@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,8 +7,24 @@ public class GameDataManager : MonoBehaviour
 {
     public static GameDataManager Instance { get; private set; }
 
+    [Header("Initial Data")]
+    [SerializeField] private InitialResourceData _initialResourceData;
+    
+    [Header("Time Settings")]
+    [SerializeField] private TimeSettingsData _timeSettingsData;
+
+    private TimeService _timeService;
+    public TimeService Time => _timeService;
+
     private ResourceService _resourceService;
     public ResourceService Resource => _resourceService;
+
+    // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
+    public event Action OnResourceChanged
+    {
+        add => _resourceService.OnResourceChanged += value;
+        remove => _resourceService.OnResourceChanged -= value;
+    }
 
     void Awake()
     {
@@ -25,8 +42,43 @@ public class GameDataManager : MonoBehaviour
     // 모든 서비스를 초기화
     private void InitializeServices()
     {
+        _timeService = new TimeService();
         _resourceService = new ResourceService();
         Debug.Log("[GameDataManager] All services initialized.");
+
+        // 시간 설정 적용
+        ApplyTimeSettings();
+
+        // 초기 자원 적용
+        ApplyInitialResources();
+    }
+
+    /// <summary>
+    /// 시간 설정 데이터를 적용합니다.
+    /// </summary>
+    private void ApplyTimeSettings()
+    {
+        if (_timeSettingsData == null)
+        {
+            Debug.LogWarning("[GameDataManager] TimeSettingsData is not assigned. Using default values.");
+            return;
+        }
+
+        _timeSettingsData.ApplyToTimeService(_timeService);
+    }
+
+    /// <summary>
+    /// 초기 자원 데이터를 적용합니다.
+    /// </summary>
+    private void ApplyInitialResources()
+    {
+        if (_initialResourceData == null)
+        {
+            Debug.LogWarning("[GameDataManager] InitialResourceData가 할당되지 않았습니다. 기본값(0)으로 시작합니다.");
+            return;
+        }
+
+        _initialResourceData.ApplyToResourceService(_resourceService);
     }
 
     // ----------------- 편의 메서드 (ResourceService 직접 호출) -----------------
@@ -62,6 +114,15 @@ public class GameDataManager : MonoBehaviour
     public void AddLabor(long amount) => _resourceService.AddResource(ResourceType.Labor, amount);
     public bool TryRemoveLabor(long amount) => _resourceService.TryRemoveResource(ResourceType.Labor, amount);
 
+    // ----------------- 편의 메서드 (TimeService 직접 호출) -----------------
+
+    public void PauseTime() => _timeService.PauseTime();
+    public void ResumeTime() => _timeService.ResumeTime();
+    public void SetTimeSpeed(float speed) => _timeService.SetTimeSpeed(speed);
+    public bool IsTimePaused() => _timeService.IsTimePaused();
+    public float GetTimeSpeed() => _timeService.GetTimeSpeed();
+    public string GetDateString() => _timeService.GetDateString();
+
     void Start()
     {
         // 초기화 로직
@@ -69,6 +130,10 @@ public class GameDataManager : MonoBehaviour
 
     void Update()
     {
-        // 업데이트 로직
+        // TimeService 업데이트
+        if (_timeService != null)
+        {
+            _timeService.Update(UnityEngine.Time.deltaTime);
+        }
     }
 }

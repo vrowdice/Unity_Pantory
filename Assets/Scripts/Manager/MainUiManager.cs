@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// 메인 UI 매니저
@@ -11,13 +12,25 @@ public class MainUiManager : MonoBehaviour, IUIManager
     private GameManager _gameManager;
     private GameDataManager _dataManager;
 
+    [Header("Information")]
+    [SerializeField] private TextMeshProUGUI _silverText;
+    [SerializeField] private TextMeshProUGUI _steelText;
+    [SerializeField] private TextMeshProUGUI _woodText;
+    [SerializeField] private TextMeshProUGUI _laborText;
+    [SerializeField] private InfoDatePanel _infoDatePanel;
+
     [Header("Panels")]
     [SerializeField] private MainPanel _mainPanel;
     [SerializeField] private ProductionPanel _productionPanel;
+    [SerializeField] private DesignPanel _designPanel;
+    [SerializeField] private MarketPanel _marketPanel;
 
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
     [SerializeField] private Transform _quickMovePanelContent;
+
+    [Header("Common")]
+    [SerializeField] private GameObject _warningPanel;
 
     // 패널 딕셔너리
     private Dictionary<MainPanelType, BasePanel> _panelDict;
@@ -40,6 +53,26 @@ public class MainUiManager : MonoBehaviour, IUIManager
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
 
+        // 자원 변경 이벤트 구독
+        if (_dataManager != null)
+        {
+            _dataManager.OnResourceChanged += UpdateAllMainText;
+            
+            // 시간 이벤트 구독
+            _dataManager.Time.OnMonthChanged += OnMonthChanged;
+            _dataManager.Time.OnYearChanged += OnYearChanged;
+        }
+
+        // InfoDatePanel 초기화
+        if (_infoDatePanel != null)
+        {
+            _infoDatePanel.OnInitialize(_dataManager);
+        }
+        else
+        {
+            Debug.LogWarning("[MainUiManager] InfoDatePanel is not assigned.");
+        }
+
         Debug.Log("[MainUiManager] Initialized.");
     }
 
@@ -57,7 +90,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
         _panelDict = new Dictionary<MainPanelType, BasePanel>
         {
             { MainPanelType.Main, _mainPanel },
-            { MainPanelType.Production, _productionPanel }
+            { MainPanelType.Production, _productionPanel },
+            { MainPanelType.Design, _designPanel },
+            { MainPanelType.Market, _marketPanel }
         };
     }
 
@@ -68,6 +103,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
 
         // QuickMoveBtn 생성
         CreateQuickMoveBtns();
+
+        // 자원 텍스트 초기 업데이트
+        UpdateAllMainText();
     }
 
     /// <summary>
@@ -75,10 +113,61 @@ public class MainUiManager : MonoBehaviour, IUIManager
     /// </summary>
     public void UpdateAllMainText()
     {
-        // 여기에 모든 메인 UI 텍스트 업데이트 로직 추가
-        // 예: 자원 표시, 상태 표시 등
+        // DataManager가 null이면 업데이트하지 않음
+        if (_dataManager == null)
+        {
+            Debug.LogWarning("[MainUiManager] DataManager is null. Cannot update main text.");
+            return;
+        }
+
+        // 각 자원 텍스트 업데이트
+        UpdateResourceText(_silverText, ResourceType.Silver);
+        UpdateResourceText(_steelText, ResourceType.Steel);
+        UpdateResourceText(_woodText, ResourceType.Wood);
+        UpdateResourceText(_laborText, ResourceType.Labor);
         
         Debug.Log("[MainUiManager] All main text updated.");
+    }
+
+    /// <summary>
+    /// 특정 자원 텍스트를 업데이트합니다.
+    /// </summary>
+    private void UpdateResourceText(TextMeshProUGUI textComponent, ResourceType resourceType)
+    {
+        if (textComponent == null)
+        {
+            Debug.LogWarning($"[MainUiManager] Text component for {resourceType} is null.");
+            return;
+        }
+
+        long resourceAmount = _dataManager.GetResource(resourceType);
+        textComponent.text = FormatResourceAmount(resourceAmount);
+    }
+
+    /// <summary>
+    /// 자원 양을 포맷팅합니다 (예: 1000 -> 1,000).
+    /// </summary>
+    private string FormatResourceAmount(long amount)
+    {
+        return amount.ToString("N0");
+    }
+
+    /// <summary>
+    /// 한 달이 지났을 때 호출됩니다.
+    /// </summary>
+    private void OnMonthChanged()
+    {
+        Debug.Log("[MainUiManager] Month changed event received.");
+        // 추가적인 UI 업데이트나 효과 처리
+    }
+
+    /// <summary>
+    /// 한 해가 지났을 때 호출됩니다.
+    /// </summary>
+    private void OnYearChanged()
+    {
+        Debug.Log("[MainUiManager] Year changed event received.");
+        // 추가적인 UI 업데이트나 효과 처리
     }
 
     /// <summary>
@@ -231,6 +320,19 @@ public class MainUiManager : MonoBehaviour, IUIManager
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             OpenPanel(MainPanelType.Production);
+        }
+    }
+
+    void OnDestroy()
+    {
+        // 자원 변경 이벤트 구독 해제
+        if (_dataManager != null)
+        {
+            _dataManager.OnResourceChanged -= UpdateAllMainText;
+            
+            // 시간 이벤트 구독 해제
+            _dataManager.Time.OnMonthChanged -= OnMonthChanged;
+            _dataManager.Time.OnYearChanged -= OnYearChanged;
         }
     }
 }

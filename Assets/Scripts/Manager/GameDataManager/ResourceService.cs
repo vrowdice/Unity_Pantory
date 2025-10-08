@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ public class ResourceService
 {
     // 자원을 저장하는 딕셔너리 (자원 타입 -> 자원 량)
     private Dictionary<ResourceType, long> _resources;
+
+    // 자원 변경 이벤트 (자원이 추가/제거/설정될 때 발생)
+    public event Action OnResourceChanged;
 
     /// <summary>
     /// ResourceService 생성자
@@ -75,7 +79,8 @@ public class ResourceService
         _resources[type] += amount;
         Debug.Log($"[ResourceService] {type} +{amount} (총: {_resources[type]})");
         
-        // [추가 로직]: UI 업데이트 이벤트 발생, 사운드 재생 등
+        // 자원 변경 이벤트 발생
+        OnResourceChanged?.Invoke();
     }
 
     /// <summary>
@@ -103,7 +108,8 @@ public class ResourceService
             _resources[type] -= amount;
             Debug.Log($"[ResourceService] {type} -{amount} (총: {_resources[type]})");
             
-            // [추가 로직]: 사운드 효과, 이벤트 트리거 등
+            // 자원 변경 이벤트 발생
+            OnResourceChanged?.Invoke();
             return true;
         }
         else
@@ -128,6 +134,9 @@ public class ResourceService
 
         _resources[type] = amount;
         Debug.Log($"[ResourceService] {type} = {amount}");
+        
+        // 자원 변경 이벤트 발생
+        OnResourceChanged?.Invoke();
     }
 
     /// <summary>
@@ -189,5 +198,8 @@ public class ResourceService
             _resources[type] = 0;
         }
         Debug.Log("[ResourceService] 모든 자원이 초기화되었습니다.");
+        
+        // 자원 변경 이벤트 발생
+        OnResourceChanged?.Invoke();
     }
 }
