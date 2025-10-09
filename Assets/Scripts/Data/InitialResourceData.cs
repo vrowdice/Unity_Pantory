@@ -9,22 +9,24 @@ public class InitialResourceData : ScriptableObject
 {
     [Header("Initial Resource Settings")]
     [Tooltip("Silver granted at game start")]
-    public long initialSilver = 1000;
-    
-    [Tooltip("Steel granted at game start")]
-    public long initialSteel = 100;
-    
-    [Tooltip("Wood granted at game start")]
-    public long initialWood = 100;
-    
-    [Tooltip("Labor granted at game start")]
-    public long initialLabor = 10;
+    public long initialCredit = 1000;
+
+    [System.Serializable]
+    public class ResourceAmount
+    {
+        public string resourceId;
+        public long amount;
+    }
+
+    [Tooltip("Initial resource amounts")]
+    public ResourceAmount[] initialResources = new ResourceAmount[0];
 
     /// <summary>
-    /// Applies initial resources to ResourceService.
+    /// Applies initial resources to ResourceService and FinancesService.
     /// </summary>
     /// <param name="resourceService">ResourceService to apply to</param>
-    public void ApplyToResourceService(ResourceService resourceService)
+    /// <param name="financesService">FinancesService to apply to</param>
+    public void ApplyToServices(ResourceService resourceService, FinancesService financesService)
     {
         if (resourceService == null)
         {
@@ -32,36 +34,28 @@ public class InitialResourceData : ScriptableObject
             return;
         }
 
-        resourceService.SetResource(ResourceType.Silver, initialSilver);
-        resourceService.SetResource(ResourceType.Steel, initialSteel);
-        resourceService.SetResource(ResourceType.Wood, initialWood);
-        resourceService.SetResource(ResourceType.Labor, initialLabor);
-
-        Debug.Log($"[InitialResourceData] Initial resources applied: " +
-                  $"Silver={initialSilver}, Steel={initialSteel}, " +
-                  $"Wood={initialWood}, Labor={initialLabor}");
-    }
-
-    /// <summary>
-    /// Applies initial resources to GameDataManager (convenience method).
-    /// </summary>
-    /// <param name="dataManager">GameDataManager to apply to</param>
-    public void ApplyToDataManager(GameDataManager dataManager)
-    {
-        if (dataManager == null)
+        if (financesService == null)
         {
-            Debug.LogError("[InitialResourceData] GameDataManager is null.");
+            Debug.LogError("[InitialResourceData] FinancesService is null.");
             return;
         }
 
-        dataManager.AddResource(ResourceType.Silver, initialSilver);
-        dataManager.AddResource(ResourceType.Steel, initialSteel);
-        dataManager.AddResource(ResourceType.Wood, initialWood);
-        dataManager.AddResource(ResourceType.Labor, initialLabor);
+        // Silver 적용
+        financesService.SetCredit(initialCredit);
+        Debug.Log($"[InitialResourceData] Initial Credit applied: {initialCredit}");
 
-        Debug.Log($"[InitialResourceData] Initial resources applied: " +
-                  $"Silver={initialSilver}, Steel={initialSteel}, " +
-                  $"Wood={initialWood}, Labor={initialLabor}");
+        // 각 자원 적용
+        foreach (var resource in initialResources)
+        {
+            if (string.IsNullOrEmpty(resource.resourceId))
+            {
+                Debug.LogWarning("[InitialResourceData] Resource ID is empty.");
+                continue;
+            }
+
+            resourceService.SetResource(resource.resourceId, resource.amount);
+            Debug.Log($"[InitialResourceData] Initial resource applied: {resource.resourceId} = {resource.amount}");
+        }
     }
 
     /// <summary>
@@ -70,10 +64,12 @@ public class InitialResourceData : ScriptableObject
     private void OnValidate()
     {
         // Prevent negative values
-        if (initialSilver < 0) initialSilver = 0;
-        if (initialSteel < 0) initialSteel = 0;
-        if (initialWood < 0) initialWood = 0;
-        if (initialLabor < 0) initialLabor = 0;
+        if (initialCredit < 0) initialCredit = 0;
+
+        foreach (var resource in initialResources)
+        {
+            if (resource.amount < 0) resource.amount = 0;
+        }
     }
 }
 

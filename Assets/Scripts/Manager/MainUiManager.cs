@@ -13,17 +13,15 @@ public class MainUiManager : MonoBehaviour, IUIManager
     private GameDataManager _dataManager;
 
     [Header("Information")]
-    [SerializeField] private TextMeshProUGUI _silverText;
-    [SerializeField] private TextMeshProUGUI _steelText;
-    [SerializeField] private TextMeshProUGUI _woodText;
-    [SerializeField] private TextMeshProUGUI _laborText;
+    [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private InfoDatePanel _infoDatePanel;
 
     [Header("Panels")]
-    [SerializeField] private MainPanel _mainPanel;
-    [SerializeField] private ProductionPanel _productionPanel;
+    [SerializeField] private StoragePanel _storagePanel;
     [SerializeField] private DesignPanel _designPanel;
     [SerializeField] private MarketPanel _marketPanel;
+    [SerializeField] private EmploymentPanel _employmentPanel;
+
 
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
@@ -89,10 +87,10 @@ public class MainUiManager : MonoBehaviour, IUIManager
     {
         _panelDict = new Dictionary<MainPanelType, BasePanel>
         {
-            { MainPanelType.Main, _mainPanel },
-            { MainPanelType.Production, _productionPanel },
+            { MainPanelType.Production, _storagePanel },
             { MainPanelType.Design, _designPanel },
-            { MainPanelType.Market, _marketPanel }
+            { MainPanelType.Market, _marketPanel },
+            { MainPanelType.Employment, _employmentPanel }
         };
     }
 
@@ -119,28 +117,24 @@ public class MainUiManager : MonoBehaviour, IUIManager
             Debug.LogWarning("[MainUiManager] DataManager is null. Cannot update main text.");
             return;
         }
-
-        // 각 자원 텍스트 업데이트
-        UpdateResourceText(_silverText, ResourceType.Silver);
-        UpdateResourceText(_steelText, ResourceType.Steel);
-        UpdateResourceText(_woodText, ResourceType.Wood);
-        UpdateResourceText(_laborText, ResourceType.Labor);
         
+        UpdateCreditText(_creditText);
+
         Debug.Log("[MainUiManager] All main text updated.");
     }
 
     /// <summary>
     /// 특정 자원 텍스트를 업데이트합니다.
     /// </summary>
-    private void UpdateResourceText(TextMeshProUGUI textComponent, ResourceType resourceType)
+    private void UpdateCreditText(TextMeshProUGUI textComponent)
     {
         if (textComponent == null)
         {
-            Debug.LogWarning($"[MainUiManager] Text component for {resourceType} is null.");
+            Debug.LogWarning($"[MainUiManager] Text component for Credit is null.");
             return;
         }
 
-        long resourceAmount = _dataManager.GetResource(resourceType);
+        long resourceAmount = _dataManager.GetCredit();
         textComponent.text = FormatResourceAmount(resourceAmount);
     }
 
@@ -183,8 +177,7 @@ public class MainUiManager : MonoBehaviour, IUIManager
                 kvp.Value.OnClose();
             }
         }
-
-        OpenPanel(MainPanelType.Main);
+        
         Debug.Log("[MainUiManager] All panels initialized.");
     }
 
@@ -315,11 +308,11 @@ public class MainUiManager : MonoBehaviour, IUIManager
         // 테스트용: 숫자 키로 패널 전환
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            OpenPanel(MainPanelType.Main);
+            OpenPanel(MainPanelType.Production);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            OpenPanel(MainPanelType.Production);
+            OpenPanel(MainPanelType.Design);
         }
     }
 

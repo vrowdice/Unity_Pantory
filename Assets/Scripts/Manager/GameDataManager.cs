@@ -13,17 +13,43 @@ public class GameDataManager : MonoBehaviour
     [Header("Time Settings")]
     [SerializeField] private TimeSettingsData _timeSettingsData;
 
+    [Header("Resource Data")]
+    [SerializeField] private ResourceData[] _resourceDataList;
+
+    [Header("Employee Data")]
+    [SerializeField] private EmployeeData[] _employeeDataList;
+
     private TimeService _timeService;
     public TimeService Time => _timeService;
 
     private ResourceService _resourceService;
     public ResourceService Resource => _resourceService;
 
+    private FinancesService _financesService;
+    public FinancesService Finances => _financesService;
+
+    private EmployeeService _employeeService;
+    public EmployeeService Employee => _employeeService;
+
     // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
     public event Action OnResourceChanged
     {
         add => _resourceService.OnResourceChanged += value;
         remove => _resourceService.OnResourceChanged -= value;
+    }
+
+    // 금액 변경 이벤트 (FinancesService의 이벤트를 중계)
+    public event Action OnSilverChanged
+    {
+        add => _financesService.OnCreditChanged += value;
+        remove => _financesService.OnCreditChanged -= value;
+    }
+
+    // 직원 변경 이벤트 (EmployeeService의 이벤트를 중계)
+    public event Action OnEmployeeChanged
+    {
+        add => _employeeService.OnEmployeeChanged += value;
+        remove => _employeeService.OnEmployeeChanged -= value;
     }
 
     void Awake()
@@ -44,13 +70,49 @@ public class GameDataManager : MonoBehaviour
     {
         _timeService = new TimeService();
         _resourceService = new ResourceService();
+        _financesService = new FinancesService();
+        _employeeService = new EmployeeService();
         Debug.Log("[GameDataManager] All services initialized.");
+
+        // ResourceData 등록
+        RegisterResources();
+
+        // EmployeeData 등록
+        RegisterEmployees();
 
         // 시간 설정 적용
         ApplyTimeSettings();
 
         // 초기 자원 적용
         ApplyInitialResources();
+    }
+
+    /// <summary>
+    /// ResourceData 배열을 ResourceService에 등록합니다.
+    /// </summary>
+    private void RegisterResources()
+    {
+        if (_resourceDataList == null || _resourceDataList.Length == 0)
+        {
+            Debug.LogWarning("[GameDataManager] ResourceData 배열이 할당되지 않았습니다.");
+            return;
+        }
+
+        _resourceService.RegisterResources(_resourceDataList);
+    }
+
+    /// <summary>
+    /// EmployeeData 배열을 EmployeeService에 등록합니다.
+    /// </summary>
+    private void RegisterEmployees()
+    {
+        if (_employeeDataList == null || _employeeDataList.Length == 0)
+        {
+            Debug.LogWarning("[GameDataManager] EmployeeData 배열이 할당되지 않았습니다.");
+            return;
+        }
+
+        _employeeService.RegisterEmployees(_employeeDataList);
     }
 
     /// <summary>
@@ -78,41 +140,69 @@ public class GameDataManager : MonoBehaviour
             return;
         }
 
-        _initialResourceData.ApplyToResourceService(_resourceService);
+        _initialResourceData.ApplyToServices(_resourceService, _financesService);
     }
 
     // ----------------- 편의 메서드 (ResourceService 직접 호출) -----------------
     
     // 특정 자원의 현재 보유량 반환
-    public long GetResource(ResourceType type) => _resourceService.GetResource(type);
+    public long GetResourceQuantity(string resourceId) => _resourceService.GetResourceQuantity(resourceId);
+
+    // 특정 자원의 현재 가격 반환
+    public float GetResourcePrice(string resourceId) => _resourceService.GetResourcePrice(resourceId);
 
     // 모든 자원 정보 반환
-    public Dictionary<ResourceType, long> GetAllResources() => _resourceService.GetAllResources();
+    public Dictionary<string, ResourceEntry> GetAllResources() => _resourceService.GetAllResources();
 
     // 특정 자원 추가
-    public void AddResource(ResourceType type, long amount) => _resourceService.AddResource(type, amount);
+    public void AddResource(string resourceId, long amount) => _resourceService.AddResource(resourceId, amount);
 
     // 특정 자원 제거
-    public bool TryRemoveResource(ResourceType type, long amount) => _resourceService.TryRemoveResource(type, amount);
+    public bool TryRemoveResource(string resourceId, long amount) => _resourceService.TryRemoveResource(resourceId, amount);
 
     // 특정 자원 충분 여부 확인
-    public bool HasEnoughResource(ResourceType type, long amount) => _resourceService.HasEnoughResource(type, amount);
+    public bool HasEnoughResource(string resourceId, long amount) => _resourceService.HasEnoughResource(resourceId, amount);
 
-    // ----------------- 레거시 호환 메서드 -----------------
+    // ----------------- 편의 메서드 (FinancesService 직접 호출) -----------------
+
+    // 현재 보유 금액 반환
+    public long GetCredit() => _financesService.GetCredit();
+
+    // 금액 추가
+    public void AddCredit(long amount) => _financesService.AddCredit(amount);
+
+    // 금액 차감
+    public bool TryRemoveCredit(long amount) => _financesService.TryRemoveCredit(amount);
+
+    // 금액 충분 여부 확인
+    public bool HasEnoughCredit(long amount) => _financesService.HasEnoughCredit(amount);
+
+    // ----------------- 편의 메서드 (EmployeeService 직접 호출) -----------------
+
+    // 특정 직원 유형의 인원 수 반환
+    public int GetEmployeeCount(string employeeId) => _employeeService.GetEmployeeCount(employeeId);
+
+    // 특정 직원 유형의 총 급여 반환
+    public long GetEmployeeTotalSalary(string employeeId) => _employeeService.GetEmployeeTotalSalary(employeeId);
+
+    // 모든 직원의 총 급여 반환
+    public long GetTotalSalary() => _employeeService.GetTotalSalary();
+
+    // 직원 고용
+    public void HireEmployee(string employeeId, int count) => _employeeService.HireEmployee(employeeId, count);
+
+    // 직원 해고
+    public bool TryFireEmployee(string employeeId, int count) => _employeeService.TryFireEmployee(employeeId, count);
+
+    // 직원 인원 수 설정
+    public void SetEmployeeCount(string employeeId, int count) => _employeeService.SetEmployeeCount(employeeId, count);
+
+    // 모든 직원 정보 반환
+    public Dictionary<string, EmployeeEntry> GetAllEmployees() => _employeeService.GetAllEmployees();
+
+    // ----------------- 레거시 호환 프로퍼티 -----------------
     
-    public long Steel => _resourceService.GetResource(ResourceType.Steel);
-    public long Wood => _resourceService.GetResource(ResourceType.Wood);
-    public long Labor => _resourceService.GetResource(ResourceType.Labor);
-    public long Silver => _resourceService.GetResource(ResourceType.Silver);
-
-    public void AddSteel(long amount) => _resourceService.AddResource(ResourceType.Steel, amount);
-    public bool TryRemoveSteel(long amount) => _resourceService.TryRemoveResource(ResourceType.Steel, amount);
-
-    public void AddWood(long amount) => _resourceService.AddResource(ResourceType.Wood, amount);
-    public bool TryRemoveWood(long amount) => _resourceService.TryRemoveResource(ResourceType.Wood, amount);
-
-    public void AddLabor(long amount) => _resourceService.AddResource(ResourceType.Labor, amount);
-    public bool TryRemoveLabor(long amount) => _resourceService.TryRemoveResource(ResourceType.Labor, amount);
+    public long Silver => _financesService.GetCredit();
 
     // ----------------- 편의 메서드 (TimeService 직접 호출) -----------------
 

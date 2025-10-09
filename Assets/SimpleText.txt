@@ -1,0 +1,87 @@
+판토리 (PANTORY) – 기획 정리
+
+1. 게임 개요
+장르: 경제 + 공장 시뮬레이션 + RPG 요소
+세계관: 판타지와 근대 일부가 혼합된 세계
+주요 목표: 플레이어가 공정을 설계하여 자원과 도구를 제작하고, 시장에 판매하며 변화하는 경제에 적응
+
+2. 자원(Resource)
+2.1. 카테고리
+Metal: 철, 은, 금 등
+Wood: 원목, 가공목, 고급목 등
+Magic: 마법 재료, 마법 지팡이 등
+Tool: 완성된 도구 (Sword, Spear, Shield, Hammer 등)
+
+2.2. 등급/단계
+각 자원은 단계별 업그레이드 가능
+예: Wood
+Raw Wood
+Processed Wood
+Fine Wood
+Premium Wood
+
+2.3. 데이터 구조
+ID, DisplayName, BaseValue, Rarity, Type, NextStage 등 포함
+BaseValue: float 사용 (가격 변동 및 시장 시뮬레이션 용)
+MinValue/MaxValue: 시장 가격 범위
+Type: 카테고리 구분 (metal, wood, tool)
+
+3. 도구(Tool)
+Tool도 Resource 하나로 통합 관리
+Category로 Tool 구분 가능
+생산/시장/업그레이드 구조 통일
+예: Iron Sword → Steel Sword → Enchanted Sword
+
+4. 스레드(Thread)
+4.1. 구조
+공장 공정 단위로 정의: [채광 → 제련 → 조립 → 강화]
+스레드 수로 생산량 결정
+스레드 내부 건물(공정)은 직접 배치 가능
+스레드 재배치 옵션은 초기에는 제한, 나중에 확장 고려
+
+4.2. 생산량 계산
+실제 생산량 = 스레드 기본 생산량 × 직원 효율 × 스레드 수
+
+5. 직원(Employee)
+5.1. 개념
+EmploymentPanel에서 관리
+StaffGroup/EmployeeUnit 단위로 분류
+직책(EmployeeType): Worker, Technician, Researcher, Manager, Executive
+Worker와 Technician(숙련 기술자) 구분 → 생산 효율 차이
+
+5.2. 데이터 구조
+StaffGroup (고정값)
+Role: 직책
+Count: 고정 인원
+BaseEfficiency: 기본 생산 효율
+EmployeeState (변하는 데이터)
+avgSkill: 평균 숙련도
+avgFatigue: 평균 피로도
+avgLoyalty: 평균 충성도
+hasUnion: 노조 가입 여부
+currentEfficiency: 실시간 생산 효율
+assignedThreadCount: 스레드 배치 인원 수
+
+5.3. 활용
+생산 효율 계산
+파업 이벤트
+피로도, 충성도 기반 생산량 조정
+
+6. 시장(Market)
+자원과 도구 모두 거래 가능
+가격 변동 반영:
+BaseValue ± 수요/공급, 시장 요인
+상한/하한 가격 설정
+변동률 제한 (예: 10% 이상 급등/급락 방지)
+
+7. 이벤트
+노조/파업 이벤트: avgLoyalty, hasUnion에 따라 발생
+연구원/임원 이벤트: 나중에 연구, 경영 관련 이벤트
+국가 전쟁: 1인 개발 초반에는 제외, 추후 확장
+
+8. 개발 전략
+자원, 도구, 직원 데이터를 ScriptableObject / CSV로 관리
+초기 프로토타입: Enum 기반 + 데이터 매핑
+중장기: 완전 데이터 기반으로 전환 가능
+생산량/효율/시장 가격 계산 공식 통합
+스레드/직원/시장 연계 구조 확보

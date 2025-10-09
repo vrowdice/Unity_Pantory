@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a173e744a3c2d4b8f37babb9010ae3, type: 3}
+  m_Name: pure_gold
+  m_EditorClassIdentifier: 
+  id: pure_gold
+  displayName: Pure Gold
+  minValue: 100
+  maxValue: 250
+  baseValue: 150
+  rarity: 0.4
+  type: 0
+  nextStage: {fileID: 11400000, guid: d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9, type: 2}
+

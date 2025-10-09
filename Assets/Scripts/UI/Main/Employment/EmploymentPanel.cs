@@ -1,24 +1,24 @@
 using UnityEngine;
 
 /// <summary>
-/// ë©”ì¸ íŒ¨ë„
+/// »ı»ê °ü¸® ÆĞ³Î
 /// </summary>
-public class MainPanel : BasePanel
+public class EmploymentPanel : BasePanel
 {
     /// <summary>
-    /// íŒ¨ë„ ì´ˆê¸°í™” (BasePanelì—ì„œ í˜¸ì¶œ)
+    /// ÆĞ³Î ÃÊ±âÈ­ (BasePanel¿¡¼­ È£Ãâ)
     /// </summary>
     protected override void OnInitialize()
     {
         if (_dataManager == null)
         {
-            Debug.LogWarning("[MainPanel] DataManager is null.");
+            Debug.LogWarning("[ProductionPanel] DataManager is null.");
             return;
         }
     }
 
     void Update()
     {
-        // ì—…ë°ì´íŠ¸ ë¡œì§
+        // ¾÷µ¥ÀÌÆ® ·ÎÁ÷
     }
 }
