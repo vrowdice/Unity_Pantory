@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a173e744a3c2d4b8f37babb9010ae3, type: 3}
+  m_Name: wooden_hammer
+  m_EditorClassIdentifier: 
+  id: wooden_hammer
+  displayName: Wooden Hammer
+  minValue: 15
+  maxValue: 40
+  baseValue: 25
+  rarity: 0.8
+  type: 2
+  nextStage: {fileID: 0}
+  icon: {fileID: 21300000, guid: 62d364d8ccea3f4498fae1e1a71441d6, type: 3}
+  description: A simple wooden mallet crafted from processed lumber. Light and easy to use, perfect for beginners and delicate work.
+  requirements:
+  - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+    count: 2
+

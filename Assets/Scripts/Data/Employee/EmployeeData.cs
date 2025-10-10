@@ -10,6 +10,9 @@ public class EmployeeData : ScriptableObject
     public string id;                    // 직원 유형 ID (예: "worker")
     public string displayName;           // 표시 이름 (예: "Worker")
     public EmployeeType role;            // 직원 역할
+    public Sprite icon;
+    [TextArea(3, 10)]
+    public string description;
 
     [Header("Initial Stats")]
     [Range(0f, 100f)]
@@ -17,11 +20,8 @@ public class EmployeeData : ScriptableObject
     [Range(0f, 100f)]
     public float baseFatigue;            // 기본 피로도
     [Range(0f, 100f)]
-    public float baseLoyalty;            // 기본 충성도
+    public float baseSatisfaction;       // 기본 만족도
     
     [Header("Salary")]
     public long baseSalary;              // 기본 급여
-    
-    [Header("Union")]
-    public bool hasUnion;                // 노조 가입 여부
 }

@@ -2233,6 +2233,7 @@ MonoBehaviour:
   _initialResourceData: {fileID: 11400000, guid: d0112735f1c0bb742bd64dfe989097f2, type: 2}
   _timeSettingsData: {fileID: 11400000, guid: 5fd3047d51914f34bae4791141b3a104, type: 2}
   _resourceDataList: []
+  _employeeDataList: []
 --- !u!4 &1964764693
 Transform:
   m_ObjectHideFlags: 0

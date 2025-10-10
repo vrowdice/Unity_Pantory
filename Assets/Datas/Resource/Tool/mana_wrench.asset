@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a173e744a3c2d4b8f37babb9010ae3, type: 3}
+  m_Name: mana_wrench
+  m_EditorClassIdentifier: 
+  id: mana_wrench
+  displayName: Mana Wrench
+  minValue: 340
+  maxValue: 680
+  baseValue: 480
+  rarity: 0.3
+  type: 2
+  nextStage: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8329272c16e9f6d4783646a4202370b5, type: 3}
+  description: A mystical wrench radiating arcane power. Can manipulate magical constructs and enchanted machinery with ease.
+  requirements:
+  - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
+    count: 2

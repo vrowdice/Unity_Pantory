@@ -20,4 +20,8 @@ MonoBehaviour:
   rarity: 0.3
   type: 1
   nextStage: {fileID: 0}
-
+  icon: {fileID: 21300000, guid: e65a29079fd01d048942b1b9865eee4c, type: 3}
+  description: Exceptional timber of unmatched quality and elegance. Reserved for masterwork creations and items of great value.
+  requirements:
+  - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
+    count: 2

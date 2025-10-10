@@ -15,6 +15,7 @@ public class ResourceEntry
         if (data != null)
         {
             resourceState.currentValue = data.baseValue;
+            resourceState.quantity = data.initialAmount;
         }
     }
 }

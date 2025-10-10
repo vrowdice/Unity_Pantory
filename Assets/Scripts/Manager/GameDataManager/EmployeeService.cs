@@ -280,8 +280,8 @@ public class EmployeeService
     /// 특정 직원 유형의 충성도를 업데이트합니다.
     /// </summary>
     /// <param name="employeeId">직원 유형 ID</param>
-    /// <param name="loyalty">새로운 충성도</param>
-    public void SetEmployeeLoyalty(string employeeId, float loyalty)
+    /// <param name="satisfaction">새로운 만족도</param>
+    public void SetEmployeeSatisfaction(string employeeId, float satisfaction)
     {
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
@@ -289,7 +289,7 @@ public class EmployeeService
             return;
         }
 
-        entry.employeeState.currentLoyalty = Mathf.Clamp(loyalty, 0f, 100f);
+        entry.employeeState.currentSatisfaction = Mathf.Clamp(satisfaction, 0f, 100f);
         UpdateEfficiency(entry);
         
         OnEmployeeChanged?.Invoke();
@@ -312,7 +312,7 @@ public class EmployeeService
     private void UpdateEfficiency(EmployeeEntry entry)
     {
         float skillFactor = entry.employeeState.currentSkill * 0.5f;
-        float loyaltyFactor = entry.employeeState.currentLoyalty * 0.3f;
+        float loyaltyFactor = entry.employeeState.currentSatisfaction * 0.3f;
         float fatigueFactor = entry.employeeState.currentFatigue * 0.2f;
         
         float efficiency = (skillFactor + loyaltyFactor - fatigueFactor) / 100f;
@@ -331,7 +331,7 @@ public class EmployeeService
             entry.employeeState.count = 0;
             entry.employeeState.currentSkill = entry.employeeData.baseSkill;
             entry.employeeState.currentFatigue = entry.employeeData.baseFatigue;
-            entry.employeeState.currentLoyalty = entry.employeeData.baseLoyalty;
+            entry.employeeState.currentSatisfaction = entry.employeeData.baseSatisfaction;
             entry.employeeState.currentEfficiency = 1f;
             entry.employeeState.assignedCount = 0;
             entry.employeeState.totalSalary = 0;

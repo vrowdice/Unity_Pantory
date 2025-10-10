@@ -19,7 +19,7 @@ public class EmployeeEntry
         {
             employeeState.currentSkill = data.baseSkill;
             employeeState.currentFatigue = data.baseFatigue;
-            employeeState.currentLoyalty = data.baseLoyalty;
+            employeeState.currentSatisfaction = data.baseSatisfaction;
         }
     }
 }
