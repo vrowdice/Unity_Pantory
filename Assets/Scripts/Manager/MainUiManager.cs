@@ -87,7 +87,7 @@ public class MainUiManager : MonoBehaviour, IUIManager
     {
         _panelDict = new Dictionary<MainPanelType, BasePanel>
         {
-            { MainPanelType.Production, _storagePanel },
+            { MainPanelType.Storage, _storagePanel },
             { MainPanelType.Design, _designPanel },
             { MainPanelType.Market, _marketPanel },
             { MainPanelType.Employment, _employmentPanel }
@@ -233,6 +233,14 @@ public class MainUiManager : MonoBehaviour, IUIManager
         Debug.Log($"[MainUiManager] Panel {panelType} closed.");
     }
 
+    public void CloseAllPanels()
+    {
+        foreach (var kvp in _panelDict)
+        {
+            ClosePanelInternal(kvp.Key);
+        }
+    }
+
     /// <summary>
     /// QuickMoveBtn을 생성합니다.
     /// </summary>
@@ -302,19 +310,19 @@ public class MainUiManager : MonoBehaviour, IUIManager
     {
         return _currentOpenPanelType == panelType;
     }
-
+/*
     void Update()
     {
         // 테스트용: 숫자 키로 패널 전환
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            OpenPanel(MainPanelType.Production);
+            OpenPanel(MainPanelType.Storage);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             OpenPanel(MainPanelType.Design);
         }
-    }
+    }*/
 
     void OnDestroy()
     {

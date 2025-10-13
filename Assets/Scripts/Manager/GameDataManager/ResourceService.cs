@@ -20,9 +20,70 @@ public class ResourceService
     public ResourceService()
     {
         _resources = new Dictionary<string, ResourceEntry>();
+        AutoLoadAllResources(); // 게임 시작 시 자동으로 모든 리소스 로드
     }
 
     // ----------------- 초기화 -----------------
+
+    /// <summary>
+    /// 지정된 경로에서 모든 ResourceData를 자동으로 로드하여 등록합니다.
+    /// </summary>
+    /// <param name="resourcePaths">검색할 폴더 경로 배열 (예: "Datas/Resource/Metal")</param>
+    public void AutoLoadResources(string[] resourcePaths)
+    {
+#if UNITY_EDITOR
+        int loadedCount = 0;
+        
+        foreach (string path in resourcePaths)
+        {
+            // AssetDatabase를 사용하여 모든 ResourceData 찾기
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResourceData", new[] { "Assets/" + path });
+            
+            foreach (string guid in guids)
+            {
+                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                ResourceData resourceData = UnityEditor.AssetDatabase.LoadAssetAtPath<ResourceData>(assetPath);
+                
+                if (resourceData != null)
+                {
+                    RegisterResource(resourceData);
+                    loadedCount++;
+                }
+            }
+        }
+        
+        Debug.Log($"[ResourceService] 자동 로드 완료: {loadedCount}개의 리소스 등록됨");
+#else
+        Debug.LogWarning("[ResourceService] AutoLoadResources는 에디터에서만 사용 가능합니다.");
+#endif
+    }
+
+    /// <summary>
+    /// 모든 ResourceData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
+    /// </summary>
+    public void AutoLoadAllResources()
+    {
+#if UNITY_EDITOR
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResourceData");
+        int loadedCount = 0;
+        
+        foreach (string guid in guids)
+        {
+            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            ResourceData resourceData = UnityEditor.AssetDatabase.LoadAssetAtPath<ResourceData>(assetPath);
+            
+            if (resourceData != null)
+            {
+                RegisterResource(resourceData);
+                loadedCount++;
+            }
+        }
+        
+        Debug.Log($"[ResourceService] 전체 자동 로드 완료: {loadedCount}개의 리소스 등록됨");
+#else
+        Debug.LogWarning("[ResourceService] AutoLoadAllResources는 에디터에서만 사용 가능합니다.");
+#endif
+    }
 
     /// <summary>
     /// ResourceData를 등록하여 관리 대상에 추가합니다.

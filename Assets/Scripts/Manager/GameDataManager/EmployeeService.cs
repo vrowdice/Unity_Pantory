@@ -20,9 +20,70 @@ public class EmployeeService
     public EmployeeService()
     {
         _employees = new Dictionary<string, EmployeeEntry>();
+        AutoLoadAllEmployees(); // 게임 시작 시 자동으로 모든 직원 데이터 로드
     }
 
     // ----------------- 초기화 -----------------
+
+    /// <summary>
+    /// 지정된 경로에서 모든 EmployeeData를 자동으로 로드하여 등록합니다.
+    /// </summary>
+    /// <param name="employeePaths">검색할 폴더 경로 배열 (예: "Datas/Employee")</param>
+    public void AutoLoadEmployees(string[] employeePaths)
+    {
+#if UNITY_EDITOR
+        int loadedCount = 0;
+        
+        foreach (string path in employeePaths)
+        {
+            // AssetDatabase를 사용하여 모든 EmployeeData 찾기
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:EmployeeData", new[] { "Assets/" + path });
+            
+            foreach (string guid in guids)
+            {
+                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                EmployeeData employeeData = UnityEditor.AssetDatabase.LoadAssetAtPath<EmployeeData>(assetPath);
+                
+                if (employeeData != null)
+                {
+                    RegisterEmployee(employeeData);
+                    loadedCount++;
+                }
+            }
+        }
+        
+        Debug.Log($"[EmployeeService] 자동 로드 완료: {loadedCount}개의 직원 유형 등록됨");
+#else
+        Debug.LogWarning("[EmployeeService] AutoLoadEmployees는 에디터에서만 사용 가능합니다.");
+#endif
+    }
+
+    /// <summary>
+    /// 모든 EmployeeData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
+    /// </summary>
+    public void AutoLoadAllEmployees()
+    {
+#if UNITY_EDITOR
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:EmployeeData");
+        int loadedCount = 0;
+        
+        foreach (string guid in guids)
+        {
+            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            EmployeeData employeeData = UnityEditor.AssetDatabase.LoadAssetAtPath<EmployeeData>(assetPath);
+            
+            if (employeeData != null)
+            {
+                RegisterEmployee(employeeData);
+                loadedCount++;
+            }
+        }
+        
+        Debug.Log($"[EmployeeService] 전체 자동 로드 완료: {loadedCount}개의 직원 유형 등록됨");
+#else
+        Debug.LogWarning("[EmployeeService] AutoLoadAllEmployees는 에디터에서만 사용 가능합니다.");
+#endif
+    }
 
     /// <summary>
     /// EmployeeData를 등록하여 관리 대상에 추가합니다.

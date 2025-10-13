@@ -13,12 +13,6 @@ public class GameDataManager : MonoBehaviour
     [Header("Time Settings")]
     [SerializeField] private TimeSettingsData _timeSettingsData;
 
-    [Header("Resource Data")]
-    [SerializeField] private ResourceData[] _resourceDataList;
-
-    [Header("Employee Data")]
-    [SerializeField] private EmployeeData[] _employeeDataList;
-
     private TimeService _timeService;
     public TimeService Time => _timeService;
 
@@ -69,50 +63,16 @@ public class GameDataManager : MonoBehaviour
     private void InitializeServices()
     {
         _timeService = new TimeService();
-        _resourceService = new ResourceService();
+        _resourceService = new ResourceService(); // 자동으로 ResourceData 로드
         _financesService = new FinancesService();
-        _employeeService = new EmployeeService();
+        _employeeService = new EmployeeService(); // 자동으로 EmployeeData 로드
         Debug.Log("[GameDataManager] All services initialized.");
-
-        // ResourceData 등록
-        RegisterResources();
-
-        // EmployeeData 등록
-        RegisterEmployees();
 
         // 시간 설정 적용
         ApplyTimeSettings();
 
         // 초기 자원 적용
         ApplyInitialResources();
-    }
-
-    /// <summary>
-    /// ResourceData 배열을 ResourceService에 등록합니다.
-    /// </summary>
-    private void RegisterResources()
-    {
-        if (_resourceDataList == null || _resourceDataList.Length == 0)
-        {
-            Debug.LogWarning("[GameDataManager] ResourceData 배열이 할당되지 않았습니다.");
-            return;
-        }
-
-        _resourceService.RegisterResources(_resourceDataList);
-    }
-
-    /// <summary>
-    /// EmployeeData 배열을 EmployeeService에 등록합니다.
-    /// </summary>
-    private void RegisterEmployees()
-    {
-        if (_employeeDataList == null || _employeeDataList.Length == 0)
-        {
-            Debug.LogWarning("[GameDataManager] EmployeeData 배열이 할당되지 않았습니다.");
-            return;
-        }
-
-        _employeeService.RegisterEmployees(_employeeDataList);
     }
 
     /// <summary>
