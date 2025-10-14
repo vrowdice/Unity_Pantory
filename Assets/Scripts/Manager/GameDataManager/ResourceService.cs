@@ -52,9 +52,9 @@ public class ResourceService
             }
         }
         
-        Debug.Log($"[ResourceService] 자동 로드 완료: {loadedCount}개의 리소스 등록됨");
+        Debug.Log($"[ResourceService] Auto load completed: {loadedCount} resources registered");
 #else
-        Debug.LogWarning("[ResourceService] AutoLoadResources는 에디터에서만 사용 가능합니다.");
+        Debug.LogWarning("[ResourceService] AutoLoadResources is only available in editor mode.");
 #endif
     }
 
@@ -79,9 +79,9 @@ public class ResourceService
             }
         }
         
-        Debug.Log($"[ResourceService] 전체 자동 로드 완료: {loadedCount}개의 리소스 등록됨");
+        Debug.Log($"[ResourceService] Full auto load completed: {loadedCount} resources registered");
 #else
-        Debug.LogWarning("[ResourceService] AutoLoadAllResources는 에디터에서만 사용 가능합니다.");
+        Debug.LogWarning("[ResourceService] AutoLoadAllResources is only available in editor mode.");
 #endif
     }
 
@@ -93,24 +93,23 @@ public class ResourceService
     {
         if (resourceData == null)
         {
-            Debug.LogWarning("[ResourceService] ResourceData가 null입니다.");
+            Debug.LogWarning("[ResourceService] ResourceData is null.");
             return;
         }
 
         if (string.IsNullOrEmpty(resourceData.id))
         {
-            Debug.LogWarning("[ResourceService] ResourceData의 ID가 비어있습니다.");
+            Debug.LogWarning("[ResourceService] ResourceData ID is empty.");
             return;
         }
 
         if (_resources.ContainsKey(resourceData.id))
         {
-            Debug.LogWarning($"[ResourceService] 이미 등록된 자원입니다: {resourceData.id}");
+            Debug.LogWarning($"[ResourceService] Resource already registered: {resourceData.id}");
             return;
         }
 
         _resources[resourceData.id] = new ResourceEntry(resourceData);
-        Debug.Log($"[ResourceService] 자원 등록: {resourceData.displayName} ({resourceData.id})");
     }
 
     /// <summary>
@@ -139,7 +138,7 @@ public class ResourceService
             return entry.resourceState.quantity;
         }
         
-        Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
         return 0;
     }
 
@@ -155,7 +154,7 @@ public class ResourceService
             return entry.resourceState.currentValue;
         }
         
-        Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
         return 0f;
     }
 
@@ -171,7 +170,7 @@ public class ResourceService
             return entry;
         }
         
-        Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
         return null;
     }
 
@@ -204,18 +203,18 @@ public class ResourceService
     {
         if (amount <= 0)
         {
-            Debug.LogWarning($"[ResourceService] 추가할 수량은 0보다 커야 합니다. (입력값: {amount})");
+            Debug.LogWarning($"[ResourceService] Amount to add must be greater than 0. (input: {amount})");
             return;
         }
 
         if (!_resources.TryGetValue(resourceId, out var entry))
         {
-            Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
             return;
         }
 
         entry.resourceState.quantity += amount;
-        Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (총: {entry.resourceState.quantity})");
+        Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (total: {entry.resourceState.quantity})");
         
         OnResourceChanged?.Invoke();
     }
@@ -230,27 +229,27 @@ public class ResourceService
     {
         if (amount <= 0)
         {
-            Debug.LogWarning($"[ResourceService] 제거할 수량은 0보다 커야 합니다. (입력값: {amount})");
+            Debug.LogWarning($"[ResourceService] Amount to remove must be greater than 0. (input: {amount})");
             return true;
         }
 
         if (!_resources.TryGetValue(resourceId, out var entry))
         {
-            Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
             return false;
         }
 
         if (entry.resourceState.quantity >= amount)
         {
             entry.resourceState.quantity -= amount;
-            Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (총: {entry.resourceState.quantity})");
+            Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (total: {entry.resourceState.quantity})");
             
             OnResourceChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[ResourceService] {entry.resourceData.displayName} 부족! (필요: {amount}, 보유: {entry.resourceState.quantity})");
+            Debug.LogWarning($"[ResourceService] {entry.resourceData.displayName} not enough! (required: {amount}, available: {entry.resourceState.quantity})");
             return false;
         }
     }
@@ -264,13 +263,13 @@ public class ResourceService
     {
         if (amount < 0)
         {
-            Debug.LogWarning($"[ResourceService] 자원 수량은 음수가 될 수 없습니다. (입력값: {amount})");
+            Debug.LogWarning($"[ResourceService] Resource quantity cannot be negative. (input: {amount})");
             return;
         }
 
         if (!_resources.TryGetValue(resourceId, out var entry))
         {
-            Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
             return;
         }
 
@@ -306,7 +305,7 @@ public class ResourceService
             {
                 var entry = GetResourceEntry(kvp.Key);
                 string displayName = entry != null ? entry.resourceData.displayName : kvp.Key;
-                Debug.LogWarning($"[ResourceService] 자원 부족으로 거래 실패: {displayName} (필요: {kvp.Value}, 보유: {GetResourceQuantity(kvp.Key)})");
+                Debug.LogWarning($"[ResourceService] Transaction failed due to insufficient resources: {displayName} (required: {kvp.Value}, available: {GetResourceQuantity(kvp.Key)})");
                 return false;
             }
         }
@@ -342,18 +341,18 @@ public class ResourceService
     {
         if (price < 0)
         {
-            Debug.LogWarning($"[ResourceService] 가격은 음수가 될 수 없습니다. (입력값: {price})");
+            Debug.LogWarning($"[ResourceService] Price cannot be negative. (input: {price})");
             return;
         }
 
         if (!_resources.TryGetValue(resourceId, out var entry))
         {
-            Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
             return;
         }
 
         entry.resourceState.currentValue = price;
-        Debug.Log($"[ResourceService] {entry.resourceData.displayName} 가격 = {price}");
+        Debug.Log($"[ResourceService] {entry.resourceData.displayName} price = {price}");
         
         OnResourceChanged?.Invoke();
     }
@@ -367,7 +366,7 @@ public class ResourceService
     {
         if (!_resources.TryGetValue(resourceId, out var entry))
         {
-            Debug.LogWarning($"[ResourceService] 등록되지 않은 자원입니다: {resourceId}");
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
             return;
         }
 
@@ -405,7 +404,7 @@ public class ResourceService
             entry.resourceState.currentValue = entry.resourceData.baseValue;
             entry.resourceState.priceChangeRate = 0f;
         }
-        Debug.Log("[ResourceService] 모든 자원이 초기화되었습니다.");
+        Debug.Log("[ResourceService] All resources have been reset.");
         
         OnResourceChanged?.Invoke();
     }

@@ -41,12 +41,12 @@ public class FinancesService
     {
         if (amount <= 0)
         {
-            Debug.LogWarning($"추가할 금액은 0보다 커야 합니다. (입력값: {amount})");
+            Debug.LogWarning($"[FinancesService] Amount to add must be greater than 0. (input: {amount})");
             return;
         }
 
         _credit += amount;
-        Debug.Log($"[FinancesService] Silver +{amount} (총: {_credit})");
+        Debug.Log($"[FinancesService] Credit +{amount} (total: {_credit})");
         
         OnCreditChanged?.Invoke();
     }
@@ -60,21 +60,21 @@ public class FinancesService
     {
         if (amount <= 0)
         {
-            Debug.LogWarning($"차감할 금액은 0보다 커야 합니다. (입력값: {amount})");
+            Debug.LogWarning($"[FinancesService] Amount to remove must be greater than 0. (input: {amount})");
             return true;
         }
 
         if (_credit >= amount)
         {
             _credit -= amount;
-            Debug.Log($"[FinancesService] Silver -{amount} (총: {_credit})");
+            Debug.Log($"[FinancesService] Credit -{amount} (total: {_credit})");
             
             OnCreditChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[FinancesService] Silver 부족! (필요: {amount}, 보유: {_credit})");
+            Debug.LogWarning($"[FinancesService] Not enough credit! (required: {amount}, available: {_credit})");
             return false;
         }
     }
@@ -87,12 +87,12 @@ public class FinancesService
     {
         if (amount < 0)
         {
-            Debug.LogWarning($"금액은 음수가 될 수 없습니다. (입력값: {amount})");
+            Debug.LogWarning($"[FinancesService] Credit cannot be negative. (input: {amount})");
             return;
         }
 
         _credit = amount;
-        Debug.Log($"[FinancesService] Silver = {amount}");
+        Debug.Log($"[FinancesService] Credit = {amount}");
         
         OnCreditChanged?.Invoke();
     }
@@ -113,7 +113,7 @@ public class FinancesService
     public void ResetCredit()
     {
         _credit = 0;
-        Debug.Log("[FinancesService] 금액이 초기화되었습니다.");
+        Debug.Log("[FinancesService] Credit has been reset.");
         
         OnCreditChanged?.Invoke();
     }

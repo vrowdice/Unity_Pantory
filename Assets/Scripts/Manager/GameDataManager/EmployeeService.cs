@@ -52,9 +52,9 @@ public class EmployeeService
             }
         }
         
-        Debug.Log($"[EmployeeService] 자동 로드 완료: {loadedCount}개의 직원 유형 등록됨");
+        Debug.Log($"[EmployeeService] Auto load completed: {loadedCount} employee types registered");
 #else
-        Debug.LogWarning("[EmployeeService] AutoLoadEmployees는 에디터에서만 사용 가능합니다.");
+        Debug.LogWarning("[EmployeeService] AutoLoadEmployees is only available in editor mode.");
 #endif
     }
 
@@ -79,9 +79,9 @@ public class EmployeeService
             }
         }
         
-        Debug.Log($"[EmployeeService] 전체 자동 로드 완료: {loadedCount}개의 직원 유형 등록됨");
+        Debug.Log($"[EmployeeService] Full auto load completed: {loadedCount} employee types registered");
 #else
-        Debug.LogWarning("[EmployeeService] AutoLoadAllEmployees는 에디터에서만 사용 가능합니다.");
+        Debug.LogWarning("[EmployeeService] AutoLoadAllEmployees is only available in editor mode.");
 #endif
     }
 
@@ -93,24 +93,23 @@ public class EmployeeService
     {
         if (employeeData == null)
         {
-            Debug.LogWarning("[EmployeeService] EmployeeData가 null입니다.");
+            Debug.LogWarning("[EmployeeService] EmployeeData is null.");
             return;
         }
 
         if (string.IsNullOrEmpty(employeeData.id))
         {
-            Debug.LogWarning("[EmployeeService] EmployeeData의 ID가 비어있습니다.");
+            Debug.LogWarning("[EmployeeService] EmployeeData ID is empty.");
             return;
         }
 
         if (_employees.ContainsKey(employeeData.id))
         {
-            Debug.LogWarning($"[EmployeeService] 이미 등록된 직원 유형입니다: {employeeData.id}");
+            Debug.LogWarning($"[EmployeeService] Employee type already registered: {employeeData.id}");
             return;
         }
 
         _employees[employeeData.id] = new EmployeeEntry(employeeData);
-        Debug.Log($"[EmployeeService] 직원 유형 등록: {employeeData.displayName} ({employeeData.id})");
     }
 
     /// <summary>
@@ -139,7 +138,7 @@ public class EmployeeService
             return entry.employeeState.count;
         }
         
-        Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+        Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
         return 0;
     }
 
@@ -155,7 +154,7 @@ public class EmployeeService
             return entry.employeeState.totalSalary;
         }
         
-        Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+        Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
         return 0;
     }
 
@@ -171,7 +170,7 @@ public class EmployeeService
             return entry;
         }
         
-        Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+        Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
         return null;
     }
 
@@ -218,19 +217,19 @@ public class EmployeeService
     {
         if (count <= 0)
         {
-            Debug.LogWarning($"[EmployeeService] 고용 인원은 0보다 커야 합니다. (입력값: {count})");
+            Debug.LogWarning($"[EmployeeService] Hire count must be greater than 0. (input: {count})");
             return;
         }
 
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
             return;
         }
 
         entry.employeeState.count += count;
         UpdateSalary(entry);
-        Debug.Log($"[EmployeeService] {entry.employeeData.displayName} 고용 +{count} (총: {entry.employeeState.count})");
+        Debug.Log($"[EmployeeService] {entry.employeeData.displayName} hired +{count} (total: {entry.employeeState.count})");
         
         OnEmployeeChanged?.Invoke();
     }
@@ -245,13 +244,13 @@ public class EmployeeService
     {
         if (count <= 0)
         {
-            Debug.LogWarning($"[EmployeeService] 해고 인원은 0보다 커야 합니다. (입력값: {count})");
+            Debug.LogWarning($"[EmployeeService] Fire count must be greater than 0. (input: {count})");
             return true;
         }
 
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
             return false;
         }
 
@@ -259,14 +258,14 @@ public class EmployeeService
         {
             entry.employeeState.count -= count;
             UpdateSalary(entry);
-            Debug.Log($"[EmployeeService] {entry.employeeData.displayName} 해고 -{count} (총: {entry.employeeState.count})");
+            Debug.Log($"[EmployeeService] {entry.employeeData.displayName} fired -{count} (total: {entry.employeeState.count})");
             
             OnEmployeeChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[EmployeeService] {entry.employeeData.displayName} 인원 부족! (필요: {count}, 보유: {entry.employeeState.count})");
+            Debug.LogWarning($"[EmployeeService] {entry.employeeData.displayName} not enough employees! (required: {count}, available: {entry.employeeState.count})");
             return false;
         }
     }
@@ -280,19 +279,19 @@ public class EmployeeService
     {
         if (count < 0)
         {
-            Debug.LogWarning($"[EmployeeService] 인원 수는 음수가 될 수 없습니다. (입력값: {count})");
+            Debug.LogWarning($"[EmployeeService] Employee count cannot be negative. (input: {count})");
             return;
         }
 
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
             return;
         }
 
         entry.employeeState.count = count;
         UpdateSalary(entry);
-        Debug.Log($"[EmployeeService] {entry.employeeData.displayName} 인원 = {count}");
+        Debug.Log($"[EmployeeService] {entry.employeeData.displayName} count = {count}");
         
         OnEmployeeChanged?.Invoke();
     }
@@ -308,7 +307,7 @@ public class EmployeeService
     {
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
             return;
         }
         
@@ -324,7 +323,7 @@ public class EmployeeService
     {
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
             return;
         }
         
@@ -340,7 +339,7 @@ public class EmployeeService
     {
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
             return;
         }
 
@@ -374,7 +373,7 @@ public class EmployeeService
             entry.employeeState.assignedCount = 0;
             entry.employeeState.totalSalary = 0;
         }
-        Debug.Log("[EmployeeService] 모든 직원이 초기화되었습니다.");
+        Debug.Log("[EmployeeService] All employees have been reset.");
         
         OnEmployeeChanged?.Invoke();
     }

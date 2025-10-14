@@ -28,6 +28,9 @@ public class GameDataManager : MonoBehaviour
     private EmployeeService _employeeService;
     public EmployeeService Employee => _employeeService;
 
+    private BuildingService _buildingService;
+    public BuildingService Building => _buildingService;
+
     // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
     public event Action OnResourceChanged
     {
@@ -47,6 +50,13 @@ public class GameDataManager : MonoBehaviour
     {
         add => _employeeService.OnEmployeeChanged += value;
         remove => _employeeService.OnEmployeeChanged -= value;
+    }
+
+    // 건물 변경 이벤트 (BuildingService의 이벤트를 중계)
+    public event Action OnBuildingChanged
+    {
+        add => _buildingService.OnBuildingChanged += value;
+        remove => _buildingService.OnBuildingChanged -= value;
     }
 
     void Awake()
@@ -69,6 +79,7 @@ public class GameDataManager : MonoBehaviour
         _resourceService = new ResourceService(); // 자동으로 ResourceData 로드
         _financesService = new FinancesService();
         _employeeService = new EmployeeService(); // 자동으로 EmployeeData 로드
+        _buildingService = new BuildingService(); // 자동으로 BuildingData 로드
         Debug.Log("[GameDataManager] All services initialized.");
 
         // 시간 설정 적용
@@ -162,6 +173,47 @@ public class GameDataManager : MonoBehaviour
 
     // 모든 직원 정보 반환
     public Dictionary<string, EmployeeEntry> GetAllEmployees() => _employeeService.GetAllEmployees();
+
+    // ----------------- 편의 메서드 (BuildingService 직접 호출) -----------------
+
+    // 특정 건물의 레벨 반환
+    public int GetBuildingLevel(string buildingId) => _buildingService.GetBuildingLevel(buildingId);
+
+    // 특정 건물의 작업 효율 반환
+    public float GetBuildingEfficiency(string buildingId) => _buildingService.GetBuildingEfficiency(buildingId);
+
+    // 특정 건물이 건설되어 있는지 확인
+    public bool IsBuildingConstructed(string buildingId) => _buildingService.IsBuildingConstructed(buildingId);
+
+    // 특정 건물의 BuildingEntry 반환
+    public BuildingEntry GetBuildingEntry(string buildingId) => _buildingService.GetBuildingEntry(buildingId);
+
+    // 모든 건물 정보 반환
+    public Dictionary<string, BuildingEntry> GetAllBuildings() => _buildingService.GetAllBuildings();
+
+    // 특정 타입의 건물 리스트 반환
+    public List<BuildingEntry> GetBuildingEntryList(BuildingType buildingType) => _buildingService.GetBuildingEntryList(buildingType);
+
+    // 건물 건설
+    public bool ConstructBuilding(string buildingId) => _buildingService.ConstructBuilding(buildingId);
+
+    // 건물 철거
+    public bool DemolishBuilding(string buildingId) => _buildingService.DemolishBuilding(buildingId);
+
+    // 건물 업그레이드
+    public bool UpgradeBuilding(string buildingId) => _buildingService.UpgradeBuilding(buildingId);
+
+    // 건물 레벨 설정
+    public void SetBuildingLevel(string buildingId, int level) => _buildingService.SetBuildingLevel(buildingId, level);
+
+    // 건물 효율 설정
+    public void SetBuildingEfficiency(string buildingId, float efficiency) => _buildingService.SetBuildingEfficiency(buildingId, efficiency);
+
+    // 총 유지비 반환
+    public int GetTotalMaintenanceCost() => _buildingService.GetTotalMaintenanceCost();
+
+    // 건설된 건물 수 반환
+    public int GetConstructedBuildingCount() => _buildingService.GetConstructedBuildingCount();
 
     // ----------------- 레거시 호환 프로퍼티 -----------------
     

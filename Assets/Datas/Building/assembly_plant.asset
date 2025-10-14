@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: assembly_plant
   displayName: Assembly Plant
-  icon: {fileID: 0}
+  buildingType: 1
+  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   description: An advanced manufacturing facility equipped for crafting tools and
     weapons. Skilled workers transform refined materials into practical equipment.
   baseCost: 300

@@ -27,9 +27,6 @@ public class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
     [SerializeField] private Transform _quickMovePanelContent;
 
-    [Header("Common")]
-    [SerializeField] private GameObject _warningPanel;
-
     // 패널 딕셔너리
     private Dictionary<MainPanelType, BasePanel> _panelDict;
 
