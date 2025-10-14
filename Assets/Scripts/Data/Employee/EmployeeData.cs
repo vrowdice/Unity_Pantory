@@ -15,10 +15,7 @@ public class EmployeeData : ScriptableObject
     public string description;
 
     [Header("Initial Stats")]
-    [Range(0f, 100f)]
-    public float baseSkill;              // 기본 숙련도
-    [Range(0f, 100f)]
-    public float baseFatigue;            // 기본 피로도
+    public int baseWorkValue;              // 기본 일의 진행도
     [Range(0f, 100f)]
     public float baseSatisfaction;       // 기본 만족도
     

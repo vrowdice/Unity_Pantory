@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65adb9f9ef092244a8f42acf50d90c4f, type: 3}
-  m_Name: InitialResourceData
+  m_Name: initialResourceData
   m_EditorClassIdentifier: 
   initialSilver: 10000
   initialSteel: 10000

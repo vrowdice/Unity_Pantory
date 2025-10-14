@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11babcbf3636d394dbeb01267c03e9a6, type: 3}
-  m_Name: TimeSettingsData
+  m_Name: timeSettingsData
   m_EditorClassIdentifier: 
   realSecondsPerDay: 0.1
   daysPerMonth: 30

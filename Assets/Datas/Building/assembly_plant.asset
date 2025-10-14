@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e16d872753dc0c4cb323b0bebf08c3d, type: 3}
+  m_Name: assembly_plant
+  m_EditorClassIdentifier: 
+  id: assembly_plant
+  displayName: Assembly Plant
+  icon: {fileID: 0}
+  description: An advanced manufacturing facility equipped for crafting tools and
+    weapons. Skilled workers transform refined materials into practical equipment.
+  baseCost: 300
+  baseMaintenanceCost: 15
+  allowedResourceTypes: 0200000003000000

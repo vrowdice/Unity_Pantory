@@ -17,8 +17,6 @@ public class EmployeeEntry
         // 초기 상태를 baseData로 설정
         if (data != null)
         {
-            employeeState.currentSkill = data.baseSkill;
-            employeeState.currentFatigue = data.baseFatigue;
             employeeState.currentSatisfaction = data.baseSatisfaction;
         }
     }

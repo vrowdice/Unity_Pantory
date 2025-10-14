@@ -16,6 +16,9 @@ public class GameDataManager : MonoBehaviour
     private TimeService _timeService;
     public TimeService Time => _timeService;
 
+    private ThreadService _threadService;
+    public ThreadService Thread => _threadService;
+
     private ResourceService _resourceService;
     public ResourceService Resource => _resourceService;
 

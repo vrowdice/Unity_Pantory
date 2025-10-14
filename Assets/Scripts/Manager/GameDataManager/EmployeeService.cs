@@ -304,16 +304,13 @@ public class EmployeeService
     /// </summary>
     /// <param name="employeeId">직원 유형 ID</param>
     /// <param name="skill">새로운 숙련도</param>
-    public void SetEmployeeSkill(string employeeId, float skill)
+    public void SetEmployeeSkill(string employeeId)
     {
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
             Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
             return;
         }
-
-        entry.employeeState.currentSkill = Mathf.Clamp(skill, 0f, 100f);
-        UpdateEfficiency(entry);
         
         OnEmployeeChanged?.Invoke();
     }
@@ -323,16 +320,13 @@ public class EmployeeService
     /// </summary>
     /// <param name="employeeId">직원 유형 ID</param>
     /// <param name="fatigue">새로운 피로도</param>
-    public void SetEmployeeFatigue(string employeeId, float fatigue)
+    public void SetEmployeeFatigue(string employeeId)
     {
         if (!_employees.TryGetValue(employeeId, out var entry))
         {
             Debug.LogWarning($"[EmployeeService] 등록되지 않은 직원 유형입니다: {employeeId}");
             return;
         }
-
-        entry.employeeState.currentFatigue = Mathf.Clamp(fatigue, 0f, 100f);
-        UpdateEfficiency(entry);
         
         OnEmployeeChanged?.Invoke();
     }
@@ -351,7 +345,6 @@ public class EmployeeService
         }
 
         entry.employeeState.currentSatisfaction = Mathf.Clamp(satisfaction, 0f, 100f);
-        UpdateEfficiency(entry);
         
         OnEmployeeChanged?.Invoke();
     }
@@ -366,20 +359,6 @@ public class EmployeeService
         entry.employeeState.totalSalary = entry.employeeData.baseSalary * entry.employeeState.count;
     }
 
-    /// <summary>
-    /// 효율을 업데이트합니다.
-    /// 효율 = (숙련도 * 0.5 + 충성도 * 0.3 - 피로도 * 0.2) / 100
-    /// </summary>
-    private void UpdateEfficiency(EmployeeEntry entry)
-    {
-        float skillFactor = entry.employeeState.currentSkill * 0.5f;
-        float loyaltyFactor = entry.employeeState.currentSatisfaction * 0.3f;
-        float fatigueFactor = entry.employeeState.currentFatigue * 0.2f;
-        
-        float efficiency = (skillFactor + loyaltyFactor - fatigueFactor) / 100f;
-        entry.employeeState.currentEfficiency = Mathf.Clamp(efficiency, 0f, 2f);
-    }
-
     // ----------------- Utility Methods -----------------
 
     /// <summary>
@@ -390,8 +369,6 @@ public class EmployeeService
         foreach (var entry in _employees.Values)
         {
             entry.employeeState.count = 0;
-            entry.employeeState.currentSkill = entry.employeeData.baseSkill;
-            entry.employeeState.currentFatigue = entry.employeeData.baseFatigue;
             entry.employeeState.currentSatisfaction = entry.employeeData.baseSatisfaction;
             entry.employeeState.currentEfficiency = 1f;
             entry.employeeState.assignedCount = 0;
