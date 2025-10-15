@@ -13,7 +13,8 @@ public class BuildingRemovalHandler
     private GameObject _hoveredBuilding = null;
 
     // Highlight Settings
-    private Color _removalHighlightColor = new Color(1, 0, 0, 0.7f);
+    private Color _validColor = new Color(0, 1, 0, 0.5f);
+    private Color _invalidColor = new Color(1, 0, 0, 0.5f);
 
     public bool IsActive => _isActive;
 
@@ -27,9 +28,10 @@ public class BuildingRemovalHandler
     /// <summary>
     /// 하이라이트 색상을 설정합니다.
     /// </summary>
-    public void SetHighlightColor(Color color)
+    public void SetColor(Color validColor, Color invalidColor)
     {
-        _removalHighlightColor = color;
+        _validColor = validColor;
+        _invalidColor = invalidColor;
     }
 
     /// <summary>
@@ -38,7 +40,7 @@ public class BuildingRemovalHandler
     public void StartRemoval()
     {
         _isActive = true;
-        _gridManager.SetAllTilesOutline(true);  // 타일 윤곽선 표시
+        _gridManager.SetAllTilesOutline(true, _invalidColor);  // 타일 윤곽선 표시
         Debug.Log("[BuildingRemovalHandler] Removal mode started");
     }
 
@@ -174,7 +176,7 @@ public class BuildingRemovalHandler
         SpriteRenderer renderer = building.GetComponent<SpriteRenderer>();
         if (renderer != null)
         {
-            renderer.color = _removalHighlightColor;
+            renderer.color = _invalidColor;
         }
     }
 

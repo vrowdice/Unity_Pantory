@@ -8,7 +8,10 @@ public class GameManager : MonoBehaviour
     private IUIManager _uiManager;
     private GameDataManager _gameDataManager;
 
+    private string _currentThreadId = "Sample_Thread";
+
     public IUIManager UiManager => _uiManager;
+    public string CurrentThreadId => _currentThreadId;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _warningPanelPrefab;

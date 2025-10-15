@@ -108,7 +108,7 @@ public class BuildingGridHandler
     /// <summary>
     /// 모든 타일의 윤곽선 표시 여부를 설정합니다.
     /// </summary>
-    public void SetAllTilesOutline(bool visible)
+    public void SetAllTilesOutline(bool visible, Color color = default)
     {
         foreach (var tile in _buildingTiles.Values)
         {
@@ -117,7 +117,7 @@ public class BuildingGridHandler
                 var buildingTile = tile.GetComponent<BuildingTile>();
                 if (buildingTile != null)
                 {
-                    buildingTile.SetOutlineVisible(visible);
+                    buildingTile.SetOutlineVisible(visible, color);
                 }
             }
         }

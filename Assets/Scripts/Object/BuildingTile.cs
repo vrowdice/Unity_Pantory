@@ -60,19 +60,27 @@ public class BuildingTile : MonoBehaviour
         _outlineRenderer.sprite = _spriteRenderer.sprite;
         _outlineRenderer.color = _outlineColor;
         _outlineRenderer.sortingLayerName = _spriteRenderer.sortingLayerName;
-        _outlineRenderer.sortingOrder = _spriteRenderer.sortingOrder + 1;
+        _outlineRenderer.sortingOrder = _spriteRenderer.sortingOrder;
         _outlineRenderer.enabled = false;  // 기본적으로 비활성화
     }
 
     /// <summary>
     /// 윤곽선 표시/숨김을 설정합니다.
     /// </summary>
-    public void SetOutlineVisible(bool visible)
+    public void SetOutlineVisible(bool visible, Color color = default)
     {
         _showOutline = visible;
+        
         if (_outlineRenderer != null)
         {
             _outlineRenderer.enabled = visible;
+            
+            // color가 default가 아닌 경우에만 색상 적용
+            if (color != default(Color))
+            {
+                _outlineColor = color;
+                _outlineRenderer.color = color;
+            }
         }
     }
 

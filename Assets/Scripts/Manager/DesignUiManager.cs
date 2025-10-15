@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class DesignUiManager : MonoBehaviour, IUIManager
 {
@@ -7,6 +8,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private Transform _buildingTypeBtnContent = null;
     [SerializeField] private GameObject _buildingBtnPrefab = null;
     [SerializeField] private Transform _buildingBtnContent = null;
+    [SerializeField] private TMP_InputField _threadTitleInputField = null;
 
     private GameDataManager _dataManager = null;
     private List<BuildingData> _buildingDataList = null;
@@ -33,6 +35,21 @@ public class DesignUiManager : MonoBehaviour, IUIManager
 
         // 기본 타입 선택
         SelectBuildingType(BuildingType.Load);
+        
+        // InputField 이벤트 등록
+        if (_threadTitleInputField != null)
+        {
+            _threadTitleInputField.onEndEdit.AddListener(OnThreadTitleChanged);
+            
+            // 기본값이 비어있으면 설정
+            if (string.IsNullOrEmpty(_threadTitleInputField.text))
+            {
+                _threadTitleInputField.text = "메인 라인";
+            }
+            
+            // 초기 Thread 생성
+            OnThreadTitleChanged(_threadTitleInputField.text);
+        }
     }
 
     public void UpdateAllMainText()
@@ -165,5 +182,52 @@ public class DesignUiManager : MonoBehaviour, IUIManager
             StartRemovalMode();
             Debug.Log("[DesignUiManager] Removal mode toggled ON");
         }
+    }
+
+    /// <summary>
+    /// Thread 제목이 변경되었을 때 호출됩니다.
+    /// </summary>
+    private void OnThreadTitleChanged(string threadTitle)
+    {
+        if (string.IsNullOrWhiteSpace(threadTitle))
+        {
+            Debug.LogWarning("[DesignUiManager] Thread title cannot be empty");
+            return;
+        }
+
+        // Thread ID 생성 (공백 제거하고 소문자로 변환)
+        string threadId = "thread_" + threadTitle.Trim().Replace(" ", "_").ToLower();
+        
+        Debug.Log($"[DesignUiManager] Thread title changed to: {threadTitle} (ID: {threadId})");
+
+        // Thread가 없으면 생성
+        if (_dataManager != null && !_dataManager.HasThread(threadId))
+        {
+            _dataManager.CreateThread(threadId, threadTitle, "생산부");
+            Debug.Log($"[DesignUiManager] Created new thread: {threadId}");
+        }
+
+        // BuildingTileManager에 현재 Thread 설정
+        if (_buildingTileManager != null)
+        {
+            _buildingTileManager.SetCurrentThread(threadId);
+        }
+    }
+
+    /// <summary>
+    /// 현재 Thread 제목을 반환합니다.
+    /// </summary>
+    public string GetCurrentThreadTitle()
+    {
+        return _threadTitleInputField != null ? _threadTitleInputField.text : "메인 라인";
+    }
+
+    /// <summary>
+    /// 현재 Thread ID를 반환합니다.
+    /// </summary>
+    public string GetCurrentThreadId()
+    {
+        string title = GetCurrentThreadTitle();
+        return "thread_" + title.Trim().Replace(" ", "_").ToLower();
     }
 }

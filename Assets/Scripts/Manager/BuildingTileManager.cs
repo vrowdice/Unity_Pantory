@@ -10,7 +10,7 @@ public class BuildingTileManager : MonoBehaviour
 
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
-    [SerializeField] private string _currentThreadId = "thread_main";  // 현재 편집 중인 Thread ID
+    private string _currentThreadId = "";  // 현재 편집 중인 Thread ID (DesignUiManager에서 설정됨)
 
     private BoxCollider2D _cameraCollider;
     private Camera _mainCamera;
@@ -28,7 +28,6 @@ public class BuildingTileManager : MonoBehaviour
     [Header("Preview Settings")]
     [SerializeField] private Color _validColor = new Color(0, 1, 0, 0.5f);    // 배치 가능 (초록)
     [SerializeField] private Color _invalidColor = new Color(1, 0, 0, 0.5f);  // 배치 불가 (빨강)
-    [SerializeField] private Color _removalHighlightColor = new Color(1, 0, 0, 0.7f);  // 제거 하이라이트 (빨강)
 
     void Awake()
     {
@@ -41,8 +40,37 @@ public class BuildingTileManager : MonoBehaviour
         _removalHandler = new BuildingRemovalHandler(_gridGenHandler, _dataManager, _mainCamera);
 
         // 색상 설정
-        _placementHandler.SetPreviewColors(_validColor, _invalidColor);
-        _removalHandler.SetHighlightColor(_removalHighlightColor);
+        _placementHandler.SetColors(_validColor, _invalidColor);
+        _removalHandler.SetColor(_validColor, _invalidColor);
+
+        // GameManager에서 현재 Thread ID 가져오기
+        if (GameManager.Instance != null)
+        {
+            string threadId = GameManager.Instance.CurrentThreadId;
+            
+            if (!string.IsNullOrEmpty(threadId))
+            {
+                // Thread가 없으면 생성
+                if (_dataManager != null && !_dataManager.HasThread(threadId))
+                {
+                    // Thread ID에서 제목 추출 (예: "thread_메인_라인" -> "메인 라인")
+                    string threadTitle = ExtractThreadTitle(threadId);
+                    _dataManager.CreateThread(threadId, threadTitle, "생산부");
+                    Debug.Log($"[BuildingTileManager] Created thread: {threadId} ({threadTitle})");
+                }
+                
+                _currentThreadId = threadId;
+                Debug.Log($"[BuildingTileManager] Initialized with thread: {threadId}");
+            }
+            else
+            {
+                Debug.LogWarning("[BuildingTileManager] GameManager.CurrentThreadId is empty");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[BuildingTileManager] GameManager.Instance is null");
+        }
     }
 
     void Start()
@@ -51,15 +79,15 @@ public class BuildingTileManager : MonoBehaviour
         SetPositionCenter();
         SetCameraCollider();
         
-        // 테스트용 Thread 생성
-        if (_dataManager != null && !_dataManager.HasThread(_currentThreadId))
-        {
-            _dataManager.CreateThread(_currentThreadId, "메인 라인", "생산부");
-        }
+        // 초기 Thread는 DesignUiManager에서 생성됨
     }
 
     void Update()
     {
+        // Thread ID가 설정되지 않았으면 업데이트하지 않음
+        if (string.IsNullOrEmpty(_currentThreadId))
+            return;
+
         // 각 핸들러 업데이트
         _placementHandler?.Update();
         _removalHandler?.Update(_currentThreadId);
@@ -124,6 +152,12 @@ public class BuildingTileManager : MonoBehaviour
     /// </summary>
     public void StartPlacementMode(BuildingData buildingData)
     {
+        if (string.IsNullOrEmpty(_currentThreadId))
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot start placement mode: Thread ID not set");
+            return;
+        }
+
         // 제거 모드가 활성화되어 있으면 취소
         if (IsRemovalMode)
         {
@@ -172,8 +206,44 @@ public class BuildingTileManager : MonoBehaviour
     /// </summary>
     public void SetCurrentThread(string threadId)
     {
+        if (string.IsNullOrEmpty(threadId))
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot set empty thread ID");
+            return;
+        }
+
         _currentThreadId = threadId;
+        Debug.Log($"[BuildingTileManager] Current thread set to: {threadId}");
+        
+        // 핸들러들에도 Thread ID 전달
+        _placementHandler?.SetCurrentThreadId(threadId);
+        
         RefreshBuildings();
+    }
+
+    /// <summary>
+    /// 현재 Thread ID를 반환합니다.
+    /// </summary>
+    public string GetCurrentThreadId()
+    {
+        return _currentThreadId;
+    }
+
+    /// <summary>
+    /// Thread ID에서 제목을 추출합니다.
+    /// </summary>
+    private string ExtractThreadTitle(string threadId)
+    {
+        // "thread_" 접두사 제거
+        if (threadId.StartsWith("thread_"))
+        {
+            string title = threadId.Substring(7); // "thread_" 길이만큼 제거
+            // 언더스코어를 공백으로 변환
+            title = title.Replace("_", " ");
+            return title;
+        }
+        
+        return threadId;
     }
 
     /// <summary>

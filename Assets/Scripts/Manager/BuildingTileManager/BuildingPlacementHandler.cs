@@ -17,6 +17,7 @@ public class BuildingPlacementHandler
     private SpriteRenderer _previewRenderer = null;
     private Vector2Int _currentGridPos;
     private bool _canPlace = false;
+    private string _currentThreadId = "";  // 현재 Thread ID
 
     // Preview Settings
     private Color _validColor = new Color(0, 1, 0, 0.5f);
@@ -34,9 +35,17 @@ public class BuildingPlacementHandler
     }
 
     /// <summary>
+    /// 현재 Thread ID를 설정합니다.
+    /// </summary>
+    public void SetCurrentThreadId(string threadId)
+    {
+        _currentThreadId = threadId;
+    }
+
+    /// <summary>
     /// Preview 색상을 설정합니다.
     /// </summary>
-    public void SetPreviewColors(Color validColor, Color invalidColor)
+    public void SetColors(Color validColor, Color invalidColor)
     {
         _validColor = validColor;
         _invalidColor = invalidColor;
@@ -51,7 +60,7 @@ public class BuildingPlacementHandler
         _selectedBuilding = buildingData;
         
         CreatePreviewObject();
-        _gridManager.SetAllTilesOutline(true);  // 타일 윤곽선 표시
+        _gridManager.SetAllTilesOutline(true, _validColor);  // 타일 윤곽선 표시
         Debug.Log($"[BuildingPlacementHandler] Placement mode started: {buildingData.displayName}");
     }
 
@@ -125,7 +134,7 @@ public class BuildingPlacementHandler
         // 왼쪽 클릭 - 건물 배치
         if (Input.GetMouseButtonDown(0) && _canPlace)
         {
-            PlaceBuilding(_currentGridPos, _selectedBuilding);
+            PlaceBuildingWithCurrentThread(_currentGridPos, _selectedBuilding);
         }
 
         // 오른쪽 클릭 또는 ESC - 취소
@@ -136,26 +145,17 @@ public class BuildingPlacementHandler
     }
 
     /// <summary>
-    /// 건물을 배치합니다.
+    /// 건물을 배치합니다 (현재 Thread에).
     /// </summary>
-    private void PlaceBuilding(Vector2Int gridPos, BuildingData buildingData)
+    private void PlaceBuildingWithCurrentThread(Vector2Int gridPos, BuildingData buildingData)
     {
-        if (!_gridManager.CanPlaceBuilding(gridPos, buildingData.size))
+        if (string.IsNullOrEmpty(_currentThreadId))
         {
-            Debug.LogWarning("[BuildingPlacementHandler] Cannot place building at this position");
+            Debug.LogWarning("[BuildingPlacementHandler] Cannot place building: Thread ID not set");
             return;
         }
 
-        // BuildingState 생성 및 ThreadService에 추가
-        BuildingState buildingState = new BuildingState(buildingData.id, gridPos);
-        
-        // 건물 오브젝트 생성
-        _gridManager.CreateBuildingObject(gridPos, buildingData);
-        
-        // 배치된 타일 차지 표시
-        _gridManager.MarkTilesAsOccupied(gridPos, buildingData.size);
-        
-        Debug.Log($"[BuildingPlacementHandler] Building placed: {buildingData.displayName} at {gridPos}");
+        PlaceBuildingWithData(gridPos, buildingData, _currentThreadId);
     }
 
     /// <summary>
