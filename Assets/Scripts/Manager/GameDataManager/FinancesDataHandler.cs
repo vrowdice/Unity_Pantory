@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 게임 내 재정(돈)을 관리하는 서비스 클래스
 /// </summary>
-public class FinancesService
+public class FinancesDataHandler
 {
     // 현재 보유 금액
     private long _credit;
@@ -15,7 +15,7 @@ public class FinancesService
     /// <summary>
     /// FinancesService 생성자
     /// </summary>
-    public FinancesService()
+    public FinancesDataHandler()
     {
         _credit = 0;
     }

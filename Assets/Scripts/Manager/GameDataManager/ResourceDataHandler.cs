@@ -6,7 +6,7 @@ using UnityEngine;
 /// 게임 자원을 관리하는 서비스 클래스
 /// ResourceData ScriptableObject를 기반으로 자원을 동적으로 관리합니다.
 /// </summary>
-public class ResourceService
+public class ResourceDataHandler
 {
     // 자원을 저장하는 딕셔너리 (자원 ID -> ResourceEntry)
     private Dictionary<string, ResourceEntry> _resources;
@@ -17,7 +17,7 @@ public class ResourceService
     /// <summary>
     /// ResourceService 생성자
     /// </summary>
-    public ResourceService()
+    public ResourceDataHandler()
     {
         _resources = new Dictionary<string, ResourceEntry>();
         AutoLoadAllResources(); // 게임 시작 시 자동으로 모든 리소스 로드

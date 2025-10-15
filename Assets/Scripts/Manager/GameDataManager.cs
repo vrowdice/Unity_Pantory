@@ -13,23 +13,23 @@ public class GameDataManager : MonoBehaviour
     [Header("Time Settings")]
     [SerializeField] private TimeSettingsData _timeSettingsData;
 
-    private TimeService _timeService;
-    public TimeService Time => _timeService;
+    private TimeDataHandler _timeService;
+    public TimeDataHandler Time => _timeService;
 
-    private ThreadService _threadService;
-    public ThreadService Thread => _threadService;
+    private ThreadDataHandler _threadService;
+    public ThreadDataHandler Thread => _threadService;
 
-    private ResourceService _resourceService;
-    public ResourceService Resource => _resourceService;
+    private ResourceDataHandler _resourceService;
+    public ResourceDataHandler Resource => _resourceService;
 
-    private FinancesService _financesService;
-    public FinancesService Finances => _financesService;
+    private FinancesDataHandler _financesService;
+    public FinancesDataHandler Finances => _financesService;
 
-    private EmployeeService _employeeService;
-    public EmployeeService Employee => _employeeService;
+    private EmployeeDataHandler _employeeService;
+    public EmployeeDataHandler Employee => _employeeService;
 
-    private BuildingService _buildingService;
-    public BuildingService Building => _buildingService;
+    private BuildingDataHandler _buildingService;
+    public BuildingDataHandler Building => _buildingService;
 
     // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
     public event Action OnResourceChanged
@@ -82,12 +82,12 @@ public class GameDataManager : MonoBehaviour
     // 모든 서비스를 초기화
     private void InitializeServices()
     {
-        _timeService = new TimeService();
-        _resourceService = new ResourceService(); // 자동으로 ResourceData 로드
-        _financesService = new FinancesService();
-        _employeeService = new EmployeeService(); // 자동으로 EmployeeData 로드
-        _buildingService = new BuildingService(); // 자동으로 BuildingData 로드
-        _threadService = new ThreadService();
+        _timeService = new TimeDataHandler();
+        _resourceService = new ResourceDataHandler(); // 자동으로 ResourceData 로드
+        _financesService = new FinancesDataHandler();
+        _employeeService = new EmployeeDataHandler(); // 자동으로 EmployeeData 로드
+        _buildingService = new BuildingDataHandler(); // 자동으로 BuildingData 로드
+        _threadService = new ThreadDataHandler();
         Debug.Log("[GameDataManager] All services initialized.");
 
         // 시간 설정 적용

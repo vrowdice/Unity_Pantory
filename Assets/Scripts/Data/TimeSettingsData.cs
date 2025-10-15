@@ -38,7 +38,7 @@ public class TimeSettingsData : ScriptableObject
     /// Applies time settings to TimeService.
     /// </summary>
     /// <param name="timeService">TimeService to apply to</param>
-    public void ApplyToTimeService(TimeService timeService)
+    public void ApplyToTimeService(TimeDataHandler timeService)
     {
         if (timeService == null)
         {

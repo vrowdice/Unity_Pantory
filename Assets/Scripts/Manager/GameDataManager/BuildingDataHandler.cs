@@ -7,7 +7,7 @@ using UnityEngine;
 /// BuildingData ScriptableObject를 로드하고 참조를 제공합니다.
 /// 건물의 동적 상태(BuildingState)는 ThreadState에서 관리됩니다.
 /// </summary>
-public class BuildingService
+public class BuildingDataHandler
 {
     // 건물 데이터를 저장하는 딕셔너리 (건물 ID -> BuildingData)
     private Dictionary<string, BuildingData> _buildings;
@@ -18,7 +18,7 @@ public class BuildingService
     /// <summary>
     /// BuildingService 생성자
     /// </summary>
-    public BuildingService()
+    public BuildingDataHandler()
     {
         _buildings = new Dictionary<string, BuildingData>();
         AutoLoadAllBuildings(); // 게임 시작 시 자동으로 모든 건물 데이터 로드

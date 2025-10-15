@@ -6,7 +6,7 @@ using UnityEngine;
 /// 게임 내 직원을 관리하는 서비스 클래스
 /// EmployeeData ScriptableObject를 기반으로 직원을 동적으로 관리합니다.
 /// </summary>
-public class EmployeeService
+public class EmployeeDataHandler
 {
     // 직원을 저장하는 딕셔너리 (직원 ID -> EmployeeEntry)
     private Dictionary<string, EmployeeEntry> _employees;
@@ -17,7 +17,7 @@ public class EmployeeService
     /// <summary>
     /// EmployeeService 생성자
     /// </summary>
-    public EmployeeService()
+    public EmployeeDataHandler()
     {
         _employees = new Dictionary<string, EmployeeEntry>();
         AutoLoadAllEmployees(); // 게임 시작 시 자동으로 모든 직원 데이터 로드

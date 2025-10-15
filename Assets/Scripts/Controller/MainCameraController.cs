@@ -32,10 +32,11 @@ public class MainCameraController : MonoBehaviour
     // 드래그로 카메라 이동
     private void HandleDrag()
     {
-        if (Input.GetMouseButtonDown(0))
+        // 왼쪽 클릭 또는 휠 클릭으로 드래그 시작
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(2))
         {
-            // 드래그 시작 시에만 UI 체크
-            if (IsPointerOverUI())
+            // 왼쪽 클릭인 경우에만 UI 체크 (휠 클릭은 항상 드래그 가능)
+            if (Input.GetMouseButtonDown(0) && IsPointerOverUI())
             {
                 _isDragging = false;
                 return;
@@ -45,7 +46,8 @@ public class MainCameraController : MonoBehaviour
             _isDragging = true;
         }
         
-        if (Input.GetMouseButton(0) && _isDragging)
+        // 왼쪽 클릭 또는 휠 클릭 유지 중일 때 드래그
+        if ((Input.GetMouseButton(0) || Input.GetMouseButton(2)) && _isDragging)
         {
             Vector3 currentMousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
             Vector3 difference = _dragOrigin - currentMousePos;
@@ -65,7 +67,8 @@ public class MainCameraController : MonoBehaviour
             _dragOrigin = _camera.ScreenToWorldPoint(Input.mousePosition);
         }
         
-        if (Input.GetMouseButtonUp(0))
+        // 왼쪽 클릭 또는 휠 클릭 해제 시 드래그 종료
+        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(2))
         {
             _isDragging = false;
         }

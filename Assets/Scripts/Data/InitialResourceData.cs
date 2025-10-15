@@ -26,7 +26,7 @@ public class InitialResourceData : ScriptableObject
     /// </summary>
     /// <param name="resourceService">ResourceService to apply to</param>
     /// <param name="financesService">FinancesService to apply to</param>
-    public void ApplyToServices(ResourceService resourceService, FinancesService financesService)
+    public void ApplyToServices(ResourceDataHandler resourceService, FinancesDataHandler financesService)
     {
         if (resourceService == null)
         {

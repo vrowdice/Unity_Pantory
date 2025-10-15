@@ -12,10 +12,12 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     private List<BuildingData> _buildingDataList = null;
     private BuildingData _selectedBuilding = null;  // 현재 선택된 건물
     private BuildingTileManager _buildingTileManager = null;
+    private bool _isRemovalMode = false;  // 현재 제거 모드 활성화 여부
 
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;
     public BuildingData SelectedBuilding => _selectedBuilding;
+    public bool IsRemovalMode => _isRemovalMode;
 
     public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
@@ -84,7 +86,14 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     public void SelectBuilding(BuildingData buildingData)
     {
         _selectedBuilding = buildingData;
+        _isRemovalMode = false;  // 배치 모드로 전환
         Debug.Log($"[DesignUiManager] Building selected: {buildingData.displayName}");
+        
+        // 제거 모드 취소
+        if (_buildingTileManager != null && _buildingTileManager.IsRemovalMode)
+        {
+            _buildingTileManager.CancelRemovalMode();
+        }
         
         // BuildingTileManager에 선택된 건물 전달
         if (_buildingTileManager != null)
@@ -99,11 +108,62 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     public void DeselectBuilding()
     {
         _selectedBuilding = null;
+        _isRemovalMode = false;
         Debug.Log("[DesignUiManager] Building deselected");
         
         if (_buildingTileManager != null)
         {
             _buildingTileManager.CancelPlacementMode();
+        }
+    }
+
+    /// <summary>
+    /// 건물 제거 모드를 시작합니다.
+    /// </summary>
+    public void StartRemovalMode()
+    {
+        _isRemovalMode = true;
+        _selectedBuilding = null;
+        
+        // 기존 배치 모드 취소
+        if (_buildingTileManager != null && _buildingTileManager.IsPlacementMode)
+        {
+            _buildingTileManager.CancelPlacementMode();
+        }
+        
+        if (_buildingTileManager != null)
+        {
+            _buildingTileManager.StartRemovalMode();
+        }
+    }
+
+    /// <summary>
+    /// 건물 제거 모드를 취소합니다.
+    /// </summary>
+    public void CancelRemovalMode()
+    {
+        _isRemovalMode = false;
+        
+        if (_buildingTileManager != null)
+        {
+            _buildingTileManager.CancelRemovalMode();
+        }
+    }
+
+    /// <summary>
+    /// 건물 제거 모드를 토글합니다.
+    /// </summary>
+    public void RemovalModeToggle()
+    {
+        if (_isRemovalMode)
+        {
+            CancelRemovalMode();
+            Debug.Log("[DesignUiManager] Removal mode toggled OFF");
+        }
+        else
+        {
+            StartRemovalMode();
+            Debug.Log("[DesignUiManager] Removal mode toggled ON");
         }
     }
 }

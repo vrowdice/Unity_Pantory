@@ -5,7 +5,7 @@ using UnityEngine;
 /// 게임 내 시간을 관리하는 서비스 클래스
 /// 년, 월, 일을 관리하고 시간 흐름을 제어합니다.
 /// </summary>
-public class TimeService
+public class TimeDataHandler
 {
     // ----------------- 시간 데이터 -----------------
     
@@ -59,7 +59,7 @@ public class TimeService
     /// TimeService 생성자
     /// 기본값: 0년 0월 0일부터 시작
     /// </summary>
-    public TimeService()
+    public TimeDataHandler()
     {
         _year = 0;
         _month = 0;
@@ -73,7 +73,7 @@ public class TimeService
     /// <summary>
     /// 시작 날짜를 지정하는 생성자
     /// </summary>
-    public TimeService(int year, int month, int day)
+    public TimeDataHandler(int year, int month, int day)
     {
         _year = year;
         _month = month;

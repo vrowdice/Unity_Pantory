@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Thread(생산 라인)를 관리하는 서비스 클래스
 /// </summary>
-public class ThreadService
+public class ThreadDataHandler
 {
     // Thread를 저장하는 딕셔너리 (Thread ID -> ThreadState)
     private Dictionary<string, ThreadState> _threads;
@@ -16,7 +16,7 @@ public class ThreadService
     /// <summary>
     /// ThreadService 생성자
     /// </summary>
-    public ThreadService()
+    public ThreadDataHandler()
     {
         _threads = new Dictionary<string, ThreadState>();
         Debug.Log("[ThreadService] ThreadService initialized.");
