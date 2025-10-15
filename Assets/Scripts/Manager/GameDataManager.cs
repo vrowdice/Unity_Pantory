@@ -59,6 +59,13 @@ public class GameDataManager : MonoBehaviour
         remove => _buildingService.OnBuildingChanged -= value;
     }
 
+    // Thread 변경 이벤트 (ThreadService의 이벤트를 중계)
+    public event Action OnThreadChanged
+    {
+        add => _threadService.OnThreadChanged += value;
+        remove => _threadService.OnThreadChanged -= value;
+    }
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -80,6 +87,7 @@ public class GameDataManager : MonoBehaviour
         _financesService = new FinancesService();
         _employeeService = new EmployeeService(); // 자동으로 EmployeeData 로드
         _buildingService = new BuildingService(); // 자동으로 BuildingData 로드
+        _threadService = new ThreadService();
         Debug.Log("[GameDataManager] All services initialized.");
 
         // 시간 설정 적용
@@ -176,44 +184,58 @@ public class GameDataManager : MonoBehaviour
 
     // ----------------- 편의 메서드 (BuildingService 직접 호출) -----------------
 
-    // 특정 건물의 레벨 반환
-    public int GetBuildingLevel(string buildingId) => _buildingService.GetBuildingLevel(buildingId);
+    // 특정 건물의 BuildingData 반환
+    public BuildingData GetBuildingData(string buildingId) => _buildingService.GetBuildingData(buildingId);
 
-    // 특정 건물의 작업 효율 반환
-    public float GetBuildingEfficiency(string buildingId) => _buildingService.GetBuildingEfficiency(buildingId);
+    // 모든 건물 데이터 반환
+    public Dictionary<string, BuildingData> GetAllBuildings() => _buildingService.GetAllBuildings();
 
-    // 특정 건물이 건설되어 있는지 확인
-    public bool IsBuildingConstructed(string buildingId) => _buildingService.IsBuildingConstructed(buildingId);
+    // 특정 타입의 건물 데이터 리스트 반환
+    public List<BuildingData> GetBuildingDataList(BuildingType buildingType) => _buildingService.GetBuildingDataList(buildingType);
 
-    // 특정 건물의 BuildingEntry 반환
-    public BuildingEntry GetBuildingEntry(string buildingId) => _buildingService.GetBuildingEntry(buildingId);
+    // 건물 등록 여부 확인
+    public bool IsBuildingRegistered(string buildingId) => _buildingService.IsBuildingRegistered(buildingId);
 
-    // 모든 건물 정보 반환
-    public Dictionary<string, BuildingEntry> GetAllBuildings() => _buildingService.GetAllBuildings();
+    // 등록된 건물 타입 개수 반환
+    public int GetBuildingTypeCount() => _buildingService.GetBuildingTypeCount();
 
-    // 특정 타입의 건물 리스트 반환
-    public List<BuildingEntry> GetBuildingEntryList(BuildingType buildingType) => _buildingService.GetBuildingEntryList(buildingType);
+    // ----------------- 편의 메서드 (ThreadService 직접 호출) -----------------
 
-    // 건물 건설
-    public bool ConstructBuilding(string buildingId) => _buildingService.ConstructBuilding(buildingId);
+    // 특정 Thread 반환
+    public ThreadState GetThread(string threadId) => _threadService.GetThread(threadId);
 
-    // 건물 철거
-    public bool DemolishBuilding(string buildingId) => _buildingService.DemolishBuilding(buildingId);
+    // 모든 Thread 반환
+    public Dictionary<string, ThreadState> GetAllThreads() => _threadService.GetAllThreads();
 
-    // 건물 업그레이드
-    public bool UpgradeBuilding(string buildingId) => _buildingService.UpgradeBuilding(buildingId);
+    // 모든 Thread ID 반환
+    public List<string> GetAllThreadIds() => _threadService.GetAllThreadIds();
 
-    // 건물 레벨 설정
-    public void SetBuildingLevel(string buildingId, int level) => _buildingService.SetBuildingLevel(buildingId, level);
+    // Thread의 건물 리스트 반환
+    public List<BuildingState> GetBuildingStates(string threadId) => _threadService.GetBuildingStates(threadId);
 
-    // 건물 효율 설정
-    public void SetBuildingEfficiency(string buildingId, float efficiency) => _buildingService.SetBuildingEfficiency(buildingId, efficiency);
+    // Thread 존재 여부 확인
+    public bool HasThread(string threadId) => _threadService.HasThread(threadId);
 
-    // 총 유지비 반환
-    public int GetTotalMaintenanceCost() => _buildingService.GetTotalMaintenanceCost();
+    // Thread 추가
+    public bool AddThread(ThreadState threadState) => _threadService.AddThread(threadState);
 
-    // 건설된 건물 수 반환
-    public int GetConstructedBuildingCount() => _buildingService.GetConstructedBuildingCount();
+    // Thread 생성 및 추가
+    public ThreadState CreateThread(string threadId, string threadName, string division = "") => _threadService.CreateThread(threadId, threadName, division);
+
+    // Thread 제거
+    public bool RemoveThread(string threadId) => _threadService.RemoveThread(threadId);
+
+    // Thread에 건물 추가
+    public bool AddBuildingToThread(string threadId, BuildingState buildingState) => _threadService.AddBuilding(threadId, buildingState);
+
+    // Thread에서 건물 제거
+    public bool RemoveBuildingFromThread(string threadId, Vector2Int position) => _threadService.RemoveBuilding(threadId, position);
+
+    // 특정 위치의 건물 반환
+    public BuildingState GetBuildingAt(string threadId, Vector2Int position) => _threadService.GetBuildingAt(threadId, position);
+
+    // Thread 개수 반환
+    public int GetThreadCount() => _threadService.GetThreadCount();
 
     // ----------------- 레거시 호환 프로퍼티 -----------------
     
@@ -230,7 +252,7 @@ public class GameDataManager : MonoBehaviour
 
     void Start()
     {
-        // 초기화 로직
+        
     }
 
     void Update()

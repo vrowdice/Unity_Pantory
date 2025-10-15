@@ -9,6 +9,7 @@ public class BuildingData : ScriptableObject
     public string displayName;
     public BuildingType buildingType;
     public Sprite icon;
+    public Sprite buildingSprite;  // 타일에 표시될 건물 스프라이트
     [TextArea(3, 10)]
     public string description;
     
@@ -18,4 +19,7 @@ public class BuildingData : ScriptableObject
     
     [Header("Production")]
     public List<ResourceType> allowedResourceTypes;
+
+    [Header("Size")]
+    public Vector2Int size = new Vector2Int(1, 1);
 }

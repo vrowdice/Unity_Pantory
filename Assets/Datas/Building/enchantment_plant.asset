@@ -16,8 +16,10 @@ MonoBehaviour:
   displayName: Enchantment Plant
   buildingType: 1
   icon: {fileID: 21300000, guid: dfd7c859a95e96346b97eb608a25617c, type: 3}
+  buildingSprite: {fileID: 21300000, guid: dfd7c859a95e96346b97eb608a25617c, type: 3}
   description: A mystical workshop where magic meets metallurgy. Magicians imbue
     tools and weapons with arcane properties, creating superior enchanted equipment.
   baseCost: 500
   baseMaintenanceCost: 25
   allowedResourceTypes: 0200000003000000
+  size: {x: 2, y: 2}

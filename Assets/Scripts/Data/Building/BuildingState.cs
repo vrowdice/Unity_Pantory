@@ -1,23 +1,22 @@
+using System;
 using UnityEngine;
 
 /// <summary>
-/// 건물의 현재 상태를 나타내는 클래스
+/// ThreadState에 건설된 건물을 나타내는 클래스
+/// 건물의 성능은 연구 시스템에서 관리됩니다.
 /// </summary>
+[Serializable]
 public class BuildingState
 {
-    // 건물이 건설되었는지 여부
-    public bool isConstructed;
+    // 건물 ID (BuildingData 참조용)
+    public string buildingId;
     
-    // 건물의 현재 레벨 (0 = 건설 안됨)
-    public int level;
-    
-    // 작업 효율 (0.0 ~ 무한대, 기본값 1.0)
-    public float workingEfficiency;
+    // 건물 배치 위치
+    public Vector2Int position;
 
-    public BuildingState()
+    public BuildingState(string buildingId, Vector2Int position)
     {
-        isConstructed = false;
-        level = 0;
-        workingEfficiency = 0f;
+        this.buildingId = buildingId;
+        this.position = position;
     }
 }

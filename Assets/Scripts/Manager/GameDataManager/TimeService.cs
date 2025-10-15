@@ -268,7 +268,6 @@ public class TimeService
         }
 
         _daysPerMonth = days;
-        Debug.Log($"[TimeService] Days per month set to {days}.");
     }
 
     /// <summary>
@@ -283,7 +282,6 @@ public class TimeService
         }
 
         _monthsPerYear = months;
-        Debug.Log($"[TimeService] Months per year set to {months}.");
     }
 
     /// <summary>

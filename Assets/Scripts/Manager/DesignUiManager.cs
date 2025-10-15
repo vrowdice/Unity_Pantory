@@ -9,14 +9,18 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private Transform _buildingBtnContent = null;
 
     private GameDataManager _dataManager = null;
-    private List<BuildingEntry> _buildingEntryList = null;
+    private List<BuildingData> _buildingDataList = null;
+    private BuildingData _selectedBuilding = null;  // 현재 선택된 건물
+    private BuildingTileManager _buildingTileManager = null;
 
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;
+    public BuildingData SelectedBuilding => _selectedBuilding;
 
     public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
         _dataManager = argGameDataManager;
+        _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
 
         // BuildingType 버튼 생성
         EnumUtils.GetAllEnumValues<BuildingType>().ForEach(buildingType =>
@@ -27,8 +31,6 @@ public class DesignUiManager : MonoBehaviour, IUIManager
 
         // 기본 타입 선택
         SelectBuildingType(BuildingType.Load);
-
-        Debug.Log("[DesignUiManager] Initialized.");
     }
 
     public void UpdateAllMainText()
@@ -49,7 +51,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
 
         // 해당 타입의 건물 리스트 가져오기
-        _buildingEntryList = _dataManager.GetBuildingEntryList(buildingType);
+        _buildingDataList = _dataManager.GetBuildingDataList(buildingType);
 
         // 기존 건물 버튼 제거
         var existingButtons = _buildingBtnContent.GetComponentsInChildren<BuildingBtn>();
@@ -59,14 +61,14 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
 
         // 새 건물 버튼 생성
-        foreach (var buildingEntry in _buildingEntryList)
+        foreach (var buildingData in _buildingDataList)
         {
             var btn = Instantiate(_buildingBtnPrefab, _buildingBtnContent);
             var buildingBtn = btn.GetComponent<BuildingBtn>();
             
             if (buildingBtn != null )
             {
-                buildingBtn.Initialize(this, buildingEntry);
+                buildingBtn.Initialize(this, buildingData);
             }
             else
             {
@@ -74,12 +76,34 @@ public class DesignUiManager : MonoBehaviour, IUIManager
                 Destroy(btn);
             }
         }
-
-        Debug.Log($"[DesignUiManager] Selected building type: {buildingType}, {_buildingEntryList.Count} buildings loaded.");
     }
 
-    public void SelectBuilding(BuildingEntry buildingEntry)
+    /// <summary>
+    /// 건물을 선택합니다. (배치 모드로 진입)
+    /// </summary>
+    public void SelectBuilding(BuildingData buildingData)
     {
-        Debug.Log("SelectBuilding: " + buildingEntry.buildingData.displayName);
+        _selectedBuilding = buildingData;
+        Debug.Log($"[DesignUiManager] Building selected: {buildingData.displayName}");
+        
+        // BuildingTileManager에 선택된 건물 전달
+        if (_buildingTileManager != null)
+        {
+            _buildingTileManager.StartPlacementMode(buildingData);
+        }
+    }
+
+    /// <summary>
+    /// 건물 선택을 취소합니다.
+    /// </summary>
+    public void DeselectBuilding()
+    {
+        _selectedBuilding = null;
+        Debug.Log("[DesignUiManager] Building deselected");
+        
+        if (_buildingTileManager != null)
+        {
+            _buildingTileManager.CancelPlacementMode();
+        }
     }
 }

@@ -44,3 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8da15edc1229d50448661698b6632ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _warningPanelPrefab: {fileID: 509094518299881478, guid: 90a762a4eed595d4fabadaa9e40a721d, type: 3}

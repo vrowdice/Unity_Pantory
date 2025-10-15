@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 게임 내 건물을 관리하는 서비스 클래스
-/// BuildingData ScriptableObject를 기반으로 건물을 동적으로 관리합니다.
+/// 게임 내 건물 데이터를 관리하는 서비스 클래스
+/// BuildingData ScriptableObject를 로드하고 참조를 제공합니다.
+/// 건물의 동적 상태(BuildingState)는 ThreadState에서 관리됩니다.
 /// </summary>
 public class BuildingService
 {
-    // 건물을 저장하는 딕셔너리 (건물 ID -> BuildingEntry)
-    private Dictionary<string, BuildingEntry> _buildings;
+    // 건물 데이터를 저장하는 딕셔너리 (건물 ID -> BuildingData)
+    private Dictionary<string, BuildingData> _buildings;
 
-    // 건물 변경 이벤트
+    // 건물 데이터 변경 이벤트 (데이터 로드 완료 등)
     public event Action OnBuildingChanged;
 
     /// <summary>
@@ -19,7 +20,7 @@ public class BuildingService
     /// </summary>
     public BuildingService()
     {
-        _buildings = new Dictionary<string, BuildingEntry>();
+        _buildings = new Dictionary<string, BuildingData>();
         AutoLoadAllBuildings(); // 게임 시작 시 자동으로 모든 건물 데이터 로드
     }
 
@@ -109,7 +110,7 @@ public class BuildingService
             return;
         }
 
-        _buildings[buildingData.id] = new BuildingEntry(buildingData);
+        _buildings[buildingData.id] = buildingData;
     }
 
     /// <summary>
@@ -127,63 +128,15 @@ public class BuildingService
     // ----------------- Public Getters (읽기 전용) -----------------
 
     /// <summary>
-    /// 특정 건물의 레벨을 반환합니다.
+    /// 특정 건물의 BuildingData를 반환합니다.
     /// </summary>
     /// <param name="buildingId">건물 ID</param>
-    /// <returns>건물 레벨</returns>
-    public int GetBuildingLevel(string buildingId)
+    /// <returns>BuildingData 또는 null</returns>
+    public BuildingData GetBuildingData(string buildingId)
     {
-        if (_buildings.TryGetValue(buildingId, out var entry))
+        if (_buildings.TryGetValue(buildingId, out var data))
         {
-            return entry.buildingState.level;
-        }
-        
-        Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-        return 0;
-    }
-
-    /// <summary>
-    /// 특정 건물의 작업 효율을 반환합니다.
-    /// </summary>
-    /// <param name="buildingId">건물 ID</param>
-    /// <returns>작업 효율 (0.0 ~ 1.0+)</returns>
-    public float GetBuildingEfficiency(string buildingId)
-    {
-        if (_buildings.TryGetValue(buildingId, out var entry))
-        {
-            return entry.buildingState.workingEfficiency;
-        }
-        
-        Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-        return 0f;
-    }
-
-    /// <summary>
-    /// 특정 건물이 건설되어 있는지 확인합니다.
-    /// </summary>
-    /// <param name="buildingId">건물 ID</param>
-    /// <returns>건설되어 있으면 true</returns>
-    public bool IsBuildingConstructed(string buildingId)
-    {
-        if (_buildings.TryGetValue(buildingId, out var entry))
-        {
-            return entry.buildingState.isConstructed;
-        }
-        
-        Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-        return false;
-    }
-
-    /// <summary>
-    /// 특정 건물의 BuildingEntry를 반환합니다.
-    /// </summary>
-    /// <param name="buildingId">건물 ID</param>
-    /// <returns>BuildingEntry 또는 null</returns>
-    public BuildingEntry GetBuildingEntry(string buildingId)
-    {
-        if (_buildings.TryGetValue(buildingId, out var entry))
-        {
-            return entry;
+            return data;
         }
         
         Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
@@ -191,12 +144,12 @@ public class BuildingService
     }
 
     /// <summary>
-    /// 모든 건물 정보를 딕셔너리로 반환합니다 (읽기 전용).
+    /// 모든 건물 데이터를 딕셔너리로 반환합니다 (읽기 전용).
     /// </summary>
     /// <returns>건물 딕셔너리의 복사본</returns>
-    public Dictionary<string, BuildingEntry> GetAllBuildings()
+    public Dictionary<string, BuildingData> GetAllBuildings()
     {
-        return new Dictionary<string, BuildingEntry>(_buildings);
+        return new Dictionary<string, BuildingData>(_buildings);
     }
 
     /// <summary>
@@ -209,215 +162,26 @@ public class BuildingService
     }
 
     /// <summary>
-    /// 특정 건물 타입의 BuildingEntry 리스트를 반환합니다.
+    /// 특정 건물 타입의 BuildingData 리스트를 반환합니다.
     /// </summary>
     /// <param name="buildingType">건물 타입</param>
-    /// <returns>해당 타입의 BuildingEntry 리스트</returns>
-    public List<BuildingEntry> GetBuildingEntryList(BuildingType buildingType)
+    /// <returns>해당 타입의 BuildingData 리스트</returns>
+    public List<BuildingData> GetBuildingDataList(BuildingType buildingType)
     {
-        List<BuildingEntry> result = new List<BuildingEntry>();
+        List<BuildingData> result = new List<BuildingData>();
         
-        foreach (var entry in _buildings.Values)
+        foreach (var data in _buildings.Values)
         {
-            if (entry.buildingData.buildingType == buildingType)
+            if (data.buildingType == buildingType)
             {
-                result.Add(entry);
+                result.Add(data);
             }
         }
         
         return result;
     }
 
-    /// <summary>
-    /// 건설된 모든 건물의 총 유지비를 반환합니다.
-    /// </summary>
-    /// <returns>총 유지비</returns>
-    public int GetTotalMaintenanceCost()
-    {
-        int total = 0;
-        foreach (var entry in _buildings.Values)
-        {
-            if (entry.buildingState.isConstructed)
-            {
-                total += CalculateMaintenanceCost(entry);
-            }
-        }
-        return total;
-    }
-
-    // ----------------- Public Methods (건물 건설/업그레이드/철거) -----------------
-
-    /// <summary>
-    /// 건물을 건설합니다.
-    /// </summary>
-    /// <param name="buildingId">건설할 건물 ID</param>
-    /// <returns>성공 시 true</returns>
-    public bool ConstructBuilding(string buildingId)
-    {
-        if (!_buildings.TryGetValue(buildingId, out var entry))
-        {
-            Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-            return false;
-        }
-
-        if (entry.buildingState.isConstructed)
-        {
-            Debug.LogWarning($"[BuildingService] Building already constructed: {entry.buildingData.displayName}");
-            return false;
-        }
-
-        entry.buildingState.isConstructed = true;
-        entry.buildingState.level = 1;
-        entry.buildingState.workingEfficiency = 1.0f;
-        
-        Debug.Log($"[BuildingService] {entry.buildingData.displayName} construction completed");
-        
-        OnBuildingChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>
-    /// 건물을 철거합니다.
-    /// </summary>
-    /// <param name="buildingId">철거할 건물 ID</param>
-    /// <returns>성공 시 true</returns>
-    public bool DemolishBuilding(string buildingId)
-    {
-        if (!_buildings.TryGetValue(buildingId, out var entry))
-        {
-            Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-            return false;
-        }
-
-        if (!entry.buildingState.isConstructed)
-        {
-            Debug.LogWarning($"[BuildingService] Building not constructed: {entry.buildingData.displayName}");
-            return false;
-        }
-
-        entry.buildingState.isConstructed = false;
-        entry.buildingState.level = 0;
-        entry.buildingState.workingEfficiency = 0f;
-        
-        Debug.Log($"[BuildingService] {entry.buildingData.displayName} demolition completed");
-        
-        OnBuildingChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>
-    /// 건물을 업그레이드합니다.
-    /// </summary>
-    /// <param name="buildingId">업그레이드할 건물 ID</param>
-    /// <returns>성공 시 true</returns>
-    public bool UpgradeBuilding(string buildingId)
-    {
-        if (!_buildings.TryGetValue(buildingId, out var entry))
-        {
-            Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-            return false;
-        }
-
-        if (!entry.buildingState.isConstructed)
-        {
-            Debug.LogWarning($"[BuildingService] Building not constructed: {entry.buildingData.displayName}");
-            return false;
-        }
-
-        entry.buildingState.level++;
-        Debug.Log($"[BuildingService] {entry.buildingData.displayName} upgrade completed (level {entry.buildingState.level})");
-        
-        OnBuildingChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>
-    /// 건물의 레벨을 직접 설정합니다.
-    /// </summary>
-    /// <param name="buildingId">건물 ID</param>
-    /// <param name="level">설정할 레벨</param>
-    public void SetBuildingLevel(string buildingId, int level)
-    {
-        if (level < 0)
-        {
-            Debug.LogWarning($"[BuildingService] Building level must be 0 or greater. (input: {level})");
-            return;
-        }
-
-        if (!_buildings.TryGetValue(buildingId, out var entry))
-        {
-            Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-            return;
-        }
-
-        entry.buildingState.level = level;
-        
-        // 레벨이 0이면 건설되지 않은 것으로 처리
-        if (level == 0)
-        {
-            entry.buildingState.isConstructed = false;
-            entry.buildingState.workingEfficiency = 0f;
-        }
-        else if (!entry.buildingState.isConstructed)
-        {
-            entry.buildingState.isConstructed = true;
-            entry.buildingState.workingEfficiency = 1.0f;
-        }
-        
-        Debug.Log($"[BuildingService] {entry.buildingData.displayName} level = {level}");
-        
-        OnBuildingChanged?.Invoke();
-    }
-
-    // ----------------- Public Methods (효율성 관리) -----------------
-
-    /// <summary>
-    /// 건물의 작업 효율을 설정합니다.
-    /// </summary>
-    /// <param name="buildingId">건물 ID</param>
-    /// <param name="efficiency">작업 효율 (0.0 ~ 무한대, 일반적으로 0.0 ~ 2.0)</param>
-    public void SetBuildingEfficiency(string buildingId, float efficiency)
-    {
-        if (!_buildings.TryGetValue(buildingId, out var entry))
-        {
-            Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
-            return;
-        }
-
-        entry.buildingState.workingEfficiency = Mathf.Max(0f, efficiency);
-        Debug.Log($"[BuildingService] {entry.buildingData.displayName} efficiency = {entry.buildingState.workingEfficiency:F2}");
-        
-        OnBuildingChanged?.Invoke();
-    }
-
-    // ----------------- Private Helper Methods -----------------
-
-    /// <summary>
-    /// 건물의 유지비를 계산합니다.
-    /// </summary>
-    private int CalculateMaintenanceCost(BuildingEntry entry)
-    {
-        // 기본 유지비 * 레벨
-        return entry.buildingData.baseMaintenanceCost * entry.buildingState.level;
-    }
-
     // ----------------- Utility Methods -----------------
-
-    /// <summary>
-    /// 모든 건물을 초기화합니다.
-    /// </summary>
-    public void ResetAllBuildings()
-    {
-        foreach (var entry in _buildings.Values)
-        {
-            entry.buildingState.level = 0;
-            entry.buildingState.workingEfficiency = 0f;
-            entry.buildingState.isConstructed = false;
-        }
-        Debug.Log("[BuildingService] All buildings have been reset.");
-        
-        OnBuildingChanged?.Invoke();
-    }
 
     /// <summary>
     /// 특정 건물이 등록되어 있는지 확인합니다.
@@ -430,21 +194,11 @@ public class BuildingService
     }
 
     /// <summary>
-    /// 건설된 건물 수를 반환합니다.
+    /// 등록된 건물 타입의 개수를 반환합니다.
     /// </summary>
-    /// <returns>건설된 건물 수</returns>
-    public int GetConstructedBuildingCount()
+    /// <returns>건물 타입 개수</returns>
+    public int GetBuildingTypeCount()
     {
-        int count = 0;
-        foreach (var entry in _buildings.Values)
-        {
-            if (entry.buildingState.isConstructed)
-            {
-                count++;
-            }
-        }
-        return count;
+        return _buildings.Count;
     }
 }
-
-

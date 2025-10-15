@@ -745,8 +745,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 250}
-  m_SizeDelta: {x: 0, y: 100}
+  m_AnchoredPosition: {x: 0, y: 225}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &727692490
 MonoBehaviour:
@@ -1465,8 +1465,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildingTilePrefab: {fileID: 439694459351957875, guid: 2883a97c15064334e9930e3cf7771678, type: 3}
+  _buildingObjectPrefab: {fileID: 4788968508785240937, guid: c11a7645413457d49842259c4ae0af64, type: 3}
   _gridWidth: 10
   _gridHeight: 10
+  _currentThreadId: thread_main
+  _validColor: {r: 0, g: 1, b: 0, a: 0.5}
+  _invalidColor: {r: 1, g: 0, b: 0, a: 0.5}
 --- !u!1 &1169881928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2260,8 +2264,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00005340576, y: 0}
-  m_SizeDelta: {x: 0, y: 93}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1797536010
 MonoBehaviour:

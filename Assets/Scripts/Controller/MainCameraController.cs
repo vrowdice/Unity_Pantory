@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MainCameraController : MonoBehaviour
 {
@@ -33,6 +34,13 @@ public class MainCameraController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            // 드래그 시작 시에만 UI 체크
+            if (IsPointerOverUI())
+            {
+                _isDragging = false;
+                return;
+            }
+            
             _dragOrigin = _camera.ScreenToWorldPoint(Input.mousePosition);
             _isDragging = true;
         }
@@ -66,6 +74,12 @@ public class MainCameraController : MonoBehaviour
     // 마우스 휠로 줌인/줌아웃
     private void HandleZoom()
     {
+        // UI 위에 마우스가 있으면 줌 무시
+        if (IsPointerOverUI())
+        {
+            return;
+        }
+        
         float scrollInput = Input.mouseScrollDelta.y;
         
         if (scrollInput != 0)
@@ -92,5 +106,11 @@ public class MainCameraController : MonoBehaviour
         position.y = Mathf.Clamp(position.y, bounds.min.y, bounds.max.y);
         
         return position;
+    }
+    
+    // UI 위에 마우스가 있는지 확인
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 }

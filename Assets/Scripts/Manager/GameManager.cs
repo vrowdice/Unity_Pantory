@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
     private IUIManager _uiManager;
+    private GameDataManager _gameDataManager;
 
     public IUIManager UiManager => _uiManager;
 
@@ -22,6 +24,9 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
             DontDestroyOnLoad(gameObject);
+            
+            // 씬 로드 이벤트 구독
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         var canvas = GameObject.Find("Canvas");
@@ -37,10 +42,20 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("[GameManager] Could not find Canvas object.");
         }
+
+        if (_gameDataManager == null)
+        {
+            _gameDataManager = GameDataManager.Instance;
+        }
     }
 
     void Start()
     {
+        if (_gameDataManager == null)
+        {
+            _gameDataManager = GameDataManager.Instance;
+        }
+
         // MainUiManager 초기화
         if (_uiManager != null)
         {
@@ -53,6 +68,51 @@ public class GameManager : MonoBehaviour
             {
                 Debug.LogError("[GameManager] GameDataManager.Instance is null. Cannot initialize MainUiManager.");
             }
+        }
+    }
+
+    void OnDestroy()
+    {
+        // 씬 로드 이벤트 구독 해제
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// 씬이 로드될 때마다 호출되는 콜백
+    /// </summary>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (_gameDataManager == null)
+        {
+            _gameDataManager = GameDataManager.Instance;
+        }
+
+        // Canvas와 UIManager 재설정
+        var canvas = GameObject.Find("Canvas");
+        if (canvas != null)
+        {
+            _uiManager = canvas.GetComponent<IUIManager>();
+            if (_uiManager == null)
+            {
+                Debug.LogError("[GameManager] Could not find MainUiManager on Canvas.");
+            }
+        }
+        else
+        {
+            Debug.LogError("[GameManager] Could not find Canvas object.");
+        }
+
+        // Main 씬이 아닐 경우 시간 정지
+        if (_gameDataManager != null)
+        {
+            if (scene.name != "Main")
+            {
+                _gameDataManager.PauseTime();
+            }
+        }
+        else
+        {
+            Debug.LogError("[GameManager] GameDataManager.Instance is null.");
         }
     }
 
