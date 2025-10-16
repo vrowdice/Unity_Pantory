@@ -8,6 +8,7 @@ public class BuildingRemovalHandler
     private readonly BuildingGridHandler _gridManager;
     private readonly GameDataManager _dataManager;
     private readonly Camera _mainCamera;
+    private readonly BuildingTileManager _buildingTileManager;
 
     private bool _isActive = false;
     private GameObject _hoveredBuilding = null;
@@ -18,11 +19,12 @@ public class BuildingRemovalHandler
 
     public bool IsActive => _isActive;
 
-    public BuildingRemovalHandler(BuildingGridHandler gridManager, GameDataManager dataManager, Camera mainCamera)
+    public BuildingRemovalHandler(BuildingGridHandler gridManager, GameDataManager dataManager, Camera mainCamera, BuildingTileManager buildingTileManager)
     {
         _gridManager = gridManager;
         _dataManager = dataManager;
         _mainCamera = mainCamera;
+        _buildingTileManager = buildingTileManager;
     }
 
     /// <summary>
@@ -151,19 +153,17 @@ public class BuildingRemovalHandler
             return;
         }
 
+        // 하이라이트 먼저 리셋 (RefreshBuildings가 오브젝트를 재생성하므로)
+        ResetBuildingHighlight();
+
         // ThreadService에서 건물 제거
         if (_dataManager.RemoveBuildingFromThread(currentThreadId, buildingOriginPos))
         {
-            // 건물 오브젝트 제거
-            _gridManager.RemoveBuildingObject(buildingOriginPos);
-
-            // 타일 점유 해제
-            _gridManager.MarkTilesAsOccupied(buildingOriginPos, targetBuildingData.size, false);
+            // 데이터만 제거하고, 실제 오브젝트는 RefreshBuildings로 갱신
+            _buildingTileManager.RefreshBuildings();
 
             Debug.Log($"[BuildingRemovalHandler] Building removed: {targetBuildingData.displayName} at {buildingOriginPos}");
         }
-
-        ResetBuildingHighlight();
     }
 
     /// <summary>

@@ -5,6 +5,9 @@ using UnityEngine;
 /// </summary>
 public class BuildingTileManager : MonoBehaviour
 {
+    [SerializeField] private GameObject _inputMarkerPrefab;
+    [SerializeField] private GameObject _outputMarkerPrefab;
+
     [SerializeField] private GameObject _buildingTilePrefab;
     [SerializeField] private GameObject _buildingObjectPrefab;  // 건물 표시용 프리팹
 
@@ -24,10 +27,11 @@ public class BuildingTileManager : MonoBehaviour
     // 모드 상태 프로퍼티
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
     public bool IsRemovalMode => _removalHandler != null && _removalHandler.IsActive;
+    public string CurrentThreadId => _currentThreadId;
 
     [Header("Preview Settings")]
-    [SerializeField] private Color _validColor = new Color(0, 1, 0, 0.5f);    // 배치 가능 (초록)
-    [SerializeField] private Color _invalidColor = new Color(1, 0, 0, 0.5f);  // 배치 불가 (빨강)
+    [SerializeField] private Color _validColor = new Color(0, 1, 0, 0.2f);    // 배치 가능 (초록)
+    [SerializeField] private Color _invalidColor = new Color(1, 0, 0, 0.2f);  // 배치 불가 (빨강)
 
     void Awake()
     {
@@ -35,9 +39,9 @@ public class BuildingTileManager : MonoBehaviour
         _dataManager = GameDataManager.Instance;
 
         // 핸들러 초기화
-        _gridGenHandler = new BuildingGridHandler(transform, _buildingTilePrefab, _dataManager, _gridWidth, _gridHeight);
-        _placementHandler = new BuildingPlacementHandler(_gridGenHandler, _dataManager, transform, _mainCamera);
-        _removalHandler = new BuildingRemovalHandler(_gridGenHandler, _dataManager, _mainCamera);
+        _gridGenHandler = new BuildingGridHandler(transform, _buildingTilePrefab, _dataManager, this, _gridWidth, _gridHeight);
+        _placementHandler = new BuildingPlacementHandler(_gridGenHandler, _dataManager, _mainCamera, this);
+        _removalHandler = new BuildingRemovalHandler(_gridGenHandler, _dataManager, _mainCamera, this);
 
         // 색상 설정
         _placementHandler.SetColors(_validColor, _invalidColor);
@@ -47,7 +51,7 @@ public class BuildingTileManager : MonoBehaviour
         if (GameManager.Instance != null)
         {
             string threadId = GameManager.Instance.CurrentThreadId;
-            
+
             if (!string.IsNullOrEmpty(threadId))
             {
                 // Thread가 없으면 생성
@@ -58,7 +62,7 @@ public class BuildingTileManager : MonoBehaviour
                     _dataManager.CreateThread(threadId, threadTitle, "생산부");
                     Debug.Log($"[BuildingTileManager] Created thread: {threadId} ({threadTitle})");
                 }
-                
+
                 _currentThreadId = threadId;
                 Debug.Log($"[BuildingTileManager] Initialized with thread: {threadId}");
             }
@@ -78,7 +82,7 @@ public class BuildingTileManager : MonoBehaviour
         CreateGrid(_gridWidth, _gridHeight);
         SetPositionCenter();
         SetCameraCollider();
-        
+
         // 초기 Thread는 DesignUiManager에서 생성됨
     }
 
@@ -214,10 +218,7 @@ public class BuildingTileManager : MonoBehaviour
 
         _currentThreadId = threadId;
         Debug.Log($"[BuildingTileManager] Current thread set to: {threadId}");
-        
-        // 핸들러들에도 Thread ID 전달
-        _placementHandler?.SetCurrentThreadId(threadId);
-        
+
         RefreshBuildings();
     }
 
@@ -242,14 +243,14 @@ public class BuildingTileManager : MonoBehaviour
             title = title.Replace("_", " ");
             return title;
         }
-        
+
         return threadId;
     }
 
     /// <summary>
     /// Thread의 건물들을 다시 로드하여 표시합니다.
     /// </summary>
-    private void RefreshBuildings()
+    public void RefreshBuildings()
     {
         if (_gridGenHandler == null || _dataManager == null)
             return;
@@ -264,7 +265,7 @@ public class BuildingTileManager : MonoBehaviour
             }
         }
 
-        // 기존 건물 오브젝트 제거
+        // 기존 건물 오브젝트 제거 (마커도 자식으로 함께 제거됨)
         foreach (var building in _gridGenHandler.PlacedBuildings.Values)
         {
             if (building != null)
@@ -281,10 +282,78 @@ public class BuildingTileManager : MonoBehaviour
                 BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
-                    _gridGenHandler.CreateBuildingObject(buildingState.position, buildingData);
+                    GameObject buildingObj = _gridGenHandler.CreateBuildingObject(buildingState.position, buildingData);
                     _gridGenHandler.MarkTilesAsOccupied(buildingState.position, buildingData.size);
+
+                    // Input/Output 마커 표시 (BuildingData의 상대 좌표가 (0,0)이 아닐 때만)
+                    // 마커를 건물 오브젝트의 자식으로 생성
+                    if (buildingObj != null)
+                    {
+                        if (buildingData.inputPosition != Vector2Int.zero)
+                        {
+                            CreateIOMarkerAsChild(buildingState.inputPosition, _inputMarkerPrefab, "Input", buildingObj.transform);
+                        }
+                        if (buildingData.outputPosition != Vector2Int.zero)
+                        {
+                            CreateIOMarkerAsChild(buildingState.outputPosition, _outputMarkerPrefab, "Output", buildingObj.transform);
+                        }
+                    }
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Input/Output 마커를 건물 오브젝트의 자식으로 생성합니다.
+    /// </summary>
+    private void CreateIOMarkerAsChild(Vector2Int gridPos, GameObject prefab, string label, Transform parent)
+    {
+        if (prefab == null)
+        {
+            Debug.LogWarning($"[BuildingTileManager] {label} marker prefab is not assigned");
+            return;
+        }
+
+        GameObject marker = Instantiate(prefab, parent);
+        marker.name = $"IOMarker_{label}";
+
+        // 월드 좌표로 변환
+        Vector3 worldPos = _gridGenHandler.GridToWorldPosition(gridPos, Vector2Int.one);
+        marker.transform.position = new Vector3(worldPos.x, worldPos.y, -0.5f);
+
+        // 부모의 스케일 영향을 제거하여 마커가 원래 크기로 보이도록 함
+        Vector3 parentScale = parent.transform.localScale;
+        marker.transform.localScale = new Vector3(
+            1f / parentScale.x,
+            1f / parentScale.y,
+            1f / parentScale.z
+        );
+
+    }
+
+    /// <summary>
+    /// Input/Output 마커 프리팹을 반환합니다.
+    /// </summary>
+    public GameObject GetInputMarkerPrefab() => _inputMarkerPrefab;
+    public GameObject GetOutputMarkerPrefab() => _outputMarkerPrefab;
+
+    /// <summary>
+    /// 스프라이트를 타일 크기에 맞게 스케일을 계산합니다.
+    /// </summary>
+    public Vector3 CalculateSpriteScale(Sprite sprite, Vector2Int targetSize)
+    {
+        if (sprite == null)
+            return Vector3.one;
+
+        float spriteWidth = sprite.bounds.size.x;
+        float spriteHeight = sprite.bounds.size.y;
+
+        float targetWidth = targetSize.x;
+        float targetHeight = targetSize.y;
+
+        float scaleX = targetWidth / spriteWidth;
+        float scaleY = targetHeight / spriteHeight;
+
+        return new Vector3(scaleX, scaleY, 1f);
     }
 }

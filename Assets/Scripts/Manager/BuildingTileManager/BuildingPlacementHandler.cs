@@ -6,40 +6,41 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class BuildingPlacementHandler
 {
+    private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridManager;
     private readonly GameDataManager _dataManager;
-    private readonly Transform _parentTransform;
     private readonly Camera _mainCamera;
 
     private bool _isActive = false;
     private BuildingData _selectedBuilding = null;
     private GameObject _previewObject = null;
     private SpriteRenderer _previewRenderer = null;
+    private GameObject _previewInputMarker = null;
+    private GameObject _previewOutputMarker = null;
     private Vector2Int _currentGridPos;
     private bool _canPlace = false;
-    private string _currentThreadId = "";  // 현재 Thread ID
 
     // Preview Settings
     private Color _validColor = new Color(0, 1, 0, 0.5f);
     private Color _invalidColor = new Color(1, 0, 0, 0.5f);
+    
+    // Input/Output Marker Prefabs
+    private GameObject _inputMarkerPrefab;
+    private GameObject _outputMarkerPrefab;
 
     public bool IsActive => _isActive;
     public BuildingData SelectedBuilding => _selectedBuilding;
 
-    public BuildingPlacementHandler(BuildingGridHandler gridManager, GameDataManager dataManager, Transform parentTransform, Camera mainCamera)
+    public BuildingPlacementHandler(BuildingGridHandler gridManager, GameDataManager dataManager, Camera mainCamera, BuildingTileManager buildingTileManager)
     {
         _gridManager = gridManager;
         _dataManager = dataManager;
-        _parentTransform = parentTransform;
+        _buildingTileManager = buildingTileManager;
         _mainCamera = mainCamera;
-    }
-
-    /// <summary>
-    /// 현재 Thread ID를 설정합니다.
-    /// </summary>
-    public void SetCurrentThreadId(string threadId)
-    {
-        _currentThreadId = threadId;
+        
+        // BuildingTileManager에서 Input/Output 마커 프리팹 가져오기
+        _inputMarkerPrefab = _buildingTileManager.GetInputMarkerPrefab();
+        _outputMarkerPrefab = _buildingTileManager.GetOutputMarkerPrefab();
     }
 
     /// <summary>
@@ -102,12 +103,20 @@ public class BuildingPlacementHandler
         {
             // UI 위에 있으면 프리뷰 숨기기
             _previewRenderer.enabled = false;
+            if (_previewInputMarker != null)
+                _previewInputMarker.SetActive(false);
+            if (_previewOutputMarker != null)
+                _previewOutputMarker.SetActive(false);
             _canPlace = false;
             return;
         }
 
         // 프리뷰 다시 보이기
         _previewRenderer.enabled = true;
+        if (_previewInputMarker != null)
+            _previewInputMarker.SetActive(true);
+        if (_previewOutputMarker != null)
+            _previewOutputMarker.SetActive(true);
 
         // 마우스 위치를 월드 좌표로 변환
         Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -124,6 +133,9 @@ public class BuildingPlacementHandler
         Vector3 worldPos = _gridManager.GridToWorldPosition(gridPos, _selectedBuilding.size);
         _previewObject.transform.position = worldPos;
         _previewRenderer.color = _canPlace ? _validColor : _invalidColor;
+        
+        // Input/Output 프리뷰 마커 위치 업데이트
+        UpdatePreviewIOMarkers(gridPos);
     }
 
     /// <summary>
@@ -149,13 +161,13 @@ public class BuildingPlacementHandler
     /// </summary>
     private void PlaceBuildingWithCurrentThread(Vector2Int gridPos, BuildingData buildingData)
     {
-        if (string.IsNullOrEmpty(_currentThreadId))
+        if (string.IsNullOrEmpty(_buildingTileManager.CurrentThreadId))
         {
             Debug.LogWarning("[BuildingPlacementHandler] Cannot place building: Thread ID not set");
             return;
         }
 
-        PlaceBuildingWithData(gridPos, buildingData, _currentThreadId);
+        PlaceBuildingWithData(gridPos, buildingData, _buildingTileManager.CurrentThreadId);
     }
 
     /// <summary>
@@ -169,17 +181,14 @@ public class BuildingPlacementHandler
             return;
         }
 
-        // BuildingState 생성 및 ThreadService에 추가
-        BuildingState buildingState = new BuildingState(buildingData.id, gridPos);
+        // BuildingState 생성 및 ThreadService에 추가 (BuildingData를 전달하여 절대 좌표 계산)
+        BuildingState buildingState = new BuildingState(buildingData.id, gridPos, buildingData);
         if (_dataManager.AddBuildingToThread(currentThreadId, buildingState))
         {
-            // 건물 오브젝트 생성
-            _gridManager.CreateBuildingObject(gridPos, buildingData);
+            // 데이터만 추가하고, 실제 오브젝트는 RefreshBuildings로 생성
+            _buildingTileManager.RefreshBuildings();
             
-            // 배치된 타일 차지 표시
-            _gridManager.MarkTilesAsOccupied(gridPos, buildingData.size);
-            
-            Debug.Log($"[BuildingPlacementHandler] Building placed: {buildingData.displayName} at {gridPos}");
+            Debug.Log($"[BuildingPlacementHandler] Building placed: {buildingData.displayName} at {gridPos}, Input: {buildingState.inputPosition}, Output: {buildingState.outputPosition}");
         }
     }
 
@@ -195,14 +204,23 @@ public class BuildingPlacementHandler
         }
 
         _previewObject = new GameObject("BuildingPreview");
-        _previewObject.transform.SetParent(_parentTransform);
+        _previewObject.transform.SetParent(_buildingTileManager.transform);
         _previewRenderer = _previewObject.AddComponent<SpriteRenderer>();
         _previewRenderer.sprite = _selectedBuilding.buildingSprite;
-        _previewRenderer.sortingOrder = 100; // 가장 위에 표시
+        _previewRenderer.sortingOrder = 0;
         
         // 프리뷰 크기를 타일 크기에 맞춤 (1타일 = 1유닛)
-        Vector3 scale = CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
+        Vector3 scale = _buildingTileManager.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
         _previewObject.transform.localScale = scale;
+
+        if(_selectedBuilding.inputPosition != Vector2Int.zero && _inputMarkerPrefab != null)
+        {
+            _previewInputMarker = CreatePreviewIOMarker("PreviewInput", _inputMarkerPrefab);
+        }
+        if(_selectedBuilding.outputPosition != Vector2Int.zero && _outputMarkerPrefab != null)
+        {
+            _previewOutputMarker = CreatePreviewIOMarker("PreviewOutput", _outputMarkerPrefab);
+        }
     }
 
     /// <summary>
@@ -210,32 +228,62 @@ public class BuildingPlacementHandler
     /// </summary>
     private void DestroyPreviewObject()
     {
+        // 프리뷰 오브젝트만 삭제하면 자식인 마커도 함께 삭제됨
         if (_previewObject != null)
         {
             Object.Destroy(_previewObject);
             _previewObject = null;
             _previewRenderer = null;
+            _previewInputMarker = null;
+            _previewOutputMarker = null;
         }
     }
 
     /// <summary>
-    /// 스프라이트를 타일 크기에 맞게 스케일을 계산합니다.
+    /// 프리뷰용 Input/Output 마커를 생성합니다.
     /// </summary>
-    private Vector3 CalculateSpriteScale(Sprite sprite, Vector2Int targetSize)
+    private GameObject CreatePreviewIOMarker(string name, GameObject prefab)
     {
-        if (sprite == null)
-            return Vector3.one;
+        GameObject marker = Object.Instantiate(prefab, _previewObject.transform);
+        marker.name = name;
+        
+                // 부모의 스케일 영향을 제거하여 마커가 원래 크기로 보이도록 함
+        Vector3 parentScale = _previewObject.transform.localScale;
+        marker.transform.localScale = new Vector3(
+            1f / parentScale.x,
+            1f / parentScale.y,
+            1f / parentScale.z
+        );
+        
 
-        float spriteWidth = sprite.bounds.size.x;
-        float spriteHeight = sprite.bounds.size.y;
+        return marker;
+    }
 
-        float targetWidth = targetSize.x;
-        float targetHeight = targetSize.y;
-
-        float scaleX = targetWidth / spriteWidth;
-        float scaleY = targetHeight / spriteHeight;
-
-        return new Vector3(scaleX, scaleY, 1f);
+    /// <summary>
+    /// 프리뷰 Input/Output 마커 위치를 업데이트합니다.
+    /// </summary>
+    private void UpdatePreviewIOMarkers(Vector2Int buildingGridPos)
+    {
+        if (_selectedBuilding == null)
+            return;
+            
+        // Input/Output 절대 좌표 계산
+        Vector2Int inputPos = buildingGridPos + _selectedBuilding.inputPosition;
+        Vector2Int outputPos = buildingGridPos + _selectedBuilding.outputPosition;
+        
+        // Input 마커 위치 업데이트
+        if (_previewInputMarker != null && _selectedBuilding.inputPosition != Vector2Int.zero)
+        {
+            Vector3 inputWorldPos = _gridManager.GridToWorldPosition(inputPos, Vector2Int.one);
+            _previewInputMarker.transform.position = new Vector3(inputWorldPos.x, inputWorldPos.y, -0.5f);
+        }
+        
+        // Output 마커 위치 업데이트
+        if (_previewOutputMarker != null && _selectedBuilding.outputPosition != Vector2Int.zero)
+        {
+            Vector3 outputWorldPos = _gridManager.GridToWorldPosition(outputPos, Vector2Int.one);
+            _previewOutputMarker.transform.position = new Vector3(outputWorldPos.x, outputWorldPos.y, -0.5f);
+        }
     }
 }
 

@@ -10,13 +10,21 @@ public class BuildingState
 {
     // 건물 ID (BuildingData 참조용)
     public string buildingId;
-    
+
     // 건물 배치 위치
     public Vector2Int position;
+    
+    // 스레드(그리드) 기준 절대 좌표
+    public Vector2Int inputPosition;
+    public Vector2Int outputPosition;
 
-    public BuildingState(string buildingId, Vector2Int position)
+    public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData)
     {
         this.buildingId = buildingId;
         this.position = position;
+        
+        // 건물의 배치 위치 + 상대 위치 = 스레드 기준 절대 좌표
+        this.inputPosition = position + buildingData.inputPosition;
+        this.outputPosition = position + buildingData.outputPosition;
     }
 }

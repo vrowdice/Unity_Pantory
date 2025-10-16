@@ -9,6 +9,7 @@ public class BuildingGridHandler
     private readonly Transform _parentTransform;
     private readonly GameObject _buildingTilePrefab;
     private readonly GameDataManager _dataManager;
+    private readonly BuildingTileManager _buildingTileManager;
     
     private int _gridWidth;
     private int _gridHeight;
@@ -24,11 +25,12 @@ public class BuildingGridHandler
     public Dictionary<Vector2Int, GameObject> BuildingTiles => _buildingTiles;
     public Dictionary<Vector2Int, GameObject> PlacedBuildings => _placedBuildings;
 
-    public BuildingGridHandler(Transform parentTransform, GameObject buildingTilePrefab, GameDataManager dataManager, int gridWidth, int gridHeight)
+    public BuildingGridHandler(Transform parentTransform, GameObject buildingTilePrefab, GameDataManager dataManager, BuildingTileManager buildingTileManager, int gridWidth, int gridHeight)
     {
         _parentTransform = parentTransform;
         _buildingTilePrefab = buildingTilePrefab;
         _dataManager = dataManager;
+        _buildingTileManager = buildingTileManager;
         _gridWidth = gridWidth;
         _gridHeight = gridHeight;
     }
@@ -148,10 +150,11 @@ public class BuildingGridHandler
     /// <summary>
     /// 건물 오브젝트를 생성하고 표시합니다.
     /// </summary>
-    public void CreateBuildingObject(Vector2Int gridPos, BuildingData buildingData)
+    /// <returns>생성된 건물 GameObject</returns>
+    public GameObject CreateBuildingObject(Vector2Int gridPos, BuildingData buildingData)
     {
         if (buildingData.buildingSprite == null)
-            return;
+            return null;
 
         GameObject buildingObj = new GameObject($"Building_{buildingData.id}_{gridPos}");
         buildingObj.transform.SetParent(_parentTransform);
@@ -164,10 +167,11 @@ public class BuildingGridHandler
         renderer.sortingOrder = 0; // 타일 위에 표시
 
         // 건물 크기를 타일 크기에 맞춤 (1타일 = 1유닛)
-        Vector3 scale = CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
+        Vector3 scale = _buildingTileManager.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
         buildingObj.transform.localScale = scale;
 
         _placedBuildings[gridPos] = buildingObj;
+        return buildingObj;
     }
 
     /// <summary>
@@ -280,29 +284,6 @@ public class BuildingGridHandler
         float centerY = -gridPos.y - (size.y - 1) * 0.5f;
         
         return _parentTransform.position + new Vector3(centerX, centerY, 9);
-    }
-
-    /// <summary>
-    /// 스프라이트를 타일 크기에 맞게 스케일을 계산합니다.
-    /// </summary>
-    private Vector3 CalculateSpriteScale(Sprite sprite, Vector2Int targetSize)
-    {
-        if (sprite == null)
-            return Vector3.one;
-
-        // 스프라이트의 실제 크기 (유닛 단위)
-        float spriteWidth = sprite.bounds.size.x;
-        float spriteHeight = sprite.bounds.size.y;
-
-        // 목표 크기 (타일 단위, 1타일 = 1유닛)
-        float targetWidth = targetSize.x;
-        float targetHeight = targetSize.y;
-
-        // 스케일 계산
-        float scaleX = targetWidth / spriteWidth;
-        float scaleY = targetHeight / spriteHeight;
-
-        return new Vector3(scaleX, scaleY, 1f);
     }
 }
 
