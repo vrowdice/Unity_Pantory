@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class DesignUiManager : MonoBehaviour, IUIManager
@@ -9,6 +10,9 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private GameObject _buildingBtnPrefab = null;
     [SerializeField] private Transform _buildingBtnContent = null;
     [SerializeField] private TMP_InputField _threadTitleInputField = null;
+
+    [SerializeField] private Image _deselectBuildingBtnImage = null;
+    [SerializeField] private Image _removalModeBtnImage = null;
 
     private GameDataManager _dataManager = null;
     private List<BuildingData> _buildingDataList = null;
@@ -55,6 +59,12 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     public void UpdateAllMainText()
     {
         Debug.Log("UpdateAllMainText");
+    }
+
+    public void UpdateModeBtnImages(bool isPlacementMode, bool isRemovalMode)
+    {
+        _deselectBuildingBtnImage.color = isPlacementMode ? VisualManager.Instance.ValidColor : Color.white;
+        _removalModeBtnImage.color = isRemovalMode ? VisualManager.Instance.InvalidColor : Color.white;
     }
 
     /// <summary>

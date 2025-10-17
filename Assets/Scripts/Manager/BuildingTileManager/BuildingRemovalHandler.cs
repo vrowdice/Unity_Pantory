@@ -5,28 +5,36 @@ using UnityEngine;
 /// </summary>
 public class BuildingRemovalHandler
 {
+    // ==================== References ====================
+    private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridManager;
     private readonly GameDataManager _dataManager;
-    private readonly Camera _mainCamera;
-    private readonly BuildingTileManager _buildingTileManager;
+    private readonly MainCameraController _mainCameraController;
+    private readonly DesignUiManager _designUiManager;
 
+    // ==================== State ====================
     private bool _isActive = false;
     private GameObject _hoveredBuilding = null;
-
-    // Highlight Settings
+    
+    // ==================== Colors ====================
     private Color _validColor = new Color(0, 1, 0, 0.5f);
     private Color _invalidColor = new Color(1, 0, 0, 0.5f);
 
+    // ==================== Properties ====================
     public bool IsActive => _isActive;
 
-    public BuildingRemovalHandler(BuildingGridHandler gridManager, GameDataManager dataManager, Camera mainCamera, BuildingTileManager buildingTileManager)
+    // ==================== Constructor ====================
+    public BuildingRemovalHandler(BuildingTileManager buildingTileManager)
     {
-        _gridManager = gridManager;
-        _dataManager = dataManager;
-        _mainCamera = mainCamera;
         _buildingTileManager = buildingTileManager;
+        _gridManager = buildingTileManager.GridGenHandler;
+        _dataManager = buildingTileManager.DataManager;
+        _mainCameraController = buildingTileManager.MainCameraController;
+        _designUiManager = buildingTileManager.DesignUiManager;
     }
 
+    // ==================== Public Methods ====================
+    
     /// <summary>
     /// 하이라이트 색상을 설정합니다.
     /// </summary>
@@ -43,6 +51,14 @@ public class BuildingRemovalHandler
     {
         _isActive = true;
         _gridManager.SetAllTilesOutline(true, _invalidColor);  // 타일 윤곽선 표시
+        
+        // 건물 제거 중 카메라 드래그 비활성화
+        if (_mainCameraController != null)
+        {
+            _mainCameraController.SetDragEnabled(false);
+        }
+        
+        _designUiManager.UpdateModeBtnImages(false, true);
         Debug.Log("[BuildingRemovalHandler] Removal mode started");
     }
 
@@ -54,6 +70,14 @@ public class BuildingRemovalHandler
         _isActive = false;
         ResetBuildingHighlight();
         _gridManager.SetAllTilesOutline(false);  // 타일 윤곽선 숨김
+        
+        // 제거 모드 종료 시 카메라 드래그 다시 활성화
+        if (_mainCameraController != null)
+        {
+            _mainCameraController.SetDragEnabled(true);
+        }
+        
+        _designUiManager.UpdateModeBtnImages(false, false);
         Debug.Log("[BuildingRemovalHandler] Removal mode cancelled");
     }
 
@@ -69,13 +93,15 @@ public class BuildingRemovalHandler
         HandleInput(currentThreadId);
     }
 
+    // ==================== Private Methods ====================
+    
     /// <summary>
     /// 제거 프리뷰를 업데이트합니다.
     /// </summary>
     private void UpdatePreview(string currentThreadId)
     {
         // 마우스 위치를 월드 좌표로 변환
-        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouseWorldPos = _mainCameraController.Camera.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = 0;
 
         // 그리드 좌표로 변환
@@ -102,7 +128,7 @@ public class BuildingRemovalHandler
         if (Input.GetMouseButtonDown(0) && _hoveredBuilding != null)
         {
             // 마우스 위치를 월드 좌표로 변환
-            Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorldPos = _mainCameraController.Camera.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPos.z = 0;
             Vector2Int gridPos = _gridManager.WorldToGridPosition(mouseWorldPos);
 

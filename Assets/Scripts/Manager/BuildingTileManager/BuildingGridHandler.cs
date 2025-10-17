@@ -25,14 +25,15 @@ public class BuildingGridHandler
     public Dictionary<Vector2Int, GameObject> BuildingTiles => _buildingTiles;
     public Dictionary<Vector2Int, GameObject> PlacedBuildings => _placedBuildings;
 
-    public BuildingGridHandler(Transform parentTransform, GameObject buildingTilePrefab, GameDataManager dataManager, BuildingTileManager buildingTileManager, int gridWidth, int gridHeight)
+    public BuildingGridHandler(BuildingTileManager buildingTileManager, GameObject buildingTilePrefab, int gridWidth, int gridHeight)
     {
-        _parentTransform = parentTransform;
         _buildingTilePrefab = buildingTilePrefab;
-        _dataManager = dataManager;
+        _dataManager = buildingTileManager.DataManager;
         _buildingTileManager = buildingTileManager;
         _gridWidth = gridWidth;
         _gridHeight = gridHeight;
+
+        _parentTransform = _buildingTileManager.transform;
     }
 
     /// <summary>
@@ -269,8 +270,9 @@ public class BuildingGridHandler
     public Vector2Int WorldToGridPosition(Vector3 worldPos)
     {
         Vector3 localPos = worldPos - _parentTransform.position;
-        int x = Mathf.FloorToInt(localPos.x);
-        int y = Mathf.FloorToInt(-localPos.y);
+        // 타일 중심을 기준으로 가장 가까운 그리드 좌표 계산
+        int x = Mathf.FloorToInt(localPos.x + 0.5f);
+        int y = Mathf.FloorToInt(-localPos.y + 0.5f);
         return new Vector2Int(x, y);
     }
 

@@ -5,76 +5,51 @@ using UnityEngine;
 /// </summary>
 public class BuildingTileManager : MonoBehaviour
 {
+    // ==================== Inspector 설정 ====================
+    [Header("UI Manager")]
+    [SerializeField] private DesignUiManager _designUiManager;
+    
+    [Header("Prefab")]
+    [SerializeField] private GameObject _buildingTilePrefab;
+    [SerializeField] private GameObject _buildingObjectPrefab;
     [SerializeField] private GameObject _inputMarkerPrefab;
     [SerializeField] private GameObject _outputMarkerPrefab;
-
-    [SerializeField] private GameObject _buildingTilePrefab;
-    [SerializeField] private GameObject _buildingObjectPrefab;  // 건물 표시용 프리팹
-
+    
+    [Header("Grid Settings")]
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
-    private string _currentThreadId = "";  // 현재 편집 중인 Thread ID (DesignUiManager에서 설정됨)
 
+    // ==================== Private 변수 ====================
+    private string _currentThreadId = "";
     private BoxCollider2D _cameraCollider;
     private Camera _mainCamera;
     private GameDataManager _dataManager;
-
+    
     // 핸들러들
+    private MainCameraController _mainCameraController;
     private BuildingGridHandler _gridGenHandler;
     private BuildingPlacementHandler _placementHandler;
     private BuildingRemovalHandler _removalHandler;
-
-    // 모드 상태 프로퍼티
+    private VisualManager _visualManager;
+    
+    // ==================== Public 프로퍼티 ====================
+    public GameDataManager DataManager => _dataManager;
+    public MainCameraController MainCameraController => _mainCameraController;
+    public BuildingGridHandler GridGenHandler => _gridGenHandler;
+    public BuildingPlacementHandler PlacementHandler => _placementHandler;
+    public BuildingRemovalHandler RemovalHandler => _removalHandler;
+    public DesignUiManager DesignUiManager => _designUiManager;
+    
+    public string CurrentThreadId => _currentThreadId;
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
     public bool IsRemovalMode => _removalHandler != null && _removalHandler.IsActive;
-    public string CurrentThreadId => _currentThreadId;
 
-    [Header("Preview Settings")]
-    [SerializeField] private Color _validColor = new Color(0, 1, 0, 0.2f);    // 배치 가능 (초록)
-    [SerializeField] private Color _invalidColor = new Color(1, 0, 0, 0.2f);  // 배치 불가 (빨강)
-
+    // ==================== Unity Lifecicle ====================
     void Awake()
     {
-        _mainCamera = Camera.main;
-        _dataManager = GameDataManager.Instance;
-
-        // 핸들러 초기화
-        _gridGenHandler = new BuildingGridHandler(transform, _buildingTilePrefab, _dataManager, this, _gridWidth, _gridHeight);
-        _placementHandler = new BuildingPlacementHandler(_gridGenHandler, _dataManager, _mainCamera, this);
-        _removalHandler = new BuildingRemovalHandler(_gridGenHandler, _dataManager, _mainCamera, this);
-
-        // 색상 설정
-        _placementHandler.SetColors(_validColor, _invalidColor);
-        _removalHandler.SetColor(_validColor, _invalidColor);
-
-        // GameManager에서 현재 Thread ID 가져오기
-        if (GameManager.Instance != null)
-        {
-            string threadId = GameManager.Instance.CurrentThreadId;
-
-            if (!string.IsNullOrEmpty(threadId))
-            {
-                // Thread가 없으면 생성
-                if (_dataManager != null && !_dataManager.HasThread(threadId))
-                {
-                    // Thread ID에서 제목 추출 (예: "thread_메인_라인" -> "메인 라인")
-                    string threadTitle = ExtractThreadTitle(threadId);
-                    _dataManager.CreateThread(threadId, threadTitle, "생산부");
-                    Debug.Log($"[BuildingTileManager] Created thread: {threadId} ({threadTitle})");
-                }
-
-                _currentThreadId = threadId;
-                Debug.Log($"[BuildingTileManager] Initialized with thread: {threadId}");
-            }
-            else
-            {
-                Debug.LogWarning("[BuildingTileManager] GameManager.CurrentThreadId is empty");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[BuildingTileManager] GameManager.Instance is null");
-        }
+        InitializeReferences();
+        InitializeHandlers();
+        InitializeThread();
     }
 
     void Start()
@@ -82,17 +57,13 @@ public class BuildingTileManager : MonoBehaviour
         CreateGrid(_gridWidth, _gridHeight);
         SetPositionCenter();
         SetCameraCollider();
-
-        // 초기 Thread는 DesignUiManager에서 생성됨
     }
 
     void Update()
     {
-        // Thread ID가 설정되지 않았으면 업데이트하지 않음
         if (string.IsNullOrEmpty(_currentThreadId))
             return;
 
-        // 각 핸들러 업데이트
         _placementHandler?.Update();
         _removalHandler?.Update(_currentThreadId);
     }
@@ -204,7 +175,7 @@ public class BuildingTileManager : MonoBehaviour
     }
 
     // ================== Thread 관리 ==================
-
+    
     /// <summary>
     /// 현재 편집 중인 Thread ID를 설정합니다.
     /// </summary>
@@ -230,6 +201,66 @@ public class BuildingTileManager : MonoBehaviour
         return _currentThreadId;
     }
 
+    // ================== 초기화 메서드 ====================
+    
+    /// <summary>
+    /// 참조들을 초기화합니다.
+    /// </summary>
+    private void InitializeReferences()
+    {
+        _mainCameraController = Camera.main.GetComponent<MainCameraController>();
+        _mainCamera = _mainCameraController.Camera;
+        _dataManager = GameDataManager.Instance;
+        _visualManager = VisualManager.Instance;
+    }
+
+    /// <summary>
+    /// 핸들러들을 초기화합니다.
+    /// </summary>
+    private void InitializeHandlers()
+    {
+        _gridGenHandler = new BuildingGridHandler(this, _buildingTilePrefab, _gridWidth, _gridHeight);
+        _placementHandler = new BuildingPlacementHandler(this);
+        _removalHandler = new BuildingRemovalHandler(this);
+
+        // 색상 설정
+        _placementHandler.SetColors(_visualManager.ValidColor, _visualManager.InvalidColor);
+        _removalHandler.SetColor(_visualManager.ValidColor, _visualManager.InvalidColor);
+    }
+
+    /// <summary>
+    /// Thread를 초기화합니다.
+    /// </summary>
+    private void InitializeThread()
+    {
+        if (GameManager.Instance != null)
+        {
+            string threadId = GameManager.Instance.CurrentThreadId;
+
+            if (!string.IsNullOrEmpty(threadId))
+            {
+                // Thread가 없으면 생성
+                if (_dataManager != null && !_dataManager.HasThread(threadId))
+                {
+                    string threadTitle = ExtractThreadTitle(threadId);
+                    _dataManager.CreateThread(threadId, threadTitle, "생산부");
+                    Debug.Log($"[BuildingTileManager] Created thread: {threadId} ({threadTitle})");
+                }
+
+                _currentThreadId = threadId;
+                Debug.Log($"[BuildingTileManager] Initialized with thread: {threadId}");
+            }
+            else
+            {
+                Debug.LogWarning("[BuildingTileManager] GameManager.CurrentThreadId is empty");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[BuildingTileManager] GameManager.Instance is null");
+        }
+    }
+
     /// <summary>
     /// Thread ID에서 제목을 추출합니다.
     /// </summary>
@@ -247,6 +278,8 @@ public class BuildingTileManager : MonoBehaviour
         return threadId;
     }
 
+    // ================== 건물 렌더링 ====================
+    
     /// <summary>
     /// Thread의 건물들을 다시 로드하여 표시합니다.
     /// </summary>
@@ -331,6 +364,8 @@ public class BuildingTileManager : MonoBehaviour
 
     }
 
+    // ================== 유틸리티 ====================
+    
     /// <summary>
     /// Input/Output 마커 프리팹을 반환합니다.
     /// </summary>

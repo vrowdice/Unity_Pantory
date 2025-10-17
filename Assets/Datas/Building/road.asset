@@ -15,8 +15,8 @@ MonoBehaviour:
   id: road
   displayName: Road
   buildingType: 0
-  icon: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
-  buildingSprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  buildingSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   description: A transportation pathway that connects different areas of the production
     line. Essential infrastructure for moving resources and products efficiently
     between facilities.

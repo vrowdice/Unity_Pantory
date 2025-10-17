@@ -14,13 +14,28 @@ public class MainCameraController : MonoBehaviour
     [Header("Boundary Settings")]
     [SerializeField] private BoxCollider2D _boundaryCollider;
 
+    public Camera Camera => _camera;
+
     private Camera _camera;
     private Vector3 _dragOrigin;
     private bool _isDragging = false;
+    private bool _isDragEnabled = true; // 드래그 활성화 여부
     
     void Start()
     {
         _camera = GetComponent<Camera>();
+    }
+    
+    /// <summary>
+    /// 카메라 드래그 활성화/비활성화
+    /// </summary>
+    public void SetDragEnabled(bool enabled)
+    {
+        _isDragEnabled = enabled;
+        if (!enabled)
+        {
+            _isDragging = false; // 비활성화 시 현재 드래그도 중단
+        }
     }
 
     void Update()
@@ -32,6 +47,13 @@ public class MainCameraController : MonoBehaviour
     // 드래그로 카메라 이동
     private void HandleDrag()
     {
+        // 드래그가 비활성화된 경우 처리하지 않음
+        if (!_isDragEnabled)
+        {
+            _isDragging = false;
+            return;
+        }
+        
         // 왼쪽 클릭 또는 휠 클릭으로 드래그 시작
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(2))
         {

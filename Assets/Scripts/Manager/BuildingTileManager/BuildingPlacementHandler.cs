@@ -6,43 +6,56 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class BuildingPlacementHandler
 {
+    // ==================== References ====================
     private readonly BuildingTileManager _buildingTileManager;
-    private readonly BuildingGridHandler _gridManager;
+    private readonly BuildingGridHandler _gridHandler;
     private readonly GameDataManager _dataManager;
-    private readonly Camera _mainCamera;
+    private readonly MainCameraController _mainCameraController;
+    private readonly DesignUiManager _designUiManager;
 
+    // ==================== State ====================
     private bool _isActive = false;
+    private bool _isDragging = false;
+    private bool _canPlace = false;
+    
+    // ==================== Building Data ====================
     private BuildingData _selectedBuilding = null;
+    private Vector2Int _currentGridPos;
+    private Vector2Int _lastPlacedGridPos = new Vector2Int(int.MinValue, int.MinValue);
+    
+    // ==================== Preview Objects ====================
     private GameObject _previewObject = null;
     private SpriteRenderer _previewRenderer = null;
     private GameObject _previewInputMarker = null;
     private GameObject _previewOutputMarker = null;
-    private Vector2Int _currentGridPos;
-    private bool _canPlace = false;
-
-    // Preview Settings
-    private Color _validColor = new Color(0, 1, 0, 0.5f);
-    private Color _invalidColor = new Color(1, 0, 0, 0.5f);
     
-    // Input/Output Marker Prefabs
+    // ==================== Prefabs ====================
     private GameObject _inputMarkerPrefab;
     private GameObject _outputMarkerPrefab;
+    
+    // ==================== Colors ====================
+    private Color _validColor = new Color(0, 1, 0, 0.5f);
+    private Color _invalidColor = new Color(1, 0, 0, 0.5f);
 
+    // ==================== Properties ====================
     public bool IsActive => _isActive;
     public BuildingData SelectedBuilding => _selectedBuilding;
 
-    public BuildingPlacementHandler(BuildingGridHandler gridManager, GameDataManager dataManager, Camera mainCamera, BuildingTileManager buildingTileManager)
+    // ==================== Constructor ====================
+    public BuildingPlacementHandler(BuildingTileManager buildingTileManager)
     {
-        _gridManager = gridManager;
-        _dataManager = dataManager;
         _buildingTileManager = buildingTileManager;
-        _mainCamera = mainCamera;
+        _gridHandler = buildingTileManager.GridGenHandler;
+        _dataManager = buildingTileManager.DataManager;
+        _mainCameraController = buildingTileManager.MainCameraController;
+        _designUiManager = buildingTileManager.DesignUiManager;
         
-        // BuildingTileManager에서 Input/Output 마커 프리팹 가져오기
         _inputMarkerPrefab = _buildingTileManager.GetInputMarkerPrefab();
         _outputMarkerPrefab = _buildingTileManager.GetOutputMarkerPrefab();
     }
 
+    // ==================== Public Methods ====================
+    
     /// <summary>
     /// Preview 색상을 설정합니다.
     /// </summary>
@@ -57,11 +70,21 @@ public class BuildingPlacementHandler
     /// </summary>
     public void StartPlacement(BuildingData buildingData)
     {
+        DestroyPreviewObject();
+
         _isActive = true;
         _selectedBuilding = buildingData;
         
         CreatePreviewObject();
-        _gridManager.SetAllTilesOutline(true, _validColor);  // 타일 윤곽선 표시
+        _gridHandler.SetAllTilesOutline(true, _validColor);  // 타일 윤곽선 표시
+        
+        // 건물 배치 중 카메라 드래그 비활성화
+        if (_mainCameraController != null)
+        {
+            _mainCameraController.SetDragEnabled(false);
+        }
+        
+        _designUiManager.UpdateModeBtnImages(true, false);
         Debug.Log($"[BuildingPlacementHandler] Placement mode started: {buildingData.displayName}");
     }
 
@@ -72,9 +95,19 @@ public class BuildingPlacementHandler
     {
         _isActive = false;
         _selectedBuilding = null;
+        _isDragging = false;
+        _lastPlacedGridPos = new Vector2Int(int.MinValue, int.MinValue);
         
         DestroyPreviewObject();
-        _gridManager.SetAllTilesOutline(false);  // 타일 윤곽선 숨김
+        _gridHandler.SetAllTilesOutline(false);  // 타일 윤곽선 숨김
+        
+        // 배치 모드 종료 시 카메라 드래그 다시 활성화
+        if (_mainCameraController != null)
+        {
+            _mainCameraController.SetDragEnabled(true);
+        }
+        
+        _designUiManager.UpdateModeBtnImages(false, false);
         Debug.Log("[BuildingPlacementHandler] Placement mode cancelled");
     }
 
@@ -90,6 +123,8 @@ public class BuildingPlacementHandler
         HandleInput();
     }
 
+    // ==================== Private Methods ====================
+    
     /// <summary>
     /// 프리뷰를 업데이트합니다.
     /// </summary>
@@ -119,18 +154,18 @@ public class BuildingPlacementHandler
             _previewOutputMarker.SetActive(true);
 
         // 마우스 위치를 월드 좌표로 변환
-        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouseWorldPos = _mainCameraController.Camera.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = 0;
 
         // 그리드 좌표로 변환
-        Vector2Int gridPos = _gridManager.WorldToGridPosition(mouseWorldPos);
+        Vector2Int gridPos = _gridHandler.WorldToGridPosition(mouseWorldPos);
         _currentGridPos = gridPos;
 
         // 배치 가능 여부 체크
-        _canPlace = _gridManager.CanPlaceBuilding(gridPos, _selectedBuilding.size);
+        _canPlace = _gridHandler.CanPlaceBuilding(gridPos, _selectedBuilding.size);
 
         // 프리뷰 위치 및 색상 업데이트
-        Vector3 worldPos = _gridManager.GridToWorldPosition(gridPos, _selectedBuilding.size);
+        Vector3 worldPos = _gridHandler.GridToWorldPosition(gridPos, _selectedBuilding.size);
         _previewObject.transform.position = worldPos;
         _previewRenderer.color = _canPlace ? _validColor : _invalidColor;
         
@@ -143,10 +178,28 @@ public class BuildingPlacementHandler
     /// </summary>
     private void HandleInput()
     {
-        // 왼쪽 클릭 - 건물 배치
-        if (Input.GetMouseButtonDown(0) && _canPlace)
+        // 마우스 버튼을 누르기 시작할 때
+        if (Input.GetMouseButtonDown(0))
         {
-            PlaceBuildingWithCurrentThread(_currentGridPos, _selectedBuilding);
+            _isDragging = true;
+            _lastPlacedGridPos = new Vector2Int(int.MinValue, int.MinValue); // 드래그 시작 시 초기화
+        }
+
+        // 마우스 버튼을 떼었을 때
+        if (Input.GetMouseButtonUp(0))
+        {
+            _isDragging = false;
+        }
+
+        // 드래그 중이거나 클릭 시 건물 배치
+        if (_isDragging && _canPlace)
+        {
+            // 현재 위치가 이전에 배치한 위치와 다를 때만 배치
+            if (_currentGridPos != _lastPlacedGridPos)
+            {
+                PlaceBuildingWithCurrentThread(_currentGridPos, _selectedBuilding);
+                _lastPlacedGridPos = _currentGridPos;
+            }
         }
 
         // 오른쪽 클릭 또는 ESC - 취소
@@ -175,7 +228,7 @@ public class BuildingPlacementHandler
     /// </summary>
     public void PlaceBuildingWithData(Vector2Int gridPos, BuildingData buildingData, string currentThreadId)
     {
-        if (!_gridManager.CanPlaceBuilding(gridPos, buildingData.size))
+        if (!_gridHandler.CanPlaceBuilding(gridPos, buildingData.size))
         {
             Debug.LogWarning("[BuildingPlacementHandler] Cannot place building at this position");
             return;
@@ -232,6 +285,8 @@ public class BuildingPlacementHandler
         if (_previewObject != null)
         {
             Object.Destroy(_previewObject);
+            Object.Destroy(_previewInputMarker);
+            Object.Destroy(_previewOutputMarker);
             _previewObject = null;
             _previewRenderer = null;
             _previewInputMarker = null;
@@ -274,14 +329,14 @@ public class BuildingPlacementHandler
         // Input 마커 위치 업데이트
         if (_previewInputMarker != null && _selectedBuilding.inputPosition != Vector2Int.zero)
         {
-            Vector3 inputWorldPos = _gridManager.GridToWorldPosition(inputPos, Vector2Int.one);
+            Vector3 inputWorldPos = _gridHandler.GridToWorldPosition(inputPos, Vector2Int.one);
             _previewInputMarker.transform.position = new Vector3(inputWorldPos.x, inputWorldPos.y, -0.5f);
         }
         
         // Output 마커 위치 업데이트
         if (_previewOutputMarker != null && _selectedBuilding.outputPosition != Vector2Int.zero)
         {
-            Vector3 outputWorldPos = _gridManager.GridToWorldPosition(outputPos, Vector2Int.one);
+            Vector3 outputWorldPos = _gridHandler.GridToWorldPosition(outputPos, Vector2Int.one);
             _previewOutputMarker.transform.position = new Vector3(outputWorldPos.x, outputWorldPos.y, -0.5f);
         }
     }
