@@ -26,10 +26,10 @@ public class BuildingPlacementHandler
     // ==================== Preview Objects ====================
     private GameObject _previewObject = null;
     private SpriteRenderer _previewRenderer = null;
-    private GameObject _previewInputMarker = null;
-    private GameObject _previewOutputMarker = null;
+    private BuildingObject _previewBuildingComponent = null;
     
     // ==================== Prefabs ====================
+    private GameObject _buildingObjectPrefab;
     private GameObject _inputMarkerPrefab;
     private GameObject _outputMarkerPrefab;
     
@@ -42,7 +42,7 @@ public class BuildingPlacementHandler
     public BuildingData SelectedBuilding => _selectedBuilding;
 
     // ==================== Constructor ====================
-    public BuildingPlacementHandler(BuildingTileManager buildingTileManager)
+    public BuildingPlacementHandler(BuildingTileManager buildingTileManager, GameObject buildingObjectPrefab)
     {
         _buildingTileManager = buildingTileManager;
         _gridHandler = buildingTileManager.GridGenHandler;
@@ -50,6 +50,7 @@ public class BuildingPlacementHandler
         _mainCameraController = buildingTileManager.MainCameraController;
         _designUiManager = buildingTileManager.DesignUiManager;
         
+        _buildingObjectPrefab = buildingObjectPrefab;
         _inputMarkerPrefab = _buildingTileManager.GetInputMarkerPrefab();
         _outputMarkerPrefab = _buildingTileManager.GetOutputMarkerPrefab();
     }
@@ -78,12 +79,6 @@ public class BuildingPlacementHandler
         CreatePreviewObject();
         _gridHandler.SetAllTilesOutline(true, _validColor);  // 타일 윤곽선 표시
         
-        // 건물 배치 중 카메라 드래그 비활성화
-        if (_mainCameraController != null)
-        {
-            _mainCameraController.SetDragEnabled(false);
-        }
-        
         _designUiManager.UpdateModeBtnImages(true, false);
         Debug.Log($"[BuildingPlacementHandler] Placement mode started: {buildingData.displayName}");
     }
@@ -100,12 +95,6 @@ public class BuildingPlacementHandler
         
         DestroyPreviewObject();
         _gridHandler.SetAllTilesOutline(false);  // 타일 윤곽선 숨김
-        
-        // 배치 모드 종료 시 카메라 드래그 다시 활성화
-        if (_mainCameraController != null)
-        {
-            _mainCameraController.SetDragEnabled(true);
-        }
         
         _designUiManager.UpdateModeBtnImages(false, false);
         Debug.Log("[BuildingPlacementHandler] Placement mode cancelled");
@@ -138,20 +127,16 @@ public class BuildingPlacementHandler
         {
             // UI 위에 있으면 프리뷰 숨기기
             _previewRenderer.enabled = false;
-            if (_previewInputMarker != null)
-                _previewInputMarker.SetActive(false);
-            if (_previewOutputMarker != null)
-                _previewOutputMarker.SetActive(false);
+            if (_previewBuildingComponent != null)
+                _previewBuildingComponent.SetMarkersActive(false);
             _canPlace = false;
             return;
         }
 
         // 프리뷰 다시 보이기
         _previewRenderer.enabled = true;
-        if (_previewInputMarker != null)
-            _previewInputMarker.SetActive(true);
-        if (_previewOutputMarker != null)
-            _previewOutputMarker.SetActive(true);
+        if (_previewBuildingComponent != null)
+            _previewBuildingComponent.SetMarkersActive(true);
 
         // 마우스 위치를 월드 좌표로 변환
         Vector3 mouseWorldPos = _mainCameraController.Camera.ScreenToWorldPoint(Input.mousePosition);
@@ -169,8 +154,11 @@ public class BuildingPlacementHandler
         _previewObject.transform.position = worldPos;
         _previewRenderer.color = _canPlace ? _validColor : _invalidColor;
         
-        // Input/Output 프리뷰 마커 위치 업데이트
-        UpdatePreviewIOMarkers(gridPos);
+        // Input/Output 프리뷰 마커 위치 업데이트 (BuildingObject를 통해)
+        if (_previewBuildingComponent != null)
+        {
+            _previewBuildingComponent.UpdatePreviewMarkers(gridPos, _gridHandler);
+        }
     }
 
     /// <summary>
@@ -203,7 +191,7 @@ public class BuildingPlacementHandler
         }
 
         // 오른쪽 클릭 또는 ESC - 취소
-        if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             CancelPlacement();
         }
@@ -256,9 +244,23 @@ public class BuildingPlacementHandler
             return;
         }
 
-        _previewObject = new GameObject("BuildingPreview");
-        _previewObject.transform.SetParent(_buildingTileManager.transform);
-        _previewRenderer = _previewObject.AddComponent<SpriteRenderer>();
+        // Prefab이 있으면 사용, 없으면 새로 생성
+        if (_buildingObjectPrefab != null)
+        {
+            _previewObject = Object.Instantiate(_buildingObjectPrefab, _buildingTileManager.transform);
+            _previewObject.name = "BuildingPreview";
+        }
+        else
+        {
+            _previewObject = new GameObject("BuildingPreview");
+            _previewObject.transform.SetParent(_buildingTileManager.transform);
+        }
+        
+        // SpriteRenderer 설정
+        _previewRenderer = _previewObject.GetComponent<SpriteRenderer>();
+        if (_previewRenderer == null)
+            _previewRenderer = _previewObject.AddComponent<SpriteRenderer>();
+            
         _previewRenderer.sprite = _selectedBuilding.buildingSprite;
         _previewRenderer.sortingOrder = 0;
         
@@ -266,14 +268,12 @@ public class BuildingPlacementHandler
         Vector3 scale = _buildingTileManager.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
         _previewObject.transform.localScale = scale;
 
-        if(_selectedBuilding.inputPosition != Vector2Int.zero && _inputMarkerPrefab != null)
-        {
-            _previewInputMarker = CreatePreviewIOMarker("PreviewInput", _inputMarkerPrefab);
-        }
-        if(_selectedBuilding.outputPosition != Vector2Int.zero && _outputMarkerPrefab != null)
-        {
-            _previewOutputMarker = CreatePreviewIOMarker("PreviewOutput", _outputMarkerPrefab);
-        }
+        // BuildingObject 컴포넌트 추가 및 프리뷰 초기화
+        _previewBuildingComponent = _previewObject.GetComponent<BuildingObject>();
+        if (_previewBuildingComponent == null)
+            _previewBuildingComponent = _previewObject.AddComponent<BuildingObject>();
+        
+        _previewBuildingComponent.InitializePreview(_selectedBuilding, _inputMarkerPrefab, _outputMarkerPrefab);
     }
 
     /// <summary>
@@ -281,63 +281,13 @@ public class BuildingPlacementHandler
     /// </summary>
     private void DestroyPreviewObject()
     {
-        // 프리뷰 오브젝트만 삭제하면 자식인 마커도 함께 삭제됨
+        // 프리뷰 오브젝트만 삭제하면 BuildingObject의 자식인 마커도 함께 삭제됨
         if (_previewObject != null)
         {
             Object.Destroy(_previewObject);
-            Object.Destroy(_previewInputMarker);
-            Object.Destroy(_previewOutputMarker);
             _previewObject = null;
             _previewRenderer = null;
-            _previewInputMarker = null;
-            _previewOutputMarker = null;
-        }
-    }
-
-    /// <summary>
-    /// 프리뷰용 Input/Output 마커를 생성합니다.
-    /// </summary>
-    private GameObject CreatePreviewIOMarker(string name, GameObject prefab)
-    {
-        GameObject marker = Object.Instantiate(prefab, _previewObject.transform);
-        marker.name = name;
-        
-                // 부모의 스케일 영향을 제거하여 마커가 원래 크기로 보이도록 함
-        Vector3 parentScale = _previewObject.transform.localScale;
-        marker.transform.localScale = new Vector3(
-            1f / parentScale.x,
-            1f / parentScale.y,
-            1f / parentScale.z
-        );
-        
-
-        return marker;
-    }
-
-    /// <summary>
-    /// 프리뷰 Input/Output 마커 위치를 업데이트합니다.
-    /// </summary>
-    private void UpdatePreviewIOMarkers(Vector2Int buildingGridPos)
-    {
-        if (_selectedBuilding == null)
-            return;
-            
-        // Input/Output 절대 좌표 계산
-        Vector2Int inputPos = buildingGridPos + _selectedBuilding.inputPosition;
-        Vector2Int outputPos = buildingGridPos + _selectedBuilding.outputPosition;
-        
-        // Input 마커 위치 업데이트
-        if (_previewInputMarker != null && _selectedBuilding.inputPosition != Vector2Int.zero)
-        {
-            Vector3 inputWorldPos = _gridHandler.GridToWorldPosition(inputPos, Vector2Int.one);
-            _previewInputMarker.transform.position = new Vector3(inputWorldPos.x, inputWorldPos.y, -0.5f);
-        }
-        
-        // Output 마커 위치 업데이트
-        if (_previewOutputMarker != null && _selectedBuilding.outputPosition != Vector2Int.zero)
-        {
-            Vector3 outputWorldPos = _gridHandler.GridToWorldPosition(outputPos, Vector2Int.one);
-            _previewOutputMarker.transform.position = new Vector3(outputWorldPos.x, outputWorldPos.y, -0.5f);
+            _previewBuildingComponent = null;
         }
     }
 }

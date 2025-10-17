@@ -20,8 +20,8 @@ public class MainCameraController : MonoBehaviour
     private Vector3 _dragOrigin;
     private bool _isDragging = false;
     private bool _isDragEnabled = true; // 드래그 활성화 여부
-    
-    void Start()
+
+    private void Awake()
     {
         _camera = GetComponent<Camera>();
     }
@@ -55,7 +55,7 @@ public class MainCameraController : MonoBehaviour
         }
         
         // 왼쪽 클릭 또는 휠 클릭으로 드래그 시작
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
         {
             // 왼쪽 클릭인 경우에만 UI 체크 (휠 클릭은 항상 드래그 가능)
             if (Input.GetMouseButtonDown(0) && IsPointerOverUI())
@@ -69,7 +69,7 @@ public class MainCameraController : MonoBehaviour
         }
         
         // 왼쪽 클릭 또는 휠 클릭 유지 중일 때 드래그
-        if ((Input.GetMouseButton(0) || Input.GetMouseButton(2)) && _isDragging)
+        if ((Input.GetMouseButton(1) || Input.GetMouseButton(2)) && _isDragging)
         {
             Vector3 currentMousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
             Vector3 difference = _dragOrigin - currentMousePos;
@@ -90,7 +90,7 @@ public class MainCameraController : MonoBehaviour
         }
         
         // 왼쪽 클릭 또는 휠 클릭 해제 시 드래그 종료
-        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(2))
+        if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
         {
             _isDragging = false;
         }
@@ -109,16 +109,31 @@ public class MainCameraController : MonoBehaviour
         
         if (scrollInput != 0)
         {
+            // 줌 전 마우스의 월드 좌표 저장
+            Vector3 mouseWorldPosBefore = _camera.ScreenToWorldPoint(Input.mousePosition);
+            
+            // 기존 Orthographic Size 저장
+            float oldSize = _camera.orthographicSize;
+            
             // Orthographic Size 조절
             _camera.orthographicSize -= scrollInput * _zoomSpeed;
             _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _minZoom, _maxZoom);
             
-            // 줌 후 경계 체크
+            // 줌 후 마우스의 월드 좌표
+            Vector3 mouseWorldPosAfter = _camera.ScreenToWorldPoint(Input.mousePosition);
+            
+            // 마우스 위치가 변하지 않도록 카메라 위치 보정
+            Vector3 offset = mouseWorldPosBefore - mouseWorldPosAfter;
+            Vector3 newPosition = transform.position + offset;
+            newPosition.z = transform.position.z; // Z 위치 고정
+            
+            // 경계 제한
             if (_boundaryCollider != null)
             {
-                Vector3 clampedPosition = ClampToBounds(transform.position);
-                transform.position = clampedPosition;
+                newPosition = ClampToBounds(newPosition);
             }
+            
+            transform.position = newPosition;
         }
     }
     

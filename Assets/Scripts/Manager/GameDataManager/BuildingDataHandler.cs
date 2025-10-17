@@ -13,7 +13,7 @@ public class BuildingDataHandler
     private Dictionary<string, BuildingData> _buildings;
 
     // 건물 데이터 변경 이벤트 (데이터 로드 완료 등)
-    public event Action OnBuildingChanged;
+    //public event Action OnBuildingChanged;
 
     /// <summary>
     /// BuildingService 생성자

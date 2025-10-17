@@ -135,7 +135,7 @@ public class ResourceDataHandler
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
-            return entry.resourceState.quantity;
+            return entry.resourceState.count;
         }
         
         Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
@@ -213,8 +213,8 @@ public class ResourceDataHandler
             return;
         }
 
-        entry.resourceState.quantity += amount;
-        Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (total: {entry.resourceState.quantity})");
+        entry.resourceState.count += amount;
+        Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (total: {entry.resourceState.count})");
         
         OnResourceChanged?.Invoke();
     }
@@ -239,17 +239,17 @@ public class ResourceDataHandler
             return false;
         }
 
-        if (entry.resourceState.quantity >= amount)
+        if (entry.resourceState.count >= amount)
         {
-            entry.resourceState.quantity -= amount;
-            Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (total: {entry.resourceState.quantity})");
+            entry.resourceState.count -= amount;
+            Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (total: {entry.resourceState.count})");
             
             OnResourceChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[ResourceService] {entry.resourceData.displayName} not enough! (required: {amount}, available: {entry.resourceState.quantity})");
+            Debug.LogWarning($"[ResourceService] {entry.resourceData.displayName} not enough! (required: {amount}, available: {entry.resourceState.count})");
             return false;
         }
     }
@@ -273,7 +273,7 @@ public class ResourceDataHandler
             return;
         }
 
-        entry.resourceState.quantity = amount;
+        entry.resourceState.count = amount;
         Debug.Log($"[ResourceService] {entry.resourceData.displayName} = {amount}");
         
         OnResourceChanged?.Invoke();
@@ -400,7 +400,7 @@ public class ResourceDataHandler
     {
         foreach (var entry in _resources.Values)
         {
-            entry.resourceState.quantity = 0;
+            entry.resourceState.count = 0;
             entry.resourceState.currentValue = entry.resourceData.baseValue;
             entry.resourceState.priceChangeRate = 0f;
         }

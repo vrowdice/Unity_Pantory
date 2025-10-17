@@ -12,9 +12,11 @@ public class GameManager : MonoBehaviour
 
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
+    public GameObject ProductionInfoImage => _productionInfoImage;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _warningPanelPrefab;
+    [SerializeField] private GameObject _productionInfoImage;
 
     void Awake()
     {

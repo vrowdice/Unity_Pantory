@@ -13,22 +13,25 @@ public class DesignUiManager : MonoBehaviour, IUIManager
 
     [SerializeField] private Image _deselectBuildingBtnImage = null;
     [SerializeField] private Image _removalModeBtnImage = null;
+    [SerializeField] private BuildingInfoPanel _buildingInfoPanel = null;
 
     private GameDataManager _dataManager = null;
     private List<BuildingData> _buildingDataList = null;
     private BuildingData _selectedBuilding = null;  // 현재 선택된 건물
     private BuildingTileManager _buildingTileManager = null;
     private bool _isRemovalMode = false;  // 현재 제거 모드 활성화 여부
+    private GameObject _productionInfoImage = null;
 
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public bool IsRemovalMode => _isRemovalMode;
-
+    public GameObject ProductionInfoImage => _productionInfoImage;
     public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
         _dataManager = argGameDataManager;
         _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
+        _productionInfoImage = argGameManager.ProductionInfoImage;
 
         // BuildingType 버튼 생성
         EnumUtils.GetAllEnumValues<BuildingType>().ForEach(buildingType =>
@@ -239,5 +242,33 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     {
         string title = GetCurrentThreadTitle();
         return "thread_" + title.Trim().Replace(" ", "_").ToLower();
+    }
+
+    /// <summary>
+    /// 건물 정보 패널을 표시합니다.
+    /// </summary>
+    public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState)
+    {
+        if (_buildingInfoPanel != null)
+        {
+            _buildingInfoPanel.gameObject.SetActive(true);
+            _buildingInfoPanel.ShowBuildingInfo(buildingData, buildingState, this);
+            Debug.Log($"[DesignUiManager] Showing building info for: {buildingData.displayName}");
+        }
+        else
+        {
+            Debug.LogWarning("[DesignUiManager] BuildingInfoPanel is not assigned!");
+        }
+    }
+
+    /// <summary>
+    /// 건물 정보 패널을 숨깁니다.
+    /// </summary>
+    public void HideBuildingInfo()
+    {
+        if (_buildingInfoPanel != null)
+        {
+            _buildingInfoPanel.gameObject.SetActive(false);
+        }
     }
 }

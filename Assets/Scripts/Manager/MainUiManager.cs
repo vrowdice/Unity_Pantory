@@ -35,11 +35,12 @@ public class MainUiManager : MonoBehaviour, IUIManager
 
     // 생성된 QuickMoveBtn 리스트
     private List<QuickMoveBtn> _quickMoveBtns = new List<QuickMoveBtn>();
+    private GameObject _productionInfoImage = null;
 
     // IUIManager 인터페이스 구현
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;
-
+    public GameObject ProductionInfoImage => _productionInfoImage;
     /// <summary>
     /// UI 매니저를 초기화합니다.
     /// </summary>
@@ -47,7 +48,8 @@ public class MainUiManager : MonoBehaviour, IUIManager
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
-
+        _productionInfoImage = argGameManager.ProductionInfoImage;
+        
         // 자원 변경 이벤트 구독
         if (_dataManager != null)
         {

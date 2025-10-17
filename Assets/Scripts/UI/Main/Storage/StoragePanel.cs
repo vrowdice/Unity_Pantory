@@ -7,8 +7,9 @@ using TMPro;
 /// </summary>
 public class StoragePanel : BasePanel
 {
+    [SerializeField] private GameObject _storageResourceTypeBtnPrefab;
     [SerializeField] private GameObject _storageResourceBtnPrefab;
-    [SerializeField] private TMP_Dropdown _resourceCategoryDropdown;
+    [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
     /// <summary>
@@ -21,36 +22,29 @@ public class StoragePanel : BasePanel
             Debug.LogWarning("[ProductionPanel] DataManager is null.");
             return;
         }
+        InitializeResourceTypeButtons();
+    }
 
-        if (_resourceCategoryDropdown.options.Count == 0)
+    private void InitializeResourceTypeButtons()
+    {
+        foreach (var resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
         {
-            EnumUtils.GetAllEnumValues<ResourceType>().ForEach(resourceType =>
-            {
-                _resourceCategoryDropdown.options.Add(new TMP_Dropdown.OptionData(resourceType.ToString()));
-            });
-
-            _resourceCategoryDropdown.onValueChanged.AddListener(OnResourceCategoryDropdownValueChanged);
-
-            OnResourceCategoryDropdownValueChanged(0);
+            Instantiate(_storageResourceTypeBtnPrefab, _resourceTypeScrollViewContentTransform).
+                GetComponent<StroageResourceTypeBtn>().OnInitialize(resourceType, this);
         }
     }
 
-    void OnResourceCategoryDropdownValueChanged(int value)
+    public void OnResourceTypeClick(ResourceType resourceType)
     {
-        _resourceCategoryDropdown.value = value;
-
         GameObjectUtils.ClearChildren(_resourceScrollViewContentTransform);
-
         foreach (var resourceEntry in _dataManager.Resource.GetAllResources())
         {
-            if(_resourceCategoryDropdown.value == (int)resourceEntry.Value.resourceData.type)
+            if(resourceEntry.Value.resourceData.type == resourceType)
             {
                 Instantiate(_storageResourceBtnPrefab, _resourceScrollViewContentTransform).
                     GetComponent<StorageResourceBtn>().OnInitialize(resourceEntry.Value);
             }
         }
-
-        Debug.Log($"[{GetType().Name}] Resource category dropdown value changed to {_resourceCategoryDropdown.value}");
     }
 
     void Update()

@@ -8,6 +8,9 @@ public class BuildingGridHandler
 {
     private readonly Transform _parentTransform;
     private readonly GameObject _buildingTilePrefab;
+    private readonly GameObject _buildingObjectPrefab;
+    private readonly GameObject _inputMarkerPrefab;
+    private readonly GameObject _outputMarkerPrefab;
     private readonly GameDataManager _dataManager;
     private readonly BuildingTileManager _buildingTileManager;
     
@@ -25,9 +28,12 @@ public class BuildingGridHandler
     public Dictionary<Vector2Int, GameObject> BuildingTiles => _buildingTiles;
     public Dictionary<Vector2Int, GameObject> PlacedBuildings => _placedBuildings;
 
-    public BuildingGridHandler(BuildingTileManager buildingTileManager, GameObject buildingTilePrefab, int gridWidth, int gridHeight)
+    public BuildingGridHandler(BuildingTileManager buildingTileManager, GameObject buildingTilePrefab, GameObject buildingObjectPrefab, GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, int gridWidth, int gridHeight)
     {
         _buildingTilePrefab = buildingTilePrefab;
+        _buildingObjectPrefab = buildingObjectPrefab;
+        _inputMarkerPrefab = inputMarkerPrefab;
+        _outputMarkerPrefab = outputMarkerPrefab;
         _dataManager = buildingTileManager.DataManager;
         _buildingTileManager = buildingTileManager;
         _gridWidth = gridWidth;
@@ -152,24 +158,56 @@ public class BuildingGridHandler
     /// 건물 오브젝트를 생성하고 표시합니다.
     /// </summary>
     /// <returns>생성된 건물 GameObject</returns>
-    public GameObject CreateBuildingObject(Vector2Int gridPos, BuildingData buildingData)
+    public GameObject CreateBuildingObject(Vector2Int gridPos, BuildingData buildingData, BuildingState buildingState = null)
     {
         if (buildingData.buildingSprite == null)
             return null;
 
-        GameObject buildingObj = new GameObject($"Building_{buildingData.id}_{gridPos}");
-        buildingObj.transform.SetParent(_parentTransform);
+        GameObject buildingObj;
+        
+        // Prefab이 있으면 Instantiate, 없으면 새로 생성
+        if (_buildingObjectPrefab != null)
+        {
+            buildingObj = Object.Instantiate(_buildingObjectPrefab, _parentTransform);
+            buildingObj.name = $"Building_{buildingData.id}_{gridPos}";
+        }
+        else
+        {
+            buildingObj = new GameObject($"Building_{buildingData.id}_{gridPos}");
+            buildingObj.transform.SetParent(_parentTransform);
+        }
         
         Vector3 worldPos = GridToWorldPosition(gridPos, buildingData.size);
         buildingObj.transform.position = worldPos;
 
-        SpriteRenderer renderer = buildingObj.AddComponent<SpriteRenderer>();
+        // SpriteRenderer가 없으면 추가
+        SpriteRenderer renderer = buildingObj.GetComponent<SpriteRenderer>();
+        if (renderer == null)
+            renderer = buildingObj.AddComponent<SpriteRenderer>();
+            
         renderer.sprite = buildingData.buildingSprite;
         renderer.sortingOrder = 0; // 타일 위에 표시
 
         // 건물 크기를 타일 크기에 맞춤 (1타일 = 1유닛)
         Vector3 scale = _buildingTileManager.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
         buildingObj.transform.localScale = scale;
+
+        // BoxCollider2D 추가 (클릭 감지용)
+        BoxCollider2D collider = buildingObj.GetComponent<BoxCollider2D>();
+        if (collider == null)
+            collider = buildingObj.AddComponent<BoxCollider2D>();
+        collider.size = new Vector2(buildingData.size.x, buildingData.size.y);
+
+        // BuildingObject 컴포넌트 추가 및 초기화
+        BuildingObject buildingComponent = buildingObj.GetComponent<BuildingObject>();
+        if (buildingComponent == null)
+            buildingComponent = buildingObj.AddComponent<BuildingObject>();
+        
+        // BuildingState가 있으면 일반 초기화, 없으면 프리뷰 초기화
+        if (buildingState != null)
+        {
+            buildingComponent.Initialize(buildingData, buildingState, _inputMarkerPrefab, _outputMarkerPrefab, this);
+        }
 
         _placedBuildings[gridPos] = buildingObj;
         return buildingObj;

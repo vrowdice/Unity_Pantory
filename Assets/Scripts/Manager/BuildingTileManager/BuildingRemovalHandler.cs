@@ -52,12 +52,6 @@ public class BuildingRemovalHandler
         _isActive = true;
         _gridManager.SetAllTilesOutline(true, _invalidColor);  // 타일 윤곽선 표시
         
-        // 건물 제거 중 카메라 드래그 비활성화
-        if (_mainCameraController != null)
-        {
-            _mainCameraController.SetDragEnabled(false);
-        }
-        
         _designUiManager.UpdateModeBtnImages(false, true);
         Debug.Log("[BuildingRemovalHandler] Removal mode started");
     }
@@ -70,12 +64,6 @@ public class BuildingRemovalHandler
         _isActive = false;
         ResetBuildingHighlight();
         _gridManager.SetAllTilesOutline(false);  // 타일 윤곽선 숨김
-        
-        // 제거 모드 종료 시 카메라 드래그 다시 활성화
-        if (_mainCameraController != null)
-        {
-            _mainCameraController.SetDragEnabled(true);
-        }
         
         _designUiManager.UpdateModeBtnImages(false, false);
         Debug.Log("[BuildingRemovalHandler] Removal mode cancelled");
@@ -136,7 +124,7 @@ public class BuildingRemovalHandler
         }
 
         // 오른쪽 클릭 또는 ESC - 취소
-        if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             CancelRemoval();
         }

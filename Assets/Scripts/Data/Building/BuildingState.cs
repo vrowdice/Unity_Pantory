@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -10,6 +11,8 @@ public class BuildingState
 {
     // 건물 ID (BuildingData 참조용)
     public string buildingId;
+    public List<string> inputProductionIds;
+    public List<string> outputProductionIds;
 
     // 건물 배치 위치
     public Vector2Int position;

@@ -66,6 +66,12 @@ public class BuildingTileManager : MonoBehaviour
 
         _placementHandler?.Update();
         _removalHandler?.Update(_currentThreadId);
+        
+        // 건물 클릭 감지 (배치 모드나 제거 모드가 아닐 때만)
+        if (!IsPlacementMode && !IsRemovalMode)
+        {
+            HandleBuildingClick();
+        }
     }
 
     // ================== 그리드 관리 ==================
@@ -219,8 +225,8 @@ public class BuildingTileManager : MonoBehaviour
     /// </summary>
     private void InitializeHandlers()
     {
-        _gridGenHandler = new BuildingGridHandler(this, _buildingTilePrefab, _gridWidth, _gridHeight);
-        _placementHandler = new BuildingPlacementHandler(this);
+        _gridGenHandler = new BuildingGridHandler(this, _buildingTilePrefab, _buildingObjectPrefab, _inputMarkerPrefab, _outputMarkerPrefab, _gridWidth, _gridHeight);
+        _placementHandler = new BuildingPlacementHandler(this, _buildingObjectPrefab);
         _removalHandler = new BuildingRemovalHandler(this);
 
         // 색상 설정
@@ -315,53 +321,12 @@ public class BuildingTileManager : MonoBehaviour
                 BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
-                    GameObject buildingObj = _gridGenHandler.CreateBuildingObject(buildingState.position, buildingData);
+                    // BuildingObject가 마커를 자동으로 생성하도록 buildingState 전달
+                    GameObject buildingObj = _gridGenHandler.CreateBuildingObject(buildingState.position, buildingData, buildingState);
                     _gridGenHandler.MarkTilesAsOccupied(buildingState.position, buildingData.size);
-
-                    // Input/Output 마커 표시 (BuildingData의 상대 좌표가 (0,0)이 아닐 때만)
-                    // 마커를 건물 오브젝트의 자식으로 생성
-                    if (buildingObj != null)
-                    {
-                        if (buildingData.inputPosition != Vector2Int.zero)
-                        {
-                            CreateIOMarkerAsChild(buildingState.inputPosition, _inputMarkerPrefab, "Input", buildingObj.transform);
-                        }
-                        if (buildingData.outputPosition != Vector2Int.zero)
-                        {
-                            CreateIOMarkerAsChild(buildingState.outputPosition, _outputMarkerPrefab, "Output", buildingObj.transform);
-                        }
-                    }
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Input/Output 마커를 건물 오브젝트의 자식으로 생성합니다.
-    /// </summary>
-    private void CreateIOMarkerAsChild(Vector2Int gridPos, GameObject prefab, string label, Transform parent)
-    {
-        if (prefab == null)
-        {
-            Debug.LogWarning($"[BuildingTileManager] {label} marker prefab is not assigned");
-            return;
-        }
-
-        GameObject marker = Instantiate(prefab, parent);
-        marker.name = $"IOMarker_{label}";
-
-        // 월드 좌표로 변환
-        Vector3 worldPos = _gridGenHandler.GridToWorldPosition(gridPos, Vector2Int.one);
-        marker.transform.position = new Vector3(worldPos.x, worldPos.y, -0.5f);
-
-        // 부모의 스케일 영향을 제거하여 마커가 원래 크기로 보이도록 함
-        Vector3 parentScale = parent.transform.localScale;
-        marker.transform.localScale = new Vector3(
-            1f / parentScale.x,
-            1f / parentScale.y,
-            1f / parentScale.z
-        );
-
     }
 
     // ================== 유틸리티 ====================
@@ -390,5 +355,74 @@ public class BuildingTileManager : MonoBehaviour
         float scaleY = targetHeight / spriteHeight;
 
         return new Vector3(scaleX, scaleY, 1f);
+    }
+
+    // ================== 건물 클릭 처리 ====================
+    
+    /// <summary>
+    /// 건물 클릭을 처리합니다.
+    /// </summary>
+    private void HandleBuildingClick()
+    {
+        // UI 위에 마우스가 있으면 무시
+        if (UnityEngine.EventSystems.EventSystem.current != null && 
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+        
+        // 왼쪽 클릭 시
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0;
+            
+            Vector2Int gridPos = _gridGenHandler.WorldToGridPosition(mouseWorldPos);
+            GameObject clickedBuilding = _gridGenHandler.GetBuildingAtPosition(gridPos, _currentThreadId);
+            
+            if (clickedBuilding != null)
+            {
+                OnBuildingClicked(gridPos);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// 건물이 클릭되었을 때 호출됩니다.
+    /// </summary>
+    private void OnBuildingClicked(Vector2Int gridPos)
+    {
+        // 해당 위치의 건물 데이터 찾기
+        var buildingStates = _dataManager.GetBuildingStates(_currentThreadId);
+        if (buildingStates != null)
+        {
+            BuildingState clickedState = buildingStates.Find(b => b.position == gridPos);
+            if (clickedState == null)
+            {
+                // 정확한 위치가 아니면 건물이 차지하는 영역 내에서 찾기
+                foreach (var state in buildingStates)
+                {
+                    BuildingData data = _dataManager.GetBuildingData(state.buildingId);
+                    if (data != null)
+                    {
+                        if (gridPos.x >= state.position.x && gridPos.x < state.position.x + data.size.x &&
+                            gridPos.y >= state.position.y && gridPos.y < state.position.y + data.size.y)
+                        {
+                            clickedState = state;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (clickedState != null)
+            {
+                BuildingData buildingData = _dataManager.GetBuildingData(clickedState.buildingId);
+                if (buildingData != null)
+                {
+                    _designUiManager?.ShowBuildingInfo(buildingData, clickedState);
+                }
+            }
+        }
     }
 }

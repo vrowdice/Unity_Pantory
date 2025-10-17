@@ -53,11 +53,11 @@ public class GameDataManager : MonoBehaviour
     }
 
     // 건물 변경 이벤트 (BuildingService의 이벤트를 중계)
-    public event Action OnBuildingChanged
+/*    public event Action OnBuildingChanged
     {
         add => _buildingService.OnBuildingChanged += value;
         remove => _buildingService.OnBuildingChanged -= value;
-    }
+    }*/
 
     // Thread 변경 이벤트 (ThreadService의 이벤트를 중계)
     public event Action OnThreadChanged
@@ -132,6 +132,9 @@ public class GameDataManager : MonoBehaviour
 
     // 특정 자원의 현재 가격 반환
     public float GetResourcePrice(string resourceId) => _resourceService.GetResourcePrice(resourceId);
+
+    // 특정 자원의 ResourceEntry 반환
+    public ResourceEntry GetResourceEntry(string resourceId) => _resourceService.GetResourceEntry(resourceId);
 
     // 모든 자원 정보 반환
     public Dictionary<string, ResourceEntry> GetAllResources() => _resourceService.GetAllResources();

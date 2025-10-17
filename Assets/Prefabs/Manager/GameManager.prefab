@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _warningPanelPrefab: {fileID: 509094518299881478, guid: 90a762a4eed595d4fabadaa9e40a721d, type: 3}
+  _productionInfoImage: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
