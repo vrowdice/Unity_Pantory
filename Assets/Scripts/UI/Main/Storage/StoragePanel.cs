@@ -30,7 +30,7 @@ public class StoragePanel : BasePanel
         foreach (var resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
         {
             Instantiate(_storageResourceTypeBtnPrefab, _resourceTypeScrollViewContentTransform).
-                GetComponent<StroageResourceTypeBtn>().OnInitialize(resourceType, this);
+                GetComponent<StroageResourceTypeBtn>().OnInitialize(this, resourceType);
         }
     }
 
@@ -42,13 +42,8 @@ public class StoragePanel : BasePanel
             if(resourceEntry.Value.resourceData.type == resourceType)
             {
                 Instantiate(_storageResourceBtnPrefab, _resourceScrollViewContentTransform).
-                    GetComponent<StorageResourceBtn>().OnInitialize(resourceEntry.Value);
+                    GetComponent<StorageResourceBtn>().OnInitialize(this, resourceEntry.Value);
             }
         }
-    }
-
-    void Update()
-    {
-        // 업데이트 로직
     }
 }

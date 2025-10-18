@@ -2,18 +2,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class StorageResourceBtn : MonoBehaviour
+public class SelectResourceBtn : MonoBehaviour
 {
     [SerializeField] private Image _resourceIconImage;
     [SerializeField] private TextMeshProUGUI _resourceNameText;
     [SerializeField] private TextMeshProUGUI _resourceCountText;
 
-    private StoragePanel _storagePanel;
+    private SelectResourcePanel _selectResourcePanel;
     private ResourceEntry _resourceEntry;
 
-    public void OnInitialize(StoragePanel storagePanel, ResourceEntry resourceEntry)
+    public void OnInitialize(SelectResourcePanel selectResourcePanel, ResourceEntry resourceEntry)
     {
-        _storagePanel = storagePanel;
+        _selectResourcePanel = selectResourcePanel;
         _resourceEntry = resourceEntry;
 
         _resourceIconImage.sprite = _resourceEntry.resourceData.icon;
