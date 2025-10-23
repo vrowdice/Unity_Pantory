@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Common UI")]
     [SerializeField] private GameObject _warningPanelPrefab;
+    [SerializeField] private GameObject _selectResourcePanelPrefab;
     [SerializeField] private GameObject _productionInfoImage;
 
     void Awake()
@@ -169,5 +171,43 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("[GameManager] WarningPanel component not found on instantiated prefab.");
         }
+    }
+
+    /// <summary>
+    /// 자원 선택 패널을 표시합니다.
+    /// </summary>
+    /// <param name="resourceTypes">선택 가능한 자원 타입 목록</param>
+    /// <param name="onResourceSelected">자원 선택 시 호출될 콜백</param>
+    /// <returns>생성된 SelectResourcePanel 컴포넌트</returns>
+    public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected)
+    {
+        if (_selectResourcePanelPrefab == null)
+        {
+            Debug.LogWarning("[GameManager] Select resource panel prefab is not assigned.");
+            return null;
+        }
+
+        if (_gameDataManager == null)
+        {
+            Debug.LogWarning("[GameManager] GameDataManager is null.");
+            return null;
+        }
+
+        // 자원 선택 패널 생성
+        GameObject selectResourcePanel = Instantiate(_selectResourcePanelPrefab, _uiManager.CanvasTrans);
+        SelectResourcePanel panelComponent = selectResourcePanel.GetComponent<SelectResourcePanel>();
+        
+        if (panelComponent != null)
+        {
+            // 패널 초기화
+            panelComponent.OnInitialize(_gameDataManager, resourceTypes, onResourceSelected);
+            Debug.Log("[GameManager] Select resource panel displayed.");
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] SelectResourcePanel component not found on instantiated prefab.");
+        }
+
+        return panelComponent;
     }
 }

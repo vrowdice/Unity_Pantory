@@ -23,6 +23,13 @@ public class SelectResourceBtn : MonoBehaviour
 
     public void OnClick()
     {
-        Debug.Log("OnClick");
+        if (_selectResourcePanel != null && _resourceEntry != null)
+        {
+            _selectResourcePanel.OnResourceSelected(_resourceEntry);
+        }
+        else
+        {
+            Debug.LogWarning("[SelectResourceBtn] SelectResourcePanel or ResourceEntry is null.");
+        }
     }
 }

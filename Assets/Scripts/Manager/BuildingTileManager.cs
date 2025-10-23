@@ -30,6 +30,7 @@ public class BuildingTileManager : MonoBehaviour
     private BuildingGridHandler _gridGenHandler;
     private BuildingPlacementHandler _placementHandler;
     private BuildingRemovalHandler _removalHandler;
+    private BuildingCalculateHandler _calculateHandler;
     private VisualManager _visualManager;
     
     // ==================== Public 프로퍼티 ====================
@@ -228,6 +229,7 @@ public class BuildingTileManager : MonoBehaviour
         _gridGenHandler = new BuildingGridHandler(this, _buildingTilePrefab, _buildingObjectPrefab, _inputMarkerPrefab, _outputMarkerPrefab, _gridWidth, _gridHeight);
         _placementHandler = new BuildingPlacementHandler(this, _buildingObjectPrefab);
         _removalHandler = new BuildingRemovalHandler(this);
+        _calculateHandler = new BuildingCalculateHandler(this);
 
         // 색상 설정
         _placementHandler.SetColors(_visualManager.ValidColor, _visualManager.InvalidColor);

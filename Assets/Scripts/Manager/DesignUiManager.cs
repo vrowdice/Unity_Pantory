@@ -15,6 +15,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private Image _removalModeBtnImage = null;
     [SerializeField] private BuildingInfoPanel _buildingInfoPanel = null;
 
+    private GameManager _gameManager = null;
     private GameDataManager _dataManager = null;
     private List<BuildingData> _buildingDataList = null;
     private BuildingData _selectedBuilding = null;  // 현재 선택된 건물
@@ -23,12 +24,16 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     private GameObject _productionInfoImage = null;
 
     public Transform CanvasTrans => transform;
-    public GameDataManager DataManager => _dataManager;
+
+    public GameManager GameManager => _gameManager;
+    public GameDataManager GameDataManager => _dataManager;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public bool IsRemovalMode => _isRemovalMode;
     public GameObject ProductionInfoImage => _productionInfoImage;
+
     public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
+        _gameManager = argGameManager;
         _dataManager = argGameDataManager;
         _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
         _productionInfoImage = argGameManager.ProductionInfoImage;

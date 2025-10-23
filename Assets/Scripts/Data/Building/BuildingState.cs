@@ -29,5 +29,8 @@ public class BuildingState
         // 건물의 배치 위치 + 상대 위치 = 스레드 기준 절대 좌표
         this.inputPosition = position + buildingData.inputPosition;
         this.outputPosition = position + buildingData.outputPosition;
+
+        inputProductionIds = new List<string>();
+        outputProductionIds = new List<string>();
     }
 }

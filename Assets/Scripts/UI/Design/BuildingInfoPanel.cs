@@ -27,6 +27,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
     private DesignUiManager _designUiManager;
     private GameDataManager _gameDataManager;
+    private System.Action<ResourceEntry> _onOutputResourceSelected;
 
     /// <summary>
     /// 건물 정보를 표시합니다.
@@ -42,7 +43,11 @@ public class BuildingInfoPanel : MonoBehaviour
         _currentBuildingData = buildingData;
         _currentBuildingState = buildingState;
         _designUiManager = designUiManager;
-        _gameDataManager = designUiManager.DataManager;
+        _gameDataManager = designUiManager.GameDataManager;
+
+        // 자원 선택 콜백 설정
+        _onOutputResourceSelected = OnOutputResourceSelected;
+
         // UI 업데이트
         UpdateUI();
     }
@@ -71,10 +76,10 @@ public class BuildingInfoPanel : MonoBehaviour
         {
             if (_currentBuildingData.allowedResourceTypes != null && _currentBuildingData.allowedResourceTypes.Count > 0)
             {
-                string resourceTypes = "Allowed Resources:\n";
+                string resourceTypes = "Allowed Resources:";
                 foreach (var resourceType in _currentBuildingData.allowedResourceTypes)
                 {
-                    resourceTypes += $"- {resourceType}\n";
+                    resourceTypes += $" {resourceType}";
                 }
                 _resourceTypesText.text = resourceTypes;
             }
@@ -96,13 +101,17 @@ public class BuildingInfoPanel : MonoBehaviour
 
         UpdateInputProductionImages();
         UpdateOutputProductionImages();
-
-
     }
 
     private void UpdateInputProductionImages()
     {
         GameObjectUtils.ClearChildren(_inputGridContentTransform);
+
+        if (_currentBuildingState.inputProductionIds == null)
+        {
+            return;
+        }
+
         foreach (var productionId in _currentBuildingState.inputProductionIds)
         {
             ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(productionId);
@@ -112,13 +121,20 @@ public class BuildingInfoPanel : MonoBehaviour
 
             Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
             GetComponent<TextMeshProUGUI>().text =
-             $"Input: {resourceEntry.resourceData.description}\nPrice: {resourceEntry.resourceState.currentValue}";
+             $"Input: {resourceEntry.resourceData.displayName}\nPrice: {resourceEntry.resourceState.currentValue}";
         }
     }
 
     private void UpdateOutputProductionImages()
     {
         GameObjectUtils.ClearChildren(_outputGridContentTransform);
+        GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
+
+        if (_currentBuildingState.inputProductionIds == null)
+        {
+            return;
+        }
+    
         foreach (var productionId in _currentBuildingState.outputProductionIds)
         {
             Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
@@ -126,7 +142,77 @@ public class BuildingInfoPanel : MonoBehaviour
 
             Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
             GetComponent<TextMeshProUGUI>().text =
-             $"Output: {_gameDataManager.GetResourceEntry(productionId).resourceData.description}\nPrice: {_gameDataManager.GetResourceEntry(productionId).resourceState.currentValue}";
+             $"Output: {_gameDataManager.GetResourceEntry(productionId).resourceData.displayName}\nPrice: {_gameDataManager.GetResourceEntry(productionId).resourceState.currentValue}";
+        }
+    }
+
+
+    /// <summary>
+    /// 출력 자원 선택 패널을 표시합니다.
+    /// </summary>
+    public void ShowOutputResourceSelection()
+    {
+        if (_currentBuildingData?.allowedResourceTypes == null || _currentBuildingData.allowedResourceTypes.Count == 0)
+        {
+            Debug.LogWarning("[BuildingInfoPanel] No allowed resource types for output selection.");
+            return;
+        }
+
+        if (_designUiManager.GameManager != null)
+        {
+            _designUiManager.GameManager.ShowSelectResourcePanel(_currentBuildingData.allowedResourceTypes, _onOutputResourceSelected);
+        }
+        else
+        {
+            Debug.LogError("[BuildingInfoPanel] GameManager.Instance is null.");
+        }
+    }
+
+
+    /// <summary>
+    /// 출력 자원이 선택되었을 때 호출되는 콜백
+    /// </summary>
+    /// <param name="selectedResource">선택된 자원</param>
+    private void OnOutputResourceSelected(ResourceEntry selectedResource)
+    {
+        if (_currentBuildingState != null && selectedResource != null)
+        {
+            _currentBuildingState.outputProductionIds.Clear();
+
+            _currentBuildingState.outputProductionIds.Add(selectedResource.resourceData.id);
+            Debug.Log($"[BuildingInfoPanel] Output resource added: {selectedResource.resourceData.displayName}");
+
+            // 선택된 출력 자원의 제조 요구사항을 확인하고 필요한 입력 자원들을 자동으로 추가
+            AddRequiredInputResources(selectedResource.resourceData);
+
+            UpdateOutputProductionImages();
+            UpdateInputProductionImages();
+        }
+    }
+
+    /// <summary>
+    /// 선택된 출력 자원의 제조 요구사항을 확인하고 필요한 입력 자원들을 자동으로 추가합니다.
+    /// </summary>
+    /// <param name="outputResourceData">출력 자원 데이터</param>
+    private void AddRequiredInputResources(ResourceData outputResourceData)
+    {
+        // 기존 입력 자원들을 모두 초기화
+        _currentBuildingState.inputProductionIds.Clear();
+        Debug.Log($"[BuildingInfoPanel] Input resources cleared for new output: {outputResourceData.displayName}");
+
+        if (outputResourceData.requirements == null || outputResourceData.requirements.Count == 0)
+        {
+            Debug.Log($"[BuildingInfoPanel] No requirements found for {outputResourceData.displayName}");
+            return;
+        }
+
+        foreach (var requirement in outputResourceData.requirements)
+        {
+            if (requirement.resource != null)
+            {
+                _currentBuildingState.inputProductionIds.Add(requirement.resource.id);
+                Debug.Log($"[BuildingInfoPanel] Required input resource added: {requirement.resource.displayName} (count: {requirement.count})");
+            }
         }
     }
 
