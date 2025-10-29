@@ -17,20 +17,70 @@ public class BuildingState
     // 건물 배치 위치
     public Vector2Int position;
     
+    // 건물 회전 (0=0도, 1=90도, 2=180도, 3=270도)
+    public int rotation = 0;
+    
     // 스레드(그리드) 기준 절대 좌표
     public Vector2Int inputPosition;
     public Vector2Int outputPosition;
 
-    public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData)
+    public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData, int rotation = 0)
     {
         this.buildingId = buildingId;
         this.position = position;
+        this.rotation = rotation;
         
-        // 건물의 배치 위치 + 상대 위치 = 스레드 기준 절대 좌표
-        this.inputPosition = position + buildingData.inputPosition;
-        this.outputPosition = position + buildingData.outputPosition;
+        // 건물의 배치 위치 + 회전된 상대 위치 = 스레드 기준 절대 좌표
+        this.inputPosition = position + RotatePositionAroundCenter(buildingData.inputPosition, rotation, buildingData.size);
+        this.outputPosition = position + RotatePositionAroundCenter(buildingData.outputPosition, rotation, buildingData.size);
 
         inputProductionIds = new List<string>();
         outputProductionIds = new List<string>();
+    }
+    
+    /// <summary>
+    /// 건물 크기를 고려하여 중심을 기준으로 위치를 회전합니다.
+    /// </summary>
+    private Vector2Int RotatePositionAroundCenter(Vector2Int pos, int rotation, Vector2Int buildingSize)
+    {
+        rotation = rotation % 4;
+        if (rotation == 0)
+            return pos;
+        
+        // 건물 중심 계산
+        float centerX = (buildingSize.x - 1) / 2f;
+        float centerY = (buildingSize.y - 1) / 2f;
+        
+        // 중심 기준으로 변환
+        float relX = pos.x - centerX;
+        float relY = pos.y - centerY;
+        
+        // 회전 적용
+        float rotatedX, rotatedY;
+        switch (rotation)
+        {
+            case 1: // 90도 시계방향: (x, y) -> (-y, x)
+                rotatedX = -relY;
+                rotatedY = relX;
+                break;
+            case 2: // 180도: (x, y) -> (-x, -y)
+                rotatedX = -relX;
+                rotatedY = -relY;
+                break;
+            case 3: // 270도 시계방향: (x, y) -> (y, -x)
+                rotatedX = relY;
+                rotatedY = -relX;
+                break;
+            default:
+                rotatedX = relX;
+                rotatedY = relY;
+                break;
+        }
+        
+        // 다시 절대 좌표로 변환
+        return new Vector2Int(
+            Mathf.RoundToInt(rotatedX + centerX),
+            Mathf.RoundToInt(rotatedY + centerY)
+        );
     }
 }

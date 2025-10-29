@@ -23,6 +23,6 @@ MonoBehaviour:
   baseCost: 100
   baseMaintenanceCost: 10
   allowedResourceTypes: 
-  inputPosition: {x: 0, y: 0}
-  outputPosition: {x: 1, y: 0}
+  inputPosition: {x: -1, y: 0}
+  outputPosition: {x: 0, y: 0}
   size: {x: 1, y: 1}

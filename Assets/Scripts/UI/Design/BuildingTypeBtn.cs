@@ -5,7 +5,7 @@ public class BuildingTypeBtn : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _text = null;
     private DesignUiManager _designUiManager = null;
-    private BuildingType _buildingType = BuildingType.Load;
+    private BuildingType _buildingType = BuildingType.Distribution;
     public void Initialize(DesignUiManager argDesignUiManager, BuildingType buildingType)
     {
         _designUiManager = argDesignUiManager;

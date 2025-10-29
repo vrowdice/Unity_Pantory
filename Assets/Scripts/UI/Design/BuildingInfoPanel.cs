@@ -10,6 +10,7 @@ public class BuildingInfoPanel : MonoBehaviour
     [SerializeField] private GameObject _productionExplainTextPrefab;
 
     [Header("UI References")]
+    [SerializeField] private GameObject _changeProductionBtn;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _typeText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -85,6 +86,7 @@ public class BuildingInfoPanel : MonoBehaviour
             }
             else
             {
+                _changeProductionBtn.SetActive(false);
                 _resourceTypesText.text = "Allowed Resources: None";
             }
         }

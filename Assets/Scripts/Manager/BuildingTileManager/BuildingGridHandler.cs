@@ -177,8 +177,16 @@ public class BuildingGridHandler
             buildingObj.transform.SetParent(_parentTransform);
         }
         
-        Vector3 worldPos = GridToWorldPosition(gridPos, buildingData.size);
+        // 회전 정보 가져오기
+        int rotation = buildingState != null ? buildingState.rotation : 0;
+        Vector2Int displaySize = GetRotatedSize(buildingData.size, rotation);
+        
+        Vector3 worldPos = GridToWorldPosition(gridPos, displaySize);
         buildingObj.transform.position = worldPos;
+        
+        // 회전 적용
+        float angle = rotation * 90f;
+        buildingObj.transform.rotation = Quaternion.Euler(0, 0, -angle);
 
         // SpriteRenderer가 없으면 추가
         SpriteRenderer renderer = buildingObj.GetComponent<SpriteRenderer>();
@@ -188,15 +196,15 @@ public class BuildingGridHandler
         renderer.sprite = buildingData.buildingSprite;
         renderer.sortingOrder = 0; // 타일 위에 표시
 
-        // 건물 크기를 타일 크기에 맞춤 (1타일 = 1유닛)
+        // 건물 크기를 타일 크기에 맞춤 (1타일 = 1유닛, 회전 전 원본 크기 사용)
         Vector3 scale = _buildingTileManager.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
         buildingObj.transform.localScale = scale;
 
-        // BoxCollider2D 추가 (클릭 감지용)
+        // BoxCollider2D 추가 (클릭 감지용, 회전된 크기 사용)
         BoxCollider2D collider = buildingObj.GetComponent<BoxCollider2D>();
         if (collider == null)
             collider = buildingObj.AddComponent<BoxCollider2D>();
-        collider.size = new Vector2(buildingData.size.x, buildingData.size.y);
+        collider.size = new Vector2(displaySize.x, displaySize.y);
 
         // BuildingObject 컴포넌트 추가 및 초기화
         BuildingObject buildingComponent = buildingObj.GetComponent<BuildingObject>();
@@ -211,6 +219,20 @@ public class BuildingGridHandler
 
         _placedBuildings[gridPos] = buildingObj;
         return buildingObj;
+    }
+    
+    /// <summary>
+    /// 회전에 따라 건물 크기를 계산합니다.
+    /// </summary>
+    private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
+    {
+        rotation = rotation % 4;
+        // 90도 또는 270도 회전 시 가로/세로 바뀜
+        if (rotation == 1 || rotation == 3)
+        {
+            return new Vector2Int(size.y, size.x);
+        }
+        return size;
     }
 
     /// <summary>
@@ -250,9 +272,12 @@ public class BuildingGridHandler
                 BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
+                    // 회전된 크기 계산
+                    Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
+                    
                     // 건물이 차지하는 영역 확인
-                    if (gridPos.x >= buildingPos.x && gridPos.x < buildingPos.x + buildingData.size.x &&
-                        gridPos.y >= buildingPos.y && gridPos.y < buildingPos.y + buildingData.size.y)
+                    if (gridPos.x >= buildingPos.x && gridPos.x < buildingPos.x + rotatedSize.x &&
+                        gridPos.y >= buildingPos.y && gridPos.y < buildingPos.y + rotatedSize.y)
                     {
                         return kvp.Value;
                     }

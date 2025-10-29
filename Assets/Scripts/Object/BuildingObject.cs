@@ -113,14 +113,18 @@ public class BuildingObject : MonoBehaviour
     /// <summary>
     /// 프리뷰 마커의 위치를 업데이트합니다 (그리드 핸들러 필요).
     /// </summary>
-    public void UpdatePreviewMarkers(Vector2Int buildingGridPos, BuildingGridHandler gridHandler)
+    public void UpdatePreviewMarkers(Vector2Int buildingGridPos, BuildingGridHandler gridHandler, int rotation = 0)
     {
         if (_buildingData == null || gridHandler == null)
             return;
         
+        // 회전된 Input/Output 상대 위치 계산 (건물 크기 고려)
+        Vector2Int rotatedInputPos = RotatePositionAroundCenter(_buildingData.inputPosition, rotation, _buildingData.size);
+        Vector2Int rotatedOutputPos = RotatePositionAroundCenter(_buildingData.outputPosition, rotation, _buildingData.size);
+        
         // Input/Output 절대 좌표 계산
-        Vector2Int inputPos = buildingGridPos + _buildingData.inputPosition;
-        Vector2Int outputPos = buildingGridPos + _buildingData.outputPosition;
+        Vector2Int inputPos = buildingGridPos + rotatedInputPos;
+        Vector2Int outputPos = buildingGridPos + rotatedOutputPos;
         
         // Input 마커 위치 업데이트
         if (_inputMarker != null && _buildingData.inputPosition != Vector2Int.zero)
@@ -135,6 +139,52 @@ public class BuildingObject : MonoBehaviour
             Vector3 outputWorldPos = gridHandler.GridToWorldPosition(outputPos, Vector2Int.one);
             _outputMarker.transform.position = new Vector3(outputWorldPos.x, outputWorldPos.y, -0.5f);
         }
+    }
+    
+    /// <summary>
+    /// 건물 크기를 고려하여 중심을 기준으로 위치를 회전합니다.
+    /// </summary>
+    private Vector2Int RotatePositionAroundCenter(Vector2Int pos, int rotation, Vector2Int buildingSize)
+    {
+        rotation = rotation % 4;
+        if (rotation == 0)
+            return pos;
+        
+        // 건물 중심 계산
+        float centerX = (buildingSize.x - 1) / 2f;
+        float centerY = (buildingSize.y - 1) / 2f;
+        
+        // 중심 기준으로 변환
+        float relX = pos.x - centerX;
+        float relY = pos.y - centerY;
+        
+        // 회전 적용
+        float rotatedX, rotatedY;
+        switch (rotation)
+        {
+            case 1: // 90도 시계방향: (x, y) -> (-y, x)
+                rotatedX = -relY;
+                rotatedY = relX;
+                break;
+            case 2: // 180도: (x, y) -> (-x, -y)
+                rotatedX = -relX;
+                rotatedY = -relY;
+                break;
+            case 3: // 270도 시계방향: (x, y) -> (y, -x)
+                rotatedX = relY;
+                rotatedY = -relX;
+                break;
+            default:
+                rotatedX = relX;
+                rotatedY = relY;
+                break;
+        }
+        
+        // 다시 절대 좌표로 변환
+        return new Vector2Int(
+            Mathf.RoundToInt(rotatedX + centerX),
+            Mathf.RoundToInt(rotatedY + centerY)
+        );
     }
     
     /// <summary>

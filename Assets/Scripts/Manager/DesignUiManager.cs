@@ -46,7 +46,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         });
 
         // 기본 타입 선택
-        SelectBuildingType(BuildingType.Load);
+        SelectBuildingType(BuildingType.Distribution);
         
         // InputField 이벤트 등록
         if (_threadTitleInputField != null)
@@ -275,5 +275,37 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         {
             _buildingInfoPanel.gameObject.SetActive(false);
         }
+    }
+
+    // ================== 건물 회전 제어 ==================
+    
+    /// <summary>
+    /// 건물을 왼쪽으로 회전합니다 (반시계방향, -90도).
+    /// 배치 모드가 활성화되어 있을 때만 작동합니다.
+    /// </summary>
+    public void RotateBuildingLeft()
+    {
+        if (_buildingTileManager == null)
+        {
+            Debug.LogWarning("[DesignUiManager] BuildingTileManager is null. Cannot rotate building.");
+            return;
+        }
+        
+        _buildingTileManager.RotateBuildingLeft();
+    }
+
+    /// <summary>
+    /// 건물을 오른쪽으로 회전합니다 (시계방향, +90도).
+    /// 배치 모드가 활성화되어 있을 때만 작동합니다.
+    /// </summary>
+    public void RotateBuildingRight()
+    {
+        if (_buildingTileManager == null)
+        {
+            Debug.LogWarning("[DesignUiManager] BuildingTileManager is null. Cannot rotate building.");
+            return;
+        }
+        
+        _buildingTileManager.RotateBuildingRight();
     }
 }

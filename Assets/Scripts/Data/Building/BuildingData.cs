@@ -9,7 +9,7 @@ public class BuildingData : ScriptableObject
     public string displayName;
     public BuildingType buildingType;
     public Sprite icon;
-    public Sprite buildingSprite;  // 타일에 표시될 건물 스프라이트
+    public Sprite buildingSprite;
     [TextArea(3, 10)]
     public string description;
 

@@ -1564,6 +1564,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _productionExplainTextPrefab: {fileID: 7833037191550852066, guid: feee0f8630b6bc34fbd9533ace58a736, type: 3}
+  _changeProductionBtn: {fileID: 1910371566}
   _nameText: {fileID: 2046678541}
   _typeText: {fileID: 227419888}
   _descriptionText: {fileID: 1613137231}
@@ -2201,7 +2202,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 613560976}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 887731462}
+        m_TargetAssemblyTypeName: DesignUiManager, Assembly-CSharp
+        m_MethodName: RotateBuildingLeft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &613560976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4546,7 +4559,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1564695739}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 887731462}
+        m_TargetAssemblyTypeName: DesignUiManager, Assembly-CSharp
+        m_MethodName: RotateBuildingRight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1564695739
 MonoBehaviour:
   m_ObjectHideFlags: 0

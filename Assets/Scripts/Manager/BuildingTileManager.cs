@@ -157,6 +157,28 @@ public class BuildingTileManager : MonoBehaviour
         _placementHandler?.CancelPlacement();
     }
 
+    /// <summary>
+    /// 건물을 왼쪽으로 회전합니다 (반시계방향).
+    /// </summary>
+    public void RotateBuildingLeft()
+    {
+        if (_placementHandler != null && _placementHandler.IsActive)
+        {
+            _placementHandler.RotateLeft();
+        }
+    }
+
+    /// <summary>
+    /// 건물을 오른쪽으로 회전합니다 (시계방향).
+    /// </summary>
+    public void RotateBuildingRight()
+    {
+        if (_placementHandler != null && _placementHandler.IsActive)
+        {
+            _placementHandler.RotateRight();
+        }
+    }
+
     // ================== 건물 제거 모드 ==================
 
     /// <summary>
@@ -325,10 +347,27 @@ public class BuildingTileManager : MonoBehaviour
                 {
                     // BuildingObject가 마커를 자동으로 생성하도록 buildingState 전달
                     GameObject buildingObj = _gridGenHandler.CreateBuildingObject(buildingState.position, buildingData, buildingState);
-                    _gridGenHandler.MarkTilesAsOccupied(buildingState.position, buildingData.size);
+                    
+                    // 회전된 크기로 타일 점유 처리
+                    Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
+                    _gridGenHandler.MarkTilesAsOccupied(buildingState.position, rotatedSize);
                 }
             }
         }
+    }
+    
+    /// <summary>
+    /// 회전에 따라 건물 크기를 계산합니다.
+    /// </summary>
+    private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
+    {
+        rotation = rotation % 4;
+        // 90도 또는 270도 회전 시 가로/세로 바뀜
+        if (rotation == 1 || rotation == 3)
+        {
+            return new Vector2Int(size.y, size.x);
+        }
+        return size;
     }
 
     // ================== 유틸리티 ====================
@@ -407,8 +446,11 @@ public class BuildingTileManager : MonoBehaviour
                     BuildingData data = _dataManager.GetBuildingData(state.buildingId);
                     if (data != null)
                     {
-                        if (gridPos.x >= state.position.x && gridPos.x < state.position.x + data.size.x &&
-                            gridPos.y >= state.position.y && gridPos.y < state.position.y + data.size.y)
+                        // 회전된 크기 고려
+                        Vector2Int rotatedSize = GetRotatedSize(data.size, state.rotation);
+                        
+                        if (gridPos.x >= state.position.x && gridPos.x < state.position.x + rotatedSize.x &&
+                            gridPos.y >= state.position.y && gridPos.y < state.position.y + rotatedSize.y)
                         {
                             clickedState = state;
                             break;
@@ -428,3 +470,4 @@ public class BuildingTileManager : MonoBehaviour
         }
     }
 }
+
