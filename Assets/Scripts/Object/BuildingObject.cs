@@ -9,6 +9,8 @@ public class BuildingObject : MonoBehaviour
     // ==================== Properties ====================
     [SerializeField] private BuildingData _buildingData;
     [SerializeField] private BuildingState _buildingState;
+    [SerializeField] private Transform _inputProductionIconContentTransform;
+    [SerializeField] private Transform _outputProductionIconContentTransform;
     
     private GameObject _inputMarker;
     private GameObject _outputMarker;

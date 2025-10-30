@@ -379,6 +379,17 @@ public class BuildingTileManager : MonoBehaviour
     public GameObject GetOutputMarkerPrefab() => _outputMarkerPrefab;
 
     /// <summary>
+    /// 현재 스레드의 유효한 생산 건물 수(간이 산출량)를 계산합니다.
+    /// </summary>
+    public int CalculateCurrentThreadOutputs()
+    {
+        if (string.IsNullOrEmpty(_currentThreadId) || _calculateHandler == null)
+            return 0;
+
+        return _calculateHandler.CalculateThreadOutputs(_currentThreadId);
+    }
+
+    /// <summary>
     /// 스프라이트를 타일 크기에 맞게 스케일을 계산합니다.
     /// </summary>
     public Vector3 CalculateSpriteScale(Sprite sprite, Vector2Int targetSize)
