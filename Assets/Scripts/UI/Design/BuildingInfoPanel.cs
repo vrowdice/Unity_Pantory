@@ -58,6 +58,9 @@ public class BuildingInfoPanel : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
+        // 생산 정보 초기화 (UpdateInputProductionImages와 UpdateOutputProductionImages에서 각각 처리)
+        GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
+
         if (_nameText != null)
             _nameText.text = _currentBuildingData.displayName;
 
@@ -107,8 +110,9 @@ public class BuildingInfoPanel : MonoBehaviour
 
     private void UpdateInputProductionImages()
     {
+        // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_inputGridContentTransform);
-
+        
         if (_currentBuildingState.inputProductionIds == null)
         {
             return;
@@ -118,33 +122,41 @@ public class BuildingInfoPanel : MonoBehaviour
         {
             ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(productionId);
 
-            Instantiate(_designUiManager.ProductionInfoImage, _inputGridContentTransform).
-            GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry);
+            if (resourceEntry != null)
+            {
+                Instantiate(_designUiManager.ProductionInfoImage, _inputGridContentTransform).
+                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry);
 
-            Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
-            GetComponent<TextMeshProUGUI>().text =
-             $"Input: {resourceEntry.resourceData.displayName}\nPrice: {resourceEntry.resourceState.currentValue}";
+                Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
+                GetComponent<TextMeshProUGUI>().text =
+                 $"Input: {resourceEntry.resourceData.displayName}\nCount: {resourceEntry.resourceState.count}\nPrice: {resourceEntry.resourceState.currentValue}";
+            }
         }
     }
 
     private void UpdateOutputProductionImages()
     {
+        // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_outputGridContentTransform);
-        GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
-
-        if (_currentBuildingState.inputProductionIds == null)
+        
+        if (_currentBuildingState.outputProductionIds == null)
         {
             return;
         }
-    
+
         foreach (var productionId in _currentBuildingState.outputProductionIds)
         {
-            Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
-            GetComponent<ProductionInfoImage>().OnInitialize(_gameDataManager.GetResourceEntry(productionId));
+            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(productionId);
+            
+            if (resourceEntry != null)
+            {
+                Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
+                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry);
 
-            Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
-            GetComponent<TextMeshProUGUI>().text =
-             $"Output: {_gameDataManager.GetResourceEntry(productionId).resourceData.displayName}\nPrice: {_gameDataManager.GetResourceEntry(productionId).resourceState.currentValue}";
+                Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
+                GetComponent<TextMeshProUGUI>().text =
+                 $"Output: {resourceEntry.resourceData.displayName}\nCount: {resourceEntry.resourceState.count}\nPrice: {resourceEntry.resourceState.currentValue}";
+            }
         }
     }
 
@@ -187,8 +199,15 @@ public class BuildingInfoPanel : MonoBehaviour
             // 선택된 출력 자원의 제조 요구사항을 확인하고 필요한 입력 자원들을 자동으로 추가
             AddRequiredInputResources(selectedResource.resourceData);
 
+            // 생산 정보 텍스트 초기화
+            GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
+            
+            // UI 업데이트
             UpdateOutputProductionImages();
             UpdateInputProductionImages();
+            
+            // 실제 게임 화면의 건물 오브젝트도 업데이트
+            RefreshBuildingObjectIcons();
         }
     }
 
@@ -215,6 +234,28 @@ public class BuildingInfoPanel : MonoBehaviour
                 _currentBuildingState.inputProductionIds.Add(requirement.resource.id);
                 Debug.Log($"[BuildingInfoPanel] Required input resource added: {requirement.resource.displayName} (count: {requirement.count})");
             }
+        }
+    }
+
+    /// <summary>
+    /// 실제 게임 화면의 건물 오브젝트 아이콘을 갱신합니다.
+    /// </summary>
+    private void RefreshBuildingObjectIcons()
+    {
+        if (_currentBuildingState == null)
+            return;
+        
+        // BuildingTileManager 찾기
+        BuildingTileManager buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
+        if (buildingTileManager != null)
+        {
+            // 건물 새로고침 (모든 건물 오브젝트를 다시 생성)
+            buildingTileManager.RefreshBuildings();
+            Debug.Log("[BuildingInfoPanel] Building object icons refreshed.");
+        }
+        else
+        {
+            Debug.LogWarning("[BuildingInfoPanel] BuildingTileManager not found.");
         }
     }
 

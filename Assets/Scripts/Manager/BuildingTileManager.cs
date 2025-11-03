@@ -33,6 +33,9 @@ public class BuildingTileManager : MonoBehaviour
     private BuildingCalculateHandler _calculateHandler;
     private VisualManager _visualManager;
     
+    // 공용 World Space Canvas
+    private GameObject _sharedProductionIconCanvas;
+    
     // ==================== Public 프로퍼티 ====================
     public GameDataManager DataManager => _dataManager;
     public MainCameraController MainCameraController => _mainCameraController;
@@ -40,6 +43,7 @@ public class BuildingTileManager : MonoBehaviour
     public BuildingPlacementHandler PlacementHandler => _placementHandler;
     public BuildingRemovalHandler RemovalHandler => _removalHandler;
     public DesignUiManager DesignUiManager => _designUiManager;
+    public Transform SharedProductionIconCanvas => _sharedProductionIconCanvas?.transform;
     
     public string CurrentThreadId => _currentThreadId;
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
@@ -58,6 +62,7 @@ public class BuildingTileManager : MonoBehaviour
         CreateGrid(_gridWidth, _gridHeight);
         SetPositionCenter();
         SetCameraCollider();
+        CreateSharedProductionIconCanvas();
     }
 
     void Update()
@@ -241,6 +246,41 @@ public class BuildingTileManager : MonoBehaviour
         _mainCamera = _mainCameraController.Camera;
         _dataManager = GameDataManager.Instance;
         _visualManager = VisualManager.Instance;
+    }
+
+    /// <summary>
+    /// 모든 건물이 공유할 World Space Canvas를 생성합니다.
+    /// </summary>
+    private void CreateSharedProductionIconCanvas()
+    {
+        _sharedProductionIconCanvas = new GameObject("SharedProductionIconCanvas");
+        _sharedProductionIconCanvas.transform.SetParent(transform);
+        _sharedProductionIconCanvas.transform.localPosition = Vector3.zero;
+        _sharedProductionIconCanvas.transform.localRotation = Quaternion.identity;
+        _sharedProductionIconCanvas.transform.localScale = Vector3.one;
+
+        // Canvas 설정 (World Space)
+        Canvas canvas = _sharedProductionIconCanvas.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        canvas.sortingOrder = 1; // 건물 위에 표시
+
+        // CanvasScaler 추가
+        UnityEngine.UI.CanvasScaler scaler = _sharedProductionIconCanvas.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 100;
+
+        // CanvasGroup 추가 - 클릭 무시 설정
+        UnityEngine.CanvasGroup canvasGroup = _sharedProductionIconCanvas.AddComponent<UnityEngine.CanvasGroup>();
+        canvasGroup.interactable = false;      // 상호작용 불가
+        canvasGroup.blocksRaycasts = false;    // 레이캐스트 차단 안 함
+
+        // RectTransform 설정
+        RectTransform rectTransform = _sharedProductionIconCanvas.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            rectTransform.sizeDelta = new Vector2(1000, 1000); // 큰 크기로 설정
+        }
+
+        Debug.Log("[BuildingTileManager] Shared Production Icon Canvas created (raycast ignored).");
     }
 
     /// <summary>

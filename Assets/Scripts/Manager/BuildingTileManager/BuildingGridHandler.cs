@@ -215,6 +215,10 @@ public class BuildingGridHandler
         if (buildingState != null)
         {
             buildingComponent.Initialize(buildingData, buildingState, _inputMarkerPrefab, _outputMarkerPrefab, this);
+            
+            // 입출력 자원 아이콘 표시 (공용 Canvas 전달)
+            Transform sharedCanvas = _buildingTileManager.SharedProductionIconCanvas;
+            buildingComponent.SetupProductionIcons(_dataManager, sharedCanvas);
         }
 
         _placedBuildings[gridPos] = buildingObj;

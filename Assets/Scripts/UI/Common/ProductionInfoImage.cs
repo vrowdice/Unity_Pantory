@@ -11,7 +11,7 @@ public class ProductionInfoImage : MonoBehaviour
     public void OnInitialize(ResourceEntry resourceEntry)
     {
         _productionImage.sprite = resourceEntry.resourceData.icon;
-        _productionText.text = resourceEntry.resourceData.description;
+        _productionText.text = resourceEntry.resourceData.displayName;
         _productionValueText.text = resourceEntry.resourceState.count.ToString();
     }
 }

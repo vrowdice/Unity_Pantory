@@ -17,7 +17,7 @@ public class SelectResourceBtn : MonoBehaviour
         _resourceEntry = resourceEntry;
 
         _resourceIconImage.sprite = _resourceEntry.resourceData.icon;
-        _resourceNameText.text = _resourceEntry.resourceData.name;
+        _resourceNameText.text = _resourceEntry.resourceData.displayName;
         _resourceCountText.text = _resourceEntry.resourceState.count.ToString();
     }
 

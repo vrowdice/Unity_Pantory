@@ -147,3 +147,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ce486a66e6da394eae6636021c91a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _productionIconContentOffset: 0.2

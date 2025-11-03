@@ -13,12 +13,18 @@ public class GameManager : MonoBehaviour
 
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
-    public GameObject ProductionInfoImage => _productionInfoImage;
+    public GameObject ProductionInfoImage => _productionInfoImagePrefab;
+    public GameObject HorizontalSortContentPrefab => _horizontalSortContentPrefab;
+    public float ProductionIconScale => _productionIconScale;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _warningPanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
-    [SerializeField] private GameObject _productionInfoImage;
+    [SerializeField] private GameObject _productionInfoImagePrefab;
+    [SerializeField] private GameObject _horizontalSortContentPrefab;
+    
+    [Header("Production Icon Settings")]
+    [SerializeField] private float _productionIconScale = 1.0f;
 
     void Awake()
     {
@@ -209,5 +215,154 @@ public class GameManager : MonoBehaviour
         }
 
         return panelComponent;
+    }
+
+    // ================== Production Icon Helper Methods ==================
+
+    /// <summary>
+    /// World Space Canvas로 설정된 생산 아이콘 컨테이너를 생성합니다.
+    /// 이 컨테이너는 자식으로 추가된 ProductionInfoImage를 자동으로 정렬합니다.
+    /// </summary>
+    /// <param name="parent">부모 Transform</param>
+    /// <param name="name">컨테이너 이름</param>
+    /// <param name="localPosition">로컬 위치</param>
+    /// <param name="containerScale">컨테이너 스케일 (기본 0.01f, -1이면 _productionIconScale 사용)</param>
+    /// <returns>생성된 컨테이너 GameObject</returns>
+    public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 localPosition, float containerScale = 0.01f)
+    {
+        if (_horizontalSortContentPrefab == null)
+        {
+            Debug.LogWarning("[GameManager] HorizontalSortContentPrefab is not assigned.");
+            return null;
+        }
+
+        GameObject container = Instantiate(_horizontalSortContentPrefab, parent);
+        container.name = name;
+
+        // Canvas 설정 (World Space)
+        Canvas canvas = container.GetComponent<Canvas>();
+        if (canvas == null)
+            canvas = container.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+
+        // CanvasScaler 추가
+        UnityEngine.UI.CanvasScaler scaler = container.GetComponent<UnityEngine.UI.CanvasScaler>();
+        if (scaler == null)
+            scaler = container.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 100;
+
+        // RectTransform 설정
+        RectTransform rectTransform = container.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            rectTransform.sizeDelta = new Vector2(200, 50);
+        }
+
+        // 위치 및 스케일 설정
+        // containerScale이 -1이면 _productionIconScale 사용 (Inspector 설정)
+        float finalScale = containerScale < 0 ? _productionIconScale : containerScale;
+        
+        container.transform.localPosition = localPosition;
+        container.transform.localRotation = Quaternion.identity;
+        container.transform.localScale = Vector3.one * finalScale;
+
+        return container;
+    }
+
+    /// <summary>
+    /// 생산 아이콘 컨테이너를 생성합니다 (Canvas 없이).
+    /// 공용 World Space Canvas 아래에서 사용하기 위한 메서드입니다.
+    /// </summary>
+    /// <param name="parent">부모 Transform (공용 Canvas)</param>
+    /// <param name="name">컨테이너 이름</param>
+    /// <param name="worldPosition">월드 위치</param>
+    /// <param name="containerScale">컨테이너 스케일 (기본 0.01f)</param>
+    /// <returns>생성된 컨테이너 GameObject</returns>
+    public GameObject CreateProductionIconContainerWithoutCanvas(Transform parent, string name, Vector3 worldPosition, float containerScale = 0.01f)
+    {
+        if (_horizontalSortContentPrefab == null)
+        {
+            Debug.LogWarning("[GameManager] HorizontalSortContentPrefab is not assigned.");
+            return null;
+        }
+
+        GameObject container = Instantiate(_horizontalSortContentPrefab, parent);
+        container.name = name;
+
+        // RectTransform 설정
+        RectTransform rectTransform = container.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            rectTransform.sizeDelta = new Vector2(200, 50);
+        }
+
+        // 위치 및 스케일 설정 (World Position 사용)
+        container.transform.position = worldPosition;
+        container.transform.rotation = Quaternion.identity;
+        container.transform.localScale = Vector3.one * containerScale;
+
+        return container;
+    }
+
+    /// <summary>
+    /// 생산 아이콘을 생성하고 초기화합니다.
+    /// HorizontalSortContentPrefab에 넣으면 자동으로 정렬됩니다.
+    /// </summary>
+    /// <param name="parent">부모 Transform (보통 HorizontalSortContent)</param>
+    /// <param name="resourceEntry">자원 정보</param>
+    /// <returns>생성된 아이콘 GameObject</returns>
+    public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry)
+    {
+        if (_productionInfoImagePrefab == null)
+        {
+            Debug.LogWarning("[GameManager] ProductionInfoImagePrefab is not assigned.");
+            return null;
+        }
+
+        if (resourceEntry == null)
+        {
+            Debug.LogWarning("[GameManager] ResourceEntry is null.");
+            return null;
+        }
+
+        // 프리팹 생성
+        GameObject iconObj = Instantiate(_productionInfoImagePrefab, parent);
+
+        // 아이콘 크기 조정 (자동 정렬에 영향 없음)
+        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
+        if (iconRect != null)
+        {
+            iconRect.localScale = Vector3.one * _productionIconScale;
+        }
+
+        // 아이콘 초기화
+        var iconComponent = iconObj.GetComponent<ProductionInfoImage>();
+        if (iconComponent != null)
+        {
+            iconComponent.OnInitialize(resourceEntry);
+        }
+
+        return iconObj;
+    }
+
+    /// <summary>
+    /// 여러 생산 아이콘을 생성합니다.
+    /// </summary>
+    /// <param name="parent">부모 Transform</param>
+    /// <param name="productionIds">생산 ID 목록</param>
+    /// <param name="dataManager">데이터 매니저</param>
+    public void CreateProductionIcons(Transform parent, List<string> productionIds, GameDataManager dataManager)
+    {
+        if (productionIds == null || dataManager == null)
+            return;
+
+        foreach (var productionId in productionIds)
+        {
+            ResourceEntry resourceEntry = dataManager.GetResourceEntry(productionId);
+            if (resourceEntry != null)
+            {
+                CreateProductionIcon(parent, resourceEntry);
+            }
+        }
     }
 }

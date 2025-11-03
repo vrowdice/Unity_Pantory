@@ -7,13 +7,15 @@ using UnityEngine;
 public class BuildingObject : MonoBehaviour
 {
     // ==================== Properties ====================
-    [SerializeField] private BuildingData _buildingData;
-    [SerializeField] private BuildingState _buildingState;
-    [SerializeField] private Transform _inputProductionIconContentTransform;
-    [SerializeField] private Transform _outputProductionIconContentTransform;
-    
+    [SerializeField] private float _productionIconContentOffset;
+
+    private BuildingData _buildingData;
+    private BuildingState _buildingState;
+
     private GameObject _inputMarker;
     private GameObject _outputMarker;
+    private GameObject _inputProductionContainer;
+    private GameObject _outputProductionContainer;
     
     // ==================== Public Properties ====================
     public BuildingData BuildingData => _buildingData;
@@ -201,10 +203,145 @@ public class BuildingObject : MonoBehaviour
             _outputMarker.SetActive(active);
     }
     
+    // ==================== Production Icons ====================
+    
+    /// <summary>
+    /// 건물 위에 입출력 자원 아이콘을 표시합니다.
+    /// </summary>
+    /// <param name="dataManager">게임 데이터 매니저</param>
+    /// <param name="sharedCanvas">공용 World Space Canvas (성능 최적화)</param>
+    public void SetupProductionIcons(GameDataManager dataManager, Transform sharedCanvas = null)
+    {
+        if (_buildingState == null || dataManager == null)
+            return;
+        
+        // 기존 컨테이너 제거
+        if (_inputProductionContainer != null)
+        {
+            Destroy(_inputProductionContainer);
+            _inputProductionContainer = null;
+        }
+        
+        if (_outputProductionContainer != null)
+        {
+            Destroy(_outputProductionContainer);
+            _outputProductionContainer = null;
+        }
+        
+        // GameManager 확인
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("[BuildingObject] GameManager.Instance is null.");
+            return;
+        }
+        
+        // 공용 Canvas 사용 여부 결정
+        bool useSharedCanvas = sharedCanvas != null;
+        
+        // 건물 크기 계산 (회전 고려)
+        Vector2Int rotatedSize = GetRotatedSize(_buildingData.size, _buildingState.rotation);
+        float buildingHeight = rotatedSize.y;
+        
+        // Input 자원 표시 (건물 중간 위)
+        if (_buildingState.inputProductionIds != null && _buildingState.inputProductionIds.Count > 0)
+        {
+            // 위치 계산
+            float yOffset = buildingHeight * _productionIconContentOffset;
+            
+            if (useSharedCanvas)
+            {
+                // 공용 Canvas 사용 (성능 최적화)
+                Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
+                _inputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
+                    sharedCanvas,
+                    $"InputIcons_{gameObject.name}",
+                    worldPosition
+                );
+            }
+            else
+            {
+                // 개별 Canvas 사용 (Fallback)
+                Vector3 localPosition = new Vector3(0, yOffset, -1);
+                _inputProductionContainer = GameManager.Instance.CreateProductionIconContainer(
+                    transform,
+                    "InputProductionContainer",
+                    localPosition
+                );
+            }
+            
+            if (_inputProductionContainer != null)
+            {
+                // 아이콘들 생성 (GameManager 헬퍼 사용)
+                GameManager.Instance.CreateProductionIcons(
+                    _inputProductionContainer.transform, 
+                    _buildingState.inputProductionIds, 
+                    dataManager
+                );
+            }
+        }
+        
+        // Output 자원 표시 (건물 중간 아래)
+        if (_buildingState.outputProductionIds != null && _buildingState.outputProductionIds.Count > 0)
+        {
+            // 위치 계산
+            float yOffset = -buildingHeight * _productionIconContentOffset;
+            
+            if (useSharedCanvas)
+            {
+                // 공용 Canvas 사용 (성능 최적화)
+                Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
+                _outputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
+                    sharedCanvas,
+                    $"OutputIcons_{gameObject.name}",
+                    worldPosition
+                );
+            }
+            else
+            {
+                // 개별 Canvas 사용 (Fallback)
+                Vector3 localPosition = new Vector3(0, yOffset, -1);
+                _outputProductionContainer = GameManager.Instance.CreateProductionIconContainer(
+                    transform,
+                    "OutputProductionContainer",
+                    localPosition
+                );
+            }
+            
+            if (_outputProductionContainer != null)
+            {
+                // 아이콘들 생성 (GameManager 헬퍼 사용)
+                GameManager.Instance.CreateProductionIcons(
+                    _outputProductionContainer.transform, 
+                    _buildingState.outputProductionIds, 
+                    dataManager
+                );
+            }
+        }
+    }
+    
+    /// <summary>
+    /// 회전에 따라 건물 크기를 계산합니다.
+    /// </summary>
+    private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
+    {
+        rotation = rotation % 4;
+        // 90도 또는 270도 회전 시 가로/세로 바뀜
+        if (rotation == 1 || rotation == 3)
+        {
+            return new Vector2Int(size.y, size.x);
+        }
+        return size;
+    }
+    
     // ==================== Cleanup ====================
     
     void OnDestroy()
     {
-        // 마커들은 자식 오브젝트이므로 자동으로 삭제됨
+        // 마커들과 컨테이너들은 자식 오브젝트이므로 자동으로 삭제됨
+        if (_inputProductionContainer != null)
+            Destroy(_inputProductionContainer);
+        
+        if (_outputProductionContainer != null)
+            Destroy(_outputProductionContainer);
     }
 }
