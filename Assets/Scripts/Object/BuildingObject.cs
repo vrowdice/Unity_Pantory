@@ -44,12 +44,12 @@ public class BuildingObject : MonoBehaviour
         _buildingState = null;
         
         // 프리뷰용 마커 생성 (위치는 UpdatePreviewMarkers에서 설정)
-        if (buildingData.inputPosition != Vector2Int.zero && inputMarkerPrefab != null)
+        if (buildingData.InputPosition != Vector2Int.zero && inputMarkerPrefab != null)
         {
             _inputMarker = CreateMarkerAsChild("PreviewInput", inputMarkerPrefab);
         }
         
-        if (buildingData.outputPosition != Vector2Int.zero && outputMarkerPrefab != null)
+        if (buildingData.OutputPosition != Vector2Int.zero && outputMarkerPrefab != null)
         {
             _outputMarker = CreateMarkerAsChild("PreviewOutput", outputMarkerPrefab);
         }
@@ -66,14 +66,14 @@ public class BuildingObject : MonoBehaviour
             return;
         
         // Input 마커 생성
-        if (_buildingData.inputPosition != Vector2Int.zero && inputMarkerPrefab != null)
+        if (_buildingData.InputPosition != Vector2Int.zero && inputMarkerPrefab != null)
         {
             _inputMarker = CreateMarkerAsChild("Input", inputMarkerPrefab);
             UpdateMarkerPosition(_inputMarker, _buildingState.inputPosition, gridHandler);
         }
         
         // Output 마커 생성
-        if (_buildingData.outputPosition != Vector2Int.zero && outputMarkerPrefab != null)
+        if (_buildingData.OutputPosition != Vector2Int.zero && outputMarkerPrefab != null)
         {
             _outputMarker = CreateMarkerAsChild("Output", outputMarkerPrefab);
             UpdateMarkerPosition(_outputMarker, _buildingState.outputPosition, gridHandler);
@@ -123,22 +123,22 @@ public class BuildingObject : MonoBehaviour
             return;
         
         // 회전된 Input/Output 상대 위치 계산 (건물 크기 고려)
-        Vector2Int rotatedInputPos = RotatePositionAroundCenter(_buildingData.inputPosition, rotation, _buildingData.size);
-        Vector2Int rotatedOutputPos = RotatePositionAroundCenter(_buildingData.outputPosition, rotation, _buildingData.size);
+        Vector2Int rotatedInputPos = RotatePositionAroundCenter(_buildingData.InputPosition, rotation, _buildingData.size);
+        Vector2Int rotatedOutputPos = RotatePositionAroundCenter(_buildingData.OutputPosition, rotation, _buildingData.size);
         
         // Input/Output 절대 좌표 계산
         Vector2Int inputPos = buildingGridPos + rotatedInputPos;
         Vector2Int outputPos = buildingGridPos + rotatedOutputPos;
         
         // Input 마커 위치 업데이트
-        if (_inputMarker != null && _buildingData.inputPosition != Vector2Int.zero)
+        if (_inputMarker != null && _buildingData.InputPosition != Vector2Int.zero)
         {
             Vector3 inputWorldPos = gridHandler.GridToWorldPosition(inputPos, Vector2Int.one);
             _inputMarker.transform.position = new Vector3(inputWorldPos.x, inputWorldPos.y, -0.5f);
         }
         
         // Output 마커 위치 업데이트
-        if (_outputMarker != null && _buildingData.outputPosition != Vector2Int.zero)
+        if (_outputMarker != null && _buildingData.OutputPosition != Vector2Int.zero)
         {
             Vector3 outputWorldPos = gridHandler.GridToWorldPosition(outputPos, Vector2Int.one);
             _outputMarker.transform.position = new Vector3(outputWorldPos.x, outputWorldPos.y, -0.5f);

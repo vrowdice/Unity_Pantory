@@ -78,14 +78,15 @@ public class BuildingInfoPanel : MonoBehaviour
 
         if (_resourceTypesText != null)
         {
-            if (_currentBuildingData.allowedResourceTypes != null && _currentBuildingData.allowedResourceTypes.Count > 0)
+            if (_currentBuildingData.AllowedResourceTypes != null && _currentBuildingData.AllowedResourceTypes.Count > 0)
             {
                 string resourceTypes = "Allowed Resources:";
-                foreach (var resourceType in _currentBuildingData.allowedResourceTypes)
+                foreach (var resourceType in _currentBuildingData.AllowedResourceTypes)
                 {
                     resourceTypes += $" {resourceType}";
                 }
                 _resourceTypesText.text = resourceTypes;
+                _changeProductionBtn.SetActive(true);
             }
             else
             {
@@ -166,7 +167,7 @@ public class BuildingInfoPanel : MonoBehaviour
     /// </summary>
     public void ShowOutputResourceSelection()
     {
-        if (_currentBuildingData?.allowedResourceTypes == null || _currentBuildingData.allowedResourceTypes.Count == 0)
+        if (_currentBuildingData?.AllowedResourceTypes == null || _currentBuildingData.AllowedResourceTypes.Count == 0)
         {
             Debug.LogWarning("[BuildingInfoPanel] No allowed resource types for output selection.");
             return;
@@ -174,7 +175,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
         if (_designUiManager.GameManager != null)
         {
-            _designUiManager.GameManager.ShowSelectResourcePanel(_currentBuildingData.allowedResourceTypes, _onOutputResourceSelected);
+            _designUiManager.GameManager.ShowSelectResourcePanel(_currentBuildingData.AllowedResourceTypes, _onOutputResourceSelected);
         }
         else
         {

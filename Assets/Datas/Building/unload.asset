@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e16d872753dc0c4cb323b0bebf08c3d, type: 3}
+  m_Script: {fileID: 11500000, guid: 34c0bcc70e8f03e4eb1944a9d53bce9d, type: 3}
   m_Name: unload
   m_EditorClassIdentifier: 
   id: unload
@@ -22,7 +22,5 @@ MonoBehaviour:
     management.
   baseCost: 100
   baseMaintenanceCost: 10
-  allowedResourceTypes: 
-  inputPosition: {x: 0, y: 0}
-  outputPosition: {x: 1, y: 0}
   size: {x: 1, y: 1}
+  outputPosition: {x: 1, y: 0}

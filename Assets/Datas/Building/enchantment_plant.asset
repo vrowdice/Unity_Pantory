@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e16d872753dc0c4cb323b0bebf08c3d, type: 3}
+  m_Script: {fileID: 11500000, guid: 47c49591c909a0840b4cc246d006a6e5, type: 3}
   m_Name: enchantment_plant
   m_EditorClassIdentifier: 
   id: enchantment_plant
@@ -21,5 +21,10 @@ MonoBehaviour:
     tools and weapons with arcane properties, creating superior enchanted equipment.
   baseCost: 500
   baseMaintenanceCost: 25
-  allowedResourceTypes: 0200000003000000
   size: {x: 2, y: 2}
+  allowedResourceTypes: 0200000003000000
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 1
+  enchantableResourceTypes: 0200000003000000

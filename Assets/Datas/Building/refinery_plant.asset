@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e16d872753dc0c4cb323b0bebf08c3d, type: 3}
+  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
   m_Name: refinery_plant
   m_EditorClassIdentifier: 
   id: refinery_plant
@@ -21,5 +21,9 @@ MonoBehaviour:
     and metal into usable resources for crafting. Essential for any production line.
   baseCost: 150
   baseMaintenanceCost: 8
-  allowedResourceTypes: 0000000001000000
   size: {x: 2, y: 2}
+  allowedResourceTypes: 0000000001000000
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 1

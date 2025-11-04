@@ -31,8 +31,27 @@ public class BuildingState
         this.rotation = rotation;
         
         // 건물의 배치 위치 + 회전된 상대 위치 = 스레드 기준 절대 좌표
-        this.inputPosition = position + RotatePositionAroundCenter(buildingData.inputPosition, rotation, buildingData.size);
-        this.outputPosition = position + RotatePositionAroundCenter(buildingData.outputPosition, rotation, buildingData.size);
+        // InputPosition이 zero가 아니면 계산, zero면 건물 중심으로 설정
+        if (buildingData.InputPosition != Vector2Int.zero)
+        {
+            this.inputPosition = position + RotatePositionAroundCenter(buildingData.InputPosition, rotation, buildingData.size);
+        }
+        else
+        {
+            // InputPosition이 zero면 건물 중심으로 설정 (LoadStation 등)
+            this.inputPosition = position + new Vector2Int(buildingData.size.x / 2, buildingData.size.y / 2);
+        }
+        
+        // OutputPosition이 zero가 아니면 계산, zero면 건물 중심으로 설정
+        if (buildingData.OutputPosition != Vector2Int.zero)
+        {
+            this.outputPosition = position + RotatePositionAroundCenter(buildingData.OutputPosition, rotation, buildingData.size);
+        }
+        else
+        {
+            // OutputPosition이 zero면 건물 중심으로 설정 (UnloadStation 등)
+            this.outputPosition = position + new Vector2Int(buildingData.size.x / 2, buildingData.size.y / 2);
+        }
 
         inputProductionIds = new List<string>();
         outputProductionIds = new List<string>();

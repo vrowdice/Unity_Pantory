@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -427,6 +428,54 @@ public class BuildingTileManager : MonoBehaviour
             return 0;
 
         return _calculateHandler.CalculateThreadOutputs(_currentThreadId);
+    }
+
+    /// <summary>
+    /// Thread의 총 유지비를 계산합니다.
+    /// </summary>
+    public int CalculateTotalMaintenanceCost(string threadId)
+    {
+        if (_calculateHandler == null)
+            return 0;
+
+        return _calculateHandler.CalculateTotalMaintenanceCost(threadId);
+    }
+
+    /// <summary>
+    /// Thread의 입력 생산 자원 리스트를 수집합니다.
+    /// </summary>
+    public List<string> CollectInputProductionIds(string threadId)
+    {
+        if (_calculateHandler == null)
+            return new List<string>();
+
+        return _calculateHandler.CollectInputProductionIds(threadId);
+    }
+
+    /// <summary>
+    /// Thread의 출력 생산 자원 리스트를 수집합니다.
+    /// </summary>
+    public List<string> CollectOutputProductionIds(string threadId)
+    {
+        if (_calculateHandler == null)
+            return new List<string>();
+
+        return _calculateHandler.CollectOutputProductionIds(threadId);
+    }
+
+    /// <summary>
+    /// 생산 체인을 추적하여 하역소에서 시작하는 입력 자원과 상역소까지 연결된 최종 출력 자원을 계산합니다.
+    /// </summary>
+    public void CalculateProductionChain(string threadId, out List<string> inputResourceIds, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
+    {
+        inputResourceIds = new List<string>();
+        outputResourceIds = new List<string>();
+        outputResourceCounts = new Dictionary<string, int>();
+
+        if (_calculateHandler == null)
+            return;
+
+        _calculateHandler.CalculateProductionChain(threadId, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
     }
 
     /// <summary>

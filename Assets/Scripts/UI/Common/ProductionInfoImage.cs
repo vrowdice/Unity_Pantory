@@ -6,12 +6,12 @@ public class ProductionInfoImage : MonoBehaviour
 {
     [SerializeField] private Image _productionImage;
     [SerializeField] private TextMeshProUGUI _productionText;
-    [SerializeField] private TextMeshProUGUI _productionValueText;
+    [SerializeField] private TextMeshProUGUI _productionCountText;
 
     public void OnInitialize(ResourceEntry resourceEntry)
     {
         _productionImage.sprite = resourceEntry.resourceData.icon;
         _productionText.text = resourceEntry.resourceData.displayName;
-        _productionValueText.text = resourceEntry.resourceState.count.ToString();
+        _productionCountText.text = resourceEntry.resourceState.count.ToString();
     }
 }

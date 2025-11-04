@@ -14,6 +14,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private Image _deselectBuildingBtnImage = null;
     [SerializeField] private Image _removalModeBtnImage = null;
     [SerializeField] private BuildingInfoPanel _buildingInfoPanel = null;
+    [SerializeField] private SaveInfoPanel _saveInfoPanel = null;
 
     private GameManager _gameManager = null;
     private GameDataManager _dataManager = null;
@@ -56,11 +57,17 @@ public class DesignUiManager : MonoBehaviour, IUIManager
             // 기본값이 비어있으면 설정
             if (string.IsNullOrEmpty(_threadTitleInputField.text))
             {
-                _threadTitleInputField.text = "메인 라인";
+                _threadTitleInputField.text = "Main Line";
             }
             
             // 초기 Thread 생성
             OnThreadTitleChanged(_threadTitleInputField.text);
+        }
+
+        // SaveInfoPanel 초기화
+        if (_saveInfoPanel != null)
+        {
+            _saveInfoPanel.OnInitialize(_dataManager);
         }
     }
 
@@ -199,6 +206,46 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         {
             StartRemovalMode();
             Debug.Log("[DesignUiManager] Removal mode toggled ON");
+        }
+    }
+
+    public void ShowSaveBtnClick()
+    {
+        if (_buildingTileManager == null || _dataManager == null || _saveInfoPanel == null)
+        {
+            Debug.LogWarning("[DesignUiManager] Cannot show save info: Required components are null");
+            return;
+        }
+
+        string currentThreadId = GetCurrentThreadId();
+        if (string.IsNullOrEmpty(currentThreadId))
+        {
+            Debug.LogWarning("[DesignUiManager] Cannot show save info: Thread ID is empty");
+            return;
+        }
+
+        // BuildingTileManager를 통해 BuildingCalculateHandler의 계산 메서드 호출
+        // 생산 체인 추적을 통한 입력/출력 자원 자동 계산
+        int totalMaintenance = _buildingTileManager.CalculateTotalMaintenanceCost(currentThreadId);
+        
+        // 생산 체인을 추적하여 하역소→생산건물→상역소 연결된 자원 계산
+        List<string> inputResourceIds;
+        List<string> outputResourceIds;
+        Dictionary<string, int> outputResourceCounts;
+        _buildingTileManager.CalculateProductionChain(currentThreadId, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
+        
+        // 산출량 계산 (기존 메서드 사용)
+        int threadOutputs = _buildingTileManager.CalculateCurrentThreadOutputs();
+        
+        // Thread 제목 가져오기
+        string threadTitle = GetCurrentThreadTitle();
+        
+        // SaveInfoPanel 초기화 및 표시
+        if (_saveInfoPanel != null)
+        {
+            _saveInfoPanel.InitializeAndShow(threadTitle, inputResourceIds, outputResourceIds, outputResourceCounts, totalMaintenance);
+            _saveInfoPanel.gameObject.SetActive(true);
+            Debug.Log($"[DesignUiManager] Save info panel shown. Outputs: {threadOutputs}, Maintenance: {totalMaintenance}, Input Resources: {inputResourceIds.Count}, Output Resources: {outputResourceIds.Count}");
         }
     }
 
