@@ -17,9 +17,13 @@ public class GameManager : MonoBehaviour
     public GameObject HorizontalSortContentPrefab => _horizontalSortContentPrefab;
     public float ProductionIconScale => _productionIconScale;
 
-    [Header("Common UI")]
+    [Header("Common Panel")]
     [SerializeField] private GameObject _warningPanelPrefab;
+    [SerializeField] private GameObject _enterNamePanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
+    [SerializeField] private GameObject _manageThreadCartegoryPanelPrefab;
+
+    [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
     [SerializeField] private GameObject _horizontalSortContentPrefab;
     
@@ -212,6 +216,70 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogWarning("[GameManager] SelectResourcePanel component not found on instantiated prefab.");
+        }
+
+        return panelComponent;
+    }
+
+    /// <summary>
+    /// 카테고리 관리 패널을 표시합니다.
+    /// </summary>
+    /// <param name="dataManager">GameDataManager</param>
+    /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
+    /// <returns>생성된 ManageThreadCartegoryPanel 컴포넌트</returns>
+    public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(GameDataManager dataManager, System.Action<string> onCategorySelected = null)
+    {
+        if (_manageThreadCartegoryPanelPrefab == null)
+        {
+            Debug.LogWarning("[GameManager] ManageThreadCartegoryPanel prefab is not assigned.");
+            return null;
+        }
+
+        // 카테고리 관리 패널 생성
+        GameObject panel = Instantiate(_manageThreadCartegoryPanelPrefab, _uiManager.CanvasTrans);
+        ManageThreadCartegoryPanel panelComponent = panel.GetComponent<ManageThreadCartegoryPanel>();
+        
+        if (panelComponent != null)
+        {
+            // 패널 초기화
+            panelComponent.OnInitialize(dataManager, onCategorySelected);
+            Debug.Log("[GameManager] ManageThreadCartegoryPanel displayed.");
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] ManageThreadCartegoryPanel component not found on instantiated prefab.");
+        }
+
+        return panelComponent;
+    }
+
+    /// <summary>
+    /// 이름 입력 패널을 표시합니다.
+    /// </summary>
+    /// <param name="message">안내 메시지</param>
+    /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
+    /// <returns>생성된 EnterNamePanel 컴포넌트</returns>
+    public EnterNamePanel ShowEnterNamePanel(System.Action<string> onConfirm)
+    {
+        if (_enterNamePanelPrefab == null)
+        {
+            Debug.LogWarning("[GameManager] Rename panel prefab is not assigned.");
+            return null;
+        }
+
+        // 이름 입력 패널 생성
+        GameObject panel = Instantiate(_enterNamePanelPrefab, _uiManager.CanvasTrans);
+        EnterNamePanel panelComponent = panel.GetComponent<EnterNamePanel>();
+        
+        if (panelComponent != null)
+        {
+            // 패널 초기화
+            panelComponent.OnInitialize(onConfirm);
+            Debug.Log("[GameManager] EnterNamePanel displayed.");
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] EnterNamePanel component not found on instantiated prefab.");
         }
 
         return panelComponent;

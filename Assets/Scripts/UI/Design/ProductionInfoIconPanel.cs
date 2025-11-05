@@ -4,22 +4,22 @@ using TMPro;
 
 public class ProductionInfoIconPanel : MonoBehaviour
 {
-    [SerializeField] private Image _productionImage;
-    [SerializeField] private TextMeshProUGUI _productionText;
-    [SerializeField] private TextMeshProUGUI _productionCountText;
+    [SerializeField] private Image _image;
+    [SerializeField] private TextMeshProUGUI _titleText;
+    [SerializeField] private TextMeshProUGUI _countText;
 
     public void OnInitialize(ResourceEntry resourceEntry, int productionCount = -1)
     {
-        _productionImage.sprite = resourceEntry.resourceData.icon;
-        _productionText.text = resourceEntry.resourceData.displayName;
+        _image.sprite = resourceEntry.resourceData.icon;
+        _titleText.text = resourceEntry.resourceData.displayName;
 
         if (productionCount == -1)
         {
-            _productionCountText.text = "Count: " + resourceEntry.resourceState.count.ToString();
+            _countText.text = "Count: " + resourceEntry.resourceState.count.ToString();
         }
         else
         {
-            _productionCountText.text = "Production: " + productionCount.ToString();
+            _countText.text = "Production: " + productionCount.ToString();
         }
     }
 }

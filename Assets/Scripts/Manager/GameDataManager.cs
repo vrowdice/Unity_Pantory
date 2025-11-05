@@ -66,6 +66,13 @@ public class GameDataManager : MonoBehaviour
         remove => _threadService.OnThreadChanged -= value;
     }
 
+    // Category 변경 이벤트 (ThreadService의 이벤트를 중계)
+    public event Action OnCategoryChanged
+    {
+        add => _threadService.OnCategoryChanged += value;
+        remove => _threadService.OnCategoryChanged -= value;
+    }
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -239,6 +246,47 @@ public class GameDataManager : MonoBehaviour
 
     // Thread 개수 반환
     public int GetThreadCount() => _threadService.GetThreadCount();
+
+    // ----------------- 편의 메서드 (ThreadService - Category 관련) -----------------
+
+    // 카테고리 추가
+    public bool AddCategory(ThreadCategory category) => _threadService.AddCategory(category);
+
+    // 카테고리 생성 및 추가
+    public ThreadCategory CreateCategory(string categoryId, string categoryName) => _threadService.CreateCategory(categoryId, categoryName);
+
+    // 카테고리 제거
+    public bool RemoveCategory(string categoryId) => _threadService.RemoveCategory(categoryId);
+
+    // 카테고리 이름 변경
+    public bool RenameCategory(string categoryId, string newName) => _threadService.RenameCategory(categoryId, newName);
+
+    // 특정 카테고리 반환
+    public ThreadCategory GetCategory(string categoryId) => _threadService.GetCategory(categoryId);
+
+    // 모든 카테고리 반환
+    public Dictionary<string, ThreadCategory> GetAllCategories() => _threadService.GetAllCategories();
+
+    // 모든 카테고리 ID 반환
+    public List<string> GetAllCategoryIds() => _threadService.GetAllCategoryIds();
+
+    // 카테고리 존재 여부 확인
+    public bool HasCategory(string categoryId) => _threadService.HasCategory(categoryId);
+
+    // 카테고리 개수 반환
+    public int GetCategoryCount() => _threadService.GetCategoryCount();
+
+    // 카테고리에 스레드 추가
+    public bool AddThreadToCategory(string categoryId, string threadId) => _threadService.AddThreadToCategory(categoryId, threadId);
+
+    // 카테고리에서 스레드 제거
+    public bool RemoveThreadFromCategory(string categoryId, string threadId) => _threadService.RemoveThreadFromCategory(categoryId, threadId);
+
+    // 특정 카테고리에 속한 스레드 ID 목록 반환
+    public List<string> GetThreadIdsInCategory(string categoryId) => _threadService.GetThreadIdsInCategory(categoryId);
+
+    // 특정 카테고리에 속한 스레드 상태 목록 반환
+    public List<ThreadState> GetThreadsInCategory(string categoryId) => _threadService.GetThreadsInCategory(categoryId);
 
     // ----------------- 레거시 호환 프로퍼티 -----------------
     

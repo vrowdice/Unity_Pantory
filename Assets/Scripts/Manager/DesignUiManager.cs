@@ -14,7 +14,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private Image _deselectBuildingBtnImage = null;
     [SerializeField] private Image _removalModeBtnImage = null;
     [SerializeField] private BuildingInfoPanel _buildingInfoPanel = null;
-    [SerializeField] private SaveInfoPanel _saveInfoPanel = null;
+    [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel = null;
 
     private GameManager _gameManager = null;
     private GameDataManager _dataManager = null;
@@ -243,7 +243,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         // SaveInfoPanel 초기화 및 표시
         if (_saveInfoPanel != null)
         {
-            _saveInfoPanel.InitializeAndShow(threadTitle, inputResourceIds, outputResourceIds, outputResourceCounts, totalMaintenance);
+            _saveInfoPanel.OnInitialize(threadTitle, inputResourceIds, outputResourceIds, outputResourceCounts, totalMaintenance);
             _saveInfoPanel.gameObject.SetActive(true);
             Debug.Log($"[DesignUiManager] Save info panel shown. Outputs: {threadOutputs}, Maintenance: {totalMaintenance}, Input Resources: {inputResourceIds.Count}, Output Resources: {outputResourceIds.Count}");
         }
@@ -284,7 +284,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     /// </summary>
     public string GetCurrentThreadTitle()
     {
-        return _threadTitleInputField != null ? _threadTitleInputField.text : "메인 라인";
+        return _threadTitleInputField != null ? _threadTitleInputField.text : "Main Line";
     }
 
     /// <summary>
