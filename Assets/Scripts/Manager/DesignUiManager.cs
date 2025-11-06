@@ -209,7 +209,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
     }
 
-    public void ShowSaveBtnClick()
+    public void OnClickSaveBtn()
     {
         if (_buildingTileManager == null || _dataManager == null || _saveInfoPanel == null)
         {
@@ -249,6 +249,59 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
     }
 
+    public void OnClickLoadBtn()
+    {
+        if (_gameManager == null || _dataManager == null)
+        {
+            Debug.LogWarning("[DesignUiManager] Cannot load thread: GameManager or DataManager is null");
+            return;
+        }
+
+        // ManageThreadPanel 열기
+        _gameManager.ShowManageThreadPanel((selectedThreadId) =>
+        {
+            // 선택된 스레드 정보 로드 및 적용
+            LoadThread(selectedThreadId);
+        });
+    }
+
+    /// <summary>
+    /// 선택된 스레드를 로드하고 적용합니다.
+    /// </summary>
+    private void LoadThread(string threadId)
+    {
+        if (string.IsNullOrEmpty(threadId) || _dataManager == null)
+        {
+            Debug.LogWarning("[DesignUiManager] Cannot load thread: Thread ID is empty or DataManager is null");
+            return;
+        }
+
+        // 스레드 정보 가져오기
+        ThreadState thread = _dataManager.GetThread(threadId);
+        if (thread == null)
+        {
+            Debug.LogWarning($"[DesignUiManager] Thread not found: {threadId}");
+            return;
+        }
+
+        // Thread 제목을 InputField에 설정
+        string threadTitle = string.IsNullOrEmpty(thread.threadName) ? threadId : thread.threadName;
+        if (_threadTitleInputField != null)
+        {
+            _threadTitleInputField.text = threadTitle;
+        }
+
+        // BuildingTileManager에 현재 Thread 설정 (실제 threadId 사용)
+        if (_buildingTileManager != null)
+        {
+            _buildingTileManager.SetCurrentThread(threadId);
+            // 건물들 새로고침 (Thread에 저장된 건물들이 로드됨)
+            _buildingTileManager.RefreshBuildings();
+        }
+
+        Debug.Log($"[DesignUiManager] Thread loaded: {threadId} ({thread.threadName})");
+    }
+
     /// <summary>
     /// Thread 제목이 변경되었을 때 호출됩니다.
     /// </summary>
@@ -265,13 +318,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         
         Debug.Log($"[DesignUiManager] Thread title changed to: {threadTitle} (ID: {threadId})");
 
-        // Thread가 없으면 생성
-        if (_dataManager != null && !_dataManager.HasThread(threadId))
-        {
-            _dataManager.CreateThread(threadId, threadTitle, "생산부");
-            Debug.Log($"[DesignUiManager] Created new thread: {threadId}");
-        }
-
+        // Thread는 저장 시 생성되므로 여기서는 생성하지 않음
         // BuildingTileManager에 현재 Thread 설정
         if (_buildingTileManager != null)
         {

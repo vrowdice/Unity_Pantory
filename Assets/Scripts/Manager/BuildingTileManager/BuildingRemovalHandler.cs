@@ -135,12 +135,15 @@ public class BuildingRemovalHandler
     /// </summary>
     private void RemoveBuilding(Vector2Int gridPos, string currentThreadId)
     {
-        // 건물 찾기
+        // 건물 찾기 (임시 저장소에서 먼저 확인, 없으면 GameDataManager에서)
         Vector2Int buildingOriginPos = Vector2Int.zero;
         BuildingState targetBuilding = null;
         BuildingData targetBuildingData = null;
 
-        var buildingStates = _dataManager.GetBuildingStates(currentThreadId);
+        // 임시 저장소의 건물 상태 확인
+        var tempBuildingStates = _buildingTileManager.GetTempBuildingStates();
+        var buildingStates = tempBuildingStates != null && tempBuildingStates.Count > 0 ? tempBuildingStates : _dataManager.GetBuildingStates(currentThreadId);
+        
         if (buildingStates != null)
         {
             foreach (var buildingState in buildingStates)
@@ -148,9 +151,12 @@ public class BuildingRemovalHandler
                 BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
+                    // 회전된 크기 고려
+                    Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
+                    
                     // 건물이 차지하는 영역 확인
-                    if (gridPos.x >= buildingState.position.x && gridPos.x < buildingState.position.x + buildingData.size.x &&
-                        gridPos.y >= buildingState.position.y && gridPos.y < buildingState.position.y + buildingData.size.y)
+                    if (gridPos.x >= buildingState.position.x && gridPos.x < buildingState.position.x + rotatedSize.x &&
+                        gridPos.y >= buildingState.position.y && gridPos.y < buildingState.position.y + rotatedSize.y)
                     {
                         buildingOriginPos = buildingState.position;
                         targetBuilding = buildingState;
@@ -170,13 +176,13 @@ public class BuildingRemovalHandler
         // 하이라이트 먼저 리셋 (RefreshBuildings가 오브젝트를 재생성하므로)
         ResetBuildingHighlight();
 
-        // ThreadService에서 건물 제거
-        if (_dataManager.RemoveBuildingFromThread(currentThreadId, buildingOriginPos))
+        // 임시 저장소에서 건물 제거
+        if (_buildingTileManager.RemoveBuildingFromTemp(buildingOriginPos))
         {
             // 데이터만 제거하고, 실제 오브젝트는 RefreshBuildings로 갱신
             _buildingTileManager.RefreshBuildings();
 
-            Debug.Log($"[BuildingRemovalHandler] Building removed: {targetBuildingData.displayName} at {buildingOriginPos}");
+            Debug.Log($"[BuildingRemovalHandler] Building removed (temp): {targetBuildingData.displayName} at {buildingOriginPos}");
         }
     }
 
@@ -208,6 +214,20 @@ public class BuildingRemovalHandler
             }
             _hoveredBuilding = null;
         }
+    }
+
+    /// <summary>
+    /// 회전에 따라 건물 크기를 계산합니다.
+    /// </summary>
+    private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
+    {
+        rotation = rotation % 4;
+        // 90도 또는 270도 회전 시 가로/세로 바뀜
+        if (rotation == 1 || rotation == 3)
+        {
+            return new Vector2Int(size.y, size.x);
+        }
+        return size;
     }
 }
 

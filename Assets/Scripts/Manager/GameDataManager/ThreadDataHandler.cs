@@ -57,6 +57,15 @@ public class ThreadDataHandler
     }
 
     /// <summary>
+    /// 모든 Thread 정보를 리스트로 반환합니다.
+    /// </summary>
+    /// <returns>Thread 리스트</returns>
+    public List<ThreadState> GetAllThreadList()
+    {
+        return new List<ThreadState>(_threads.Values);
+    }
+
+    /// <summary>
     /// 등록된 모든 Thread ID 목록을 반환합니다.
     /// </summary>
     /// <returns>Thread ID 리스트</returns>
@@ -158,9 +167,23 @@ public class ThreadDataHandler
         }
 
         var thread = _threads[threadId];
+        
+        // 모든 카테고리에서 해당 스레드 제거
+        foreach (var category in _categories.Values)
+        {
+            if (category.threadIds != null && category.threadIds.Contains(threadId))
+            {
+                category.threadIds.Remove(threadId);
+                Debug.Log($"[ThreadService] Thread removed from category: {category.categoryName} ({category.categoryId})");
+            }
+        }
+        
+        // 스레드 삭제
         _threads.Remove(threadId);
         Debug.Log($"[ThreadService] Thread removed: {thread.threadName} ({threadId})");
         
+        // 카테고리 변경 이벤트도 발생시켜야 UI가 업데이트됨
+        OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
         return true;
     }
@@ -258,6 +281,94 @@ public class ThreadDataHandler
     public int GetThreadCount()
     {
         return _threads.Count;
+    }
+
+    // ----------------- Save/Load Methods -----------------
+
+    /// <summary>
+    /// 현재 Thread 데이터를 초기화합니다 (저장 전 백업용).
+    /// </summary>
+    public void ClearAllThreads()
+    {
+        _threads.Clear();
+        _categories.Clear();
+    }
+
+    /// <summary>
+    /// 저장용 Thread 리스트를 반환합니다.
+    /// </summary>
+    /// <returns>Thread 리스트</returns>
+    public List<ThreadState> GetThreadListForSave()
+    {
+        return new List<ThreadState>(_threads.Values);
+    }
+
+    /// <summary>
+    /// 저장용 Category 리스트를 반환합니다.
+    /// </summary>
+    /// <returns>Category 리스트</returns>
+    public List<ThreadCategory> GetCategoryListForSave()
+    {
+        return new List<ThreadCategory>(_categories.Values);
+    }
+
+    /// <summary>
+    /// 저장된 Thread 리스트를 로드합니다.
+    /// </summary>
+    /// <param name="threads">로드할 Thread 리스트</param>
+    public void LoadThreads(List<ThreadState> threads)
+    {
+        if (threads == null)
+        {
+            Debug.LogWarning("[ThreadService] Thread list is null.");
+            return;
+        }
+
+        int loadedCount = 0;
+        int skippedCount = 0;
+        
+        foreach (var thread in threads)
+        {
+            if (thread == null || string.IsNullOrEmpty(thread.threadId))
+                continue;
+
+            // 중복 체크 (이미 존재하는 스레드는 건너뜀)
+            if (_threads.ContainsKey(thread.threadId))
+            {
+                Debug.LogWarning($"[ThreadService] Skipping duplicate thread during load: {thread.threadId} ({thread.threadName})");
+                skippedCount++;
+                continue;
+            }
+            
+            _threads[thread.threadId] = thread;
+            loadedCount++;
+        }
+        
+        Debug.Log($"[ThreadService] Loaded {loadedCount} threads, skipped {skippedCount} duplicates");
+        OnThreadChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 저장된 Category 리스트를 로드합니다.
+    /// </summary>
+    /// <param name="categories">로드할 Category 리스트</param>
+    public void LoadCategories(List<ThreadCategory> categories)
+    {
+        if (categories == null)
+        {
+            Debug.LogWarning("[ThreadService] Category list is null.");
+            return;
+        }
+
+        foreach (var category in categories)
+        {
+            if (category != null && !string.IsNullOrEmpty(category.categoryId))
+            {
+                _categories[category.categoryId] = category;
+            }
+        }
+        
+        OnCategoryChanged?.Invoke();
     }
 
     // ----------------- Category Management Methods -----------------
@@ -515,14 +626,11 @@ public class ThreadDataHandler
     {
         var result = new List<ThreadState>();
         
-        if (_categories.TryGetValue(categoryId, out var category))
+        foreach (var thread in _threads.Values)
         {
-            foreach (var threadId in category.threadIds)
+            if (thread.categoryId == categoryId)
             {
-                if (_threads.TryGetValue(threadId, out var thread))
-                {
-                    result.Add(thread);
-                }
+                result.Add(thread);
             }
         }
         

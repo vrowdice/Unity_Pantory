@@ -14,6 +14,15 @@ public class GameManager : MonoBehaviour
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
     public GameObject ProductionInfoImage => _productionInfoImagePrefab;
+    
+    /// <summary>
+    /// 현재 Thread ID를 설정합니다.
+    /// </summary>
+    public void SetCurrentThreadId(string threadId)
+    {
+        _currentThreadId = threadId;
+        Debug.Log($"[GameManager] Current thread ID set to: {threadId}");
+    }
     public GameObject HorizontalSortContentPrefab => _horizontalSortContentPrefab;
     public float ProductionIconScale => _productionIconScale;
 
@@ -21,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _warningPanelPrefab;
     [SerializeField] private GameObject _enterNamePanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
+    [SerializeField] private GameObject _manageThreadPanelPrefab;
     [SerializeField] private GameObject _manageThreadCartegoryPanelPrefab;
 
     [Header("Common UI")]
@@ -248,6 +258,43 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogWarning("[GameManager] ManageThreadCartegoryPanel component not found on instantiated prefab.");
+        }
+
+        return panelComponent;
+    }
+
+    /// <summary>
+    /// Thread 관리 패널을 표시합니다.
+    /// </summary>
+    /// <param name="onThreadSelected">스레드 선택 시 호출될 콜백 (옵션)</param>
+    /// <returns>생성된 ManageThreadPanel 컴포넌트</returns>
+    public ManageThreadPanel ShowManageThreadPanel(System.Action<string> onThreadSelected = null)
+    {
+        if (_manageThreadPanelPrefab == null)
+        {
+            Debug.LogWarning("[GameManager] ManageThreadPanel prefab is not assigned.");
+            return null;
+        }
+
+        if (_gameDataManager == null)
+        {
+            Debug.LogWarning("[GameManager] GameDataManager is null.");
+            return null;
+        }
+
+        // Thread 관리 패널 생성
+        GameObject panel = Instantiate(_manageThreadPanelPrefab, _uiManager.CanvasTrans);
+        ManageThreadPanel panelComponent = panel.GetComponent<ManageThreadPanel>();
+        
+        if (panelComponent != null)
+        {
+            // 패널 초기화 (콜백 포함)
+            panelComponent.OnInitialize(_gameDataManager, onThreadSelected);
+            Debug.Log("[GameManager] ManageThreadPanel displayed.");
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] ManageThreadPanel component not found on instantiated prefab.");
         }
 
         return panelComponent;

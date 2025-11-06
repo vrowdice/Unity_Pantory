@@ -47,6 +47,7 @@ MonoBehaviour:
   _warningPanelPrefab: {fileID: 509094518299881478, guid: 90a762a4eed595d4fabadaa9e40a721d, type: 3}
   _enterNamePanelPrefab: {fileID: 915623633410631137, guid: bc5f5e5569d10e94ba5162370d635536, type: 3}
   _selectResourcePanelPrefab: {fileID: 3902504510895382675, guid: 8e5e94113a3155c4baa0c42d053bcaed, type: 3}
+  _manageThreadPanelPrefab: {fileID: 3974597957071869347, guid: 734f746900304da4798ab8efff7ebddf, type: 3}
   _manageThreadCartegoryPanelPrefab: {fileID: 2639419400245874255, guid: f65e8985534c69643be32468ceb4c333, type: 3}
   _productionInfoImagePrefab: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
   _horizontalSortContentPrefab: {fileID: 9210800356017659960, guid: 6bd967e415823724f8074308be52ebc6, type: 3}

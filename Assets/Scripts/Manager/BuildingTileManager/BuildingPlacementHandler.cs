@@ -287,7 +287,7 @@ public class BuildingPlacementHandler
     }
 
     /// <summary>
-    /// 건물을 배치하고 데이터에 추가합니다.
+    /// 건물을 배치하고 임시 저장소에 추가합니다.
     /// </summary>
     public void PlaceBuildingWithData(Vector2Int gridPos, BuildingData buildingData, string currentThreadId, int rotation = 0)
     {
@@ -299,15 +299,14 @@ public class BuildingPlacementHandler
             return;
         }
 
-        // BuildingState 생성 및 ThreadService에 추가 (회전 정보 포함)
+        // BuildingState 생성 및 임시 저장소에 추가 (회전 정보 포함)
         BuildingState buildingState = new BuildingState(buildingData.id, gridPos, buildingData, rotation);
-        if (_dataManager.AddBuildingToThread(currentThreadId, buildingState))
-        {
-            // 데이터만 추가하고, 실제 오브젝트는 RefreshBuildings로 생성
-            _buildingTileManager.RefreshBuildings();
-            
-            Debug.Log($"[BuildingPlacementHandler] Building placed: {buildingData.displayName} at {gridPos}, Rotation: {rotation * 90}°, Input: {buildingState.inputPosition}, Output: {buildingState.outputPosition}");
-        }
+        _buildingTileManager.AddBuildingToTemp(buildingState);
+        
+        // 데이터만 추가하고, 실제 오브젝트는 RefreshBuildings로 생성
+        _buildingTileManager.RefreshBuildings();
+        
+        Debug.Log($"[BuildingPlacementHandler] Building placed (temp): {buildingData.displayName} at {gridPos}, Rotation: {rotation * 90}°, Input: {buildingState.inputPosition}, Output: {buildingState.outputPosition}");
     }
 
     /// <summary>

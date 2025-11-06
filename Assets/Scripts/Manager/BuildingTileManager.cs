@@ -37,6 +37,10 @@ public class BuildingTileManager : MonoBehaviour
     // 공용 World Space Canvas
     private GameObject _sharedProductionIconCanvas;
     
+    // 임시 저장: 현재 편집 중인 스레드의 건물 상태를 임시로 저장 (실제 저장 시 GameDataManager에 반영)
+    private List<BuildingState> _tempBuildingStates = new List<BuildingState>();
+    private bool _isTempDataDirty = false; // 임시 데이터가 변경되었는지 여부
+    
     // ==================== Public 프로퍼티 ====================
     public GameDataManager DataManager => _dataManager;
     public MainCameraController MainCameraController => _mainCameraController;
@@ -222,8 +226,36 @@ public class BuildingTileManager : MonoBehaviour
             return;
         }
 
+        // 같은 스레드로 설정하는 경우는 건너뜀 (임시 데이터 유지)
+        if (_currentThreadId == threadId)
+        {
+            Debug.Log($"[BuildingTileManager] Thread ID unchanged: {threadId}");
+            return;
+        }
+
+        // 이전 스레드의 임시 데이터가 있으면 저장하지 않고 버림 (편집 취소)
+        if (_isTempDataDirty)
+        {
+            Debug.Log($"[BuildingTileManager] Discarding temporary building data for thread: {_currentThreadId}");
+        }
+
         _currentThreadId = threadId;
-        Debug.Log($"[BuildingTileManager] Current thread set to: {threadId}");
+        _isTempDataDirty = false;
+        _tempBuildingStates.Clear();
+
+        // GameDataManager에서 현재 스레드의 건물 상태를 임시 저장소로 복사 (스레드가 없으면 빈 리스트)
+        var buildingStates = _dataManager.GetBuildingStates(threadId);
+        if (buildingStates != null)
+        {
+            _tempBuildingStates = new List<BuildingState>(buildingStates);
+        }
+        else
+        {
+            // 스레드가 없으면 빈 리스트로 시작 (저장 시 생성됨)
+            _tempBuildingStates = new List<BuildingState>();
+        }
+
+        Debug.Log($"[BuildingTileManager] Current thread set to: {threadId} (loaded {_tempBuildingStates.Count} buildings)");
 
         RefreshBuildings();
     }
@@ -234,6 +266,95 @@ public class BuildingTileManager : MonoBehaviour
     public string GetCurrentThreadId()
     {
         return _currentThreadId;
+    }
+
+    /// <summary>
+    /// 임시 저장된 건물 데이터를 GameDataManager에 반영합니다.
+    /// 저장 시 호출됩니다.
+    /// </summary>
+    public void ApplyTempBuildingDataToDataManager()
+    {
+        if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot apply temp data: Thread ID is empty or DataManager is null");
+            return;
+        }
+
+        // 임시 데이터가 없으면 저장할 필요 없음
+        if (_tempBuildingStates == null || _tempBuildingStates.Count == 0)
+        {
+            if (_isTempDataDirty)
+            {
+                // 임시 데이터가 비어있고 dirty 상태면 모든 건물을 제거
+                var existingBuildingsToClear = _dataManager.GetBuildingStates(_currentThreadId);
+                if (existingBuildingsToClear != null)
+                {
+                    foreach (var building in existingBuildingsToClear)
+                    {
+                        _dataManager.RemoveBuildingFromThread(_currentThreadId, building.position);
+                    }
+                }
+                _isTempDataDirty = false;
+                Debug.Log($"[BuildingTileManager] Cleared all buildings for thread: {_currentThreadId}");
+            }
+            return;
+        }
+
+        // GameDataManager의 기존 건물 상태를 모두 제거
+        var existingBuildings = _dataManager.GetBuildingStates(_currentThreadId);
+        if (existingBuildings != null)
+        {
+            foreach (var building in existingBuildings)
+            {
+                _dataManager.RemoveBuildingFromThread(_currentThreadId, building.position);
+            }
+        }
+
+        // 임시 저장된 건물 상태를 GameDataManager에 추가
+        foreach (var buildingState in _tempBuildingStates)
+        {
+            _dataManager.AddBuildingToThread(_currentThreadId, buildingState);
+        }
+
+        _isTempDataDirty = false;
+        Debug.Log($"[BuildingTileManager] Applied {_tempBuildingStates.Count} buildings to GameDataManager for thread: {_currentThreadId}");
+    }
+
+    /// <summary>
+    /// 임시 저장소에 건물을 추가합니다.
+    /// </summary>
+    internal void AddBuildingToTemp(BuildingState buildingState)
+    {
+        if (buildingState == null)
+            return;
+
+        // 중복 확인 (같은 위치에 건물이 있으면 제거)
+        _tempBuildingStates.RemoveAll(b => b.position == buildingState.position);
+        
+        _tempBuildingStates.Add(buildingState);
+        _isTempDataDirty = true;
+    }
+
+    /// <summary>
+    /// 임시 저장소에서 건물을 제거합니다.
+    /// </summary>
+    internal bool RemoveBuildingFromTemp(Vector2Int position)
+    {
+        int removedCount = _tempBuildingStates.RemoveAll(b => b.position == position);
+        if (removedCount > 0)
+        {
+            _isTempDataDirty = true;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 임시 저장소의 건물 상태 리스트를 반환합니다.
+    /// </summary>
+    internal List<BuildingState> GetTempBuildingStates()
+    {
+        return _tempBuildingStates;
     }
 
     // ================== 초기화 메서드 ====================
@@ -310,14 +431,7 @@ public class BuildingTileManager : MonoBehaviour
 
             if (!string.IsNullOrEmpty(threadId))
             {
-                // Thread가 없으면 생성
-                if (_dataManager != null && !_dataManager.HasThread(threadId))
-                {
-                    string threadTitle = ExtractThreadTitle(threadId);
-                    _dataManager.CreateThread(threadId, threadTitle, "생산부");
-                    Debug.Log($"[BuildingTileManager] Created thread: {threadId} ({threadTitle})");
-                }
-
+                // Thread ID만 설정 (스레드는 저장 시 생성됨)
                 _currentThreadId = threadId;
                 Debug.Log($"[BuildingTileManager] Initialized with thread: {threadId}");
             }
@@ -353,6 +467,7 @@ public class BuildingTileManager : MonoBehaviour
     
     /// <summary>
     /// Thread의 건물들을 다시 로드하여 표시합니다.
+    /// 임시 저장된 데이터가 있으면 임시 데이터를 사용하고, 없으면 GameDataManager에서 로드합니다.
     /// </summary>
     public void RefreshBuildings()
     {
@@ -377,8 +492,17 @@ public class BuildingTileManager : MonoBehaviour
         }
         _gridGenHandler.PlacedBuildings.Clear();
 
-        // ThreadService에서 건물 데이터 가져와서 표시
-        var buildingStates = _dataManager.GetBuildingStates(_currentThreadId);
+        // 임시 저장된 데이터가 있으면 임시 데이터 사용, 없으면 GameDataManager에서 로드
+        List<BuildingState> buildingStates = null;
+        if (_isTempDataDirty && _tempBuildingStates != null && _tempBuildingStates.Count > 0)
+        {
+            buildingStates = _tempBuildingStates;
+        }
+        else
+        {
+            buildingStates = _dataManager.GetBuildingStates(_currentThreadId);
+        }
+
         if (buildingStates != null)
         {
             foreach (var buildingState in buildingStates)
@@ -420,6 +544,138 @@ public class BuildingTileManager : MonoBehaviour
     public GameObject GetOutputMarkerPrefab() => _outputMarkerPrefab;
 
     /// <summary>
+    /// 현재 Thread의 건물 레이아웃을 이미지로 캡처합니다.
+    /// </summary>
+    /// <param name="threadId">캡처할 Thread ID</param>
+    /// <returns>이미지 파일 경로 (실패 시 null)</returns>
+    public string CaptureThreadLayout(string threadId)
+    {
+        if (string.IsNullOrEmpty(threadId))
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot capture layout: Thread ID is empty");
+            return null;
+        }
+
+        if (_mainCamera == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot capture layout: Main camera is null");
+            return null;
+        }
+
+        try
+        {
+            // 건물이 있는 영역 계산 (임시 저장소 우선 사용)
+            List<BuildingState> buildingStates = null;
+            if (_isTempDataDirty && _tempBuildingStates != null && _tempBuildingStates.Count > 0 && threadId == _currentThreadId)
+            {
+                buildingStates = _tempBuildingStates;
+            }
+            else
+            {
+                buildingStates = _dataManager?.GetBuildingStates(threadId);
+            }
+
+            if (buildingStates == null || buildingStates.Count == 0)
+            {
+                Debug.LogWarning("[BuildingTileManager] No buildings to capture");
+                return null;
+            }
+
+            // 건물들의 경계 계산
+            int minX = int.MaxValue, minY = int.MaxValue;
+            int maxX = int.MinValue, maxY = int.MinValue;
+
+            foreach (var buildingState in buildingStates)
+            {
+                BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
+                if (buildingData != null)
+                {
+                    Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
+                    minX = Mathf.Min(minX, buildingState.position.x);
+                    minY = Mathf.Min(minY, buildingState.position.y);
+                    maxX = Mathf.Max(maxX, buildingState.position.x + rotatedSize.x);
+                    maxY = Mathf.Max(maxY, buildingState.position.y + rotatedSize.y);
+                }
+            }
+
+            // 경계에 여유 공간 추가
+            int padding = 2;
+            minX -= padding;
+            minY -= padding;
+            maxX += padding;
+            maxY += padding;
+
+            int gridWidth = maxX - minX;
+            int gridHeight = maxY - minY;
+
+            // RenderTexture 생성 (그리드 크기에 맞춤, 최소 512x512)
+            int width = Mathf.Max(512, gridWidth * 64); // 타일당 64픽셀
+            int height = Mathf.Max(512, gridHeight * 64);
+            RenderTexture renderTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
+            
+            // 카메라의 원래 설정 백업
+            RenderTexture originalRT = _mainCamera.targetTexture;
+            CameraClearFlags originalClearFlags = _mainCamera.clearFlags;
+            Color originalBackgroundColor = _mainCamera.backgroundColor;
+            float originalOrthographicSize = _mainCamera.orthographicSize;
+            Vector3 originalPosition = _mainCamera.transform.position;
+
+            // 카메라 설정 변경 - 그리드 전체가 보이도록
+            _mainCamera.targetTexture = renderTexture;
+            _mainCamera.clearFlags = CameraClearFlags.SolidColor;
+            _mainCamera.backgroundColor = Color.white;
+            
+            // 그리드 중심 계산
+            float centerX = (minX + maxX) / 2f;
+            float centerY = (minY + maxY) / 2f;
+            
+            // 카메라 위치 조정 (그리드 중심으로)
+            _mainCamera.transform.position = new Vector3(centerX, -centerY, originalPosition.z);
+            
+            // Orthographic 크기 조정 (전체 그리드가 보이도록)
+            float requiredSize = Mathf.Max(gridWidth, gridHeight) / 2f + padding;
+            _mainCamera.orthographicSize = requiredSize;
+
+            // 렌더링
+            _mainCamera.Render();
+
+            // RenderTexture에서 Texture2D로 변환
+            RenderTexture.active = renderTexture;
+            Texture2D texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+            texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            texture.Apply();
+
+            // 카메라 설정 복원
+            _mainCamera.targetTexture = originalRT;
+            _mainCamera.clearFlags = originalClearFlags;
+            _mainCamera.backgroundColor = originalBackgroundColor;
+            _mainCamera.orthographicSize = originalOrthographicSize;
+            _mainCamera.transform.position = originalPosition;
+            RenderTexture.active = null;
+
+            // 이미지를 PNG로 저장
+            byte[] imageBytes = texture.EncodeToPNG();
+            string fileName = $"ThreadPreview_{threadId}.png";
+            string filePath = System.IO.Path.Combine(Application.persistentDataPath, fileName);
+            
+            System.IO.File.WriteAllBytes(filePath, imageBytes);
+
+            // 리소스 정리
+            Destroy(texture);
+            renderTexture.Release();
+            Destroy(renderTexture);
+
+            Debug.Log($"[BuildingTileManager] Thread layout captured: {filePath} (Size: {gridWidth}x{gridHeight})");
+            return filePath;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[BuildingTileManager] Failed to capture thread layout: {e.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
     /// 현재 스레드의 유효한 생산 건물 수(간이 산출량)를 계산합니다.
     /// </summary>
     public int CalculateCurrentThreadOutputs()
@@ -427,7 +683,18 @@ public class BuildingTileManager : MonoBehaviour
         if (string.IsNullOrEmpty(_currentThreadId) || _calculateHandler == null)
             return 0;
 
-        return _calculateHandler.CalculateThreadOutputs(_currentThreadId);
+        // 임시 저장소의 건물 상태를 사용 (임시 저장소가 있으면 우선 사용)
+        List<BuildingState> buildingStatesToUse = null;
+        if (_isTempDataDirty && _tempBuildingStates != null && _tempBuildingStates.Count > 0)
+        {
+            buildingStatesToUse = _tempBuildingStates;
+        }
+        else
+        {
+            buildingStatesToUse = _dataManager.GetBuildingStates(_currentThreadId);
+        }
+
+        return _calculateHandler.CalculateThreadOutputs(_currentThreadId, buildingStatesToUse);
     }
 
     /// <summary>
@@ -475,7 +742,30 @@ public class BuildingTileManager : MonoBehaviour
         if (_calculateHandler == null)
             return;
 
-        _calculateHandler.CalculateProductionChain(threadId, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
+        // 임시 저장소의 건물 상태를 사용 (임시 저장소가 있으면 우선 사용)
+        List<BuildingState> buildingStatesToUse = null;
+        if (_isTempDataDirty && _tempBuildingStates != null && _tempBuildingStates.Count > 0 && threadId == _currentThreadId)
+        {
+            buildingStatesToUse = _tempBuildingStates;
+        }
+        else
+        {
+            buildingStatesToUse = _dataManager.GetBuildingStates(threadId);
+        }
+
+        _calculateHandler.CalculateProductionChain(threadId, buildingStatesToUse, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
+    }
+
+    /// <summary>
+    /// 현재 스레드의 건물 상태를 반환합니다 (임시 저장소 우선).
+    /// </summary>
+    public List<BuildingState> GetCurrentBuildingStates()
+    {
+        if (_isTempDataDirty && _tempBuildingStates != null && _tempBuildingStates.Count > 0)
+        {
+            return _tempBuildingStates;
+        }
+        return _dataManager.GetBuildingStates(_currentThreadId);
     }
 
     /// <summary>

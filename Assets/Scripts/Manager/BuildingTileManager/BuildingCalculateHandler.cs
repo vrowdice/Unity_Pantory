@@ -19,7 +19,7 @@ public class BuildingCalculateHandler
     /// 현재 스레드의 빌딩 상태를 기반으로 간단한 산출량을 계산합니다.
     /// 유효한 입출력 연결(도로 경로) 여부를 검증하여, 연결이 유효한 생산 건물 수를 반환합니다.
     /// </summary>
-    public int CalculateThreadOutputs(string threadId)
+    public int CalculateThreadOutputs(string threadId, List<BuildingState> buildingStates = null)
     {
         if (string.IsNullOrEmpty(threadId))
             return 0;
@@ -28,7 +28,12 @@ public class BuildingCalculateHandler
         if (dataManager == null)
             return 0;
 
-        var buildingStates = dataManager.GetBuildingStates(threadId);
+        // buildingStates가 null이면 GameDataManager에서 가져오기
+        if (buildingStates == null)
+        {
+            buildingStates = dataManager.GetBuildingStates(threadId);
+        }
+
         if (buildingStates == null || buildingStates.Count == 0)
             return 0;
 
@@ -212,7 +217,7 @@ public class BuildingCalculateHandler
     /// <summary>
     /// Thread의 총 유지비를 계산합니다.
     /// </summary>
-    public int CalculateTotalMaintenanceCost(string threadId)
+    public int CalculateTotalMaintenanceCost(string threadId, List<BuildingState> buildingStates = null)
     {
         if (string.IsNullOrEmpty(threadId))
             return 0;
@@ -221,7 +226,12 @@ public class BuildingCalculateHandler
         if (dataManager == null)
             return 0;
 
-        var buildingStates = dataManager.GetBuildingStates(threadId);
+        // buildingStates가 null이면 GameDataManager에서 가져오기
+        if (buildingStates == null)
+        {
+            buildingStates = dataManager.GetBuildingStates(threadId);
+        }
+
         if (buildingStates == null || buildingStates.Count == 0)
             return 0;
 
@@ -242,7 +252,7 @@ public class BuildingCalculateHandler
     /// <summary>
     /// Thread의 입력 생산 자원 리스트를 수집합니다 (중복 제거).
     /// </summary>
-    public List<string> CollectInputProductionIds(string threadId)
+    public List<string> CollectInputProductionIds(string threadId, List<BuildingState> buildingStates = null)
     {
         List<string> inputIds = new List<string>();
 
@@ -253,7 +263,12 @@ public class BuildingCalculateHandler
         if (dataManager == null)
             return inputIds;
 
-        var buildingStates = dataManager.GetBuildingStates(threadId);
+        // buildingStates가 null이면 GameDataManager에서 가져오기
+        if (buildingStates == null)
+        {
+            buildingStates = dataManager.GetBuildingStates(threadId);
+        }
+
         if (buildingStates == null || buildingStates.Count == 0)
             return inputIds;
 
@@ -280,7 +295,7 @@ public class BuildingCalculateHandler
     /// <summary>
     /// Thread의 출력 생산 자원 리스트를 수집합니다 (중복 제거).
     /// </summary>
-    public List<string> CollectOutputProductionIds(string threadId)
+    public List<string> CollectOutputProductionIds(string threadId, List<BuildingState> buildingStates = null)
     {
         List<string> outputIds = new List<string>();
 
@@ -291,7 +306,12 @@ public class BuildingCalculateHandler
         if (dataManager == null)
             return outputIds;
 
-        var buildingStates = dataManager.GetBuildingStates(threadId);
+        // buildingStates가 null이면 GameDataManager에서 가져오기
+        if (buildingStates == null)
+        {
+            buildingStates = dataManager.GetBuildingStates(threadId);
+        }
+
         if (buildingStates == null || buildingStates.Count == 0)
             return outputIds;
 
@@ -319,7 +339,7 @@ public class BuildingCalculateHandler
     /// 생산 체인을 추적하여 하역소에서 시작하는 입력 자원과 상역소까지 연결된 최종 출력 자원을 계산합니다.
     /// 하역소 → (도로) → 생산건물들 → (도로) → 상역소 경로를 추적합니다.
     /// </summary>
-    public void CalculateProductionChain(string threadId, out List<string> inputResourceIds, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
+    public void CalculateProductionChain(string threadId, List<BuildingState> buildingStates, out List<string> inputResourceIds, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
     {
         inputResourceIds = new List<string>();
         outputResourceIds = new List<string>();
@@ -332,7 +352,12 @@ public class BuildingCalculateHandler
         if (dataManager == null)
             return;
 
-        var buildingStates = dataManager.GetBuildingStates(threadId);
+        // buildingStates가 null이면 GameDataManager에서 가져오기
+        if (buildingStates == null)
+        {
+            buildingStates = dataManager.GetBuildingStates(threadId);
+        }
+
         if (buildingStates == null || buildingStates.Count == 0)
             return;
 

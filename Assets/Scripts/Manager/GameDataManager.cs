@@ -31,6 +31,9 @@ public class GameDataManager : MonoBehaviour
     private BuildingDataHandler _buildingService;
     public BuildingDataHandler Building => _buildingService;
 
+    private SaveLoadHandler _saveLoadHandler;
+    public SaveLoadHandler SaveLoad => _saveLoadHandler;
+
     // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
     public event Action OnResourceChanged
     {
@@ -95,6 +98,14 @@ public class GameDataManager : MonoBehaviour
         _employeeService = new EmployeeDataHandler(); // 자동으로 EmployeeData 로드
         _buildingService = new BuildingDataHandler(); // 자동으로 BuildingData 로드
         _threadService = new ThreadDataHandler();
+        
+        // SaveLoadHandler 초기화
+        _saveLoadHandler = GetComponent<SaveLoadHandler>();
+        if (_saveLoadHandler == null)
+        {
+            _saveLoadHandler = gameObject.AddComponent<SaveLoadHandler>();
+        }
+        
         Debug.Log("[GameDataManager] All services initialized.");
 
         // 시간 설정 적용
@@ -102,6 +113,31 @@ public class GameDataManager : MonoBehaviour
 
         // 초기 자원 적용
         ApplyInitialResources();
+
+        // Thread 데이터 자동 로드
+        LoadThreadData();
+    }
+
+    /// <summary>
+    /// Thread 데이터를 자동으로 로드합니다.
+    /// </summary>
+    private void LoadThreadData()
+    {
+        if (_saveLoadHandler != null && _threadService != null)
+        {
+            _saveLoadHandler.LoadThreadData(_threadService);
+        }
+    }
+
+    /// <summary>
+    /// Thread 데이터를 저장합니다.
+    /// </summary>
+    public void SaveThreadData()
+    {
+        if (_saveLoadHandler != null && _threadService != null)
+        {
+            _saveLoadHandler.SaveThreadData(_threadService);
+        }
     }
 
     /// <summary>
@@ -214,8 +250,11 @@ public class GameDataManager : MonoBehaviour
     // 특정 Thread 반환
     public ThreadState GetThread(string threadId) => _threadService.GetThread(threadId);
 
-    // 모든 Thread 반환
+    // 모든 Thread 반환 (Dictionary)
     public Dictionary<string, ThreadState> GetAllThreads() => _threadService.GetAllThreads();
+
+    // 모든 Thread 반환 (List)
+    public List<ThreadState> GetAllThreadList() => _threadService.GetAllThreadList();
 
     // 모든 Thread ID 반환
     public List<string> GetAllThreadIds() => _threadService.GetAllThreadIds();

@@ -166,24 +166,96 @@ public class ThreadSaveInfoPanel : MonoBehaviour
             return;
         }
 
-        // 현재 스레드 가져오기
-        string currentThreadId = _gameManager.CurrentThreadId;
+        // BuildingTileManager에서 현재 편집 중인 스레드 ID 가져오기
+        BuildingTileManager buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
+        string currentThreadId = null;
+        
+        if (buildingTileManager != null)
+        {
+            currentThreadId = buildingTileManager.GetCurrentThreadId();
+        }
+        
+        // BuildingTileManager에서 가져오지 못했으면 GameManager에서 가져오기
+        if (string.IsNullOrEmpty(currentThreadId) && _gameManager != null)
+        {
+            currentThreadId = _gameManager.CurrentThreadId;
+        }
+        
+        // 그래도 없으면 스레드 이름에서 생성
+        if (string.IsNullOrEmpty(currentThreadId))
+        {
+            currentThreadId = "thread_" + threadName.Trim().Replace(" ", "_").ToLower();
+        }
+        
+        // 스레드가 없으면 생성 (저장 시점에 생성)
         ThreadState currentThread = _dataManager.GetThread(currentThreadId);
-
         if (currentThread == null)
         {
-            Debug.LogWarning($"[ThreadSaveInfoPanel] Thread not found: {currentThreadId}");
-            return;
+            // 새 스레드 생성
+            currentThread = _dataManager.CreateThread(currentThreadId, threadName, "");
+            if (currentThread == null)
+            {
+                Debug.LogError($"[ThreadSaveInfoPanel] Failed to create thread: {currentThreadId}");
+                return;
+            }
+            Debug.Log($"[ThreadSaveInfoPanel] Created new thread: {currentThreadId} ({threadName})");
         }
-
-        // 스레드 이름 변경
-        currentThread.threadName = threadName;
+        else
+        {
+            // 기존 스레드 이름 변경
+            currentThread.threadName = threadName;
+        }
 
         // 카테고리에 스레드 추가
         if (!string.IsNullOrEmpty(_selectedCategoryId))
         {
             _dataManager.AddThreadToCategory(_selectedCategoryId, currentThreadId);
         }
+
+        // 건물 레이아웃 캡처
+        if (buildingTileManager != null)
+        {
+            // 현재 편집 중인 스레드의 임시 데이터를 먼저 저장 (스레드 ID가 변경되기 전에)
+            string oldThreadId = buildingTileManager.GetCurrentThreadId();
+            if (!string.IsNullOrEmpty(oldThreadId))
+            {
+                // 현재 스레드의 임시 데이터를 먼저 저장 (스레드 ID가 같거나 다를 수 있음)
+                buildingTileManager.ApplyTempBuildingDataToDataManager();
+            }
+            
+            // BuildingTileManager의 현재 스레드 ID를 업데이트 (저장할 스레드로)
+            // 스레드 ID가 같으면 SetCurrentThread는 임시 데이터를 다시 로드하지 않음
+            if (oldThreadId != currentThreadId)
+            {
+                buildingTileManager.SetCurrentThread(currentThreadId);
+            }
+            
+            // 현재 스레드의 임시 저장된 건물 데이터를 GameDataManager에 반영
+            buildingTileManager.ApplyTempBuildingDataToDataManager();
+            
+            // 저장 후 건물을 다시 로드하여 표시
+            buildingTileManager.RefreshBuildings();
+            
+            string imagePath = buildingTileManager.CaptureThreadLayout(currentThreadId);
+            if (!string.IsNullOrEmpty(imagePath))
+            {
+                currentThread.previewImagePath = imagePath;
+                Debug.Log($"[ThreadSaveInfoPanel] Thread layout captured: {imagePath}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[ThreadSaveInfoPanel] BuildingTileManager not found. Layout capture skipped.");
+        }
+        
+        // GameManager의 CurrentThreadId도 업데이트
+        if (_gameManager != null)
+        {
+            _gameManager.SetCurrentThreadId(currentThreadId);
+        }
+
+        // Thread 데이터 저장
+        _dataManager.SaveThreadData();
 
         Debug.Log($"[ThreadSaveInfoPanel] Thread saved: {threadName} (Category: {_selectedCategoryId})");
         _gameManager.ShowWarningPanel("Saved successfully.");
