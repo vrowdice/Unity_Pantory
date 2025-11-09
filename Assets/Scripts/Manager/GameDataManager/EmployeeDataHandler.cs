@@ -17,7 +17,7 @@ public class EmployeeDataHandler
     /// <summary>
     /// EmployeeService 생성자
     /// </summary>
-    public EmployeeDataHandler()
+    public EmployeeDataHandler(GameDataManager gameDataManager)
     {
         _employees = new Dictionary<string, EmployeeEntry>();
         AutoLoadAllEmployees(); // 게임 시작 시 자동으로 모든 직원 데이터 로드

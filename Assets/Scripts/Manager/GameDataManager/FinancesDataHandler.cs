@@ -15,7 +15,7 @@ public class FinancesDataHandler
     /// <summary>
     /// FinancesService 생성자
     /// </summary>
-    public FinancesDataHandler()
+    public FinancesDataHandler(GameDataManager gameDataManager)
     {
         _credit = 0;
     }

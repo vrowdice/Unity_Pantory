@@ -24,3 +24,4 @@ MonoBehaviour:
   description: A heavy, lustrous rock that glints with veins of precious metal. A
     valuable raw material ready for smelting.
   requirements: []
+  initialAmount: 0

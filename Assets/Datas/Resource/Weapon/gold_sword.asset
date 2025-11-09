@@ -18,12 +18,14 @@ MonoBehaviour:
   maxValue: 500
   baseValue: 350
   rarity: 0.4
-  type: 3
+  type: 4
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: d99e44a5738f1d94b98e65f2e914bd55, type: 3}
-  description: A magnificent golden sword adorned with fine craftsmanship. A weapon of nobles and champions, both lethal and prestigious.
+  description: A magnificent golden sword adorned with fine craftsmanship. A weapon
+    of nobles and champions, both lethal and prestigious.
   requirements:
   - resource: {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
     count: 3
   - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
     count: 1
+  initialAmount: 0

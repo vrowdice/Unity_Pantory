@@ -18,10 +18,12 @@ MonoBehaviour:
   maxValue: 160
   baseValue: 110
   rarity: 0.4
-  type: 2
+  type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 433622daf1ba17346b732ff80ca58f7c, type: 3}
-  description: A heavy-duty steel wrench built for tough jobs. Provides excellent grip and leverage for demanding tasks.
+  description: A heavy-duty steel wrench built for tough jobs. Provides excellent
+    grip and leverage for demanding tasks.
   requirements:
   - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
     count: 2
+  initialAmount: 0

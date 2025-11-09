@@ -15,7 +15,8 @@ public class BuildingState
     public List<string> outputProductionIds;
 
     // 건물 배치 위치
-    public Vector2Int position;
+public int positionX;
+    public int positionY;
     
     // 건물 회전 (0=0도, 1=90도, 2=180도, 3=270도)
     public int rotation = 0;
@@ -27,7 +28,8 @@ public class BuildingState
     public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData, int rotation = 0)
     {
         this.buildingId = buildingId;
-        this.position = position;
+        this.positionX = position.x;
+        this.positionY = position.y;
         this.rotation = rotation;
         
         // 건물의 배치 위치 + 회전된 상대 위치 = 스레드 기준 절대 좌표

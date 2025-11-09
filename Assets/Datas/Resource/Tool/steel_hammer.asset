@@ -18,13 +18,14 @@ MonoBehaviour:
   maxValue: 150
   baseValue: 100
   rarity: 0.4
-  type: 2
+  type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: fa91a74407bcd3240bd893cf5f99b1c9, type: 3}
-  description: A reinforced hammer forged from steel alloy. Delivers powerful strikes with precision and durability.
+  description: A reinforced hammer forged from steel alloy. Delivers powerful strikes
+    with precision and durability.
   requirements:
   - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
     count: 2
   - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
     count: 1
-
+  initialAmount: 0

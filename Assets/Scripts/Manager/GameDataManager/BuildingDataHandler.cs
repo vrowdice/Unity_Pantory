@@ -18,7 +18,7 @@ public class BuildingDataHandler
     /// <summary>
     /// BuildingService 생성자
     /// </summary>
-    public BuildingDataHandler()
+    public BuildingDataHandler(GameDataManager gameDataManager)
     {
         _buildings = new Dictionary<string, BuildingData>();
         AutoLoadAllBuildings(); // 게임 시작 시 자동으로 모든 건물 데이터 로드

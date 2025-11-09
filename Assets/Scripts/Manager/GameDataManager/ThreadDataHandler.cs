@@ -3,161 +3,168 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Thread(생산 라인)를 관리하는 서비스 클래스
+/// Thread(생산 라인)를 관리하는 서비스 클래스.
+/// 데이터 변경 시 자동으로 저장(Save)을 트리거합니다.
 /// </summary>
 public class ThreadDataHandler
 {
-    // Thread를 저장하는 딕셔너리 (Thread ID -> ThreadState)
-    private Dictionary<string, ThreadState> _threads;
+    private readonly GameDataManager _gameDataManager = null;
 
-    // 카테고리를 저장하는 딕셔너리 (Category ID -> ThreadCategory)
+    #region Private Data Containers
+
+    private Dictionary<string, ThreadState> _threads;
     private Dictionary<string, ThreadCategory> _categories;
 
-    // Thread 변경 이벤트
-    public event Action OnThreadChanged;
+    #endregion
 
-    // Category 변경 이벤트
+    #region Events
+
+    public event Action OnThreadChanged;
     public event Action OnCategoryChanged;
 
-    /// <summary>
-    /// ThreadService 생성자
-    /// </summary>
-    public ThreadDataHandler()
+    #endregion
+
+    #region Constructor & Save Logic
+
+    public ThreadDataHandler(GameDataManager gameDataManager)
     {
         _threads = new Dictionary<string, ThreadState>();
         _categories = new Dictionary<string, ThreadCategory>();
-        Debug.Log("[ThreadService] ThreadService initialized.");
+        _gameDataManager = gameDataManager;
+        Debug.Log("[ThreadService] ThreadService initialized with GameDataManager access.");
     }
 
-    // ----------------- Public Getters (읽기 전용) -----------------
+    /// <summary> Thread 데이터를 저장합니다. </summary>
+    private void SaveThreadData()
+    {
+        if (_gameDataManager?.SaveLoad != null)
+        {
+            // SaveLoadHandler의 SaveThreadData(this) 호출
+            _gameDataManager.SaveLoad.SaveThreadData(this);
+        }
+    }
 
-    /// <summary>
-    /// 특정 Thread의 ThreadState를 반환합니다.
-    /// </summary>
-    /// <param name="threadId">Thread ID</param>
-    /// <returns>ThreadState 또는 null</returns>
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region Utility & Data Initialization
+
+    /// <summary> Thread 데이터를 초기화하고 저장합니다. </summary>
+    public void ResetThreadData()
+    {
+        _threads.Clear();
+        _categories.Clear();
+        Debug.Log("[ThreadService] All threads and categories reset to empty.");
+
+        OnThreadChanged?.Invoke();
+        OnCategoryChanged?.Invoke();
+        SaveThreadData();
+    }
+
+    /// <summary> 모든 Thread를 초기화합니다 (로드 전용). </summary>
+    public void ClearAllThreads()
+    {
+        _threads.Clear();
+        _categories.Clear();
+        Debug.Log("[ThreadService] All threads and categories cleared (for load preparation).");
+    }
+
+    /// <summary> 등록된 Thread 개수를 반환합니다. </summary>
+    public int GetThreadCount()
+    {
+        return _threads.Count;
+    }
+
+    /// <summary> 등록된 카테고리 개수를 반환합니다. </summary>
+    public int GetCategoryCount()
+    {
+        return _categories.Count;
+    }
+
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region Thread Getters (Read Operations)
+
+    /// <summary> 특정 Thread의 ThreadState를 반환합니다. </summary>
     public ThreadState GetThread(string threadId)
     {
-        if (_threads.TryGetValue(threadId, out var thread))
-        {
-            return thread;
-        }
-        
+        if (_threads.TryGetValue(threadId, out var thread)) return thread;
         Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
         return null;
     }
 
-    /// <summary>
-    /// 모든 Thread 정보를 딕셔너리로 반환합니다 (읽기 전용).
-    /// </summary>
-    /// <returns>Thread 딕셔너리의 복사본</returns>
+    /// <summary> 모든 Thread 정보를 딕셔너리로 반환합니다. </summary>
     public Dictionary<string, ThreadState> GetAllThreads()
     {
         return new Dictionary<string, ThreadState>(_threads);
     }
 
-    /// <summary>
-    /// 모든 Thread 정보를 리스트로 반환합니다.
-    /// </summary>
-    /// <returns>Thread 리스트</returns>
+    /// <summary> 모든 Thread 정보를 리스트로 반환합니다. </summary>
     public List<ThreadState> GetAllThreadList()
     {
         return new List<ThreadState>(_threads.Values);
     }
 
-    /// <summary>
-    /// 등록된 모든 Thread ID 목록을 반환합니다.
-    /// </summary>
-    /// <returns>Thread ID 리스트</returns>
+    /// <summary> 등록된 모든 Thread ID 목록을 반환합니다. </summary>
     public List<string> GetAllThreadIds()
     {
         return new List<string>(_threads.Keys);
     }
 
-    /// <summary>
-    /// 특정 Thread의 건물 리스트를 반환합니다.
-    /// </summary>
-    /// <param name="threadId">Thread ID</param>
-    /// <returns>BuildingState 리스트 또는 null</returns>
-    public List<BuildingState> GetBuildingStates(string threadId)
-    {
-        if (_threads.TryGetValue(threadId, out var thread))
-        {
-            return thread.buildingStateList;
-        }
-        
-        Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
-        return null;
-    }
-
-    /// <summary>
-    /// Thread가 존재하는지 확인합니다.
-    /// </summary>
-    /// <param name="threadId">확인할 Thread ID</param>
-    /// <returns>존재하면 true</returns>
+    /// <summary> Thread가 존재하는지 확인합니다. </summary>
     public bool HasThread(string threadId)
     {
         return _threads.ContainsKey(threadId);
     }
 
-    // ----------------- Public Methods (Thread 관리) -----------------
+    #endregion
 
-    /// <summary>
-    /// 새로운 Thread를 추가합니다.
-    /// </summary>
-    /// <param name="threadState">추가할 ThreadState</param>
-    /// <returns>성공 시 true</returns>
+    //---------------------------------------------------------
+
+    #region Thread CRUD (Write Operations)
+
+    /// <summary> 새로운 Thread를 추가합니다. </summary>
     public bool AddThread(ThreadState threadState)
     {
-        if (threadState == null)
+        if (threadState == null || string.IsNullOrEmpty(threadState.threadId) || _threads.ContainsKey(threadState.threadId))
         {
-            Debug.LogWarning("[ThreadService] ThreadState is null.");
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(threadState.threadId))
-        {
-            Debug.LogWarning("[ThreadService] Thread ID is empty.");
-            return false;
-        }
-
-        if (_threads.ContainsKey(threadState.threadId))
-        {
-            Debug.LogWarning($"[ThreadService] Thread already exists: {threadState.threadId}");
+            Debug.LogWarning($"[ThreadService] Cannot add thread. ID invalid or already exists: {threadState?.threadId}");
             return false;
         }
 
         _threads[threadState.threadId] = threadState;
         Debug.Log($"[ThreadService] Thread added: {threadState.threadName} ({threadState.threadId})");
-        
+
         OnThreadChanged?.Invoke();
+        SaveThreadData();
         return true;
     }
 
-    /// <summary>
-    /// Thread를 생성하고 추가합니다.
-    /// </summary>
-    /// <param name="threadId">Thread ID</param>
-    /// <param name="threadName">Thread 이름</param>
-    /// <param name="division">부서/사업부</param>
-    /// <returns>생성된 ThreadState</returns>
-    public ThreadState CreateThread(string threadId, string threadName, string division = "")
+    /// <summary> Thread를 생성하거나, 이미 존재하면 이름을 업데이트합니다. </summary>
+    public ThreadState CreateThread(string threadId, string threadName)
     {
-        var newThread = new ThreadState(threadId, threadName, division);
-        
-        if (AddThread(newThread))
+        if (_threads.TryGetValue(threadId, out var existingThread))
         {
-            return newThread;
+            if (existingThread.threadName != threadName)
+            {
+                existingThread.threadName = threadName;
+                Debug.Log($"[ThreadService] Thread updated: {threadName} ({threadId})");
+                OnThreadChanged?.Invoke();
+                SaveThreadData();
+            }
+            return existingThread;
         }
-        
+
+        var newThread = new ThreadState(threadId, threadName);
+        if (AddThread(newThread)) return newThread;
+
         return null;
     }
 
-    /// <summary>
-    /// Thread를 제거합니다.
-    /// </summary>
-    /// <param name="threadId">제거할 Thread ID</param>
-    /// <returns>성공 시 true</returns>
+    /// <summary> Thread를 제거합니다. </summary>
     public bool RemoveThread(string threadId)
     {
         if (!_threads.ContainsKey(threadId))
@@ -167,390 +174,230 @@ public class ThreadDataHandler
         }
 
         var thread = _threads[threadId];
-        
-        // 모든 카테고리에서 해당 스레드 제거
+
+        // 1. 모든 카테고리에서 해당 스레드 제거
         foreach (var category in _categories.Values)
         {
-            if (category.threadIds != null && category.threadIds.Contains(threadId))
-            {
-                category.threadIds.Remove(threadId);
-                Debug.Log($"[ThreadService] Thread removed from category: {category.categoryName} ({category.categoryId})");
-            }
+            category.threadIds.Remove(threadId); // RemoveAll 대신 Remove 사용
         }
-        
-        // 스레드 삭제
+
+        // 2. 스레드 삭제
         _threads.Remove(threadId);
         Debug.Log($"[ThreadService] Thread removed: {thread.threadName} ({threadId})");
-        
-        // 카테고리 변경 이벤트도 발생시켜야 UI가 업데이트됨
+
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
+        SaveThreadData();
         return true;
     }
 
-    // ----------------- Public Methods (건물 관리) -----------------
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region Building Management
+
+    /// <summary> 특정 Thread의 건물 리스트를 반환합니다. </summary>
+    public List<BuildingState> GetBuildingStates(string threadId)
+    {
+        if (_threads.TryGetValue(threadId, out var thread)) return thread.buildingStateList;
+        Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
+        return null;
+    }
 
     /// <summary>
-    /// 특정 Thread에 건물을 추가합니다.
+    /// 특정 Thread의 건물 목록을 새로운 리스트로 덮어씁니다. (핵심 저장 로직)
+    /// BuildingTileManager에서 임시 데이터 적용 시 호출됩니다.
     /// </summary>
-    /// <param name="threadId">Thread ID</param>
-    /// <param name="buildingState">추가할 BuildingState</param>
+    /// <param name="threadId">대상 스레드 ID</param>
+    /// <param name="newBuildingStates">덮어쓸 새 건물 상태 리스트</param>
     /// <returns>성공 시 true</returns>
+    public bool OverwriteBuildings(string threadId, List<BuildingState> newBuildingStates)
+    {
+        if (!_threads.TryGetValue(threadId, out var thread))
+        {
+            Debug.LogWarning($"[ThreadService] Cannot overwrite buildings: Thread not found: {threadId}");
+            return false;
+        }
+
+        thread.buildingStateList = newBuildingStates ?? new List<BuildingState>();
+
+        Debug.Log($"[ThreadService] Overwrote {thread.buildingStateList.Count} buildings in thread: {threadId}");
+
+        OnThreadChanged?.Invoke();
+        SaveThreadData();
+        return true;
+    }
+
+    // NOTE: AddBuilding과 RemoveBuilding은 이제 OverwriteBuildings가 최종 저장 시 호출되므로, 
+    // 임시 데이터 관리를 위해 사용될 경우 SaveThreadData() 호출 로직을 유지할 수 있으나,
+    // 여기서는 최종적으로 ApplyTempBuildingDataToDataManager()가 OverwriteBuildings를 호출하는 방식으로 통합됩니다.
+
+    /// <summary> 특정 Thread에 건물을 추가합니다. </summary>
     public bool AddBuilding(string threadId, BuildingState buildingState)
     {
-        if (!_threads.TryGetValue(threadId, out var thread))
-        {
-            Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
-            return false;
-        }
+        if (!_threads.TryGetValue(threadId, out var thread) || buildingState == null) return false;
 
-        if (buildingState == null)
-        {
-            Debug.LogWarning("[ThreadService] BuildingState is null.");
-            return false;
-        }
-
+        // 기존 위치에 건물이 있으면 제거 후 추가 (덮어쓰기)
+        thread.buildingStateList.RemoveAll(b => b.positionX == buildingState.positionX && b.positionY == buildingState.positionY);
         thread.buildingStateList.Add(buildingState);
-        Debug.Log($"[ThreadService] Building added to thread {thread.threadName}: {buildingState.buildingId}");
-        
+
+        Debug.Log($"[ThreadService] Building added/replaced in thread {thread.threadName}: {buildingState.buildingId}");
+
         OnThreadChanged?.Invoke();
+        // SaveThreadData(); // OverwriteBuildings가 최종 저장 시 호출된다면, 여기서는 생략 가능 (성능 최적화)
         return true;
     }
 
-    /// <summary>
-    /// 특정 Thread에서 위치로 건물을 제거합니다.
-    /// </summary>
-    /// <param name="threadId">Thread ID</param>
-    /// <param name="position">건물 위치</param>
-    /// <returns>성공 시 true</returns>
+    /// <summary> 특정 Thread에서 위치로 건물을 제거합니다. </summary>
     public bool RemoveBuilding(string threadId, Vector2Int position)
     {
-        if (!_threads.TryGetValue(threadId, out var thread))
-        {
-            Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
-            return false;
-        }
+        if (!_threads.TryGetValue(threadId, out var thread)) return false;
 
-        var building = thread.buildingStateList.Find(b => b.position == position);
-        if (building == null)
+        int removedCount = thread.buildingStateList.RemoveAll(b => b.positionX == position.x && b.positionY == position.y);
+        if (removedCount == 0)
         {
             Debug.LogWarning($"[ThreadService] Building not found at position {position} in thread {threadId}");
             return false;
         }
 
-        thread.buildingStateList.Remove(building);
-        Debug.Log($"[ThreadService] Building removed from thread {thread.threadName}: {building.buildingId} at {position}");
-        
+        Debug.Log($"[ThreadService] Building removed from thread {thread.threadName} at {position}");
+
         OnThreadChanged?.Invoke();
+        // SaveThreadData(); // OverwriteBuildings가 최종 저장 시 호출된다면, 여기서는 생략 가능 (성능 최적화)
         return true;
     }
 
-    /// <summary>
-    /// 특정 위치에 건물이 있는지 확인합니다.
-    /// </summary>
-    /// <param name="threadId">Thread ID</param>
-    /// <param name="position">확인할 위치</param>
-    /// <returns>건물이 있으면 BuildingState, 없으면 null</returns>
+    /// <summary> 특정 위치에 건물이 있는지 확인합니다. </summary>
     public BuildingState GetBuildingAt(string threadId, Vector2Int position)
     {
-        if (!_threads.TryGetValue(threadId, out var thread))
-        {
-            return null;
-        }
-
-        return thread.buildingStateList.Find(b => b.position == position);
+        if (!_threads.TryGetValue(threadId, out var thread)) return null;
+        return thread.buildingStateList.Find(b => b.positionX == position.x && b.positionY == position.y);
     }
 
-    // ----------------- Utility Methods -----------------
+    #endregion
 
-    /// <summary>
-    /// 모든 Thread를 초기화합니다.
-    /// </summary>
-    public void ResetAllThreads()
-    {
-        _threads.Clear();
-        Debug.Log("[ThreadService] All threads have been reset.");
-        
-        OnThreadChanged?.Invoke();
-    }
+    //---------------------------------------------------------
 
-    /// <summary>
-    /// 등록된 Thread 개수를 반환합니다.
-    /// </summary>
-    /// <returns>Thread 개수</returns>
-    public int GetThreadCount()
-    {
-        return _threads.Count;
-    }
+    #region Category Getters (Read Operations)
 
-    // ----------------- Save/Load Methods -----------------
-
-    /// <summary>
-    /// 현재 Thread 데이터를 초기화합니다 (저장 전 백업용).
-    /// </summary>
-    public void ClearAllThreads()
-    {
-        _threads.Clear();
-        _categories.Clear();
-    }
-
-    /// <summary>
-    /// 저장용 Thread 리스트를 반환합니다.
-    /// </summary>
-    /// <returns>Thread 리스트</returns>
-    public List<ThreadState> GetThreadListForSave()
-    {
-        return new List<ThreadState>(_threads.Values);
-    }
-
-    /// <summary>
-    /// 저장용 Category 리스트를 반환합니다.
-    /// </summary>
-    /// <returns>Category 리스트</returns>
-    public List<ThreadCategory> GetCategoryListForSave()
-    {
-        return new List<ThreadCategory>(_categories.Values);
-    }
-
-    /// <summary>
-    /// 저장된 Thread 리스트를 로드합니다.
-    /// </summary>
-    /// <param name="threads">로드할 Thread 리스트</param>
-    public void LoadThreads(List<ThreadState> threads)
-    {
-        if (threads == null)
-        {
-            Debug.LogWarning("[ThreadService] Thread list is null.");
-            return;
-        }
-
-        int loadedCount = 0;
-        int skippedCount = 0;
-        
-        foreach (var thread in threads)
-        {
-            if (thread == null || string.IsNullOrEmpty(thread.threadId))
-                continue;
-
-            // 중복 체크 (이미 존재하는 스레드는 건너뜀)
-            if (_threads.ContainsKey(thread.threadId))
-            {
-                Debug.LogWarning($"[ThreadService] Skipping duplicate thread during load: {thread.threadId} ({thread.threadName})");
-                skippedCount++;
-                continue;
-            }
-            
-            _threads[thread.threadId] = thread;
-            loadedCount++;
-        }
-        
-        Debug.Log($"[ThreadService] Loaded {loadedCount} threads, skipped {skippedCount} duplicates");
-        OnThreadChanged?.Invoke();
-    }
-
-    /// <summary>
-    /// 저장된 Category 리스트를 로드합니다.
-    /// </summary>
-    /// <param name="categories">로드할 Category 리스트</param>
-    public void LoadCategories(List<ThreadCategory> categories)
-    {
-        if (categories == null)
-        {
-            Debug.LogWarning("[ThreadService] Category list is null.");
-            return;
-        }
-
-        foreach (var category in categories)
-        {
-            if (category != null && !string.IsNullOrEmpty(category.categoryId))
-            {
-                _categories[category.categoryId] = category;
-            }
-        }
-        
-        OnCategoryChanged?.Invoke();
-    }
-
-    // ----------------- Category Management Methods -----------------
-
-    /// <summary>
-    /// 카테고리를 추가합니다.
-    /// </summary>
-    /// <param name="category">추가할 ThreadCategory</param>
-    /// <returns>성공 시 true</returns>
-    public bool AddCategory(ThreadCategory category)
-    {
-        if (category == null)
-        {
-            Debug.LogWarning("[ThreadService] ThreadCategory is null.");
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(category.categoryId))
-        {
-            Debug.LogWarning("[ThreadService] Category ID is empty.");
-            return false;
-        }
-
-        if (_categories.ContainsKey(category.categoryId))
-        {
-            Debug.LogWarning($"[ThreadService] Category already exists: {category.categoryId}");
-            return false;
-        }
-
-        _categories[category.categoryId] = category;
-        Debug.Log($"[ThreadService] Category added: {category.categoryName} ({category.categoryId})");
-        
-        OnCategoryChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>
-    /// 카테고리를 생성하고 추가합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <param name="categoryName">카테고리 이름</param>
-    /// <returns>생성된 ThreadCategory</returns>
-    public ThreadCategory CreateCategory(string categoryId, string categoryName)
-    {
-        var newCategory = new ThreadCategory(categoryId, categoryName);
-        
-        if (AddCategory(newCategory))
-        {
-            return newCategory;
-        }
-        
-        return null;
-    }
-
-    /// <summary>
-    /// 카테고리를 제거합니다.
-    /// </summary>
-    /// <param name="categoryId">제거할 카테고리 ID</param>
-    /// <returns>성공 시 true</returns>
-    public bool RemoveCategory(string categoryId)
-    {
-        if (!_categories.ContainsKey(categoryId))
-        {
-            Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
-            return false;
-        }
-
-        var category = _categories[categoryId];
-        
-        // 카테고리에 속한 모든 스레드의 categoryId 초기화
-        if (category.threadIds != null)
-        {
-            foreach (var threadId in category.threadIds)
-            {
-                if (_threads.TryGetValue(threadId, out var thread))
-                {
-                    thread.categoryId = string.Empty;
-                }
-            }
-        }
-
-        _categories.Remove(categoryId);
-        Debug.Log($"[ThreadService] Category removed: {category.categoryName} ({categoryId})");
-        
-        OnCategoryChanged?.Invoke();
-        OnThreadChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>
-    /// 카테고리 이름을 변경합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <param name="newName">새 이름</param>
-    /// <returns>성공 시 true</returns>
-    public bool RenameCategory(string categoryId, string newName)
-    {
-        if (!_categories.TryGetValue(categoryId, out var category))
-        {
-            Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
-            return false;
-        }
-
-        category.categoryName = newName;
-        Debug.Log($"[ThreadService] Category renamed: {categoryId} -> {newName}");
-        
-        OnCategoryChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>
-    /// 특정 카테고리를 반환합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <returns>ThreadCategory 또는 null</returns>
+    /// <summary> 특정 카테고리를 반환합니다. </summary>
     public ThreadCategory GetCategory(string categoryId)
     {
-        if (_categories.TryGetValue(categoryId, out var category))
-        {
-            return category;
-        }
-        
+        if (_categories.TryGetValue(categoryId, out var category)) return category;
         Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
         return null;
     }
 
-    /// <summary>
-    /// 모든 카테고리를 반환합니다.
-    /// </summary>
-    /// <returns>카테고리 딕셔너리의 복사본</returns>
+    /// <summary> 모든 카테고리를 반환합니다. </summary>
     public Dictionary<string, ThreadCategory> GetAllCategories()
     {
         return new Dictionary<string, ThreadCategory>(_categories);
     }
 
-    /// <summary>
-    /// 모든 카테고리 ID 목록을 반환합니다.
-    /// </summary>
-    /// <returns>카테고리 ID 리스트</returns>
+    /// <summary> 모든 카테고리 ID 목록을 반환합니다. </summary>
     public List<string> GetAllCategoryIds()
     {
         return new List<string>(_categories.Keys);
     }
 
-    /// <summary>
-    /// 카테고리가 존재하는지 확인합니다.
-    /// </summary>
-    /// <param name="categoryId">확인할 카테고리 ID</param>
-    /// <returns>존재하면 true</returns>
+    /// <summary> 카테고리가 존재하는지 확인합니다. </summary>
     public bool HasCategory(string categoryId)
     {
         return _categories.ContainsKey(categoryId);
     }
 
-    /// <summary>
-    /// 등록된 카테고리 개수를 반환합니다.
-    /// </summary>
-    /// <returns>카테고리 개수</returns>
-    public int GetCategoryCount()
+    /// <summary> 특정 카테고리에 속한 스레드 ID 목록을 반환합니다. </summary>
+    public List<string> GetThreadIdsInCategory(string categoryId)
     {
-        return _categories.Count;
+        if (_categories.TryGetValue(categoryId, out var category)) return new List<string>(category.threadIds);
+        Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
+        return new List<string>();
     }
 
-    /// <summary>
-    /// 카테고리에 스레드를 추가합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <param name="threadId">추가할 스레드 ID</param>
-    /// <returns>성공 시 true</returns>
-    public bool AddThreadToCategory(string categoryId, string threadId)
+    /// <summary> 특정 카테고리에 속한 스레드 상태 목록을 반환합니다. </summary>
+    public List<ThreadState> GetThreadsInCategory(string categoryId)
     {
-        if (!_categories.TryGetValue(categoryId, out var category))
+        var result = new List<ThreadState>();
+        foreach (var thread in _threads.Values)
         {
-            Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
+            if (thread.categoryId == categoryId) result.Add(thread);
+        }
+        return result;
+    }
+
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region Category CRUD (Write Operations)
+
+    /// <summary> 카테고리를 추가합니다. </summary>
+    public bool AddCategory(ThreadCategory category)
+    {
+        if (category == null || string.IsNullOrEmpty(category.categoryId) || _categories.ContainsKey(category.categoryId))
+        {
+            Debug.LogWarning($"[ThreadService] Invalid category or ID exists: {category?.categoryId}");
             return false;
         }
 
-        if (!_threads.TryGetValue(threadId, out var thread))
+        _categories[category.categoryId] = category;
+        Debug.Log($"[ThreadService] Category added: {category.categoryName}");
+
+        OnCategoryChanged?.Invoke();
+        SaveThreadData();
+        return true;
+    }
+
+    /// <summary> 카테고리를 생성하고 추가합니다. </summary>
+    public ThreadCategory CreateCategory(string categoryId, string categoryName)
+    {
+        var newCategory = new ThreadCategory(categoryId, categoryName);
+        if (AddCategory(newCategory)) return newCategory;
+        return null;
+    }
+
+    /// <summary> 카테고리를 제거합니다. </summary>
+    public bool RemoveCategory(string categoryId)
+    {
+        if (!_categories.ContainsKey(categoryId)) return false;
+
+        var category = _categories[categoryId];
+        // 카테고리에 속한 스레드 ID 초기화
+        if (category.threadIds != null)
         {
-            Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
-            return false;
+            foreach (var threadId in category.threadIds)
+            {
+                if (_threads.TryGetValue(threadId, out var thread)) thread.categoryId = string.Empty;
+            }
         }
+
+        _categories.Remove(categoryId);
+        Debug.Log($"[ThreadService] Category removed: {category.categoryName}");
+
+        OnCategoryChanged?.Invoke();
+        OnThreadChanged?.Invoke();
+        SaveThreadData();
+        return true;
+    }
+
+    /// <summary> 카테고리 이름을 변경합니다. </summary>
+    public bool RenameCategory(string categoryId, string newName)
+    {
+        if (!_categories.TryGetValue(categoryId, out var category)) return false;
+
+        category.categoryName = newName;
+        Debug.Log($"[ThreadService] Category renamed: {categoryId} -> {newName}");
+
+        OnCategoryChanged?.Invoke();
+        SaveThreadData();
+        return true;
+    }
+
+    /// <summary> 카테고리에 스레드를 추가합니다. </summary>
+    public bool AddThreadToCategory(string categoryId, string threadId)
+    {
+        if (!_categories.TryGetValue(categoryId, out var category) || !_threads.TryGetValue(threadId, out var thread)) return false;
 
         // 기존 카테고리에서 제거
         if (!string.IsNullOrEmpty(thread.categoryId) && _categories.TryGetValue(thread.categoryId, out var oldCategory))
@@ -559,81 +406,91 @@ public class ThreadDataHandler
         }
 
         // 새 카테고리에 추가
-        if (!category.threadIds.Contains(threadId))
-        {
-            category.threadIds.Add(threadId);
-        }
-        
+        if (!category.threadIds.Contains(threadId)) category.threadIds.Add(threadId);
+
         thread.categoryId = categoryId;
         Debug.Log($"[ThreadService] Thread {thread.threadName} added to category {category.categoryName}");
-        
+
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
+        SaveThreadData();
         return true;
     }
 
-    /// <summary>
-    /// 카테고리에서 스레드를 제거합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <param name="threadId">제거할 스레드 ID</param>
-    /// <returns>성공 시 true</returns>
+    /// <summary> 카테고리에서 스레드를 제거합니다. </summary>
     public bool RemoveThreadFromCategory(string categoryId, string threadId)
     {
-        if (!_categories.TryGetValue(categoryId, out var category))
-        {
-            Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
-            return false;
-        }
-
-        if (!_threads.TryGetValue(threadId, out var thread))
-        {
-            Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
-            return false;
-        }
+        if (!_categories.TryGetValue(categoryId, out var category) || !_threads.TryGetValue(threadId, out var thread)) return false;
 
         category.threadIds.Remove(threadId);
         thread.categoryId = string.Empty;
         Debug.Log($"[ThreadService] Thread {thread.threadName} removed from category {category.categoryName}");
-        
+
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
+        SaveThreadData();
         return true;
     }
 
-    /// <summary>
-    /// 특정 카테고리에 속한 스레드 목록을 반환합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <returns>스레드 ID 리스트</returns>
-    public List<string> GetThreadIdsInCategory(string categoryId)
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region Save/Load Data Access
+
+    /// <summary> 저장용 Thread 리스트를 반환합니다. </summary>
+    public List<ThreadState> GetThreadListForSave()
     {
-        if (_categories.TryGetValue(categoryId, out var category))
-        {
-            return new List<string>(category.threadIds);
-        }
-        
-        Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
-        return new List<string>();
+        return new List<ThreadState>(_threads.Values);
     }
 
-    /// <summary>
-    /// 특정 카테고리에 속한 스레드 상태 목록을 반환합니다.
-    /// </summary>
-    /// <param name="categoryId">카테고리 ID</param>
-    /// <returns>ThreadState 리스트</returns>
-    public List<ThreadState> GetThreadsInCategory(string categoryId)
+    /// <summary> 저장용 Category 리스트를 반환합니다. </summary>
+    public List<ThreadCategory> GetCategoryListForSave()
     {
-        var result = new List<ThreadState>();
-        
-        foreach (var thread in _threads.Values)
+        return new List<ThreadCategory>(_categories.Values);
+    }
+
+    /// <summary> 저장된 Thread 리스트를 로드합니다. </summary>
+    public void LoadThreads(List<ThreadState> threads)
+    {
+        if (threads == null) return;
+
+        // 기존 로직 유지 (LoadThreads는 AddThread를 사용하지 않고 직접 _threads를 채움)
+
+        int loadedCount = 0;
+        int skippedCount = 0;
+
+        foreach (var thread in threads)
         {
-            if (thread.categoryId == categoryId)
+            if (thread == null || string.IsNullOrEmpty(thread.threadId)) continue;
+            if (_threads.ContainsKey(thread.threadId))
             {
-                result.Add(thread);
+                Debug.LogWarning($"[ThreadService] Skipping duplicate thread during load: {thread.threadId}");
+                skippedCount++;
+                continue;
+            }
+            _threads[thread.threadId] = thread;
+            loadedCount++;
+        }
+
+        Debug.Log($"[ThreadService] Loaded {loadedCount} threads, skipped {skippedCount} duplicates");
+        OnThreadChanged?.Invoke();
+    }
+
+    /// <summary> 저장된 Category 리스트를 로드합니다. </summary>
+    public void LoadCategories(List<ThreadCategory> categories)
+    {
+        if (categories == null) return;
+
+        foreach (var category in categories)
+        {
+            if (category != null && !string.IsNullOrEmpty(category.categoryId))
+            {
+                _categories[category.categoryId] = category;
             }
         }
-        
-        return result;
+        OnCategoryChanged?.Invoke();
     }
+
+    #endregion
 }

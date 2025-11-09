@@ -22,7 +22,7 @@ MonoBehaviour:
   baseCost: 500
   baseMaintenanceCost: 25
   size: {x: 2, y: 2}
-  allowedResourceTypes: 0200000003000000
+  allowedResourceTypes: 0300000004000000
   inputPosition: {x: -1, y: 1}
   outputPosition: {x: 2, y: 1}
   baseProductionRate: 1

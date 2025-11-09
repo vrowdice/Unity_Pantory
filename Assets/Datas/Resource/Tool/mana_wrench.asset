@@ -18,10 +18,12 @@ MonoBehaviour:
   maxValue: 680
   baseValue: 480
   rarity: 0.3
-  type: 2
+  type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 8329272c16e9f6d4783646a4202370b5, type: 3}
-  description: A mystical wrench radiating arcane power. Can manipulate magical constructs and enchanted machinery with ease.
+  description: A mystical wrench radiating arcane power. Can manipulate magical constructs
+    and enchanted machinery with ease.
   requirements:
   - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
     count: 2
+  initialAmount: 0

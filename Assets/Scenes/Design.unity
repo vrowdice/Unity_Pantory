@@ -4664,11 +4664,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9456d8af5e75b4f9ebfd08d6404a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _threadTitleInputField: {fileID: 0}
   _buildingTypeBtnPrefab: {fileID: 5843711190326734755, guid: 1df3294a1ba7ef54eac87bc4a0d0da5a, type: 3}
   _buildingTypeBtnContent: {fileID: 1797536009}
   _buildingBtnPrefab: {fileID: 412398129040250562, guid: ca8cf8656f83546468bec330025d97f7, type: 3}
   _buildingBtnContent: {fileID: 1207280451}
-  _threadTitleInputField: {fileID: 878789322}
   _deselectBuildingBtnImage: {fileID: 1423325038}
   _removalModeBtnImage: {fileID: 527040269}
   _buildingInfoPanel: {fileID: 405737244}

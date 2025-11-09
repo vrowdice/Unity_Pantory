@@ -18,12 +18,14 @@ MonoBehaviour:
   maxValue: 180
   baseValue: 120
   rarity: 0.4
-  type: 3
+  type: 4
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: e135deec5aa629f4eac85f313d1ba09d, type: 3}
-  description: A well-balanced blade forged from steel alloy. Sharp and durable, capable of withstanding fierce combat.
+  description: A well-balanced blade forged from steel alloy. Sharp and durable,
+    capable of withstanding fierce combat.
   requirements:
   - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
     count: 3
   - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
     count: 1
+  initialAmount: 0

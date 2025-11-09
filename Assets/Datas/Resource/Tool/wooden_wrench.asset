@@ -18,11 +18,12 @@ MonoBehaviour:
   maxValue: 45
   baseValue: 28
   rarity: 0.8
-  type: 2
+  type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: c42dccca25dc1e3428f5cecc312c3f12, type: 3}
-  description: A basic wooden tool for gripping and turning. Though not as durable as metal, it's sufficient for simple assembly tasks.
+  description: A basic wooden tool for gripping and turning. Though not as durable
+    as metal, it's sufficient for simple assembly tasks.
   requirements:
   - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
     count: 2
-
+  initialAmount: 0

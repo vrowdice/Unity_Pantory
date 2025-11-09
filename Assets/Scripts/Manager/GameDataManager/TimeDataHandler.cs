@@ -59,15 +59,13 @@ public class TimeDataHandler
     /// TimeService 생성자
     /// 기본값: 0년 0월 0일부터 시작
     /// </summary>
-    public TimeDataHandler()
+    public TimeDataHandler(GameDataManager gameDataManager)
     {
         _year = 0;
         _month = 0;
         _day = 0;
         _isTimePaused = false;
         _timeSpeed = 1.0f;
-        
-        Debug.Log("[TimeService] Initialized. Start date: Y0 M0 D0");
     }
 
     /// <summary>
@@ -232,8 +230,6 @@ public class TimeDataHandler
         _year = year;
         _month = month;
         _day = day;
-
-        Debug.Log($"[TimeService] Date set to: {GetDateString()}");
     }
 
     /// <summary>
@@ -248,7 +244,6 @@ public class TimeDataHandler
         }
 
         _realSecondsPerDay = seconds;
-        Debug.Log($"[TimeService] Real seconds per day set to {seconds}s.");
     }
 
     /// <summary>

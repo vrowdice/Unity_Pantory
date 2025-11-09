@@ -42,7 +42,6 @@ public class InitialResourceData : ScriptableObject
 
         // Silver 적용
         financesService.SetCredit(initialCredit);
-        Debug.Log($"[InitialResourceData] Initial Credit applied: {initialCredit}");
 
         // 각 자원 적용
         foreach (var resource in initialResources)

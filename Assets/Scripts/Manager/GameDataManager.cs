@@ -2,79 +2,53 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 게임 데이터를 관리하는 싱글톤 허브 클래스 (실제 데이터 관리는 각 서비스 클래스에 위임)
+/// <summary>
+/// 게임 데이터를 관리하는 싱글톤 허브 클래스 (실제 데이터 관리는 각 서비스 클래스에 위임)
+/// </summary>
 public class GameDataManager : MonoBehaviour
 {
+    // ==================== 싱글톤 인스턴스 ====================
     public static GameDataManager Instance { get; private set; }
+
+    #region 인스펙터 설정 (Initial Data)
 
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;
-    
+
     [Header("Time Settings")]
     [SerializeField] private TimeSettingsData _timeSettingsData;
 
-    private TimeDataHandler _timeService;
-    public TimeDataHandler Time => _timeService;
+    #endregion
 
-    private ThreadDataHandler _threadService;
-    public ThreadDataHandler Thread => _threadService;
+    #region 데이터 핸들러 (Services)
 
-    private ResourceDataHandler _resourceService;
-    public ResourceDataHandler Resource => _resourceService;
+    private TimeDataHandler _timeHandler;
+    public TimeDataHandler Time => _timeHandler;
 
-    private FinancesDataHandler _financesService;
-    public FinancesDataHandler Finances => _financesService;
+    private ThreadDataHandler _threadHandler;
+    public ThreadDataHandler Thread => _threadHandler;
 
-    private EmployeeDataHandler _employeeService;
-    public EmployeeDataHandler Employee => _employeeService;
+    private ResourceDataHandler _resourceHandler;
+    public ResourceDataHandler Resource => _resourceHandler;
 
-    private BuildingDataHandler _buildingService;
-    public BuildingDataHandler Building => _buildingService;
+    private FinancesDataHandler _financesHandler;
+    public FinancesDataHandler Finances => _financesHandler;
+
+    private EmployeeDataHandler _employeeHandler;
+    public EmployeeDataHandler Employee => _employeeHandler;
+
+    private BuildingDataHandler _buildingHandler;
+    public BuildingDataHandler Building => _buildingHandler;
 
     private SaveLoadHandler _saveLoadHandler;
     public SaveLoadHandler SaveLoad => _saveLoadHandler;
 
-    // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
-    public event Action OnResourceChanged
-    {
-        add => _resourceService.OnResourceChanged += value;
-        remove => _resourceService.OnResourceChanged -= value;
-    }
+    // 레거시 호환 프로퍼티
+    public long Silver => _financesHandler.GetCredit();
 
-    // 금액 변경 이벤트 (FinancesService의 이벤트를 중계)
-    public event Action OnSilverChanged
-    {
-        add => _financesService.OnCreditChanged += value;
-        remove => _financesService.OnCreditChanged -= value;
-    }
+    #endregion
 
-    // 직원 변경 이벤트 (EmployeeService의 이벤트를 중계)
-    public event Action OnEmployeeChanged
-    {
-        add => _employeeService.OnEmployeeChanged += value;
-        remove => _employeeService.OnEmployeeChanged -= value;
-    }
-
-    // 건물 변경 이벤트 (BuildingService의 이벤트를 중계)
-/*    public event Action OnBuildingChanged
-    {
-        add => _buildingService.OnBuildingChanged += value;
-        remove => _buildingService.OnBuildingChanged -= value;
-    }*/
-
-    // Thread 변경 이벤트 (ThreadService의 이벤트를 중계)
-    public event Action OnThreadChanged
-    {
-        add => _threadService.OnThreadChanged += value;
-        remove => _threadService.OnThreadChanged -= value;
-    }
-
-    // Category 변경 이벤트 (ThreadService의 이벤트를 중계)
-    public event Action OnCategoryChanged
-    {
-        add => _threadService.OnCategoryChanged += value;
-        remove => _threadService.OnCategoryChanged -= value;
-    }
+    #region Unity 생명주기 및 초기화 (Awake, Start, Update)
 
     void Awake()
     {
@@ -83,62 +57,123 @@ public class GameDataManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
         InitializeServices();
     }
 
-    // 모든 서비스를 초기화
+    void Update()
+    {
+        // TimeService 업데이트
+        if (_timeHandler != null)
+        {
+            _timeHandler.Update(UnityEngine.Time.deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// 모든 서비스를 초기화하고 SaveLoadHandler를 연결합니다.
+    /// </summary>
     private void InitializeServices()
     {
-        _timeService = new TimeDataHandler();
-        _resourceService = new ResourceDataHandler(); // 자동으로 ResourceData 로드
-        _financesService = new FinancesDataHandler();
-        _employeeService = new EmployeeDataHandler(); // 자동으로 EmployeeData 로드
-        _buildingService = new BuildingDataHandler(); // 자동으로 BuildingData 로드
-        _threadService = new ThreadDataHandler();
-        
-        // SaveLoadHandler 초기화
-        _saveLoadHandler = GetComponent<SaveLoadHandler>();
-        if (_saveLoadHandler == null)
-        {
-            _saveLoadHandler = gameObject.AddComponent<SaveLoadHandler>();
-        }
-        
+        _saveLoadHandler = new SaveLoadHandler(this);
+        _threadHandler = new ThreadDataHandler(this);
+        _timeHandler = new TimeDataHandler(this);
+        _resourceHandler = new ResourceDataHandler(this);
+        _financesHandler = new FinancesDataHandler(this);
+        _employeeHandler = new EmployeeDataHandler(this);
+        _buildingHandler = new BuildingDataHandler(this);
+
         Debug.Log("[GameDataManager] All services initialized.");
 
-        // 시간 설정 적용
+        // 초기 데이터 및 설정 적용
         ApplyTimeSettings();
-
-        // 초기 자원 적용
         ApplyInitialResources();
 
-        // Thread 데이터 자동 로드
+        // Thread 데이터 자동 로드 시도
         LoadThreadData();
     }
 
+    #endregion
+
+    #region 이벤트 중계 (Event Proxy)
+
+    // 자원 변경 이벤트 (ResourceService의 이벤트를 중계)
+    public event Action OnResourceChanged
+    {
+        add => _resourceHandler.OnResourceChanged += value;
+        remove => _resourceHandler.OnResourceChanged -= value;
+    }
+
+    // 금액 변경 이벤트 (FinancesService의 이벤트를 중계)
+    public event Action OnSilverChanged
+    {
+        add => _financesHandler.OnCreditChanged += value;
+        remove => _financesHandler.OnCreditChanged -= value;
+    }
+
+    // 직원 변경 이벤트 (EmployeeService의 이벤트를 중계)
+    public event Action OnEmployeeChanged
+    {
+        add => _employeeHandler.OnEmployeeChanged += value;
+        remove => _employeeHandler.OnEmployeeChanged -= value;
+    }
+
+    /* // 건물 변경 이벤트 (BuildingService의 이벤트를 중계)
+    public event Action OnBuildingChanged
+    {
+        add => _buildingService.OnBuildingChanged += value;
+        remove => _buildingService.OnBuildingChanged -= value;
+    }*/
+
+    // Thread 변경 이벤트 (ThreadService의 이벤트를 중계)
+    public event Action OnThreadChanged
+    {
+        add => _threadHandler.OnThreadChanged += value;
+        remove => _threadHandler.OnThreadChanged -= value;
+    }
+
+    // Category 변경 이벤트 (ThreadService의 이벤트를 중계)
+    public event Action OnCategoryChanged
+    {
+        add => _threadHandler.OnCategoryChanged += value;
+        remove => _threadHandler.OnCategoryChanged -= value;
+    }
+
+    #endregion
+
+    #region 초기 데이터 및 저장/로드 로직 (ThreadDataHandler로 저장 권한 위임)
+
     /// <summary>
-    /// Thread 데이터를 자동으로 로드합니다.
+    /// Thread 데이터를 자동으로 로드합니다. 로드 실패 시 데이터를 초기화하고 저장합니다.
     /// </summary>
     private void LoadThreadData()
     {
-        if (_saveLoadHandler != null && _threadService != null)
+        if (_saveLoadHandler != null && _threadHandler != null)
         {
-            _saveLoadHandler.LoadThreadData(_threadService);
+            if (!_saveLoadHandler.LoadThreadData(_threadHandler))
+            {
+                Debug.LogWarning("[GameDataManager] Failed to load Thread data. Attempting to reset and save default data.");
+                ResetThreadData();
+            }
         }
     }
 
     /// <summary>
-    /// Thread 데이터를 저장합니다.
+    /// Thread 데이터를 초기화합니다.
     /// </summary>
-    public void SaveThreadData()
+    private void ResetThreadData()
     {
-        if (_saveLoadHandler != null && _threadService != null)
-        {
-            _saveLoadHandler.SaveThreadData(_threadService);
-        }
+        // Thread 데이터를 초기 상태로 되돌림
+        _threadHandler.ResetThreadData();
+
+        // 데이터가 변경되었으므로 ThreadDataHandler가 내부적으로 저장을 요청해야 함
+        // ThreadDataHandler.ResetThreadData() 내부에서 SaveThreadData()를 호출하도록 수정함
     }
+
+    // NOTE: Thread 데이터를 저장하는 public 메서드 SaveThreadData()는 책임 분리 원칙에 따라 제거되었습니다. 
+    // 저장은 ThreadDataHandler 내부에서 데이터가 변경된 후 자동으로 호출됩니다.
 
     /// <summary>
     /// 시간 설정 데이터를 적용합니다.
@@ -151,7 +186,7 @@ public class GameDataManager : MonoBehaviour
             return;
         }
 
-        _timeSettingsData.ApplyToTimeService(_timeService);
+        _timeSettingsData.ApplyToTimeService(_timeHandler);
     }
 
     /// <summary>
@@ -161,196 +196,197 @@ public class GameDataManager : MonoBehaviour
     {
         if (_initialResourceData == null)
         {
-            Debug.LogWarning("[GameDataManager] InitialResourceData가 할당되지 않았습니다. 기본값(0)으로 시작합니다.");
+            Debug.LogWarning("[GameDataManager] InitialResourceData is not assigned. Starting with default values (0).");
             return;
         }
 
-        _initialResourceData.ApplyToServices(_resourceService, _financesService);
+        _initialResourceData.ApplyToServices(_resourceHandler, _financesHandler);
     }
 
-    // ----------------- 편의 메서드 (ResourceService 직접 호출) -----------------
-    
-    // 특정 자원의 현재 보유량 반환
-    public long GetResourceQuantity(string resourceId) => _resourceService.GetResourceQuantity(resourceId);
+    #endregion
 
-    // 특정 자원의 현재 가격 반환
-    public float GetResourcePrice(string resourceId) => _resourceService.GetResourcePrice(resourceId);
+    #region 편의 메서드: Time Service
 
-    // 특정 자원의 ResourceEntry 반환
-    public ResourceEntry GetResourceEntry(string resourceId) => _resourceService.GetResourceEntry(resourceId);
+    public void PauseTime() => _timeHandler.PauseTime();
+    public void ResumeTime() => _timeHandler.ResumeTime();
+    public void SetTimeSpeed(float speed) => _timeHandler.SetTimeSpeed(speed);
+    public bool IsTimePaused() => _timeHandler.IsTimePaused();
+    public float GetTimeSpeed() => _timeHandler.GetTimeSpeed();
+    public string GetDateString() => _timeHandler.GetDateString();
 
-    // 모든 자원 정보 반환
-    public Dictionary<string, ResourceEntry> GetAllResources() => _resourceService.GetAllResources();
+    #endregion
 
-    // 특정 자원 추가
-    public void AddResource(string resourceId, long amount) => _resourceService.AddResource(resourceId, amount);
+    #region 편의 메서드: Resource Service
 
-    // 특정 자원 제거
-    public bool TryRemoveResource(string resourceId, long amount) => _resourceService.TryRemoveResource(resourceId, amount);
+    /// <summary> 특정 자원의 현재 보유량 반환 </summary>
+    public long GetResourceQuantity(string resourceId) => _resourceHandler.GetResourceQuantity(resourceId);
 
-    // 특정 자원 충분 여부 확인
-    public bool HasEnoughResource(string resourceId, long amount) => _resourceService.HasEnoughResource(resourceId, amount);
+    /// <summary> 특정 자원의 현재 가격 반환 </summary>
+    public float GetResourcePrice(string resourceId) => _resourceHandler.GetResourcePrice(resourceId);
 
-    // ----------------- 편의 메서드 (FinancesService 직접 호출) -----------------
+    /// <summary> 특정 자원의 ResourceEntry 반환 </summary>
+    public ResourceEntry GetResourceEntry(string resourceId) => _resourceHandler.GetResourceEntry(resourceId);
 
-    // 현재 보유 금액 반환
-    public long GetCredit() => _financesService.GetCredit();
+    /// <summary> 모든 자원 정보 반환 </summary>
+    public Dictionary<string, ResourceEntry> GetAllResources() => _resourceHandler.GetAllResources();
 
-    // 금액 추가
-    public void AddCredit(long amount) => _financesService.AddCredit(amount);
+    /// <summary> 특정 자원 추가 </summary>
+    public void AddResource(string resourceId, long amount) => _resourceHandler.AddResource(resourceId, amount);
 
-    // 금액 차감
-    public bool TryRemoveCredit(long amount) => _financesService.TryRemoveCredit(amount);
+    /// <summary> 특정 자원 제거 시도 </summary>
+    public bool TryRemoveResource(string resourceId, long amount) => _resourceHandler.TryRemoveResource(resourceId, amount);
 
-    // 금액 충분 여부 확인
-    public bool HasEnoughCredit(long amount) => _financesService.HasEnoughCredit(amount);
+    /// <summary> 특정 자원 충분 여부 확인 </summary>
+    public bool HasEnoughResource(string resourceId, long amount) => _resourceHandler.HasEnoughResource(resourceId, amount);
 
-    // ----------------- 편의 메서드 (EmployeeService 직접 호출) -----------------
+    #endregion
 
-    // 특정 직원 유형의 인원 수 반환
-    public int GetEmployeeCount(string employeeId) => _employeeService.GetEmployeeCount(employeeId);
+    #region 편의 메서드: Finances Service
 
-    // 특정 직원 유형의 총 급여 반환
-    public long GetEmployeeTotalSalary(string employeeId) => _employeeService.GetEmployeeTotalSalary(employeeId);
+    /// <summary> 현재 보유 금액 반환 </summary>
+    public long GetCredit() => _financesHandler.GetCredit();
 
-    // 모든 직원의 총 급여 반환
-    public long GetTotalSalary() => _employeeService.GetTotalSalary();
+    /// <summary> 금액 추가 </summary>
+    public void AddCredit(long amount) => _financesHandler.AddCredit(amount);
 
-    // 직원 고용
-    public void HireEmployee(string employeeId, int count) => _employeeService.HireEmployee(employeeId, count);
+    /// <summary> 금액 차감 시도 </summary>
+    public bool TryRemoveCredit(long amount) => _financesHandler.TryRemoveCredit(amount);
 
-    // 직원 해고
-    public bool TryFireEmployee(string employeeId, int count) => _employeeService.TryFireEmployee(employeeId, count);
+    /// <summary> 금액 충분 여부 확인 </summary>
+    public bool HasEnoughCredit(long amount) => _financesHandler.HasEnoughCredit(amount);
 
-    // 직원 인원 수 설정
-    public void SetEmployeeCount(string employeeId, int count) => _employeeService.SetEmployeeCount(employeeId, count);
+    #endregion
 
-    // 모든 직원 정보 반환
-    public Dictionary<string, EmployeeEntry> GetAllEmployees() => _employeeService.GetAllEmployees();
+    #region 편의 메서드: Employee Service
 
-    // ----------------- 편의 메서드 (BuildingService 직접 호출) -----------------
+    /// <summary> 특정 직원 유형의 인원 수 반환 </summary>
+    public int GetEmployeeCount(string employeeId) => _employeeHandler.GetEmployeeCount(employeeId);
 
-    // 특정 건물의 BuildingData 반환
-    public BuildingData GetBuildingData(string buildingId) => _buildingService.GetBuildingData(buildingId);
+    /// <summary> 특정 직원 유형의 총 급여 반환 </summary>
+    public long GetEmployeeTotalSalary(string employeeId) => _employeeHandler.GetEmployeeTotalSalary(employeeId);
 
-    // 모든 건물 데이터 반환
-    public Dictionary<string, BuildingData> GetAllBuildings() => _buildingService.GetAllBuildings();
+    /// <summary> 모든 직원의 총 급여 반환 </summary>
+    public long GetTotalSalary() => _employeeHandler.GetTotalSalary();
 
-    // 특정 타입의 건물 데이터 리스트 반환
-    public List<BuildingData> GetBuildingDataList(BuildingType buildingType) => _buildingService.GetBuildingDataList(buildingType);
+    /// <summary> 직원 고용 </summary>
+    public void HireEmployee(string employeeId, int count) => _employeeHandler.HireEmployee(employeeId, count);
 
-    // 건물 등록 여부 확인
-    public bool IsBuildingRegistered(string buildingId) => _buildingService.IsBuildingRegistered(buildingId);
+    /// <summary> 직원 해고 시도 </summary>
+    public bool TryFireEmployee(string employeeId, int count) => _employeeHandler.TryFireEmployee(employeeId, count);
 
-    // 등록된 건물 타입 개수 반환
-    public int GetBuildingTypeCount() => _buildingService.GetBuildingTypeCount();
+    /// <summary> 직원 인원 수 설정 </summary>
+    public void SetEmployeeCount(string employeeId, int count) => _employeeHandler.SetEmployeeCount(employeeId, count);
 
-    // ----------------- 편의 메서드 (ThreadService 직접 호출) -----------------
+    /// <summary> 모든 직원 정보 반환 </summary>
+    public Dictionary<string, EmployeeEntry> GetAllEmployees() => _employeeHandler.GetAllEmployees();
 
-    // 특정 Thread 반환
-    public ThreadState GetThread(string threadId) => _threadService.GetThread(threadId);
+    #endregion
 
-    // 모든 Thread 반환 (Dictionary)
-    public Dictionary<string, ThreadState> GetAllThreads() => _threadService.GetAllThreads();
+    #region 편의 메서드: Building Service
 
-    // 모든 Thread 반환 (List)
-    public List<ThreadState> GetAllThreadList() => _threadService.GetAllThreadList();
+    /// <summary> 특정 건물의 BuildingData 반환 </summary>
+    public BuildingData GetBuildingData(string buildingId) => _buildingHandler.GetBuildingData(buildingId);
 
-    // 모든 Thread ID 반환
-    public List<string> GetAllThreadIds() => _threadService.GetAllThreadIds();
+    /// <summary> 모든 건물 데이터 반환 </summary>
+    public Dictionary<string, BuildingData> GetAllBuildings() => _buildingHandler.GetAllBuildings();
 
-    // Thread의 건물 리스트 반환
-    public List<BuildingState> GetBuildingStates(string threadId) => _threadService.GetBuildingStates(threadId);
+    /// <summary> 특정 타입의 건물 데이터 리스트 반환 </summary>
+    public List<BuildingData> GetBuildingDataList(BuildingType buildingType) => _buildingHandler.GetBuildingDataList(buildingType);
 
-    // Thread 존재 여부 확인
-    public bool HasThread(string threadId) => _threadService.HasThread(threadId);
+    /// <summary> 건물 등록 여부 확인 </summary>
+    public bool IsBuildingRegistered(string buildingId) => _buildingHandler.IsBuildingRegistered(buildingId);
 
-    // Thread 추가
-    public bool AddThread(ThreadState threadState) => _threadService.AddThread(threadState);
+    /// <summary> 등록된 건물 타입 개수 반환 </summary>
+    public int GetBuildingTypeCount() => _buildingHandler.GetBuildingTypeCount();
 
-    // Thread 생성 및 추가
-    public ThreadState CreateThread(string threadId, string threadName, string division = "") => _threadService.CreateThread(threadId, threadName, division);
+    #endregion
 
-    // Thread 제거
-    public bool RemoveThread(string threadId) => _threadService.RemoveThread(threadId);
+    #region 편의 메서드: Thread Service (Thread 관련)
 
-    // Thread에 건물 추가
-    public bool AddBuildingToThread(string threadId, BuildingState buildingState) => _threadService.AddBuilding(threadId, buildingState);
+    /// <summary> 모든 Thread 데이터 초기화 </summary>
+    public void ClearAllThreads() => _threadHandler.ResetThreadData();
 
-    // Thread에서 건물 제거
-    public bool RemoveBuildingFromThread(string threadId, Vector2Int position) => _threadService.RemoveBuilding(threadId, position);
+    /// <summary> 특정 Thread 반환 </summary>
+    public ThreadState GetThread(string threadId) => _threadHandler.GetThread(threadId);
 
-    // 특정 위치의 건물 반환
-    public BuildingState GetBuildingAt(string threadId, Vector2Int position) => _threadService.GetBuildingAt(threadId, position);
+    /// <summary> 모든 Thread 반환 (Dictionary) </summary>
+    public Dictionary<string, ThreadState> GetAllThreads() => _threadHandler.GetAllThreads();
 
-    // Thread 개수 반환
-    public int GetThreadCount() => _threadService.GetThreadCount();
+    /// <summary> 모든 Thread 반환 (List) </summary>
+    public List<ThreadState> GetAllThreadList() => _threadHandler.GetAllThreadList();
 
-    // ----------------- 편의 메서드 (ThreadService - Category 관련) -----------------
+    /// <summary> 모든 Thread ID 반환 </summary>
+    public List<string> GetAllThreadIds() => _threadHandler.GetAllThreadIds();
 
-    // 카테고리 추가
-    public bool AddCategory(ThreadCategory category) => _threadService.AddCategory(category);
+    /// <summary> Thread의 건물 리스트 반환 </summary>
+    public List<BuildingState> GetBuildingStates(string threadId) => _threadHandler.GetBuildingStates(threadId);
 
-    // 카테고리 생성 및 추가
-    public ThreadCategory CreateCategory(string categoryId, string categoryName) => _threadService.CreateCategory(categoryId, categoryName);
+    /// <summary> Thread 존재 여부 확인 </summary>
+    public bool HasThread(string threadId) => _threadHandler.HasThread(threadId);
 
-    // 카테고리 제거
-    public bool RemoveCategory(string categoryId) => _threadService.RemoveCategory(categoryId);
+    /// <summary> Thread 추가 </summary>
+    public bool AddThread(ThreadState threadState) => _threadHandler.AddThread(threadState);
 
-    // 카테고리 이름 변경
-    public bool RenameCategory(string categoryId, string newName) => _threadService.RenameCategory(categoryId, newName);
+    /// <summary> Thread 생성 및 추가 </summary>
+    public ThreadState CreateThread(string threadId, string threadName) => _threadHandler.CreateThread(threadId, threadName);
 
-    // 특정 카테고리 반환
-    public ThreadCategory GetCategory(string categoryId) => _threadService.GetCategory(categoryId);
+    /// <summary> Thread 제거 </summary>
+    public bool RemoveThread(string threadId) => _threadHandler.RemoveThread(threadId);
 
-    // 모든 카테고리 반환
-    public Dictionary<string, ThreadCategory> GetAllCategories() => _threadService.GetAllCategories();
+    /// <summary> Thread에 건물 추가 </summary>
+    public bool AddBuildingToThread(string threadId, BuildingState buildingState) => _threadHandler.AddBuilding(threadId, buildingState);
 
-    // 모든 카테고리 ID 반환
-    public List<string> GetAllCategoryIds() => _threadService.GetAllCategoryIds();
+    /// <summary> Thread에서 건물 제거 </summary>
+    public bool RemoveBuildingFromThread(string threadId, Vector2Int position) => _threadHandler.RemoveBuilding(threadId, position);
 
-    // 카테고리 존재 여부 확인
-    public bool HasCategory(string categoryId) => _threadService.HasCategory(categoryId);
+    /// <summary> 특정 위치의 건물 반환 </summary>
+    public BuildingState GetBuildingAt(string threadId, Vector2Int position) => _threadHandler.GetBuildingAt(threadId, position);
 
-    // 카테고리 개수 반환
-    public int GetCategoryCount() => _threadService.GetCategoryCount();
+    /// <summary> Thread 개수 반환 </summary>
+    public int GetThreadCount() => _threadHandler.GetThreadCount();
 
-    // 카테고리에 스레드 추가
-    public bool AddThreadToCategory(string categoryId, string threadId) => _threadService.AddThreadToCategory(categoryId, threadId);
+    #endregion
 
-    // 카테고리에서 스레드 제거
-    public bool RemoveThreadFromCategory(string categoryId, string threadId) => _threadService.RemoveThreadFromCategory(categoryId, threadId);
+    #region 편의 메서드: Thread Service (Category 관련)
 
-    // 특정 카테고리에 속한 스레드 ID 목록 반환
-    public List<string> GetThreadIdsInCategory(string categoryId) => _threadService.GetThreadIdsInCategory(categoryId);
+    /// <summary> 카테고리 추가 </summary>
+    public bool AddCategory(ThreadCategory category) => _threadHandler.AddCategory(category);
 
-    // 특정 카테고리에 속한 스레드 상태 목록 반환
-    public List<ThreadState> GetThreadsInCategory(string categoryId) => _threadService.GetThreadsInCategory(categoryId);
+    /// <summary> 카테고리 생성 및 추가 </summary>
+    public ThreadCategory CreateCategory(string categoryId, string categoryName) => _threadHandler.CreateCategory(categoryId, categoryName);
 
-    // ----------------- 레거시 호환 프로퍼티 -----------------
-    
-    public long Silver => _financesService.GetCredit();
+    /// <summary> 카테고리 제거 </summary>
+    public bool RemoveCategory(string categoryId) => _threadHandler.RemoveCategory(categoryId);
 
-    // ----------------- 편의 메서드 (TimeService 직접 호출) -----------------
+    /// <summary> 카테고리 이름 변경 </summary>
+    public bool RenameCategory(string categoryId, string newName) => _threadHandler.RenameCategory(categoryId, newName);
 
-    public void PauseTime() => _timeService.PauseTime();
-    public void ResumeTime() => _timeService.ResumeTime();
-    public void SetTimeSpeed(float speed) => _timeService.SetTimeSpeed(speed);
-    public bool IsTimePaused() => _timeService.IsTimePaused();
-    public float GetTimeSpeed() => _timeService.GetTimeSpeed();
-    public string GetDateString() => _timeService.GetDateString();
+    /// <summary> 특정 카테고리 반환 </summary>
+    public ThreadCategory GetCategory(string categoryId) => _threadHandler.GetCategory(categoryId);
 
-    void Start()
-    {
-        
-    }
+    /// <summary> 모든 카테고리 반환 </summary>
+    public Dictionary<string, ThreadCategory> GetAllCategories() => _threadHandler.GetAllCategories();
 
-    void Update()
-    {
-        // TimeService 업데이트
-        if (_timeService != null)
-        {
-            _timeService.Update(UnityEngine.Time.deltaTime);
-        }
-    }
+    /// <summary> 모든 카테고리 ID 반환 </summary>
+    public List<string> GetAllCategoryIds() => _threadHandler.GetAllCategoryIds();
+
+    /// <summary> 카테고리 존재 여부 확인 </summary>
+    public bool HasCategory(string categoryId) => _threadHandler.HasCategory(categoryId);
+
+    /// <summary> 카테고리 개수 반환 </summary>
+    public int GetCategoryCount() => _threadHandler.GetCategoryCount();
+
+    /// <summary> 카테고리에 스레드 추가 </summary>
+    public bool AddThreadToCategory(string categoryId, string threadId) => _threadHandler.AddThreadToCategory(categoryId, threadId);
+
+    /// <summary> 카테고리에서 스레드 제거 </summary>
+    public bool RemoveThreadFromCategory(string categoryId, string threadId) => _threadHandler.RemoveThreadFromCategory(categoryId, threadId);
+
+    /// <summary> 특정 카테고리에 속한 스레드 ID 목록 반환 </summary>
+    public List<string> GetThreadIdsInCategory(string categoryId) => _threadHandler.GetThreadIdsInCategory(categoryId);
+
+    /// <summary> 특정 카테고리에 속한 스레드 상태 목록 반환 </summary>
+    public List<ThreadState> GetThreadsInCategory(string categoryId) => _threadHandler.GetThreadsInCategory(categoryId);
+
+    #endregion
 }

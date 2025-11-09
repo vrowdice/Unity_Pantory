@@ -1,43 +1,72 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.UI; // Image, Button, InputField 등을 위해 사용
+using TMPro; // TMP_InputField, TextMeshProUGUI를 위해 필요
 
+/// <summary>
+/// 디자인 모드의 UI를 관리하는 매니저
+/// </summary>
 public class DesignUiManager : MonoBehaviour, IUIManager
 {
+    // DesignUiManager는 Thread 제목을 직접 관리하는 InputField를 가져야 하므로, 
+    // 여기에 TMP_InputField를 추가합니다. (원래 코드에는 없었지만, SaveInfoPanel에서 사용했기 때문에 필요함)
+    [Header("Thread Title Input")]
+    [SerializeField] private TMP_InputField _threadTitleInputField = null;
+
+    #region Inspector Fields
+
+    [Header("UI Prefabs & Contents")]
     [SerializeField] private GameObject _buildingTypeBtnPrefab = null;
     [SerializeField] private Transform _buildingTypeBtnContent = null;
     [SerializeField] private GameObject _buildingBtnPrefab = null;
     [SerializeField] private Transform _buildingBtnContent = null;
-    [SerializeField] private TMP_InputField _threadTitleInputField = null;
 
+    [Header("Mode & Panel References")]
     [SerializeField] private Image _deselectBuildingBtnImage = null;
     [SerializeField] private Image _removalModeBtnImage = null;
     [SerializeField] private BuildingInfoPanel _buildingInfoPanel = null;
     [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel = null;
 
+    #endregion
+
+    #region Private State & Managers
+
     private GameManager _gameManager = null;
     private GameDataManager _dataManager = null;
-    private List<BuildingData> _buildingDataList = null;
-    private BuildingData _selectedBuilding = null;  // 현재 선택된 건물
     private BuildingTileManager _buildingTileManager = null;
-    private bool _isRemovalMode = false;  // 현재 제거 모드 활성화 여부
-    private GameObject _productionInfoImage = null;
+    private List<BuildingData> _buildingDataList = null;
+
+    private BuildingData _selectedBuilding = null; // 현재 선택된 건물
+    private bool _isRemovalMode = false;         // 현재 제거 모드 활성화 여부
+    private GameObject _productionInfoImage = null; // ProductionInfoImage는 GameManager에서 설정됨
+
+    #endregion
+
+    #region Public Properties
 
     public Transform CanvasTrans => transform;
-
+    public BuildingTileManager BuildingTileManager => _buildingTileManager;
     public GameManager GameManager => _gameManager;
     public GameDataManager GameDataManager => _dataManager;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public bool IsRemovalMode => _isRemovalMode;
     public GameObject ProductionInfoImage => _productionInfoImage;
 
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region 초기화
+
     public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
+
+        // 씬에서 BuildingTileManager를 찾아 참조
         _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
-        _productionInfoImage = argGameManager.ProductionInfoImage;
+        _productionInfoImage = argGameManager.ProductionInfoImage; // GameManager로부터 이미지 오브젝트 참조 획득
 
         // BuildingType 버튼 생성
         EnumUtils.GetAllEnumValues<BuildingType>().ForEach(buildingType =>
@@ -46,55 +75,56 @@ public class DesignUiManager : MonoBehaviour, IUIManager
             btn.GetComponent<BuildingTypeBtn>().Initialize(this, buildingType);
         });
 
-        // 기본 타입 선택
+        // 기본 타입 선택 및 버튼 생성
         SelectBuildingType(BuildingType.Distribution);
-        
-        // InputField 이벤트 등록
-        if (_threadTitleInputField != null)
-        {
-            _threadTitleInputField.onEndEdit.AddListener(OnThreadTitleChanged);
-            
-            // 기본값이 비어있으면 설정
-            if (string.IsNullOrEmpty(_threadTitleInputField.text))
-            {
-                _threadTitleInputField.text = "Main Line";
-            }
-            
-            // 초기 Thread 생성
-            OnThreadTitleChanged(_threadTitleInputField.text);
-        }
 
         // SaveInfoPanel 초기화
         if (_saveInfoPanel != null)
         {
             _saveInfoPanel.OnInitialize(_dataManager);
         }
+
+        // Thread 제목 변경 이벤트 리스너 추가
+        if (_threadTitleInputField != null)
+        {
+            _threadTitleInputField.onEndEdit.AddListener(OnThreadTitleChanged);
+
+            // 초기 Thread ID 설정을 위해 한 번 호출
+            if (string.IsNullOrEmpty(_threadTitleInputField.text))
+            {
+                _threadTitleInputField.text = "Main Line";
+            }
+            OnThreadTitleChanged(_threadTitleInputField.text);
+        }
     }
 
     public void UpdateAllMainText()
     {
-        Debug.Log("UpdateAllMainText");
+        Debug.Log("[DesignUiManager] UpdateAllMainText called (placeholder)");
     }
 
+    /// <summary>
+    /// 배치/제거 모드 버튼의 시각적 상태를 업데이트합니다.
+    /// </summary>
     public void UpdateModeBtnImages(bool isPlacementMode, bool isRemovalMode)
     {
         _deselectBuildingBtnImage.color = isPlacementMode ? VisualManager.Instance.ValidColor : Color.white;
         _removalModeBtnImage.color = isRemovalMode ? VisualManager.Instance.InvalidColor : Color.white;
     }
 
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region 건물 목록 관리 (Building Type Selection)
+
     /// <summary>
     /// 건물 타입을 선택하고 해당 타입의 건물 버튼들을 생성합니다.
     /// </summary>
-    /// <param name="buildingType">선택할 건물 타입</param>
     public void SelectBuildingType(BuildingType buildingType)
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[DesignUiManager] DataManager is null. Cannot select building type.");
-            return;
-        }
+        if (_dataManager == null) return;
 
-        // 해당 타입의 건물 리스트 가져오기
         _buildingDataList = _dataManager.GetBuildingDataList(buildingType);
 
         // 기존 건물 버튼 제거
@@ -109,8 +139,8 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         {
             var btn = Instantiate(_buildingBtnPrefab, _buildingBtnContent);
             var buildingBtn = btn.GetComponent<BuildingBtn>();
-            
-            if (buildingBtn != null )
+
+            if (buildingBtn != null)
             {
                 buildingBtn.Initialize(this, buildingData);
             }
@@ -122,79 +152,68 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
     }
 
-    /// <summary>
-    /// 건물을 선택합니다. (배치 모드로 진입)
-    /// </summary>
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region 모드 제어 (Placement / Removal)
+
+    /// <summary> 건물을 선택하고 배치 모드로 진입합니다. </summary>
     public void SelectBuilding(BuildingData buildingData)
     {
         _selectedBuilding = buildingData;
-        _isRemovalMode = false;  // 배치 모드로 전환
-        Debug.Log($"[DesignUiManager] Building selected: {buildingData.displayName}");
-        
-        // 제거 모드 취소
-        if (_buildingTileManager != null && _buildingTileManager.IsRemovalMode)
-        {
-            _buildingTileManager.CancelRemovalMode();
-        }
-        
-        // BuildingTileManager에 선택된 건물 전달
+        _isRemovalMode = false;
+
         if (_buildingTileManager != null)
         {
+            if (_buildingTileManager.IsRemovalMode) _buildingTileManager.CancelRemovalMode();
             _buildingTileManager.StartPlacementMode(buildingData);
         }
+
+        UpdateModeBtnImages(true, false);
+        Debug.Log($"[DesignUiManager] Building selected: {buildingData.displayName}");
     }
 
-    /// <summary>
-    /// 건물 선택을 취소합니다.
-    /// </summary>
+    /// <summary> 건물 선택을 취소하고 배치 모드에서 벗어납니다. </summary>
     public void DeselectBuilding()
     {
         _selectedBuilding = null;
         _isRemovalMode = false;
+
+        _buildingTileManager?.CancelPlacementMode();
+
+        UpdateModeBtnImages(false, false);
         Debug.Log("[DesignUiManager] Building deselected");
-        
-        if (_buildingTileManager != null)
-        {
-            _buildingTileManager.CancelPlacementMode();
-        }
     }
 
-    /// <summary>
-    /// 건물 제거 모드를 시작합니다.
-    /// </summary>
+    /// <summary> 건물 제거 모드를 시작합니다. </summary>
     public void StartRemovalMode()
     {
         _isRemovalMode = true;
         _selectedBuilding = null;
-        
-        // 기존 배치 모드 취소
-        if (_buildingTileManager != null && _buildingTileManager.IsPlacementMode)
-        {
-            _buildingTileManager.CancelPlacementMode();
-        }
-        
+
         if (_buildingTileManager != null)
         {
+            if (_buildingTileManager.IsPlacementMode) _buildingTileManager.CancelPlacementMode();
             _buildingTileManager.StartRemovalMode();
         }
+
+        UpdateModeBtnImages(false, true);
+        Debug.Log("[DesignUiManager] Removal mode started");
     }
 
-    /// <summary>
-    /// 건물 제거 모드를 취소합니다.
-    /// </summary>
+    /// <summary> 건물 제거 모드를 취소합니다. </summary>
     public void CancelRemovalMode()
     {
         _isRemovalMode = false;
-        
-        if (_buildingTileManager != null)
-        {
-            _buildingTileManager.CancelRemovalMode();
-        }
+
+        _buildingTileManager?.CancelRemovalMode();
+
+        UpdateModeBtnImages(false, false);
+        Debug.Log("[DesignUiManager] Removal mode cancelled");
     }
 
-    /// <summary>
-    /// 건물 제거 모드를 토글합니다.
-    /// </summary>
+    /// <summary> 건물 제거 모드를 토글합니다. </summary>
     public void RemovalModeToggle()
     {
         if (_isRemovalMode)
@@ -209,58 +228,98 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
     }
 
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region Thread 관리 및 저장/로드
+
+    /// <summary>
+    /// Thread 제목이 변경되었을 때 호출됩니다.
+    /// Thread ID를 생성하고 BuildingTileManager에 설정합니다.
+    /// </summary>
+    private void OnThreadTitleChanged(string threadTitle)
+    {
+        if (string.IsNullOrWhiteSpace(threadTitle))
+        {
+            Debug.LogWarning("[DesignUiManager] Thread title cannot be empty");
+            return;
+        }
+
+        // BuildingTileManager의 유틸리티 메서드를 사용하여 ID 생성
+        string threadId = GetThreadIdFromTitle(threadTitle);
+
+        Debug.Log($"[DesignUiManager] Thread title changed to: {threadTitle} (ID: {threadId})");
+
+        // BuildingTileManager에 현재 Thread 설정 (임시 데이터 로드/초기화)
+        _buildingTileManager?.SetCurrentThread(threadId);
+    }
+
+    /// <summary>
+    /// '저장' 버튼 클릭 시, 저장 정보를 계산하고 패널을 표시합니다.
+    /// </summary>
     public void OnClickSaveBtn()
     {
-        if (_buildingTileManager == null || _dataManager == null || _saveInfoPanel == null)
+        if (_saveInfoPanel == null || _buildingTileManager == null || _dataManager == null)
         {
-            Debug.LogWarning("[DesignUiManager] Cannot show save info: Required components are null");
+            Debug.LogWarning("[DesignUiManager] Cannot show save info: Required components are null.");
             return;
         }
 
-        string currentThreadId = GetCurrentThreadId();
-        if (string.IsNullOrEmpty(currentThreadId))
+        // 1. 현재 편집 중인 Thread 정보 가져오기
+        string threadId = _buildingTileManager.CurrentThreadId;
+        string threadTitle = GetCurrentThreadTitle();
+
+        if (string.IsNullOrEmpty(threadId))
         {
-            Debug.LogWarning("[DesignUiManager] Cannot show save info: Thread ID is empty");
-            return;
+            // ID가 없으면 제목으로 임시 ID 생성 (계산용)
+            threadId = GetThreadIdFromTitle(threadTitle);
         }
 
-        // BuildingTileManager를 통해 BuildingCalculateHandler의 계산 메서드 호출
-        // 생산 체인 추적을 통한 입력/출력 자원 자동 계산
-        int totalMaintenance = _buildingTileManager.CalculateTotalMaintenanceCost(currentThreadId);
-        
-        // 생산 체인을 추적하여 하역소→생산건물→상역소 연결된 자원 계산
+        // 2. 계산 핸들러를 통해 필요한 정보 계산 (BuildingTileManager 중개)
         List<string> inputResourceIds;
         List<string> outputResourceIds;
         Dictionary<string, int> outputResourceCounts;
-        _buildingTileManager.CalculateProductionChain(currentThreadId, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
-        
-        // 산출량 계산 (기존 메서드 사용)
-        int threadOutputs = _buildingTileManager.CalculateCurrentThreadOutputs();
-        
-        // Thread 제목 가져오기
-        string threadTitle = GetCurrentThreadTitle();
-        
-        // SaveInfoPanel 초기화 및 표시
-        if (_saveInfoPanel != null)
-        {
-            _saveInfoPanel.OnInitialize(threadTitle, inputResourceIds, outputResourceIds, outputResourceCounts, totalMaintenance);
-            _saveInfoPanel.gameObject.SetActive(true);
-            Debug.Log($"[DesignUiManager] Save info panel shown. Outputs: {threadOutputs}, Maintenance: {totalMaintenance}, Input Resources: {inputResourceIds.Count}, Output Resources: {outputResourceIds.Count}");
-        }
+
+        _buildingTileManager.CalculateProductionChain(threadId, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
+        int totalMaintenance = _buildingTileManager.CalculateTotalMaintenanceCost(threadId);
+
+        // 3. SaveInfoPanel 초기화 및 표시
+        _saveInfoPanel.OnShow(threadTitle, inputResourceIds, outputResourceIds, outputResourceCounts, totalMaintenance, this);
+        Debug.Log($"[DesignUiManager] Save info panel shown. Thread ID used for calculation: {threadId}");
     }
 
-    public void OnClickLoadBtn()
+    /// <summary>
+    /// [ThreadSaveInfoPanel]에서 최종 저장 확인 시 호출되어, 
+    /// BuildingTileManager에게 저장 명령을 위임합니다.
+    /// </summary>
+    public void SaveThreadChanges(string threadName, string categoryId)
     {
-        if (_gameManager == null || _dataManager == null)
+        if (_buildingTileManager == null)
         {
-            Debug.LogWarning("[DesignUiManager] Cannot load thread: GameManager or DataManager is null");
+            Debug.LogError("[DesignUiManager] Cannot save changes: BuildingTileManager is null.");
             return;
         }
+
+        // BuildingTileManager에게 모든 저장/갱신 작업을 위임합니다.
+        _buildingTileManager.SaveThreadChanges(threadName, categoryId);
+
+        // UI 상태 정리 및 알림
+        DeselectBuilding();
+        _gameManager?.ShowWarningPanel("Saved successfully.");
+    }
+
+
+    /// <summary>
+    /// '로드' 버튼 클릭 시, 스레드 관리 패널을 표시합니다.
+    /// </summary>
+    public void OnClickLoadBtn()
+    {
+        if (_gameManager == null || _dataManager == null) return;
 
         // ManageThreadPanel 열기
         _gameManager.ShowManageThreadPanel((selectedThreadId) =>
         {
-            // 선택된 스레드 정보 로드 및 적용
             LoadThread(selectedThreadId);
         });
     }
@@ -270,11 +329,7 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     /// </summary>
     private void LoadThread(string threadId)
     {
-        if (string.IsNullOrEmpty(threadId) || _dataManager == null)
-        {
-            Debug.LogWarning("[DesignUiManager] Cannot load thread: Thread ID is empty or DataManager is null");
-            return;
-        }
+        if (string.IsNullOrEmpty(threadId) || _dataManager == null) return;
 
         // 스레드 정보 가져오기
         ThreadState thread = _dataManager.GetThread(threadId);
@@ -291,61 +346,19 @@ public class DesignUiManager : MonoBehaviour, IUIManager
             _threadTitleInputField.text = threadTitle;
         }
 
-        // BuildingTileManager에 현재 Thread 설정 (실제 threadId 사용)
-        if (_buildingTileManager != null)
-        {
-            _buildingTileManager.SetCurrentThread(threadId);
-            // 건물들 새로고침 (Thread에 저장된 건물들이 로드됨)
-            _buildingTileManager.RefreshBuildings();
-        }
+        // BuildingTileManager에 현재 Thread 설정 (임시 데이터 로드 및 렌더링)
+        _buildingTileManager?.SetCurrentThread(threadId);
 
         Debug.Log($"[DesignUiManager] Thread loaded: {threadId} ({thread.threadName})");
     }
 
-    /// <summary>
-    /// Thread 제목이 변경되었을 때 호출됩니다.
-    /// </summary>
-    private void OnThreadTitleChanged(string threadTitle)
-    {
-        if (string.IsNullOrWhiteSpace(threadTitle))
-        {
-            Debug.LogWarning("[DesignUiManager] Thread title cannot be empty");
-            return;
-        }
+    #endregion
 
-        // Thread ID 생성 (공백 제거하고 소문자로 변환)
-        string threadId = "thread_" + threadTitle.Trim().Replace(" ", "_").ToLower();
-        
-        Debug.Log($"[DesignUiManager] Thread title changed to: {threadTitle} (ID: {threadId})");
+    //---------------------------------------------------------
 
-        // Thread는 저장 시 생성되므로 여기서는 생성하지 않음
-        // BuildingTileManager에 현재 Thread 설정
-        if (_buildingTileManager != null)
-        {
-            _buildingTileManager.SetCurrentThread(threadId);
-        }
-    }
+    #region Info Panel and Rotation
 
-    /// <summary>
-    /// 현재 Thread 제목을 반환합니다.
-    /// </summary>
-    public string GetCurrentThreadTitle()
-    {
-        return _threadTitleInputField != null ? _threadTitleInputField.text : "Main Line";
-    }
-
-    /// <summary>
-    /// 현재 Thread ID를 반환합니다.
-    /// </summary>
-    public string GetCurrentThreadId()
-    {
-        string title = GetCurrentThreadTitle();
-        return "thread_" + title.Trim().Replace(" ", "_").ToLower();
-    }
-
-    /// <summary>
-    /// 건물 정보 패널을 표시합니다.
-    /// </summary>
+    /// <summary> 건물 정보 패널을 표시합니다. </summary>
     public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState)
     {
         if (_buildingInfoPanel != null)
@@ -360,46 +373,44 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         }
     }
 
-    /// <summary>
-    /// 건물 정보 패널을 숨깁니다.
-    /// </summary>
+    /// <summary> 건물 정보 패널을 숨깁니다. </summary>
     public void HideBuildingInfo()
     {
-        if (_buildingInfoPanel != null)
-        {
-            _buildingInfoPanel.gameObject.SetActive(false);
-        }
+        _buildingInfoPanel?.gameObject.SetActive(false);
     }
 
-    // ================== 건물 회전 제어 ==================
-    
-    /// <summary>
-    /// 건물을 왼쪽으로 회전합니다 (반시계방향, -90도).
-    /// 배치 모드가 활성화되어 있을 때만 작동합니다.
-    /// </summary>
+    /// <summary> 건물을 왼쪽으로 회전합니다. </summary>
     public void RotateBuildingLeft()
     {
-        if (_buildingTileManager == null)
-        {
-            Debug.LogWarning("[DesignUiManager] BuildingTileManager is null. Cannot rotate building.");
-            return;
-        }
-        
+        if (_buildingTileManager == null) return;
         _buildingTileManager.RotateBuildingLeft();
     }
 
-    /// <summary>
-    /// 건물을 오른쪽으로 회전합니다 (시계방향, +90도).
-    /// 배치 모드가 활성화되어 있을 때만 작동합니다.
-    /// </summary>
+    /// <summary> 건물을 오른쪽으로 회전합니다. </summary>
     public void RotateBuildingRight()
     {
-        if (_buildingTileManager == null)
-        {
-            Debug.LogWarning("[DesignUiManager] BuildingTileManager is null. Cannot rotate building.");
-            return;
-        }
-        
+        if (_buildingTileManager == null) return;
         _buildingTileManager.RotateBuildingRight();
     }
+
+    #endregion
+
+    //---------------------------------------------------------
+
+    #region 유틸리티: Thread ID/Title
+
+    /// <summary> 현재 Thread 제목을 반환합니다. </summary>
+    public string GetCurrentThreadTitle()
+    {
+        return _threadTitleInputField != null ? _threadTitleInputField.text : "Main Line";
+    }
+
+    /// <summary> 제목을 기반으로 Thread ID 문자열을 생성합니다. </summary>
+    public string GetThreadIdFromTitle(string threadTitle)
+    {
+        // "thread_" 접두사 + (공백 제거 및 소문자 변환)
+        return "thread_" + threadTitle.Trim().Replace(" ", "_").ToLower();
+    }
+
+    #endregion
 }

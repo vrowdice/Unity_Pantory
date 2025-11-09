@@ -18,7 +18,7 @@ MonoBehaviour:
   maxValue: 80
   baseValue: 50
   rarity: 0.6
-  type: 2
+  type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
   description: A simple but sturdy forging hammer. Essential for basic metalworking

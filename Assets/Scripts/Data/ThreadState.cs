@@ -11,7 +11,6 @@ public class ThreadState
     public string threadId = string.Empty;         // 고유 식별자 (플레이어가 저장할 때 사용)
     public string threadName = string.Empty;       // 표시 이름
     public string categoryId = string.Empty;       // 속한 카테고리 ID
-    public string division = string.Empty;         // 부서/사업부
     public List<BuildingState> buildingStateList = new List<BuildingState>();
     public string previewImagePath = string.Empty; // 건물 레이아웃 미리보기 이미지 경로
     
@@ -23,7 +22,6 @@ public class ThreadState
     {
         threadId = id;
         threadName = name;
-        division = div;
         categoryId = catId;
     }
 }

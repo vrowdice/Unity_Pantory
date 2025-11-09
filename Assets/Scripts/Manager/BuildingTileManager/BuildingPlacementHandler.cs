@@ -49,7 +49,7 @@ public class BuildingPlacementHandler
         _buildingTileManager = buildingTileManager;
         _gridHandler = buildingTileManager.GridGenHandler;
         _dataManager = buildingTileManager.DataManager;
-        _mainCameraController = buildingTileManager.MainCameraController;
+        _mainCameraController = buildingTileManager.MainCamera.GetComponent<MainCameraController>();
         _designUiManager = buildingTileManager.DesignUiManager;
         
         _buildingObjectPrefab = buildingObjectPrefab;

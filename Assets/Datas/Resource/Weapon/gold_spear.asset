@@ -18,12 +18,14 @@ MonoBehaviour:
   maxValue: 480
   baseValue: 330
   rarity: 0.4
-  type: 3
+  type: 4
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 934c9f828c026324d9c0319297fed1f4, type: 3}
-  description: A regal spear with a golden tip and premium wood shaft. The weapon of elite warriors and royal guards.
+  description: A regal spear with a golden tip and premium wood shaft. The weapon
+    of elite warriors and royal guards.
   requirements:
   - resource: {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
     count: 2
   - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
     count: 2
+  initialAmount: 0

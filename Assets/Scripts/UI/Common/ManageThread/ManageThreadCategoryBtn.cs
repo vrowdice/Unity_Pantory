@@ -8,6 +8,8 @@ public class ManageThreadCategoryBtn : MonoBehaviour
     private string _categoryId = string.Empty;
     private System.Action<string> _onClickCallback = null;
 
+    public string CategoryId => _categoryId;
+
     public void OnInitialize(string categoryId, string categoryName, System.Action<string> onClickCallback)
     {
         _categoryId = categoryId;
@@ -21,7 +23,7 @@ public class ManageThreadCategoryBtn : MonoBehaviour
 
     public void OnClick()
     {
-        if (!string.IsNullOrEmpty(_categoryId) && _onClickCallback != null)
+        if (_onClickCallback != null)
         {
             _onClickCallback(_categoryId);
         }

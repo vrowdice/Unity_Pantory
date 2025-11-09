@@ -209,6 +209,8 @@ public class BuildingInfoPanel : MonoBehaviour
             
             // 실제 게임 화면의 건물 오브젝트도 업데이트
             RefreshBuildingObjectIcons();
+
+            gameObject.SetActive(false);
         }
     }
 

@@ -17,7 +17,7 @@ public class ResourceDataHandler
     /// <summary>
     /// ResourceService 생성자
     /// </summary>
-    public ResourceDataHandler()
+    public ResourceDataHandler(GameDataManager gameDataManager)
     {
         _resources = new Dictionary<string, ResourceEntry>();
         AutoLoadAllResources(); // 게임 시작 시 자동으로 모든 리소스 로드

@@ -8,13 +8,13 @@ public class GameManager : MonoBehaviour
 
     private IUIManager _uiManager;
     private GameDataManager _gameDataManager;
-
+    private MainCameraController _mainCameraController;
     private string _currentThreadId = "Sample_Thread";
 
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
     public GameObject ProductionInfoImage => _productionInfoImagePrefab;
-    
+    public MainCameraController MainCameraController => _mainCameraController;
     /// <summary>
     /// 현재 Thread ID를 설정합니다.
     /// </summary>
@@ -127,6 +127,12 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogError("[GameManager] Could not find Canvas object.");
+        }
+
+        _mainCameraController = GameObject.Find("MainCamera").GetComponent<MainCameraController>();
+        if (_mainCameraController == null)
+        {
+            Debug.LogError("[GameManager] Could not find MainCameraController on Main Camera.");
         }
 
         // Main 씬이 아닐 경우 시간 정지
