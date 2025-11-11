@@ -78,24 +78,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (_gameDataManager == null)
-        {
-            _gameDataManager = GameDataManager.Instance;
-        }
 
-        // MainUiManager 초기화
-        if (_uiManager != null)
-        {
-            var dataManager = GameDataManager.Instance;
-            if (dataManager != null)
-            {
-                _uiManager.Initialize(this, dataManager);
-            }
-            else
-            {
-                Debug.LogError("[GameManager] GameDataManager.Instance is null. Cannot initialize MainUiManager.");
-            }
-        }
     }
 
     void OnDestroy()
@@ -127,6 +110,20 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogError("[GameManager] Could not find Canvas object.");
+        }
+
+        // MainUiManager 초기화
+        if (_uiManager != null)
+        {
+            var dataManager = GameDataManager.Instance;
+            if (dataManager != null)
+            {
+                _uiManager.Initialize(this, dataManager);
+            }
+            else
+            {
+                Debug.LogError("[GameManager] GameDataManager.Instance is null. Cannot initialize MainUiManager.");
+            }
         }
 
         _mainCameraController = GameObject.Find("MainCamera").GetComponent<MainCameraController>();

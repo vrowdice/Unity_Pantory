@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 /// <summary>
 /// 메인 UI 매니저
@@ -18,14 +19,20 @@ public class MainUiManager : MonoBehaviour, IUIManager
 
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
-    [SerializeField] private DesignPanel _designPanel;
     [SerializeField] private MarketPanel _marketPanel;
     [SerializeField] private EmploymentPanel _employmentPanel;
-
+    [SerializeField] private FinancePanel _financePanel;
 
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
     [SerializeField] private Transform _quickMovePanelContent;
+
+    [Header("Thread")]
+    [SerializeField] private GameObject _threadCategoryBtnPrefab;
+    [SerializeField] private Transform _threadCategoryScrollViewContent;
+    [SerializeField] private GameObject _threadBtnPrefab;
+    [SerializeField] private GameObject _threadPlusBtnPrefab;
+    [SerializeField] private Transform _threadScrollViewContent;
 
     // 패널 딕셔너리
     private Dictionary<MainPanelType, BasePanel> _panelDict;
@@ -35,7 +42,10 @@ public class MainUiManager : MonoBehaviour, IUIManager
 
     // 생성된 QuickMoveBtn 리스트
     private List<QuickMoveBtn> _quickMoveBtns = new List<QuickMoveBtn>();
+    private readonly List<ThreadCategoryBtn> _threadCategoryBtns = new List<ThreadCategoryBtn>();
+    private readonly List<ThreadBtn> _threadBtns = new List<ThreadBtn>();
     private GameObject _productionInfoImage = null;
+    private string _selectedThreadCategoryId = string.Empty;
 
     // IUIManager 인터페이스 구현
     public Transform CanvasTrans => transform;
@@ -71,6 +81,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
         }
 
         Debug.Log("[MainUiManager] Initialized.");
+
+        RefreshThreadCategories();
+        RefreshThreadButtons();
     }
 
     void Awake()
@@ -87,9 +100,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
         _panelDict = new Dictionary<MainPanelType, BasePanel>
         {
             { MainPanelType.Storage, _storagePanel },
-            { MainPanelType.Design, _designPanel },
             { MainPanelType.Market, _marketPanel },
-            { MainPanelType.Employment, _employmentPanel }
+            { MainPanelType.Employment, _employmentPanel },
+            { MainPanelType.Finance, _financePanel }
         };
     }
 
@@ -103,6 +116,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
 
         // 자원 텍스트 초기 업데이트
         UpdateAllMainText();
+
+        RefreshThreadCategories();
+        RefreshThreadButtons();
     }
 
     /// <summary>
@@ -281,8 +297,6 @@ public class MainUiManager : MonoBehaviour, IUIManager
                 // 버튼 초기화
                 btn.Initialize(this, panelType);
                 _quickMoveBtns.Add(btn);
-                
-                Debug.Log($"[MainUiManager] QuickMoveBtn created for {panelType}");
             }
             else
             {
@@ -290,8 +304,6 @@ public class MainUiManager : MonoBehaviour, IUIManager
                 Destroy(btnObj);
             }
         }
-
-        Debug.Log($"[MainUiManager] Created {_quickMoveBtns.Count} QuickMoveBtn(s).");
     }
 
     /// <summary>
@@ -335,5 +347,119 @@ public class MainUiManager : MonoBehaviour, IUIManager
             _dataManager.Time.OnYearChanged -= OnYearChanged;
         }
     }
+
+    private void RefreshThreadCategories()
+    {
+        if (_dataManager == null || _threadCategoryScrollViewContent == null)
+            return;
+
+        GameObjectUtils.ClearChildren(_threadCategoryScrollViewContent);
+        _threadCategoryBtns.Clear();
+
+        if (_threadCategoryBtnPrefab == null)
+            return;
+
+        var categories = _dataManager.GetAllCategories();
+
+        if (!string.IsNullOrEmpty(_selectedThreadCategoryId) && (categories == null || !categories.ContainsKey(_selectedThreadCategoryId)))
+        {
+            _selectedThreadCategoryId = string.Empty;
+        }
+
+        CreateThreadCategoryButton(string.Empty, "All");
+
+        if (categories != null)
+        {
+            foreach (var category in categories.Values)
+            {
+                if (category == null || string.IsNullOrEmpty(category.categoryId))
+                    continue;
+
+                CreateThreadCategoryButton(category.categoryId, category.categoryName);
+            }
+        }
+
+        UpdateThreadCategoryButtonStates();
+    }
+
+    private void CreateThreadCategoryButton(string categoryId, string categoryName)
+    {
+        GameObject btnObj = Instantiate(_threadCategoryBtnPrefab, _threadCategoryScrollViewContent);
+        ThreadCategoryBtn categoryBtn = btnObj.GetComponent<ThreadCategoryBtn>();
+        if (categoryBtn != null)
+        {
+            categoryBtn.Initialize(categoryId, categoryName, HandleThreadCategoryButtonClicked);
+            _threadCategoryBtns.Add(categoryBtn);
+        }
+    }
+
+    private void RefreshThreadButtons()
+    {
+        if (_dataManager == null || _threadScrollViewContent == null)
+            return;
+
+        GameObjectUtils.ClearChildren(_threadScrollViewContent);
+        _threadBtns.Clear();
+
+        if (_threadBtnPrefab == null)
+            return;
+
+        List<ThreadState> threadsToShow;
+        if (string.IsNullOrEmpty(_selectedThreadCategoryId))
+        {
+            threadsToShow = _dataManager.GetAllThreadList();
+        }
+        else
+        {
+            threadsToShow = _dataManager.GetThreadsInCategory(_selectedThreadCategoryId);
+        }
+
+        if (threadsToShow != null)
+        {
+            foreach (var thread in threadsToShow)
+            {
+                if (thread == null || string.IsNullOrEmpty(thread.threadId))
+                    continue;
+
+                GameObject btnObj = Instantiate(_threadBtnPrefab, _threadScrollViewContent);
+                ThreadBtn threadBtn = btnObj.GetComponent<ThreadBtn>();
+                if (threadBtn != null)
+                {
+                    threadBtn.Initialize(this, thread);
+                    _threadBtns.Add(threadBtn);
+                }
+            }
+        }
+
+        if (_threadPlusBtnPrefab != null)
+        {
+            Instantiate(_threadPlusBtnPrefab, _threadScrollViewContent);
+        }
+    }
+
+    private void HandleThreadCategoryButtonClicked(ThreadCategoryBtn btn)
+    {
+        if (btn == null)
+            return;
+
+        _selectedThreadCategoryId = btn.CategoryId ?? string.Empty;
+        UpdateThreadCategoryButtonStates();
+        RefreshThreadButtons();
+    }
+
+    private void UpdateThreadCategoryButtonStates()
+    {
+        foreach (var btn in _threadCategoryBtns)
+        {
+            bool isActive = btn.CategoryId == _selectedThreadCategoryId;
+
+            Image image = btn.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = isActive ? Color.yellow : Color.white;
+            }
+        }
+    }
+
 }
 

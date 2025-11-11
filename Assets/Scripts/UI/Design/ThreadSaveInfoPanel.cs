@@ -46,7 +46,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// Thread 정보를 계산된 데이터로 초기화하고 패널을 표시합니다.
     /// 이 메서드는 DesignUiManager.OnClickSaveBtn()에서 호출됩니다.
     /// </summary>
-    public void OnShow(string threadTitle, List<string> inputResourceIds, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignUiManager designUiManager)
+    public void OnShow(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignUiManager designUiManager)
     {
         _designUiManager = designUiManager;
 
@@ -76,11 +76,12 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
         // 4. 입력/출력 자원 목록 표시
         inputResourceIds ??= new List<string>();
+        inputResourceCounts ??= new Dictionary<string, int>();
         outputResourceIds ??= new List<string>();
         outputResourceCounts ??= new Dictionary<string, int>();
 
-        DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, false, null);
-        DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, true, outputResourceCounts);
+        DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts);
+        DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts);
 
         // 5. 총 유지비 표시
         if (_totalMaintenanceText != null)
@@ -94,7 +95,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// <summary>
     /// 자원 아이콘과 산출량을 스크롤 뷰에 표시합니다.
     /// </summary>
-    private void DisplayProductionIcons(List<string> resourceIds, Transform content, bool showCount, Dictionary<string, int> counts)
+    private void DisplayProductionIcons(List<string> resourceIds, Transform content, Dictionary<string, int> counts)
     {
         if (_productionInfoIconPanel == null || content == null || _dataManager == null)
             return;
@@ -107,17 +108,16 @@ public class ThreadSaveInfoPanel : MonoBehaviour
                 GameObject panel = Instantiate(_productionInfoIconPanel, content);
                 ProductionInfoIconPanel iconPanel = panel.GetComponent<ProductionInfoIconPanel>();
 
-                if (iconPanel != null)
+                if (iconPanel == null)
+                    continue;
+
+                if (counts != null && counts.TryGetValue(resourceId, out int amount))
                 {
-                    int productionCount = 0;
-                    if (showCount && counts != null && counts.TryGetValue(resourceId, out productionCount))
-                    {
-                        iconPanel.OnInitialize(resourceEntry, productionCount);
-                    }
-                    else
-                    {
-                        iconPanel.OnInitialize(resourceEntry);
-                    }
+                    iconPanel.OnInitialize(resourceEntry, amount);
+                }
+                else
+                {
+                    iconPanel.OnInitialize(resourceEntry);
                 }
             }
         }

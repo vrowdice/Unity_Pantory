@@ -18,7 +18,7 @@ MonoBehaviour:
   maxValue: 500
   baseValue: 300
   rarity: 0.2
-  type: 2
+  type: 1
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 5c2cafa0a96f44d439b8ee65e34b724c, type: 3}
   description: Gold imbued with concentrated magical power, radiating golden light.

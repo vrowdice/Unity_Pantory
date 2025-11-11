@@ -618,14 +618,17 @@ public class BuildingTileManager : MonoBehaviour
     }
 
     /// <summary> 생산 체인 연결 정보를 계산합니다. </summary>
-    public void CalculateProductionChain(string threadId, out List<string> inputResourceIds, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
+    public void CalculateProductionChain(string threadId, out List<string> inputResourceIds, out Dictionary<string, int> inputResourceCounts, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
     {
-        inputResourceIds = new List<string>(); outputResourceIds = new List<string>(); outputResourceCounts = new Dictionary<string, int>();
+        inputResourceIds = new List<string>();
+        inputResourceCounts = new Dictionary<string, int>();
+        outputResourceIds = new List<string>();
+        outputResourceCounts = new Dictionary<string, int>();
         if (_calculateHandler == null) return;
 
         List<BuildingState> buildingStatesToUse = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager?.GetBuildingStates(threadId);
 
-        _calculateHandler.CalculateProductionChain(threadId, buildingStatesToUse, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
+        _calculateHandler.CalculateProductionChain(threadId, buildingStatesToUse, out inputResourceIds, out inputResourceCounts, out outputResourceIds, out outputResourceCounts);
     }
 
     /// <summary> 스프라이트의 스케일을 타일 크기에 맞게 계산합니다. </summary>

@@ -304,9 +304,10 @@ public class BuildingCalculateHandler
     /// 생산 체인을 추적하여 하역소에서 시작하는 입력 자원과 상역소까지 연결된 최종 출력 자원을 계산합니다.
     /// 하역소 → (도로) → 생산건물들 → (도로) → 상역소 경로를 추적합니다.
     /// </summary>
-    public void CalculateProductionChain(string threadId, List<BuildingState> buildingStates, out List<string> inputResourceIds, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
+    public void CalculateProductionChain(string threadId, List<BuildingState> buildingStates, out List<string> inputResourceIds, out Dictionary<string, int> inputResourceCounts, out List<string> outputResourceIds, out Dictionary<string, int> outputResourceCounts)
     {
         inputResourceIds = new List<string>();
+        inputResourceCounts = new Dictionary<string, int>();
         outputResourceIds = new List<string>();
         outputResourceCounts = new Dictionary<string, int>();
 
@@ -323,7 +324,7 @@ public class BuildingCalculateHandler
             return;
 
         HashSet<string> reachableOutputResources = new HashSet<string>();
-        HashSet<string> requiredInputResources = new HashSet<string>();
+        Dictionary<string, int> requiredInputResources = new Dictionary<string, int>();
         Dictionary<string, int> resourceCounts = new Dictionary<string, int>();
 
         foreach (var state in buildingStates)
@@ -383,7 +384,8 @@ public class BuildingCalculateHandler
                                 {
                                     if (requirement.resource != null && !string.IsNullOrEmpty(requirement.resource.id))
                                     {
-                                        requiredInputResources.Add(requirement.resource.id);
+                                        int requirementCount = Mathf.Max(1, requirement.count);
+                                        AddResourceCount(requiredInputResources, requirement.resource.id, requirementCount);
                                     }
                                 }
                             }
@@ -396,16 +398,32 @@ public class BuildingCalculateHandler
                     {
                         if (!string.IsNullOrEmpty(inputId))
                         {
-                            requiredInputResources.Add(inputId);
+                            AddResourceCount(requiredInputResources, inputId, 1);
                         }
                     }
                 }
             }
         }
 
-        inputResourceIds = new List<string>(requiredInputResources);
+        inputResourceIds = new List<string>(requiredInputResources.Keys);
+        inputResourceCounts = requiredInputResources;
         outputResourceIds = new List<string>(reachableOutputResources);
         outputResourceCounts = resourceCounts;
+    }
+
+    private void AddResourceCount(Dictionary<string, int> counts, string resourceId, int amount)
+    {
+        if (string.IsNullOrEmpty(resourceId))
+            return;
+
+        if (counts.ContainsKey(resourceId))
+        {
+            counts[resourceId] += amount;
+        }
+        else
+        {
+            counts[resourceId] = amount;
+        }
     }
 
     #endregion

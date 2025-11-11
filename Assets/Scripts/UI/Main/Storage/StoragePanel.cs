@@ -12,6 +12,11 @@ public class StoragePanel : BasePanel
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
+    private void Start()
+    {
+        OnResourceTypeClick(ResourceType.raw);
+    }
+
     /// <summary>
     /// 패널 초기화 (BasePanel에서 호출)
     /// </summary>
@@ -22,6 +27,7 @@ public class StoragePanel : BasePanel
             Debug.LogWarning("[ProductionPanel] DataManager is null.");
             return;
         }
+
         InitializeResourceTypeButtons();
     }
 

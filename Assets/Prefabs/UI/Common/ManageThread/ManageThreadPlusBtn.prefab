@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1095819303580214413}
   - component: {fileID: 4378975628415694285}
   - component: {fileID: 4454803871143436799}
-  - component: {fileID: 4477465899709914263}
+  - component: {fileID: 6753422591597662145}
   m_Layer: 5
   m_Name: ManageThreadPlusBtn
   m_TagString: Untagged
@@ -122,8 +122,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4477465899709914263}
-        m_TargetAssemblyTypeName: ThreadPlusBtn, Assembly-CSharp
+      - m_Target: {fileID: 6753422591597662145}
+        m_TargetAssemblyTypeName: ScenMoveBtn, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -134,7 +134,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4477465899709914263
+--- !u!114 &6753422591597662145
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,9 +143,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4578795421820652337}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4dde8825e65a954889a7eec985743e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 36b1238d2a191c542a21f48ca509cff2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _scenName: Design
 --- !u!1 &8537740032201680826
 GameObject:
   m_ObjectHideFlags: 0

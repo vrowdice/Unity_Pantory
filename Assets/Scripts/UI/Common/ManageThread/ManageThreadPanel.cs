@@ -150,7 +150,7 @@ public class ManageThreadPanel : MonoBehaviour
                 if (btn != null)
                 {
                     // 미리보기 이미지 로드
-                    Sprite previewSprite = LoadPreviewImage(thread.previewImagePath);
+                    Sprite previewSprite = SpriteUtils.LoadSpriteFromFile(thread.previewImagePath);
                     btn.OnInitialize(thread, previewSprite, OnThreadClick, OnThreadEdit, OnThreadDelete);
                     _threadBtns.Add(btn);
                 }
@@ -161,11 +161,7 @@ public class ManageThreadPanel : MonoBehaviour
         if (_threadPlusBtnPrefab != null)
         {
             GameObject plusBtnObj = Instantiate(_threadPlusBtnPrefab, _threadScrollViewContent);
-            ManageThreadPlusBtn plusBtn = plusBtnObj.GetComponent<ManageThreadPlusBtn>();
-            if (plusBtn != null)
-            {
-                plusBtn.OnInitialize(OnPlusBtnClick);
-            }
+            ThreadPlusBtn plusBtn = plusBtnObj.GetComponent<ThreadPlusBtn>();
         }
     }
 
@@ -183,32 +179,6 @@ public class ManageThreadPanel : MonoBehaviour
             {
                 button.color = isActive ? Color.yellow : Color.white;
             }
-        }
-    }
-
-
-    /// <summary>
-    /// 저장된 이미지 파일 경로로부터 Sprite를 로드합니다.
-    /// </summary>
-    private Sprite LoadPreviewImage(string imagePath)
-    {
-        if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
-            return null;
-
-        try
-        {
-            byte[] imageData = File.ReadAllBytes(imagePath);
-            Texture2D texture = new Texture2D(2, 2);
-            texture.LoadImage(imageData);
-
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            // Texture2D는 Sprite에 묶이므로, 바로 파괴하지 않고 반환합니다.
-            return sprite;
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogWarning($"[ManageThreadPanel] Failed to load preview image: {e.Message}");
-            return null;
         }
     }
 
@@ -267,6 +237,7 @@ public class ManageThreadPanel : MonoBehaviour
             // 미리보기 이미지 파일도 삭제 (선택 사항)
             if (thread != null && File.Exists(thread.previewImagePath))
             {
+                SpriteUtils.UnloadSprite(thread.previewImagePath);
                 File.Delete(thread.previewImagePath);
                 Debug.Log($"[ManageThreadPanel] Deleted preview file: {thread.previewImagePath}");
             }

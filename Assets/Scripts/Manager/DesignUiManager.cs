@@ -278,14 +278,15 @@ public class DesignUiManager : MonoBehaviour, IUIManager
 
         // 2. 계산 핸들러를 통해 필요한 정보 계산 (BuildingTileManager 중개)
         List<string> inputResourceIds;
+        Dictionary<string, int> inputResourceCounts;
         List<string> outputResourceIds;
         Dictionary<string, int> outputResourceCounts;
 
-        _buildingTileManager.CalculateProductionChain(threadId, out inputResourceIds, out outputResourceIds, out outputResourceCounts);
+        _buildingTileManager.CalculateProductionChain(threadId, out inputResourceIds, out inputResourceCounts, out outputResourceIds, out outputResourceCounts);
         int totalMaintenance = _buildingTileManager.CalculateTotalMaintenanceCost(threadId);
 
         // 3. SaveInfoPanel 초기화 및 표시
-        _saveInfoPanel.OnShow(threadTitle, inputResourceIds, outputResourceIds, outputResourceCounts, totalMaintenance, this);
+        _saveInfoPanel.OnShow(threadTitle, inputResourceIds, inputResourceCounts, outputResourceIds, outputResourceCounts, totalMaintenance, this);
         Debug.Log($"[DesignUiManager] Save info panel shown. Thread ID used for calculation: {threadId}");
     }
 

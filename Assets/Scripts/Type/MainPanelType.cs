@@ -1,7 +1,7 @@
 public enum MainPanelType
 {
     Storage,  // 생산
-    Design,      // 디자인
     Market,      // 시장
-    Employment   // 채용
+    Employment,   // 채용
+    Finance
 }
