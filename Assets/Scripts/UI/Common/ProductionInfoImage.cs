@@ -10,8 +10,21 @@ public class ProductionInfoImage : MonoBehaviour
 
     public void OnInitialize(ResourceEntry resourceEntry)
     {
+        OnInitialize(resourceEntry, -1);
+    }
+
+    public void OnInitialize(ResourceEntry resourceEntry, int amount)
+    {
         _productionImage.sprite = resourceEntry.resourceData.icon;
         _productionText.text = resourceEntry.resourceData.displayName;
-        _productionCountText.text = resourceEntry.resourceState.count.ToString();
+
+        if (amount >= 0)
+        {
+            _productionCountText.text = $"{amount}";
+        }
+        else
+        {
+            _productionCountText.text = $"-";
+        }
     }
 }

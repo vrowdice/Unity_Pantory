@@ -2,18 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Image, Button, InputField 등을 위해 사용
-using TMPro; // TMP_InputField, TextMeshProUGUI를 위해 필요
 
 /// <summary>
 /// 디자인 모드의 UI를 관리하는 매니저
 /// </summary>
 public class DesignUiManager : MonoBehaviour, IUIManager
 {
-    // DesignUiManager는 Thread 제목을 직접 관리하는 InputField를 가져야 하므로, 
-    // 여기에 TMP_InputField를 추가합니다. (원래 코드에는 없었지만, SaveInfoPanel에서 사용했기 때문에 필요함)
-    [Header("Thread Title Input")]
-    [SerializeField] private TMP_InputField _threadTitleInputField = null;
-
     #region Inspector Fields
 
     [Header("UI Prefabs & Contents")]
@@ -28,18 +22,21 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private BuildingInfoPanel _buildingInfoPanel = null;
     [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel = null;
 
+    [Header("Managers")]
+    [SerializeField] private BuildingTileManager _buildingTileManager = null;
+
     #endregion
 
     #region Private State & Managers
 
     private GameManager _gameManager = null;
     private GameDataManager _dataManager = null;
-    private BuildingTileManager _buildingTileManager = null;
     private List<BuildingData> _buildingDataList = null;
 
     private BuildingData _selectedBuilding = null; // 현재 선택된 건물
     private bool _isRemovalMode = false;         // 현재 제거 모드 활성화 여부
     private GameObject _productionInfoImage = null; // ProductionInfoImage는 GameManager에서 설정됨
+    private string _currentThreadTitle = DefaultThreadTitle;
 
     #endregion
 
@@ -57,15 +54,14 @@ public class DesignUiManager : MonoBehaviour, IUIManager
 
     //---------------------------------------------------------
 
+    private const string DefaultThreadTitle = "Main Line";
+
     #region 초기화
 
     public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
-
-        // 씬에서 BuildingTileManager를 찾아 참조
-        _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
         _productionInfoImage = argGameManager.ProductionInfoImage; // GameManager로부터 이미지 오브젝트 참조 획득
 
         // BuildingType 버튼 생성
@@ -83,19 +79,8 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         {
             _saveInfoPanel.OnInitialize(_dataManager);
         }
-
-        // Thread 제목 변경 이벤트 리스너 추가
-        if (_threadTitleInputField != null)
-        {
-            _threadTitleInputField.onEndEdit.AddListener(OnThreadTitleChanged);
-
-            // 초기 Thread ID 설정을 위해 한 번 호출
-            if (string.IsNullOrEmpty(_threadTitleInputField.text))
-            {
-                _threadTitleInputField.text = "Main Line";
-            }
-            OnThreadTitleChanged(_threadTitleInputField.text);
-        }
+        
+        InitializeThreadTitle();
     }
 
     public void UpdateAllMainText()
@@ -235,27 +220,6 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     #region Thread 관리 및 저장/로드
 
     /// <summary>
-    /// Thread 제목이 변경되었을 때 호출됩니다.
-    /// Thread ID를 생성하고 BuildingTileManager에 설정합니다.
-    /// </summary>
-    private void OnThreadTitleChanged(string threadTitle)
-    {
-        if (string.IsNullOrWhiteSpace(threadTitle))
-        {
-            Debug.LogWarning("[DesignUiManager] Thread title cannot be empty");
-            return;
-        }
-
-        // BuildingTileManager의 유틸리티 메서드를 사용하여 ID 생성
-        string threadId = GetThreadIdFromTitle(threadTitle);
-
-        Debug.Log($"[DesignUiManager] Thread title changed to: {threadTitle} (ID: {threadId})");
-
-        // BuildingTileManager에 현재 Thread 설정 (임시 데이터 로드/초기화)
-        _buildingTileManager?.SetCurrentThread(threadId);
-    }
-
-    /// <summary>
     /// '저장' 버튼 클릭 시, 저장 정보를 계산하고 패널을 표시합니다.
     /// </summary>
     public void OnClickSaveBtn()
@@ -270,10 +234,16 @@ public class DesignUiManager : MonoBehaviour, IUIManager
         string threadId = _buildingTileManager.CurrentThreadId;
         string threadTitle = GetCurrentThreadTitle();
 
+        if (string.IsNullOrEmpty(threadTitle))
+        {
+            threadTitle = DefaultThreadTitle;
+        }
+
         if (string.IsNullOrEmpty(threadId))
         {
-            // ID가 없으면 제목으로 임시 ID 생성 (계산용)
+            // ID가 없으면 제목으로 임시 ID 생성 (계산용 및 임시 데이터 참조용)
             threadId = GetThreadIdFromTitle(threadTitle);
+            _buildingTileManager.SetCurrentThread(threadId);
         }
 
         // 2. 계산 핸들러를 통해 필요한 정보 계산 (BuildingTileManager 중개)
@@ -304,6 +274,8 @@ public class DesignUiManager : MonoBehaviour, IUIManager
 
         // BuildingTileManager에게 모든 저장/갱신 작업을 위임합니다.
         _buildingTileManager.SaveThreadChanges(threadName, categoryId);
+
+        _currentThreadTitle = threadName;
 
         // UI 상태 정리 및 알림
         DeselectBuilding();
@@ -340,12 +312,9 @@ public class DesignUiManager : MonoBehaviour, IUIManager
             return;
         }
 
-        // Thread 제목을 InputField에 설정
-        string threadTitle = string.IsNullOrEmpty(thread.threadName) ? threadId : thread.threadName;
-        if (_threadTitleInputField != null)
-        {
-            _threadTitleInputField.text = threadTitle;
-        }
+        // Thread 제목 갱신
+        string threadTitle = string.IsNullOrEmpty(thread.threadName) ? DefaultThreadTitle : thread.threadName;
+        _currentThreadTitle = threadTitle;
 
         // BuildingTileManager에 현재 Thread 설정 (임시 데이터 로드 및 렌더링)
         _buildingTileManager?.SetCurrentThread(threadId);
@@ -403,14 +372,44 @@ public class DesignUiManager : MonoBehaviour, IUIManager
     /// <summary> 현재 Thread 제목을 반환합니다. </summary>
     public string GetCurrentThreadTitle()
     {
-        return _threadTitleInputField != null ? _threadTitleInputField.text : "Main Line";
+        return string.IsNullOrEmpty(_currentThreadTitle) ? DefaultThreadTitle : _currentThreadTitle;
     }
 
     /// <summary> 제목을 기반으로 Thread ID 문자열을 생성합니다. </summary>
     public string GetThreadIdFromTitle(string threadTitle)
     {
         // "thread_" 접두사 + (공백 제거 및 소문자 변환)
+        if (string.IsNullOrWhiteSpace(threadTitle))
+        {
+            threadTitle = DefaultThreadTitle;
+        }
+
         return "thread_" + threadTitle.Trim().Replace(" ", "_").ToLower();
+    }
+
+    private void InitializeThreadTitle()
+    {
+        if (_buildingTileManager == null)
+        {
+            _currentThreadTitle = DefaultThreadTitle;
+            return;
+        }
+
+        string currentThreadId = _buildingTileManager.CurrentThreadId;
+        if (!string.IsNullOrEmpty(currentThreadId) && _dataManager != null)
+        {
+            ThreadState existingThread = _dataManager.GetThread(currentThreadId);
+            if (existingThread != null && !string.IsNullOrEmpty(existingThread.threadName))
+            {
+                _currentThreadTitle = existingThread.threadName;
+                return;
+            }
+        }
+
+        _currentThreadTitle = DefaultThreadTitle;
+
+        string defaultThreadId = GetThreadIdFromTitle(_currentThreadTitle);
+        _buildingTileManager.SetCurrentThread(defaultThreadId);
     }
 
     #endregion

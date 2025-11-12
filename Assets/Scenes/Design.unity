@@ -4673,6 +4673,7 @@ MonoBehaviour:
   _removalModeBtnImage: {fileID: 527040269}
   _buildingInfoPanel: {fileID: 405737244}
   _saveInfoPanel: {fileID: 1682099514}
+  _buildingTileManager: {fileID: 1027707964}
 --- !u!1 &909702200
 GameObject:
   m_ObjectHideFlags: 0

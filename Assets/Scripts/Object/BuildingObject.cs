@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -235,88 +236,93 @@ public class BuildingObject : MonoBehaviour
             return;
         }
         
-        // 공용 Canvas 사용 여부 결정
-        bool useSharedCanvas = sharedCanvas != null;
+        if (sharedCanvas == null)
+        {
+            Debug.LogWarning("[BuildingObject] Shared canvas is null. Production icons will not be displayed.");
+            return;
+        }
+
+        Dictionary<string, int> inputCounts = AggregateResourceCounts(_buildingState.inputProductionIds);
+        Dictionary<string, int> outputCounts = AggregateResourceCounts(_buildingState.outputProductionIds);
         
         // 건물 크기 계산 (회전 고려)
         Vector2Int rotatedSize = GetRotatedSize(_buildingData.size, _buildingState.rotation);
         float buildingHeight = rotatedSize.y;
         
         // Input 자원 표시 (건물 중간 위)
-        if (_buildingState.inputProductionIds != null && _buildingState.inputProductionIds.Count > 0)
+        if (inputCounts.Count > 0)
         {
             // 위치 계산
             float yOffset = buildingHeight * _productionIconContentOffset;
             
-            if (useSharedCanvas)
-            {
-                // 공용 Canvas 사용 (성능 최적화)
-                Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
-                _inputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
-                    sharedCanvas,
-                    $"InputIcons_{gameObject.name}",
-                    worldPosition
-                );
-            }
-            else
-            {
-                // 개별 Canvas 사용 (Fallback)
-                Vector3 localPosition = new Vector3(0, yOffset, -1);
-                _inputProductionContainer = GameManager.Instance.CreateProductionIconContainer(
-                    transform,
-                    "InputProductionContainer",
-                    localPosition
-                );
-            }
+            Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
+            _inputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
+                sharedCanvas,
+                $"InputIcons_{gameObject.name}",
+                worldPosition
+            );
             
             if (_inputProductionContainer != null)
             {
                 // 아이콘들 생성 (GameManager 헬퍼 사용)
                 GameManager.Instance.CreateProductionIcons(
                     _inputProductionContainer.transform, 
-                    _buildingState.inputProductionIds, 
-                    dataManager
+                    inputCounts, 
+                    dataManager,
+                    isOutput: false
                 );
             }
         }
         
         // Output 자원 표시 (건물 중간 아래)
-        if (_buildingState.outputProductionIds != null && _buildingState.outputProductionIds.Count > 0)
+        if (outputCounts.Count > 0)
         {
             // 위치 계산
             float yOffset = -buildingHeight * _productionIconContentOffset;
             
-            if (useSharedCanvas)
-            {
-                // 공용 Canvas 사용 (성능 최적화)
-                Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
-                _outputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
-                    sharedCanvas,
-                    $"OutputIcons_{gameObject.name}",
-                    worldPosition
-                );
-            }
-            else
-            {
-                // 개별 Canvas 사용 (Fallback)
-                Vector3 localPosition = new Vector3(0, yOffset, -1);
-                _outputProductionContainer = GameManager.Instance.CreateProductionIconContainer(
-                    transform,
-                    "OutputProductionContainer",
-                    localPosition
-                );
-            }
+            Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
+            _outputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
+                sharedCanvas,
+                $"OutputIcons_{gameObject.name}",
+                worldPosition
+            );
             
             if (_outputProductionContainer != null)
             {
                 // 아이콘들 생성 (GameManager 헬퍼 사용)
                 GameManager.Instance.CreateProductionIcons(
                     _outputProductionContainer.transform, 
-                    _buildingState.outputProductionIds, 
-                    dataManager
+                    outputCounts, 
+                    dataManager,
+                    isOutput: true
                 );
             }
         }
+    }
+
+    private Dictionary<string, int> AggregateResourceCounts(List<string> resourceIds)
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+
+        if (resourceIds == null)
+            return counts;
+
+        foreach (var resourceId in resourceIds)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+                continue;
+
+            if (counts.ContainsKey(resourceId))
+            {
+                counts[resourceId]++;
+            }
+            else
+            {
+                counts[resourceId] = 1;
+            }
+        }
+
+        return counts;
     }
     
     /// <summary>

@@ -45,7 +45,10 @@ public class ThreadBtn : MonoBehaviour
 
     public void OnClick()
     {
-        
+        if (_mainUiManager == null || _threadState == null)
+            return;
+
+        _mainUiManager.StartThreadPlacement(_threadState);
     }
 
 }

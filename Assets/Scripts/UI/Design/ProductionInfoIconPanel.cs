@@ -13,13 +13,13 @@ public class ProductionInfoIconPanel : MonoBehaviour
         _image.sprite = resourceEntry.resourceData.icon;
         _titleText.text = resourceEntry.resourceData.displayName;
 
-        if (productionCount == -1)
+        if (productionCount >= 0)
         {
-            _countText.text = "Count: " + resourceEntry.resourceState.count.ToString();
+            _countText.text = $"{productionCount}";
         }
         else
         {
-            _countText.text = "Production: " + productionCount.ToString();
+            _countText.text = $"-";
         }
     }
 }

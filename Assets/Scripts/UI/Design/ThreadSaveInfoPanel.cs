@@ -80,8 +80,8 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         outputResourceIds ??= new List<string>();
         outputResourceCounts ??= new Dictionary<string, int>();
 
-        DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts);
-        DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts);
+        DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts, isOutput: false);
+        DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts, isOutput: true);
 
         // 5. 총 유지비 표시
         if (_totalMaintenanceText != null)
@@ -95,7 +95,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// <summary>
     /// 자원 아이콘과 산출량을 스크롤 뷰에 표시합니다.
     /// </summary>
-    private void DisplayProductionIcons(List<string> resourceIds, Transform content, Dictionary<string, int> counts)
+    private void DisplayProductionIcons(List<string> resourceIds, Transform content, Dictionary<string, int> counts, bool isOutput)
     {
         if (_productionInfoIconPanel == null || content == null || _dataManager == null)
             return;
@@ -111,14 +111,17 @@ public class ThreadSaveInfoPanel : MonoBehaviour
                 if (iconPanel == null)
                     continue;
 
-                if (counts != null && counts.TryGetValue(resourceId, out int amount))
+                int amount = 0;
+                if (counts != null && counts.TryGetValue(resourceId, out int value))
                 {
-                    iconPanel.OnInitialize(resourceEntry, amount);
+                    amount = value;
                 }
                 else
                 {
-                    iconPanel.OnInitialize(resourceEntry);
+                    amount = -1;
                 }
+
+                iconPanel.OnInitialize(resourceEntry, amount);
             }
         }
     }
@@ -197,7 +200,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
         // 2. 최종 저장 명령을 DesignUiManager에 위임
         // DesignUiManager는 이 정보를 가지고 BuildingTileManager의 임시 데이터를 DataManager에 반영하고, 최종 파일 저장을 트리거합니다.
-        _designUiManager.BuildingTileManager.SaveThreadChanges(threadName, _selectedCategoryId);
+        _designUiManager.SaveThreadChanges(threadName, _selectedCategoryId);
 
         Debug.Log($"[ThreadSaveInfoPanel] Save request delegated for: {threadName} (Category: {_selectedCategoryId})");
 

@@ -34,6 +34,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private GameObject _threadPlusBtnPrefab;
     [SerializeField] private Transform _threadScrollViewContent;
 
+    [Header("Managers")]
+    [SerializeField] private ThreadTileManager _threadTileManager;
+
     // 패널 딕셔너리
     private Dictionary<MainPanelType, BasePanel> _panelDict;
 
@@ -51,6 +54,7 @@ public class MainUiManager : MonoBehaviour, IUIManager
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;
     public GameObject ProductionInfoImage => _productionInfoImage;
+    public ThreadTileManager ThreadTileManager => _threadTileManager;
     /// <summary>
     /// UI 매니저를 초기화합니다.
     /// </summary>
@@ -59,6 +63,10 @@ public class MainUiManager : MonoBehaviour, IUIManager
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
         _productionInfoImage = argGameManager.ProductionInfoImage;
+        if (_threadTileManager == null)
+        {
+            _threadTileManager = FindObjectOfType<ThreadTileManager>();
+        }
         
         // 자원 변경 이벤트 구독
         if (_dataManager != null)
@@ -445,6 +453,36 @@ public class MainUiManager : MonoBehaviour, IUIManager
         _selectedThreadCategoryId = btn.CategoryId ?? string.Empty;
         UpdateThreadCategoryButtonStates();
         RefreshThreadButtons();
+    }
+
+    public void RegisterThreadTileManager(ThreadTileManager threadTileManager)
+    {
+        _threadTileManager = threadTileManager;
+    }
+
+    public void StartThreadPlacement(ThreadState threadState)
+    {
+        if (threadState == null)
+            return;
+
+        if (_threadTileManager == null)
+        {
+            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned.");
+            return;
+        }
+
+        if (_threadTileManager.IsPlacementMode && _threadTileManager.CurrentPlacementThread == threadState)
+        {
+            _threadTileManager.CancelPlacementMode();
+            return;
+        }
+
+        _threadTileManager.StartPlacementMode(threadState);
+    }
+
+    public void CancelThreadPlacement()
+    {
+        _threadTileManager?.CancelPlacementMode();
     }
 
     private void UpdateThreadCategoryButtonStates()

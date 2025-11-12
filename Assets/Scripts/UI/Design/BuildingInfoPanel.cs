@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -114,23 +115,24 @@ public class BuildingInfoPanel : MonoBehaviour
         // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_inputGridContentTransform);
         
-        if (_currentBuildingState.inputProductionIds == null)
+        Dictionary<string, int> inputCounts = AggregateResourceCounts(_currentBuildingState.inputProductionIds);
+        if (inputCounts.Count == 0)
         {
             return;
         }
 
-        foreach (var productionId in _currentBuildingState.inputProductionIds)
+        foreach (var kvp in inputCounts)
         {
-            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(productionId);
+            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(kvp.Key);
 
             if (resourceEntry != null)
             {
                 Instantiate(_designUiManager.ProductionInfoImage, _inputGridContentTransform).
-                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry);
+                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Input: {resourceEntry.resourceData.displayName}\nCount: {resourceEntry.resourceState.count}\nPrice: {resourceEntry.resourceState.currentValue}";
+                 $"Input: {resourceEntry.resourceData.displayName}\nConsumption: {kvp.Value}\nPrice: {resourceEntry.resourceState.currentValue}";
             }
         }
     }
@@ -140,23 +142,24 @@ public class BuildingInfoPanel : MonoBehaviour
         // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_outputGridContentTransform);
         
-        if (_currentBuildingState.outputProductionIds == null)
+        Dictionary<string, int> outputCounts = AggregateResourceCounts(_currentBuildingState.outputProductionIds);
+        if (outputCounts.Count == 0)
         {
             return;
         }
 
-        foreach (var productionId in _currentBuildingState.outputProductionIds)
+        foreach (var kvp in outputCounts)
         {
-            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(productionId);
+            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(kvp.Key);
             
             if (resourceEntry != null)
             {
                 Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
-                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry);
+                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Output: {resourceEntry.resourceData.displayName}\nCount: {resourceEntry.resourceState.count}\nPrice: {resourceEntry.resourceState.currentValue}";
+                 $"Output: {resourceEntry.resourceData.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.resourceState.currentValue}";
             }
         }
     }
@@ -234,8 +237,12 @@ public class BuildingInfoPanel : MonoBehaviour
         {
             if (requirement.resource != null)
             {
-                _currentBuildingState.inputProductionIds.Add(requirement.resource.id);
-                Debug.Log($"[BuildingInfoPanel] Required input resource added: {requirement.resource.displayName} (count: {requirement.count})");
+                int requiredCount = Mathf.Max(1, requirement.count);
+                for (int i = 0; i < requiredCount; i++)
+                {
+                    _currentBuildingState.inputProductionIds.Add(requirement.resource.id);
+                }
+                Debug.Log($"[BuildingInfoPanel] Required input resource added: {requirement.resource.displayName} (count: {requiredCount})");
             }
         }
     }
@@ -268,5 +275,30 @@ public class BuildingInfoPanel : MonoBehaviour
     public void Hide()
     {
         gameObject.SetActive(false);
+    }
+
+    private Dictionary<string, int> AggregateResourceCounts(List<string> resourceIds)
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+
+        if (resourceIds == null)
+            return counts;
+
+        foreach (var resourceId in resourceIds)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+                continue;
+
+            if (counts.ContainsKey(resourceId))
+            {
+                counts[resourceId]++;
+            }
+            else
+            {
+                counts[resourceId] = 1;
+            }
+        }
+
+        return counts;
     }
 }

@@ -338,56 +338,6 @@ public class GameManager : MonoBehaviour
     // ================== Production Icon Helper Methods ==================
 
     /// <summary>
-    /// World Space Canvas로 설정된 생산 아이콘 컨테이너를 생성합니다.
-    /// 이 컨테이너는 자식으로 추가된 ProductionInfoImage를 자동으로 정렬합니다.
-    /// </summary>
-    /// <param name="parent">부모 Transform</param>
-    /// <param name="name">컨테이너 이름</param>
-    /// <param name="localPosition">로컬 위치</param>
-    /// <param name="containerScale">컨테이너 스케일 (기본 0.01f, -1이면 _productionIconScale 사용)</param>
-    /// <returns>생성된 컨테이너 GameObject</returns>
-    public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 localPosition, float containerScale = 0.01f)
-    {
-        if (_horizontalSortContentPrefab == null)
-        {
-            Debug.LogWarning("[GameManager] HorizontalSortContentPrefab is not assigned.");
-            return null;
-        }
-
-        GameObject container = Instantiate(_horizontalSortContentPrefab, parent);
-        container.name = name;
-
-        // Canvas 설정 (World Space)
-        Canvas canvas = container.GetComponent<Canvas>();
-        if (canvas == null)
-            canvas = container.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-
-        // CanvasScaler 추가
-        UnityEngine.UI.CanvasScaler scaler = container.GetComponent<UnityEngine.UI.CanvasScaler>();
-        if (scaler == null)
-            scaler = container.AddComponent<UnityEngine.UI.CanvasScaler>();
-        scaler.dynamicPixelsPerUnit = 100;
-
-        // RectTransform 설정
-        RectTransform rectTransform = container.GetComponent<RectTransform>();
-        if (rectTransform != null)
-        {
-            rectTransform.sizeDelta = new Vector2(200, 50);
-        }
-
-        // 위치 및 스케일 설정
-        // containerScale이 -1이면 _productionIconScale 사용 (Inspector 설정)
-        float finalScale = containerScale < 0 ? _productionIconScale : containerScale;
-        
-        container.transform.localPosition = localPosition;
-        container.transform.localRotation = Quaternion.identity;
-        container.transform.localScale = Vector3.one * finalScale;
-
-        return container;
-    }
-
-    /// <summary>
     /// 생산 아이콘 컨테이너를 생성합니다 (Canvas 없이).
     /// 공용 World Space Canvas 아래에서 사용하기 위한 메서드입니다.
     /// </summary>
@@ -428,8 +378,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="parent">부모 Transform (보통 HorizontalSortContent)</param>
     /// <param name="resourceEntry">자원 정보</param>
+    /// <param name="amount">생산/소모량</param>
+    /// <param name="isOutput">true면 생산, false면 소모</param>
     /// <returns>생성된 아이콘 GameObject</returns>
-    public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry)
+    public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry, int amount = -1, bool isOutput = true)
     {
         if (_productionInfoImagePrefab == null)
         {
@@ -457,7 +409,7 @@ public class GameManager : MonoBehaviour
         var iconComponent = iconObj.GetComponent<ProductionInfoImage>();
         if (iconComponent != null)
         {
-            iconComponent.OnInitialize(resourceEntry);
+            iconComponent.OnInitialize(resourceEntry, amount);
         }
 
         return iconObj;
@@ -467,19 +419,23 @@ public class GameManager : MonoBehaviour
     /// 여러 생산 아이콘을 생성합니다.
     /// </summary>
     /// <param name="parent">부모 Transform</param>
-    /// <param name="productionIds">생산 ID 목록</param>
+    /// <param name="productionCounts">자원 ID와 생산/소모량 매핑</param>
     /// <param name="dataManager">데이터 매니저</param>
-    public void CreateProductionIcons(Transform parent, List<string> productionIds, GameDataManager dataManager)
+    /// <param name="isOutput">true면 생산, false면 소모</param>
+    public void CreateProductionIcons(Transform parent, Dictionary<string, int> productionCounts, GameDataManager dataManager, bool isOutput)
     {
-        if (productionIds == null || dataManager == null)
+        if (productionCounts == null || dataManager == null)
             return;
 
-        foreach (var productionId in productionIds)
+        foreach (var kvp in productionCounts)
         {
-            ResourceEntry resourceEntry = dataManager.GetResourceEntry(productionId);
+            if (string.IsNullOrEmpty(kvp.Key))
+                continue;
+
+            ResourceEntry resourceEntry = dataManager.GetResourceEntry(kvp.Key);
             if (resourceEntry != null)
             {
-                CreateProductionIcon(parent, resourceEntry);
+                CreateProductionIcon(parent, resourceEntry, kvp.Value, isOutput);
             }
         }
     }
