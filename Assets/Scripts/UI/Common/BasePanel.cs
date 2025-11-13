@@ -23,8 +23,6 @@ public abstract class BasePanel : MonoBehaviour
         // 초기화 (자식 클래스에서 구현)
         // DataManager가 null이어도 패널은 열리고, 나중에 사용 가능할 때 초기화
         OnInitialize();
-
-        Debug.Log($"[{GetType().Name}] Panel opened.");
     }
 
     /// <summary>
@@ -34,8 +32,6 @@ public abstract class BasePanel : MonoBehaviour
     {
         // 패널 숨김
         gameObject.SetActive(false);
-
-        Debug.Log($"[{GetType().Name}] Panel closed.");
     }
 
     /// <summary>

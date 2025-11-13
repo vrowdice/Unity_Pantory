@@ -121,7 +121,6 @@ public class SaveLoadHandler
                 threadService.LoadThreads(saveData.threads);
             }
 
-            Debug.Log($"[SaveLoadHandler] Thread data loaded from: {filePath} (Threads: {saveData.threads?.Count ?? 0}, Categories: {saveData.categories?.Count ?? 0})");
             return true;
         }
         catch (Exception e)

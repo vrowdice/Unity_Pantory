@@ -33,7 +33,23 @@ public class ThreadTileManager : MonoBehaviour
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
     public bool IsRemovalMode => _removalHandler != null && _removalHandler.IsActive;
     public ThreadState CurrentPlacementThread => _placementHandler?.SelectedThread;
-    public Transform SharedThreadLabelCanvas => _sharedThreadLabelCanvas?.transform;
+    public Transform SharedThreadLabelCanvas
+    {
+        get
+        {
+            if (_sharedThreadLabelCanvas == null && GameManager.Instance != null)
+            {
+                Camera targetCamera = _mainCamera ?? Camera.main;
+                RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+                if (canvasRect != null)
+                {
+                    _sharedThreadLabelCanvas = canvasRect.gameObject;
+                }
+            }
+
+            return _sharedThreadLabelCanvas != null ? _sharedThreadLabelCanvas.transform : null;
+        }
+    }
 
     void Start()
     {
@@ -117,6 +133,18 @@ public class ThreadTileManager : MonoBehaviour
         _removalHandler?.CancelRemoval();
     }
 
+    public void ToggleRemovalMode()
+    {
+        if (IsRemovalMode)
+        {
+            _removalHandler?.CancelRemoval();
+        }
+        else
+        {
+            StartRemovalMode();
+        }
+    }
+
     public bool PlaceThread(Vector2Int gridPos, ThreadState threadState)
     {
         if (threadState == null || _gridHandler == null)
@@ -133,7 +161,6 @@ public class ThreadTileManager : MonoBehaviour
         _gridHandler.SetTileOccupied(gridPos, true);
 
         _placedThreads[gridPos] = new ThreadPlacementInfo(threadState.threadId);
-        Debug.Log($"[ThreadTileManager] Thread placed: {threadState.threadId} at {gridPos}");
         return true;
     }
 
@@ -147,7 +174,6 @@ public class ThreadTileManager : MonoBehaviour
 
         _placedThreads.Remove(gridPos);
         _gridHandler.RemoveThreadObject(gridPos);
-        Debug.Log($"[ThreadTileManager] Thread removed at {gridPos}");
         return true;
     }
 
@@ -224,26 +250,22 @@ public class ThreadTileManager : MonoBehaviour
         if (_sharedThreadLabelCanvas != null)
             return;
 
-        _sharedThreadLabelCanvas = new GameObject("SharedThreadLabelCanvas");
-        _sharedThreadLabelCanvas.transform.SetParent(transform);
-
-        Canvas canvas = _sharedThreadLabelCanvas.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvas.sortingOrder = 2;
-        canvas.worldCamera = _mainCamera != null ? _mainCamera : Camera.main;
-
-        CanvasScaler scaler = _sharedThreadLabelCanvas.AddComponent<CanvasScaler>();
-        scaler.dynamicPixelsPerUnit = 100;
-
-        CanvasGroup canvasGroup = _sharedThreadLabelCanvas.AddComponent<CanvasGroup>();
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-
-        RectTransform rectTransform = _sharedThreadLabelCanvas.GetComponent<RectTransform>();
-        if (rectTransform != null)
+        if (GameManager.Instance == null)
         {
-            rectTransform.sizeDelta = new Vector2(1000f, 1000f);
+            Debug.LogWarning("[ThreadTileManager] GameManager.Instance is null. Cannot create shared thread label canvas.");
+            return;
         }
+
+        Camera targetCamera = _mainCamera ?? Camera.main;
+        RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+
+        if (canvasRect == null)
+        {
+            Debug.LogWarning("[ThreadTileManager] Failed to acquire shared thread label canvas from GameManager.");
+            return;
+        }
+
+        _sharedThreadLabelCanvas = canvasRect.gameObject;
     }
 
     #endregion

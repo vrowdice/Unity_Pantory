@@ -268,8 +268,7 @@ public class BuildingObject : MonoBehaviour
                 GameManager.Instance.CreateProductionIcons(
                     _inputProductionContainer.transform, 
                     inputCounts, 
-                    dataManager,
-                    isOutput: false
+                    dataManager
                 );
             }
         }
@@ -293,8 +292,7 @@ public class BuildingObject : MonoBehaviour
                 GameManager.Instance.CreateProductionIcons(
                     _outputProductionContainer.transform, 
                     outputCounts, 
-                    dataManager,
-                    isOutput: true
+                    dataManager
                 );
             }
         }

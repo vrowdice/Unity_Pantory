@@ -467,9 +467,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 789901293}
-        m_TargetAssemblyTypeName: DesignUiManager, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 789901298}
+        m_TargetAssemblyTypeName: MainUiManager, Assembly-CSharp
+        m_MethodName: ToggleThreadRemovalMode
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1837,7 +1837,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _dragSpeed: 0.5
   _zoomSpeed: 1
-  _minZoom: 2
+  _minZoom: 1
   _maxZoom: 20
   _boundaryCollider: {fileID: 590199397}
 --- !u!1 &530055721
@@ -2548,6 +2548,8 @@ MonoBehaviour:
   _financePanel: {fileID: 1905144862}
   _quickMoveBtnPrefeb: {fileID: 36962183709833815, guid: ecbf718cd5649e74d9e4fda0e969449e, type: 3}
   _quickMovePanelContent: {fileID: 1268440718}
+  _cancelPlacementBtnImage: {fileID: 1778036463}
+  _removalModeBtnImage: {fileID: 130363912}
   _threadCategoryBtnPrefab: {fileID: 8883260443006643471, guid: 124a95f6f6e05db439ada4da1e6f62e8, type: 3}
   _threadCategoryScrollViewContent: {fileID: 451076159}
   _threadBtnPrefab: {fileID: 4574329230655590142, guid: 13f2ae0d58f7b0947a8be563d3cbbcf2, type: 3}
@@ -5099,9 +5101,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: DesignUiManager, Assembly-CSharp
-        m_MethodName: DeselectBuilding
+      - m_Target: {fileID: 789901298}
+        m_TargetAssemblyTypeName: MainUiManager, Assembly-CSharp
+        m_MethodName: CancelThreadPlacement
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using Pantory.Managers;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +12,10 @@ public class GameManager : MonoBehaviour
     private GameDataManager _gameDataManager;
     private MainCameraController _mainCameraController;
     private string _currentThreadId = "Sample_Thread";
+
+    private GameUiPanelHandler _uiPanelHandler;
+    private GameProductionIconHandler _productionIconHandler;
+    private GameWorldCanvasHandler _worldCanvasHandler;
 
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
@@ -23,8 +29,14 @@ public class GameManager : MonoBehaviour
         _currentThreadId = threadId;
         Debug.Log($"[GameManager] Current thread ID set to: {threadId}");
     }
-    public GameObject HorizontalSortContentPrefab => _horizontalSortContentPrefab;
+    public GameObject GridSortContentPrefab => _gridSortContentPrefab;
     public float ProductionIconScale => _productionIconScale;
+
+    [Header("World Space Canvas Settings")]
+    [SerializeField] private string _worldCanvasName = "SharedWorldCanvas";
+    [SerializeField] private int _worldCanvasSortingOrder = 1;
+    [SerializeField] private float _worldCanvasDynamicPixelsPerUnit = 100f;
+    [SerializeField] private Vector2 _worldCanvasSize = new Vector2(1000f, 1000f);
 
     [Header("Common Panel")]
     [SerializeField] private GameObject _warningPanelPrefab;
@@ -35,7 +47,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
-    [SerializeField] private GameObject _horizontalSortContentPrefab;
+    [SerializeField] private GameObject _gridSortContentPrefab;
     
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
@@ -74,6 +86,8 @@ public class GameManager : MonoBehaviour
         {
             _gameDataManager = GameDataManager.Instance;
         }
+
+        InitializeHandlers();
     }
 
     void Start()
@@ -144,6 +158,18 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("[GameManager] GameDataManager.Instance is null.");
         }
+
+        InitializeHandlers();
+
+        Camera targetCamera = _mainCameraController != null ? _mainCameraController.Camera : Camera.main;
+        if (scene.name != "Title")
+        {
+            _worldCanvasHandler?.EnsureWorldCanvas(null, targetCamera);
+        }
+        else
+        {
+            _worldCanvasHandler?.DestroyCanvas();
+        }
     }
 
     void Update()
@@ -157,15 +183,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ShowWarningPanel()
     {
-        if (_warningPanelPrefab == null)
+        if (_uiPanelHandler == null)
         {
-            Debug.LogWarning("[GameManager] Warning panel prefab is not assigned.");
+            Debug.LogWarning("[GameManager] UI panel handler is not initialized.");
             return;
         }
 
-        // 경고 패널 생성
-        GameObject warningPanel = Instantiate(_warningPanelPrefab, _uiManager.CanvasTrans);
-        Debug.Log("[GameManager] Warning panel displayed.");
+        _uiPanelHandler.ShowWarningPanel();
     }
 
     /// <summary>
@@ -174,26 +198,13 @@ public class GameManager : MonoBehaviour
     /// <param name="message">표시할 메시지</param>
     public void ShowWarningPanel(string message)
     {
-        if (_warningPanelPrefab == null)
+        if (_uiPanelHandler == null)
         {
-            Debug.LogWarning("[GameManager] Warning panel prefab is not assigned.");
+            Debug.LogWarning("[GameManager] UI panel handler is not initialized.");
             return;
         }
 
-        // 경고 패널 생성
-        GameObject warningPanel = Instantiate(_warningPanelPrefab, _uiManager.CanvasTrans);
-        
-        // 메시지 설정
-        var warningPanelComponent = warningPanel.GetComponent<WarningPanel>();
-        if (warningPanelComponent != null)
-        {
-            warningPanelComponent.SetMessage(message);
-            Debug.Log($"[GameManager] Warning panel displayed with message: {message}");
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] WarningPanel component not found on instantiated prefab.");
-        }
+        _uiPanelHandler.ShowWarningPanel(message);
     }
 
     /// <summary>
@@ -204,34 +215,13 @@ public class GameManager : MonoBehaviour
     /// <returns>생성된 SelectResourcePanel 컴포넌트</returns>
     public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected)
     {
-        if (_selectResourcePanelPrefab == null)
+        if (_uiPanelHandler == null)
         {
-            Debug.LogWarning("[GameManager] Select resource panel prefab is not assigned.");
+            Debug.LogWarning("[GameManager] UI panel handler is not initialized.");
             return null;
         }
 
-        if (_gameDataManager == null)
-        {
-            Debug.LogWarning("[GameManager] GameDataManager is null.");
-            return null;
-        }
-
-        // 자원 선택 패널 생성
-        GameObject selectResourcePanel = Instantiate(_selectResourcePanelPrefab, _uiManager.CanvasTrans);
-        SelectResourcePanel panelComponent = selectResourcePanel.GetComponent<SelectResourcePanel>();
-        
-        if (panelComponent != null)
-        {
-            // 패널 초기화
-            panelComponent.OnInitialize(_gameDataManager, resourceTypes, onResourceSelected);
-            Debug.Log("[GameManager] Select resource panel displayed.");
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] SelectResourcePanel component not found on instantiated prefab.");
-        }
-
-        return panelComponent;
+        return _uiPanelHandler.ShowSelectResourcePanel(resourceTypes, onResourceSelected);
     }
 
     /// <summary>
@@ -242,28 +232,13 @@ public class GameManager : MonoBehaviour
     /// <returns>생성된 ManageThreadCartegoryPanel 컴포넌트</returns>
     public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(GameDataManager dataManager, System.Action<string> onCategorySelected = null)
     {
-        if (_manageThreadCartegoryPanelPrefab == null)
+        if (_uiPanelHandler == null)
         {
-            Debug.LogWarning("[GameManager] ManageThreadCartegoryPanel prefab is not assigned.");
+            Debug.LogWarning("[GameManager] UI panel handler is not initialized.");
             return null;
         }
 
-        // 카테고리 관리 패널 생성
-        GameObject panel = Instantiate(_manageThreadCartegoryPanelPrefab, _uiManager.CanvasTrans);
-        ManageThreadCartegoryPanel panelComponent = panel.GetComponent<ManageThreadCartegoryPanel>();
-        
-        if (panelComponent != null)
-        {
-            // 패널 초기화
-            panelComponent.OnInitialize(dataManager, onCategorySelected);
-            Debug.Log("[GameManager] ManageThreadCartegoryPanel displayed.");
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] ManageThreadCartegoryPanel component not found on instantiated prefab.");
-        }
-
-        return panelComponent;
+        return _uiPanelHandler.ShowManageThreadCategoryPanel(dataManager, onCategorySelected);
     }
 
     /// <summary>
@@ -273,34 +248,13 @@ public class GameManager : MonoBehaviour
     /// <returns>생성된 ManageThreadPanel 컴포넌트</returns>
     public ManageThreadPanel ShowManageThreadPanel(System.Action<string> onThreadSelected = null)
     {
-        if (_manageThreadPanelPrefab == null)
+        if (_uiPanelHandler == null)
         {
-            Debug.LogWarning("[GameManager] ManageThreadPanel prefab is not assigned.");
+            Debug.LogWarning("[GameManager] UI panel handler is not initialized.");
             return null;
         }
 
-        if (_gameDataManager == null)
-        {
-            Debug.LogWarning("[GameManager] GameDataManager is null.");
-            return null;
-        }
-
-        // Thread 관리 패널 생성
-        GameObject panel = Instantiate(_manageThreadPanelPrefab, _uiManager.CanvasTrans);
-        ManageThreadPanel panelComponent = panel.GetComponent<ManageThreadPanel>();
-        
-        if (panelComponent != null)
-        {
-            // 패널 초기화 (콜백 포함)
-            panelComponent.OnInitialize(_gameDataManager, onThreadSelected);
-            Debug.Log("[GameManager] ManageThreadPanel displayed.");
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] ManageThreadPanel component not found on instantiated prefab.");
-        }
-
-        return panelComponent;
+        return _uiPanelHandler.ShowManageThreadPanel(onThreadSelected);
     }
 
     /// <summary>
@@ -311,28 +265,13 @@ public class GameManager : MonoBehaviour
     /// <returns>생성된 EnterNamePanel 컴포넌트</returns>
     public EnterNamePanel ShowEnterNamePanel(System.Action<string> onConfirm)
     {
-        if (_enterNamePanelPrefab == null)
+        if (_uiPanelHandler == null)
         {
-            Debug.LogWarning("[GameManager] Rename panel prefab is not assigned.");
+            Debug.LogWarning("[GameManager] UI panel handler is not initialized.");
             return null;
         }
 
-        // 이름 입력 패널 생성
-        GameObject panel = Instantiate(_enterNamePanelPrefab, _uiManager.CanvasTrans);
-        EnterNamePanel panelComponent = panel.GetComponent<EnterNamePanel>();
-        
-        if (panelComponent != null)
-        {
-            // 패널 초기화
-            panelComponent.OnInitialize(onConfirm);
-            Debug.Log("[GameManager] EnterNamePanel displayed.");
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] EnterNamePanel component not found on instantiated prefab.");
-        }
-
-        return panelComponent;
+        return _uiPanelHandler.ShowEnterNamePanel(onConfirm);
     }
 
     // ================== Production Icon Helper Methods ==================
@@ -348,28 +287,13 @@ public class GameManager : MonoBehaviour
     /// <returns>생성된 컨테이너 GameObject</returns>
     public GameObject CreateProductionIconContainerWithoutCanvas(Transform parent, string name, Vector3 worldPosition, float containerScale = 0.01f)
     {
-        if (_horizontalSortContentPrefab == null)
+        if (_productionIconHandler == null)
         {
-            Debug.LogWarning("[GameManager] HorizontalSortContentPrefab is not assigned.");
+            Debug.LogWarning("[GameManager] Production icon handler is not initialized.");
             return null;
         }
 
-        GameObject container = Instantiate(_horizontalSortContentPrefab, parent);
-        container.name = name;
-
-        // RectTransform 설정
-        RectTransform rectTransform = container.GetComponent<RectTransform>();
-        if (rectTransform != null)
-        {
-            rectTransform.sizeDelta = new Vector2(200, 50);
-        }
-
-        // 위치 및 스케일 설정 (World Position 사용)
-        container.transform.position = worldPosition;
-        container.transform.rotation = Quaternion.identity;
-        container.transform.localScale = Vector3.one * containerScale;
-
-        return container;
+        return _productionIconHandler.CreateProductionIconContainerWithoutCanvas(parent, name, worldPosition, containerScale);
     }
 
     /// <summary>
@@ -379,40 +303,16 @@ public class GameManager : MonoBehaviour
     /// <param name="parent">부모 Transform (보통 HorizontalSortContent)</param>
     /// <param name="resourceEntry">자원 정보</param>
     /// <param name="amount">생산/소모량</param>
-    /// <param name="isOutput">true면 생산, false면 소모</param>
     /// <returns>생성된 아이콘 GameObject</returns>
-    public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry, int amount = -1, bool isOutput = true)
+    public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry, int amount = -1)
     {
-        if (_productionInfoImagePrefab == null)
+        if (_productionIconHandler == null)
         {
-            Debug.LogWarning("[GameManager] ProductionInfoImagePrefab is not assigned.");
+            Debug.LogWarning("[GameManager] Production icon handler is not initialized.");
             return null;
         }
 
-        if (resourceEntry == null)
-        {
-            Debug.LogWarning("[GameManager] ResourceEntry is null.");
-            return null;
-        }
-
-        // 프리팹 생성
-        GameObject iconObj = Instantiate(_productionInfoImagePrefab, parent);
-
-        // 아이콘 크기 조정 (자동 정렬에 영향 없음)
-        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
-        if (iconRect != null)
-        {
-            iconRect.localScale = Vector3.one * _productionIconScale;
-        }
-
-        // 아이콘 초기화
-        var iconComponent = iconObj.GetComponent<ProductionInfoImage>();
-        if (iconComponent != null)
-        {
-            iconComponent.OnInitialize(resourceEntry, amount);
-        }
-
-        return iconObj;
+        return _productionIconHandler.CreateProductionIcon(parent, resourceEntry, amount);
     }
 
     /// <summary>
@@ -422,21 +322,77 @@ public class GameManager : MonoBehaviour
     /// <param name="productionCounts">자원 ID와 생산/소모량 매핑</param>
     /// <param name="dataManager">데이터 매니저</param>
     /// <param name="isOutput">true면 생산, false면 소모</param>
-    public void CreateProductionIcons(Transform parent, Dictionary<string, int> productionCounts, GameDataManager dataManager, bool isOutput)
+    public void CreateProductionIcons(Transform parent, Dictionary<string, int> productionCounts, GameDataManager dataManager)
     {
-        if (productionCounts == null || dataManager == null)
-            return;
-
-        foreach (var kvp in productionCounts)
+        if (_productionIconHandler == null)
         {
-            if (string.IsNullOrEmpty(kvp.Key))
-                continue;
+            Debug.LogWarning("[GameManager] Production icon handler is not initialized.");
+            return;
+        }
 
-            ResourceEntry resourceEntry = dataManager.GetResourceEntry(kvp.Key);
-            if (resourceEntry != null)
-            {
-                CreateProductionIcon(parent, resourceEntry, kvp.Value, isOutput);
-            }
+        _productionIconHandler.CreateProductionIcons(parent, productionCounts, dataManager);
+    }
+
+    // ================== Shared World Canvas Helper ==================
+
+    /// <summary>
+    /// 월드 스페이스 캔버스를 가져오거나 새로 만듭니다.
+    /// </summary>
+    public RectTransform GetWorldCanvas(Transform parent = null, Camera worldCamera = null)
+    {
+        return _worldCanvasHandler != null ? _worldCanvasHandler.GetWorldCanvas(parent, worldCamera) : null;
+    }
+
+    /// <summary>
+    /// 월드 스페이스 캔버스 Transform을 반환합니다.
+    /// </summary>
+    public Transform GetWorldCanvasTransform()
+    {
+        return _worldCanvasHandler != null ? _worldCanvasHandler.GetWorldCanvasTransform() : null;
+    }
+
+    /// <summary>
+    /// 월드 스페이스 캔버스 위치를 반환합니다.
+    /// </summary>
+    public Vector3? GetWorldCanvasPosition()
+    {
+        return _worldCanvasHandler != null ? _worldCanvasHandler.GetWorldCanvasPosition() : (Vector3?)null;
+    }
+
+    private void InitializeHandlers()
+    {
+        if (_uiPanelHandler == null)
+        {
+            _uiPanelHandler = new GameUiPanelHandler(
+                _uiManager,
+                _gameDataManager,
+                _warningPanelPrefab,
+                _enterNamePanelPrefab,
+                _selectResourcePanelPrefab,
+                _manageThreadPanelPrefab,
+                _manageThreadCartegoryPanelPrefab);
+        }
+        else
+        {
+            _uiPanelHandler.UpdateReferences(_uiManager, _gameDataManager);
+        }
+
+        if (_productionIconHandler == null)
+        {
+            _productionIconHandler = new GameProductionIconHandler(_gridSortContentPrefab, _productionInfoImagePrefab, _productionIconScale);
+        }
+        else
+        {
+            _productionIconHandler.UpdateSettings(_gridSortContentPrefab, _productionInfoImagePrefab, _productionIconScale);
+        }
+
+        if (_worldCanvasHandler == null)
+        {
+            _worldCanvasHandler = new GameWorldCanvasHandler(transform, _worldCanvasName, _worldCanvasSortingOrder, _worldCanvasDynamicPixelsPerUnit, _worldCanvasSize);
+        }
+        else
+        {
+            _worldCanvasHandler.UpdateSettings(_worldCanvasName, _worldCanvasSortingOrder, _worldCanvasDynamicPixelsPerUnit, _worldCanvasSize);
         }
     }
 }

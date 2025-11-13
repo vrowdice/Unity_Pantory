@@ -28,6 +28,8 @@ public class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private Transform _quickMovePanelContent;
 
     [Header("Thread")]
+    [SerializeField] private Image _cancelPlacementBtnImage;
+    [SerializeField] private Image _removalModeBtnImage;
     [SerializeField] private GameObject _threadCategoryBtnPrefab;
     [SerializeField] private Transform _threadCategoryScrollViewContent;
     [SerializeField] private GameObject _threadBtnPrefab;
@@ -63,9 +65,10 @@ public class MainUiManager : MonoBehaviour, IUIManager
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
         _productionInfoImage = argGameManager.ProductionInfoImage;
+
         if (_threadTileManager == null)
         {
-            _threadTileManager = FindObjectOfType<ThreadTileManager>();
+            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned.");
         }
         
         // 자원 변경 이벤트 구독
@@ -87,8 +90,6 @@ public class MainUiManager : MonoBehaviour, IUIManager
         {
             Debug.LogWarning("[MainUiManager] InfoDatePanel is not assigned.");
         }
-
-        Debug.Log("[MainUiManager] Initialized.");
 
         RefreshThreadCategories();
         RefreshThreadButtons();
@@ -458,6 +459,9 @@ public class MainUiManager : MonoBehaviour, IUIManager
     public void RegisterThreadTileManager(ThreadTileManager threadTileManager)
     {
         _threadTileManager = threadTileManager;
+        UpdateThreadModeButtons(
+            _threadTileManager != null && _threadTileManager.IsPlacementMode,
+            _threadTileManager != null && _threadTileManager.IsRemovalMode);
     }
 
     public void StartThreadPlacement(ThreadState threadState)
@@ -467,22 +471,70 @@ public class MainUiManager : MonoBehaviour, IUIManager
 
         if (_threadTileManager == null)
         {
-            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned.");
+            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot start thread placement.");
             return;
+        }
+
+        if (_threadTileManager.IsRemovalMode)
+        {
+            _threadTileManager.CancelRemovalMode();
+            UpdateThreadModeButtons(false, false);
         }
 
         if (_threadTileManager.IsPlacementMode && _threadTileManager.CurrentPlacementThread == threadState)
         {
             _threadTileManager.CancelPlacementMode();
+            UpdateThreadModeButtons(false, false);
             return;
         }
 
         _threadTileManager.StartPlacementMode(threadState);
+        UpdateThreadModeButtons(true, false);
     }
 
     public void CancelThreadPlacement()
     {
-        _threadTileManager?.CancelPlacementMode();
+        if (_threadTileManager == null)
+            return;
+
+        _threadTileManager.CancelPlacementMode();
+        UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
+    }
+
+    public void StartThreadRemovalMode()
+    {
+        if (_threadTileManager == null)
+        {
+            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot start removal mode.");
+            return;
+        }
+
+        _threadTileManager.StartRemovalMode();
+        UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, true);
+    }
+
+    public void CancelThreadRemovalMode()
+    {
+        if (_threadTileManager == null)
+        {
+            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot cancel removal mode.");
+            return;
+        }
+
+        _threadTileManager.CancelRemovalMode();
+        UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, false);
+    }
+
+    public void ToggleThreadRemovalMode()
+    {
+        if (_threadTileManager == null)
+        {
+            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot toggle removal mode.");
+            return;
+        }
+
+        _threadTileManager.ToggleRemovalMode();
+        UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, _threadTileManager.IsRemovalMode);
     }
 
     private void UpdateThreadCategoryButtonStates()
@@ -499,5 +551,23 @@ public class MainUiManager : MonoBehaviour, IUIManager
         }
     }
 
+    private void UpdateThreadModeButtons(bool isPlacementMode, bool isRemovalMode)
+    {
+        VisualManager visualManager = VisualManager.Instance;
+
+        if (_cancelPlacementBtnImage != null)
+        {
+            _cancelPlacementBtnImage.color = (isPlacementMode && visualManager != null)
+                ? visualManager.ValidColor
+                : Color.white;
+        }
+
+        if (_removalModeBtnImage != null)
+        {
+            _removalModeBtnImage.color = (isRemovalMode && visualManager != null)
+                ? visualManager.InvalidColor
+                : Color.white;
+        }
+    }
 }
 

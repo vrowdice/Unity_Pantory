@@ -35,8 +35,6 @@ public class InfoDatePanel : MonoBehaviour
         // 초기 UI 업데이트
         UpdateDateText();
         UpdatePlayPauseButtonImage();
-
-        Debug.Log("[InfoDatePanel] Initialized.");
     }
 
     // ----------------- UI 업데이트 -----------------

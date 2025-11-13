@@ -56,7 +56,23 @@ public class BuildingTileManager : MonoBehaviour
     public BuildingPlacementHandler PlacementHandler => _placementHandler;
     public BuildingRemovalHandler RemovalHandler => _removalHandler;
     public DesignUiManager DesignUiManager => _designUiManager;
-    public Transform SharedProductionIconCanvas => _sharedProductionIconCanvas?.transform;
+    public Transform SharedProductionIconCanvas
+    {
+        get
+        {
+            if (_sharedProductionIconCanvas == null && GameManager.Instance != null)
+            {
+                Camera targetCamera = _mainCamera ?? Camera.main;
+                RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+                if (canvasRect != null)
+                {
+                    _sharedProductionIconCanvas = canvasRect.gameObject;
+                }
+            }
+
+            return _sharedProductionIconCanvas != null ? _sharedProductionIconCanvas.transform : null;
+        }
+    }
     public Camera MainCamera => _mainCamera;
 
     public string CurrentThreadId => _currentThreadId;
@@ -156,20 +172,26 @@ public class BuildingTileManager : MonoBehaviour
 
     private void CreateSharedProductionIconCanvas()
     {
-        _sharedProductionIconCanvas = new GameObject("SharedProductionIconCanvas");
-        _sharedProductionIconCanvas.transform.SetParent(transform);
-        // ... Canvas 설정 로직 (World Space, Raycast 무시)
-        Canvas canvas = _sharedProductionIconCanvas.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvas.sortingOrder = 1;
-        _sharedProductionIconCanvas.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 100;
-        CanvasGroup canvasGroup = _sharedProductionIconCanvas.AddComponent<CanvasGroup>();
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-        RectTransform rectTransform = _sharedProductionIconCanvas.GetComponent<RectTransform>();
-        if (rectTransform != null) rectTransform.sizeDelta = new Vector2(1000, 1000);
+        if (_sharedProductionIconCanvas != null)
+            return;
 
-        Debug.Log("[BuildingTileManager] Shared Production Icon Canvas created (raycast ignored).");
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] GameManager.Instance is null. Cannot create shared production icon canvas.");
+            return;
+        }
+
+        Camera targetCamera = _mainCamera ?? Camera.main;
+        RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+
+        if (canvasRect == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Failed to acquire shared production icon canvas from GameManager.");
+            return;
+        }
+
+        _sharedProductionIconCanvas = canvasRect.gameObject;
+        Debug.Log("[BuildingTileManager] Shared Production Icon Canvas acquired from GameManager.");
     }
 
     #endregion

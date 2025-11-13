@@ -147,5 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24feb38388024354b8bd2c4f92b9395c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _threadTitleYOffset: 0
+  _threadTitleYOffset: 0.3
   _threadTitleScale: 0.01
+  _consumptionYOffset: 0
+  _productionYOffset: -0.4

@@ -67,7 +67,6 @@ public class ThreadDataHandler
     {
         _threads.Clear();
         _categories.Clear();
-        Debug.Log("[ThreadService] All threads and categories cleared (for load preparation).");
     }
 
     /// <summary> 등록된 Thread 개수를 반환합니다. </summary>

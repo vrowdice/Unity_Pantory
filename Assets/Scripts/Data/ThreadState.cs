@@ -24,4 +24,45 @@ public class ThreadState
         threadName = name;
         categoryId = catId;
     }
+
+    public bool TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts)
+    {
+        consumptionCounts = new Dictionary<string, int>();
+        productionCounts = new Dictionary<string, int>();
+
+        if (buildingStateList == null)
+            return false;
+
+        foreach (var buildingState in buildingStateList)
+        {
+            if (buildingState == null)
+                continue;
+
+            AccumulateResourceCounts(consumptionCounts, buildingState.inputProductionIds);
+            AccumulateResourceCounts(productionCounts, buildingState.outputProductionIds);
+        }
+
+        return consumptionCounts.Count > 0 || productionCounts.Count > 0;
+    }
+
+    private void AccumulateResourceCounts(Dictionary<string, int> counts, List<string> resourceIds)
+    {
+        if (resourceIds == null)
+            return;
+
+        foreach (var resourceId in resourceIds)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+                continue;
+
+            if (counts.TryGetValue(resourceId, out int current))
+            {
+                counts[resourceId] = current + 1;
+            }
+            else
+            {
+                counts[resourceId] = 1;
+            }
+        }
+    }
 }

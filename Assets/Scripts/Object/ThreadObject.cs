@@ -15,6 +15,8 @@ public class ThreadObject : MonoBehaviour
     private Vector2Int _gridPosition;
     [SerializeField] private float _threadTitleYOffset = 0.6f;
     [SerializeField] private float _threadTitleScale = 0.01f;
+    [SerializeField] private float _consumptionYOffset = 0.2f;
+    [SerializeField] private float _productionYOffset = 0.4f;
 
     private RectTransform _threadTitleRect;
     private TextMeshProUGUI _threadTitleLabel;
@@ -162,18 +164,15 @@ public class ThreadObject : MonoBehaviour
 
     private void PositionResourceIcons()
     {
-        float consumptionYOffset = _threadTitleYOffset - 0.2f;
-        float productionYOffset = consumptionYOffset - 0.2f;
-
         if (_consumptionIconContainer != null)
         {
-            Vector3 consumptionPosition = transform.position + new Vector3(0f, consumptionYOffset, -0.12f);
+            Vector3 consumptionPosition = transform.position + new Vector3(0f, _consumptionYOffset, -0.12f);
             _consumptionIconContainer.transform.position = consumptionPosition;
         }
 
         if (_productionIconContainer != null)
         {
-            Vector3 productionPosition = transform.position + new Vector3(0f, productionYOffset, -0.12f);
+            Vector3 productionPosition = transform.position + new Vector3(0f, _productionYOffset, -0.12f);
             _productionIconContainer.transform.position = productionPosition;
         }
     }
@@ -277,7 +276,7 @@ public class ThreadObject : MonoBehaviour
         if (IsPreview || _threadState == null || _sharedCanvas == null || GameManager.Instance == null)
             return;
 
-        if (!TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts))
+        if (!_threadState.TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts))
             return;
 
         GameDataManager dataManager = GameDataManager.Instance;
@@ -288,15 +287,16 @@ public class ThreadObject : MonoBehaviour
                 _sharedCanvas,
                 $"ThreadConsumption_{_threadState.threadId}",
                 transform.position,
-                0.01f);
+                0.005f
+                );
 
             if (_consumptionIconContainer != null)
             {
                 GameManager.Instance.CreateProductionIcons(
                     _consumptionIconContainer.transform,
                     consumptionCounts,
-                    dataManager,
-                    isOutput: false);
+                    dataManager
+                    );
             }
         }
 
@@ -306,15 +306,15 @@ public class ThreadObject : MonoBehaviour
                 _sharedCanvas,
                 $"ThreadProduction_{_threadState.threadId}",
                 transform.position,
-                0.01f);
+                0.005f
+                );
 
             if (_productionIconContainer != null)
             {
                 GameManager.Instance.CreateProductionIcons(
                     _productionIconContainer.transform,
                     productionCounts,
-                    dataManager,
-                    isOutput: true);
+                    dataManager);
             }
         }
 
@@ -333,47 +333,6 @@ public class ThreadObject : MonoBehaviour
         {
             Object.Destroy(_productionIconContainer);
             _productionIconContainer = null;
-        }
-    }
-
-    private bool TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts)
-    {
-        consumptionCounts = new Dictionary<string, int>();
-        productionCounts = new Dictionary<string, int>();
-
-        if (_threadState?.buildingStateList == null)
-            return false;
-
-        foreach (var buildingState in _threadState.buildingStateList)
-        {
-            if (buildingState == null)
-                continue;
-
-            AccumulateResourceCounts(consumptionCounts, buildingState.inputProductionIds);
-            AccumulateResourceCounts(productionCounts, buildingState.outputProductionIds);
-        }
-
-        return consumptionCounts.Count > 0 || productionCounts.Count > 0;
-    }
-
-    private void AccumulateResourceCounts(Dictionary<string, int> counts, List<string> resourceIds)
-    {
-        if (resourceIds == null)
-            return;
-
-        foreach (var resourceId in resourceIds)
-        {
-            if (string.IsNullOrEmpty(resourceId))
-                continue;
-
-            if (counts.TryGetValue(resourceId, out int current))
-            {
-                counts[resourceId] = current + 1;
-            }
-            else
-            {
-                counts[resourceId] = 1;
-            }
         }
     }
 
