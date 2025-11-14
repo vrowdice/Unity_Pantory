@@ -34,9 +34,7 @@ public class TimeDataHandler
     private int _daysPerMonth = 20;  // 영업일 기준 약 20일
 
     private const int HOURS_PER_DAY = 24;
-    private const int MINUTES_PER_HOUR = 60;
     private int _currentHour;
-    private int _currentMinute;
     
     // 한 해의 월 수
     private int _monthsPerYear = 12;
@@ -77,7 +75,6 @@ public class TimeDataHandler
         _isTimePaused = false;
         _timeSpeed = 1.0f;
         _currentHour = 0;
-        _currentMinute = 0;
     }
 
     /// <summary>
@@ -91,7 +88,6 @@ public class TimeDataHandler
         _isTimePaused = false;
         _timeSpeed = 1.0f;
         _currentHour = 0;
-        _currentMinute = 0;
         
         Debug.Log($"[TimeService] Initialized. Start date: Y{year} M{month} D{day}");
     }
@@ -191,22 +187,17 @@ public class TimeDataHandler
     }
 
     /// <summary>
-    /// 현재 시간을 HH:MM 포맷으로 반환합니다.
+    /// 현재 시간을 HH:00 포맷으로 반환합니다.
     /// </summary>
     public string GetTimeString()
     {
-        return $"{_currentHour:D2}:{_currentMinute:D2}";
+        return $"{_currentHour:D2}:00";
     }
 
     /// <summary>
     /// 현재 시각(시)을 반환합니다.
     /// </summary>
     public int GetCurrentHour() => _currentHour;
-
-    /// <summary>
-    /// 현재 시각(분)을 반환합니다.
-    /// </summary>
-    public int GetCurrentMinute() => _currentMinute;
 
     // ----------------- Private Methods -----------------
 
@@ -217,7 +208,6 @@ public class TimeDataHandler
     {
         _day++;
         _currentHour = 0;
-        _currentMinute = 0;
         UpdateTimeOfDay(true);
 
         // 한 달이 지났는지 확인
@@ -268,7 +258,6 @@ public class TimeDataHandler
         _month = month;
         _day = day;
         _currentHour = 0;
-        _currentMinute = 0;
         UpdateTimeOfDay(true);
     }
 
@@ -350,24 +339,16 @@ public class TimeDataHandler
 
     private void UpdateTimeOfDay(bool forceNotify = false)
     {
-        float totalMinutes = Mathf.Clamp01(_currentDayProgress) * HOURS_PER_DAY * MINUTES_PER_HOUR;
-        int newHour = Mathf.Clamp(Mathf.FloorToInt(totalMinutes / MINUTES_PER_HOUR), 0, HOURS_PER_DAY - 1);
-        int newMinute = Mathf.Clamp(Mathf.FloorToInt(totalMinutes % MINUTES_PER_HOUR), 0, MINUTES_PER_HOUR - 1);
+        float totalHours = Mathf.Clamp01(_currentDayProgress) * HOURS_PER_DAY;
+        int newHour = Mathf.Clamp(Mathf.FloorToInt(totalHours), 0, HOURS_PER_DAY - 1);
 
         bool hourChanged = newHour != _currentHour || forceNotify;
-        bool minuteChanged = newMinute != _currentMinute || forceNotify;
 
         _currentHour = newHour;
-        _currentMinute = newMinute;
 
         if (hourChanged)
         {
             OnHourChanged?.Invoke();
-        }
-
-        if (minuteChanged)
-        {
-            // minute change handled silently; expose via GetCurrentMinute()
         }
     }
 }
