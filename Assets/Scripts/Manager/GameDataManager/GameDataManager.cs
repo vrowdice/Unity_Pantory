@@ -85,7 +85,7 @@ public class GameDataManager : MonoBehaviour
         _threadPlacementHandler = new ThreadPlacementDataHandler(this);
         _threadPlacementHandler.OnPlacementChanged += HandleThreadPlacementChanged;
         _timeHandler = new TimeDataHandler(this);
-        _timeHandler.OnMonthChanged += HandleMonthChanged;
+        _timeHandler.OnDayChanged += HandleDayChanged;
         _resourceHandler = new ResourceDataHandler(this);
         _financesHandler = new FinancesDataHandler(this);
         _employeeHandler = new EmployeeDataHandler(this);
@@ -161,7 +161,7 @@ public class GameDataManager : MonoBehaviour
 
         if (_timeHandler != null)
         {
-            _timeHandler.OnMonthChanged -= HandleMonthChanged;
+            _timeHandler.OnDayChanged -= HandleDayChanged;
         }
     }
 
@@ -417,7 +417,7 @@ public class GameDataManager : MonoBehaviour
 
     #region Thread Placement Delta 계산
 
-    private void HandleMonthChanged()
+    private void HandleDayChanged()
     {
         _resourceHandler?.ApplyResourceDeltas();
         HandleThreadPlacementChanged();

@@ -32,6 +32,11 @@ public class TimeDataHandler
     
     // 한 달의 일 수 (영업일 기준)
     private int _daysPerMonth = 20;  // 영업일 기준 약 20일
+
+    private const int HOURS_PER_DAY = 24;
+    private const int MINUTES_PER_HOUR = 60;
+    private int _currentHour;
+    private int _currentMinute;
     
     // 한 해의 월 수
     private int _monthsPerYear = 12;
@@ -53,6 +58,11 @@ public class TimeDataHandler
     /// </summary>
     public event Action OnYearChanged;
 
+    /// <summary>
+    /// 시간이 바뀔 때 발생하는 이벤트 (정각 기준)
+    /// </summary>
+    public event Action OnHourChanged;
+
     // ----------------- 생성자 -----------------
 
     /// <summary>
@@ -66,6 +76,8 @@ public class TimeDataHandler
         _day = 0;
         _isTimePaused = false;
         _timeSpeed = 1.0f;
+        _currentHour = 0;
+        _currentMinute = 0;
     }
 
     /// <summary>
@@ -78,6 +90,8 @@ public class TimeDataHandler
         _day = day;
         _isTimePaused = false;
         _timeSpeed = 1.0f;
+        _currentHour = 0;
+        _currentMinute = 0;
         
         Debug.Log($"[TimeService] Initialized. Start date: Y{year} M{month} D{day}");
     }
@@ -98,6 +112,8 @@ public class TimeDataHandler
 
         // 시간 경과 (배속 적용)
         _currentDayProgress += (deltaTime / _realSecondsPerDay) * _timeSpeed;
+
+        UpdateTimeOfDay();
 
         // 하루가 지났는지 확인
         if (_currentDayProgress >= 1.0f)
@@ -174,6 +190,24 @@ public class TimeDataHandler
         return $"{_year:D4}년 {_month:D2}월 {_day:D2}일";
     }
 
+    /// <summary>
+    /// 현재 시간을 HH:MM 포맷으로 반환합니다.
+    /// </summary>
+    public string GetTimeString()
+    {
+        return $"{_currentHour:D2}:{_currentMinute:D2}";
+    }
+
+    /// <summary>
+    /// 현재 시각(시)을 반환합니다.
+    /// </summary>
+    public int GetCurrentHour() => _currentHour;
+
+    /// <summary>
+    /// 현재 시각(분)을 반환합니다.
+    /// </summary>
+    public int GetCurrentMinute() => _currentMinute;
+
     // ----------------- Private Methods -----------------
 
     /// <summary>
@@ -182,6 +216,9 @@ public class TimeDataHandler
     private void AdvanceDay()
     {
         _day++;
+        _currentHour = 0;
+        _currentMinute = 0;
+        UpdateTimeOfDay(true);
 
         // 한 달이 지났는지 확인
         if (_day >= _daysPerMonth)
@@ -230,6 +267,9 @@ public class TimeDataHandler
         _year = year;
         _month = month;
         _day = day;
+        _currentHour = 0;
+        _currentMinute = 0;
+        UpdateTimeOfDay(true);
     }
 
     /// <summary>
@@ -247,9 +287,28 @@ public class TimeDataHandler
     }
 
     /// <summary>
+    /// 한 시간(인게임)이 지나는 실제 시간을 설정합니다.
+    /// </summary>
+    public void SetRealSecondsPerHour(float seconds)
+    {
+        if (seconds <= 0)
+        {
+            Debug.LogWarning($"[TimeService] Real seconds per hour must be positive. Input: {seconds}");
+            return;
+        }
+
+        _realSecondsPerDay = seconds * HOURS_PER_DAY;
+    }
+
+    /// <summary>
     /// 현재 설정된 하루 당 실제 시간을 반환합니다.
     /// </summary>
     public float GetRealSecondsPerDay() => _realSecondsPerDay;
+
+    /// <summary>
+    /// 현재 설정된 한 시간 당 실제 시간을 반환합니다.
+    /// </summary>
+    public float GetRealSecondsPerHour() => _realSecondsPerDay / HOURS_PER_DAY;
 
     /// <summary>
     /// 한 달의 일 수를 설정합니다.
@@ -288,5 +347,28 @@ public class TimeDataHandler
     /// 현재 한 해의 월 수를 반환합니다.
     /// </summary>
     public int GetMonthsPerYear() => _monthsPerYear;
+
+    private void UpdateTimeOfDay(bool forceNotify = false)
+    {
+        float totalMinutes = Mathf.Clamp01(_currentDayProgress) * HOURS_PER_DAY * MINUTES_PER_HOUR;
+        int newHour = Mathf.Clamp(Mathf.FloorToInt(totalMinutes / MINUTES_PER_HOUR), 0, HOURS_PER_DAY - 1);
+        int newMinute = Mathf.Clamp(Mathf.FloorToInt(totalMinutes % MINUTES_PER_HOUR), 0, MINUTES_PER_HOUR - 1);
+
+        bool hourChanged = newHour != _currentHour || forceNotify;
+        bool minuteChanged = newMinute != _currentMinute || forceNotify;
+
+        _currentHour = newHour;
+        _currentMinute = newMinute;
+
+        if (hourChanged)
+        {
+            OnHourChanged?.Invoke();
+        }
+
+        if (minuteChanged)
+        {
+            // minute change handled silently; expose via GetCurrentMinute()
+        }
+    }
 }
 

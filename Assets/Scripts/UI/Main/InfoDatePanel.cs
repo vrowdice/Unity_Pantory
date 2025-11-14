@@ -31,6 +31,7 @@ public class InfoDatePanel : MonoBehaviour
         _dataManager.Time.OnDayChanged += UpdateDateText;
         _dataManager.Time.OnMonthChanged += OnMonthChanged;
         _dataManager.Time.OnYearChanged += OnYearChanged;
+        _dataManager.Time.OnHourChanged += OnHourChanged;
 
         // 초기 UI 업데이트
         UpdateDateText();
@@ -62,7 +63,8 @@ public class InfoDatePanel : MonoBehaviour
         int day = _dataManager.Time.Day;
 
         // 날짜 텍스트 업데이트
-        _dateText.text = $"Y{year} M{month} D{day}";
+        string timeText = _dataManager.Time.GetTimeString();
+        _dateText.text = $"Y{year} M{month} D{day}  {timeText}";
     }
 
     /// <summary>
@@ -184,6 +186,11 @@ public class InfoDatePanel : MonoBehaviour
         UpdateDateText();
     }
 
+    private void OnHourChanged()
+    {
+        UpdateDateText();
+    }
+
     void OnDestroy()
     {
         // 이벤트 구독 해제
@@ -192,6 +199,7 @@ public class InfoDatePanel : MonoBehaviour
             _dataManager.Time.OnDayChanged -= UpdateDateText;
             _dataManager.Time.OnMonthChanged -= OnMonthChanged;
             _dataManager.Time.OnYearChanged -= OnYearChanged;
+            _dataManager.Time.OnHourChanged -= OnHourChanged;
         }
     }
 }

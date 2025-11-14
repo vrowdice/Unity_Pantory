@@ -8,9 +8,9 @@ using UnityEngine;
 public class TimeSettingsData : ScriptableObject
 {
     [Header("Time Flow Settings")]
-    [Tooltip("Real seconds it takes for one in-game day to pass")]
-    [Range(0.1f, 60.0f)]
-    public float realSecondsPerDay = 2.0f;
+    [Tooltip("Real seconds it takes for one in-game HOUR to pass")]
+    [Range(0.01f, 10.0f)]
+    public float realSecondsPerHour = 0.1f;
 
     [Header("Calendar Settings")]
     [Tooltip("Number of days in a month (business days)")]
@@ -46,13 +46,13 @@ public class TimeSettingsData : ScriptableObject
             return;
         }
 
-        timeService.SetRealSecondsPerDay(realSecondsPerDay);
+        timeService.SetRealSecondsPerHour(realSecondsPerHour);
         timeService.SetDaysPerMonth(daysPerMonth);
         timeService.SetMonthsPerYear(monthsPerYear);
         timeService.SetDate(startYear, startMonth, startDay);
 
         Debug.Log($"[TimeSettingsData] Time settings applied: " +
-                  $"RealSecondsPerDay={realSecondsPerDay}, " +
+                  $"RealSecondsPerHour={realSecondsPerHour}, " +
                   $"DaysPerMonth={daysPerMonth}, " +
                   $"MonthsPerYear={monthsPerYear}, " +
                   $"StartDate=Y{startYear} M{startMonth} D{startDay}");
@@ -64,7 +64,7 @@ public class TimeSettingsData : ScriptableObject
     private void OnValidate()
     {
         // Ensure positive values
-        if (realSecondsPerDay <= 0) realSecondsPerDay = 0.1f;
+        if (realSecondsPerHour <= 0) realSecondsPerHour = 0.01f;
         if (daysPerMonth < 1) daysPerMonth = 1;
         if (monthsPerYear < 1) monthsPerYear = 1;
 
