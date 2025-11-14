@@ -31,6 +31,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     private string _currentThreadId = "";
     private BoxCollider2D _cameraCollider;
     private Camera _mainCamera;
+    private MainCameraController _mainCameraController;
     private GameDataManager _dataManager;
     private VisualManager _visualManager;
     private GameManager _gameManager;
@@ -77,6 +78,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         }
     }
     public Camera MainCamera => _mainCamera;
+    public MainCameraController MainCameraController => _mainCameraController;
 
     public string CurrentThreadId => _currentThreadId;
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
@@ -157,7 +159,10 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         }
 
         _mainCamera = Camera.main;
-        _mainCamera.TryGetComponent(out MainCameraController mainCameraController);
+        if (_mainCamera != null)
+        {
+            _mainCamera.TryGetComponent(out _mainCameraController);
+        }
     }
 
     private void InitializeHandlers()

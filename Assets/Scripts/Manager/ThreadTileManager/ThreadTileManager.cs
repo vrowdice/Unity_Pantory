@@ -163,14 +163,28 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
 
     public bool RemoveThread(Vector2Int gridPos)
     {
-        if (_threadPlacementHandler == null || !_threadPlacementHandler.HasPlacedThread(gridPos))
+        ThreadObject threadObject = _gridHandler?.GetThreadObjectAt(gridPos);
+
+        bool placementRemoved = false;
+        if (_threadPlacementHandler != null)
         {
-            Debug.LogWarning($"[ThreadTileManager] No thread at {gridPos} to remove.");
+            placementRemoved = _threadPlacementHandler.RemovePlacedThread(gridPos);
+
+            if (!placementRemoved && threadObject?.ThreadState != null)
+            {
+                // placement 데이터가 없더라도 ThreadState 정보를 기반으로 이벤트를 트리거하기 위해 임시 등록 후 제거
+                _threadPlacementHandler.SetPlacedThread(gridPos, threadObject.ThreadState.threadId);
+                placementRemoved = _threadPlacementHandler.RemovePlacedThread(gridPos);
+            }
+        }
+
+        if (threadObject == null && !placementRemoved)
+        {
+            Debug.LogWarning($"[ThreadTileManager] No thread object at {gridPos} to remove.");
             return false;
         }
 
-        _threadPlacementHandler.RemovePlacedThread(gridPos);
-        _gridHandler.RemoveThreadObject(gridPos);
+        _gridHandler?.RemoveThreadObject(gridPos);
         return true;
     }
 

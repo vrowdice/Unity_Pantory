@@ -10,6 +10,7 @@ public class ResourceDataHandler
 {
     // 자원을 저장하는 딕셔너리 (자원 ID -> ResourceEntry)
     private Dictionary<string, ResourceEntry> _resources;
+    private readonly GameDataManager _gameDataManager;
 
     // 자원 변경 이벤트 (자원이 추가/제거/설정될 때 발생)
     public event Action OnResourceChanged;
@@ -19,6 +20,7 @@ public class ResourceDataHandler
     /// </summary>
     public ResourceDataHandler(GameDataManager gameDataManager)
     {
+        _gameDataManager = gameDataManager;
         _resources = new Dictionary<string, ResourceEntry>();
         AutoLoadAllResources(); // 게임 시작 시 자동으로 모든 리소스 로드
     }
@@ -438,14 +440,14 @@ public class ResourceDataHandler
             long newCount = entry.resourceState.count + delta;
             if (newCount < 0)
             {
+                long deficit = -newCount;
+                HandleResourceShortage(entry, deficit);
                 newCount = 0;
             }
 
             entry.resourceState.count = newCount;
             entry.resourceState.deltaCount = 0;
             hasChanges = true;
-
-            Debug.Log($"[ResourceService] Monthly delta applied to {entry.resourceData.displayName}: {delta:+#;-#;0} (total: {newCount})");
         }
 
         if (hasChanges)
@@ -462,5 +464,30 @@ public class ResourceDataHandler
     public bool IsResourceRegistered(string resourceId)
     {
         return _resources.ContainsKey(resourceId);
+    }
+
+    private void HandleResourceShortage(ResourceEntry entry, long deficit)
+    {
+        if (entry == null || deficit <= 0)
+        {
+            return;
+        }
+
+        float unitPrice = entry.resourceState?.currentValue ?? 0f;
+        long cost = (long)Math.Ceiling(unitPrice * deficit);
+
+        var finances = _gameDataManager?.Finances;
+        if (finances != null && cost > 0)
+        {
+            bool removed = finances.TryRemoveCredit(cost);
+            if (removed)
+            {
+                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits.");
+            }
+            else
+            {
+                Debug.LogWarning($"[ResourceService] Unable to cover shortage cost ({cost}) for {entry.resourceData.displayName} due to insufficient credits.");
+            }
+        }
     }
 }

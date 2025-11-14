@@ -187,16 +187,9 @@ public class GameDataManager : MonoBehaviour
     /// </summary>
     private void ResetThreadData()
     {
-        // Thread 데이터를 초기 상태로 되돌림
         _threadHandler.ResetThreadData();
         _threadPlacementHandler?.ClearAll();
-
-        // 데이터가 변경되었으므로 ThreadDataHandler가 내부적으로 저장을 요청해야 함
-        // ThreadDataHandler.ResetThreadData() 내부에서 SaveThreadData()를 호출하도록 수정함
     }
-
-    // NOTE: Thread 데이터를 저장하는 public 메서드 SaveThreadData()는 책임 분리 원칙에 따라 제거되었습니다. 
-    // 저장은 ThreadDataHandler 내부에서 데이터가 변경된 후 자동으로 호출됩니다.
 
     /// <summary>
     /// 시간 설정 데이터를 적용합니다.

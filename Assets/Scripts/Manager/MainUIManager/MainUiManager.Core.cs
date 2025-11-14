@@ -36,6 +36,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         if (_dataManager != null)
         {
             _dataManager.OnResourceChanged += UpdateAllMainText;
+            _dataManager.OnThreadPlacementChanged += UpdateResourceSummary;
 
             _dataManager.Time.OnMonthChanged += OnMonthChanged;
             _dataManager.Time.OnYearChanged += OnYearChanged;
@@ -52,6 +53,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
         RefreshThreadCategories();
         RefreshThreadButtons();
+        UpdateResourceSummary();
     }
 
     private void Awake()
@@ -67,6 +69,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
         RefreshThreadCategories();
         RefreshThreadButtons();
+        UpdateResourceSummary();
     }
 
     public void UpdateAllMainText()
@@ -78,6 +81,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         }
 
         UpdateCreditText(_creditText);
+        UpdateResourceSummary();
 
         Debug.Log("[MainUiManager] All main text updated.");
     }
@@ -87,6 +91,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         if (_dataManager != null)
         {
             _dataManager.OnResourceChanged -= UpdateAllMainText;
+            _dataManager.OnThreadPlacementChanged -= UpdateResourceSummary;
 
             _dataManager.Time.OnMonthChanged -= OnMonthChanged;
             _dataManager.Time.OnYearChanged -= OnYearChanged;

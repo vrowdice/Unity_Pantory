@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65adb9f9ef092244a8f42acf50d90c4f, type: 3}
   m_Name: InitialResourceData
   m_EditorClassIdentifier: 
-  initialCredit: 1000
+  initialCredit: 100000000000000
   initialResources: []

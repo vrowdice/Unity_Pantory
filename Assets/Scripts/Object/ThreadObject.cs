@@ -265,6 +265,7 @@ public class ThreadObject : MonoBehaviour
         _threadTitleLabel.textWrappingMode = TextWrappingModes.NoWrap;
         _threadTitleLabel.outlineWidth = 0.2f;
         _threadTitleLabel.outlineColor = Color.black;
+        _threadTitleLabel.raycastTarget = false;
 
         return true;
     }

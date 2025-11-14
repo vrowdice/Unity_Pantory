@@ -18,7 +18,7 @@ public class MainScrollViewResouceBtn : MonoBehaviour
 
         _image.sprite = resourceEntry.resourceData.icon;
         _valueText.text = resourceEntry.resourceState.count.ToString();
-        UpdateChangeValue(resourceEntry.resourceState);
+        UpdateChangeValue();
     }
 
     public void OnClick()
@@ -26,8 +26,9 @@ public class MainScrollViewResouceBtn : MonoBehaviour
         
     }
 
-    private void UpdateChangeValue(ResourceState resourceState)
+    private void UpdateChangeValue()
     {
+        var resourceState = _resourceEntry?.resourceState;
         if (_changeValueText == null || resourceState == null)
         {
             return;

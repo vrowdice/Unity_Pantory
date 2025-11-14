@@ -11,6 +11,7 @@ public class BuildingRemovalHandler
     private readonly BuildingGridHandler _gridManager;
     private readonly GameDataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
+    private readonly Camera _camera;
     private readonly DesignUiManager _designUiManager;
 
     // ==================== State ====================
@@ -30,8 +31,8 @@ public class BuildingRemovalHandler
         _buildingTileManager = buildingTileManager;
         _gridManager = buildingTileManager.GridGenHandler;
         _dataManager = buildingTileManager.DataManager;
-        // MainCameraController는 BuildingTileManager에 MainCameraController 프로퍼티가 있음을 가정합니다.
-        _mainCameraController = buildingTileManager.MainCamera.GetComponent<MainCameraController>(); 
+        _mainCameraController = buildingTileManager.MainCameraController;
+        _camera = _mainCameraController != null ? _mainCameraController.Camera : buildingTileManager.MainCamera;
         _designUiManager = buildingTileManager.DesignUiManager;
     }
 
@@ -94,7 +95,11 @@ public class BuildingRemovalHandler
     private void UpdatePreview(string currentThreadId)
     {
         // 마우스 위치를 그리드 좌표로 변환
-        Vector3 mouseWorldPos = _mainCameraController.Camera.ScreenToWorldPoint(Input.mousePosition);
+        Camera activeCamera = GetActiveCamera();
+        if (activeCamera == null)
+            return;
+
+        Vector3 mouseWorldPos = activeCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int gridPos = _gridManager.WorldToGridPosition(mouseWorldPos);
 
         // 해당 위치에 건물이 있는지 확인 (GridManager가 크기/회전 고려)
@@ -115,10 +120,14 @@ public class BuildingRemovalHandler
     private void HandleInput(string currentThreadId)
     {
         // 왼쪽 클릭 - 건물 제거
+        Camera activeCamera = GetActiveCamera();
+        if (activeCamera == null)
+            return;
+
         if (Input.GetMouseButtonDown(0) && _hoveredBuilding != null)
         {
             // 클릭된 위치를 다시 계산하여 Grid Pos를 확보
-            Vector3 mouseWorldPos = _mainCameraController.Camera.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorldPos = activeCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2Int gridPos = _gridManager.WorldToGridPosition(mouseWorldPos);
 
             // 중요: GetBuildingAtPosition은 해당 gridPos를 포함하는 건물의 '원점'을 찾아야 하므로, 
@@ -142,6 +151,16 @@ public class BuildingRemovalHandler
         {
             CancelRemoval();
         }
+    }
+
+    private Camera GetActiveCamera()
+    {
+        if (_mainCameraController != null && _mainCameraController.Camera != null)
+        {
+            return _mainCameraController.Camera;
+        }
+
+        return _camera;
     }
 
     /// <summary>

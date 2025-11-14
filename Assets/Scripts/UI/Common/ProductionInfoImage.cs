@@ -17,6 +17,7 @@ public class ProductionInfoImage : MonoBehaviour
     {
         _productionImage.sprite = resourceEntry.resourceData.icon;
         _productionText.text = resourceEntry.resourceData.displayName;
+        SetRaycastTargets(false);
 
         if (amount >= 0)
         {
@@ -25,6 +26,24 @@ public class ProductionInfoImage : MonoBehaviour
         else
         {
             _productionCountText.text = $"-";
+        }
+    }
+
+    private void SetRaycastTargets(bool enabled)
+    {
+        if (_productionImage != null)
+        {
+            _productionImage.raycastTarget = enabled;
+        }
+
+        if (_productionText != null)
+        {
+            _productionText.raycastTarget = enabled;
+        }
+
+        if (_productionCountText != null)
+        {
+            _productionCountText.raycastTarget = enabled;
         }
     }
 }

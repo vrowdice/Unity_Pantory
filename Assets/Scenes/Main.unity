@@ -2540,8 +2540,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1647824761
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!224 &789901297
 RectTransform:
@@ -2592,6 +2592,8 @@ MonoBehaviour:
   _financePanel: {fileID: 1905144862}
   _quickMoveBtnPrefeb: {fileID: 36962183709833815, guid: ecbf718cd5649e74d9e4fda0e969449e, type: 3}
   _quickMovePanelContent: {fileID: 1268440718}
+  _mainScrollViewResouceBtn: {fileID: 3288361424689650741, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
+  _resouceScrollViewContent: {fileID: 1714360684}
   _cancelPlacementBtnImage: {fileID: 1778036463}
   _removalModeBtnImage: {fileID: 130363912}
   _threadCategoryBtnPrefab: {fileID: 8883260443006643471, guid: 124a95f6f6e05db439ada4da1e6f62e8, type: 3}
@@ -2599,8 +2601,6 @@ MonoBehaviour:
   _threadBtnPrefab: {fileID: 4574329230655590142, guid: 13f2ae0d58f7b0947a8be563d3cbbcf2, type: 3}
   _threadPlusBtnPrefab: {fileID: 3523065955825143660, guid: 0830d5423dee4dd47aec5999a46ef2e1, type: 3}
   _threadScrollViewContent: {fileID: 530055722}
-  _mainScrollViewResouceBtn: {fileID: 3288361424689650741, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
-  _resouceScrollViewContent: {fileID: 1714360684}
 --- !u!1 &795270708
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,10 +13,6 @@ public partial class MainUiManager
     [SerializeField] private GameObject _threadPlusBtnPrefab;
     [SerializeField] private Transform _threadScrollViewContent;
 
-    [Header("Resouce ScrollView")]
-    [SerializeField] private GameObject _mainScrollViewResouceBtn;
-    [SerializeField] private Transform _resouceScrollViewContent;
-
     private readonly List<ThreadCategoryBtn> _threadCategoryBtns = new List<ThreadCategoryBtn>();
     private readonly List<ThreadBtn> _threadBtns = new List<ThreadBtn>();
     private string _selectedThreadCategoryId = string.Empty;
