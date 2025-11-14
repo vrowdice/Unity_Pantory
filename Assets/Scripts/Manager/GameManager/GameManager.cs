@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Pantory.Managers;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -393,6 +394,40 @@ public class GameManager : MonoBehaviour
         else
         {
             _worldCanvasHandler.UpdateSettings(_worldCanvasName, _worldCanvasSortingOrder, _worldCanvasDynamicPixelsPerUnit, _worldCanvasSize);
+        }
+
+        InitializeSceneManagers();
+    }
+
+    private void InitializeSceneManagers()
+    {
+        if (_gameDataManager == null)
+        {
+            Debug.LogWarning("[GameManager] GameDataManager is null. Cannot initialize scene managers.");
+            return;
+        }
+
+        GameObject sceneManagerRoot = GameObject.Find("SceneManager");
+        if (sceneManagerRoot == null)
+        {
+            Debug.Log("[GameManager] SceneManager object not found in the scene. Skipping scene manager initialization.");
+            return;
+        }
+
+        var managers = sceneManagerRoot
+            .GetComponentsInChildren<MonoBehaviour>(true)
+            .OfType<ISceneManagerComponent>()
+            .ToList();
+
+        if (managers.Count == 0)
+        {
+            Debug.Log("[GameManager] No ISceneManagerComponent implementations found under SceneManager.");
+            return;
+        }
+
+        foreach (var manager in managers)
+        {
+            manager.Initialize(this, _gameDataManager);
         }
     }
 }

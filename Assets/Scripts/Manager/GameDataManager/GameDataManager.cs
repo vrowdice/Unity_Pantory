@@ -28,6 +28,9 @@ public class GameDataManager : MonoBehaviour
     private ThreadDataHandler _threadHandler;
     public ThreadDataHandler Thread => _threadHandler;
 
+    private ThreadPlacementDataHandler _threadPlacementHandler;
+    public ThreadPlacementDataHandler ThreadPlacement => _threadPlacementHandler;
+
     private ResourceDataHandler _resourceHandler;
     public ResourceDataHandler Resource => _resourceHandler;
 
@@ -79,7 +82,10 @@ public class GameDataManager : MonoBehaviour
     {
         _saveLoadHandler = new SaveLoadHandler(this);
         _threadHandler = new ThreadDataHandler(this);
+        _threadPlacementHandler = new ThreadPlacementDataHandler(this);
+        _threadPlacementHandler.OnPlacementChanged += HandleThreadPlacementChanged;
         _timeHandler = new TimeDataHandler(this);
+        _timeHandler.OnMonthChanged += HandleMonthChanged;
         _resourceHandler = new ResourceDataHandler(this);
         _financesHandler = new FinancesDataHandler(this);
         _employeeHandler = new EmployeeDataHandler(this);
@@ -93,6 +99,7 @@ public class GameDataManager : MonoBehaviour
 
         // Thread 데이터 자동 로드 시도
         LoadThreadData();
+        UpdateResourceDeltasFromPlacedThreads();
     }
 
     #endregion
@@ -141,7 +148,22 @@ public class GameDataManager : MonoBehaviour
         remove => _threadHandler.OnCategoryChanged -= value;
     }
 
+    public event Action OnThreadPlacementChanged;
+
     #endregion
+
+    void OnDestroy()
+    {
+        if (_threadPlacementHandler != null)
+        {
+            _threadPlacementHandler.OnPlacementChanged -= HandleThreadPlacementChanged;
+        }
+
+        if (_timeHandler != null)
+        {
+            _timeHandler.OnMonthChanged -= HandleMonthChanged;
+        }
+    }
 
     #region 초기 데이터 및 저장/로드 로직 (ThreadDataHandler로 저장 권한 위임)
 
@@ -167,6 +189,7 @@ public class GameDataManager : MonoBehaviour
     {
         // Thread 데이터를 초기 상태로 되돌림
         _threadHandler.ResetThreadData();
+        _threadPlacementHandler?.ClearAll();
 
         // 데이터가 변경되었으므로 ThreadDataHandler가 내부적으로 저장을 요청해야 함
         // ThreadDataHandler.ResetThreadData() 내부에서 SaveThreadData()를 호출하도록 수정함
@@ -345,6 +368,15 @@ public class GameDataManager : MonoBehaviour
     /// <summary> Thread 개수 반환 </summary>
     public int GetThreadCount() => _threadHandler.GetThreadCount();
 
+    /// <summary> 특정 Thread의 자원 소비/생산 요약 반환 </summary>
+    public ThreadResourceSummary GetThreadResourceSummary(string threadId) => _threadHandler.GetThreadResourceSummary(threadId);
+
+    /// <summary> 특정 Thread의 자원 소비/생산 요약 반환 시도 </summary>
+    public bool TryGetThreadResourceSummary(string threadId, out ThreadResourceSummary summary) => _threadHandler.TryGetThreadResourceSummary(threadId, out summary);
+
+    /// <summary> 모든 Thread의 자원 소비/생산 요약 리스트 반환 </summary>
+    public List<ThreadResourceSummary> GetAllThreadResourceSummaries() => _threadHandler.GetAllThreadResourceSummaries();
+
     #endregion
 
     #region 편의 메서드: Thread Service (Category 관련)
@@ -387,6 +419,94 @@ public class GameDataManager : MonoBehaviour
 
     /// <summary> 특정 카테고리에 속한 스레드 상태 목록 반환 </summary>
     public List<ThreadState> GetThreadsInCategory(string categoryId) => _threadHandler.GetThreadsInCategory(categoryId);
+
+    #endregion
+
+    #region Thread Placement Delta 계산
+
+    private void HandleMonthChanged()
+    {
+        _resourceHandler?.ApplyResourceDeltas();
+        HandleThreadPlacementChanged();
+    }
+
+    private void HandleThreadPlacementChanged()
+    {
+        UpdateResourceDeltasFromPlacedThreads();
+        OnThreadPlacementChanged?.Invoke();
+    }
+
+    private void UpdateResourceDeltasFromPlacedThreads()
+    {
+        if (_resourceHandler == null)
+        {
+            return;
+        }
+
+        Dictionary<string, ResourceEntry> allResources = _resourceHandler.GetAllResources();
+        if (allResources == null)
+        {
+            return;
+        }
+
+        foreach (var entry in allResources.Values)
+        {
+            if (entry?.resourceState != null)
+            {
+                entry.resourceState.deltaCount = 0;
+            }
+        }
+
+        if (_threadPlacementHandler == null || _threadHandler == null)
+        {
+            return;
+        }
+
+        foreach (var kvp in _threadPlacementHandler.GetAllPlacedThreads())
+        {
+            ThreadPlacementState placementState = kvp.Value;
+            if (placementState == null || string.IsNullOrEmpty(placementState.ThreadId))
+            {
+                continue;
+            }
+
+            ThreadState threadState = _threadHandler.GetThread(placementState.ThreadId);
+            if (threadState == null)
+            {
+                continue;
+            }
+
+            if (threadState.TryGetAggregatedResourceCounts(out var consumptionCounts, out var productionCounts))
+            {
+                ApplyResourceDelta(allResources, productionCounts, 1);
+                ApplyResourceDelta(allResources, consumptionCounts, -1);
+            }
+        }
+    }
+
+    private void ApplyResourceDelta(Dictionary<string, ResourceEntry> allResources, Dictionary<string, int> resourceCounts, int sign)
+    {
+        if (resourceCounts == null)
+        {
+            return;
+        }
+
+        foreach (var kvp in resourceCounts)
+        {
+            string resourceId = kvp.Key;
+            int amount = kvp.Value;
+
+            if (string.IsNullOrEmpty(resourceId) || amount == 0)
+            {
+                continue;
+            }
+
+            if (allResources.TryGetValue(resourceId, out var entry) && entry?.resourceState != null)
+            {
+                entry.resourceState.deltaCount += sign * amount;
+            }
+        }
+    }
 
     #endregion
 }

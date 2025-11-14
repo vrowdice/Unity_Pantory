@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 건물 타일 시스템의 메인 매니저 (조율자).
 /// - 그리드, 배치/제거 모드, 임시 데이터 및 최종 저장 로직을 관리합니다.
 /// </summary>
-public class BuildingTileManager : MonoBehaviour
+public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
 {
     #region 인스펙터 설정
 
@@ -33,6 +33,7 @@ public class BuildingTileManager : MonoBehaviour
     private Camera _mainCamera;
     private GameDataManager _dataManager;
     private VisualManager _visualManager;
+    private GameManager _gameManager;
 
     // 핸들러들
     private BuildingGridHandler _gridGenHandler;
@@ -46,6 +47,8 @@ public class BuildingTileManager : MonoBehaviour
     // 임시 저장 상태
     private List<BuildingState> _tempBuildingStates = new List<BuildingState>();
     private bool _isTempDataDirty = false; // 임시 데이터 변경 여부
+    private bool _handlersInitialized = false;
+    private bool _isInitialized = false;
 
     #endregion
 
@@ -60,10 +63,10 @@ public class BuildingTileManager : MonoBehaviour
     {
         get
         {
-            if (_sharedProductionIconCanvas == null && GameManager.Instance != null)
+            if (_sharedProductionIconCanvas == null && _gameManager != null)
             {
                 Camera targetCamera = _mainCamera ?? Camera.main;
-                RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+                RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
                 if (canvasRect != null)
                 {
                     _sharedProductionIconCanvas = canvasRect.gameObject;
@@ -87,25 +90,9 @@ public class BuildingTileManager : MonoBehaviour
 
     void Start()
     {
-        InitializeReferences();
-        InitializeHandlers();
-        InitializeThread();
-
-        CreateGrid(_gridWidth, _gridHeight);
-        SetPositionCenter();
-        SetCameraCollider();
-        CreateSharedProductionIconCanvas();
-
-        // 초기 스레드 로드
-        if (!string.IsNullOrEmpty(_currentThreadId))
+        if (!_isInitialized)
         {
-            var buildingStates = _dataManager.GetBuildingStates(_currentThreadId);
-            if (buildingStates != null)
-            {
-                _tempBuildingStates = new List<BuildingState>(buildingStates);
-            }
-            RefreshBuildings();
-            Debug.Log($"[BuildingTileManager] Initial thread data loaded and refreshed: {_currentThreadId} ({_tempBuildingStates.Count} buildings)");
+            Initialize(GameManager.Instance, GameDataManager.Instance);
         }
     }
 
@@ -130,8 +117,39 @@ public class BuildingTileManager : MonoBehaviour
 
     #region 초기화 메서드
 
-    private void InitializeReferences()
+    public void Initialize(GameManager gameManager, GameDataManager dataManager)
     {
+        InitializeReferences(gameManager, dataManager ?? GameDataManager.Instance);
+
+        if (!_handlersInitialized)
+        {
+            InitializeHandlers();
+            _handlersInitialized = true;
+        }
+
+        InitializeThread();
+
+        if (!_isInitialized)
+        {
+            CreateGrid(_gridWidth, _gridHeight);
+            SetPositionCenter();
+            SetCameraCollider();
+            CreateSharedProductionIconCanvas();
+            LoadInitialThreadState();
+            _isInitialized = true;
+        }
+        else
+        {
+            RefreshBuildings();
+        }
+    }
+
+    private void InitializeReferences(GameManager gameManager, GameDataManager dataManager)
+    {
+        _gameManager = gameManager ?? GameManager.Instance;
+        _dataManager = dataManager ?? GameDataManager.Instance;
+        _visualManager = VisualManager.Instance;
+
         if (Camera.main == null)
         {
             Debug.LogError("[BuildingTileManager] Main camera not found.");
@@ -140,8 +158,6 @@ public class BuildingTileManager : MonoBehaviour
 
         _mainCamera = Camera.main;
         _mainCamera.TryGetComponent(out MainCameraController mainCameraController);
-        _dataManager = GameDataManager.Instance;
-        _visualManager = VisualManager.Instance;
     }
 
     private void InitializeHandlers()
@@ -160,14 +176,28 @@ public class BuildingTileManager : MonoBehaviour
 
     private void InitializeThread()
     {
-        if (GameManager.Instance != null && !string.IsNullOrEmpty(GameManager.Instance.CurrentThreadId))
+        if (_gameManager != null && !string.IsNullOrEmpty(_gameManager.CurrentThreadId))
         {
-            _currentThreadId = GameManager.Instance.CurrentThreadId;
+            _currentThreadId = _gameManager.CurrentThreadId;
         }
         else
         {
-            Debug.LogWarning("[BuildingTileManager] GameManager.Instance or CurrentThreadId is null/empty. Starting with an empty thread.");
+            Debug.LogWarning("[BuildingTileManager] GameManager or CurrentThreadId is null/empty. Starting with an empty thread.");
         }
+    }
+
+    private void LoadInitialThreadState()
+    {
+        if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null)
+            return;
+
+        var buildingStates = _dataManager.GetBuildingStates(_currentThreadId);
+        if (buildingStates != null)
+        {
+            _tempBuildingStates = new List<BuildingState>(buildingStates);
+        }
+        RefreshBuildings();
+        Debug.Log($"[BuildingTileManager] Initial thread data loaded and refreshed: {_currentThreadId} ({_tempBuildingStates.Count} buildings)");
     }
 
     private void CreateSharedProductionIconCanvas()
@@ -175,14 +205,14 @@ public class BuildingTileManager : MonoBehaviour
         if (_sharedProductionIconCanvas != null)
             return;
 
-        if (GameManager.Instance == null)
+        if (_gameManager == null)
         {
-            Debug.LogWarning("[BuildingTileManager] GameManager.Instance is null. Cannot create shared production icon canvas.");
+            Debug.LogWarning("[BuildingTileManager] GameManager is null. Cannot create shared production icon canvas.");
             return;
         }
 
         Camera targetCamera = _mainCamera ?? Camera.main;
-        RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+        RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
 
         if (canvasRect == null)
         {
@@ -373,10 +403,7 @@ public class BuildingTileManager : MonoBehaviour
         }
 
         // 5. GameManager 및 화면 갱신
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.SetCurrentThreadId(newThreadId);
-        }
+        _gameManager?.SetCurrentThreadId(newThreadId);
         SetCurrentThread(newThreadId); // 임시 데이터 초기화 및 로드/갱신
 
         Debug.Log($"[BuildingTileManager] Save operation completed for Thread: {newThreadId}");

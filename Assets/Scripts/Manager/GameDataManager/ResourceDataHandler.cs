@@ -213,6 +213,7 @@ public class ResourceDataHandler
             return;
         }
 
+        entry.resourceState.deltaCount = amount;
         entry.resourceState.count += amount;
         Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (total: {entry.resourceState.count})");
         
@@ -241,6 +242,7 @@ public class ResourceDataHandler
 
         if (entry.resourceState.count >= amount)
         {
+            entry.resourceState.deltaCount = -amount;
             entry.resourceState.count -= amount;
             Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (total: {entry.resourceState.count})");
             
@@ -273,6 +275,8 @@ public class ResourceDataHandler
             return;
         }
 
+        long previousAmount = entry.resourceState.count;
+        entry.resourceState.deltaCount = amount - previousAmount;
         entry.resourceState.count = amount;
         Debug.Log($"[ResourceService] {entry.resourceData.displayName} = {amount}");
         
@@ -400,13 +404,54 @@ public class ResourceDataHandler
     {
         foreach (var entry in _resources.Values)
         {
+            long previousCount = entry.resourceState.count;
             entry.resourceState.count = 0;
             entry.resourceState.currentValue = entry.resourceData.baseValue;
             entry.resourceState.priceChangeRate = 0f;
+            entry.resourceState.deltaCount = -previousCount;
         }
         Debug.Log("[ResourceService] All resources have been reset.");
         
         OnResourceChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 누적된 deltaCount를 실제 자원 수량에 반영하고 초기화합니다.
+    /// </summary>
+    public void ApplyResourceDeltas()
+    {
+        bool hasChanges = false;
+
+        foreach (var entry in _resources.Values)
+        {
+            if (entry?.resourceState == null)
+            {
+                continue;
+            }
+
+            long delta = entry.resourceState.deltaCount;
+            if (delta == 0)
+            {
+                continue;
+            }
+
+            long newCount = entry.resourceState.count + delta;
+            if (newCount < 0)
+            {
+                newCount = 0;
+            }
+
+            entry.resourceState.count = newCount;
+            entry.resourceState.deltaCount = 0;
+            hasChanges = true;
+
+            Debug.Log($"[ResourceService] Monthly delta applied to {entry.resourceData.displayName}: {delta:+#;-#;0} (total: {newCount})");
+        }
+
+        if (hasChanges)
+        {
+            OnResourceChanged?.Invoke();
+        }
     }
 
     /// <summary>

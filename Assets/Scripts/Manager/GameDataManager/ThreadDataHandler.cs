@@ -119,6 +119,46 @@ public class ThreadDataHandler
         return _threads.ContainsKey(threadId);
     }
 
+    /// <summary>
+    /// 특정 Thread의 자원 소비/생산량을 집계한 Summary를 반환합니다.
+    /// </summary>
+    public ThreadResourceSummary GetThreadResourceSummary(string threadId)
+    {
+        if (!_threads.TryGetValue(threadId, out var thread))
+        {
+            Debug.LogWarning($"[ThreadService] Thread not found when aggregating resources: {threadId}");
+            return null;
+        }
+
+        thread.TryGetAggregatedResourceCounts(out var consumptionCounts, out var productionCounts);
+        return new ThreadResourceSummary(thread.threadId, consumptionCounts, productionCounts);
+    }
+
+    /// <summary>
+    /// 특정 Thread의 자원 Summary를 반환 시도합니다.
+    /// </summary>
+    public bool TryGetThreadResourceSummary(string threadId, out ThreadResourceSummary summary)
+    {
+        summary = GetThreadResourceSummary(threadId);
+        return summary != null;
+    }
+
+    /// <summary>
+    /// 모든 Thread의 자원 Summary를 리스트로 반환합니다.
+    /// </summary>
+    public List<ThreadResourceSummary> GetAllThreadResourceSummaries()
+    {
+        var result = new List<ThreadResourceSummary>();
+
+        foreach (var thread in _threads.Values)
+        {
+            thread.TryGetAggregatedResourceCounts(out var consumptionCounts, out var productionCounts);
+            result.Add(new ThreadResourceSummary(thread.threadId, consumptionCounts, productionCounts));
+        }
+
+        return result;
+    }
+
     #endregion
 
     //---------------------------------------------------------

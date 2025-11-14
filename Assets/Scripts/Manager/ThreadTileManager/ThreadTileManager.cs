@@ -3,7 +3,7 @@ using Pantory.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ThreadTileManager : MonoBehaviour
+public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
 {
     [Header("UI Manager")]
     [SerializeField] private MainUiManager _mainUiManager;
@@ -27,7 +27,9 @@ public class ThreadTileManager : MonoBehaviour
 
     private GameObject _sharedThreadLabelCanvas;
 
-    private readonly Dictionary<Vector2Int, ThreadPlacementInfo> _placedThreads = new Dictionary<Vector2Int, ThreadPlacementInfo>();
+    private ThreadPlacementDataHandler _threadPlacementHandler;
+    private GameManager _gameManager;
+    private bool _isInitialized;
 
     internal GameObject ThreadObjectPrefab => _threadObjectPrefab;
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
@@ -37,10 +39,10 @@ public class ThreadTileManager : MonoBehaviour
     {
         get
         {
-            if (_sharedThreadLabelCanvas == null && GameManager.Instance != null)
+            if (_sharedThreadLabelCanvas == null && _gameManager != null)
             {
                 Camera targetCamera = _mainCamera ?? Camera.main;
-                RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+                RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
                 if (canvasRect != null)
                 {
                     _sharedThreadLabelCanvas = canvasRect.gameObject;
@@ -53,15 +55,10 @@ public class ThreadTileManager : MonoBehaviour
 
     void Start()
     {
-        InitializeReferences();
-        InitializeHandlers();
-
-        SetPositionCenter();
-        CreateGrid(_gridWidth, _gridHeight);
-        SetCameraCollider();
-        CreateSharedThreadLabelCanvas();
-
-        RefreshThreads();
+        if (!_isInitialized)
+        {
+            Initialize(GameManager.Instance, GameDataManager.Instance);
+        }
     }
 
     public void SetPositionCenter()
@@ -160,19 +157,19 @@ public class ThreadTileManager : MonoBehaviour
         threadObject.SetGridPosition(gridPos);
         _gridHandler.SetTileOccupied(gridPos, true);
 
-        _placedThreads[gridPos] = new ThreadPlacementInfo(threadState.threadId);
+        _threadPlacementHandler?.SetPlacedThread(gridPos, threadState.threadId);
         return true;
     }
 
     public bool RemoveThread(Vector2Int gridPos)
     {
-        if (!_placedThreads.ContainsKey(gridPos))
+        if (_threadPlacementHandler == null || !_threadPlacementHandler.HasPlacedThread(gridPos))
         {
             Debug.LogWarning($"[ThreadTileManager] No thread at {gridPos} to remove.");
             return false;
         }
 
-        _placedThreads.Remove(gridPos);
+        _threadPlacementHandler.RemovePlacedThread(gridPos);
         _gridHandler.RemoveThreadObject(gridPos);
         return true;
     }
@@ -189,7 +186,10 @@ public class ThreadTileManager : MonoBehaviour
 
         _gridHandler.ClearAllThreadObjects();
 
-        foreach (var kvp in _placedThreads)
+        if (_threadPlacementHandler == null)
+            return;
+
+        foreach (var kvp in _threadPlacementHandler.GetAllPlacedThreads())
         {
             ThreadState threadState = _dataManager?.GetThread(kvp.Value.ThreadId);
             if (threadState == null)
@@ -218,18 +218,42 @@ public class ThreadTileManager : MonoBehaviour
 
     #region Initialization
 
-    private void InitializeReferences()
+    public void Initialize(GameManager gameManager, GameDataManager dataManager)
     {
-        _dataManager = GameDataManager.Instance;
+        _gameManager = gameManager ?? GameManager.Instance;
+        InitializeReferences(_gameManager, dataManager ?? GameDataManager.Instance);
 
-        if (_mainUiManager == null && GameManager.Instance?.UiManager is MainUiManager uiManager)
+        if (_gridHandler == null)
+        {
+            InitializeHandlers();
+            SetPositionCenter();
+            CreateGrid(_gridWidth, _gridHeight);
+            SetCameraCollider();
+            CreateSharedThreadLabelCanvas();
+        }
+        else
+        {
+            CreateSharedThreadLabelCanvas();
+        }
+
+        RefreshThreads();
+        _isInitialized = true;
+    }
+
+    private void InitializeReferences(GameManager gameManager, GameDataManager dataManager)
+    {
+        _dataManager = dataManager ?? GameDataManager.Instance;
+
+        if (_mainUiManager == null && gameManager?.UiManager is MainUiManager uiManager)
         {
             _mainUiManager = uiManager;
         }
 
+        _threadPlacementHandler = _dataManager?.ThreadPlacement;
+
         _mainUiManager?.RegisterThreadTileManager(this);
 
-        _mainCameraController = GameManager.Instance?.MainCameraController;
+        _mainCameraController = gameManager?.MainCameraController;
         if (_mainCameraController == null && Camera.main != null)
         {
             _mainCameraController = Camera.main.GetComponent<MainCameraController>();
@@ -250,14 +274,14 @@ public class ThreadTileManager : MonoBehaviour
         if (_sharedThreadLabelCanvas != null)
             return;
 
-        if (GameManager.Instance == null)
+        if (_gameManager == null)
         {
-            Debug.LogWarning("[ThreadTileManager] GameManager.Instance is null. Cannot create shared thread label canvas.");
+            Debug.LogWarning("[ThreadTileManager] GameManager is null. Cannot create shared thread label canvas.");
             return;
         }
 
         Camera targetCamera = _mainCamera ?? Camera.main;
-        RectTransform canvasRect = GameManager.Instance.GetWorldCanvas(transform, targetCamera);
+        RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
 
         if (canvasRect == null)
         {
@@ -270,19 +294,6 @@ public class ThreadTileManager : MonoBehaviour
 
     #endregion
 
-    #region Internal Types
-
-    private class ThreadPlacementInfo
-    {
-        public string ThreadId { get; }
-
-        public ThreadPlacementInfo(string threadId)
-        {
-            ThreadId = threadId;
-        }
-    }
-
-    #endregion
 }
 
 
