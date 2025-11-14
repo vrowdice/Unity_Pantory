@@ -34,6 +34,9 @@ public class GameDataManager : MonoBehaviour
     private ResourceDataHandler _resourceHandler;
     public ResourceDataHandler Resource => _resourceHandler;
 
+    private MarketDataHandler _marketHandler;
+    public MarketDataHandler Market => _marketHandler;
+
     private FinancesDataHandler _financesHandler;
     public FinancesDataHandler Finances => _financesHandler;
 
@@ -87,6 +90,7 @@ public class GameDataManager : MonoBehaviour
         _timeHandler = new TimeDataHandler(this);
         _timeHandler.OnDayChanged += HandleDayChanged;
         _resourceHandler = new ResourceDataHandler(this);
+        _marketHandler = new MarketDataHandler(this);
         _financesHandler = new FinancesDataHandler(this);
         _employeeHandler = new EmployeeDataHandler(this);
         _buildingHandler = new BuildingDataHandler(this);
@@ -421,6 +425,7 @@ public class GameDataManager : MonoBehaviour
     {
         _resourceHandler?.ApplyResourceDeltas();
         HandleThreadPlacementChanged();
+        _marketHandler?.TickDailyMarket();
     }
 
     private void HandleThreadPlacementChanged()

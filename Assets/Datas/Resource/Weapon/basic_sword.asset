@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_sword
   displayName: Basic Sword
-  minValue: 40
-  maxValue: 100
   baseValue: 60
+  marketSensitivity: 0.5
+  meanReversionStrength: 0.35
+  maxDailySwing: 0.22
+  scarcityWeight: 0.7
   rarity: 0.6
   type: 4
   nextStage: {fileID: 0}

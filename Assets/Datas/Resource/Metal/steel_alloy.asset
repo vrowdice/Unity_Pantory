@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_alloy
   displayName: Steel Alloy
-  minValue: 30
-  maxValue: 80
   baseValue: 50
+  marketSensitivity: 0.42
+  meanReversionStrength: 0.35
+  maxDailySwing: 0.16
+  scarcityWeight: 0.9
   rarity: 0.4
   type: 1
   nextStage: {fileID: 0}
@@ -26,6 +28,6 @@ MonoBehaviour:
   requirements:
   - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
     count: 2
-  - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6, type: 2}
+  - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d5, type: 2}
     count: 1
   initialAmount: 0

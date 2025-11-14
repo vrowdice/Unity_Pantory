@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: LumberConsortium
+  m_EditorClassIdentifier: 
+  id: lumber_consortium
+  displayName: Lumber Consortium
+  portrait: {fileID: 0}
+  archetype: 3
+  roles: 1
+  providerProfile:
+    outputs:
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+      desiredMin: 400
+      desiredMax: 700
+      priceSensitivity: 0.3
+      urgency: 0.15
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
+      desiredMin: 120
+      desiredMax: 220
+      priceSensitivity: 0.25
+      urgency: 0.08
+    upkeep: []
+    basePriceModifier: 0.9
+    productionCooldownRange: {x: 8, y: 16}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 2
+  consumerProfile:
+    budgetRange:
+      min: 0
+      max: 0
+    desiredResources: []
+    patienceSeconds: 30
+    satisfactionDecay: 0.1
+    allowBulkBuying: 1
+    persistentOrders: 0
+

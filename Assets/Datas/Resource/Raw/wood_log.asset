@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: wood_log
   displayName: Raw Wood
-  minValue: 3
-  maxValue: 12
   baseValue: 6
+  marketSensitivity: 0.25
+  meanReversionStrength: 0.2
+  maxDailySwing: 0.2
+  scarcityWeight: 0.4
   rarity: 0.9
   type: 0
   nextStage: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}

@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: gold_sword
   displayName: Gold Sword
-  minValue: 250
-  maxValue: 500
   baseValue: 350
+  marketSensitivity: 0.55
+  meanReversionStrength: 0.45
+  maxDailySwing: 0.15
+  scarcityWeight: 1.25
   rarity: 0.4
   type: 4
   nextStage: {fileID: 0}

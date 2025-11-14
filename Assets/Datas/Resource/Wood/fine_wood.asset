@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fine_wood
   displayName: Fine Wood
-  minValue: 25
-  maxValue: 65
   baseValue: 40
+  marketSensitivity: 0.4
+  meanReversionStrength: 0.35
+  maxDailySwing: 0.2
+  scarcityWeight: 0.8
   rarity: 0.5
   type: 2
   nextStage: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
@@ -24,6 +26,6 @@ MonoBehaviour:
   description: High-quality wood with a smooth finish and beautiful grain. Selected
     and perfected through meticulous processing.
   requirements:
-  - resource: {fileID: 11400000}
+  - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
     count: 2
   initialAmount: 0

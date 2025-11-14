@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_sword
   displayName: Steel Sword
-  minValue: 90
-  maxValue: 180
   baseValue: 120
+  marketSensitivity: 0.48
+  meanReversionStrength: 0.38
+  maxDailySwing: 0.18
+  scarcityWeight: 0.85
   rarity: 0.4
   type: 4
   nextStage: {fileID: 0}

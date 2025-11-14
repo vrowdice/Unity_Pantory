@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ore
   displayName: Iron Ore
-  minValue: 5
-  maxValue: 20
   baseValue: 10
+  marketSensitivity: 0.3
+  meanReversionStrength: 0.25
+  maxDailySwing: 0.22
+  scarcityWeight: 0.5
   rarity: 0.8
   type: 0
   nextStage: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}

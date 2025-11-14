@@ -386,12 +386,13 @@ public class ResourceDataHandler
     {
         foreach (var entry in _resources.Values)
         {
-            float newPrice = entry.resourceState.currentValue * (1 + entry.resourceState.priceChangeRate);
-            
-            // minValue와 maxValue 범위 내로 제한
-            newPrice = Mathf.Clamp(newPrice, entry.resourceData.minValue, entry.resourceData.maxValue);
-            
-            entry.resourceState.currentValue = newPrice;
+            if (entry?.resourceState == null)
+            {
+                continue;
+            }
+
+            float multiplier = 1f + entry.resourceState.priceChangeRate;
+            entry.resourceState.currentValue = Mathf.Max(0.01f, entry.resourceState.currentValue * multiplier);
         }
         
         OnResourceChanged?.Invoke();
@@ -407,9 +408,7 @@ public class ResourceDataHandler
         foreach (var entry in _resources.Values)
         {
             long previousCount = entry.resourceState.count;
-            entry.resourceState.count = 0;
-            entry.resourceState.currentValue = entry.resourceData.baseValue;
-            entry.resourceState.priceChangeRate = 0f;
+            entry.resourceState.InitializeFromData(entry.resourceData);
             entry.resourceState.deltaCount = -previousCount;
         }
         Debug.Log("[ResourceService] All resources have been reset.");

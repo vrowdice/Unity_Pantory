@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: silver_ore
   displayName: Silver Ore
-  minValue: 20
-  maxValue: 50
   baseValue: 30
+  marketSensitivity: 0.38
+  meanReversionStrength: 0.28
+  maxDailySwing: 0.2
+  scarcityWeight: 0.75
   rarity: 0.7
   type: 0
   nextStage: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6, type: 2}

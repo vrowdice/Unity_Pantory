@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: gold_ore
   displayName: Gold Ore
-  minValue: 40
-  maxValue: 100
   baseValue: 60
+  marketSensitivity: 0.4
+  meanReversionStrength: 0.3
+  maxDailySwing: 0.18
+  scarcityWeight: 0.9
   rarity: 0.6
   type: 0
   nextStage: {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}

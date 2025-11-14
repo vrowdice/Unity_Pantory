@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: SilverBladeAtelier
+  m_EditorClassIdentifier: 
+  id: silver_blade_atelier
+  displayName: Silver Blade Atelier
+  portrait: {fileID: 0}
+  archetype: 2
+  roles: 3
+  providerProfile:
+    outputs:
+    - resource: {fileID: 11400000, guid: aa6d5522a42554f4ba1615937e2fcc55, type: 2}
+      desiredMin: 25
+      desiredMax: 45
+      priceSensitivity: 0.5
+      urgency: 0.35
+    upkeep:
+    - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d5, type: 2}
+      count: 3
+    - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+      count: 1
+    basePriceModifier: 1.2
+    productionCooldownRange: {x: 16, y: 28}
+    allowBatchSelling: 0
+    maxConcurrentContracts: 1
+  consumerProfile:
+    budgetRange:
+      min: 900
+      max: 1600
+    desiredResources:
+    - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d5, type: 2}
+      desiredMin: 100
+      desiredMax: 160
+      priceSensitivity: 0.5
+      urgency: 0.4
+    - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+      desiredMin: 40
+      desiredMax: 60
+      priceSensitivity: 0.45
+      urgency: 0.3
+    patienceSeconds: 6000
+    satisfactionDecay: 0.1
+    allowBulkBuying: 0
+    persistentOrders: 1
+

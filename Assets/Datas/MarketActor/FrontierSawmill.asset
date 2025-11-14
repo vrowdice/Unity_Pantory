@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: FrontierSawmill
+  m_EditorClassIdentifier: 
+  id: frontier_sawmill
+  displayName: Frontier Sawmill Cooperative
+  portrait: {fileID: 0}
+  archetype: 1
+  roles: 3
+  providerProfile:
+    outputs:
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
+      desiredMin: 160
+      desiredMax: 240
+      priceSensitivity: 0.4
+      urgency: 0.2
+    - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+      desiredMin: 60
+      desiredMax: 100
+      priceSensitivity: 0.35
+      urgency: 0.15
+    upkeep:
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+      count: 4
+    basePriceModifier: 1
+    productionCooldownRange: {x: 10, y: 18}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 2
+  consumerProfile:
+    budgetRange:
+      min: 800
+      max: 1400
+    desiredResources:
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+      desiredMin: 300
+      desiredMax: 500
+      priceSensitivity: 0.45
+      urgency: 0.2
+    patienceSeconds: 7200
+    satisfactionDecay: 0.07
+    allowBulkBuying: 1
+    persistentOrders: 1
+

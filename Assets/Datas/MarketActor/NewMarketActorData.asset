@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: NewMarketActorData
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: New Market Actor
+  portrait: {fileID: 0}
+  archetype: 0
+  roles: 1
+  providerProfile:
+    outputs: []
+    upkeep: []
+    basePriceModifier: 1
+    productionCooldownRange: {x: 15, y: 30}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 1
+  consumerProfile:
+    budgetRange:
+      min: 0
+      max: 0
+    desiredResources: []
+    patienceSeconds: 30
+    satisfactionDecay: 0.1
+    allowBulkBuying: 1
+    persistentOrders: 0

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: VanguardSteelworks
+  m_EditorClassIdentifier: 
+  id: vanguard_steelworks
+  displayName: Vanguard Steelworks
+  portrait: {fileID: 0}
+  archetype: 0
+  roles: 3
+  providerProfile:
+    outputs:
+    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
+      desiredMin: 180
+      desiredMax: 260
+      priceSensitivity: 0.32
+      urgency: 0.18
+    upkeep:
+    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+      count: 3
+    - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d5, type: 2}
+      count: 1
+    basePriceModifier: 1.05
+    productionCooldownRange: {x: 11, y: 20}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 2
+  consumerProfile:
+    budgetRange:
+      min: 1500
+      max: 2600
+    desiredResources:
+    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+      desiredMin: 200
+      desiredMax: 320
+      priceSensitivity: 0.35
+      urgency: 0.2
+    - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d5, type: 2}
+      desiredMin: 80
+      desiredMax: 120
+      priceSensitivity: 0.3
+      urgency: 0.15
+    patienceSeconds: 6480
+    satisfactionDecay: 0.08
+    allowBulkBuying: 1
+    persistentOrders: 1
+

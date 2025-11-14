@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: silver_sword
   displayName: Silver Sword
-  minValue: 150
-  maxValue: 300
   baseValue: 200
+  marketSensitivity: 0.5
+  meanReversionStrength: 0.4
+  maxDailySwing: 0.16
+  scarcityWeight: 1.1
   rarity: 0.5
   type: 4
   nextStage: {fileID: 0}

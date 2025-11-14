@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: processed_wood
   displayName: Processed Wood
-  minValue: 10
-  maxValue: 30
   baseValue: 18
+  marketSensitivity: 0.35
+  meanReversionStrength: 0.3
+  maxDailySwing: 0.22
+  scarcityWeight: 0.6
   rarity: 0.7
   type: 2
   nextStage: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
@@ -24,6 +26,6 @@ MonoBehaviour:
   description: Carefully prepared lumber, sanded and treated. More refined than raw
     logs, suitable for quality craftsmanship.
   requirements:
-  - resource: {fileID: 11400000}
+  - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
     count: 3
   initialAmount: 0

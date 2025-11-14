@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: premium_wood
   displayName: Premium Wood
-  minValue: 60
-  maxValue: 150
   baseValue: 90
+  marketSensitivity: 0.45
+  meanReversionStrength: 0.4
+  maxDailySwing: 0.18
+  scarcityWeight: 1
   rarity: 0.3
   type: 2
   nextStage: {fileID: 0}
@@ -24,6 +26,6 @@ MonoBehaviour:
   description: Exceptional timber of unmatched quality and elegance. Reserved for
     masterwork creations and items of great value.
   requirements:
-  - resource: {fileID: 11400000}
+  - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
     count: 2
   initialAmount: 0

@@ -11,11 +11,6 @@ public class ResourceEntry
         resourceData = data;
         resourceState = new ResourceState();
         
-        // 초기 가격을 baseValue로 설정
-        if (data != null)
-        {
-            resourceState.currentValue = data.baseValue;
-            resourceState.count = data.initialAmount;
-        }
+        resourceState.InitializeFromData(data);
     }
 }
