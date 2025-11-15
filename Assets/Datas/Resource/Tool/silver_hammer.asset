@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: silver_hammer
   displayName: Silver Hammer
-  minValue: 120
-  maxValue: 250
-  baseValue: 170
+  minValue: 420
+  maxValue: 620
+  baseValue: 500
+  marketSensitivity: 0.22
+  meanReversionStrength: 0.62
+  maxDailySwing: 0.05
   rarity: 0.5
   type: 3
   nextStage: {fileID: 0}

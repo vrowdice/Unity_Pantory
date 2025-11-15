@@ -15,20 +15,20 @@ MonoBehaviour:
   id: lumber_consortium
   displayName: Lumber Consortium
   portrait: {fileID: 0}
+  description: A sprawling federation of logging houses that controls most timber exports along the northern frontier.
   archetype: 3
   roles: 1
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 0
+  - 2
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 8
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
-    outputs:
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
-      desiredMin: 400
-      desiredMax: 700
-      priceSensitivity: 0.3
-      urgency: 0.15
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-      desiredMin: 120
-      desiredMax: 220
-      priceSensitivity: 0.25
-      urgency: 0.08
+    outputs: []
     upkeep: []
     basePriceModifier: 0.9
     productionCooldownRange: {x: 8, y: 16}

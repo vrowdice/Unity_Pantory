@@ -15,10 +15,10 @@ MonoBehaviour:
   id: iron_ore
   displayName: Iron Ore
   baseValue: 10
-  marketSensitivity: 0.3
-  meanReversionStrength: 0.25
-  maxDailySwing: 0.22
-  scarcityWeight: 0.5
+  marketSensitivity: 0.18
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.07
+  scarcityWeight: 0.45
   rarity: 0.8
   type: 0
   nextStage: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}

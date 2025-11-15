@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_wrench
   displayName: Basic Wrench
-  minValue: 35
-  maxValue: 85
-  baseValue: 55
+  minValue: 110
+  maxValue: 170
+  baseValue: 130
+  marketSensitivity: 0.22
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.06
   rarity: 0.6
   type: 3
   nextStage: {fileID: 0}

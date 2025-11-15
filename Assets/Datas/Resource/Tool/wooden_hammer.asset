@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: wooden_hammer
   displayName: Wooden Hammer
-  minValue: 15
-  maxValue: 40
-  baseValue: 25
+  minValue: 150
+  maxValue: 230
+  baseValue: 180
+  marketSensitivity: 0.2
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.055
   rarity: 0.8
   type: 3
   nextStage: {fileID: 0}

@@ -71,6 +71,7 @@ public class MarketDataHandler
 
         foreach (var entry in _actors.Values)
         {
+            MarketActorDynamicAllocator.UpdateAssignments(entry, resourceSnapshot);
             RefreshActor(entry);
             SimulateProvider(entry, resourceSnapshot, totalSupply);
             SimulateConsumer(entry, resourceSnapshot, totalDemand);
@@ -100,7 +101,7 @@ public class MarketDataHandler
 
     private void RefreshConsumer(MarketActorEntry entry)
     {
-        var profile = entry.data.consumerProfile;
+        var profile = entry.GetConsumerProfile();
         var state = entry.state.consumer;
         if (profile == null || state == null)
         {
@@ -142,7 +143,7 @@ public class MarketDataHandler
             return;
         }
 
-        var profile = entry.data.providerProfile;
+        var profile = entry.GetProviderProfile();
         var state = entry.state.provider;
         if (profile == null || state == null)
         {
@@ -188,7 +189,7 @@ public class MarketDataHandler
             return;
         }
 
-        var profile = entry.data.consumerProfile;
+        var profile = entry.GetConsumerProfile();
         var state = entry.state.consumer;
         if (profile == null || state == null)
         {
@@ -276,6 +277,8 @@ public class MarketDataHandler
 
             entry.resourceState.priceChangeRate = rate;
             entry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + rate));
+            
+            entry.resourceState.RecordPrice(entry.resourceState.currentValue);
         }
     }
 

@@ -15,15 +15,20 @@ MonoBehaviour:
   id: smelter_collective
   displayName: Smelter Collective
   portrait: {fileID: 0}
+  description: Cooperative furnaces that refine mountains of ore into ingots, keeping city forges supplied year-round.
   archetype: 3
   roles: 3
+  scale: 1
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 0
+  - 1
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
-    outputs:
-    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-      desiredMin: 320
-      desiredMax: 520
-      priceSensitivity: 0.35
-      urgency: 0.15
+    outputs: []
     upkeep:
     - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
       count: 5
@@ -35,12 +40,7 @@ MonoBehaviour:
     budgetRange:
       min: 1000
       max: 1800
-    desiredResources:
-    - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
-      desiredMin: 400
-      desiredMax: 600
-      priceSensitivity: 0.4
-      urgency: 0.25
+    desiredResources: []
     patienceSeconds: 6480
     satisfactionDecay: 0.08
     allowBulkBuying: 1

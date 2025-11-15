@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: NorthwindIndustrialUnion
+  m_EditorClassIdentifier: 
+  id: northwind_industrial_union
+  displayName: Northwind Industrial Union
+  portrait: {fileID: 0}
+  description: Heavy-industry magnates who churn out tools and alloys for inland factories while swallowing iron and timber supplies.
+  archetype: 1
+  roles: 3
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 1
+  - 2
+  - 3
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
+  providerProfile:
+    outputs: []
+    upkeep:
+    - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
+      count: 28
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+      count: 18
+    basePriceModifier: 1.05
+    productionCooldownRange: {x: 8, y: 16}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 3
+  consumerProfile:
+    budgetRange:
+      min: 2600
+      max: 4400
+    desiredResources: []
+    patienceSeconds: 5400
+    satisfactionDecay: 0.085
+    allowBulkBuying: 1
+    persistentOrders: 1
+

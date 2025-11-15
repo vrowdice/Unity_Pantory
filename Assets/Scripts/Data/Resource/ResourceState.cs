@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -21,6 +22,10 @@ public class ResourceState
     public float lastImbalance;
     public float lastNormalizedImbalance;
 
+    public const int PriceHistoryCapacity = 60;
+    [SerializeField] private List<float> _priceHistory = new List<float>(PriceHistoryCapacity);
+    public IReadOnlyList<float> PriceHistory => _priceHistory;
+
     public ResourceState()
     {
         InitializeDefaults();
@@ -37,6 +42,7 @@ public class ResourceState
 
         count = data.initialAmount;
         currentValue = Mathf.Max(0.01f, data.baseValue);
+        RecordPrice(currentValue);
     }
 
     public float GetEffectiveBaseline(float baseValue)
@@ -88,5 +94,28 @@ public class ResourceState
         lastDemand = 0f;
         lastImbalance = 0f;
         lastNormalizedImbalance = 0f;
+        if (_priceHistory == null)
+        {
+            _priceHistory = new List<float>(PriceHistoryCapacity);
+        }
+        else
+        {
+            _priceHistory.Clear();
+        }
+    }
+
+    public void RecordPrice(float price)
+    {
+        if (_priceHistory == null)
+        {
+            _priceHistory = new List<float>(PriceHistoryCapacity);
+        }
+
+        float clampedPrice = Mathf.Max(0.01f, price);
+        _priceHistory.Add(clampedPrice);
+        if (_priceHistory.Count > PriceHistoryCapacity)
+        {
+            _priceHistory.RemoveAt(0);
+        }
     }
 }

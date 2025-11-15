@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: silver_spear
   displayName: Silver Spear
-  minValue: 140
-  maxValue: 290
-  baseValue: 190
+  minValue: 360
+  maxValue: 560
+  baseValue: 440
+  marketSensitivity: 0.22
+  meanReversionStrength: 0.62
+  maxDailySwing: 0.055
   rarity: 0.5
   type: 4
   nextStage: {fileID: 0}

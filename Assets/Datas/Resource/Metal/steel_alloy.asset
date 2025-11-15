@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_alloy
   displayName: Steel Alloy
-  baseValue: 50
-  marketSensitivity: 0.42
-  meanReversionStrength: 0.35
-  maxDailySwing: 0.16
-  scarcityWeight: 0.9
+  baseValue: 150
+  marketSensitivity: 0.2
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.055
+  scarcityWeight: 0.5
   rarity: 0.4
   type: 1
   nextStage: {fileID: 0}

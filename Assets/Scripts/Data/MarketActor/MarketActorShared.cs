@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
 public enum MarketActorArchetype
 {
     Generalist,
@@ -18,6 +22,13 @@ public enum MarketRoleFlags
     Consumer = 1 << 1
 }
 
+public enum MarketActorScale
+{
+    Small,
+    Medium,
+    Large
+}
+
 [Serializable]
 public class ResourcePreference
 {
@@ -26,6 +37,18 @@ public class ResourcePreference
     public long desiredMax;
     public float priceSensitivity = 1f;
     public float urgency;
+
+    public ResourcePreference Clone()
+    {
+        return new ResourcePreference
+        {
+            resource = resource,
+            desiredMin = desiredMin,
+            desiredMax = desiredMax,
+            priceSensitivity = priceSensitivity,
+            urgency = urgency
+        };
+    }
 }
 
 [Serializable]
@@ -63,6 +86,30 @@ public class ProviderProfile
     [Header("Behavior Flags")]
     public bool allowBatchSelling = true;
     public int maxConcurrentContracts = 1;
+
+    public ProviderProfile Clone()
+    {
+        var clone = (ProviderProfile)MemberwiseClone();
+        clone.outputs = new List<ResourcePreference>();
+        foreach (var output in outputs)
+        {
+            if (output != null)
+            {
+                clone.outputs.Add(output.Clone());
+            }
+        }
+
+        clone.upkeep = new List<ResourceRequirement>();
+        foreach (var item in upkeep)
+        {
+            if (item != null)
+            {
+                clone.upkeep.Add(item.Clone());
+            }
+        }
+
+        return clone;
+    }
 }
 
 [Serializable]
@@ -77,5 +124,54 @@ public class ConsumerProfile
     public float satisfactionDecay = 0.1f;
     public bool allowBulkBuying = true;
     public bool persistentOrders;
+
+    public ConsumerProfile Clone()
+    {
+        var clone = (ConsumerProfile)MemberwiseClone();
+        clone.desiredResources = new List<ResourcePreference>();
+        foreach (var resource in desiredResources)
+        {
+            if (resource != null)
+            {
+                clone.desiredResources.Add(resource.Clone());
+            }
+        }
+
+        return clone;
+    }
 }
 
+public static class MarketActorScaleUtility
+{
+    public static int GetProviderSlots(MarketActorScale scale, int overrideValue)
+    {
+        if (overrideValue > 0)
+        {
+            return overrideValue;
+        }
+
+        return scale switch
+        {
+            MarketActorScale.Small => 1,
+            MarketActorScale.Medium => 3,
+            MarketActorScale.Large => 5,
+            _ => 2
+        };
+    }
+
+    public static int GetConsumerSlots(MarketActorScale scale, int overrideValue)
+    {
+        if (overrideValue > 0)
+        {
+            return overrideValue;
+        }
+
+        return scale switch
+        {
+            MarketActorScale.Small => 1,
+            MarketActorScale.Medium => 2,
+            MarketActorScale.Large => 4,
+            _ => 2
+        };
+    }
+}

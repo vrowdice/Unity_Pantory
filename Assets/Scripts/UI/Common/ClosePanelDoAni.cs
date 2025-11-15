@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -23,12 +24,13 @@ public class ClosePanelDoAni : MonoBehaviour
 
     private RectTransform _target;
     private Vector2 _openedAnchoredPos;
+    private bool _hasOpenedAnchoredPos;
     private Tweener _activeTween;
 
     private void Awake()
     {
         _target = GetComponent<RectTransform>();
-        CacheOpenedPosition();
+        CacheOpenedPosition(force: true);
     }
 
     private void OnEnable()
@@ -53,27 +55,47 @@ public class ClosePanelDoAni : MonoBehaviour
     }
 
     [ContextMenu("Play Close Animation")]
-    public void ClosePanel()
+    public void ClosePanel(Action onComplete = null)
     {
-        AnimateTo(GetOffScreenPosition());
+        AnimateTo(GetOffScreenPosition(), onComplete);
         isOpen = false;
     }
 
     [ContextMenu("Play Open Animation")]
-    public void OpenPanel()
+    public void OpenPanel(Action onComplete = null)
     {
-        AnimateTo(_openedAnchoredPos);
+        EnsureOpenedPositionCached();
+        AnimateTo(_openedAnchoredPos, onComplete);
         isOpen = true;
     }
 
-    private void AnimateTo(Vector2 destination)
+    public void SnapToClosedPosition()
     {
-        if (_target == null) return;
+        if (_target == null)
+        {
+            return;
+        }
+
+        _target.anchoredPosition = GetOffScreenPosition();
+        isOpen = false;
+    }
+
+    private void AnimateTo(Vector2 destination, Action onComplete = null)
+    {
+        if (_target == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
 
         _activeTween?.Kill();
         _activeTween = _target.DOAnchorPos(destination, duration)
             .SetEase(ease)
-            .SetUpdate(true);
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                onComplete?.Invoke();
+            });
     }
 
     private Vector2 GetOffScreenPosition()
@@ -116,13 +138,28 @@ public class ClosePanelDoAni : MonoBehaviour
 
     public void RefreshOpenedPosition()
     {
-        CacheOpenedPosition();
+        CacheOpenedPosition(force: true);
     }
 
-    private void CacheOpenedPosition()
+    public void EnsureOpenedPositionCached()
     {
-        if (_target == null) return;
+        CacheOpenedPosition(force: false);
+    }
+
+    private void CacheOpenedPosition(bool force)
+    {
+        if (_target == null)
+        {
+            return;
+        }
+
+        if (_hasOpenedAnchoredPos && !force)
+        {
+            return;
+        }
+
         _openedAnchoredPos = _target.anchoredPosition;
+        _hasOpenedAnchoredPos = true;
     }
 
     private void OnDisable()

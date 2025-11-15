@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: premium_wood
   displayName: Premium Wood
-  baseValue: 90
-  marketSensitivity: 0.45
-  meanReversionStrength: 0.4
-  maxDailySwing: 0.18
+  baseValue: 190
+  marketSensitivity: 0.24
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.065
   scarcityWeight: 1
   rarity: 0.3
   type: 2

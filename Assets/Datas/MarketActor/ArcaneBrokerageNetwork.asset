@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: ArcaneBrokerageNetwork
+  m_EditorClassIdentifier: 
+  id: arcane_brokerage_network
+  displayName: Arcane Brokerage Network
+  portrait: {fileID: 0}
+  archetype: 2
+  roles: 2
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 1
+  - 3
+  - 4
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 4
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
+  providerProfile:
+    outputs: []
+    upkeep: []
+    basePriceModifier: 1
+    productionCooldownRange: {x: 14, y: 26}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 1
+  consumerProfile:
+    budgetRange:
+      min: 3000
+      max: 4800
+    desiredResources: []
+    patienceSeconds: 6600
+    satisfactionDecay: 0.08
+    allowBulkBuying: 1
+    persistentOrders: 1
+

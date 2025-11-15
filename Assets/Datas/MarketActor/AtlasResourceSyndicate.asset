@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: AtlasResourceSyndicate
+  m_EditorClassIdentifier: 
+  id: atlas_resource_syndicate
+  displayName: Atlas Resource Syndicate
+  portrait: {fileID: 0}
+  description: Empire-spanning traders that consolidate precious metals, fine lumber, and enchanted ingots for royal contracts.
+  archetype: 2
+  roles: 3
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 0
+  - 1
+  - 2
+  - 3
+  providerReassignmentDays: 5
+  consumerReassignmentDays: 5
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
+  providerProfile:
+    outputs: []
+    upkeep:
+    - resource: {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f7, type: 2}
+      count: 6
+    - resource: {fileID: 11400000, guid: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d5, type: 2}
+      count: 6
+    - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
+      count: 10
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+      count: 15
+    basePriceModifier: 1.15
+    productionCooldownRange: {x: 12, y: 22}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 3
+  consumerProfile:
+    budgetRange:
+      min: 3200
+      max: 5200
+    desiredResources: []
+    patienceSeconds: 7200
+    satisfactionDecay: 0.08
+    allowBulkBuying: 1
+    persistentOrders: 1
+

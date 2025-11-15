@@ -15,8 +15,17 @@ MonoBehaviour:
   id: artisan_carvers
   displayName: Artisan Woodcarver Guild
   portrait: {fileID: 0}
+  description: Master woodcarvers who turn premium lumber into bespoke décor and architectural trims for noble estates.
   archetype: 1
   roles: 2
+  scale: 1
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 2
+  providerReassignmentDays: 10
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep: []
@@ -28,24 +37,8 @@ MonoBehaviour:
     budgetRange:
       min: 1200
       max: 2200
-    desiredResources:
-    - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
-      desiredMin: 40
-      desiredMax: 80
-      priceSensitivity: 0.5
-      urgency: 0.3
-    - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
-      desiredMin: 20
-      desiredMax: 40
-      priceSensitivity: 0.55
-      urgency: 0.4
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-      desiredMin: 60
-      desiredMax: 100
-      priceSensitivity: 0.35
-      urgency: 0.25
+    desiredResources: []
     patienceSeconds: 5400
     satisfactionDecay: 0.09
     allowBulkBuying: 0
     persistentOrders: 0
-

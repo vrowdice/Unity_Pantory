@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_wrench
   displayName: Steel Wrench
-  minValue: 75
-  maxValue: 160
-  baseValue: 110
+  minValue: 330
+  maxValue: 470
+  baseValue: 390
+  marketSensitivity: 0.24
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.06
   rarity: 0.4
   type: 3
   nextStage: {fileID: 0}

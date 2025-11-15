@@ -15,20 +15,20 @@ MonoBehaviour:
   id: frontier_sawmill
   displayName: Frontier Sawmill Cooperative
   portrait: {fileID: 0}
+  description: Pioneering lumber camps that flood the market with processed timber while buying raw logs in bulk from settlers.
   archetype: 1
   roles: 3
+  scale: 1
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 0
+  - 2
+  providerReassignmentDays: 9
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
-    outputs:
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-      desiredMin: 160
-      desiredMax: 240
-      priceSensitivity: 0.4
-      urgency: 0.2
-    - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
-      desiredMin: 60
-      desiredMax: 100
-      priceSensitivity: 0.35
-      urgency: 0.15
+    outputs: []
     upkeep:
     - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
       count: 4
@@ -40,12 +40,7 @@ MonoBehaviour:
     budgetRange:
       min: 800
       max: 1400
-    desiredResources:
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
-      desiredMin: 300
-      desiredMax: 500
-      priceSensitivity: 0.45
-      urgency: 0.2
+    desiredResources: []
     patienceSeconds: 7200
     satisfactionDecay: 0.07
     allowBulkBuying: 1

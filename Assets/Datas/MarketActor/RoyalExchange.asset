@@ -15,25 +15,21 @@ MonoBehaviour:
   id: royal_exchange
   displayName: Royal Exchange
   portrait: {fileID: 0}
+  description: Crown-sanctioned brokers who balance the capital’s supply of lumber, ore, and luxury goods through tightly regulated auctions.
   archetype: 2
   roles: 3
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 0
+  - 1
+  - 2
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
-    outputs:
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-      desiredMin: 100
-      desiredMax: 180
-      priceSensitivity: 0.3
-      urgency: 0.12
-    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-      desiredMin: 120
-      desiredMax: 210
-      priceSensitivity: 0.32
-      urgency: 0.15
-    - resource: {fileID: 11400000, guid: aa6d5522a42554f4ba1615937e2fcc55, type: 2}
-      desiredMin: 8
-      desiredMax: 14
-      priceSensitivity: 0.45
-      urgency: 0.25
+    outputs: []
     upkeep: []
     basePriceModifier: 1.08
     productionCooldownRange: {x: 12, y: 24}
@@ -43,22 +39,7 @@ MonoBehaviour:
     budgetRange:
       min: 2000
       max: 3200
-    desiredResources:
-    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-      desiredMin: 120
-      desiredMax: 220
-      priceSensitivity: 0.35
-      urgency: 0.15
-    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-      desiredMin: 150
-      desiredMax: 230
-      priceSensitivity: 0.34
-      urgency: 0.18
-    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
-      desiredMin: 70
-      desiredMax: 110
-      priceSensitivity: 0.3
-      urgency: 0.12
+    desiredResources: []
     patienceSeconds: 6600
     satisfactionDecay: 0.09
     allowBulkBuying: 1

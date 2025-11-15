@@ -9,6 +9,8 @@ public class ProviderState
     public float productionProgress;
     public float cooldownTimer;
     public int activeContracts;
+    public int reassignmentCountdown;
+    public List<string> activeResourceIds = new();
 
     public ProviderState()
     {
@@ -16,6 +18,7 @@ public class ProviderState
         productionProgress = 0f;
         cooldownTimer = 0f;
         activeContracts = 0;
+        reassignmentCountdown = 0;
     }
 }
 
@@ -26,12 +29,15 @@ public class ConsumerState
     public List<ResourceStock> holdings = new();
     public float satisfaction = 1f;
     public float desireTimer;
+    public int reassignmentCountdown;
+    public List<string> activeResourceIds = new();
 
     public ConsumerState()
     {
         currentBudget = 0f;
         satisfaction = 1f;
         desireTimer = 0f;
+        reassignmentCountdown = 0;
     }
 }
 

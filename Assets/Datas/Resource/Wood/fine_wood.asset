@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fine_wood
   displayName: Fine Wood
-  baseValue: 40
-  marketSensitivity: 0.4
-  meanReversionStrength: 0.35
-  maxDailySwing: 0.2
+  baseValue: 70
+  marketSensitivity: 0.2
+  meanReversionStrength: 0.55
+  maxDailySwing: 0.07
   scarcityWeight: 0.8
   rarity: 0.5
   type: 2

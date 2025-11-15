@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: gold_hammer
   displayName: Gold Hammer
-  minValue: 200
-  maxValue: 400
-  baseValue: 280
+  minValue: 780
+  maxValue: 1080
+  baseValue: 900
+  marketSensitivity: 0.18
+  meanReversionStrength: 0.65
+  maxDailySwing: 0.05
   rarity: 0.4
   type: 3
   nextStage: {fileID: 0}

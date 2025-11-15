@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ingot
   displayName: Iron Ingot
-  baseValue: 25
-  marketSensitivity: 0.35
-  meanReversionStrength: 0.3
-  maxDailySwing: 0.18
-  scarcityWeight: 0.65
+  baseValue: 45
+  marketSensitivity: 0.18
+  meanReversionStrength: 0.55
+  maxDailySwing: 0.06
+  scarcityWeight: 0.55
   rarity: 0.6
   type: 1
   nextStage: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}

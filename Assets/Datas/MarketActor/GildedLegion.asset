@@ -15,8 +15,17 @@ MonoBehaviour:
   id: gilded_legion
   displayName: Gilded Legion
   portrait: {fileID: 0}
+  description: A mercenary host with lavish tastes, constantly requisitioning elite weaponry and armor for its gilded cohorts.
   archetype: 2
   roles: 2
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 4
+  providerReassignmentDays: 8
+  consumerReassignmentDays: 4
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep: []
@@ -28,17 +37,7 @@ MonoBehaviour:
     budgetRange:
       min: 3000
       max: 5000
-    desiredResources:
-    - resource: {fileID: 11400000, guid: 6cd47e880a9792d4287151489dd07db2, type: 2}
-      desiredMin: 20
-      desiredMax: 35
-      priceSensitivity: 0.6
-      urgency: 0.5
-    - resource: {fileID: 11400000, guid: df6bde2a4eaaf474b8a192222fd4df23, type: 2}
-      desiredMin: 80
-      desiredMax: 140
-      priceSensitivity: 0.5
-      urgency: 0.35
+    desiredResources: []
     patienceSeconds: 7200
     satisfactionDecay: 0.12
     allowBulkBuying: 1

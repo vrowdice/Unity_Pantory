@@ -38,6 +38,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             _dataManager.OnResourceChanged += UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged += UpdateResourceSummary;
 
+            _dataManager.Time.OnDayChanged += OnDayChanged;
             _dataManager.Time.OnMonthChanged += OnMonthChanged;
             _dataManager.Time.OnYearChanged += OnYearChanged;
         }
@@ -93,6 +94,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             _dataManager.OnResourceChanged -= UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged -= UpdateResourceSummary;
 
+            _dataManager.Time.OnDayChanged -= OnDayChanged;
             _dataManager.Time.OnMonthChanged -= OnMonthChanged;
             _dataManager.Time.OnYearChanged -= OnYearChanged;
         }
@@ -123,5 +125,10 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     private void OnYearChanged()
     {
         Debug.Log("[MainUiManager] Year changed event received.");
+    }
+
+    private void OnDayChanged()
+    {
+        UpdateResourceSummary();
     }
 }

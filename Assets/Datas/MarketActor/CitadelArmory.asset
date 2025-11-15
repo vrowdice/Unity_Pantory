@@ -15,20 +15,19 @@ MonoBehaviour:
   id: citadel_armory
   displayName: Citadel Armory
   portrait: {fileID: 0}
+  description: The capital’s royal workshop, renowned for disciplined output of military-grade blades and armor for fortified garrisons.
   archetype: 0
   roles: 1
+  scale: 1
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 4
+  providerReassignmentDays: 8
+  consumerReassignmentDays: 8
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
   providerProfile:
-    outputs:
-    - resource: {fileID: 11400000, guid: c9b7943d58d0e3c469f46afbc884ba92, type: 2}
-      desiredMin: 90
-      desiredMax: 160
-      priceSensitivity: 0.45
-      urgency: 0.2
-    - resource: {fileID: 11400000, guid: df6bde2a4eaaf474b8a192222fd4df23, type: 2}
-      desiredMin: 45
-      desiredMax: 80
-      priceSensitivity: 0.4
-      urgency: 0.2
+    outputs: []
     upkeep:
     - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
       count: 4

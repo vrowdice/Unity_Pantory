@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: mana_hammer
   displayName: Mana Hammer
-  minValue: 320
-  maxValue: 650
-  baseValue: 450
+  minValue: 1050
+  maxValue: 1500
+  baseValue: 1250
+  marketSensitivity: 0.16
+  meanReversionStrength: 0.7
+  maxDailySwing: 0.045
   rarity: 0.3
   type: 3
   nextStage: {fileID: 0}

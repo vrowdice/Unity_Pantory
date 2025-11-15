@@ -111,13 +111,11 @@ public class InfoDatePanel : MonoBehaviour
         {
             // 일시정지
             _dataManager.PauseTime();
-            Debug.Log("[InfoDatePanel] Time paused by button.");
         }
         else
         {
             // 재생 (1배속)
             _dataManager.ResumeTime();
-            Debug.Log("[InfoDatePanel] Time resumed at 1x speed by button.");
         }
 
         // 버튼 이미지 업데이트
@@ -141,8 +139,6 @@ public class InfoDatePanel : MonoBehaviour
         
         // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
-        
-        Debug.Log("[InfoDatePanel] Time speed set to 2x by button.");
     }
 
     /// <summary>
@@ -162,8 +158,6 @@ public class InfoDatePanel : MonoBehaviour
         
         // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
-        
-        Debug.Log("[InfoDatePanel] Time speed set to 4x by button.");
     }
 
     // ----------------- 이벤트 핸들러 -----------------

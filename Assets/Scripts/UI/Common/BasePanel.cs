@@ -8,6 +8,13 @@ public abstract class BasePanel : MonoBehaviour
 {
     protected GameDataManager _dataManager;
     protected IUIManager _uiManager;
+    
+    [Header("Animation")]
+    [SerializeField] private bool _usePanelAnimation = true;
+    [SerializeField] private bool _deactivateAfterClose = true;
+    [SerializeField] private ClosePanelDoAni _panelAnimator;
+
+    private bool _isAnimatorCached;
 
     /// <summary>
     /// 패널이 열릴 때 호출됩니다.
@@ -17,8 +24,22 @@ public abstract class BasePanel : MonoBehaviour
         _dataManager = argDataManager;
         _uiManager = argUIManager;
 
-        // 패널 표시
-        gameObject.SetActive(true);
+        ClosePanelDoAni animator = null;
+        if (TryGetPanelAnimator(out animator))
+        {
+            animator.EnsureOpenedPositionCached();
+            animator.SnapToClosedPosition();
+        }
+
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
+        if (animator != null)
+        {
+            animator.OpenPanel();
+        }
 
         // 초기화 (자식 클래스에서 구현)
         // DataManager가 null이어도 패널은 열리고, 나중에 사용 가능할 때 초기화
@@ -30,8 +51,27 @@ public abstract class BasePanel : MonoBehaviour
     /// </summary>
     public void OnClose()
     {
-        // 패널 숨김
-        gameObject.SetActive(false);
+        if (!gameObject.activeSelf)
+        {
+            return;
+        }
+
+        if (TryGetPanelAnimator(out var animator))
+        {
+            animator.ClosePanel(() =>
+            {
+                if (_deactivateAfterClose && this != null && gameObject != null)
+                {
+                    gameObject.SetActive(false);
+                }
+            });
+            return;
+        }
+
+        if (_deactivateAfterClose)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -42,5 +82,29 @@ public abstract class BasePanel : MonoBehaviour
     void Start()
     {
         // MainUiManager에서 초기화를 관리합니다
+    }
+
+    private bool TryGetPanelAnimator(out ClosePanelDoAni animator)
+    {
+        animator = null;
+
+        if (!_usePanelAnimation)
+        {
+            return false;
+        }
+
+        if (!_isAnimatorCached || _panelAnimator == null)
+        {
+            _panelAnimator = GetComponent<ClosePanelDoAni>();
+            _isAnimatorCached = true;
+        }
+
+        if (_panelAnimator == null)
+        {
+            return false;
+        }
+
+        animator = _panelAnimator;
+        return true;
     }
 }

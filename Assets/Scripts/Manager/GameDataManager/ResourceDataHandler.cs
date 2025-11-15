@@ -358,6 +358,7 @@ public class ResourceDataHandler
         }
 
         entry.resourceState.currentValue = price;
+        entry.resourceState.RecordPrice(entry.resourceState.currentValue);
         Debug.Log($"[ResourceService] {entry.resourceData.displayName} price = {price}");
         
         OnResourceChanged?.Invoke();
@@ -393,6 +394,7 @@ public class ResourceDataHandler
 
             float multiplier = 1f + entry.resourceState.priceChangeRate;
             entry.resourceState.currentValue = Mathf.Max(0.01f, entry.resourceState.currentValue * multiplier);
+            entry.resourceState.RecordPrice(entry.resourceState.currentValue);
         }
         
         OnResourceChanged?.Invoke();
