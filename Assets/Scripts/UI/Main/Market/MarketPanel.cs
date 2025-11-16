@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class MarketPanel : BasePanel
 {
-    [Header("Resouce ScrollView")]
-    [SerializeField] private GameObject _marketResourceBtn;
-    [SerializeField] private Transform _resouceScrollViewContent;
-    [SerializeField] private WindowGraph _windowGraph;
-    
-    [Header("Info Panel")]
-    [SerializeField] private TextMeshProUGUI _resourceNameText;
-    [SerializeField] private TextMeshProUGUI _resourcePriceText;
-    [SerializeField] private TextMeshProUGUI _resourceStatusText;
-    [SerializeField] private TextMeshProUGUI _resourceNextStageText;
+    [Header("Action Buttons")]
+    [SerializeField] private GameObject _actionBtnPrefab = null;
+    [SerializeField] private Transform _marketActionBtnContentTransform = null;
 
-    private readonly List<MarketResourceBtn> _resourceBtns = new List<MarketResourceBtn>();
+    [Header("Panels")]
+    [SerializeField] private MarketResurcePanel _resourcePanel;
+    [SerializeField] private MarketTraderPanel _traderPanel;
+    
+    [Header("Scroll & Prefabs (Injected to Panels)")]
+    [SerializeField] private Transform _marketScrollViewContent;
+    [SerializeField] private GameObject _marketResourceBtnPrefab;
+    [SerializeField] private GameObject _marketTraderBtnPrefab;
+    
+    private bool _isResourceView = true;
     private bool _isSubscribedToDayChange;
-    private ResourceEntry _selectedResourceEntry;
-    private string _selectedResourceId = string.Empty;
 
     /// <summary>
     /// initialize market panel
@@ -30,29 +30,68 @@ public class MarketPanel : BasePanel
             return;
         }
 
+        SetupActionButtons();
         SubscribeToDayChange();
-        RefreshResourceScrollView();
-
-        _windowGraph?.OnInitialize();
-        UpdateGraph();
-        UpdateSelectionDetails();
+        ShowResourceView(); // 기본 진입은 리소스 패널
     }
 
-    private void RefreshResourceScrollView()
+    private void SetupActionButtons()
     {
-        if (_dataManager == null || _resouceScrollViewContent == null)
+        if (_actionBtnPrefab == null || _marketActionBtnContentTransform == null)
         {
             return;
         }
 
-        GameObjectUtils.ClearChildren(_resouceScrollViewContent);
-        _resourceBtns.Clear();
+        GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
 
-        if (_marketResourceBtn == null)
+        // Resource View Button
+        var resBtnObj = Instantiate(_actionBtnPrefab, _marketActionBtnContentTransform);
+        var resBtn = resBtnObj.GetComponent<ActionBtn>();
+        resBtn?.OnInitialize("Resources", ShowResourceView);
+
+        // Trader View Button
+        var traderBtnObj = Instantiate(_actionBtnPrefab, _marketActionBtnContentTransform);
+        var traderBtn = traderBtnObj.GetComponent<ActionBtn>();
+        traderBtn?.OnInitialize("Traders", ShowTraderView);
+    }
+
+    public void HandleResourceButtonClicked(ResourceEntry entry)
+    {
+        _resourcePanel?.HandleResourceButtonClicked(entry);
+    }
+
+    private void ShowResourceView()
+    {
+        _isResourceView = true;
+        if (_resourcePanel != null && _traderPanel != null)
         {
-            Debug.LogWarning("[MainUiManager] MainScrollViewResouceBtn prefab is not assigned.");
+            _resourcePanel.gameObject.SetActive(true);
+            _traderPanel.gameObject.SetActive(false);
+        }
+        _resourcePanel?.OnInitialize(_dataManager);
+        RefreshResourceList();
+    }
+
+    private void ShowTraderView()
+    {
+        _isResourceView = false;
+        if (_resourcePanel != null && _traderPanel != null)
+        {
+            _resourcePanel.gameObject.SetActive(false);
+            _traderPanel.gameObject.SetActive(true);
+        }
+        _traderPanel?.OnInitialize(_dataManager);
+        RefreshTraderList();
+    }
+
+    private void RefreshResourceList()
+    {
+        if (_dataManager == null || _marketScrollViewContent == null || _marketResourceBtnPrefab == null)
+        {
             return;
         }
+
+        GameObjectUtils.ClearChildren(_marketScrollViewContent);
 
         Dictionary<string, ResourceEntry> resources = _dataManager.GetAllResources();
         if (resources == null || resources.Count == 0)
@@ -61,8 +100,6 @@ public class MarketPanel : BasePanel
         }
 
         ResourceEntry firstEntry = null;
-        bool selectionFound = false;
-
         foreach (var entry in resources.Values)
         {
             if (entry == null)
@@ -75,31 +112,55 @@ public class MarketPanel : BasePanel
                 firstEntry = entry;
             }
 
-            if (!string.IsNullOrEmpty(_selectedResourceId) &&
-                entry.resourceData != null &&
-                entry.resourceData.id == _selectedResourceId)
-            {
-                _selectedResourceEntry = entry;
-                selectionFound = true;
-            }
-
-            GameObject btnObj = Instantiate(_marketResourceBtn, _resouceScrollViewContent);
+            GameObject btnObj = Instantiate(_marketResourceBtnPrefab, _marketScrollViewContent);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
             if (resourceBtn != null)
             {
                 resourceBtn.OnInitialize(this, entry);
-                _resourceBtns.Add(resourceBtn);
             }
         }
 
-        if (!selectionFound)
+        if (firstEntry != null)
         {
-            _selectedResourceEntry = firstEntry;
-            _selectedResourceId = firstEntry?.resourceData?.id ?? string.Empty;
+            HandleResourceButtonClicked(firstEntry);
+        }
+    }
+
+    private void RefreshTraderList()
+    {
+        if (_dataManager == null || _marketScrollViewContent == null || _marketTraderBtnPrefab == null)
+        {
+            return;
         }
 
-        UpdateGraph();
-        UpdateSelectionDetails();
+        GameObjectUtils.ClearChildren(_marketScrollViewContent);
+
+        var market = _dataManager.Market;
+        if (market == null)
+        {
+            return;
+        }
+
+        Dictionary<string, MarketActorEntry> actors = market.GetAllActors();
+        if (actors == null || actors.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var actor in actors.Values)
+        {
+            if (actor?.data == null)
+            {
+                continue;
+            }
+
+            GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
+            var traderBtn = btnObj.GetComponent<MarketTraderBtn>();
+            if (traderBtn != null)
+            {
+                traderBtn.OnInitialize(_traderPanel, actor);
+            }
+        }
     }
 
     private void SubscribeToDayChange()
@@ -137,128 +198,13 @@ public class MarketPanel : BasePanel
 
     private void HandleDayChanged()
     {
-        RefreshResourceScrollView();
-    }
-
-    public void HandleResourceButtonClicked(ResourceEntry entry)
-    {
-        if (entry == null)
+        if (_isResourceView)
         {
-            return;
+            RefreshResourceList();
         }
-
-        _selectedResourceEntry = entry;
-        _selectedResourceId = entry.resourceData?.id ?? string.Empty;
-        UpdateGraph();
-        UpdateSelectionDetails();
-    }
-
-    private void UpdateGraph()
-    {
-        if (_windowGraph == null)
+        else
         {
-            return;
-        }
-
-        _windowGraph.ShowGraph(_selectedResourceEntry?.resourceState?.PriceHistory);
-    }
-
-    private void UpdateSelectionDetails()
-    {
-        if (_selectedResourceEntry == null || _selectedResourceEntry.resourceData == null)
-        {
-            SetInfoTexts("-", "-", "-", "-", Color.white);
-            return;
-        }
-
-        var data = _selectedResourceEntry.resourceData;
-        var state = _selectedResourceEntry.resourceState;
-
-        string priceText = state != null
-            ? $"{state.currentValue:N0}"
-            : "N/A";
-
-        if (state != null && state.priceChangeRate != 0f)
-        {
-            priceText += $" ({state.priceChangeRate:+0.##;-0.##;0})";
-        }
-
-        string statusText = GetFriendlyStatus(state, out var statusColor);
-        string nextStageText = data.nextStage != null
-            ? data.nextStage.displayName
-            : "Final Product";
-
-        SetInfoTexts(
-            data.displayName,
-            priceText,
-            statusText,
-            nextStageText,
-            statusColor);
-    }
-
-    private string GetFriendlyStatus(ResourceState state, out Color color)
-    {
-        color = Color.white;
-
-        if (state == null)
-        {
-            return "No Data";
-        }
-
-        string status = "Stable";
-        float delta = state.priceChangeRate;
-        if (delta > 0.02f)
-        {
-            status = "Uptrend";
-            color = Color.green;
-        }
-        else if (delta < -0.02f)
-        {
-            status = "Downtrend";
-            color = Color.red;
-        }
-
-        float supply = state.lastSupply;
-        float demand = state.lastDemand;
-        if (supply > 0f || demand > 0f)
-        {
-            float ratio = demand - supply;
-            if (ratio > 0.1f * Mathf.Max(1f, supply))
-            {
-                status = "Demand Crunch";
-                color = new Color(1f, 0.5f, 0f); // orange
-            }
-            else if (-ratio > 0.1f * Mathf.Max(1f, demand))
-            {
-                status = "Oversupply";
-                color = new Color(0.4f, 0.6f, 1f); // light blue
-            }
-        }
-
-        return status;
-    }
-
-    private void SetInfoTexts(string name, string price, string status, string nextStage, Color statusColor)
-    {
-        if (_resourceNameText != null)
-        {
-            _resourceNameText.text = name;
-        }
-
-        if (_resourcePriceText != null)
-        {
-            _resourcePriceText.text = price;
-        }
-
-        if (_resourceStatusText != null)
-        {
-            _resourceStatusText.text = status;
-            _resourceStatusText.color = statusColor;
-        }
-
-        if (_resourceNextStageText != null)
-        {
-            _resourceNextStageText.text = nextStage;
+            RefreshTraderList();
         }
     }
 
