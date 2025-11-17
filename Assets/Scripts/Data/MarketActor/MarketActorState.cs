@@ -32,6 +32,19 @@ public class ProviderState
         rank = 0;
         health = 1f;
     }
+
+    public ProviderState(float initialWealth, float initialHealth)
+    {
+        priceDelta = 0f;
+        productionProgress = 0f;
+        cooldownTimer = 0f;
+        activeContracts = 0;
+        reassignmentCountdown = 0;
+        wealth = initialWealth;
+        previousWealth = initialWealth;
+        rank = 0;
+        health = initialHealth;
+    }
 }
 
 [Serializable]
@@ -61,6 +74,18 @@ public class ConsumerState
         previousWealth = 0f;
         rank = 0;
         health = 1f;
+    }
+
+    public ConsumerState(float initialWealth, float initialHealth)
+    {
+        currentBudget = 0f;
+        satisfaction = 1f;
+        desireTimer = 0f;
+        reassignmentCountdown = 0;
+        wealth = initialWealth;
+        previousWealth = initialWealth;
+        rank = 0;
+        health = initialHealth;
     }
 }
 

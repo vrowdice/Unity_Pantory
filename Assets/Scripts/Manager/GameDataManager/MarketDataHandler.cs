@@ -9,6 +9,7 @@ public class MarketDataHandler
 {
     private readonly Dictionary<string, MarketActorEntry> _actors = new();
     private readonly GameDataManager _gameDataManager;
+    private InitialMarketData _marketSettings;
 
     public event Action OnMarketUpdated;
 
@@ -16,6 +17,23 @@ public class MarketDataHandler
     {
         _gameDataManager = manager;
         AutoLoadAllActors();
+    }
+
+    /// <summary>
+    /// 마켓 설정을 적용합니다.
+    /// </summary>
+    public void SetMarketSettings(InitialMarketData settings)
+    {
+        _marketSettings = settings;
+        
+        // 기존 액터들의 초기 상태 업데이트
+        if (_marketSettings != null)
+        {
+            foreach (var entry in _actors.Values)
+            {
+                entry?.ApplyInitialMarketSettings(_marketSettings);
+            }
+        }
     }
 
     public void RegisterActor(MarketActorData data)
@@ -32,7 +50,14 @@ public class MarketDataHandler
             return;
         }
 
-        _actors[data.id] = new MarketActorEntry(data);
+        var entry = new MarketActorEntry(data);
+        _actors[data.id] = entry;
+        
+        // 초기 마켓 설정 적용
+        if (_marketSettings != null)
+        {
+            entry.ApplyInitialMarketSettings(_marketSettings);
+        }
     }
 
     public void RegisterActors(IEnumerable<MarketActorData> actors)
@@ -88,7 +113,7 @@ public class MarketDataHandler
 
         foreach (var entry in _actors.Values)
         {
-            MarketActorDynamicAllocator.UpdateAssignments(entry, resourceSnapshot);
+            MarketActorDynamicAllocator.UpdateAssignments(entry, resourceSnapshot, _marketSettings);
             RefreshActor(entry);
             SimulateProvider(entry, resourceSnapshot, totalSupply);
             SimulateConsumer(entry, resourceSnapshot, totalDemand);
@@ -97,7 +122,47 @@ public class MarketDataHandler
         ApplyPriceAdjustments(resourceSnapshot, totalSupply, totalDemand);
         ApplyBusinessHealthEffects();
         UpdateRevenueRankings();
+        
+        // 플레이어 자동 거래 실행 (playerTransactionDelta 기반)
+        ExecutePlayerAutoTrades(resourceSnapshot);
         OnMarketUpdated?.Invoke();
+    }
+
+    /// <summary>
+    /// 플레이어 자동 거래를 실행합니다 (playerTransactionDelta 기반)
+    /// </summary>
+    private void ExecutePlayerAutoTrades(Dictionary<string, ResourceEntry> resources)
+    {
+        if (resources == null || _gameDataManager == null)
+        {
+            return;
+        }
+
+        foreach (var kvp in resources)
+        {
+            var entry = kvp.Value;
+            if (entry?.resourceState == null)
+            {
+                continue;
+            }
+
+            long delta = entry.resourceState.playerTransactionDelta;
+            if (delta == 0)
+            {
+                continue; // 거래 설정이 없으면 스킵
+            }
+
+            if (delta > 0)
+            {
+                // 양수: 매수
+                TryPlayerBuyResource(kvp.Key, delta);
+            }
+            else
+            {
+                // 음수: 매도
+                TryPlayerSellResource(kvp.Key, -delta);
+            }
+        }
     }
 
     private void RefreshActor(MarketActorEntry entry)
@@ -185,10 +250,11 @@ public class MarketDataHandler
             float currentPrice = Mathf.Max(0.01f, resourceEntry.resourceState.currentValue);
             float priceRatio = currentPrice / baseline;
             float priceSignal = 1f + (priceRatio - 1f) * preference.priceSensitivity;
-            priceSignal = Mathf.Max(0.1f, priceSignal);
+            float minSignal = _marketSettings != null ? _marketSettings.minPriceSignal : 0.1f;
+            priceSignal = Mathf.Max(minSignal, priceSignal);
 
             float quantity = SampleQuantity(preference.desiredMin, preference.desiredMax);
-            float batchModifier = profile.allowBatchSelling ? 1f : 0.5f;
+            float batchModifier = profile.allowBatchSelling ? 1f : (_marketSettings != null ? _marketSettings.noBatchSellingModifier : 0.5f);
             float output = quantity * priceSignal * profile.basePriceModifier * batchModifier;
 
             // 건강도 적용
@@ -206,10 +272,12 @@ public class MarketDataHandler
             // 순이익 계산 (매출 - 비용)
             float netProfit = salesRevenue - productionCost;
 
-            // 랜덤 손실 (5% 확률로 생산 실패)
-            if (UnityEngine.Random.Range(0f, 1f) < 0.05f)
+            // 랜덤 손실 (생산 실패)
+            float failureChance = _marketSettings != null ? _marketSettings.productionFailureChance : 0.05f;
+            float failureLossRate = _marketSettings != null ? _marketSettings.productionFailureLossRate : 0.1f;
+            if (UnityEngine.Random.Range(0f, 1f) < failureChance)
             {
-                netProfit -= salesRevenue * 0.1f; // 매출의 10% 손실
+                netProfit -= salesRevenue * failureLossRate;
             }
 
             // 자산 업데이트 (순이익이 양수면 증가, 음수면 감소)
@@ -253,7 +321,8 @@ public class MarketDataHandler
             float currentPrice = Mathf.Max(0.01f, resourceEntry.resourceState.currentValue);
             float priceRatio = currentPrice / baseline;
             float priceSignal = 1f + (1f - priceRatio) * preference.priceSensitivity;
-            priceSignal = Mathf.Max(0.1f, priceSignal);
+            float minSignal = _marketSettings != null ? _marketSettings.minPriceSignal : 0.1f;
+            priceSignal = Mathf.Max(minSignal, priceSignal);
 
             float appetite = SampleQuantity(preference.desiredMin, preference.desiredMax);
             float urgencyBoost = 1f + preference.urgency;
@@ -281,8 +350,10 @@ public class MarketDataHandler
 
             // Consumer는 구매를 "투자"로 간주
             // 만족도가 높으면 가치가 있지만, 구매 비용은 자산을 감소시킴
-            float satisfactionValue = state.satisfaction * purchaseCost * 0.1f; // 만족도에 따른 가치
-            float netValue = satisfactionValue - purchaseCost * 0.5f; // 구매 비용의 절반만 손실
+            float satisfactionRate = _marketSettings != null ? _marketSettings.satisfactionValueRate : 0.1f;
+            float purchaseLossRate = _marketSettings != null ? _marketSettings.purchaseCostLossRate : 0.5f;
+            float satisfactionValue = state.satisfaction * purchaseCost * satisfactionRate;
+            float netValue = satisfactionValue - purchaseCost * purchaseLossRate;
 
             // 자산 업데이트 (netValue가 양수면 증가, 음수면 감소)
             state.wealth += netValue;
@@ -329,7 +400,11 @@ public class MarketDataHandler
             float scarcity = Mathf.Max(0f, normalizedImbalance) * entry.resourceData.scarcityWeight;
 
             float rate = marketPressure + meanReversion + scarcity;
-            rate = Mathf.Clamp(rate, -entry.resourceData.maxDailySwing, entry.resourceData.maxDailySwing);
+            
+            // 변동성 계산: 기본값 × 자원별 배율
+            float baseVolatility = _marketSettings != null ? _marketSettings.baseMaxDailySwing : 0.01f;
+            float maxSwing = baseVolatility * entry.resourceData.volatilityMultiplier;
+            rate = Mathf.Clamp(rate, -maxSwing, maxSwing);
 
             entry.resourceState.priceChangeRate = rate;
             entry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + rate));
@@ -426,12 +501,17 @@ public class MarketDataHandler
         }
 
         float unitPrice = resourceEntry.resourceState.currentValue;
-        long totalCost = (long)Mathf.Ceil(unitPrice * amount);
+        long baseCost = (long)Mathf.Ceil(unitPrice * amount);
+        
+        // 시장 수수료 추가
+        float feeRate = _marketSettings != null ? _marketSettings.marketFeeRate : 0.05f;
+        long marketFee = (long)Mathf.Ceil(baseCost * feeRate);
+        long totalCost = baseCost + marketFee;
 
         // 돈 확인
         if (!_gameDataManager.Finances.HasEnoughCredit(totalCost))
         {
-            Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost}, Available: {_gameDataManager.Finances.GetCredit()}");
+            Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost} (base: {baseCost}, fee: {marketFee}), Available: {_gameDataManager.Finances.GetCredit()}");
             return false;
         }
 
@@ -439,13 +519,10 @@ public class MarketDataHandler
         _gameDataManager.Finances.TryRemoveCredit(totalCost);
         _gameDataManager.Resource.AddResource(resourceId, amount);
 
-        // 플레이어 매수량 기록 (양수)
-        resourceEntry.resourceState.AddPlayerBuyAmount(amount);
-
         // 시장 수요에 즉시 반영
         ApplyPlayerDemand(resourceEntry, amount);
 
-        Debug.Log($"[MarketDataHandler] Player bought {amount} {resourceEntry.resourceData.displayName} for {totalCost} credits.");
+        Debug.Log($"[MarketDataHandler] Player bought {amount} {resourceEntry.resourceData.displayName} for {totalCost} credits (base: {baseCost}, fee: {marketFee}).");
         OnMarketUpdated?.Invoke();
         return true;
     }
@@ -485,19 +562,21 @@ public class MarketDataHandler
         }
 
         float unitPrice = resourceEntry.resourceState.currentValue;
-        long totalRevenue = (long)Mathf.Floor(unitPrice * amount);
+        long baseRevenue = (long)Mathf.Floor(unitPrice * amount);
+        
+        // 시장 수수료 차감
+        float feeRate = _marketSettings != null ? _marketSettings.marketFeeRate : 0.05f;
+        long marketFee = (long)Mathf.Floor(baseRevenue * feeRate);
+        long totalRevenue = baseRevenue - marketFee;
 
         // 거래 실행
         _gameDataManager.Resource.TryRemoveResource(resourceId, amount);
         _gameDataManager.Finances.AddCredit(totalRevenue);
 
-        // 플레이어 매도량 기록 (음수)
-        resourceEntry.resourceState.AddPlayerSellAmount(amount);
-
         // 시장 공급에 즉시 반영
         ApplyPlayerSupply(resourceEntry, amount);
 
-        Debug.Log($"[MarketDataHandler] Player sold {amount} {resourceEntry.resourceData.displayName} for {totalRevenue} credits.");
+        Debug.Log($"[MarketDataHandler] Player sold {amount} {resourceEntry.resourceData.displayName} for {totalRevenue} credits (base: {baseRevenue}, fee: {marketFee}).");
         OnMarketUpdated?.Invoke();
         return true;
     }
@@ -516,7 +595,8 @@ public class MarketDataHandler
         resourceEntry.resourceState.lastDemand += amount;
 
         // 즉시 가격 조정 (선택적 - 작은 영향만)
-        float demandImpact = amount * 0.1f; // 플레이어 거래의 영향력 조절
+        float impactRate = _marketSettings != null ? _marketSettings.playerDemandImpact : 0.1f;
+        float demandImpact = amount * impactRate;
         float currentPrice = resourceEntry.resourceState.currentValue;
         float priceAdjustment = demandImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
@@ -537,7 +617,8 @@ public class MarketDataHandler
         resourceEntry.resourceState.lastSupply += amount;
 
         // 즉시 가격 조정 (선택적 - 작은 영향만)
-        float supplyImpact = amount * 0.1f; // 플레이어 거래의 영향력 조절
+        float impactRate = _marketSettings != null ? _marketSettings.playerSupplyImpact : 0.1f;
+        float supplyImpact = amount * impactRate;
         float currentPrice = resourceEntry.resourceState.currentValue;
         float priceAdjustment = -supplyImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
@@ -554,8 +635,9 @@ public class MarketDataHandler
     {
         if (profile == null || profile.upkeep == null || profile.upkeep.Count == 0)
         {
-            // 기본 운영비 (생산량의 20%)
-            return outputAmount * 0.2f;
+            // 기본 운영비
+            float upkeepRate = _marketSettings != null ? _marketSettings.defaultUpkeepRate : 0.2f;
+            return outputAmount * upkeepRate;
         }
 
         float totalCost = 0f;
@@ -577,7 +659,8 @@ public class MarketDataHandler
         }
 
         // 생산량에 비례한 비용 (스케일링)
-        return totalCost * (outputAmount / 100f); // 100 단위당 비용
+        float costScale = _marketSettings != null ? _marketSettings.productionCostScale : 100f;
+        return totalCost * (outputAmount / costScale);
     }
 
     /// <summary>
@@ -601,23 +684,27 @@ public class MarketDataHandler
                 // 자산 증가 시 건강도 회복
                 if (wealthChange > 0f)
                 {
-                    state.health = Mathf.Min(1f, state.health + 0.02f);
+                    float recovery = _marketSettings != null ? _marketSettings.providerWealthGainHealthRecovery : 0.02f;
+                    state.health = Mathf.Min(1f, state.health + recovery);
                 }
                 // 자산 감소 시 건강도 감소
                 else if (wealthChange < 0f)
                 {
-                    state.health = Mathf.Max(0.2f, state.health - 0.05f);
+                    float damage = _marketSettings != null ? _marketSettings.providerWealthLossHealthDamage : 0.05f;
+                    state.health = Mathf.Max(0.2f, state.health - damage);
                 }
 
                 // 경쟁 페널티 (순위가 낮을수록)
                 if (state.rank > 1)
                 {
-                    float penalty = (state.rank - 1) * 0.005f;
+                    float penaltyRate = _marketSettings != null ? _marketSettings.providerRankPenalty : 0.005f;
+                    float penalty = (state.rank - 1) * penaltyRate;
                     state.health = Mathf.Max(0.3f, state.health - penalty);
                 }
 
                 // 자연 감소 (매우 작게)
-                state.health = Mathf.Max(0.2f, state.health - 0.002f);
+                float naturalDecay = _marketSettings != null ? _marketSettings.providerNaturalDecay : 0.002f;
+                state.health = Mathf.Max(0.2f, state.health - naturalDecay);
             }
 
             // Consumer 건강 효과
@@ -627,18 +714,22 @@ public class MarketDataHandler
                 var profile = entry.GetConsumerProfile();
 
                 // 예산 부족 시 건강도 감소
-                if (profile != null && state.currentBudget < profile.budgetRange.min * 0.3f)
+                float shortageThreshold = _marketSettings != null ? _marketSettings.budgetShortageThreshold : 0.3f;
+                if (profile != null && state.currentBudget < profile.budgetRange.min * shortageThreshold)
                 {
-                    state.health = Mathf.Max(0.2f, state.health - 0.03f);
+                    float damage = _marketSettings != null ? _marketSettings.consumerBudgetShortageDamage : 0.03f;
+                    state.health = Mathf.Max(0.2f, state.health - damage);
                 }
                 else
                 {
                     // 예산 충분 시 건강도 회복
-                    state.health = Mathf.Min(1f, state.health + 0.01f);
+                    float recovery = _marketSettings != null ? _marketSettings.consumerBudgetSufficientRecovery : 0.01f;
+                    state.health = Mathf.Min(1f, state.health + recovery);
                 }
 
                 // 만족도에 따른 건강도
-                state.health = Mathf.Lerp(state.health, state.satisfaction, 0.1f);
+                float lerpRate = _marketSettings != null ? _marketSettings.consumerSatisfactionLerp : 0.1f;
+                state.health = Mathf.Lerp(state.health, state.satisfaction, lerpRate);
                 state.health = Mathf.Clamp(state.health, 0.2f, 1f);
             }
         }

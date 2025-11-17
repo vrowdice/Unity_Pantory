@@ -14,6 +14,7 @@ public class GameDataManager : MonoBehaviour
 
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;
+    [SerializeField] private InitialMarketData _initialMarketData;
 
     [Header("Time Settings")]
     [SerializeField] private TimeSettingsData _timeSettingsData;
@@ -100,6 +101,7 @@ public class GameDataManager : MonoBehaviour
         // 초기 데이터 및 설정 적용
         ApplyTimeSettings();
         ApplyInitialResources();
+        ApplyInitialMarketData();
 
         // Thread 데이터 자동 로드 시도
         LoadThreadData();
@@ -221,6 +223,20 @@ public class GameDataManager : MonoBehaviour
         }
 
         _initialResourceData.ApplyToServices(_resourceHandler, _financesHandler);
+    }
+
+    /// <summary>
+    /// 초기 마켓 데이터를 적용합니다.
+    /// </summary>
+    private void ApplyInitialMarketData()
+    {
+        if (_initialMarketData == null)
+        {
+            Debug.LogWarning("[GameDataManager] InitialMarketData is not assigned. Using default market values.");
+            return;
+        }
+
+        _initialMarketData.ApplyToMarket(_marketHandler);
     }
 
     #endregion
@@ -468,7 +484,7 @@ public class GameDataManager : MonoBehaviour
             if (entry?.resourceState != null)
             {
                 entry.resourceState.deltaCount = 0;
-                entry.resourceState.ResetPlayerTransactions();
+                // playerTransactionDelta는 자동 거래 설정값이므로 초기화하지 않음
             }
         }
 

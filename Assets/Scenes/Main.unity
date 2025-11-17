@@ -1265,7 +1265,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 183119241}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ChangeResouceTradeInputFieldValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -100
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &183119241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5521,14 +5533,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
+  m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 0
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 2
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 0
@@ -5552,7 +5564,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ResouceTradeInputFieldChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -5694,7 +5718,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 853194369}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ChangeResouceTradeInputFieldValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 100
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &853194369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6190,7 +6226,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1007693047}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ChangeResouceTradeInputFieldValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 10
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1007693047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8155,6 +8203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _windowGraph: {fileID: 1494021990}
+  _resouceTradeInputField: {fileID: 822834306}
   _resourceNameText: {fileID: 1160314507}
   _resourcePriceText: {fileID: 816675559}
   _resourceStatusText: {fileID: 600380884}
@@ -9292,7 +9341,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1479187168}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ChangeResouceTradeInputFieldValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -10
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1479187168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9385,8 +9446,11 @@ MonoBehaviour:
   _labelOffsetX: {x: 0, y: -10}
   _labelOffsetY: {x: 5, y: 0}
   _graphPadding: 10
-  _maxDataPoints: 60
   _lineColor: {r: 1, g: 1, b: 1, a: 0.5}
+  _maxDisplayPointsX: 60
+  _forcedYMin: 0
+  _forcedYMax: 10
+  _maxLabelCountY: 10
 --- !u!1 &1523239347
 GameObject:
   m_ObjectHideFlags: 0
@@ -9602,7 +9666,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1542120343}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ChangeResouceTradeInputFieldValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1542120343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9994,7 +10070,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1626679483}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1291078232}
+        m_TargetAssemblyTypeName: MarketResurcePanel, Assembly-CSharp
+        m_MethodName: ChangeResouceTradeInputFieldValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1626679483
 MonoBehaviour:
   m_ObjectHideFlags: 0
