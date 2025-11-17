@@ -19,6 +19,14 @@ public class MarketResurcePanel : MonoBehaviour
     private ResourceEntry _selectedResourceEntry;
     private string _selectedResourceId = string.Empty;
 
+    /// <summary>
+    /// 현재 선택된 리소스 ID를 반환합니다.
+    /// </summary>
+    public string GetSelectedResourceId()
+    {
+        return _selectedResourceId;
+    }
+
     public void OnInitialize(GameDataManager dataManager)
     {
         _dataManager = dataManager;

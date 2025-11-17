@@ -277,6 +277,22 @@ public class GameDataManager : MonoBehaviour
 
     #endregion
 
+    #region 편의 메서드: Market Service (플레이어 거래)
+
+    /// <summary> 플레이어가 자원 구매 시도 </summary>
+    public bool TryPlayerBuyResource(string resourceId, long amount) => _marketHandler?.TryPlayerBuyResource(resourceId, amount) ?? false;
+
+    /// <summary> 플레이어가 자원 판매 시도 </summary>
+    public bool TryPlayerSellResource(string resourceId, long amount) => _marketHandler?.TryPlayerSellResource(resourceId, amount) ?? false;
+
+    /// <summary> 모든 액터를 자산 기준으로 정렬하여 반환 </summary>
+    public List<MarketActorEntry> GetActorsSortedByWealth(bool ascending = false) => _marketHandler?.GetActorsSortedByWealth(ascending) ?? new List<MarketActorEntry>();
+
+    /// <summary> 특정 액터의 자산 순위 반환 </summary>
+    public int GetActorWealthRank(string actorId) => _marketHandler?.GetActorWealthRank(actorId) ?? -1;
+
+    #endregion
+
     #region 편의 메서드: Employee Service
 
     /// <summary> 특정 직원 유형의 인원 수 반환 </summary>
@@ -452,6 +468,7 @@ public class GameDataManager : MonoBehaviour
             if (entry?.resourceState != null)
             {
                 entry.resourceState.deltaCount = 0;
+                entry.resourceState.ResetPlayerTransactions();
             }
         }
 

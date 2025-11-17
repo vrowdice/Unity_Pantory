@@ -17,7 +17,7 @@ MonoBehaviour:
   baseValue: 720
   marketSensitivity: 0.26
   meanReversionStrength: 0.6
-  maxDailySwing: 0.055
+  maxDailySwing: 0.011
   scarcityWeight: 0.7
   rarity: 0.4
   type: 4

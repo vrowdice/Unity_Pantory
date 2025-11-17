@@ -69,6 +69,23 @@ public class MarketDataHandler
         var totalSupply = new Dictionary<string, float>();
         var totalDemand = new Dictionary<string, float>();
 
+        // 전일 자산 저장
+        foreach (var entry in _actors.Values)
+        {
+            if (entry?.state == null)
+            {
+                continue;
+            }
+            if (entry.state.provider != null)
+            {
+                entry.state.provider.previousWealth = entry.state.provider.wealth;
+            }
+            if (entry.state.consumer != null)
+            {
+                entry.state.consumer.previousWealth = entry.state.consumer.wealth;
+            }
+        }
+
         foreach (var entry in _actors.Values)
         {
             MarketActorDynamicAllocator.UpdateAssignments(entry, resourceSnapshot);
@@ -78,6 +95,8 @@ public class MarketDataHandler
         }
 
         ApplyPriceAdjustments(resourceSnapshot, totalSupply, totalDemand);
+        ApplyBusinessHealthEffects();
+        UpdateRevenueRankings();
         OnMarketUpdated?.Invoke();
     }
 
@@ -172,8 +191,30 @@ public class MarketDataHandler
             float batchModifier = profile.allowBatchSelling ? 1f : 0.5f;
             float output = quantity * priceSignal * profile.basePriceModifier * batchModifier;
 
-            AddToMap(totalSupply, preference.resource.id, output);
-            UpdateStock(state.stocks, preference.resource, Mathf.RoundToInt(output));
+            // 건강도 적용
+            float effectiveOutput = output * state.health;
+
+            AddToMap(totalSupply, preference.resource.id, effectiveOutput);
+            UpdateStock(state.stocks, preference.resource, Mathf.RoundToInt(effectiveOutput));
+
+            // 매출 계산: 판매액 = 생산량 * 가격
+            float salesRevenue = effectiveOutput * currentPrice;
+
+            // 비용 계산: 생산 비용 (upkeep)
+            float productionCost = CalculateProviderCost(profile, resources, effectiveOutput);
+
+            // 순이익 계산 (매출 - 비용)
+            float netProfit = salesRevenue - productionCost;
+
+            // 랜덤 손실 (5% 확률로 생산 실패)
+            if (UnityEngine.Random.Range(0f, 1f) < 0.05f)
+            {
+                netProfit -= salesRevenue * 0.1f; // 매출의 10% 손실
+            }
+
+            // 자산 업데이트 (순이익이 양수면 증가, 음수면 감소)
+            state.wealth += netProfit;
+            state.wealth = Mathf.Max(0f, state.wealth); // 자산은 0 이하로 내려가지 않음
 
             state.priceDelta = priceSignal - 1f;
         }
@@ -232,7 +273,22 @@ public class MarketDataHandler
                 UpdateStock(state.holdings, preference.resource, Mathf.RoundToInt(finalAmount));
             }
 
-            AddToMap(totalDemand, preference.resource.id, finalAmount);
+            // 건강도 적용
+            float effectiveAmount = finalAmount * state.health;
+
+            // 구매 비용
+            float purchaseCost = effectiveAmount * currentPrice;
+
+            // Consumer는 구매를 "투자"로 간주
+            // 만족도가 높으면 가치가 있지만, 구매 비용은 자산을 감소시킴
+            float satisfactionValue = state.satisfaction * purchaseCost * 0.1f; // 만족도에 따른 가치
+            float netValue = satisfactionValue - purchaseCost * 0.5f; // 구매 비용의 절반만 손실
+
+            // 자산 업데이트 (netValue가 양수면 증가, 음수면 감소)
+            state.wealth += netValue;
+            state.wealth = Mathf.Max(0f, state.wealth);
+
+            AddToMap(totalDemand, preference.resource.id, effectiveAmount);
         }
     }
 
@@ -338,6 +394,333 @@ public class MarketDataHandler
         }
 
         return UnityEngine.Random.Range(sampleMin, sampleMax + 1f);
+    }
+
+    // ==================== 플레이어 거래 시스템 ====================
+
+    /// <summary>
+    /// 플레이어가 자원을 구매합니다. 구매 시 시장 수요에 즉시 반영됩니다.
+    /// </summary>
+    /// <param name="resourceId">구매할 자원 ID</param>
+    /// <param name="amount">구매할 수량</param>
+    /// <returns>성공 시 true, 실패 시 false</returns>
+    public bool TryPlayerBuyResource(string resourceId, long amount)
+    {
+        if (_gameDataManager?.Resource == null || _gameDataManager.Finances == null)
+        {
+            Debug.LogWarning("[MarketDataHandler] GameDataManager or required handlers are not available.");
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(resourceId) || amount <= 0)
+        {
+            Debug.LogWarning($"[MarketDataHandler] Invalid buy request: resourceId={resourceId}, amount={amount}");
+            return false;
+        }
+
+        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        if (resourceEntry == null)
+        {
+            Debug.LogWarning($"[MarketDataHandler] Resource not found: {resourceId}");
+            return false;
+        }
+
+        float unitPrice = resourceEntry.resourceState.currentValue;
+        long totalCost = (long)Mathf.Ceil(unitPrice * amount);
+
+        // 돈 확인
+        if (!_gameDataManager.Finances.HasEnoughCredit(totalCost))
+        {
+            Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost}, Available: {_gameDataManager.Finances.GetCredit()}");
+            return false;
+        }
+
+        // 거래 실행
+        _gameDataManager.Finances.TryRemoveCredit(totalCost);
+        _gameDataManager.Resource.AddResource(resourceId, amount);
+
+        // 플레이어 매수량 기록 (양수)
+        resourceEntry.resourceState.AddPlayerBuyAmount(amount);
+
+        // 시장 수요에 즉시 반영
+        ApplyPlayerDemand(resourceEntry, amount);
+
+        Debug.Log($"[MarketDataHandler] Player bought {amount} {resourceEntry.resourceData.displayName} for {totalCost} credits.");
+        OnMarketUpdated?.Invoke();
+        return true;
+    }
+
+    /// <summary>
+    /// 플레이어가 자원을 판매합니다. 판매 시 시장 공급에 즉시 반영됩니다.
+    /// </summary>
+    /// <param name="resourceId">판매할 자원 ID</param>
+    /// <param name="amount">판매할 수량</param>
+    /// <returns>성공 시 true, 실패 시 false</returns>
+    public bool TryPlayerSellResource(string resourceId, long amount)
+    {
+        if (_gameDataManager?.Resource == null || _gameDataManager.Finances == null)
+        {
+            Debug.LogWarning("[MarketDataHandler] GameDataManager or required handlers are not available.");
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(resourceId) || amount <= 0)
+        {
+            Debug.LogWarning($"[MarketDataHandler] Invalid sell request: resourceId={resourceId}, amount={amount}");
+            return false;
+        }
+
+        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        if (resourceEntry == null)
+        {
+            Debug.LogWarning($"[MarketDataHandler] Resource not found: {resourceId}");
+            return false;
+        }
+
+        // 자원 확인
+        if (!_gameDataManager.Resource.HasEnoughResource(resourceId, amount))
+        {
+            Debug.LogWarning($"[MarketDataHandler] Insufficient resources for sale. Required: {amount}, Available: {_gameDataManager.Resource.GetResourceQuantity(resourceId)}");
+            return false;
+        }
+
+        float unitPrice = resourceEntry.resourceState.currentValue;
+        long totalRevenue = (long)Mathf.Floor(unitPrice * amount);
+
+        // 거래 실행
+        _gameDataManager.Resource.TryRemoveResource(resourceId, amount);
+        _gameDataManager.Finances.AddCredit(totalRevenue);
+
+        // 플레이어 매도량 기록 (음수)
+        resourceEntry.resourceState.AddPlayerSellAmount(amount);
+
+        // 시장 공급에 즉시 반영
+        ApplyPlayerSupply(resourceEntry, amount);
+
+        Debug.Log($"[MarketDataHandler] Player sold {amount} {resourceEntry.resourceData.displayName} for {totalRevenue} credits.");
+        OnMarketUpdated?.Invoke();
+        return true;
+    }
+
+    /// <summary>
+    /// 플레이어의 구매를 시장 수요에 반영합니다.
+    /// </summary>
+    private void ApplyPlayerDemand(ResourceEntry resourceEntry, long amount)
+    {
+        if (resourceEntry?.resourceState == null)
+        {
+            return;
+        }
+
+        // 수요 증가
+        resourceEntry.resourceState.lastDemand += amount;
+
+        // 즉시 가격 조정 (선택적 - 작은 영향만)
+        float demandImpact = amount * 0.1f; // 플레이어 거래의 영향력 조절
+        float currentPrice = resourceEntry.resourceState.currentValue;
+        float priceAdjustment = demandImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
+        resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
+        resourceEntry.resourceState.RecordPrice(resourceEntry.resourceState.currentValue);
+    }
+
+    /// <summary>
+    /// 플레이어의 판매를 시장 공급에 반영합니다.
+    /// </summary>
+    private void ApplyPlayerSupply(ResourceEntry resourceEntry, long amount)
+    {
+        if (resourceEntry?.resourceState == null)
+        {
+            return;
+        }
+
+        // 공급 증가
+        resourceEntry.resourceState.lastSupply += amount;
+
+        // 즉시 가격 조정 (선택적 - 작은 영향만)
+        float supplyImpact = amount * 0.1f; // 플레이어 거래의 영향력 조절
+        float currentPrice = resourceEntry.resourceState.currentValue;
+        float priceAdjustment = -supplyImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
+        resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
+        resourceEntry.resourceState.RecordPrice(resourceEntry.resourceState.currentValue);
+    }
+
+    /// <summary>
+    /// Provider의 생산 비용을 계산합니다.
+    /// </summary>
+    private float CalculateProviderCost(
+        ProviderProfile profile,
+        Dictionary<string, ResourceEntry> resources,
+        float outputAmount)
+    {
+        if (profile == null || profile.upkeep == null || profile.upkeep.Count == 0)
+        {
+            // 기본 운영비 (생산량의 20%)
+            return outputAmount * 0.2f;
+        }
+
+        float totalCost = 0f;
+        foreach (var requirement in profile.upkeep)
+        {
+            if (requirement?.resource == null || string.IsNullOrEmpty(requirement.resource.id))
+            {
+                continue;
+            }
+
+            if (!resources.TryGetValue(requirement.resource.id, out var resourceEntry))
+            {
+                continue;
+            }
+
+            float unitPrice = resourceEntry.resourceState.currentValue;
+            float cost = requirement.count * unitPrice;
+            totalCost += cost;
+        }
+
+        // 생산량에 비례한 비용 (스케일링)
+        return totalCost * (outputAmount / 100f); // 100 단위당 비용
+    }
+
+    /// <summary>
+    /// 비즈니스 건강 효과를 적용합니다 (단순화된 건강도 시스템).
+    /// </summary>
+    private void ApplyBusinessHealthEffects()
+    {
+        foreach (var entry in _actors.Values)
+        {
+            if (entry?.state == null)
+            {
+                continue;
+            }
+
+            // Provider 건강 효과
+            if (entry.state.provider != null)
+            {
+                var state = entry.state.provider;
+                float wealthChange = state.wealth - state.previousWealth;
+
+                // 자산 증가 시 건강도 회복
+                if (wealthChange > 0f)
+                {
+                    state.health = Mathf.Min(1f, state.health + 0.02f);
+                }
+                // 자산 감소 시 건강도 감소
+                else if (wealthChange < 0f)
+                {
+                    state.health = Mathf.Max(0.2f, state.health - 0.05f);
+                }
+
+                // 경쟁 페널티 (순위가 낮을수록)
+                if (state.rank > 1)
+                {
+                    float penalty = (state.rank - 1) * 0.005f;
+                    state.health = Mathf.Max(0.3f, state.health - penalty);
+                }
+
+                // 자연 감소 (매우 작게)
+                state.health = Mathf.Max(0.2f, state.health - 0.002f);
+            }
+
+            // Consumer 건강 효과
+            if (entry.state.consumer != null)
+            {
+                var state = entry.state.consumer;
+                var profile = entry.GetConsumerProfile();
+
+                // 예산 부족 시 건강도 감소
+                if (profile != null && state.currentBudget < profile.budgetRange.min * 0.3f)
+                {
+                    state.health = Mathf.Max(0.2f, state.health - 0.03f);
+                }
+                else
+                {
+                    // 예산 충분 시 건강도 회복
+                    state.health = Mathf.Min(1f, state.health + 0.01f);
+                }
+
+                // 만족도에 따른 건강도
+                state.health = Mathf.Lerp(state.health, state.satisfaction, 0.1f);
+                state.health = Mathf.Clamp(state.health, 0.2f, 1f);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 모든 액터의 자산 순위를 계산하고 업데이트합니다.
+    /// </summary>
+    private void UpdateRevenueRankings()
+    {
+        // Provider 순위 계산 (자산 기준)
+        var providerEntries = new List<(MarketActorEntry entry, float wealth)>();
+        foreach (var kvp in _actors)
+        {
+            var entry = kvp.Value;
+            if (entry?.state?.provider != null)
+            {
+                providerEntries.Add((entry, entry.state.provider.wealth));
+            }
+        }
+
+        providerEntries.Sort((a, b) => b.wealth.CompareTo(a.wealth)); // 내림차순 정렬
+        for (int i = 0; i < providerEntries.Count; i++)
+        {
+            providerEntries[i].entry.state.provider.rank = i + 1;
+        }
+
+        // Consumer 순위 계산 (자산 기준)
+        var consumerEntries = new List<(MarketActorEntry entry, float wealth)>();
+        foreach (var kvp in _actors)
+        {
+            var entry = kvp.Value;
+            if (entry?.state?.consumer != null)
+            {
+                consumerEntries.Add((entry, entry.state.consumer.wealth));
+            }
+        }
+
+        consumerEntries.Sort((a, b) => b.wealth.CompareTo(a.wealth)); // 내림차순 정렬
+        for (int i = 0; i < consumerEntries.Count; i++)
+        {
+            consumerEntries[i].entry.state.consumer.rank = i + 1;
+        }
+    }
+
+    /// <summary>
+    /// 모든 액터를 자산 기준으로 정렬하여 반환합니다.
+    /// </summary>
+    public List<MarketActorEntry> GetActorsSortedByWealth(bool ascending = false)
+    {
+        var sortedList = new List<MarketActorEntry>(_actors.Values);
+        if (ascending)
+        {
+            sortedList.Sort((a, b) => a.state.GetWealth().CompareTo(b.state.GetWealth()));
+        }
+        else
+        {
+            sortedList.Sort((a, b) => b.state.GetWealth().CompareTo(a.state.GetWealth()));
+        }
+        return sortedList;
+    }
+
+    /// <summary>
+    /// 특정 액터의 자산 순위를 반환합니다.
+    /// </summary>
+    public int GetActorWealthRank(string actorId)
+    {
+        if (!_actors.TryGetValue(actorId, out var entry))
+        {
+            return -1;
+        }
+
+        var sorted = GetActorsSortedByWealth(false);
+        for (int i = 0; i < sorted.Count; i++)
+        {
+            if (sorted[i].data.id == actorId)
+            {
+                return i + 1;
+            }
+        }
+
+        return -1;
     }
 
     private void AutoLoadAllActors()

@@ -91,6 +91,9 @@ public class MarketPanel : BasePanel
             return;
         }
 
+        // 현재 선택된 리소스 ID 저장
+        string currentSelectedId = _resourcePanel?.GetSelectedResourceId() ?? string.Empty;
+
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
 
         Dictionary<string, ResourceEntry> resources = _dataManager.GetAllResources();
@@ -100,6 +103,8 @@ public class MarketPanel : BasePanel
         }
 
         ResourceEntry firstEntry = null;
+        ResourceEntry selectedEntry = null;
+
         foreach (var entry in resources.Values)
         {
             if (entry == null)
@@ -112,6 +117,12 @@ public class MarketPanel : BasePanel
                 firstEntry = entry;
             }
 
+            // 현재 선택된 리소스 찾기
+            if (!string.IsNullOrEmpty(currentSelectedId) && entry.resourceData?.id == currentSelectedId)
+            {
+                selectedEntry = entry;
+            }
+
             GameObject btnObj = Instantiate(_marketResourceBtnPrefab, _marketScrollViewContent);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
             if (resourceBtn != null)
@@ -120,9 +131,11 @@ public class MarketPanel : BasePanel
             }
         }
 
-        if (firstEntry != null)
+        // 현재 선택된 리소스가 있으면 유지, 없으면 첫 번째 선택
+        ResourceEntry entryToSelect = selectedEntry ?? firstEntry;
+        if (entryToSelect != null)
         {
-            HandleResourceButtonClicked(firstEntry);
+            HandleResourceButtonClicked(entryToSelect);
         }
     }
 
@@ -134,6 +147,9 @@ public class MarketPanel : BasePanel
         }
 
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
+
+        // 플레이어 버튼 추가 (맨 위에 표시)
+        AddPlayerButton();
 
         var market = _dataManager.Market;
         if (market == null)
@@ -160,6 +176,21 @@ public class MarketPanel : BasePanel
             {
                 traderBtn.OnInitialize(_traderPanel, actor);
             }
+        }
+    }
+
+    private void AddPlayerButton()
+    {
+        if (_dataManager == null || _marketScrollViewContent == null || _marketTraderBtnPrefab == null)
+        {
+            return;
+        }
+
+        GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
+        var traderBtn = btnObj.GetComponent<MarketTraderBtn>();
+        if (traderBtn != null)
+        {
+            traderBtn.OnInitializePlayer(_traderPanel, _dataManager);
         }
     }
 

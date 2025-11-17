@@ -483,12 +483,35 @@ public class ResourceDataHandler
             bool removed = finances.TryRemoveCredit(cost);
             if (removed)
             {
-                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits.");
+                // 시장 수요에 반영 (자원 추가 없이 수요만 증가)
+                ApplyMarketDemand(entry, deficit);
+                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits (market demand increased).");
             }
             else
             {
                 Debug.LogWarning($"[ResourceService] Unable to cover shortage cost ({cost}) for {entry.resourceData.displayName} due to insufficient credits.");
             }
         }
+    }
+
+    /// <summary>
+    /// 자원 부족 시 시장 수요에 반영합니다 (자원 추가 없이 수요만 증가).
+    /// </summary>
+    private void ApplyMarketDemand(ResourceEntry entry, long amount)
+    {
+        if (entry?.resourceState == null)
+        {
+            return;
+        }
+
+        // 시장 수요 증가
+        entry.resourceState.lastDemand += amount;
+
+        // 가격에 소폭 영향 (플레이어 구매와 동일한 로직)
+        float demandImpact = amount * 0.1f;
+        float currentPrice = entry.resourceState.currentValue;
+        float priceAdjustment = demandImpact * entry.resourceData.marketSensitivity * 0.01f;
+        entry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
+        entry.resourceState.RecordPrice(entry.resourceState.currentValue);
     }
 }

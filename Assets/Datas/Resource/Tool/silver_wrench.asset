@@ -19,7 +19,7 @@ MonoBehaviour:
   baseValue: 260
   marketSensitivity: 0.22
   meanReversionStrength: 0.62
-  maxDailySwing: 0.05
+  maxDailySwing: 0.01
   rarity: 0.5
   type: 3
   nextStage: {fileID: 0}

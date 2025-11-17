@@ -50,7 +50,7 @@ public class MarketResourceBtn : MonoBehaviour
     {
         if (delta > 0f)
         {
-            return Color.green;
+            return Color.blue;
         }
 
         if (delta < 0f)
