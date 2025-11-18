@@ -395,16 +395,18 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
 
         // 4. 레이아웃 캡처 및 이미지 경로 업데이트
         string imagePath = CaptureThreadLayout(newThreadId);
-        if (!string.IsNullOrEmpty(imagePath))
+        
+        // 5. 유지비 계산 및 저장
+        int totalMaintenance = CalculateTotalMaintenanceCost(newThreadId);
+        
+        ThreadState thread = _dataManager.GetThread(newThreadId);
+        if (thread != null)
         {
-            ThreadState thread = _dataManager.GetThread(newThreadId);
-            if (thread != null)
+            if (!string.IsNullOrEmpty(imagePath))
             {
-                // ThreadState의 필드를 직접 수정하는 것은 ThreadDataHandler의 캡슐화를 위반할 수 있으므로,
-                // ThreadDataHandler에 해당 필드를 업데이트하는 메서드가 있어야 하지만,
-                // 현재는 편의상 직접 접근하거나, ThreadDataHandler가 저장을 트리거하는 것으로 가정합니다.
                 thread.previewImagePath = imagePath;
             }
+            thread.totalMaintenanceCost = totalMaintenance;
         }
 
         // 5. GameManager 및 화면 갱신

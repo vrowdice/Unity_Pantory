@@ -13,6 +13,7 @@ public class ThreadState
     public string categoryId = string.Empty;       // 속한 카테고리 ID
     public List<BuildingState> buildingStateList = new List<BuildingState>();
     public string previewImagePath = string.Empty; // 건물 레이아웃 미리보기 이미지 경로
+    public int totalMaintenanceCost = 0;           // 스레드의 총 유지비 (월간)
     
     public ThreadState()
     {
