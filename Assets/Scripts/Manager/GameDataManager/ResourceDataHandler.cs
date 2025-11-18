@@ -129,15 +129,16 @@ public class ResourceDataHandler
     // ----------------- Public Getters (읽기 전용) -----------------
 
     /// <summary>
-    /// 특정 자원의 보유량을 반환합니다.
+    /// 특정 자원의 보유량을 반환합니다. (deltaCount를 고려한 실제 사용 가능한 수량)
     /// </summary>
     /// <param name="resourceId">자원 ID</param>
-    /// <returns>해당 자원의 보유량</returns>
+    /// <returns>해당 자원의 보유량 (count + deltaCount)</returns>
     public long GetResourceQuantity(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
-            return entry.resourceState.count;
+            // deltaCount를 고려한 실제 사용 가능한 자원량 반환
+            return entry.resourceState.count + entry.resourceState.deltaCount;
         }
         
         Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
@@ -215,9 +216,9 @@ public class ResourceDataHandler
             return;
         }
 
-        entry.resourceState.deltaCount = amount;
-        entry.resourceState.count += amount;
-        Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (total: {entry.resourceState.count})");
+        // deltaCount만 누적 (count는 ApplyResourceDeltas에서 반영)
+        entry.resourceState.deltaCount += amount;
+        Debug.Log($"[ResourceService] {entry.resourceData.displayName} +{amount} (delta: {entry.resourceState.deltaCount}, current: {entry.resourceState.count})");
         
         OnResourceChanged?.Invoke();
     }
@@ -242,18 +243,21 @@ public class ResourceDataHandler
             return false;
         }
 
-        if (entry.resourceState.count >= amount)
+        // 현재 count + deltaCount를 고려한 실제 사용 가능한 자원량 계산
+        long availableCount = entry.resourceState.count + entry.resourceState.deltaCount;
+        
+        if (availableCount >= amount)
         {
-            entry.resourceState.deltaCount = -amount;
-            entry.resourceState.count -= amount;
-            Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (total: {entry.resourceState.count})");
+            // deltaCount만 누적 (count는 ApplyResourceDeltas에서 반영)
+            entry.resourceState.deltaCount -= amount;
+            Debug.Log($"[ResourceService] {entry.resourceData.displayName} -{amount} (delta: {entry.resourceState.deltaCount}, current: {entry.resourceState.count})");
             
             OnResourceChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[ResourceService] {entry.resourceData.displayName} not enough! (required: {amount}, available: {entry.resourceState.count})");
+            Debug.LogWarning($"[ResourceService] {entry.resourceData.displayName} not enough! (required: {amount}, available: {availableCount})");
             return false;
         }
     }
@@ -277,10 +281,10 @@ public class ResourceDataHandler
             return;
         }
 
-        long previousAmount = entry.resourceState.count;
-        entry.resourceState.deltaCount = amount - previousAmount;
-        entry.resourceState.count = amount;
-        Debug.Log($"[ResourceService] {entry.resourceData.displayName} = {amount}");
+        // 목표 수량과 현재 수량의 차이를 deltaCount로 설정
+        entry.resourceState.deltaCount = amount - entry.resourceState.count;
+        // count는 ApplyResourceDeltas에서 반영되므로 여기서는 변경하지 않음
+        Debug.Log($"[ResourceService] {entry.resourceData.displayName} = {amount} (delta: {entry.resourceState.deltaCount}, current: {entry.resourceState.count})");
         
         OnResourceChanged?.Invoke();
     }
@@ -304,14 +308,15 @@ public class ResourceDataHandler
     /// <returns>성공 시 true, 자원 부족 시 false</returns>
     public bool TryRemoveResources(Dictionary<string, long> resources)
     {
-        // 먼저 모든 자원이 충분한지 확인
+        // 먼저 모든 자원이 충분한지 확인 (deltaCount 고려)
         foreach (var kvp in resources)
         {
-            if (GetResourceQuantity(kvp.Key) < kvp.Value)
+            if (!HasEnoughResource(kvp.Key, kvp.Value))
             {
                 var entry = GetResourceEntry(kvp.Key);
                 string displayName = entry != null ? entry.resourceData.displayName : kvp.Key;
-                Debug.LogWarning($"[ResourceService] Transaction failed due to insufficient resources: {displayName} (required: {kvp.Value}, available: {GetResourceQuantity(kvp.Key)})");
+                long available = GetResourceQuantity(kvp.Key);
+                Debug.LogWarning($"[ResourceService] Transaction failed due to insufficient resources: {displayName} (required: {kvp.Value}, available: {available})");
                 return false;
             }
         }
@@ -333,7 +338,14 @@ public class ResourceDataHandler
     /// <returns>충분하면 true, 부족하면 false</returns>
     public bool HasEnoughResource(string resourceId, long amount)
     {
-        return GetResourceQuantity(resourceId) >= amount;
+        if (!_resources.TryGetValue(resourceId, out var entry))
+        {
+            return false;
+        }
+        
+        // deltaCount를 고려한 실제 사용 가능한 자원량 반환
+        long availableCount = entry.resourceState.count + entry.resourceState.deltaCount;
+        return availableCount >= amount;
     }
 
     // ----------------- Public Methods (가격 관리) -----------------
@@ -483,12 +495,35 @@ public class ResourceDataHandler
             bool removed = finances.TryRemoveCredit(cost);
             if (removed)
             {
-                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits.");
+                // 시장 수요에 반영 (자원 추가 없이 수요만 증가)
+                ApplyMarketDemand(entry, deficit);
+                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits (market demand increased).");
             }
             else
             {
                 Debug.LogWarning($"[ResourceService] Unable to cover shortage cost ({cost}) for {entry.resourceData.displayName} due to insufficient credits.");
             }
         }
+    }
+
+    /// <summary>
+    /// 자원 부족 시 시장 수요에 반영합니다 (자원 추가 없이 수요만 증가).
+    /// </summary>
+    private void ApplyMarketDemand(ResourceEntry entry, long amount)
+    {
+        if (entry?.resourceState == null)
+        {
+            return;
+        }
+
+        // 시장 수요 증가
+        entry.resourceState.lastDemand += amount;
+
+        // 가격에 소폭 영향 (플레이어 구매와 동일한 로직)
+        float demandImpact = amount * 0.1f;
+        float currentPrice = entry.resourceState.currentValue;
+        float priceAdjustment = demandImpact * entry.resourceData.marketSensitivity * 0.01f;
+        entry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
+        entry.resourceState.RecordPrice(entry.resourceState.currentValue);
     }
 }

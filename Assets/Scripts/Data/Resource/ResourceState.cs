@@ -11,6 +11,9 @@ public class ResourceState
     public bool isEnchanted;           // 마법 주문 적용 여부
     public long deltaCount;            // 최근 변화 수량
 
+    [Header("Player Transactions")]
+    public long playerTransactionDelta; // 플레이어 거래 델타 (매수 +, 매도 -)
+
     [Header("Market Modifiers")]
     public float permanentModifier;    // 영구적인 가치 조정 (기술, 연구 등)
     public float temporaryModifier;    // 일시적 가치 조정 (이벤트)
@@ -87,6 +90,7 @@ public class ResourceState
         priceChangeRate = 0f;
         count = 0;
         deltaCount = 0;
+        playerTransactionDelta = 0;
         permanentModifier = 1f;
         temporaryModifier = 1f;
         temporaryModifierDuration = 0f;
@@ -102,6 +106,36 @@ public class ResourceState
         {
             _priceHistory.Clear();
         }
+    }
+
+    /// <summary>
+    /// 플레이어 매수량을 추가합니다 (양수로 추가)
+    /// </summary>
+    public void AddPlayerBuyAmount(long amount)
+    {
+        if (amount > 0)
+        {
+            playerTransactionDelta += amount;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어 매도량을 추가합니다 (음수로 추가)
+    /// </summary>
+    public void AddPlayerSellAmount(long amount)
+    {
+        if (amount > 0)
+        {
+            playerTransactionDelta -= amount;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어 거래 정보를 초기화합니다 (하루가 지날 때 호출)
+    /// </summary>
+    public void ResetPlayerTransactions()
+    {
+        playerTransactionDelta = 0;
     }
 
     public void RecordPrice(float price)

@@ -14,6 +14,7 @@ public class GameDataManager : MonoBehaviour
 
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;
+    [SerializeField] private InitialMarketData _initialMarketData;
 
     [Header("Time Settings")]
     [SerializeField] private TimeSettingsData _timeSettingsData;
@@ -100,6 +101,7 @@ public class GameDataManager : MonoBehaviour
         // 초기 데이터 및 설정 적용
         ApplyTimeSettings();
         ApplyInitialResources();
+        ApplyInitialMarketData();
 
         // Thread 데이터 자동 로드 시도
         LoadThreadData();
@@ -223,6 +225,20 @@ public class GameDataManager : MonoBehaviour
         _initialResourceData.ApplyToServices(_resourceHandler, _financesHandler);
     }
 
+    /// <summary>
+    /// 초기 마켓 데이터를 적용합니다.
+    /// </summary>
+    private void ApplyInitialMarketData()
+    {
+        if (_initialMarketData == null)
+        {
+            Debug.LogWarning("[GameDataManager] InitialMarketData is not assigned. Using default market values.");
+            return;
+        }
+
+        _initialMarketData.ApplyToMarket(_marketHandler);
+    }
+
     #endregion
 
     #region 편의 메서드: Time Service
@@ -274,6 +290,22 @@ public class GameDataManager : MonoBehaviour
 
     /// <summary> 금액 충분 여부 확인 </summary>
     public bool HasEnoughCredit(long amount) => _financesHandler.HasEnoughCredit(amount);
+
+    #endregion
+
+    #region 편의 메서드: Market Service (플레이어 거래)
+
+    /// <summary> 플레이어가 자원 구매 시도 </summary>
+    public bool TryPlayerBuyResource(string resourceId, long amount) => _marketHandler?.TryPlayerBuyResource(resourceId, amount) ?? false;
+
+    /// <summary> 플레이어가 자원 판매 시도 </summary>
+    public bool TryPlayerSellResource(string resourceId, long amount) => _marketHandler?.TryPlayerSellResource(resourceId, amount) ?? false;
+
+    /// <summary> 모든 액터를 자산 기준으로 정렬하여 반환 </summary>
+    public List<MarketActorEntry> GetActorsSortedByWealth(bool ascending = false) => _marketHandler?.GetActorsSortedByWealth(ascending) ?? new List<MarketActorEntry>();
+
+    /// <summary> 특정 액터의 자산 순위 반환 </summary>
+    public int GetActorWealthRank(string actorId) => _marketHandler?.GetActorWealthRank(actorId) ?? -1;
 
     #endregion
 
@@ -452,6 +484,7 @@ public class GameDataManager : MonoBehaviour
             if (entry?.resourceState != null)
             {
                 entry.resourceState.deltaCount = 0;
+                // playerTransactionDelta는 자동 거래 설정값이므로 초기화하지 않음
             }
         }
 

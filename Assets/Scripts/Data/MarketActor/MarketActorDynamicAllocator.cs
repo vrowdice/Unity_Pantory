@@ -9,7 +9,8 @@ public static class MarketActorDynamicAllocator
 
     public static void UpdateAssignments(
         MarketActorEntry entry,
-        Dictionary<string, ResourceEntry> resources)
+        Dictionary<string, ResourceEntry> resources,
+        InitialMarketData marketSettings = null)
     {
         if (entry?.data == null || resources == null || resources.Count == 0)
         {
@@ -23,18 +24,19 @@ public static class MarketActorDynamicAllocator
 
         if (entry.data.roles.HasFlag(MarketRoleFlags.Provider))
         {
-            UpdateProviderAssignment(entry, resources);
+            UpdateProviderAssignment(entry, resources, marketSettings);
         }
 
         if (entry.data.roles.HasFlag(MarketRoleFlags.Consumer))
         {
-            UpdateConsumerAssignment(entry, resources);
+            UpdateConsumerAssignment(entry, resources, marketSettings);
         }
     }
 
     private static void UpdateProviderAssignment(
         MarketActorEntry entry,
-        Dictionary<string, ResourceEntry> resources)
+        Dictionary<string, ResourceEntry> resources,
+        InitialMarketData marketSettings)
     {
         if (entry.state.provider == null)
         {
@@ -57,7 +59,8 @@ public static class MarketActorDynamicAllocator
             profile.outputs = BuildPreferences(
                 selectedResources,
                 entry.data.scale,
-                true);
+                true,
+                marketSettings);
 
             entry.state.provider.activeResourceIds =
                 selectedResources.Select(r => r.resourceData.id).ToList();
@@ -68,7 +71,8 @@ public static class MarketActorDynamicAllocator
 
     private static void UpdateConsumerAssignment(
         MarketActorEntry entry,
-        Dictionary<string, ResourceEntry> resources)
+        Dictionary<string, ResourceEntry> resources,
+        InitialMarketData marketSettings)
     {
         if (entry.state.consumer == null)
         {
@@ -87,13 +91,14 @@ public static class MarketActorDynamicAllocator
                 return;
             }
 
-            EnsureBudgetRange(entry, profile);
+            EnsureBudgetRange(entry, profile, marketSettings);
 
             var selectedResources = SelectResources(entry, resources, false);
             profile.desiredResources = BuildPreferences(
                 selectedResources,
                 entry.data.scale,
-                false);
+                false,
+                marketSettings);
 
             entry.state.consumer.activeResourceIds =
                 selectedResources.Select(r => r.resourceData.id).ToList();
@@ -102,7 +107,7 @@ public static class MarketActorDynamicAllocator
         }
     }
 
-    private static void EnsureBudgetRange(MarketActorEntry entry, ConsumerProfile profile)
+    private static void EnsureBudgetRange(MarketActorEntry entry, ConsumerProfile profile, InitialMarketData marketSettings)
     {
         if (profile == null)
         {
@@ -112,12 +117,14 @@ public static class MarketActorDynamicAllocator
         if (profile.budgetRange.max <= 0f ||
             profile.budgetRange.max <= profile.budgetRange.min)
         {
-            profile.budgetRange = entry.data.scale switch
+            Vector2 budgetRange = entry.data.scale switch
             {
-                MarketActorScale.Small => new BudgetRange { min = 400f, max = 800f },
-                MarketActorScale.Large => new BudgetRange { min = 1800f, max = 3200f },
-                _ => new BudgetRange { min = 800f, max = 1500f }
+                MarketActorScale.Small => marketSettings != null ? marketSettings.smallConsumerBudget : new Vector2(600f, 1200f),
+                MarketActorScale.Large => marketSettings != null ? marketSettings.largeConsumerBudget : new Vector2(2700f, 4800f),
+                _ => marketSettings != null ? marketSettings.mediumConsumerBudget : new Vector2(1200f, 2250f)
             };
+            
+            profile.budgetRange = new BudgetRange { min = budgetRange.x, max = budgetRange.y };
         }
     }
 
@@ -219,7 +226,8 @@ public static class MarketActorDynamicAllocator
     private static List<ResourcePreference> BuildPreferences(
         List<ResourceEntry> resources,
         MarketActorScale scale,
-        bool forProvider)
+        bool forProvider,
+        InitialMarketData marketSettings)
     {
         var result = new List<ResourcePreference>();
         foreach (var resource in resources)
@@ -236,7 +244,7 @@ public static class MarketActorDynamicAllocator
                 urgency = forProvider ? 0.1f : 0.25f
             };
 
-            (long min, long max) = GetQuantityRange(resource.resourceData.type, scale, forProvider);
+            (long min, long max) = GetQuantityRange(resource.resourceData.type, scale, forProvider, marketSettings);
             preference.desiredMin = min;
             preference.desiredMax = max;
 
@@ -249,29 +257,34 @@ public static class MarketActorDynamicAllocator
     private static (long min, long max) GetQuantityRange(
         ResourceType type,
         MarketActorScale scale,
-        bool forProvider)
+        bool forProvider,
+        InitialMarketData marketSettings)
     {
         float scaleMultiplier = scale switch
         {
-            MarketActorScale.Small => 0.6f,
-            MarketActorScale.Large => 1.6f,
-            _ => 1f
+            MarketActorScale.Small => marketSettings != null ? marketSettings.smallScaleMultiplier : 0.6f,
+            MarketActorScale.Large => marketSettings != null ? marketSettings.largeScaleMultiplier : 1.6f,
+            _ => marketSettings != null ? marketSettings.mediumScaleMultiplier : 1f
         };
 
-        (float min, float max) baseRange = type switch
+        Vector2 baseRangeVector = type switch
         {
-            ResourceType.raw => (150f, 280f),
-            ResourceType.metal => (100f, 220f),
-            ResourceType.wood => (120f, 260f),
-            ResourceType.tool => (20f, 60f),
-            ResourceType.weapon => (15f, 45f),
-            _ => (60f, 140f)
+            ResourceType.raw => marketSettings != null ? marketSettings.rawProductionRange : new Vector2(250f, 450f),
+            ResourceType.metal => marketSettings != null ? marketSettings.metalProductionRange : new Vector2(180f, 350f),
+            ResourceType.wood => marketSettings != null ? marketSettings.woodProductionRange : new Vector2(200f, 400f),
+            ResourceType.tool => marketSettings != null ? marketSettings.toolProductionRange : new Vector2(35f, 100f),
+            ResourceType.weapon => marketSettings != null ? marketSettings.weaponProductionRange : new Vector2(25f, 75f),
+            _ => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(100f, 220f)
         };
+
+        (float min, float max) baseRange = (baseRangeVector.x, baseRangeVector.y);
 
         if (!forProvider)
         {
-            baseRange.min *= 0.6f;
-            baseRange.max *= 0.6f;
+            // Consumer 소비량 배율 적용
+            float consumerMultiplier = marketSettings != null ? marketSettings.consumerConsumptionMultiplier : 0.85f;
+            baseRange.min *= consumerMultiplier;
+            baseRange.max *= consumerMultiplier;
         }
 
         long minValue = Mathf.RoundToInt(baseRange.min * scaleMultiplier);

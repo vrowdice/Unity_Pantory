@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 
@@ -7,6 +8,8 @@ public class MarketResurcePanel : MonoBehaviour
     private GameDataManager _dataManager;
 
     [SerializeField] private WindowGraph _windowGraph;
+
+    [SerializeField] private TMP_InputField _resouceTradeInputField;
 
     [Header("Info Panel")]
     [SerializeField] private TextMeshProUGUI _resourceNameText;
@@ -19,14 +22,23 @@ public class MarketResurcePanel : MonoBehaviour
     private ResourceEntry _selectedResourceEntry;
     private string _selectedResourceId = string.Empty;
 
+    /// <summary>
+    /// 현재 선택된 리소스 ID를 반환합니다.
+    /// </summary>
+    public string GetSelectedResourceId()
+    {
+        return _selectedResourceId;
+    }
+
     public void OnInitialize(GameDataManager dataManager)
     {
         _dataManager = dataManager;
 
         SubscribeToDayChange();
-        _windowGraph?.OnInitialize();
         UpdateGraph();
         UpdateSelectionDetails();
+
+        _windowGraph?.OnInitialize();
     }
 
     public void HandleResourceButtonClicked(ResourceEntry entry)
@@ -38,8 +50,41 @@ public class MarketResurcePanel : MonoBehaviour
 
         _selectedResourceEntry = entry;
         _selectedResourceId = entry.resourceData?.id ?? string.Empty;
+        
+        // InputField에 현재 playerTransactionDelta 값 표시
+        if (_resouceTradeInputField != null && entry.resourceState != null)
+        {
+            _resouceTradeInputField.text = entry.resourceState.playerTransactionDelta.ToString();
+        }
+        
         UpdateGraph();
         UpdateSelectionDetails();
+    }
+
+    public void ResouceTradeInputFieldChanged()
+    {
+        if (_selectedResourceEntry == null || string.IsNullOrEmpty(_selectedResourceId))
+        {
+            return;
+        }
+
+        // InputField 값을 playerTransactionDelta에 설정 (양수: 매수, 음수: 매도, 0: 거래 안함)
+        string inputText = _resouceTradeInputField.text;
+        if (string.IsNullOrEmpty(inputText))
+        {
+            inputText = "0";
+        }
+
+        if (int.TryParse(inputText, out int tradeAmount))
+        {
+            _selectedResourceEntry.resourceState.playerTransactionDelta = tradeAmount;
+        }
+    }
+
+    public void ChangeResouceTradeInputFieldValue(int argValue)
+    {
+        _resouceTradeInputField.text = (int.Parse(_resouceTradeInputField.text) + argValue).ToString();
+        ResouceTradeInputFieldChanged();
     }
 
     private void SubscribeToDayChange()

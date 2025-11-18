@@ -85,11 +85,14 @@ public class WindowGraph : MonoBehaviour
         float yMin = float.MaxValue;
         float yMax = float.MinValue;
 
+        // 데이터 포인트를 정수로 변환하여 저장
+        List<int> intValueList = new List<int>();
         for (int i = startIndex; i < valueList.Count; i++)
         {
-            float value = valueList[i];
-            if (value < yMin) yMin = value;
-            if (value > yMax) yMax = value;
+            int intValue = Mathf.RoundToInt(valueList[i]);
+            intValueList.Add(intValue);
+            if (intValue < yMin) yMin = intValue;
+            if (intValue > yMax) yMax = intValue;
         }
 
         if (Mathf.Approximately(yMax, yMin))
@@ -104,7 +107,9 @@ public class WindowGraph : MonoBehaviour
         GameObject lastDot = null;
         for (int i = 0; i < targetCount; i++)
         {
-            float normalizedValue = (valueList[startIndex + i] - yMin) / verticalRange;
+            // 정수 값 사용
+            int intValue = intValueList[i];
+            float normalizedValue = (intValue - yMin) / verticalRange;
             float xPosition = _graphPadding + i * xSize;
             float yPosition = normalizedValue * graphHeight;
             GameObject dot = CreateCircle(new Vector2(xPosition, yPosition));
@@ -128,18 +133,60 @@ public class WindowGraph : MonoBehaviour
             _spawnedElements.Add(lineX.gameObject);
         }
 
-        int separatorCount = 10;
-        for (int i = 0; i <= separatorCount; i++)
+        // 평균값 계산
+        float averageValue = 0f;
+        if (intValueList.Count > 0)
         {
-            float normalizedValue = i * (1f / separatorCount);
+            int sum = 0;
+            foreach (int val in intValueList)
+            {
+                sum += val;
+            }
+            averageValue = sum / (float)intValueList.Count;
+        }
+
+        // Y축 라벨 생성 (최소 1 이상 차이나도록)
+        int intYMin = Mathf.RoundToInt(yMin);
+        int intYMax = Mathf.RoundToInt(yMax);
+        int range = intYMax - intYMin;
+
+        // 적절한 간격 계산 (최소 1 이상)
+        int step = Mathf.Max(1, Mathf.RoundToInt(range / 10f));
+        
+        // 평균값을 중심으로 라벨 위치 조정
+        int centerValue = Mathf.RoundToInt(averageValue);
+        List<int> labelValues = new List<int>();
+        
+        // 평균값 중심으로 위아래로 라벨 생성
+        for (int offset = 0; offset <= range; offset += step)
+        {
+            int valueAbove = centerValue + offset;
+            int valueBelow = centerValue - offset;
+            
+            if (valueAbove <= intYMax && valueAbove >= intYMin && !labelValues.Contains(valueAbove))
+            {
+                labelValues.Add(valueAbove);
+            }
+            if (valueBelow >= intYMin && valueBelow <= intYMax && !labelValues.Contains(valueBelow) && offset > 0)
+            {
+                labelValues.Add(valueBelow);
+            }
+        }
+        
+        // 정렬
+        labelValues.Sort();
+
+        // 라벨과 선 생성
+        foreach (int labelValue in labelValues)
+        {
+            float normalizedValue = (labelValue - yMin) / verticalRange;
             float yPosition = normalizedValue * graphHeight;
 
             RectTransform labelY = Instantiate(_labelTemplateY, _graphContainer);
             labelY.gameObject.SetActive(true);
             Vector2 baseYLabelPos = new Vector2(_labelTemplateY.anchoredPosition.x, yPosition);
             labelY.anchoredPosition = baseYLabelPos + _labelOffsetY;
-            float labelValue = Mathf.Lerp(yMin, yMax, normalizedValue);
-            labelY.GetComponent<Text>().text = Mathf.RoundToInt(labelValue).ToString();
+            labelY.GetComponent<Text>().text = labelValue.ToString();
             _spawnedElements.Add(labelY.gameObject);
 
             RectTransform lineY = Instantiate(_lineTemplateY, _graphContainer);

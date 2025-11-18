@@ -10,7 +10,9 @@ public class ResourceData : ScriptableObject
     public float baseValue = 10f;
     [Range(0f, 1f)] public float marketSensitivity = 0.4f;
     [Range(0f, 1f)] public float meanReversionStrength = 0.25f;
-    [Range(0.01f, 1f)] public float maxDailySwing = 0.3f;
+    [Range(0.1f, 3f)] 
+    [Tooltip("Volatility multiplier relative to base market volatility (1.0 = normal, 0.5 = half, 2.0 = double)")]
+    public float volatilityMultiplier = 1f;
     [Range(0f, 5f)] public float scarcityWeight = 1f;
 
     [Header("Meta")]

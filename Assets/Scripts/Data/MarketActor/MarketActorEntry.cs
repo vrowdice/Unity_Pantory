@@ -42,6 +42,31 @@ public class MarketActorEntry
         }
     }
 
+    /// <summary>
+    /// 초기 마켓 설정을 적용합니다.
+    /// </summary>
+    public void ApplyInitialMarketSettings(InitialMarketData settings)
+    {
+        if (settings == null)
+        {
+            return;
+        }
+
+        if (state.provider != null)
+        {
+            state.provider.wealth = settings.initialActorWealth;
+            state.provider.previousWealth = settings.initialActorWealth;
+            state.provider.health = settings.initialActorHealth;
+        }
+
+        if (state.consumer != null)
+        {
+            state.consumer.wealth = settings.initialActorWealth;
+            state.consumer.previousWealth = settings.initialActorWealth;
+            state.consumer.health = settings.initialActorHealth;
+        }
+    }
+
     public ProviderProfile GetProviderProfile()
     {
         return _runtimeProviderProfile ?? data.providerProfile;
