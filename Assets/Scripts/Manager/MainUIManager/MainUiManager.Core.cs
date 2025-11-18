@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public partial class MainUiManager : MonoBehaviour, IUIManager
+public partial class MainUiManager
 {
     [Header("References")]
     private GameManager _gameManager;

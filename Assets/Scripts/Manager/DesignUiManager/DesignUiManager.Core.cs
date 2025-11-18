@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public partial class DesignUiManager : MonoBehaviour, IUIManager
+public partial class DesignUiManager
 {
     [Header("UI Prefabs & Contents")]
     [SerializeField] private GameObject _buildingTypeBtnPrefab;

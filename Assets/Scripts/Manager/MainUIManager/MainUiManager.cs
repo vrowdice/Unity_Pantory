@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public partial class MainUiManager : MonoBehaviour
+public partial class MainUiManager : MonoBehaviour, IUIManager
 {
 }
