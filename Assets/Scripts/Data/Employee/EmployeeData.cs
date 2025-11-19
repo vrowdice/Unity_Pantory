@@ -15,8 +15,8 @@ public class EmployeeData : ScriptableObject
     public string description;
 
     [Header("Initial Stats")]
-    public int baseWorkValue;              // 기본 일의 진행도
-    [Range(0f, 100f)]
+    public float baseEfficiency;              // 기본 생산 효율
+    [Range(-100f, 100f)]
     public float baseSatisfaction;       // 기본 만족도
     
     [Header("Salary")]

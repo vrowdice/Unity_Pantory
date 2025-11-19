@@ -48,14 +48,16 @@ public class MarketResourceBtn : MonoBehaviour
 
     private Color GetDeltaColor(float delta)
     {
+        VisualManager visualManager = VisualManager.Instance;
+        
         if (delta > 0f)
         {
-            return Color.blue;
+            return visualManager != null ? visualManager.ProfitColor : Color.blue;
         }
 
         if (delta < 0f)
         {
-            return Color.red;
+            return visualManager != null ? visualManager.LossColor : Color.red;
         }
 
         return Color.white;

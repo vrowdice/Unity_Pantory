@@ -183,16 +183,18 @@ public class MarketTraderBtn : MonoBehaviour
             return Color.white;
         }
 
+        VisualManager visualManager = VisualManager.Instance;
         float change = currentWealth - previousWealth;
+        
         if (change > 0f)
         {
-            // 증가 → 파란색
-            return Color.blue;
+            // 증가 → 흑자 색상
+            return visualManager != null ? visualManager.ProfitColor : Color.blue;
         }
         else if (change < 0f)
         {
-            // 감소 → 빨간색
-            return Color.red;
+            // 감소 → 적자 색상
+            return visualManager != null ? visualManager.LossColor : Color.red;
         }
         else
         {

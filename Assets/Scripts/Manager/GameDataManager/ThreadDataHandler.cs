@@ -44,6 +44,12 @@ public class ThreadDataHandler
         }
     }
 
+    /// <summary> Thread 데이터를 명시적으로 저장합니다. (외부에서 호출 가능) </summary>
+    public void Save()
+    {
+        SaveThreadData();
+    }
+
     #endregion
 
     //---------------------------------------------------------

@@ -291,6 +291,201 @@ public class GameDataManager : MonoBehaviour
     /// <summary> 금액 충분 여부 확인 </summary>
     public bool HasEnoughCredit(long amount) => _financesHandler.HasEnoughCredit(amount);
 
+    /// <summary> 일일 예상 크레딧 변화량을 계산합니다 (배치된 스레드의 유지비 + 자원 부족 구매 비용 + 플레이어 자동 거래 비용) </summary>
+    public long CalculateDailyCreditDelta()
+    {
+        Debug.Log("[GameDataManager] CalculateDailyCreditDelta called");
+        
+        if (_threadPlacementHandler == null)
+        {
+            Debug.LogWarning("[GameDataManager] ThreadPlacementHandler is null. Cannot calculate daily credit delta.");
+            return 0;
+        }
+        
+        if (_threadHandler == null)
+        {
+            Debug.LogWarning("[GameDataManager] ThreadHandler is null. Cannot calculate daily credit delta.");
+            return 0;
+        }
+
+        if (_resourceHandler == null)
+        {
+            Debug.LogWarning("[GameDataManager] ResourceHandler is null. Cannot calculate daily credit delta.");
+            return 0;
+        }
+
+        if (_marketHandler == null)
+        {
+            Debug.LogWarning("[GameDataManager] MarketHandler is null. Cannot calculate daily credit delta.");
+            return 0;
+        }
+
+        var placedThreads = _threadPlacementHandler.GetAllPlacedThreads();
+        int placedThreadCount = placedThreads != null ? placedThreads.Count : 0;
+        Debug.Log($"[GameDataManager] Found {placedThreadCount} placed threads");
+
+        // 1. 스레드 유지비 계산
+        long totalMaintenanceCost = 0;
+        int processedThreadCount = 0;
+
+        if (placedThreads != null)
+        {
+            foreach (var kvp in placedThreads)
+            {
+                ThreadPlacementState placementState = kvp.Value;
+                if (placementState == null || string.IsNullOrEmpty(placementState.ThreadId))
+                {
+                    Debug.LogWarning($"[GameDataManager] Invalid placement state at {kvp.Key}");
+                    continue;
+                }
+
+                ThreadState threadState = _threadHandler.GetThread(placementState.ThreadId);
+                if (threadState == null)
+                {
+                    Debug.LogWarning($"[GameDataManager] Thread not found: {placementState.ThreadId}");
+                    continue;
+                }
+
+                Debug.Log($"[GameDataManager] Thread '{threadState.threadName}' (ID: {threadState.threadId}) maintenance cost: {threadState.totalMaintenanceCost}");
+                totalMaintenanceCost += threadState.totalMaintenanceCost;
+                processedThreadCount++;
+            }
+        }
+
+        // 2. 자원 부족으로 인한 예상 구매 비용 계산
+        long totalShortageCost = 0;
+        Dictionary<string, ResourceEntry> allResources = _resourceHandler.GetAllResources();
+        
+        if (allResources != null && placedThreads != null)
+        {
+            // 모든 스레드의 자원 소비량 집계
+            Dictionary<string, long> totalConsumption = new Dictionary<string, long>();
+            
+            foreach (var kvp in placedThreads)
+            {
+                ThreadPlacementState placementState = kvp.Value;
+                if (placementState == null || string.IsNullOrEmpty(placementState.ThreadId))
+                {
+                    continue;
+                }
+
+                ThreadState threadState = _threadHandler.GetThread(placementState.ThreadId);
+                if (threadState == null)
+                {
+                    continue;
+                }
+
+                // 스레드의 소비 자원 집계
+                if (threadState.TryGetAggregatedResourceCounts(out var consumptionCounts, out var productionCounts))
+                {
+                    foreach (var resourceKvp in consumptionCounts)
+                    {
+                        string resourceId = resourceKvp.Key;
+                        int amount = resourceKvp.Value;
+                        
+                        if (totalConsumption.TryGetValue(resourceId, out long current))
+                        {
+                            totalConsumption[resourceId] = current + amount;
+                        }
+                        else
+                        {
+                            totalConsumption[resourceId] = amount;
+                        }
+                    }
+                }
+            }
+
+            // 각 자원의 부족량 계산 및 구매 비용 산정
+            foreach (var consumptionKvp in totalConsumption)
+            {
+                string resourceId = consumptionKvp.Key;
+                long requiredAmount = consumptionKvp.Value;
+                
+                if (!allResources.TryGetValue(resourceId, out var resourceEntry))
+                {
+                    continue;
+                }
+
+                long availableAmount = _resourceHandler.GetResourceQuantity(resourceId);
+                long shortage = requiredAmount - availableAmount;
+                
+                if (shortage > 0)
+                {
+                    float unitPrice = resourceEntry.resourceState?.currentValue ?? 0f;
+                    long shortageCost = (long)Math.Ceiling(unitPrice * shortage);
+                    totalShortageCost += shortageCost;
+                    
+                    Debug.Log($"[GameDataManager] Resource '{resourceId}' shortage: {shortage} units, cost: {shortageCost} credits (required: {requiredAmount}, available: {availableAmount}, price: {unitPrice})");
+                }
+            }
+        }
+
+        // 3. 플레이어 자동 거래 비용/수익 계산 (playerTransactionDelta 기반)
+        long totalPlayerTradeCost = 0;
+        long totalPlayerTradeRevenue = 0;
+        
+        if (allResources != null)
+        {
+            float marketFeeRate = _marketHandler.GetMarketFeeRate();
+            
+            foreach (var kvp in allResources)
+            {
+                var entry = kvp.Value;
+                if (entry?.resourceState == null)
+                {
+                    continue;
+                }
+
+                long transactionDelta = entry.resourceState.playerTransactionDelta;
+                if (transactionDelta == 0)
+                {
+                    continue; // 거래 설정이 없으면 스킵
+                }
+
+                float unitPrice = entry.resourceState.currentValue;
+                
+                if (transactionDelta > 0)
+                {
+                    // 양수: 매수 (크레딧 차감)
+                    long amount = transactionDelta;
+                    long baseCost = (long)Mathf.Ceil(unitPrice * amount);
+                    long marketFee = (long)Mathf.Ceil(baseCost * marketFeeRate);
+                    long totalCost = baseCost + marketFee;
+                    totalPlayerTradeCost += totalCost;
+                    
+                    Debug.Log($"[GameDataManager] Player auto-buy '{entry.resourceData.displayName}': {amount} units, cost: {totalCost} credits (base: {baseCost}, fee: {marketFee})");
+                }
+                else
+                {
+                    // 음수: 매도 (크레딧 증가, 수익이므로 양수로 더함)
+                    long amount = -transactionDelta;
+                    long availableAmount = _resourceHandler.GetResourceQuantity(kvp.Key);
+                    long sellAmount = Math.Min(amount, availableAmount); // 보유량만큼만 판매 가능
+                    
+                    if (sellAmount > 0)
+                    {
+                        long baseRevenue = (long)Mathf.Floor(unitPrice * sellAmount);
+                        long marketFee = (long)Mathf.Floor(baseRevenue * marketFeeRate);
+                        long totalRevenue = baseRevenue - marketFee;
+                        totalPlayerTradeRevenue += totalRevenue;
+                        
+                        Debug.Log($"[GameDataManager] Player auto-sell '{entry.resourceData.displayName}': {sellAmount} units, revenue: {totalRevenue} credits (base: {baseRevenue}, fee: {marketFee})");
+                    }
+                }
+            }
+        }
+
+        // 최종 계산: 수익 - 지출
+        // 수익: 플레이어 매도 수익
+        // 지출: 유지비 + 부족 구매 비용 + 플레이어 매수 비용
+        long totalExpenses = totalMaintenanceCost + totalShortageCost + totalPlayerTradeCost;
+        long netDelta = totalPlayerTradeRevenue - totalExpenses;
+        
+        Debug.Log($"[GameDataManager] Daily credit delta calculated: {netDelta} (expenses: {totalExpenses} = maintenance: {totalMaintenanceCost} + shortage: {totalShortageCost} + buy: {totalPlayerTradeCost}, revenue: {totalPlayerTradeRevenue}, from {processedThreadCount}/{placedThreadCount} threads)");
+        
+        return netDelta;
+    }
+
     #endregion
 
     #region 편의 메서드: Market Service (플레이어 거래)
@@ -484,7 +679,6 @@ public class GameDataManager : MonoBehaviour
             if (entry?.resourceState != null)
             {
                 entry.resourceState.deltaCount = 0;
-                // playerTransactionDelta는 자동 거래 설정값이므로 초기화하지 않음
             }
         }
 
@@ -512,6 +706,9 @@ public class GameDataManager : MonoBehaviour
                 ApplyResourceDelta(allResources, productionCounts, 1);
                 ApplyResourceDelta(allResources, consumptionCounts, -1);
             }
+
+            _financesHandler.TryRemoveCredit(threadState.totalMaintenanceCost);
+            Debug.Log($"[GameDataManager] Removed {threadState.totalMaintenanceCost} credit for thread {threadState.threadName}");
         }
     }
 
