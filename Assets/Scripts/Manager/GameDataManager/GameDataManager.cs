@@ -221,8 +221,6 @@ public class GameDataManager : MonoBehaviour
 
         // 4. 직원 급여
         long salaryCost = Employee != null ? Employee.GetTotalSalary() : 0;
-
-        // 결과 저장
         _reservedDailyExpenses.maintenanceCost = maintenanceCost;
         _reservedDailyExpenses.salaryCost = salaryCost;
         _reservedDailyExpenses.resourceShortageCost = shortageCost;

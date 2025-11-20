@@ -175,11 +175,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-
-    }
-
     /// <summary>
     /// 경고 패널을 표시합니다.
     /// 현재 활성화된 씬의 Canvas에 생성됩니다.
