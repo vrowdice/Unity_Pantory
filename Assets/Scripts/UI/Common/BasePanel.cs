@@ -6,21 +6,23 @@ using UnityEngine;
 /// </summary>
 public abstract class BasePanel : MonoBehaviour
 {
+    protected GameManager _gameManager;
     protected GameDataManager _dataManager;
     protected IUIManager _uiManager;
     
     [Header("Animation")]
     [SerializeField] private bool _usePanelAnimation = true;
     [SerializeField] private bool _deactivateAfterClose = true;
-    [SerializeField] private PanelDoAni _panelAnimator;
 
+    private PanelDoAni _panelAnimator;
     private bool _isAnimatorCached;
 
     /// <summary>
     /// 패널이 열릴 때 호출됩니다.
     /// </summary>
-    public void OnOpen(GameDataManager argDataManager, IUIManager argUIManager)
+    public void OnOpen(GameManager argGameManager ,GameDataManager argDataManager, IUIManager argUIManager)
     {
+        _gameManager = argGameManager;
         _dataManager = argDataManager;
         _uiManager = argUIManager;
 

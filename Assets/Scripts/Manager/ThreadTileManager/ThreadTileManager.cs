@@ -205,7 +205,7 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
 
         foreach (var kvp in _threadPlacementHandler.GetAllPlacedThreads())
         {
-            ThreadState threadState = _dataManager?.GetThread(kvp.Value.ThreadId);
+            ThreadState threadState = _dataManager.Thread.GetThread(kvp.Value.ThreadId);
             if (threadState == null)
                 continue;
 

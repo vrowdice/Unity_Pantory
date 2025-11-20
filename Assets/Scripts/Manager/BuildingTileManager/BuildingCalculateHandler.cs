@@ -50,7 +50,7 @@ public class BuildingCalculateHandler
 
         foreach (var state in buildingStates)
         {
-            BuildingData data = DataManager.GetBuildingData(state.buildingId);
+            BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
             if (data == null || !data.IsProductionBuilding)
                 continue;
 
@@ -178,7 +178,7 @@ public class BuildingCalculateHandler
         // 정확히 해당 좌표를 포함하는 빌딩 상태를 찾음 (회전 고려한 영역 포함 검사)
         foreach (var state in buildingStates)
         {
-            BuildingData data = dataManager.GetBuildingData(state.buildingId);
+            BuildingData data = dataManager.Building.GetBuildingData(state.buildingId);
             if (data == null)
                 continue;
 
@@ -216,7 +216,7 @@ public class BuildingCalculateHandler
 
         foreach (var state in buildingStates)
         {
-            BuildingData data = DataManager.GetBuildingData(state.buildingId);
+            BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
             if (data != null)
             {
                 totalMaintenance += data.baseMaintenanceCost;
@@ -329,7 +329,7 @@ public class BuildingCalculateHandler
 
         foreach (var state in buildingStates)
         {
-            BuildingData data = DataManager.GetBuildingData(state.buildingId);
+            BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
             if (data == null || !data.IsProductionBuilding)
                 continue;
 
@@ -377,7 +377,7 @@ public class BuildingCalculateHandler
                     {
                         foreach (var outputId in state.outputProductionIds)
                         {
-                            ResourceEntry outputResource = DataManager.GetResourceEntry(outputId);
+                            ResourceEntry outputResource = DataManager.Resource.GetResourceEntry(outputId);
                             if (outputResource != null && outputResource.resourceData?.requirements != null)
                             {
                                 foreach (var requirement in outputResource.resourceData.requirements)

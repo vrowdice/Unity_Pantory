@@ -20,7 +20,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
     [SerializeField] private MarketPanel _marketPanel;
-    [SerializeField] private EmploymentPanel _employmentPanel;
+    [SerializeField] private EmployeePanel _employmentPanel;
     [SerializeField] private FinancePanel _financePanel;
 
     [Header("Quick Move")]
@@ -152,7 +152,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             return;
         }
 
-        long resourceAmount = _dataManager.GetCredit();
+        long resourceAmount = _dataManager.Finances.GetCredit();
         textComponent.text = FormatResourceAmount(resourceAmount);
     }
 

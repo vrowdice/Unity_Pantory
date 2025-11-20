@@ -93,8 +93,8 @@ public class MarketTraderBtn : MonoBehaviour
             // 플레이어 정보 표시
             if (_dataManager != null)
             {
-                long playerWealth = _dataManager.GetCredit();
-                var sortedActors = _dataManager.GetActorsSortedByWealth(false);
+                long playerWealth = _dataManager.Finances.GetCredit();
+                var sortedActors = _dataManager.Market.GetActorsSortedByWealth(false);
                 
                 // 플레이어 순위 계산
                 int playerRank = 1;

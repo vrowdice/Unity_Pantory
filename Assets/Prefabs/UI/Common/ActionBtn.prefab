@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4348817205274211843}
   - component: {fileID: 7545844627546741301}
   m_Layer: 5
-  m_Name: MarketViewBtn
+  m_Name: ActionBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

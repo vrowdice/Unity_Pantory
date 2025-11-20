@@ -5,7 +5,6 @@ using UnityEngine;
 public class MarketPanel : BasePanel
 {
     [Header("Action Buttons")]
-    [SerializeField] private GameObject _actionBtnPrefab = null;
     [SerializeField] private Transform _marketActionBtnContentTransform = null;
 
     [Header("Panels")]
@@ -37,7 +36,7 @@ public class MarketPanel : BasePanel
 
     private void SetupActionButtons()
     {
-        if (_actionBtnPrefab == null || _marketActionBtnContentTransform == null)
+        if (_gameManager.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
         {
             return;
         }
@@ -45,12 +44,12 @@ public class MarketPanel : BasePanel
         GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
 
         // Resource View Button
-        var resBtnObj = Instantiate(_actionBtnPrefab, _marketActionBtnContentTransform);
+        var resBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
         var resBtn = resBtnObj.GetComponent<ActionBtn>();
         resBtn?.OnInitialize("Resources", ShowResourceView);
 
         // Trader View Button
-        var traderBtnObj = Instantiate(_actionBtnPrefab, _marketActionBtnContentTransform);
+        var traderBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
         var traderBtn = traderBtnObj.GetComponent<ActionBtn>();
         traderBtn?.OnInitialize("Traders", ShowTraderView);
     }
@@ -96,7 +95,7 @@ public class MarketPanel : BasePanel
 
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
 
-        Dictionary<string, ResourceEntry> resources = _dataManager.GetAllResources();
+        Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
         if (resources == null || resources.Count == 0)
         {
             return;

@@ -42,8 +42,8 @@ public class ManageThreadPanel : MonoBehaviour
         _selectedCategoryId = string.Empty;
 
         // 이벤트 구독
-        _dataManager.OnCategoryChanged += RefreshCategoryList;
-        _dataManager.OnThreadChanged += RefreshThreadList;
+        _dataManager.Thread.OnCategoryChanged += RefreshCategoryList;
+        _dataManager.Thread.OnThreadChanged += RefreshThreadList;
 
         // 초기 표시
         RefreshCategoryList();
@@ -55,8 +55,8 @@ public class ManageThreadPanel : MonoBehaviour
         // 이벤트 구독 해제
         if (_dataManager != null)
         {
-            _dataManager.OnCategoryChanged -= RefreshCategoryList;
-            _dataManager.OnThreadChanged -= RefreshThreadList;
+            _dataManager.Thread.OnCategoryChanged -= RefreshCategoryList;
+            _dataManager.Thread.OnThreadChanged -= RefreshThreadList;
         }
     }
 
@@ -86,7 +86,7 @@ public class ManageThreadPanel : MonoBehaviour
         }
 
         // 2. 등록된 모든 카테고리 버튼 추가
-        var categories = _dataManager.GetAllCategories();
+        var categories = _dataManager.Thread.GetAllCategories();
 
         foreach (var category in categories.Values)
         {
@@ -128,12 +128,12 @@ public class ManageThreadPanel : MonoBehaviour
         if (string.IsNullOrEmpty(_selectedCategoryId))
         {
             // "All" 선택 시: 모든 스레드 표시
-            threadsToShow = _dataManager.GetAllThreadList();
+            threadsToShow = _dataManager.Thread.GetAllThreadList();
         }
         else
         {
             // 특정 카테고리 선택 시: 해당 카테고리에 속한 스레드만 표시
-            threadsToShow = _dataManager.GetThreadsInCategory(_selectedCategoryId);
+            threadsToShow = _dataManager.Thread.GetThreadsInCategory(_selectedCategoryId);
         }
 
         // 1. 스레드 버튼 생성
@@ -226,11 +226,11 @@ public class ManageThreadPanel : MonoBehaviour
     {
         if (_dataManager == null) return;
 
-        ThreadState thread = _dataManager.GetThread(threadId);
+        ThreadState thread = _dataManager.Thread.GetThread(threadId);
         string threadName = thread != null ? thread.threadName : threadId;
 
         // 스레드 삭제 (ThreadDataHandler 내부에서 저장 자동 트리거)
-        bool removed = _dataManager.RemoveThread(threadId);
+        bool removed = _dataManager.Thread.RemoveThread(threadId);
 
         if (removed)
         {
@@ -274,19 +274,19 @@ public class ManageThreadPanel : MonoBehaviour
             int suffix = 0;
 
             // 중복 확인 및 처리
-            while (_dataManager.HasThread(threadId))
+            while (_dataManager.Thread.HasThread(threadId))
             {
                 suffix++;
                 threadId = $"{baseId}_{suffix}";
             }
 
             // 새 스레드 생성 (자동 저장/이벤트 트리거)
-            _dataManager.CreateThread(threadId, threadName);
+            _dataManager.Thread.CreateThread(threadId, threadName);
 
             // 선택된 카테고리가 있으면 새 스레드를 카테고리에 추가
             if (!string.IsNullOrEmpty(_selectedCategoryId))
             {
-                _dataManager.AddThreadToCategory(_selectedCategoryId, threadId);
+                _dataManager.Thread.AddThreadToCategory(_selectedCategoryId, threadId);
             }
 
             Debug.Log($"[ManageThreadPanel] New thread created: {threadId} ({threadName})");

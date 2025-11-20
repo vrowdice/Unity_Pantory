@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
     public GameObject ProductionInfoImage => _productionInfoImagePrefab;
+    public GameObject ActionBtnPrefab => _actionBtnPrefab;
     public MainCameraController MainCameraController => _mainCameraController;
     /// <summary>
     /// 현재 Thread ID를 설정합니다.
@@ -49,6 +50,7 @@ public class GameManager : MonoBehaviour
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
     [SerializeField] private GameObject _gridSortContentPrefab;
+    [SerializeField] private GameObject _actionBtnPrefab;
     
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
@@ -152,7 +154,7 @@ public class GameManager : MonoBehaviour
         {
             if (scene.name != "Main")
             {
-                _gameDataManager.PauseTime();
+                _gameDataManager.Time.PauseTime();
             }
         }
         else

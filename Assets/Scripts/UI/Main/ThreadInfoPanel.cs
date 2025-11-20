@@ -95,7 +95,7 @@ public class ThreadInfoPanel : MonoBehaviour
 
             if (_dataManager != null)
             {
-                var buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
+                var buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
                     buildingNames.Add(buildingData.displayName);
@@ -161,7 +161,7 @@ public class ThreadInfoPanel : MonoBehaviour
             {
                 foreach (var kvp in consumptionCounts)
                 {
-                    ResourceEntry resourceEntry = _dataManager.GetResourceEntry(kvp.Key);
+                    ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
                     if (resourceEntry != null && _mainUiManager.ProductionInfoImage != null)
                     {
                         Instantiate(_mainUiManager.ProductionInfoImage, _inputResourceContentTransform)
@@ -175,7 +175,7 @@ public class ThreadInfoPanel : MonoBehaviour
             {
                 foreach (var kvp in productionCounts)
                 {
-                    ResourceEntry resourceEntry = _dataManager.GetResourceEntry(kvp.Key);
+                    ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
                     if (resourceEntry != null && _mainUiManager.ProductionInfoImage != null)
                     {
                         Instantiate(_mainUiManager.ProductionInfoImage, _outputResourceContentTransform)

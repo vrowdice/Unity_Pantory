@@ -19,7 +19,7 @@ public partial class MainUiManager
             return;
         }
 
-        var categories = _dataManager.GetAllCategories();
+        var categories = _dataManager.Thread.GetAllCategories();
 
         if (!string.IsNullOrEmpty(_selectedThreadCategoryId) && (categories == null || !categories.ContainsKey(_selectedThreadCategoryId)))
         {
@@ -73,11 +73,11 @@ public partial class MainUiManager
         List<ThreadState> threadsToShow;
         if (string.IsNullOrEmpty(_selectedThreadCategoryId))
         {
-            threadsToShow = _dataManager.GetAllThreadList();
+            threadsToShow = _dataManager.Thread.GetAllThreadList();
         }
         else
         {
-            threadsToShow = _dataManager.GetThreadsInCategory(_selectedThreadCategoryId);
+            threadsToShow = _dataManager.Thread.GetThreadsInCategory(_selectedThreadCategoryId);
         }
 
         if (threadsToShow != null)

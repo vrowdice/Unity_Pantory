@@ -524,7 +524,21 @@ public class MarketDataHandler
         }
 
         // 거래 실행
-        _gameDataManager.Finances.TryRemoveCredit(totalCost);
+        // 예약된 비용 처리 중이면 비용 차감을 하지 않음 (이미 예약된 비용에서 처리됨)
+        bool shouldDeduct = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
+        
+        if (shouldDeduct)
+        {
+            // 돈 확인
+            if (!_gameDataManager.Finances.HasEnoughCredit(totalCost))
+            {
+                Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost} (base: {baseCost}, fee: {marketFee}), Available: {_gameDataManager.Finances.GetCredit()}");
+                return false;
+            }
+            
+            _gameDataManager.Finances.TryRemoveCredit(totalCost);
+        }
+        
         _gameDataManager.Resource.AddResource(resourceId, amount);
 
         // 시장 수요에 즉시 반영
@@ -579,7 +593,14 @@ public class MarketDataHandler
 
         // 거래 실행
         _gameDataManager.Resource.TryRemoveResource(resourceId, amount);
-        _gameDataManager.Finances.AddCredit(totalRevenue);
+        
+        // 예약된 비용 처리 중이면 수익 추가를 하지 않음 (이미 예약된 비용에서 처리됨)
+        bool shouldAdd = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
+        
+        if (shouldAdd)
+        {
+            _gameDataManager.Finances.AddCredit(totalRevenue);
+        }
 
         // 시장 공급에 즉시 반영
         ApplyPlayerSupply(resourceEntry, amount);

@@ -340,7 +340,7 @@ public class BuildingGridHandler
         {
             foreach (var buildingState in buildingStates)
             {
-                BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
+                BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
 
                 // BuildingState의 위치가 곧 건물이 차지하는 영역의 시작점입니다.
                 Vector2Int buildingPos = new Vector2Int(buildingState.positionX, buildingState.positionY);

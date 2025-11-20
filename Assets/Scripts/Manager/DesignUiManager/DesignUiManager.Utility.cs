@@ -28,7 +28,7 @@ public partial class DesignUiManager
         string currentThreadId = _buildingTileManager.CurrentThreadId;
         if (!string.IsNullOrEmpty(currentThreadId) && _dataManager != null)
         {
-            ThreadState existingThread = _dataManager.GetThread(currentThreadId);
+            ThreadState existingThread = _dataManager.Thread.GetThread(currentThreadId);
             if (existingThread != null && !string.IsNullOrEmpty(existingThread.threadName))
             {
                 _currentThreadTitle = existingThread.threadName;

@@ -62,7 +62,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
         if (!string.IsNullOrEmpty(currentThreadId) && _dataManager != null)
         {
-            ThreadState existingThread = _dataManager.GetThread(currentThreadId);
+            ThreadState existingThread = _dataManager.Thread.GetThread(currentThreadId);
             if (existingThread != null && !string.IsNullOrEmpty(existingThread.categoryId))
             {
                 _selectedCategoryId = existingThread.categoryId;
@@ -102,7 +102,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
         foreach (var resourceId in resourceIds)
         {
-            ResourceEntry resourceEntry = _dataManager.GetResourceEntry(resourceId);
+            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceId);
             if (resourceEntry != null)
             {
                 GameObject panel = Instantiate(_productionInfoIconPanel, content);
@@ -167,7 +167,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
             return;
         }
 
-        ThreadCategory category = _dataManager.GetCategory(_selectedCategoryId);
+        ThreadCategory category = _dataManager.Thread.GetCategory(_selectedCategoryId);
         if (category != null)
         {
             _threadCartegoryText.text = category.categoryName;

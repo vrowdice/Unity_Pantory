@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -196,7 +197,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null)
             return;
 
-        var buildingStates = _dataManager.GetBuildingStates(_currentThreadId);
+        var buildingStates = _dataManager.Thread.GetBuildingStates(_currentThreadId);
         if (buildingStates != null)
         {
             _tempBuildingStates = new List<BuildingState>(buildingStates);
@@ -345,7 +346,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         _tempBuildingStates.Clear();
 
         // GameDataManager에서 건물 상태를 임시 저장소로 복사
-        var buildingStates = _dataManager?.GetBuildingStates(threadId);
+        var buildingStates = _dataManager.Thread.GetBuildingStates(threadId);
         if (buildingStates != null)
         {
             _tempBuildingStates = new List<BuildingState>(buildingStates);
@@ -360,7 +361,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     {
         if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null) return;
 
-        if (!_isTempDataDirty && _tempBuildingStates.Count == (_dataManager.GetBuildingStates(_currentThreadId)?.Count ?? 0))
+        if (!_isTempDataDirty && _tempBuildingStates.Count == (_dataManager.Thread.GetBuildingStates(_currentThreadId)?.Count ?? 0))
         {
             Debug.Log($"[BuildingTileManager] No changes to apply for thread: {_currentThreadId}");
             return;
@@ -379,7 +380,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
 
         // 1. Thread ID 결정 및 생성/업데이트
         string newThreadId = _designUiManager.GetThreadIdFromTitle(threadName);
-        _dataManager.CreateThread(newThreadId, threadName);
+        _dataManager.Thread.CreateThread(newThreadId, threadName);
 
         // 2. 임시 데이터를 DataManager에 반영
         string oldThreadId = _currentThreadId;
@@ -390,7 +391,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         // 3. 카테고리 적용
         if (!string.IsNullOrEmpty(categoryId))
         {
-            _dataManager.AddThreadToCategory(categoryId, newThreadId);
+            _dataManager.Thread.AddThreadToCategory(categoryId, newThreadId);
         }
 
         // 4. 레이아웃 캡처 및 이미지 경로 업데이트
@@ -399,7 +400,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         // 5. 유지비 계산 및 저장
         int totalMaintenance = CalculateTotalMaintenanceCost(newThreadId);
         
-        ThreadState thread = _dataManager.GetThread(newThreadId);
+        ThreadState thread = _dataManager.Thread.GetThread(newThreadId);
         if (thread != null)
         {
             if (!string.IsNullOrEmpty(imagePath))
@@ -423,7 +424,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     public List<BuildingState> GetCurrentBuildingStates()
     {
         if (_isTempDataDirty && _tempBuildingStates != null) return _tempBuildingStates;
-        return _dataManager.GetBuildingStates(_currentThreadId) ?? new List<BuildingState>();
+        return _dataManager.Thread.GetBuildingStates(_currentThreadId) ?? new List<BuildingState>();
     }
 
     /// <summary> 임시 저장소에 건물을 추가합니다. </summary>
@@ -467,7 +468,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         {
             foreach (var buildingState in buildingStates)
             {
-                BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
+                BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
                     _gridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
@@ -505,7 +506,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         // 클릭된 영역 내의 건물 찾기
         foreach (var state in buildingStates)
         {
-            BuildingData data = _dataManager?.GetBuildingData(state.buildingId);
+            BuildingData data = _dataManager.Building.GetBuildingData(state.buildingId);
             if (data != null)
             {
                 Vector2Int rotatedSize = GetRotatedSize(data.size, state.rotation);
@@ -520,7 +521,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
 
         if (clickedState != null)
         {
-            BuildingData buildingData = _dataManager.GetBuildingData(clickedState.buildingId);
+            BuildingData buildingData = _dataManager.Building.GetBuildingData(clickedState.buildingId);
             if (buildingData != null)
             {
                 _designUiManager?.ShowBuildingInfo(buildingData, clickedState);
@@ -554,7 +555,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         if (string.IsNullOrEmpty(threadId) || _mainCamera == null) return null;
 
         // 경계 계산에 사용할 건물 목록 로드
-        List<BuildingState> buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager?.GetBuildingStates(threadId);
+        List<BuildingState> buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
         if (buildingStates == null || buildingStates.Count == 0) return null;
 
         // 경계 계산
@@ -562,7 +563,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         int maxX = int.MinValue, maxY = int.MinValue;
         foreach (var buildingState in buildingStates)
         {
-            BuildingData buildingData = _dataManager.GetBuildingData(buildingState.buildingId);
+            BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
             if (buildingData != null)
             {
                 Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
@@ -685,7 +686,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         outputResourceCounts = new Dictionary<string, int>();
         if (_calculateHandler == null) return;
 
-        List<BuildingState> buildingStatesToUse = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager?.GetBuildingStates(threadId);
+        List<BuildingState> buildingStatesToUse = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
 
         _calculateHandler.CalculateProductionChain(threadId, buildingStatesToUse, out inputResourceIds, out inputResourceCounts, out outputResourceIds, out outputResourceCounts);
     }

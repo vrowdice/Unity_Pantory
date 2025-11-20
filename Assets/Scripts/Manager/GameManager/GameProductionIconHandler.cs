@@ -101,7 +101,7 @@ namespace Pantory.Managers
                 if (string.IsNullOrEmpty(kvp.Key))
                     continue;
 
-                ResourceEntry resourceEntry = dataManager.GetResourceEntry(kvp.Key);
+                ResourceEntry resourceEntry = dataManager.Resource.GetResourceEntry(kvp.Key);
                 if (resourceEntry != null)
                 {
                     CreateProductionIcon(parent, resourceEntry, kvp.Value);

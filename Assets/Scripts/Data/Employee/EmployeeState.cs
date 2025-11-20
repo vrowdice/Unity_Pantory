@@ -11,7 +11,6 @@ public class EmployeeState
     public float currentEfficiency;     // 현재 생산 효율
     public int assignedCount;           // 배치된 인원 수
     public long totalSalary;            // 총 급여
-    public bool hasUnion;                // 노조 가입 여부
 
     public EmployeeState()
     {
@@ -20,6 +19,5 @@ public class EmployeeState
         currentEfficiency = 1f;
         assignedCount = 0;
         totalSalary = 0;
-        hasUnion = false;
     }
 }

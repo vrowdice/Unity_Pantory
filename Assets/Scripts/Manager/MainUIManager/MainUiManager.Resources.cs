@@ -19,7 +19,7 @@ public partial class MainUiManager
             return;
         }
 
-        Dictionary<string, ResourceEntry> resources = _dataManager.GetAllResources();
+        Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
         if (resources == null || resources.Count == 0)
         {
             return;

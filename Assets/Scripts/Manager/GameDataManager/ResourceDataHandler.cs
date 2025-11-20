@@ -492,16 +492,28 @@ public class ResourceDataHandler
         var finances = _gameDataManager?.Finances;
         if (finances != null && cost > 0)
         {
-            bool removed = finances.TryRemoveCredit(cost);
-            if (removed)
+            // 예약된 비용 처리 중이면 비용 차감을 하지 않음 (이미 예약된 비용에서 처리됨)
+            bool shouldDeduct = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
+            
+            if (shouldDeduct)
             {
-                // 시장 수요에 반영 (자원 추가 없이 수요만 증가)
-                ApplyMarketDemand(entry, deficit);
-                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits (market demand increased).");
+                bool removed = finances.TryRemoveCredit(cost);
+                if (removed)
+                {
+                    // 시장 수요에 반영 (자원 추가 없이 수요만 증가)
+                    ApplyMarketDemand(entry, deficit);
+                    Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units purchased for {cost} credits (market demand increased).");
+                }
+                else
+                {
+                    Debug.LogWarning($"[ResourceService] Unable to cover shortage cost ({cost}) for {entry.resourceData.displayName} due to insufficient credits.");
+                }
             }
             else
             {
-                Debug.LogWarning($"[ResourceService] Unable to cover shortage cost ({cost}) for {entry.resourceData.displayName} due to insufficient credits.");
+                // 예약된 비용에서 이미 처리되었으므로 비용 차감 없이 시장 수요만 반영
+                ApplyMarketDemand(entry, deficit);
+                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units (cost {cost} credits already reserved).");
             }
         }
     }

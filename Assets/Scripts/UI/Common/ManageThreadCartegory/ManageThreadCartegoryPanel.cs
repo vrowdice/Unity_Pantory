@@ -41,7 +41,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
         GameObjectUtils.ClearChildren(_contentTransform);
 
         // 모든 카테고리 가져오기
-        var categories = _dataManager.GetAllCategories();
+        var categories = _dataManager.Thread.GetAllCategories();
 
         foreach (var category in categories.Values)
         {
@@ -85,7 +85,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
             string categoryId = $"Category_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
 
             // 카테고리 생성
-            var newCategory = _dataManager.CreateCategory(categoryId, categoryName);
+            var newCategory = _dataManager.Thread.CreateCategory(categoryId, categoryName);
             
             if (newCategory != null)
             {
@@ -128,7 +128,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
             }
 
             // 카테고리 이름 변경
-            bool success = _dataManager.RenameCategory(categoryId, newName);
+            bool success = _dataManager.Thread.RenameCategory(categoryId, newName);
             
             if (success)
             {
@@ -165,7 +165,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
         gameManager.ShowWarningPanel($"Delete category '{categoryName}'");
         
         // 카테고리 삭제
-        bool success = _dataManager.RemoveCategory(categoryId);
+        bool success = _dataManager.Thread.RemoveCategory(categoryId);
         
         if (success)
         {

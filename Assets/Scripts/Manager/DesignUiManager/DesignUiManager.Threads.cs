@@ -73,7 +73,7 @@ public partial class DesignUiManager
             return;
         }
 
-        ThreadState thread = _dataManager.GetThread(threadId);
+        ThreadState thread = _dataManager.Thread.GetThread(threadId);
         if (thread == null)
         {
             Debug.LogWarning($"[DesignUiManager] Thread not found: {threadId}");

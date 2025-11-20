@@ -123,7 +123,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
         foreach (var kvp in inputCounts)
         {
-            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(kvp.Key);
+            ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(kvp.Key);
 
             if (resourceEntry != null)
             {
@@ -150,7 +150,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
         foreach (var kvp in outputCounts)
         {
-            ResourceEntry resourceEntry = _gameDataManager.GetResourceEntry(kvp.Key);
+            ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(kvp.Key);
             
             if (resourceEntry != null)
             {

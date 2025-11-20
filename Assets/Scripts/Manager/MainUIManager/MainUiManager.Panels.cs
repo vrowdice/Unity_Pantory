@@ -48,7 +48,7 @@ public partial class MainUiManager
             ClosePanelInternal(_currentOpenPanelType);
         }
 
-        panel.OnOpen(_dataManager, this);
+        panel.OnOpen(_gameManager ,_dataManager, this);
         _currentOpenPanelType = panelType;
         Debug.Log($"[MainUiManager] Panel {panelType} opened.");
     }

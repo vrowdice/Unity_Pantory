@@ -9,7 +9,7 @@ public partial class DesignUiManager
             return;
         }
 
-        _buildingDataList = _dataManager.GetBuildingDataList(buildingType);
+        _buildingDataList = _dataManager.Building.GetBuildingDataList(buildingType);
 
         var existingButtons = _buildingBtnContent.GetComponentsInChildren<BuildingBtn>();
         foreach (var btn in existingButtons)

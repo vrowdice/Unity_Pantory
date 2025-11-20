@@ -110,12 +110,12 @@ public class InfoDatePanel : MonoBehaviour
         if (_isTimePaused)
         {
             // 일시정지
-            _dataManager.PauseTime();
+            _dataManager.Time.PauseTime();
         }
         else
         {
             // 재생 (1배속)
-            _dataManager.ResumeTime();
+            _dataManager.Time.ResumeTime();
         }
 
         // 버튼 이미지 업데이트
@@ -135,7 +135,7 @@ public class InfoDatePanel : MonoBehaviour
 
         // 2배속으로 설정하면 자동으로 일시정지 해제
         _isTimePaused = false;
-        _dataManager.SetTimeSpeed(2.0f);
+        _dataManager.Time.SetTimeSpeed(2.0f);
         
         // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
@@ -154,7 +154,7 @@ public class InfoDatePanel : MonoBehaviour
 
         // 4배속으로 설정하면 자동으로 일시정지 해제
         _isTimePaused = false;
-        _dataManager.SetTimeSpeed(4.0f);
+        _dataManager.Time.SetTimeSpeed(4.0f);
         
         // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
