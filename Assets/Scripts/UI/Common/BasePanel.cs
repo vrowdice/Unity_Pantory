@@ -12,7 +12,7 @@ public abstract class BasePanel : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private bool _usePanelAnimation = true;
     [SerializeField] private bool _deactivateAfterClose = true;
-    [SerializeField] private ClosePanelDoAni _panelAnimator;
+    [SerializeField] private PanelDoAni _panelAnimator;
 
     private bool _isAnimatorCached;
 
@@ -24,7 +24,7 @@ public abstract class BasePanel : MonoBehaviour
         _dataManager = argDataManager;
         _uiManager = argUIManager;
 
-        ClosePanelDoAni animator = null;
+        PanelDoAni animator = null;
         if (TryGetPanelAnimator(out animator))
         {
             animator.EnsureOpenedPositionCached();
@@ -84,7 +84,7 @@ public abstract class BasePanel : MonoBehaviour
         // MainUiManager에서 초기화를 관리합니다
     }
 
-    private bool TryGetPanelAnimator(out ClosePanelDoAni animator)
+    private bool TryGetPanelAnimator(out PanelDoAni animator)
     {
         animator = null;
 
@@ -95,7 +95,7 @@ public abstract class BasePanel : MonoBehaviour
 
         if (!_isAnimatorCached || _panelAnimator == null)
         {
-            _panelAnimator = GetComponent<ClosePanelDoAni>();
+            _panelAnimator = GetComponent<PanelDoAni>();
             _isAnimatorCached = true;
         }
 

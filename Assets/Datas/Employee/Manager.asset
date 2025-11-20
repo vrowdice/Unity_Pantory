@@ -18,6 +18,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
   description: An experienced leader who oversees operations and staff. Boosts team
     morale and reduces fatigue through efficient management.
-  baseWorkValue: 0
-  baseSatisfaction: 80
+  baseEfficiency: 100
+  baseSatisfaction: 0
   baseSalary: 1200

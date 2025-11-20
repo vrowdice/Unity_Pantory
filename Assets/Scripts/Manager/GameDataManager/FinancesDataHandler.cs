@@ -67,7 +67,6 @@ public class FinancesDataHandler
         if (_credit >= amount)
         {
             _credit -= amount;
-            Debug.Log($"[FinancesService] Credit -{amount} (total: {_credit})");
             
             OnCreditChanged?.Invoke();
             return true;

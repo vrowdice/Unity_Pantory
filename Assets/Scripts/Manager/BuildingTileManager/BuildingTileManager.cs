@@ -407,9 +407,12 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
                 thread.previewImagePath = imagePath;
             }
             thread.totalMaintenanceCost = totalMaintenance;
+            
+            // totalMaintenanceCost와 previewImagePath 변경사항을 저장
+            _dataManager.Thread.Save();
         }
 
-        // 5. GameManager 및 화면 갱신
+        // 6. GameManager 및 화면 갱신
         _gameManager?.SetCurrentThreadId(newThreadId);
         SetCurrentThread(newThreadId); // 임시 데이터 초기화 및 로드/갱신
 

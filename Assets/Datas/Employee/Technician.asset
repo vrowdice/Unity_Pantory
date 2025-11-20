@@ -18,6 +18,6 @@ MonoBehaviour:
   icon: {fileID: 2296345650897399238, guid: be40cd7d02703244dbe8af74759055fa, type: 3}
   description: A skilled craftsman with technical expertise. Proficient in complex
     assembly and advanced crafting techniques.
-  baseWorkValue: 0
-  baseSatisfaction: 60
+  baseEfficiency: 120
+  baseSatisfaction: 0
   baseSalary: 250

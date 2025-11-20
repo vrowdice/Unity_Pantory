@@ -59,12 +59,6 @@ public class ThreadInfoPanel : MonoBehaviour
         if (_categoryText != null)
             _categoryText.text = _currentThreadState.categoryId;
 
-        // Description 표시 (건물 정보 집계)
-        if (_descriptionText != null)
-        {
-            _descriptionText.text = GetThreadDescription();
-        }
-
         // 유지비는 ThreadState에 저장된 값 사용
         if (_maintenanceText != null)
         {

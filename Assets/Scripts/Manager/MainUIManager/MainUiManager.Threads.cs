@@ -4,19 +4,6 @@ using UnityEngine.UI;
 
 public partial class MainUiManager
 {
-    [Header("Thread")]
-    [SerializeField] private Image _cancelPlacementBtnImage;
-    [SerializeField] private Image _removalModeBtnImage;
-    [SerializeField] private GameObject _threadCategoryBtnPrefab;
-    [SerializeField] private Transform _threadCategoryScrollViewContent;
-    [SerializeField] private GameObject _threadBtnPrefab;
-    [SerializeField] private GameObject _threadPlusBtnPrefab;
-    [SerializeField] private Transform _threadScrollViewContent;
-
-    private readonly List<ThreadCategoryBtn> _threadCategoryBtns = new List<ThreadCategoryBtn>();
-    private readonly List<ThreadBtn> _threadBtns = new List<ThreadBtn>();
-    private string _selectedThreadCategoryId = string.Empty;
-
     private void RefreshThreadCategories()
     {
         if (_dataManager == null || _threadCategoryScrollViewContent == null)

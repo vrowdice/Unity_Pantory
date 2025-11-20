@@ -20,6 +20,14 @@ public class MarketDataHandler
     }
 
     /// <summary>
+    /// 현재 시장 수수료율을 반환합니다.
+    /// </summary>
+    public float GetMarketFeeRate()
+    {
+        return _marketSettings != null ? _marketSettings.marketFeeRate : 0.05f;
+    }
+
+    /// <summary>
     /// 마켓 설정을 적용합니다.
     /// </summary>
     public void SetMarketSettings(InitialMarketData settings)

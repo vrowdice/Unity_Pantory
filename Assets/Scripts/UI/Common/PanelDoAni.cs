@@ -2,7 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 
-public class ClosePanelDoAni : MonoBehaviour
+public class PanelDoAni : MonoBehaviour
 {
     public enum SlideDirection
     {

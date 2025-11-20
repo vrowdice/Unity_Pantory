@@ -3,12 +3,6 @@ using UnityEngine;
 
 public partial class MainUiManager
 {
-    [Header("Quick Move")]
-    [SerializeField] private GameObject _quickMoveBtnPrefeb;
-    [SerializeField] private Transform _quickMovePanelContent;
-
-    private readonly List<QuickMoveBtn> _quickMoveBtns = new List<QuickMoveBtn>();
-
     private void CreateQuickMoveBtns()
     {
         if (_quickMoveBtnPrefeb == null)

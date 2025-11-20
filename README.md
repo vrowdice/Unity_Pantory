@@ -33,5 +33,17 @@ Players gather resources, craft various tools, and directly sell their creations
 | **Genre** | Crafting / Simulation / Fantasy |
 | **Developer** | Vrowdice Studio |
 
+## 📚 게임 가이드 / Game Guide
+
+게임 플레이 방법을 자세히 알고 싶으시다면 **[게임 가이드 (GAME_GUIDE.md)](GAME_GUIDE.md)**를 참고해주세요!
+
+- 🎮 기본 조작 방법
+- 🧵 스레드(Thread) 시스템 설명
+- 🏗️ 건물 배치 가이드
+- ⚙️ 생산 체인 구성 방법
+- 💡 팁과 전략
+
+---
+
 ## 📁 Project Structure / 프로젝트 구조 (예시)
 
