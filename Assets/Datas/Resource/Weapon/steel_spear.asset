@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_spear
   displayName: Steel Spear
-  minValue: 500
-  maxValue: 720
-  baseValue: 600
+  baseValue: 2800
   marketSensitivity: 0.24
   meanReversionStrength: 0.6
   maxDailySwing: 0.012

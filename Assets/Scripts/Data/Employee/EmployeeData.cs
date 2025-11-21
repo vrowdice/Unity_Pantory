@@ -11,6 +11,7 @@ public class EmployeeData : ScriptableObject
     public string displayName;           // 표시 이름 (예: "Worker")
     public EmployeeType role;            // 직원 역할
     public Sprite icon;
+    public Sprite Image;
     [TextArea(3, 10)]
     public string description;
 

@@ -5,11 +5,11 @@ using UnityEngine;
 /// Allows time flow configuration through the Inspector.
 /// </summary>
 [CreateAssetMenu(fileName = "TimeSettingsData", menuName = "Game Data/Time Settings Data", order = 2)]
-public class TimeSettingsData : ScriptableObject
+public class InitialTimeData : ScriptableObject
 {
     [Header("Time Flow Settings")]
     [Tooltip("Real seconds it takes for one in-game HOUR to pass")]
-    [Range(0.01f, 10.0f)]
+    [Range(0.01f, 1.0f)]
     public float realSecondsPerHour = 0.1f;
 
     [Header("Calendar Settings")]

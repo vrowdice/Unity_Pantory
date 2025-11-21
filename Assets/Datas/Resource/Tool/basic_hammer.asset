@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_hammer
   displayName: Basic Hammer
-  minValue: 125
-  maxValue: 195
-  baseValue: 150
+  baseValue: 500
   marketSensitivity: 0.22
   meanReversionStrength: 0.6
   maxDailySwing: 0.012

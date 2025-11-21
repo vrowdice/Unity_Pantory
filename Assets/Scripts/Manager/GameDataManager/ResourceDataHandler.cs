@@ -486,16 +486,18 @@ public class ResourceDataHandler
             return;
         }
 
-        float unitPrice = entry.resourceState?.currentValue ?? 0f;
-        long cost = (long)Math.Ceiling(unitPrice * deficit);
-
-        var finances = _gameDataManager?.Finances;
-        if (finances != null && cost > 0)
+        // 예약된 비용 처리 중이면 비용 차감을 하지 않음 (이미 예약된 비용에서 처리됨)
+        bool isProcessingReserved = _gameDataManager?.Finances?.IsProcessingReservedExpenses ?? false;
+        
+        if (!isProcessingReserved)
         {
-            // 예약된 비용 처리 중이면 비용 차감을 하지 않음 (이미 예약된 비용에서 처리됨)
-            bool shouldDeduct = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
-            
-            if (shouldDeduct)
+            // 예약 시스템이 아닌 경우에만 직접 처리 (호환성을 위해 유지)
+            // 하지만 일반적으로는 예약 시스템을 통해 처리되어야 함
+            float unitPrice = entry.resourceState?.currentValue ?? 0f;
+            long cost = (long)Math.Ceiling(unitPrice * deficit);
+
+            var finances = _gameDataManager?.Finances;
+            if (finances != null && cost > 0)
             {
                 bool removed = finances.TryRemoveCredit(cost);
                 if (removed)
@@ -509,12 +511,14 @@ public class ResourceDataHandler
                     Debug.LogWarning($"[ResourceService] Unable to cover shortage cost ({cost}) for {entry.resourceData.displayName} due to insufficient credits.");
                 }
             }
-            else
-            {
-                // 예약된 비용에서 이미 처리되었으므로 비용 차감 없이 시장 수요만 반영
-                ApplyMarketDemand(entry, deficit);
-                Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units (cost {cost} credits already reserved).");
-            }
+        }
+        else
+        {
+            // 예약된 비용에서 이미 처리되었으므로 비용 차감 없이 시장 수요만 반영
+            ApplyMarketDemand(entry, deficit);
+            float unitPrice = entry.resourceState?.currentValue ?? 0f;
+            long cost = (long)Math.Ceiling(unitPrice * deficit);
+            Debug.Log($"[ResourceService] Shortage for {entry.resourceData.displayName}: {deficit} units (cost {cost} credits already reserved).");
         }
     }
 

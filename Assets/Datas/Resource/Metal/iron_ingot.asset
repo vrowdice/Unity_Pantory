@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ingot
   displayName: Iron Ingot
-  baseValue: 45
+  baseValue: 75
   marketSensitivity: 0.18
   meanReversionStrength: 0.55
   maxDailySwing: 0.012

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 /// <summary>
 /// 직원 데이터와 상태를 포함하는 엔트리
@@ -18,6 +19,10 @@ public class EmployeeEntry
         if (data != null)
         {
             employeeState.currentSatisfaction = data.baseSatisfaction;
+            // 효율성은 0~200% 범위 (0.0~2.0)
+            employeeState.currentEfficiency = Mathf.Clamp(data.baseEfficiency, 0f, 2f);
+            // 급여 레벨 기본값: 보통 (2)
+            employeeState.salaryLevel = 2;
         }
     }
 }

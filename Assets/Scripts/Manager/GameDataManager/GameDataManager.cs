@@ -3,36 +3,17 @@ using System.Collections.Generic;
 using System.Linq; // LINQ 추가
 using UnityEngine;
 
-[Serializable]
-public struct DailyExpenseReservation
-{
-    public long maintenanceCost;      
-    public long salaryCost;           
-    public long resourceShortageCost; 
-    public long playerTradeCost;      
-    public long playerTradeRevenue;   
-    
-    public long TotalExpenses => maintenanceCost + salaryCost + resourceShortageCost + playerTradeCost;
-    public long NetDelta => playerTradeRevenue - TotalExpenses;
-}
-
 public class GameDataManager : MonoBehaviour
 {
     // ==================== 싱글톤 ====================
     public static GameDataManager Instance { get; private set; }
-    
-    // ==================== 일일 비용 예약 ====================
-    private DailyExpenseReservation _reservedDailyExpenses;
-    public DailyExpenseReservation ReservedDailyExpenses => _reservedDailyExpenses;
-    public bool IsProcessingReservedExpenses { get; private set; } = false;
 
     #region 인스펙터 설정 (Initial Data)
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;
     [SerializeField] private InitialMarketData _initialMarketData;
-
-    [Header("Time Settings")]
-    [SerializeField] private TimeSettingsData _timeSettingsData;
+    [SerializeField] private InitialEmployeeData _initialEmployeeData;
+    [SerializeField] private InitialTimeData _timeSettingsData;
     #endregion
 
     #region 데이터 핸들러 (Services - Public Access)
@@ -112,6 +93,7 @@ public class GameDataManager : MonoBehaviour
         _timeSettingsData?.ApplyToTimeService(Time);
         _initialResourceData?.ApplyToServices(Resource, Finances);
         _initialMarketData?.ApplyToMarket(Market);
+        _initialEmployeeData?.ApplyToEmployeeHandler(Employee);
 
         // 데이터 로드 및 초기 상태 계산
         LoadThreadData();
@@ -139,180 +121,59 @@ public class GameDataManager : MonoBehaviour
 
     private void HandleDayChanged()
     {
-        // 1. 다음 날 비용 예약 (현재 상태 기준)
+        // 1. 직원 상태 업데이트 (만족도 및 효율성)
+        Employee?.UpdateDailyEmployeeStatus();
+        
+        // 2. 다음 날 비용 예약 (현재 상태 기준)
         ReserveDailyExpenses();
         
-        // 2. 예약된 비용 처리 (자금 차감/지급)
+        // 3. 예약된 비용 처리 (자금 차감/지급)
         ApplyReservedDailyExpenses();
         
-        // 3. 자원 증감 적용 (생산/소비)
+        // 4. 자원 증감 적용 (생산/소비)
         Resource?.ApplyResourceDeltas();
         
-        // 4. 배치 변경에 따른 델타 갱신 (배치가 바뀌지 않았어도 일일 루틴으로 호출)
+        // 5. 배치 변경에 따른 델타 갱신 (배치가 바뀌지 않았어도 일일 루틴으로 호출)
         HandleThreadPlacementChanged();
         
-        // 5. 시장 업데이트 (가격 변동 및 자동 거래 실행)
+        // 6. 시장 업데이트 (가격 변동 및 자동 거래 실행)
         Market?.TickDailyMarket();
     }
 
-    /// <summary>
-    /// 현재 배치된 스레드들의 자원 생산/소비 총합과 유지비를 계산하여 반환하는 헬퍼 함수
-    /// (중복 로직 제거용)
-    /// </summary>
-    private void CalculateThreadAggregates(out long totalMaintenance, out Dictionary<string, long> totalProduction, out Dictionary<string, long> totalConsumption)
-    {
-        totalMaintenance = 0;
-        totalProduction = new Dictionary<string, long>();
-        totalConsumption = new Dictionary<string, long>();
-
-        var placedThreads = ThreadPlacement.GetAllPlacedThreads();
-        if (placedThreads == null) return;
-
-        foreach (var placement in placedThreads.Values)
-        {
-            if (placement == null || string.IsNullOrEmpty(placement.ThreadId)) continue;
-
-            var threadState = Thread.GetThread(placement.ThreadId);
-            if (threadState == null) continue;
-
-            // 유지비 합산
-            totalMaintenance += threadState.totalMaintenanceCost;
-
-            // 자원 합산
-            if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
-            {
-                AddToDict(totalProduction, prod);
-                AddToDict(totalConsumption, cons);
-            }
-        }
-
-        // 로컬 헬퍼
-        void AddToDict(Dictionary<string, long> target, Dictionary<string, int> source)
-        {
-            if (source == null) return;
-            foreach (var kvp in source)
-            {
-                if (target.ContainsKey(kvp.Key)) target[kvp.Key] += kvp.Value;
-                else target[kvp.Key] = kvp.Value;
-            }
-        }
-    }
 
     /// <summary>
     /// 일일 예상 크레딧 변화량을 반환합니다 (예약된 비용 기준)
     /// </summary>
     public long CalculateDailyCreditDelta()
     {
-        return _reservedDailyExpenses.NetDelta;
+        return Finances?.CalculateDailyCreditDelta() ?? 0;
     }
-    
+
+    /// <summary>
+    /// 일일 비용 예약 (FinancesDataHandler로 위임)
+    /// </summary>
     public void ReserveDailyExpenses()
     {
-        _reservedDailyExpenses = new DailyExpenseReservation();
-
-        // 1. 스레드 집계 (유지비, 생산, 소비)
-        CalculateThreadAggregates(out long maintenanceCost, out var totalProduction, out var totalConsumption);
-
-        // 2. 자원 부족 비용 계산
-        long shortageCost = CalculateResourceShortageCost(totalProduction, totalConsumption);
-
-        // 3. 플레이어 자동 거래 비용/수익 계산
-        CalculatePlayerTradeEconomics(totalProduction, totalConsumption, out long tradeCost, out long tradeRevenue);
-
-        // 4. 직원 급여
-        long salaryCost = Employee != null ? Employee.GetTotalSalary() : 0;
-        _reservedDailyExpenses.maintenanceCost = maintenanceCost;
-        _reservedDailyExpenses.salaryCost = salaryCost;
-        _reservedDailyExpenses.resourceShortageCost = shortageCost;
-        _reservedDailyExpenses.playerTradeCost = tradeCost;
-        _reservedDailyExpenses.playerTradeRevenue = tradeRevenue;
-
-        Debug.Log($"[GameDataManager] Daily expenses reserved. Net: {_reservedDailyExpenses.NetDelta}");
+        Finances?.ReserveDailyExpenses();
     }
 
-    private long CalculateResourceShortageCost(Dictionary<string, long> production, Dictionary<string, long> consumption)
+    /// <summary>
+    /// 예약된 일일 비용 적용 (FinancesDataHandler로 위임)
+    /// </summary>
+    public void ApplyReservedDailyExpenses()
     {
-        long totalCost = 0;
-        var allResources = Resource.GetAllResources();
-
-        foreach (var kvp in consumption)
-        {
-            string id = kvp.Key;
-            long consumeAmount = kvp.Value;
-            long produceAmount = production.ContainsKey(id) ? production[id] : 0;
-            long currentAmount = Resource.GetResourceQuantity(id);
-
-            // 예상 보유량 = 현재 + 생산 - 소비
-            long expectedAmount = currentAmount + produceAmount - consumeAmount;
-
-            if (expectedAmount < 0)
-            {
-                long shortage = -expectedAmount;
-                if (allResources.TryGetValue(id, out var entry))
-                {
-                    float price = entry.resourceState?.currentValue ?? 0f;
-                    totalCost += (long)Math.Ceiling(price * shortage);
-                }
-            }
-        }
-        return totalCost;
+        Finances?.ApplyReservedDailyExpenses();
     }
 
-    private void CalculatePlayerTradeEconomics(Dictionary<string, long> production, Dictionary<string, long> consumption, out long cost, out long revenue)
-    {
-        cost = 0;
-        revenue = 0;
-        
-        var allResources = Resource.GetAllResources();
-        float feeRate = Market.GetMarketFeeRate();
+    /// <summary>
+    /// 예약된 일일 비용 정보 반환
+    /// </summary>
+    public DailyExpenseReservation ReservedDailyExpenses => Finances?.ReservedDailyExpenses ?? new DailyExpenseReservation();
 
-        foreach (var kvp in allResources)
-        {
-            string id = kvp.Key;
-            var state = kvp.Value.resourceState;
-            if (state == null || state.playerTransactionDelta == 0) continue;
-
-            long delta = state.playerTransactionDelta;
-            float price = state.currentValue;
-
-            if (delta > 0) // 매수
-            {
-                long baseCost = (long)Mathf.Ceil(price * delta);
-                cost += baseCost + (long)Mathf.Ceil(baseCost * feeRate);
-            }
-            else // 매도
-            {
-                long sellRequest = -delta;
-                long current = Resource.GetResourceQuantity(id);
-                long prod = production.ContainsKey(id) ? production[id] : 0;
-                long cons = consumption.ContainsKey(id) ? consumption[id] : 0;
-
-                // 델타 적용 후 예상 보유량 기준 판매 가능 수량 확인
-                long expectedAmount = current + prod - cons;
-                long actualSell = Math.Max(0, Math.Min(sellRequest, expectedAmount));
-
-                if (actualSell > 0)
-                {
-                    long baseRevenue = (long)Mathf.Floor(price * actualSell);
-                    revenue += baseRevenue - (long)Mathf.Floor(baseRevenue * feeRate);
-                }
-            }
-        }
-    }
-
-    private void ApplyReservedDailyExpenses()
-    {
-        IsProcessingReservedExpenses = true;
-
-        long expenses = _reservedDailyExpenses.TotalExpenses;
-        long revenue = _reservedDailyExpenses.playerTradeRevenue;
-
-        if (expenses > 0) Finances.TryRemoveCredit(expenses);
-        if (revenue > 0) Finances.AddCredit(revenue);
-
-        _reservedDailyExpenses = new DailyExpenseReservation(); // 초기화
-        IsProcessingReservedExpenses = false;
-    }
+    /// <summary>
+    /// 예약된 비용 처리 중 여부
+    /// </summary>
+    public bool IsProcessingReservedExpenses => Finances?.IsProcessingReservedExpenses ?? false;
 
     #endregion
 

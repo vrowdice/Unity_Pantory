@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: processed_wood
   displayName: Processed Wood
-  baseValue: 24
+  baseValue: 45
   marketSensitivity: 0.18
   meanReversionStrength: 0.55
   maxDailySwing: 0.013

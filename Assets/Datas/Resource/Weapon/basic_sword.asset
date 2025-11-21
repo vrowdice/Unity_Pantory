@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_sword
   displayName: Basic Sword
-  baseValue: 300
+  baseValue: 750
   marketSensitivity: 0.28
   meanReversionStrength: 0.6
   maxDailySwing: 0.014

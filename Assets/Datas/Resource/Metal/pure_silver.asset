@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: pure_silver
   displayName: Pure Silver
-  minValue: 70
-  maxValue: 130
-  baseValue: 95
+  baseValue: 150
   marketSensitivity: 0.2
   meanReversionStrength: 0.6
   maxDailySwing: 0.012

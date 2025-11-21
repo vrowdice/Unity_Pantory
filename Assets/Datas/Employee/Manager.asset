@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: manager
   displayName: Manager
-  role: 4
+  role: 3
   icon: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
+  Image: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
   description: An experienced leader who oversees operations and staff. Boosts team
     morale and reduces fatigue through efficient management.
   baseEfficiency: 100
   baseSatisfaction: 0
-  baseSalary: 1200
+  baseSalary: 200

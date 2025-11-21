@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: gold_spear
   displayName: Gold Spear
-  minValue: 900
-  maxValue: 1350
-  baseValue: 1100
+  baseValue: 5000
   marketSensitivity: 0.18
   meanReversionStrength: 0.65
   maxDailySwing: 0.01

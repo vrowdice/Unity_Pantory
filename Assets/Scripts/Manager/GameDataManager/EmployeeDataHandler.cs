@@ -14,6 +14,9 @@ public class EmployeeDataHandler
     // 직원 변경 이벤트
     public event Action OnEmployeeChanged;
 
+    // 급여 비율 설정
+    private InitialEmployeeData _salarySettings;
+
     /// <summary>
     /// EmployeeService 생성자
     /// </summary>
@@ -351,11 +354,177 @@ public class EmployeeDataHandler
     // ----------------- Private Helper Methods -----------------
 
     /// <summary>
+    /// 급여 비율 설정을 적용합니다.
+    /// </summary>
+    /// <param name="initialEmployeeData">InitialEmployeeData 설정</param>
+    public void SetSalaryMultipliers(InitialEmployeeData initialEmployeeData)
+    {
+        if (initialEmployeeData == null)
+        {
+            Debug.LogWarning("[EmployeeDataHandler] InitialEmployeeData is null.");
+            _salarySettings = null;
+            return;
+        }
+
+        _salarySettings = initialEmployeeData;
+        
+        // 모든 직원의 급여 재계산
+        RefreshAllSalaries();
+        
+        Debug.Log("[EmployeeDataHandler] Salary multipliers applied.");
+    }
+
+    /// <summary>
+    /// 급여 레벨에 따른 비율을 반환합니다.
+    /// </summary>
+    /// <param name="salaryLevel">급여 레벨 (0=매우 적음, 1=적음, 2=보통, 3=많음, 4=매우 많음)</param>
+    /// <returns>급여 비율</returns>
+    public float GetSalaryMultiplier(int salaryLevel)
+    {
+        if (_salarySettings == null)
+        {
+            return 1.0f; // 기본값
+        }
+        return _salarySettings.GetSalaryMultiplier(salaryLevel);
+    }
+
+    /// <summary>
+    /// 특정 직원 유형의 급여 레벨을 설정합니다.
+    /// </summary>
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="salaryLevel">급여 레벨 (0=매우 적음, 1=적음, 2=보통, 3=많음, 4=매우 많음)</param>
+    public void SetEmployeeSalaryLevel(string employeeId, int salaryLevel)
+    {
+        if (_salarySettings == null)
+        {
+            Debug.LogWarning("[EmployeeDataHandler] Salary settings not initialized. Cannot set salary level.");
+            return;
+        }
+
+        if (!_employees.TryGetValue(employeeId, out var entry))
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            return;
+        }
+
+        // 급여 레벨 범위 검증 (0~4)
+        salaryLevel = Mathf.Clamp(salaryLevel, 0, 4);
+        entry.employeeState.salaryLevel = salaryLevel;
+        
+        // 해당 직원의 급여 재계산
+        UpdateSalary(entry);
+        
+        string levelName = _salarySettings.GetSalaryLevelName(salaryLevel);
+        Debug.Log($"[EmployeeDataHandler] {entry.employeeData.displayName} salary level set to: {levelName}");
+        
+        OnEmployeeChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 특정 직원 유형의 현재 급여 레벨을 반환합니다.
+    /// </summary>
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <returns>급여 레벨 (0~4), 직원이 없으면 -1</returns>
+    public int GetEmployeeSalaryLevel(string employeeId)
+    {
+        if (!_employees.TryGetValue(employeeId, out var entry))
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            return -1;
+        }
+
+        return entry.employeeState.salaryLevel;
+    }
+
+    /// <summary>
+    /// 일일 직원 상태 업데이트 (만족도 및 효율성)
+    /// </summary>
+    public void UpdateDailyEmployeeStatus()
+    {
+        if (_salarySettings == null)
+        {
+            Debug.LogWarning("[EmployeeDataHandler] Salary settings not initialized. Skipping daily update.");
+            return;
+        }
+
+        foreach (var entry in _employees.Values)
+        {
+            if (entry == null || entry.employeeData == null || entry.employeeState == null)
+            {
+                continue;
+            }
+
+            // 각 직원의 개별 급여 레벨에 따른 만족도 변화
+            int salaryLevel = entry.employeeState.salaryLevel;
+            float satisfactionChange = _salarySettings.GetSatisfactionChangePerDay(salaryLevel);
+
+            // 만족도 업데이트 (-100~100 범위로 클램프)
+            entry.employeeState.currentSatisfaction = Mathf.Clamp(
+                entry.employeeState.currentSatisfaction + satisfactionChange,
+                -100f, 100f
+            );
+
+            // 만족도에 따른 효율성 계산
+            UpdateEfficiencyFromSatisfaction(entry);
+        }
+
+        // 급여 재계산 (만족도 변화로 인한 효율성 변화는 급여에 직접 영향 없음)
+        RefreshAllSalaries();
+        
+        OnEmployeeChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 만족도에 따른 효율성을 업데이트합니다.
+    /// </summary>
+    private void UpdateEfficiencyFromSatisfaction(EmployeeEntry entry)
+    {
+        if (_salarySettings == null || entry == null || entry.employeeData == null || entry.employeeState == null)
+        {
+            return;
+        }
+
+        // 효율성 = 기본 효율성 + (만족도 * 계수)
+        // 만족도는 -100~100 범위, 효율성은 0~2 범위 (0~200%)
+        float baseEfficiency = entry.employeeData.baseEfficiency;
+        float satisfactionEffect = entry.employeeState.currentSatisfaction * _salarySettings.satisfactionToEfficiencyRatio;
+        
+        // 최종 효율성 = 기본 효율성 + 만족도 영향
+        // baseEfficiencyFromSatisfaction은 만족도가 0일 때의 기준값이지만, 
+        // 여기서는 각 직원의 baseEfficiency를 기준으로 사용
+        entry.employeeState.currentEfficiency = Mathf.Clamp(
+            baseEfficiency + satisfactionEffect,
+            0f, 2f
+        );
+    }
+
+    /// <summary>
     /// 급여를 업데이트합니다.
     /// </summary>
     private void UpdateSalary(EmployeeEntry entry)
     {
-        entry.employeeState.totalSalary = entry.employeeData.baseSalary * entry.employeeState.count;
+        if (_salarySettings == null)
+        {
+            // 급여 설정이 없으면 기본 급여 사용
+            entry.employeeState.totalSalary = entry.employeeData.baseSalary * entry.employeeState.count;
+            return;
+        }
+
+        // 각 직원의 개별 급여 레벨에 따른 비율 적용
+        float salaryMultiplier = _salarySettings.GetSalaryMultiplier(entry.employeeState.salaryLevel);
+        entry.employeeState.totalSalary = (long)(entry.employeeData.baseSalary * salaryMultiplier * entry.employeeState.count);
+    }
+
+    /// <summary>
+    /// 모든 직원의 급여를 재계산합니다.
+    /// </summary>
+    private void RefreshAllSalaries()
+    {
+        foreach (var entry in _employees.Values)
+        {
+            UpdateSalary(entry);
+        }
+        OnEmployeeChanged?.Invoke();
     }
 
     // ----------------- Utility Methods -----------------
@@ -369,9 +538,10 @@ public class EmployeeDataHandler
         {
             entry.employeeState.count = 0;
             entry.employeeState.currentSatisfaction = entry.employeeData.baseSatisfaction;
-            entry.employeeState.currentEfficiency = 1f;
+            entry.employeeState.currentEfficiency = Mathf.Clamp(entry.employeeData.baseEfficiency, 0f, 2f);
             entry.employeeState.assignedCount = 0;
             entry.employeeState.totalSalary = 0;
+            entry.employeeState.salaryLevel = 2; // 기본값: 보통
         }
         Debug.Log("[EmployeeService] All employees have been reset.");
         

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_sword
   displayName: Steel Sword
-  baseValue: 720
+  baseValue: 4000
   marketSensitivity: 0.26
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

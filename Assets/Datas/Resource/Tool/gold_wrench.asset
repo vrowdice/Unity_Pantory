@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: gold_wrench
   displayName: Gold Wrench
-  minValue: 540
-  maxValue: 780
-  baseValue: 640
+  baseValue: 2200
   marketSensitivity: 0.18
   meanReversionStrength: 0.65
   maxDailySwing: 0.01

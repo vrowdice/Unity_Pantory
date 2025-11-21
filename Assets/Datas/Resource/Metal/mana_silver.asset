@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: mana_silver
   displayName: Mana Silver
-  minValue: 210
-  maxValue: 380
-  baseValue: 280
+  baseValue: 1100
   marketSensitivity: 0.18
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

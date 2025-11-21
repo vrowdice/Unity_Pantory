@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_hammer
   displayName: Steel Hammer
-  minValue: 540
-  maxValue: 780
-  baseValue: 640
+  baseValue: 2800
   marketSensitivity: 0.24
   meanReversionStrength: 0.6
   maxDailySwing: 0.012

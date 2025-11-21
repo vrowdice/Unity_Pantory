@@ -43,12 +43,23 @@ public partial class MainUiManager
             return;
         }
 
-        if (_panelDict.ContainsKey(_currentOpenPanelType))
+        // 토글 기능: 이미 열려있는 패널을 다시 누르면 닫기
+        if (_currentOpenPanelType == panelType && panel.gameObject.activeSelf)
+        {
+            ClosePanelInternal(panelType);
+            _currentOpenPanelType = default(MainPanelType); // 기본값으로 리셋
+            Debug.Log($"[MainUiManager] Panel {panelType} toggled off (closed).");
+            return;
+        }
+
+        // 다른 패널이 열려있으면 닫기
+        if (_panelDict.ContainsKey(_currentOpenPanelType) && _currentOpenPanelType != panelType)
         {
             ClosePanelInternal(_currentOpenPanelType);
         }
 
-        panel.OnOpen(_gameManager ,_dataManager, this);
+        // 새 패널 열기
+        panel.OnOpen(_gameManager, _dataManager, this);
         _currentOpenPanelType = panelType;
         Debug.Log($"[MainUiManager] Panel {panelType} opened.");
     }

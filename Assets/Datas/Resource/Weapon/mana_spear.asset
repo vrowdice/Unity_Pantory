@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: mana_spear
   displayName: Mana Spear
-  minValue: 1300
-  maxValue: 1850
-  baseValue: 1500
+  baseValue: 10000
   marketSensitivity: 0.16
   meanReversionStrength: 0.72
   maxDailySwing: 0.009

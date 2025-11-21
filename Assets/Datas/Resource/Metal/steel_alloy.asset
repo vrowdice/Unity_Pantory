@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_alloy
   displayName: Steel Alloy
-  baseValue: 150
+  baseValue: 500
   marketSensitivity: 0.2
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

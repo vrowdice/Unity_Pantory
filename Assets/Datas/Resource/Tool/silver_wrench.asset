@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: silver_wrench
   displayName: Silver Wrench
-  minValue: 220
-  maxValue: 320
-  baseValue: 260
+  baseValue: 750
   marketSensitivity: 0.22
   meanReversionStrength: 0.62
   maxDailySwing: 0.01

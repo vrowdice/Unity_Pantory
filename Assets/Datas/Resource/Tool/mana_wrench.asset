@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: mana_wrench
   displayName: Mana Wrench
-  minValue: 450
-  maxValue: 620
-  baseValue: 520
+  baseValue: 10000
   marketSensitivity: 0.16
   meanReversionStrength: 0.7
   maxDailySwing: 0.009

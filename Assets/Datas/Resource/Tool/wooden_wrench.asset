@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: wooden_wrench
   displayName: Wooden Wrench
-  minValue: 150
-  maxValue: 230
-  baseValue: 180
+  baseValue: 250
   marketSensitivity: 0.2
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

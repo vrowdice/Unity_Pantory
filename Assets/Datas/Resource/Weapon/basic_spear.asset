@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_spear
   displayName: Basic Spear
-  minValue: 260
-  maxValue: 400
-  baseValue: 320
+  baseValue: 650
   marketSensitivity: 0.24
   meanReversionStrength: 0.6
   maxDailySwing: 0.014
