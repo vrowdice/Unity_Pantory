@@ -110,7 +110,7 @@ public class MarketTraderBtn : MonoBehaviour
                     }
                 }
 
-                indicator = $"#{playerRank} Wealth {playerWealth:N0} [Player]";
+                indicator = $"#{playerRank} Wealth {ReplaceUtils.FormatNumber(playerWealth)} [Player]";
                 color = Color.yellow; // 플레이어는 노란색으로 표시
             }
             else
@@ -136,12 +136,12 @@ public class MarketTraderBtn : MonoBehaviour
                     : changePercent < 0f ? $"{changePercent:F1}%" 
                     : "0%";
                 
-                indicator = $"#{rank} Wealth {wealth:N0} ({changeText}) [{healthStatus}]";
+                indicator = $"#{rank} Wealth {ReplaceUtils.FormatNumber((long)wealth)} ({changeText}) [{healthStatus}]";
                 color = GetWealthChangeColor(wealth, previousWealth);
             }
             else if (wealth > 0f)
             {
-                indicator = $"Wealth {wealth:N0} [{healthStatus}]";
+                indicator = $"Wealth {ReplaceUtils.FormatNumber((long)wealth)} [{healthStatus}]";
                 color = GetWealthChangeColor(wealth, previousWealth);
             }
             else
@@ -176,31 +176,14 @@ public class MarketTraderBtn : MonoBehaviour
 
     private Color GetWealthChangeColor(float currentWealth, float previousWealth)
     {
-        // 전일 대비 증감에 따른 색상
-        if (previousWealth <= 0f)
-        {
-            // 전일 데이터가 없으면 흰색
-            return Color.white;
-        }
-
         VisualManager visualManager = VisualManager.Instance;
-        float change = currentWealth - previousWealth;
+        if (visualManager != null)
+        {
+            return visualManager.GetWealthChangeColor(currentWealth, previousWealth);
+        }
         
-        if (change > 0f)
-        {
-            // 증가 → 흑자 색상
-            return visualManager != null ? visualManager.ProfitColor : Color.blue;
-        }
-        else if (change < 0f)
-        {
-            // 감소 → 적자 색상
-            return visualManager != null ? visualManager.LossColor : Color.red;
-        }
-        else
-        {
-            // 변화 없음 → 흰색
-            return Color.white;
-        }
+        // VisualManager가 없을 경우 기본값 반환
+        return Color.white;
     }
 }
 

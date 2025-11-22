@@ -39,7 +39,7 @@ public class MarketResourceBtn : MonoBehaviour
         }
 
         var resourceState = _resourceEntry.resourceState;
-        string currentPriceText = resourceState.currentValue.ToString("N0");
+        string currentPriceText = ReplaceUtils.FormatNumber((long)resourceState.currentValue);
         string deltaText = resourceState.priceChangeRate.ToString("+0.##;-0.##;0");
 
         _changeValueText.text = $"{currentPriceText} ({deltaText})";
@@ -49,17 +49,12 @@ public class MarketResourceBtn : MonoBehaviour
     private Color GetDeltaColor(float delta)
     {
         VisualManager visualManager = VisualManager.Instance;
+        if (visualManager != null)
+        {
+            return visualManager.GetDeltaColor(delta);
+        }
         
-        if (delta > 0f)
-        {
-            return visualManager != null ? visualManager.ProfitColor : Color.blue;
-        }
-
-        if (delta < 0f)
-        {
-            return visualManager != null ? visualManager.LossColor : Color.red;
-        }
-
+        // VisualManager가 없을 경우 기본값 반환
         return Color.white;
     }
 }

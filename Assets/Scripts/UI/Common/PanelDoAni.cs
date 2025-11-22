@@ -22,15 +22,22 @@ public class PanelDoAni : MonoBehaviour
     [SerializeField] private bool playOnEnable;
     [SerializeField] private bool isOpen = true;
 
+    /// <summary>
+    /// 현재 패널이 열려있는지 반환합니다 (목표 상태 기준).
+    /// </summary>
+    public bool IsOpen => _targetIsOpen;
+
     private RectTransform _target;
     private Vector2 _openedAnchoredPos;
     private bool _hasOpenedAnchoredPos;
     private Tweener _activeTween;
+    private bool _targetIsOpen; // 목표 상태 (애니메이션 완료 후 상태)
 
     private void Awake()
     {
         _target = GetComponent<RectTransform>();
         CacheOpenedPosition(force: true);
+        _targetIsOpen = isOpen;
     }
 
     private void OnEnable()
@@ -44,29 +51,89 @@ public class PanelDoAni : MonoBehaviour
     [ContextMenu("Toggle Panel")]
     public void TogglePanel()
     {
-        if (isOpen)
+        // 목표 상태를 반전시켜서 애니메이션 시작
+        _targetIsOpen = !_targetIsOpen;
+        
+        // 진행 중인 애니메이션 즉시 취소
+        if (_activeTween != null && _activeTween.IsActive())
         {
-            ClosePanel();
+            _activeTween.Kill();
+        }
+        _activeTween = null;
+        
+        if (_targetIsOpen)
+        {
+            OpenPanelInternal();
         }
         else
         {
-            OpenPanel();
+            ClosePanelInternal();
         }
     }
 
     [ContextMenu("Play Close Animation")]
     public void ClosePanel(Action onComplete = null)
     {
-        AnimateTo(GetOffScreenPosition(), onComplete);
-        isOpen = false;
+        if (_target == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        // 목표 상태 설정
+        _targetIsOpen = false;
+        
+        // 진행 중인 애니메이션 즉시 취소
+        if (_activeTween != null && _activeTween.IsActive())
+        {
+            _activeTween.Kill();
+        }
+        _activeTween = null;
+        
+        ClosePanelInternal(onComplete);
     }
 
     [ContextMenu("Play Open Animation")]
     public void OpenPanel(Action onComplete = null)
     {
+        if (_target == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
         EnsureOpenedPositionCached();
-        AnimateTo(_openedAnchoredPos, onComplete);
-        isOpen = true;
+        
+        // 목표 상태 설정
+        _targetIsOpen = true;
+        
+        // 진행 중인 애니메이션 즉시 취소
+        if (_activeTween != null && _activeTween.IsActive())
+        {
+            _activeTween.Kill();
+        }
+        _activeTween = null;
+        
+        OpenPanelInternal(onComplete);
+    }
+
+    private void ClosePanelInternal(Action onComplete = null)
+    {
+        AnimateTo(GetOffScreenPosition(), () =>
+        {
+            isOpen = false;
+            onComplete?.Invoke();
+        });
+    }
+
+    private void OpenPanelInternal(Action onComplete = null)
+    {
+        EnsureOpenedPositionCached();
+        AnimateTo(_openedAnchoredPos, () =>
+        {
+            isOpen = true;
+            onComplete?.Invoke();
+        });
     }
 
     public void SnapToClosedPosition()
@@ -76,8 +143,15 @@ public class PanelDoAni : MonoBehaviour
             return;
         }
 
+        if (_activeTween != null && _activeTween.IsActive())
+        {
+            _activeTween.Kill();
+        }
+        _activeTween = null;
+        
         _target.anchoredPosition = GetOffScreenPosition();
         isOpen = false;
+        _targetIsOpen = false;
     }
 
     private void AnimateTo(Vector2 destination, Action onComplete = null)
@@ -88,13 +162,18 @@ public class PanelDoAni : MonoBehaviour
             return;
         }
 
-        _activeTween?.Kill();
+        // 현재 위치에서 목표 위치로 애니메이션 시작 (호출부에서 이미 Kill 처리됨)
         _activeTween = _target.DOAnchorPos(destination, duration)
             .SetEase(ease)
-            .SetUpdate(true)
+            .SetUpdate(UpdateType.Normal) // DOTween 설정과 일치
             .OnComplete(() =>
             {
+                _activeTween = null;
                 onComplete?.Invoke();
+            })
+            .OnKill(() =>
+            {
+                _activeTween = null;
             });
     }
 
@@ -164,7 +243,10 @@ public class PanelDoAni : MonoBehaviour
 
     private void OnDisable()
     {
-        _activeTween?.Kill();
+        if (_activeTween != null && _activeTween.IsActive())
+        {
+            _activeTween.Kill();
+        }
         _activeTween = null;
     }
 }

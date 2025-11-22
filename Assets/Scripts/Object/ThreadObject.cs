@@ -259,7 +259,7 @@ public class ThreadObject : MonoBehaviour
         _threadTitleRect.sizeDelta = new Vector2(200f, 60f);
 
         _threadTitleLabel = titleObj.AddComponent<TextMeshProUGUI>();
-        _threadTitleLabel.fontSize = 24f;
+        _threadTitleLabel.fontSize = 20f;
         _threadTitleLabel.alignment = TextAlignmentOptions.Center;
         _threadTitleLabel.color = Color.black;
         _threadTitleLabel.textWrappingMode = TextWrappingModes.NoWrap;

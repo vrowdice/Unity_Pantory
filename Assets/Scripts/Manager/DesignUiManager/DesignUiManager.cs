@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public partial class DesignUiManager : MonoBehaviour, IUIManager
 {
-        [Header("UI Prefabs & Contents")]
+    [Header("UI Prefabs & Contents")]
     [SerializeField] private GameObject _buildingTypeBtnPrefab;
     [SerializeField] private Transform _buildingTypeBtnContent;
     [SerializeField] private GameObject _buildingBtnPrefab;
