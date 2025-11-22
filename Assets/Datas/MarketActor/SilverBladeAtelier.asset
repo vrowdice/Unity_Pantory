@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: SilverBladeAtelier
+  m_Name: PrecisionWeaponsWorkshop
   m_EditorClassIdentifier: 
-  id: silver_blade_atelier
-  displayName: Silver Blade Atelier
+  id: precision_weapons_workshop
+  displayName: Precision Weapons Workshop
   portrait: {fileID: 0}
-  description: Boutique smiths famed for mirror-bright silver blades, sourcing only the purest ingots and seasoned hardwood.
+  description: Boutique workshop famed for precision-crafted weapons, sourcing only the purest
+    metals and fine wood.
   archetype: 2
   roles: 3
   scale: 1
@@ -24,6 +25,7 @@ MonoBehaviour:
   - 1
   - 2
   - 4
+  - 7
   providerReassignmentDays: 7
   consumerReassignmentDays: 7
   providerSlotOverride: -1

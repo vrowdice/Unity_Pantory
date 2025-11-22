@@ -10,18 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: CitadelArmory
+  m_Name: MilitaryArmory
   m_EditorClassIdentifier: 
-  id: citadel_armory
-  displayName: Citadel Armory
+  id: military_armory
+  displayName: Military Armory
   portrait: {fileID: 0}
-  description: The capital’s royal workshop, renowned for disciplined output of military-grade blades and armor for fortified garrisons.
+  description: The capital's military workshop, renowned for disciplined output of military-grade
+    weapons and equipment for armed forces.
   archetype: 0
   roles: 1
   scale: 1
   useDynamicResourceAllocation: 1
   preferredResourceTypes:
   - 4
+  - 7
+  - 9
   providerReassignmentDays: 8
   consumerReassignmentDays: 8
   providerSlotOverride: -1

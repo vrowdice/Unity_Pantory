@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: PrecisionComponentsLtd
+  m_EditorClassIdentifier: 
+  id: precision_components_ltd
+  displayName: Precision Components Ltd
+  portrait: {fileID: 0}
+  description: A specialized manufacturer producing precision gears, bolts, and mechanical
+    components for industrial machinery and vehicles.
+  archetype: 0
+  roles: 3
+  scale: 1
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 1
+  - 7
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
+  providerProfile:
+    outputs: []
+    upkeep:
+    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+      count: 4
+    - resource: {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
+      count: 2
+    basePriceModifier: 1.08
+    productionCooldownRange: {x: 9, y: 17}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 2
+  consumerProfile:
+    budgetRange:
+      min: 1800
+      max: 3000
+    desiredResources: []
+    patienceSeconds: 6480
+    satisfactionDecay: 0.08
+    allowBulkBuying: 1
+    persistentOrders: 1
+

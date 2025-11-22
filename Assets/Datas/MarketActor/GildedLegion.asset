@@ -10,18 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: GildedLegion
+  m_Name: EliteSecurityForces
   m_EditorClassIdentifier: 
-  id: gilded_legion
-  displayName: Gilded Legion
+  id: elite_security_forces
+  displayName: Elite Security Forces
   portrait: {fileID: 0}
-  description: A mercenary host with lavish tastes, constantly requisitioning elite weaponry and armor for its gilded cohorts.
+  description: A private military contractor with high standards, constantly requisitioning
+    elite weaponry and vehicles for its security operations.
   archetype: 2
   roles: 2
   scale: 2
   useDynamicResourceAllocation: 1
   preferredResourceTypes:
   - 4
+  - 9
   providerReassignmentDays: 8
   consumerReassignmentDays: 4
   providerSlotOverride: -1

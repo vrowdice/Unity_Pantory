@@ -685,9 +685,15 @@ public class MarketDataHandler
         // 수요 증가
         resourceEntry.resourceState.lastDemand += amount;
 
-        // 즉시 가격 조정 (선택적 - 작은 영향만)
-        float impactRate = _marketSettings != null ? _marketSettings.playerDemandImpact : 0.1f;
-        float demandImpact = amount * impactRate;
+        // 즉시 가격 조정 (시장 전체 공급/수요에 비해 상대적으로 작은 영향)
+        float impactRate = _marketSettings != null ? _marketSettings.playerDemandImpact : 0.02f;
+        float totalMarketSupply = resourceEntry.resourceState.lastSupply;
+        float totalMarketDemand = resourceEntry.resourceState.lastDemand;
+        float marketVolume = Mathf.Max(1f, totalMarketSupply + totalMarketDemand);
+        
+        // 플레이어의 영향력을 시장 규모에 비례하여 감소
+        float normalizedImpact = amount / marketVolume;
+        float demandImpact = normalizedImpact * impactRate * 100f; // 시장 규모에 비례하여 영향력 감소
         float currentPrice = resourceEntry.resourceState.currentValue;
         float priceAdjustment = demandImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
@@ -707,9 +713,15 @@ public class MarketDataHandler
         // 공급 증가
         resourceEntry.resourceState.lastSupply += amount;
 
-        // 즉시 가격 조정 (선택적 - 작은 영향만)
-        float impactRate = _marketSettings != null ? _marketSettings.playerSupplyImpact : 0.1f;
-        float supplyImpact = amount * impactRate;
+        // 즉시 가격 조정 (시장 전체 공급/수요에 비해 상대적으로 작은 영향)
+        float impactRate = _marketSettings != null ? _marketSettings.playerSupplyImpact : 0.02f;
+        float totalMarketSupply = resourceEntry.resourceState.lastSupply;
+        float totalMarketDemand = resourceEntry.resourceState.lastDemand;
+        float marketVolume = Mathf.Max(1f, totalMarketSupply + totalMarketDemand);
+        
+        // 플레이어의 영향력을 시장 규모에 비례하여 감소
+        float normalizedImpact = amount / marketVolume;
+        float supplyImpact = normalizedImpact * impactRate * 100f; // 시장 규모에 비례하여 영향력 감소
         float currentPrice = resourceEntry.resourceState.currentValue;
         float priceAdjustment = -supplyImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));

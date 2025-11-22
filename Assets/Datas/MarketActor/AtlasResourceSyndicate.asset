@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: AtlasResourceSyndicate
+  m_Name: GlobalResourceSyndicate
   m_EditorClassIdentifier: 
-  id: atlas_resource_syndicate
-  displayName: Atlas Resource Syndicate
+  id: global_resource_syndicate
+  displayName: Global Resource Syndicate
   portrait: {fileID: 0}
-  description: Empire-spanning traders that consolidate precious metals, fine lumber, and enchanted ingots for royal contracts.
+  description: Empire-spanning traders that consolidate precious metals, fine lumber, and
+    refined ingots for government and corporate contracts.
   archetype: 2
   roles: 3
   scale: 2
@@ -25,6 +26,9 @@ MonoBehaviour:
   - 1
   - 2
   - 3
+  - 5
+  - 6
+  - 7
   providerReassignmentDays: 5
   consumerReassignmentDays: 5
   providerSlotOverride: -1

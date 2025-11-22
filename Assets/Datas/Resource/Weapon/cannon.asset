@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.2
   type: 4
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: ba1b4900d39c28547a83b6473e32527d, type: 3}
+  icon: {fileID: 21300000, guid: 34af123674ec0b64286ed185f3649ddb, type: 3}
   description: A large-caliber artillery piece designed for long-range bombardment. The
     primary armament for heavy military vehicles and fortifications.
   requirements:

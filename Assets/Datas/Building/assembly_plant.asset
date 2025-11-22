@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: assembly_plant
   m_EditorClassIdentifier: 
   id: assembly_plant
-  displayName: Assembly Plant
+  displayName: General Assembly Plant
   buildingType: 1
   icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  description: An advanced manufacturing facility equipped for crafting tools and
-    weapons. Skilled workers transform refined materials into practical equipment.
-  baseCost: 300
-  baseMaintenanceCost: 15
+  description: A versatile manufacturing facility for basic assembly work. Can produce
+    tools and weapons, though specialized factories are more efficient.
+  baseCost: 280
+  baseMaintenanceCost: 14
   size: {x: 2, y: 2}
   allowedResourceTypes: 0300000004000000
   inputPosition: {x: -1, y: 1}

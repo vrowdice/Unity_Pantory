@@ -91,38 +91,38 @@ public class InitialMarketData : ScriptableObject
 
     [Header("Actor Production/Consumption Ranges")]
     [Tooltip("Base production range for raw resources (min, max)")]
-    public Vector2 rawProductionRange = new Vector2(250f, 450f);
+    public Vector2 rawProductionRange = new Vector2(800f, 1500f);
     [Tooltip("Base production range for metal resources (min, max)")]
-    public Vector2 metalProductionRange = new Vector2(180f, 350f);
+    public Vector2 metalProductionRange = new Vector2(600f, 1200f);
     [Tooltip("Base production range for wood resources (min, max)")]
-    public Vector2 woodProductionRange = new Vector2(200f, 400f);
+    public Vector2 woodProductionRange = new Vector2(700f, 1300f);
     [Tooltip("Base production range for tool resources (min, max)")]
-    public Vector2 toolProductionRange = new Vector2(35f, 100f);
+    public Vector2 toolProductionRange = new Vector2(150f, 350f);
     [Tooltip("Base production range for weapon resources (min, max)")]
-    public Vector2 weaponProductionRange = new Vector2(25f, 75f);
+    public Vector2 weaponProductionRange = new Vector2(100f, 300f);
     [Tooltip("Base production range for other resources (min, max)")]
-    public Vector2 otherProductionRange = new Vector2(100f, 220f);
+    public Vector2 otherProductionRange = new Vector2(400f, 900f);
 
     [Header("Actor Scale Multipliers")]
     [Tooltip("Production/consumption multiplier for Small scale actors")]
-    public float smallScaleMultiplier = 0.6f;
+    public float smallScaleMultiplier = 1.2f;
     [Tooltip("Production/consumption multiplier for Large scale actors")]
-    public float largeScaleMultiplier = 1.6f;
-    [Tooltip("Production/consumption multiplier for Medium scale actors (default: 1.0)")]
-    public float mediumScaleMultiplier = 1f;
+    public float largeScaleMultiplier = 3.0f;
+    [Tooltip("Production/consumption multiplier for Medium scale actors (default: 2.0)")]
+    public float mediumScaleMultiplier = 2.0f;
 
     [Header("Consumer Settings")]
-    [Range(0f, 1f)]
-    [Tooltip("Consumer consumption multiplier relative to production (0.85 = 85% of production)")]
-    public float consumerConsumptionMultiplier = 0.85f;
+    [Range(0f, 2f)]
+    [Tooltip("Consumer consumption multiplier relative to production (1.2 = 120% of production, creates demand)")]
+    public float consumerConsumptionMultiplier = 1.2f;
 
     [Header("Consumer Budget Ranges")]
     [Tooltip("Budget range for Small scale consumers (min, max)")]
-    public Vector2 smallConsumerBudget = new Vector2(600f, 1200f);
+    public Vector2 smallConsumerBudget = new Vector2(1200f, 2400f);
     [Tooltip("Budget range for Medium scale consumers (min, max)")]
-    public Vector2 mediumConsumerBudget = new Vector2(1200f, 2250f);
+    public Vector2 mediumConsumerBudget = new Vector2(2400f, 4500f);
     [Tooltip("Budget range for Large scale consumers (min, max)")]
-    public Vector2 largeConsumerBudget = new Vector2(2700f, 4800f);
+    public Vector2 largeConsumerBudget = new Vector2(5400f, 9600f);
 
     /// <summary>
     /// Applies initial market data to MarketDataHandler.
@@ -154,7 +154,7 @@ public class InitialMarketData : ScriptableObject
         budgetShortageThreshold = Mathf.Clamp01(budgetShortageThreshold);
         minPriceSignal = Mathf.Clamp01(minPriceSignal);
         noBatchSellingModifier = Mathf.Clamp01(noBatchSellingModifier);
-        consumerConsumptionMultiplier = Mathf.Clamp01(consumerConsumptionMultiplier);
+        consumerConsumptionMultiplier = Mathf.Clamp(consumerConsumptionMultiplier, 0f, 2f);
         
         // Ensure production ranges are valid (min <= max)
         if (rawProductionRange.x > rawProductionRange.y) rawProductionRange = new Vector2(rawProductionRange.y, rawProductionRange.x);

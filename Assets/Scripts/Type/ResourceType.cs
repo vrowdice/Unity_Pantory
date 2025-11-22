@@ -2,10 +2,13 @@
 public enum ResourceType
 {
     raw,        // 0 - 원자재
-    metal,      // 1 - 금속 (Metal, Component, Electronics, Vehicle도 현재 type: 1 사용)
+    metal,      // 1 - 금속
     wood,       // 2 - 나무
     tool,       // 3 - 도구
     weapon,     // 4 - 무기
     furniture,  // 5 - 가구
     clothing,   // 6 - 옷
+    component,  // 7 - 부품
+    electronics,// 8 - 전자제품
+    vehicle,    // 9 - 차량
 }

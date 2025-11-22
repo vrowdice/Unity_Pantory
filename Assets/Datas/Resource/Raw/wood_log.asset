@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.9
   type: 0
   nextStage: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-  icon: {fileID: 21300000, guid: 4f84b3f03165ded4e9a5f7c502138450, type: 3}
+  icon: {fileID: 21300000, guid: 06fc44997e2d55444930032664b749e8, type: 3}
   description: Freshly cut timber from the forest, still rough and unprocessed. The
     basic building block for countless creations.
   requirements: []

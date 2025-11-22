@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.4
   type: 4
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: ba1b4900d39c28547a83b6473e32527d, type: 3}
+  icon: {fileID: 21300000, guid: 61df1f787f2d10e499581fe139453aed, type: 3}
   description: A compact handgun designed for close-range combat. Portable and reliable,
     favored by law enforcement and civilians.
   requirements:

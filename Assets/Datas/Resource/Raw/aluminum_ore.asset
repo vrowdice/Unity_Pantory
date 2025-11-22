@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.65
   type: 0
   nextStage: {fileID: 11400000, guid: d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0, type: 2}
-  icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
+  icon: {fileID: 21300000, guid: 31ea3ce6dfcb5d04988666ef59c0331b, type: 3}
   description: A lightweight ore containing aluminum. Valued for its strength-to-weight
     ratio in modern construction.
   requirements: []

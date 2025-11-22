@@ -119,9 +119,9 @@ public static class MarketActorDynamicAllocator
         {
             Vector2 budgetRange = entry.data.scale switch
             {
-                MarketActorScale.Small => marketSettings != null ? marketSettings.smallConsumerBudget : new Vector2(600f, 1200f),
-                MarketActorScale.Large => marketSettings != null ? marketSettings.largeConsumerBudget : new Vector2(2700f, 4800f),
-                _ => marketSettings != null ? marketSettings.mediumConsumerBudget : new Vector2(1200f, 2250f)
+                MarketActorScale.Small => marketSettings != null ? marketSettings.smallConsumerBudget : new Vector2(1200f, 2400f),
+                MarketActorScale.Large => marketSettings != null ? marketSettings.largeConsumerBudget : new Vector2(5400f, 9600f),
+                _ => marketSettings != null ? marketSettings.mediumConsumerBudget : new Vector2(2400f, 4500f)
             };
             
             profile.budgetRange = new BudgetRange { min = budgetRange.x, max = budgetRange.y };
@@ -262,29 +262,32 @@ public static class MarketActorDynamicAllocator
     {
         float scaleMultiplier = scale switch
         {
-            MarketActorScale.Small => marketSettings != null ? marketSettings.smallScaleMultiplier : 0.6f,
-            MarketActorScale.Large => marketSettings != null ? marketSettings.largeScaleMultiplier : 1.6f,
-            _ => marketSettings != null ? marketSettings.mediumScaleMultiplier : 1f
+            MarketActorScale.Small => marketSettings != null ? marketSettings.smallScaleMultiplier : 1.2f,
+            MarketActorScale.Large => marketSettings != null ? marketSettings.largeScaleMultiplier : 3.0f,
+            _ => marketSettings != null ? marketSettings.mediumScaleMultiplier : 2.0f
         };
 
         Vector2 baseRangeVector = type switch
         {
-            ResourceType.raw => marketSettings != null ? marketSettings.rawProductionRange : new Vector2(250f, 450f),
-            ResourceType.metal => marketSettings != null ? marketSettings.metalProductionRange : new Vector2(180f, 350f),
-            ResourceType.wood => marketSettings != null ? marketSettings.woodProductionRange : new Vector2(200f, 400f),
-            ResourceType.tool => marketSettings != null ? marketSettings.toolProductionRange : new Vector2(35f, 100f),
-            ResourceType.weapon => marketSettings != null ? marketSettings.weaponProductionRange : new Vector2(25f, 75f),
-            ResourceType.furniture => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(15f, 40f),
-            ResourceType.clothing => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(20f, 50f),
-            _ => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(100f, 220f)
+            ResourceType.raw => marketSettings != null ? marketSettings.rawProductionRange : new Vector2(800f, 1500f),
+            ResourceType.metal => marketSettings != null ? marketSettings.metalProductionRange : new Vector2(600f, 1200f),
+            ResourceType.wood => marketSettings != null ? marketSettings.woodProductionRange : new Vector2(700f, 1300f),
+            ResourceType.tool => marketSettings != null ? marketSettings.toolProductionRange : new Vector2(150f, 350f),
+            ResourceType.weapon => marketSettings != null ? marketSettings.weaponProductionRange : new Vector2(100f, 300f),
+            ResourceType.furniture => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(80f, 200f),
+            ResourceType.clothing => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(100f, 250f),
+            ResourceType.component => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(150f, 350f),
+            ResourceType.electronics => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(100f, 280f),
+            ResourceType.vehicle => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(30f, 80f),
+            _ => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(400f, 900f)
         };
 
         (float min, float max) baseRange = (baseRangeVector.x, baseRangeVector.y);
 
         if (!forProvider)
         {
-            // Consumer 소비량 배율 적용
-            float consumerMultiplier = marketSettings != null ? marketSettings.consumerConsumptionMultiplier : 0.85f;
+            // Consumer 소비량 배율 적용 (소비량을 생산량보다 크게 설정하여 수요를 증가)
+            float consumerMultiplier = marketSettings != null ? marketSettings.consumerConsumptionMultiplier : 1.2f;
             baseRange.min *= consumerMultiplier;
             baseRange.max *= consumerMultiplier;
         }

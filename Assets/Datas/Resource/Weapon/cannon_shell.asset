@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.45
   type: 4
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: ba1b4900d39c28547a83b6473e32527d, type: 3}
+  icon: {fileID: 21300000, guid: 48989bb88d0da3b44ae90d5dd1eafe8c, type: 3}
   description: A large-caliber artillery shell for cannons. Contains a steel casing,
     high-explosive charge, and fuse mechanism. Devastating against fortifications.
   requirements:

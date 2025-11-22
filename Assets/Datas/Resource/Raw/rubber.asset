@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.75
   type: 0
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
+  icon: {fileID: 21300000, guid: 860e934b5e404b443a88fea11fccc787, type: 3}
   description: Natural rubber harvested from rubber trees. Essential for tires, seals,
     and flexible components.
   requirements: []

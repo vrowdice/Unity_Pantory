@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -101,14 +102,21 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
 
     void Update()
     {
-        if (string.IsNullOrEmpty(_currentThreadId))
+        // 배치 모드나 제거 모드가 활성화되어 있으면 스레드 ID 없이도 업데이트
+        bool canUpdate = !string.IsNullOrEmpty(_currentThreadId) || IsPlacementMode || IsRemovalMode;
+        
+        if (!canUpdate)
             return;
 
         _placementHandler?.Update();
-        _removalHandler?.Update(_currentThreadId);
+        
+        if (!string.IsNullOrEmpty(_currentThreadId))
+        {
+            _removalHandler?.Update(_currentThreadId);
+        }
 
-        // 일반 클릭 처리
-        if (!IsPlacementMode && !IsRemovalMode)
+        // 일반 클릭 처리 (스레드 ID 필요)
+        if (!IsPlacementMode && !IsRemovalMode && !string.IsNullOrEmpty(_currentThreadId))
         {
             HandleBuildingClick();
         }
@@ -192,18 +200,91 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         }
     }
 
+    /// <summary>
+    /// 스레드 ID가 없을 때 자동으로 설정합니다.
+    /// </summary>
+    public void EnsureThreadId()
+    {
+        if (!string.IsNullOrEmpty(_currentThreadId))
+            return;
+
+        // 1. GameManager에서 가져오기
+        if (_gameManager != null && !string.IsNullOrEmpty(_gameManager.CurrentThreadId))
+        {
+            _currentThreadId = _gameManager.CurrentThreadId;
+            Debug.Log($"[BuildingTileManager] Thread ID set from GameManager: {_currentThreadId}");
+            return;
+        }
+
+        // 2. DataManager에서 존재하는 첫 번째 스레드 사용
+        if (_dataManager != null && _dataManager.Thread != null)
+        {
+            var allThreads = _dataManager.Thread.GetAllThreads();
+            if (allThreads != null && allThreads.Count > 0)
+            {
+                _currentThreadId = allThreads.Keys.First();
+                Debug.Log($"[BuildingTileManager] Thread ID set from existing thread: {_currentThreadId}");
+                return;
+            }
+        }
+
+        // 3. 스레드가 없으면 기본 스레드 생성
+        if (_dataManager != null && _dataManager.Thread != null)
+        {
+            string defaultThreadId = "thread_main_line";
+            string defaultThreadName = "Main Line";
+            _dataManager.Thread.CreateThread(defaultThreadId, defaultThreadName);
+            _currentThreadId = defaultThreadId;
+            
+            if (_gameManager != null)
+            {
+                _gameManager.SetCurrentThreadId(defaultThreadId);
+            }
+            
+            Debug.Log($"[BuildingTileManager] Default thread created: {defaultThreadId}");
+        }
+        else
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot ensure thread ID: DataManager or Thread handler is null.");
+        }
+    }
+
     private void LoadInitialThreadState()
     {
-        if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null)
+        if (string.IsNullOrEmpty(_currentThreadId))
+        {
+            // 스레드 ID가 없으면 건물 로드하지 않음 (정상적인 상황)
+            _tempBuildingStates = new List<BuildingState>();
             return;
+        }
+
+        if (_dataManager == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot load initial thread state: DataManager is null.");
+            _tempBuildingStates = new List<BuildingState>();
+            return;
+        }
+
+        if (_dataManager.Thread == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot load initial thread state: Thread handler is null.");
+            _tempBuildingStates = new List<BuildingState>();
+            return;
+        }
 
         var buildingStates = _dataManager.Thread.GetBuildingStates(_currentThreadId);
         if (buildingStates != null)
         {
             _tempBuildingStates = new List<BuildingState>(buildingStates);
+            RefreshBuildings();
+            Debug.Log($"[BuildingTileManager] Initial thread data loaded and refreshed: {_currentThreadId} ({_tempBuildingStates.Count} buildings)");
         }
-        RefreshBuildings();
-        Debug.Log($"[BuildingTileManager] Initial thread data loaded and refreshed: {_currentThreadId} ({_tempBuildingStates.Count} buildings)");
+        else
+        {
+            // 스레드가 존재하지 않으면 빈 리스트로 초기화 (새 스레드)
+            _tempBuildingStates = new List<BuildingState>();
+            Debug.Log($"[BuildingTileManager] Thread '{_currentThreadId}' not found. Starting with empty building list.");
+        }
     }
 
     private void CreateSharedProductionIconCanvas()
@@ -290,7 +371,12 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> 건물 배치 모드를 시작합니다. </summary>
     public void StartPlacementMode(BuildingData buildingData)
     {
-        if (string.IsNullOrEmpty(_currentThreadId)) return;
+        // 스레드 ID가 없으면 자동으로 설정 시도
+        if (string.IsNullOrEmpty(_currentThreadId))
+        {
+            EnsureThreadId();
+        }
+        
         if (IsRemovalMode) _removalHandler?.CancelRemoval();
         _placementHandler?.StartPlacement(buildingData);
     }
@@ -337,6 +423,16 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     {
         if (string.IsNullOrEmpty(threadId)) return;
         if (_currentThreadId == threadId) return;
+
+        // DataManager가 없으면 스레드 ID만 설정하고 나중에 로드
+        if (_dataManager == null || _dataManager.Thread == null)
+        {
+            _currentThreadId = threadId;
+            _isTempDataDirty = false;
+            _tempBuildingStates.Clear();
+            Debug.LogWarning($"[BuildingTileManager] SetCurrentThread called but DataManager/Thread is null. Thread ID set to: {threadId}");
+            return;
+        }
 
         // 이전 임시 데이터 버림
         if (_isTempDataDirty) Debug.Log($"[BuildingTileManager] Discarding temporary building data for thread: {_currentThreadId}");
@@ -423,7 +519,18 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> 현재 스레드의 건물 상태를 반환합니다 (임시 저장소 우선). </summary>
     public List<BuildingState> GetCurrentBuildingStates()
     {
+        if (string.IsNullOrEmpty(_currentThreadId))
+        {
+            return _tempBuildingStates ?? new List<BuildingState>();
+        }
+
         if (_isTempDataDirty && _tempBuildingStates != null) return _tempBuildingStates;
+        
+        if (_dataManager?.Thread == null)
+        {
+            return _tempBuildingStates ?? new List<BuildingState>();
+        }
+
         return _dataManager.Thread.GetBuildingStates(_currentThreadId) ?? new List<BuildingState>();
     }
 
@@ -457,7 +564,17 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> Thread의 건물들을 다시 로드하여 표시합니다. </summary>
     public void RefreshBuildings()
     {
-        if (_gridGenHandler == null || _dataManager == null) return;
+        if (_gridGenHandler == null || _dataManager == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot refresh buildings: GridGenHandler or DataManager is null.");
+            return;
+        }
+
+        if (_dataManager.Building == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot refresh buildings: Building handler is null.");
+            return;
+        }
 
         _gridGenHandler.ClearAllOccupiedTiles();
         _gridGenHandler.ClearAllPlacedBuildings();
@@ -468,12 +585,22 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         {
             foreach (var buildingState in buildingStates)
             {
+                if (buildingState == null || string.IsNullOrEmpty(buildingState.buildingId))
+                {
+                    Debug.LogWarning("[BuildingTileManager] Invalid building state found. Skipping.");
+                    continue;
+                }
+
                 BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
                     _gridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
                     Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
                     _gridGenHandler.MarkTilesAsOccupied(new Vector2Int(buildingState.positionX, buildingState.positionY), rotatedSize);
+                }
+                else
+                {
+                    Debug.LogWarning($"[BuildingTileManager] Building data not found for ID: {buildingState.buildingId}. This building may have been removed.");
                 }
             }
         }

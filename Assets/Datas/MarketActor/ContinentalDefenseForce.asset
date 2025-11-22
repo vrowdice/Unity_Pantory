@@ -22,6 +22,8 @@ MonoBehaviour:
   preferredResourceTypes:
   - 3
   - 4
+  - 7
+  - 9
   providerReassignmentDays: 9
   consumerReassignmentDays: 5
   providerSlotOverride: -1

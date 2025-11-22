@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.6
   type: 3
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
+  icon: {fileID: 21300000, guid: 8ad0d77bfa414d14dbe8263df37b866a, type: 3}
   description: A serrated blade tool for cutting wood and metal. Essential for carpentry
     and construction work.
   requirements:

@@ -24,6 +24,8 @@ MonoBehaviour:
   - 1
   - 2
   - 3
+  - 7
+  - 8
   providerReassignmentDays: 6
   consumerReassignmentDays: 6
   providerSlotOverride: -1

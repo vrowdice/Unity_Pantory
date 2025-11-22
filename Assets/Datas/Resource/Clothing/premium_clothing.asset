@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.45
   type: 6
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: ba1b4900d39c28547a83b6473e32527d, type: 3}
+  icon: {fileID: 21300000, guid: 1c784837bcae5a346bcc98eac3fac7db, type: 3}
   description: High-quality clothing crafted from fine materials with exquisite tailoring.
     A mark of elegance and sophistication.
   requirements:

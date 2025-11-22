@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: FashionRetailChain
+  m_EditorClassIdentifier: 
+  id: fashion_retail_chain
+  displayName: Fashion Retail Chain
+  portrait: {fileID: 0}
+  description: A nationwide clothing retailer offering both basic and premium fashion
+    for everyday consumers and luxury markets.
+  archetype: 1
+  roles: 2
+  scale: 2
+  useDynamicResourceAllocation: 1
+  preferredResourceTypes:
+  - 6
+  providerReassignmentDays: 7
+  consumerReassignmentDays: 5
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
+  providerProfile:
+    outputs: []
+    upkeep: []
+    basePriceModifier: 1
+    productionCooldownRange: {x: 8, y: 16}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 2
+  consumerProfile:
+    budgetRange:
+      min: 1200
+      max: 2200
+    desiredResources: []
+    patienceSeconds: 5400
+    satisfactionDecay: 0.11
+    allowBulkBuying: 1
+    persistentOrders: 1
+

@@ -20,9 +20,9 @@ MonoBehaviour:
   maxDailySwing: 0.009
   scarcityWeight: 0.85
   rarity: 0.3
-  type: 1
+  type: 9
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
+  icon: {fileID: 21300000, guid: b14c3f51cf7290a4c91149bf1a5491f6, type: 3}
   description: A modern automobile powered by an internal combustion engine. The symbol
     of personal transportation and industrial progress.
   requirements:

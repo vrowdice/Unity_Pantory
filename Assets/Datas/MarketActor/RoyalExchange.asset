@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: RoyalExchange
+  m_Name: NationalExchange
   m_EditorClassIdentifier: 
-  id: royal_exchange
-  displayName: Royal Exchange
+  id: national_exchange
+  displayName: National Exchange
   portrait: {fileID: 0}
-  description: Crown-sanctioned brokers who balance the capital’s supply of lumber, ore, and luxury goods through tightly regulated auctions.
+  description: Government-sanctioned brokers who balance the capital's supply of lumber,
+    ore, and luxury goods through tightly regulated auctions.
   archetype: 2
   roles: 3
   scale: 2
@@ -24,6 +25,8 @@ MonoBehaviour:
   - 0
   - 1
   - 2
+  - 5
+  - 6
   providerReassignmentDays: 6
   consumerReassignmentDays: 6
   providerSlotOverride: -1

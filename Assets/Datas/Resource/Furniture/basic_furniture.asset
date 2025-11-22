@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.65
   type: 5
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 384c0fa6487076147a63c5daf3c7fc84, type: 3}
+  icon: {fileID: 21300000, guid: 07c8862f23ae2ae48ac69ca34ebc00e1, type: 3}
   description: Simple, functional furniture crafted from fine wood. Practical and
     affordable, suitable for everyday use.
   requirements:

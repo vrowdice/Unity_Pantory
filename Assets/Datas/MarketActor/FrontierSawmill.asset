@@ -15,7 +15,8 @@ MonoBehaviour:
   id: frontier_sawmill
   displayName: Frontier Sawmill Cooperative
   portrait: {fileID: 0}
-  description: Pioneering lumber camps that flood the market with processed timber while buying raw logs in bulk from settlers.
+  description: Pioneering lumber mills that flood the market with processed timber and
+    furniture while buying raw logs in bulk from suppliers.
   archetype: 1
   roles: 3
   scale: 1
@@ -23,6 +24,7 @@ MonoBehaviour:
   preferredResourceTypes:
   - 0
   - 2
+  - 5
   providerReassignmentDays: 9
   consumerReassignmentDays: 6
   providerSlotOverride: -1

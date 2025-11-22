@@ -22,7 +22,7 @@ MonoBehaviour:
   rarity: 0.4
   type: 3
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
+  icon: {fileID: 21300000, guid: b551925b3cd04884481351e9f89b409b, type: 3}
   description: A mechanical drill powered by a motor. Essential for creating precise
     holes in metal, wood, and concrete.
   requirements:

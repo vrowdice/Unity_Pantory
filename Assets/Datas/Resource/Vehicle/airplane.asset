@@ -20,9 +20,9 @@ MonoBehaviour:
   maxDailySwing: 0.008
   scarcityWeight: 0.95
   rarity: 0.2
-  type: 1
+  type: 9
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
+  icon: {fileID: 21300000, guid: e668180682ff5c54c88a6f708b89527d, type: 3}
   description: A sophisticated aircraft capable of flight. Represents the pinnacle of
     engineering and modern transportation technology.
   requirements:
