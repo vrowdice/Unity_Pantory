@@ -26,6 +26,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
     [SerializeField] private Transform _quickMovePanelContent;
+    [SerializeField] private PanelDoAni _quickMovePanelAni;
 
     [Header("Resouce ScrollView")]
     [SerializeField] private GameObject _mainScrollViewResouceBtn;
@@ -76,6 +77,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         if (_dataManager != null)
         {
             _dataManager.OnResourceChanged += UpdateAllMainText;
+            _dataManager.OnCreditChanged += UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged += OnThreadPlacementChanged;
 
             _dataManager.Time.OnDayChanged += OnDayChanged;
@@ -127,8 +129,6 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         UpdateCreditText(_creditText);
         UpdateDeltaCreditText(_deltaCreditText);
         UpdateResourceSummary();
-
-        Debug.Log("[MainUiManager] All main text updated.");
     }
 
     private void OnDestroy()
@@ -136,6 +136,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         if (_dataManager != null)
         {
             _dataManager.OnResourceChanged -= UpdateAllMainText;
+            _dataManager.OnCreditChanged -= UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged -= OnThreadPlacementChanged;
 
             _dataManager.Time.OnDayChanged -= OnDayChanged;
@@ -172,7 +173,6 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         }
 
         long deltaCredit = _dataManager.CalculateDailyCreditDelta();
-        Debug.Log($"[MainUiManager] Daily credit delta calculated: {deltaCredit}");
         
         if (deltaCredit == 0)
         {
@@ -193,8 +193,6 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         {
             textComponent.color = visualManager != null ? visualManager.ProfitColor : Color.blue; // 흑자
         }
-        
-        Debug.Log($"[MainUiManager] Delta credit text updated: {textComponent.text}, color: {textComponent.color}");
     }
 
     private string FormatResourceAmount(long amount)

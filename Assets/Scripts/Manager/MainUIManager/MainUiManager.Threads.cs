@@ -153,6 +153,8 @@ public partial class MainUiManager
 
         _threadTileManager.StartPlacementMode(threadState);
         UpdateThreadModeButtons(true, false);
+
+        _quickMovePanelAni.ClosePanel();
     }
 
     public void CancelThreadPlacement()
@@ -164,30 +166,8 @@ public partial class MainUiManager
 
         _threadTileManager.CancelPlacementMode();
         UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
-    }
 
-    public void StartThreadRemovalMode()
-    {
-        if (_threadTileManager == null)
-        {
-            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot start removal mode.");
-            return;
-        }
-
-        _threadTileManager.StartRemovalMode();
-        UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, true);
-    }
-
-    public void CancelThreadRemovalMode()
-    {
-        if (_threadTileManager == null)
-        {
-            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot cancel removal mode.");
-            return;
-        }
-
-        _threadTileManager.CancelRemovalMode();
-        UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, false);
+        _quickMovePanelAni.OpenPanel();
     }
 
     public void ToggleThreadRemovalMode()
@@ -200,6 +180,15 @@ public partial class MainUiManager
 
         _threadTileManager.ToggleRemovalMode();
         UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, _threadTileManager.IsRemovalMode);
+
+        if(_threadTileManager.IsRemovalMode)
+        {
+            _quickMovePanelAni.ClosePanel();
+        }
+        else
+        {
+            _quickMovePanelAni.OpenPanel();
+        }
     }
 
     private void UpdateThreadCategoryButtonStates()

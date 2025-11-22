@@ -23,8 +23,6 @@ public partial class MainUiManager
                 kvp.Value.OnClose();
             }
         }
-
-        Debug.Log("[MainUiManager] All panels initialized.");
     }
 
     public void OpenPanel(MainPanelType panelType)
@@ -79,7 +77,6 @@ public partial class MainUiManager
         }
 
         panel.OnClose();
-        Debug.Log($"[MainUiManager] Panel {panelType} closed.");
     }
 
     public void CloseAllPanels()

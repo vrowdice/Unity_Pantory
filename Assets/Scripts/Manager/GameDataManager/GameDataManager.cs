@@ -36,7 +36,7 @@ public class GameDataManager : MonoBehaviour
         add => Resource.OnResourceChanged += value;
         remove => Resource.OnResourceChanged -= value;
     }
-    public event Action OnSilverChanged
+    public event Action OnCreditChanged
     {
         add => Finances.OnCreditChanged += value;
         remove => Finances.OnCreditChanged -= value;
@@ -124,17 +124,17 @@ public class GameDataManager : MonoBehaviour
         // 1. 직원 상태 업데이트 (만족도 및 효율성)
         Employee?.UpdateDailyEmployeeStatus();
         
-        // 2. 다음 날 비용 예약 (현재 상태 기준)
-        ReserveDailyExpenses();
-        
-        // 3. 예약된 비용 처리 (자금 차감/지급)
+        // 2. 예약된 비용 처리 (이전 날에 예약된 비용을 먼저 적용)
         ApplyReservedDailyExpenses();
         
-        // 4. 자원 증감 적용 (생산/소비)
+        // 3. 자원 증감 적용 (생산/소비)
         Resource?.ApplyResourceDeltas();
         
-        // 5. 배치 변경에 따른 델타 갱신 (배치가 바뀌지 않았어도 일일 루틴으로 호출)
+        // 4. 배치 변경에 따른 델타 갱신 (배치가 바뀌지 않았어도 일일 루틴으로 호출)
         HandleThreadPlacementChanged();
+        
+        // 5. 다음 날 비용 예약 (현재 상태 기준)
+        ReserveDailyExpenses();
         
         // 6. 시장 업데이트 (가격 변동 및 자동 거래 실행)
         Market?.TickDailyMarket();

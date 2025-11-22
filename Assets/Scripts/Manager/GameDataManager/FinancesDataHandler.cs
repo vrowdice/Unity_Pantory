@@ -73,8 +73,6 @@ public class FinancesDataHandler
         }
 
         _credit += amount;
-        Debug.Log($"[FinancesService] Credit +{amount} (total: {_credit})");
-        
         OnCreditChanged?.Invoke();
     }
 
@@ -118,8 +116,6 @@ public class FinancesDataHandler
         }
 
         _credit = amount;
-        Debug.Log($"[FinancesService] Credit = {amount}");
-        
         OnCreditChanged?.Invoke();
     }
 
@@ -139,8 +135,6 @@ public class FinancesDataHandler
     public void ResetCredit()
     {
         _credit = 0;
-        Debug.Log("[FinancesService] Credit has been reset.");
-        
         OnCreditChanged?.Invoke();
     }
 
@@ -178,14 +172,12 @@ public class FinancesDataHandler
 
         // 4. 직원 급여
         long salaryCost = _gameDataManager.Employee != null ? _gameDataManager.Employee.GetTotalSalary() : 0;
-
+        
         _reservedDailyExpenses.maintenanceCost = maintenanceCost;
         _reservedDailyExpenses.salaryCost = salaryCost;
         _reservedDailyExpenses.resourceShortageCost = shortageCost;
         _reservedDailyExpenses.playerTradeCost = tradeCost;
         _reservedDailyExpenses.playerTradeRevenue = tradeRevenue;
-
-        Debug.Log($"[FinancesDataHandler] Daily expenses reserved. Net: {_reservedDailyExpenses.NetDelta} (Maintenance: {maintenanceCost}, Salary: {salaryCost}, Shortage: {shortageCost}, Trade Cost: {tradeCost}, Trade Revenue: {tradeRevenue})");
     }
 
     /// <summary>
@@ -209,8 +201,6 @@ public class FinancesDataHandler
 
         _reservedDailyExpenses = new DailyExpenseReservation(); // 초기화
         IsProcessingReservedExpenses = false;
-
-        Debug.Log($"[FinancesDataHandler] Reserved daily expenses applied. Expenses: {expenses}, Revenue: {revenue}, Net: {revenue - expenses}");
     }
 
     /// <summary>

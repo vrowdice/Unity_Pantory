@@ -25,7 +25,7 @@ MonoBehaviour:
   description: A reinforced hammer forged from steel alloy. Delivers powerful strikes
     with precision and durability.
   requirements:
-  - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
+  - resource: {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
     count: 2
   - resource: {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
     count: 1

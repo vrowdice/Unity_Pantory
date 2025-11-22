@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a173e744a3c2d4b8f37babb9010ae3, type: 3}
+  m_Name: aluminum_ore
+  m_EditorClassIdentifier: 
+  id: aluminum_ore
+  displayName: Aluminum Ore
+  baseValue: 35
+  marketSensitivity: 0.19
+  meanReversionStrength: 0.6
+  maxDailySwing: 0.013
+  scarcityWeight: 0.55
+  rarity: 0.65
+  type: 0
+  nextStage: {fileID: 11400000, guid: d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0, type: 2}
+  icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
+  description: A lightweight ore containing aluminum. Valued for its strength-to-weight
+    ratio in modern construction.
+  requirements: []
+  initialAmount: 0
+

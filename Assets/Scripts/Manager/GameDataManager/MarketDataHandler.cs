@@ -138,6 +138,7 @@ public class MarketDataHandler
 
     /// <summary>
     /// 플레이어 자동 거래를 실행합니다 (playerTransactionDelta 기반)
+    /// 예약 시스템을 통해 처리되므로 직접 금액 변경 없이 자원만 처리합니다.
     /// </summary>
     private void ExecutePlayerAutoTrades(Dictionary<string, ResourceEntry> resources)
     {
@@ -162,13 +163,13 @@ public class MarketDataHandler
 
             if (delta > 0)
             {
-                // 양수: 매수
-                TryPlayerBuyResource(kvp.Key, delta);
+                // 양수: 매수 (예약 시스템을 통해 처리되므로 자원만 추가)
+                ExecutePlayerBuyResourceWithoutPayment(kvp.Key, delta);
             }
             else
             {
-                // 음수: 매도
-                TryPlayerSellResource(kvp.Key, -delta);
+                // 음수: 매도 (예약 시스템을 통해 처리되므로 자원만 제거)
+                ExecutePlayerSellResourceWithoutPayment(kvp.Key, -delta);
             }
         }
     }
@@ -550,6 +551,34 @@ public class MarketDataHandler
     }
 
     /// <summary>
+    /// 플레이어 자동 거래용 매수 (예약 시스템을 통해 처리되므로 금액 변경 없이 자원만 처리)
+    /// </summary>
+    private void ExecutePlayerBuyResourceWithoutPayment(string resourceId, long amount)
+    {
+        if (_gameDataManager?.Resource == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(resourceId) || amount <= 0)
+        {
+            return;
+        }
+
+        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        if (resourceEntry == null)
+        {
+            return;
+        }
+
+        // 자원 추가
+        _gameDataManager.Resource.AddResource(resourceId, amount);
+
+        // 시장 수요에 즉시 반영
+        ApplyPlayerDemand(resourceEntry, amount);
+    }
+
+    /// <summary>
     /// 플레이어가 자원을 판매합니다. 판매 시 시장 공급에 즉시 반영됩니다.
     /// </summary>
     /// <param name="resourceId">판매할 자원 ID</param>
@@ -608,6 +637,39 @@ public class MarketDataHandler
         Debug.Log($"[MarketDataHandler] Player sold {amount} {resourceEntry.resourceData.displayName} for {totalRevenue} credits (base: {baseRevenue}, fee: {marketFee}).");
         OnMarketUpdated?.Invoke();
         return true;
+    }
+
+    /// <summary>
+    /// 플레이어 자동 거래용 매도 (예약 시스템을 통해 처리되므로 금액 변경 없이 자원만 처리)
+    /// </summary>
+    private void ExecutePlayerSellResourceWithoutPayment(string resourceId, long amount)
+    {
+        if (_gameDataManager?.Resource == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(resourceId) || amount <= 0)
+        {
+            return;
+        }
+
+        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        if (resourceEntry == null)
+        {
+            return;
+        }
+
+        // 자원 확인 및 제거
+        if (!_gameDataManager.Resource.HasEnoughResource(resourceId, amount))
+        {
+            return;
+        }
+
+        _gameDataManager.Resource.TryRemoveResource(resourceId, amount);
+
+        // 시장 공급에 즉시 반영
+        ApplyPlayerSupply(resourceEntry, amount);
     }
 
     /// <summary>

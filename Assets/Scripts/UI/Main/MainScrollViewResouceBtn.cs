@@ -45,7 +45,7 @@ public class MainScrollViewResouceBtn : MonoBehaviour
         }
         else
         {
-            _changeValueText.text = "0";
+            _changeValueText.text = "";
         }
     }
 }

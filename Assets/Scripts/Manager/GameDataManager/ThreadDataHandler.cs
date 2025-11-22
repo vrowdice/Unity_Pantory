@@ -31,7 +31,6 @@ public class ThreadDataHandler
         _threads = new Dictionary<string, ThreadState>();
         _categories = new Dictionary<string, ThreadCategory>();
         _gameDataManager = gameDataManager;
-        Debug.Log("[ThreadService] ThreadService initialized with GameDataManager access.");
     }
 
     /// <summary> Thread 데이터를 저장합니다. </summary>

@@ -274,6 +274,8 @@ public static class MarketActorDynamicAllocator
             ResourceType.wood => marketSettings != null ? marketSettings.woodProductionRange : new Vector2(200f, 400f),
             ResourceType.tool => marketSettings != null ? marketSettings.toolProductionRange : new Vector2(35f, 100f),
             ResourceType.weapon => marketSettings != null ? marketSettings.weaponProductionRange : new Vector2(25f, 75f),
+            ResourceType.furniture => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(15f, 40f),
+            ResourceType.clothing => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(20f, 50f),
             _ => marketSettings != null ? marketSettings.otherProductionRange : new Vector2(100f, 220f)
         };
 

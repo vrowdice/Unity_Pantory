@@ -232,7 +232,6 @@ public class EmployeeDataHandler
 
         entry.employeeState.count += count;
         UpdateSalary(entry);
-        Debug.Log($"[EmployeeService] {entry.employeeData.displayName} hired +{count} (total: {entry.employeeState.count})");
         
         OnEmployeeChanged?.Invoke();
     }
@@ -261,8 +260,6 @@ public class EmployeeDataHandler
         {
             entry.employeeState.count -= count;
             UpdateSalary(entry);
-            Debug.Log($"[EmployeeService] {entry.employeeData.displayName} fired -{count} (total: {entry.employeeState.count})");
-            
             OnEmployeeChanged?.Invoke();
             return true;
         }
@@ -370,8 +367,6 @@ public class EmployeeDataHandler
         
         // 모든 직원의 급여 재계산
         RefreshAllSalaries();
-        
-        Debug.Log("[EmployeeDataHandler] Salary multipliers applied.");
     }
 
     /// <summary>
