@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -137,6 +138,7 @@ public class InitialMarketData : ScriptableObject
         }
 
         marketHandler.SetMarketSettings(this);
+        // 액터는 MarketDataHandler 생성자에서 AutoLoadAllActors()로 자동 로드됩니다.
     }
 
     /// <summary>

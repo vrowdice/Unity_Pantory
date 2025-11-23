@@ -161,16 +161,27 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         _dataManager = dataManager ?? GameDataManager.Instance;
         _visualManager = VisualManager.Instance;
 
-        if (Camera.main == null)
+        // GameManager에서 MainCameraController 가져오기 (우선순위)
+        _mainCameraController = _gameManager?.MainCameraController;
+        
+        if (_mainCameraController != null)
         {
-            Debug.LogError("[BuildingTileManager] Main camera not found.");
-            return;
+            _mainCamera = _mainCameraController.Camera;
         }
-
-        _mainCamera = Camera.main;
-        if (_mainCamera != null)
+        else
         {
-            _mainCamera.TryGetComponent(out _mainCameraController);
+            // GameManager에 없으면 Camera.main에서 찾기
+            if (Camera.main == null)
+            {
+                Debug.LogError("[BuildingTileManager] Main camera not found.");
+                return;
+            }
+
+            _mainCamera = Camera.main;
+            if (_mainCamera != null)
+            {
+                _mainCamera.TryGetComponent(out _mainCameraController);
+            }
         }
     }
 

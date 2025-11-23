@@ -52,18 +52,46 @@ public class MarketActorEntry
             return;
         }
 
+        // 초기 자산이 0이면 기본값 설정 (액터가 시장에 참여할 수 있도록)
+        float initialWealth = settings.initialActorWealth;
+        if (initialWealth <= 0f)
+        {
+            // 스케일에 따라 다른 초기 자산 설정
+            initialWealth = data.scale switch
+            {
+                MarketActorScale.Small => 5000f,
+                MarketActorScale.Large => 20000f,
+                _ => 10000f // Medium
+            };
+        }
+
         if (state.provider != null)
         {
-            state.provider.wealth = settings.initialActorWealth;
-            state.provider.previousWealth = settings.initialActorWealth;
+            state.provider.wealth = initialWealth;
+            state.provider.previousWealth = initialWealth;
             state.provider.health = settings.initialActorHealth;
         }
 
         if (state.consumer != null)
         {
-            state.consumer.wealth = settings.initialActorWealth;
-            state.consumer.previousWealth = settings.initialActorWealth;
+            state.consumer.wealth = initialWealth;
+            state.consumer.previousWealth = initialWealth;
             state.consumer.health = settings.initialActorHealth;
+            
+            // Consumer의 경우 예산도 초기 자산 기반으로 설정
+            var consumerProfile = GetConsumerProfile();
+            if (consumerProfile != null && consumerProfile.budgetRange.max <= 0f)
+            {
+                // 예산 범위가 설정되지 않은 경우 초기 자산의 일부를 예산으로 사용
+                float budgetRatio = data.scale switch
+                {
+                    MarketActorScale.Small => 0.3f,
+                    MarketActorScale.Large => 0.4f,
+                    _ => 0.35f
+                };
+                float dailyBudget = initialWealth * budgetRatio;
+                state.consumer.currentBudget = dailyBudget;
+            }
         }
     }
 

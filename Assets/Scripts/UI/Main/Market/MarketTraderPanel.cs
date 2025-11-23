@@ -104,19 +104,45 @@ public class MarketTraderPanel : MonoBehaviour
             _satisfactionText.text = satStr;
         }
 
-        // Activity Summary
+        // Activity Summary (거래 통계 및 경제력)
         if (_activityText != null)
         {
-            int providerActive = state?.provider?.activeResourceIds?.Count ?? 0;
-            int providerContracts = state?.provider?.activeContracts ?? 0;
-            int providerStocks = state?.provider?.stocks?.Count ?? 0;
-
-            int consumerActive = state?.consumer?.activeResourceIds?.Count ?? 0;
-            int consumerHoldings = state?.consumer?.holdings?.Count ?? 0;
-
-            _activityText.text =
-                $"Provider: active {providerActive}, contracts {providerContracts}, stocks {providerStocks}\n" +
-                $"Consumer: active {consumerActive}, holdings {consumerHoldings}";
+            var summary = new System.Text.StringBuilder();
+            
+            // 기본 정보
+            float wealth = state?.GetWealth() ?? 0f;
+            int rank = state?.GetRank() ?? 0;
+            float economicPower = state?.CalculateEconomicPower() ?? 0f;
+            string healthStatus = state?.GetHealthStatus() ?? "Normal";
+            
+            summary.AppendLine($"Rank: #{rank} | Economic Power: {(economicPower * 100f):F1}% | Health: {healthStatus}");
+            summary.AppendLine($"Total Wealth: {ReplaceUtils.FormatNumber((long)wealth)}");
+            
+            // Provider 거래 통계
+            if (state?.provider != null && data.roles.HasFlag(MarketRoleFlags.Provider))
+            {
+                var provider = state.provider;
+                summary.AppendLine($"Provider - Sales: {ReplaceUtils.FormatNumber((long)provider.dailySalesRevenue)} | " +
+                    $"Volume: {ReplaceUtils.FormatNumber((long)provider.dailySalesVolume)} | " +
+                    $"Net Profit: {ReplaceUtils.FormatNumber((long)provider.dailyNetProfit)}");
+            }
+            
+            // Consumer 거래 통계
+            if (state?.consumer != null && data.roles.HasFlag(MarketRoleFlags.Consumer))
+            {
+                var consumer = state.consumer;
+                summary.AppendLine($"Consumer - Purchase: {ReplaceUtils.FormatNumber((long)consumer.dailyPurchaseExpense)} | " +
+                    $"Volume: {ReplaceUtils.FormatNumber((long)consumer.dailyPurchaseVolume)} | " +
+                    $"Value: {ReplaceUtils.FormatNumber((long)consumer.dailyConsumptionValue)}");
+            }
+            
+            // 일일 거래액 및 순이익
+            float dailyTradeVolume = state?.GetDailyTradeVolume() ?? 0f;
+            float dailyNetProfit = state?.GetDailyNetProfit() ?? 0f;
+            summary.AppendLine($"Daily Trade Volume: {ReplaceUtils.FormatNumber((long)dailyTradeVolume)}");
+            summary.Append($"Daily Net Profit: {ReplaceUtils.FormatNumber((long)dailyNetProfit)}");
+            
+            _activityText.text = summary.ToString();
         }
     }
 

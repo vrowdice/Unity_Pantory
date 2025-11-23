@@ -10,7 +10,9 @@ public partial class MainUiManager
             { MainPanelType.Storage, _storagePanel },
             { MainPanelType.Market, _marketPanel },
             { MainPanelType.Employment, _employmentPanel },
-            { MainPanelType.Finance, _financePanel }
+            { MainPanelType.Finance, _financePanel },
+            { MainPanelType.Research, _researchPanel },
+            { MainPanelType.Order, _orderPanel }
         };
     }
 
@@ -20,9 +22,14 @@ public partial class MainUiManager
         {
             if (kvp.Value != null)
             {
+                // 패널을 닫고 비활성화하여 시작 시 모든 패널이 닫힌 상태로 시작
                 kvp.Value.OnClose();
+                kvp.Value.gameObject.SetActive(false);
             }
         }
+        
+        // 현재 열린 패널 타입 초기화
+        _currentOpenPanelType = default(MainPanelType);
     }
 
     public void OpenPanel(MainPanelType panelType)

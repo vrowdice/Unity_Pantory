@@ -23,10 +23,21 @@ public class MainCameraController : MonoBehaviour
     private Vector3 _dragOrigin;
     private bool _isDragging = false;
     private bool _isDragEnabled = true; // 드래그 활성화 여부
+    
+    // 설치/제거 모드 확인을 위한 매니저 참조
+    private BuildingTileManager _buildingTileManager;
+    private ThreadTileManager _threadTileManager;
 
     private void Awake()
     {
         _camera = GetComponent<Camera>();
+    }
+
+    private void Start()
+    {
+        // 설치/제거 모드 확인을 위한 매니저 찾기
+        _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
+        _threadTileManager = FindFirstObjectByType<ThreadTileManager>();
     }
 
     /// <summary>
@@ -57,13 +68,62 @@ public class MainCameraController : MonoBehaviour
             return;
         }
 
-        // 마우스 오른쪽 클릭 (1) 또는 휠 클릭 (2)으로 드래그 시작
-        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
+        // 설치/제거 모드가 활성화되어 있으면 드래그 비활성화
+        if (IsPlacementOrRemovalModeActive())
         {
-            // UI 위에 포인터가 있을 경우 드래그 시작을 막음 (단, 휠 클릭은 예외)
-            // NOTE: 원본 코드에는 Input.GetMouseButtonDown(0) 조건이 있었으나, 
-            // 오른쪽/휠 클릭만 확인하므로, UI 체크는 왼쪽 클릭이 아닌 경우에만 의미가 있습니다.
-            if (Input.GetMouseButtonDown(1) && IsPointerOverUI())
+            _isDragging = false;
+            return;
+        }
+
+        // 모바일: 터치 입력 처리
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            
+            if (touch.phase == TouchPhase.Began)
+            {
+                // UI 위에 터치가 있으면 드래그 시작하지 않음
+                if (IsPointerOverUI())
+                {
+                    _isDragging = false;
+                    return;
+                }
+
+                _dragOrigin = _camera.ScreenToWorldPoint(touch.position);
+                _isDragging = true;
+            }
+            else if (touch.phase == TouchPhase.Moved && _isDragging)
+            {
+                Vector3 currentTouchPos = _camera.ScreenToWorldPoint(touch.position);
+                Vector3 difference = _dragOrigin - currentTouchPos;
+
+                Vector3 newPosition = transform.position + difference * _dragSpeed;
+                newPosition.z = transform.position.z; // Z 위치 고정
+
+                // 경계 제한 적용
+                if (_boundaryCollider != null)
+                {
+                    newPosition = ClampToBounds(newPosition);
+                }
+
+                transform.position = newPosition;
+
+                // dragOrigin 업데이트
+                _dragOrigin = _camera.ScreenToWorldPoint(touch.position);
+            }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                _isDragging = false;
+            }
+            
+            return; // 모바일 입력 처리 후 종료
+        }
+
+        // PC: 마우스 왼쪽 클릭 (0)으로 드래그 시작
+        if (Input.GetMouseButtonDown(0))
+        {
+            // UI 위에 포인터가 있을 경우 드래그 시작을 막음
+            if (IsPointerOverUI())
             {
                 _isDragging = false;
                 return;
@@ -74,7 +134,7 @@ public class MainCameraController : MonoBehaviour
         }
 
         // 드래그 중일 때 카메라 이동
-        if ((Input.GetMouseButton(1) || Input.GetMouseButton(2)) && _isDragging)
+        if (Input.GetMouseButton(0) && _isDragging)
         {
             Vector3 currentMousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
             Vector3 difference = _dragOrigin - currentMousePos;
@@ -94,11 +154,24 @@ public class MainCameraController : MonoBehaviour
             _dragOrigin = _camera.ScreenToWorldPoint(Input.mousePosition);
         }
 
-        // 마우스 오른쪽 클릭 또는 휠 클릭 해제 시 드래그 종료
-        if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+        // 마우스 왼쪽 클릭 해제 시 드래그 종료
+        if (Input.GetMouseButtonUp(0))
         {
             _isDragging = false;
         }
+    }
+
+    /// <summary>
+    /// 건물 또는 스레드 설치/제거 모드가 활성화되어 있는지 확인합니다.
+    /// </summary>
+    private bool IsPlacementOrRemovalModeActive()
+    {
+        bool buildingPlacementMode = _buildingTileManager != null && 
+                                     (_buildingTileManager.IsPlacementMode || _buildingTileManager.IsRemovalMode);
+        bool threadPlacementMode = _threadTileManager != null && 
+                                   (_threadTileManager.IsPlacementMode || _threadTileManager.IsRemovalMode);
+        
+        return buildingPlacementMode || threadPlacementMode;
     }
 
     // 마우스 휠로 줌인/줌아웃

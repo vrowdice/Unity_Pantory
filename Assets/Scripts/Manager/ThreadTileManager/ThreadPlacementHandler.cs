@@ -40,7 +40,7 @@ namespace Pantory.Managers
             _selectedThread = threadState;
             _isActive = true;
             _gridHandler.SetAllTilesOutline(true, OUTLINE_COLOR);
-            _cameraController?.SetDragEnabled(false);
+            // 카메라 드래그는 MainCameraController에서 자동으로 비활성화됨
 
             CreatePreviewObject();
         }
@@ -158,7 +158,7 @@ namespace Pantory.Managers
             _isActive = false;
             _selectedThread = null;
             _gridHandler.SetAllTilesOutline(false);
-            _cameraController?.SetDragEnabled(true);
+            // 카메라 드래그는 MainCameraController에서 자동으로 활성화됨
 
             if (_previewObject != null)
             {

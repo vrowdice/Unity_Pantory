@@ -80,6 +80,9 @@ public class GameManager : MonoBehaviour
         // 씬 로드 이벤트 구독
         SceneManager.sceneLoaded += OnSceneLoaded;
 
+        // MainCameraController 초기화
+        InitializeMainCameraController();
+
         // 초기화 핸들러 생성 및 모든 매니저 초기화
         _initializationHandler = new GameInitializationHandler(
             this,
@@ -201,16 +204,13 @@ public class GameManager : MonoBehaviour
             Debug.LogError("[GameManager] Could not find Canvas object.");
         }
 
+        // MainCameraController 재초기화 (씬이 바뀔 수 있으므로)
+        InitializeMainCameraController();
+
         // MainUiManager 초기화 (GameDataManager가 준비된 후)
         if (_uiManager != null)
         {
             _uiManager.Initialize(this, _gameDataManager);
-        }
-
-        _mainCameraController = GameObject.Find("MainCamera")?.GetComponent<MainCameraController>();
-        if (_mainCameraController == null)
-        {
-            Debug.LogError("[GameManager] Could not find MainCameraController on Main Camera.");
         }
 
         // Main 씬이 아닐 경우 시간 정지
@@ -454,12 +454,47 @@ public class GameManager : MonoBehaviour
         InitializeSceneManagers();
     }
 
+    /// <summary>
+    /// MainCameraController를 초기화합니다.
+    /// </summary>
+    private void InitializeMainCameraController()
+    {
+        if (_mainCameraController != null)
+        {
+            return; // 이미 초기화됨
+        }
+
+        GameObject mainCamera = GameObject.Find("MainCamera");
+        if (mainCamera != null)
+        {
+            _mainCameraController = mainCamera.GetComponent<MainCameraController>();
+            if (_mainCameraController == null)
+            {
+                Debug.LogWarning("[GameManager] MainCameraController component not found on MainCamera.");
+            }
+            else
+            {
+                Debug.Log("[GameManager] MainCameraController initialized successfully.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] MainCamera GameObject not found in the scene.");
+        }
+    }
+
     private void InitializeSceneManagers()
     {
         if (_gameDataManager == null)
         {
             Debug.LogWarning("[GameManager] GameDataManager is null. Cannot initialize scene managers.");
             return;
+        }
+
+        // MainCameraController가 없으면 초기화 시도
+        if (_mainCameraController == null)
+        {
+            InitializeMainCameraController();
         }
 
         GameObject sceneManagerRoot = GameObject.Find("SceneManager");

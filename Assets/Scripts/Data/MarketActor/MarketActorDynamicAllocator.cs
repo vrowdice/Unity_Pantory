@@ -64,8 +64,12 @@ public static class MarketActorDynamicAllocator
 
             entry.state.provider.activeResourceIds =
                 selectedResources.Select(r => r.resourceData.id).ToList();
+            
+            // 재할당 주기에 ±30% 변동성 추가 (더 불규칙한 타이밍)
+            int baseDays = entry.data.providerReassignmentDays;
+            int variation = Mathf.RoundToInt(baseDays * Random.Range(-0.3f, 0.3f));
             entry.state.provider.reassignmentCountdown =
-                Mathf.Max(1, entry.data.providerReassignmentDays);
+                Mathf.Max(1, baseDays + variation);
         }
     }
 
@@ -102,8 +106,12 @@ public static class MarketActorDynamicAllocator
 
             entry.state.consumer.activeResourceIds =
                 selectedResources.Select(r => r.resourceData.id).ToList();
+            
+            // 재할당 주기에 ±30% 변동성 추가 (더 불규칙한 타이밍)
+            int baseDays = entry.data.consumerReassignmentDays;
+            int variation = Mathf.RoundToInt(baseDays * Random.Range(-0.3f, 0.3f));
             entry.state.consumer.reassignmentCountdown =
-                Mathf.Max(1, entry.data.consumerReassignmentDays);
+                Mathf.Max(1, baseDays + variation);
         }
     }
 
@@ -209,7 +217,14 @@ public static class MarketActorDynamicAllocator
             float imbalance = demand - supply;
 
             float score = forProvider ? imbalance : -imbalance;
-            score += Random.Range(-0.25f, 0.25f);
+            
+            // 더 큰 랜덤 변동성 추가 (±40%) - 액터들이 더 다양한 선택을 하도록
+            float randomVariation = Random.Range(-0.4f, 0.4f);
+            score += randomVariation;
+            
+            // 가격 변동성도 고려 (가격이 변동이 클수록 더 매력적)
+            float priceVolatility = Mathf.Abs(candidate.resourceState.priceChangeRate);
+            score += priceVolatility * Random.Range(-0.2f, 0.2f);
 
             if (score > bestScore)
             {
@@ -237,11 +252,19 @@ public static class MarketActorDynamicAllocator
                 continue;
             }
 
+            // 액터별로 다른 가격 민감도와 긴급도 적용 (변동성 증가)
+            float basePriceSensitivity = forProvider ? 0.35f : 0.55f;
+            float baseUrgency = forProvider ? 0.1f : 0.25f;
+            
+            // ±20% 변동성 추가
+            float priceSensitivityVariation = Random.Range(-0.2f, 0.2f);
+            float urgencyVariation = Random.Range(-0.2f, 0.2f);
+            
             var preference = new ResourcePreference
             {
                 resource = resource.resourceData,
-                priceSensitivity = forProvider ? 0.35f : 0.55f,
-                urgency = forProvider ? 0.1f : 0.25f
+                priceSensitivity = Mathf.Clamp01(basePriceSensitivity * (1f + priceSensitivityVariation)),
+                urgency = Mathf.Max(0f, baseUrgency * (1f + urgencyVariation))
             };
 
             (long min, long max) = GetQuantityRange(resource.resourceData.type, scale, forProvider, marketSettings);
