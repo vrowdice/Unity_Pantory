@@ -15,8 +15,8 @@ MonoBehaviour:
   id: refinery_plant
   displayName: Refinery Plant
   buildingType: 1
-  icon: {fileID: 21300000, guid: 40352f4e75edfff4ba05b35be0fdfd4b, type: 3}
-  buildingSprite: {fileID: 21300000, guid: 40352f4e75edfff4ba05b35be0fdfd4b, type: 3}
+  icon: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
   description: A foundational facility for processing raw materials. Refines wood
     and metal into usable resources for crafting. Essential for any production line.
   baseCost: 150

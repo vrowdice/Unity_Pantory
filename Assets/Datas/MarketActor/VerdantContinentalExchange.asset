@@ -14,30 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: verdant_continental_exchange
   displayName: Verdant Continental Exchange
-  portrait: {fileID: 0}
+  icon: {fileID: 21300000, guid: ce6601d5ab80c364aa129eac85fcafd2, type: 3}
   description: Pan-regional wholesalers that keep carpenters supplied with every grade of wood and basic arms for militias.
   archetype: 3
   roles: 3
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 0
-  - 2
-  - 4
-  - 5
-  providerReassignmentDays: 6
-  consumerReassignmentDays: 6
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep:
     - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-      count: 60
+      count: 12
     - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
-      count: 20
+      count: 4
     - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
-      count: 80
+      count: 16
     basePriceModifier: 1.08
     productionCooldownRange: {x: 9, y: 18}
     allowBatchSelling: 1
@@ -51,4 +40,15 @@ MonoBehaviour:
     satisfactionDecay: 0.09
     allowBulkBuying: 1
     persistentOrders: 1
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 0
+  - 2
+  - 4
+  - 5
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
 

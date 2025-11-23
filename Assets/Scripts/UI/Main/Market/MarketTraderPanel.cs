@@ -44,8 +44,8 @@ public class MarketTraderPanel : MonoBehaviour
         // Portrait & Name
         if (_portrait != null)
         {
-            _portrait.sprite = data.portrait;
-            _portrait.enabled = data.portrait != null;
+            _portrait.sprite = data.icon;
+            _portrait.enabled = data.icon != null;
         }
 
         if (_nameText != null)

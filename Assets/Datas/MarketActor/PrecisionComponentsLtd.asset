@@ -14,20 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: precision_components_ltd
   displayName: Precision Components Ltd
-  portrait: {fileID: 0}
+  icon: {fileID: 21300000, guid: 2c21ade715dbd414abc57483682065dd, type: 3}
   description: A specialized manufacturer producing precision gears, bolts, and mechanical
     components for industrial machinery and vehicles.
   archetype: 0
   roles: 3
-  scale: 1
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 1
-  - 7
-  providerReassignmentDays: 6
-  consumerReassignmentDays: 6
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep:
@@ -48,4 +39,12 @@ MonoBehaviour:
     satisfactionDecay: 0.08
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 1
+  preferredResourceTypes:
+  - 1
+  - 7
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

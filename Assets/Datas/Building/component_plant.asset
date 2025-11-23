@@ -15,8 +15,8 @@ MonoBehaviour:
   id: component_plant
   displayName: Component Factory
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: 1e70a9003ec4ad74f99aef642e0864b4, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 1e70a9003ec4ad74f99aef642e0864b4, type: 3}
   description: A precision manufacturing facility for producing mechanical components
     such as gears, bolts, and screws. Essential for advanced production chains.
   baseCost: 280

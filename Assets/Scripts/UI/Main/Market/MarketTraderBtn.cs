@@ -24,7 +24,7 @@ public class MarketTraderBtn : MonoBehaviour
         {
             if (_image != null)
             {
-                _image.sprite = _actorEntry.data.portrait;
+                _image.sprite = _actorEntry.data.icon;
             }
 
             if (_nameText != null)

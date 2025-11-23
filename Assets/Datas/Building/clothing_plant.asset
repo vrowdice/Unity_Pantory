@@ -15,8 +15,8 @@ MonoBehaviour:
   id: clothing_plant
   displayName: Textile Factory
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: 9fe7b4b202fb8c3409751ee59db406b6, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 9fe7b4b202fb8c3409751ee59db406b6, type: 3}
   description: A textile manufacturing facility for producing clothing and garments.
     Processes fabric and materials into finished apparel for various markets.
   baseCost: 200

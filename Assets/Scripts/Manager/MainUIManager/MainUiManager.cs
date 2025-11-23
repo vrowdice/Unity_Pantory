@@ -15,14 +15,15 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private TextMeshProUGUI _deltaCreditText;
-    [SerializeField] private InfoDatePanel _infoDatePanel;
+    [SerializeField] private DateTopInfoPanel _infoDatePanel;
+    [SerializeField] private TopInfoPanel _topInfoPanel;
 
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
     [SerializeField] private MarketPanel _marketPanel;
     [SerializeField] private EmployeePanel _employmentPanel;
     [SerializeField] private FinancePanel _financePanel;
-    [SerializeField] private CreditInfoPanel _creditInfoPanel;
+    [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
@@ -98,6 +99,15 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         if (_creditInfoPanel != null)
         {
             _creditInfoPanel.OnInitialize(_dataManager);
+        }
+
+        if (_topInfoPanel != null)
+        {
+            _topInfoPanel.OnInitialize(_dataManager);
+        }
+        else
+        {
+            Debug.LogWarning("[MainUiManager] TopInfoPanel is not assigned.");
         }
 
         RefreshThreadCategories();

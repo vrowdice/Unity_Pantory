@@ -15,8 +15,8 @@ MonoBehaviour:
   id: furniture_plant
   displayName: Furniture Workshop
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: 13d6382c7bcfac149a1a8870bf1b17d6, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 13d6382c7bcfac149a1a8870bf1b17d6, type: 3}
   description: A craft workshop specializing in furniture production. Combines fine
     wood with quality materials to create functional and decorative furniture pieces.
   baseCost: 220

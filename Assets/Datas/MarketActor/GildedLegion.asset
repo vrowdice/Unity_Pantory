@@ -10,24 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: EliteSecurityForces
+  m_Name: GildedLegion
   m_EditorClassIdentifier: 
   id: elite_security_forces
   displayName: Elite Security Forces
-  portrait: {fileID: 0}
+  icon: {fileID: 21300000, guid: 315b604d19942474eb27a2a4bcff519b, type: 3}
   description: A private military contractor with high standards, constantly requisitioning
     elite weaponry and vehicles for its security operations.
   archetype: 2
   roles: 2
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 4
-  - 9
-  providerReassignmentDays: 8
-  consumerReassignmentDays: 4
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep: []
@@ -44,4 +35,12 @@ MonoBehaviour:
     satisfactionDecay: 0.12
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 4
+  - 9
+  providerReassignmentDays: 8
+  consumerReassignmentDays: 4
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

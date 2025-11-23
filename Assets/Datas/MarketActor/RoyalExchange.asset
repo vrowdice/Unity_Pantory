@@ -10,27 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: NationalExchange
+  m_Name: RoyalExchange
   m_EditorClassIdentifier: 
   id: national_exchange
   displayName: National Exchange
-  portrait: {fileID: 0}
-  description: Government-sanctioned brokers who balance the capital's supply of lumber,
-    ore, and luxury goods through tightly regulated auctions.
+  icon: {fileID: 21300000, guid: bd2571b0a3fc8d04d88079ceab4a6b87, type: 3}
+  description: Government-sanctioned brokers who balance the capital's supply of
+    lumber, ore, and luxury goods through tightly regulated auctions.
   archetype: 2
   roles: 3
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 0
-  - 1
-  - 2
-  - 5
-  - 6
-  providerReassignmentDays: 6
-  consumerReassignmentDays: 6
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep: []
@@ -47,4 +35,15 @@ MonoBehaviour:
     satisfactionDecay: 0.09
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 0
+  - 1
+  - 2
+  - 5
+  - 6
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

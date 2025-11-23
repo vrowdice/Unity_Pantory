@@ -277,10 +277,10 @@ public class BuildingPlacementHandler
     /// </summary>
     private void PlaceBuildingWithCurrentThread(Vector2Int gridPos, BuildingData buildingData)
     {
-        // 스레드 ID가 없으면 자동으로 설정 시도
+        // 스레드 ID가 없으면 자동으로 생성 (건물 배치 시에는 생성 허용)
         if (string.IsNullOrEmpty(_buildingTileManager.CurrentThreadId))
         {
-            _buildingTileManager.EnsureThreadId();
+            _buildingTileManager.EnsureThreadId(createIfNotExists: true);
         }
 
         string threadId = _buildingTileManager.CurrentThreadId;

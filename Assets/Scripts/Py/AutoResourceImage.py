@@ -1,17 +1,36 @@
 import os
 import re
 import time
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from PIL import Image
 from io import BytesIO
 
-# Google AI API 키 설정 (환경 변수에서 가져오기)
-GOOGLE_AI_API_KEY = "AIzaSyDQhgensoGa0ov1_-LJg0rd8VgIG1rcJ8A"
+# .env 파일에서 환경 변수 로드
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+PY_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 프로젝트 루트의 .env 파일 먼저 시도
+env_path = os.path.join(PROJECT_ROOT, ".env")
+load_dotenv(env_path)
+
+# Py 폴더의 Api.env 파일도 시도 (fallback)
+api_env_path = os.path.join(PY_SCRIPT_DIR, "Api.env")
+if not os.getenv("GOOGLE_AI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
+    load_dotenv(api_env_path)
+
+# Google AI API 키 설정 (.env 파일 또는 환경 변수에서 가져오기)
+GOOGLE_AI_API_KEY = os.getenv("GOOGLE_AI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+IMAGEN_MODEL = os.getenv("IMAGEN_MODEL", "imagen-4.0-fast-generate-001")
 
 # Imagen 클라이언트 초기화
 imagen_client = None
-if GOOGLE_AI_API_KEY:
+if not GOOGLE_AI_API_KEY:
+    print("⚠️  경고: GOOGLE_AI_API_KEY가 설정되지 않았습니다.")
+    print(f"   프로젝트 루트에 .env 파일을 생성하고 GOOGLE_AI_API_KEY=your_key를 추가하세요.")
+    print(f"   또는 환경 변수로 설정하세요.\n")
+elif GOOGLE_AI_API_KEY:
     try:
         os.environ["GOOGLE_API_KEY"] = GOOGLE_AI_API_KEY
         imagen_client = genai.Client(api_key=GOOGLE_AI_API_KEY)
@@ -19,8 +38,7 @@ if GOOGLE_AI_API_KEY:
         print(f"Imagen 클라이언트 초기화 실패: {e}")
         imagen_client = None
 
-# 프로젝트 루트 디렉토리
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+# 프로젝트 루트 디렉토리 (이미 위에서 정의됨)
 DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/Resource")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/Resource")
 
@@ -190,7 +208,7 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", c
         if imagen_client:
             try:
                 response = imagen_client.models.generate_images(
-                    model='imagen-4.0-generate-001',
+                    model=IMAGEN_MODEL,
                     prompt=simple_prompt,
                     config=types.GenerateImagesConfig(
                         number_of_images=1,

@@ -15,8 +15,8 @@ MonoBehaviour:
   id: vehicle_plant
   displayName: Vehicle Assembly Plant
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
+  buildingSprite: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
   description: A massive industrial facility for assembling vehicles. Requires extensive
     components, electronics, and materials to produce cars, airplanes, and tanks.
   baseCost: 800

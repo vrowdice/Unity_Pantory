@@ -15,8 +15,8 @@ MonoBehaviour:
   id: assembly_plant
   displayName: General Assembly Plant
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: e8fb31b5160d222408ac27cfb1683f2c, type: 3}
+  buildingSprite: {fileID: 21300000, guid: e8fb31b5160d222408ac27cfb1683f2c, type: 3}
   description: A versatile manufacturing facility for basic assembly work. Can produce
     tools and weapons, though specialized factories are more efficient.
   baseCost: 280

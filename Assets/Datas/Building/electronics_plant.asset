@@ -15,8 +15,8 @@ MonoBehaviour:
   id: electronics_plant
   displayName: Electronics Factory
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: fbb738c5d1393864396abf6bef44932b, type: 3}
+  buildingSprite: {fileID: 21300000, guid: fbb738c5d1393864396abf6bef44932b, type: 3}
   description: An advanced facility for manufacturing electronic devices and components.
     Produces motors, wires, batteries, and other electronic equipment.
   baseCost: 350

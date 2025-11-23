@@ -15,8 +15,8 @@ MonoBehaviour:
   id: tool_plant
   displayName: Tool Workshop
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
+  buildingSprite: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
   description: A specialized workshop for crafting industrial tools. Skilled workers
     transform refined metals and materials into practical tools for various applications.
   baseCost: 250

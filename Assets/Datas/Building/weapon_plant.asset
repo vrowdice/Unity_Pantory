@@ -15,8 +15,8 @@ MonoBehaviour:
   id: weapon_plant
   displayName: Weapon Factory
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: b9dca41e3d54514499f16447cac3cab3, type: 3}
+  buildingSprite: {fileID: 21300000, guid: b9dca41e3d54514499f16447cac3cab3, type: 3}
   description: A military-grade manufacturing facility for producing firearms and
     weapons. Requires precision components and skilled craftsmanship.
   baseCost: 400

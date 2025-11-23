@@ -14,19 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_mining_consortium
   displayName: Iron Mining Consortium
-  portrait: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3336f6ddcb9c8a44b1e68f213f412ca, type: 3}
   description: A cartel of deep-shaft mines that floods the market with cheap ore and undercuts rivals with ruthless efficiency.
   archetype: 1
   roles: 1
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 0
-  - 1
-  providerReassignmentDays: 4
-  consumerReassignmentDays: 8
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep: []
@@ -43,4 +34,12 @@ MonoBehaviour:
     satisfactionDecay: 0.1
     allowBulkBuying: 1
     persistentOrders: 0
-
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 0
+  - 1
+  providerReassignmentDays: 4
+  consumerReassignmentDays: 8
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

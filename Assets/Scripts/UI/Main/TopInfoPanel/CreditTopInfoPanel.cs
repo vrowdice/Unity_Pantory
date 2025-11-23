@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreditInfoPanel : MonoBehaviour
+public class CreditTopInfoPanel : MonoBehaviour
 {
     [SerializeField] private GameObject _titleDeltaTextPanelPrefab;
     [SerializeField] private PanelDoAni _panelDoAni;
-    [SerializeField] private Transform _contentTransform;
 
     private GameDataManager _dataManager;
     private readonly List<TitleDeltaTextPanel> _createdPanels = new List<TitleDeltaTextPanel>();
@@ -182,13 +181,13 @@ public class CreditInfoPanel : MonoBehaviour
     /// </summary>
     private void AddPanel(string title, long deltaValue)
     {
-        if (_titleDeltaTextPanelPrefab == null || _contentTransform == null)
+        if (_titleDeltaTextPanelPrefab == null)
         {
             Debug.LogWarning("[CreditInfoPanel] Prefab or ContentTransform is null.");
             return;
         }
 
-        GameObject panelObj = Instantiate(_titleDeltaTextPanelPrefab, _contentTransform);
+        GameObject panelObj = Instantiate(_titleDeltaTextPanelPrefab, transform);
         TitleDeltaTextPanel panel = panelObj.GetComponent<TitleDeltaTextPanel>();
         
         if (panel != null)
@@ -212,10 +211,6 @@ public class CreditInfoPanel : MonoBehaviour
         }
         _createdPanels.Clear();
 
-        // 추가 안전장치: ContentTransform의 모든 자식 제거
-        if (_contentTransform != null)
-        {
-            GameObjectUtils.ClearChildren(_contentTransform);
-        }
+        GameObjectUtils.ClearChildren(transform);
     }
 }

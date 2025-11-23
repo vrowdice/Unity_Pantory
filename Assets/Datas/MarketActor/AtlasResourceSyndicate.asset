@@ -10,29 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
-  m_Name: GlobalResourceSyndicate
+  m_Name: AtlasResourceSyndicate
   m_EditorClassIdentifier: 
   id: global_resource_syndicate
   displayName: Global Resource Syndicate
-  portrait: {fileID: 0}
-  description: Empire-spanning traders that consolidate precious metals, fine lumber, and
-    refined ingots for government and corporate contracts.
+  icon: {fileID: 21300000, guid: 8a0d726d3dba28e48a6362dd1ca350c1, type: 3}
+  description: Empire-spanning traders that consolidate precious metals, fine lumber,
+    and refined ingots for government and corporate contracts.
   archetype: 2
   roles: 3
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 0
-  - 1
-  - 2
-  - 3
-  - 5
-  - 6
-  - 7
-  providerReassignmentDays: 5
-  consumerReassignmentDays: 5
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep:
@@ -57,4 +43,17 @@ MonoBehaviour:
     satisfactionDecay: 0.08
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 5
+  - 6
+  - 7
+  providerReassignmentDays: 5
+  consumerReassignmentDays: 5
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

@@ -203,7 +203,8 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary>
     /// 스레드 ID가 없을 때 자동으로 설정합니다.
     /// </summary>
-    public void EnsureThreadId()
+    /// <param name="createIfNotExists">스레드가 없을 때 자동으로 생성할지 여부 (기본값: false)</param>
+    public void EnsureThreadId(bool createIfNotExists = false)
     {
         if (!string.IsNullOrEmpty(_currentThreadId))
             return;
@@ -228,9 +229,10 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
             }
         }
 
-        // 3. 스레드가 없으면 기본 스레드 생성
-        if (_dataManager != null && _dataManager.Thread != null)
+        // 3. 스레드가 없을 때의 처리
+        if (createIfNotExists && _dataManager != null && _dataManager.Thread != null)
         {
+            // 사용자가 명시적으로 요청한 경우에만 기본 스레드 생성 (예: 건물 배치 시)
             string defaultThreadId = "thread_main_line";
             string defaultThreadName = "Main Line";
             _dataManager.Thread.CreateThread(defaultThreadId, defaultThreadName);
@@ -242,6 +244,11 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
             }
             
             Debug.Log($"[BuildingTileManager] Default thread created: {defaultThreadId}");
+        }
+        else if (!createIfNotExists)
+        {
+            // 스레드가 없고 생성하지 않는 경우 - 정상적인 상황 (초기화 시)
+            Debug.Log("[BuildingTileManager] No thread ID available. Thread will be created when needed (e.g., when placing a building).");
         }
         else
         {
@@ -371,10 +378,10 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> 건물 배치 모드를 시작합니다. </summary>
     public void StartPlacementMode(BuildingData buildingData)
     {
-        // 스레드 ID가 없으면 자동으로 설정 시도
+        // 스레드 ID가 없으면 자동으로 생성 (건물 배치 시에는 생성 허용)
         if (string.IsNullOrEmpty(_currentThreadId))
         {
-            EnsureThreadId();
+            EnsureThreadId(createIfNotExists: true);
         }
         
         if (IsRemovalMode) _removalHandler?.CancelRemoval();
@@ -424,13 +431,11 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         if (string.IsNullOrEmpty(threadId)) return;
         if (_currentThreadId == threadId) return;
 
-        // DataManager가 없으면 스레드 ID만 설정하고 나중에 로드
+        // DataManager가 없으면 스레드 ID만 설정하지 않고 경고만 출력
+        // 초기화 중에는 DataManager가 아직 준비되지 않았을 수 있으므로 스레드 ID를 설정하지 않음
         if (_dataManager == null || _dataManager.Thread == null)
         {
-            _currentThreadId = threadId;
-            _isTempDataDirty = false;
-            _tempBuildingStates.Clear();
-            Debug.LogWarning($"[BuildingTileManager] SetCurrentThread called but DataManager/Thread is null. Thread ID set to: {threadId}");
+            Debug.LogWarning($"[BuildingTileManager] SetCurrentThread called but DataManager/Thread is null. Thread ID '{threadId}' will be set when DataManager is ready.");
             return;
         }
 
