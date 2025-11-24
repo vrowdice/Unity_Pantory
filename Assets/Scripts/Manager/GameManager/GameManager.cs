@@ -135,12 +135,10 @@ public class GameManager : MonoBehaviour
         if (allThreads != null && allThreads.Count > 0)
         {
             _currentThreadId = allThreads.Keys.First();
-            Debug.Log($"[GameManager] Current thread set to: {_currentThreadId}");
         }
         else
         {
             _currentThreadId = string.Empty;
-            Debug.Log("[GameManager] No threads available. Current thread ID is empty.");
         }
 
         // 핸들러 초기화 (GameDataManager가 완전히 준비된 후)
@@ -471,10 +469,6 @@ public class GameManager : MonoBehaviour
             if (_mainCameraController == null)
             {
                 Debug.LogWarning("[GameManager] MainCameraController component not found on MainCamera.");
-            }
-            else
-            {
-                Debug.Log("[GameManager] MainCameraController initialized successfully.");
             }
         }
         else

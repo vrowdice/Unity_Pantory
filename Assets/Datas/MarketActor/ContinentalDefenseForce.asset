@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A unified military command coordinating defense procurement and logistics
     across continental borders, requiring steady supplies of weapons and equipment.
   archetype: 0
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

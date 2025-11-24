@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A private military contractor with high standards, constantly requisitioning
     elite weaponry and vehicles for its security operations.
   archetype: 2
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

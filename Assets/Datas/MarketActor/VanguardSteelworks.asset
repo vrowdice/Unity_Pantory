@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A disciplined foundry house that converts premium ore into dependable steel
     for the nation's military and construction industries.
   archetype: 0
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

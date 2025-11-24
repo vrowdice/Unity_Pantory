@@ -18,7 +18,6 @@ MonoBehaviour:
   description: Boutique workshop famed for precision-crafted weapons, sourcing only
     the purest metals and fine wood.
   archetype: 2
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

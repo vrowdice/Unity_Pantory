@@ -18,7 +18,6 @@ MonoBehaviour:
   description: The capital's military workshop, renowned for disciplined output of
     military-grade weapons and equipment for armed forces.
   archetype: 0
-  roles: 1
   providerProfile:
     outputs: []
     upkeep:

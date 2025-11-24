@@ -92,7 +92,7 @@ public class MarketPanel : BasePanel
             _resourcePanel.gameObject.SetActive(false);
             _traderPanel.gameObject.SetActive(true);
         }
-        _traderPanel?.OnInitialize(_dataManager);
+        _traderPanel?.OnInitialize(_gameManager ,_dataManager);
         RefreshTraderList();
     }
 
@@ -175,14 +175,14 @@ public class MarketPanel : BasePanel
             sortedActors = new List<MarketActorEntry>();
         }
 
-        // 플레이어 자산 계산
+        // 플레이어 자산 계산 (FinancesDataHandler에서 가져오기)
         long playerWealth = _dataManager.Finances.GetCredit();
 
         // 플레이어를 포함한 정렬된 리스트 생성
-        // 각 항목은 (isPlayer, wealth, entry) 튜플로 저장
-        var sortedItems = new List<(bool isPlayer, float wealth, MarketActorEntry entry)>();
+        // 각 항목은 (isPlayer, wealth, entry, rank) 튜플로 저장
+        var sortedItems = new List<(bool isPlayer, float wealth, MarketActorEntry entry, int rank)>();
 
-        // NPC 액터 추가
+        // NPC 액터 추가 (MarketActorState.rank 사용 - 이미 자산 기준으로 계산됨)
         foreach (var actor in sortedActors)
         {
             if (actor?.data == null)
@@ -191,18 +191,27 @@ public class MarketPanel : BasePanel
             }
 
             float wealth = actor.state?.GetWealth() ?? 0f;
-            sortedItems.Add((false, wealth, actor));
+            int rank = actor.state?.GetRank() ?? 0; // MarketDataHandler에서 계산된 자산 기준 순위 사용
+            sortedItems.Add((false, wealth, actor, rank));
         }
 
-        // 플레이어 추가 (null entry로 표시)
-        sortedItems.Add((true, playerWealth, null));
+        // 플레이어 추가 (플레이어 자산을 기준으로 순위 계산)
+        // 플레이어보다 자산이 많은 NPC 수를 세어서 순위 결정
+        int playerRank = 1;
+        foreach (var actor in sortedActors)
+        {
+            if (actor?.state != null && actor.state.GetWealth() > playerWealth)
+            {
+                playerRank++;
+            }
+        }
+        sortedItems.Add((true, playerWealth, null, playerRank));
 
-        // 자산 기준으로 내림차순 정렬
+        // 자산 기준으로 내림차순 정렬 (표시 순서용, 순위는 이미 계산됨)
         sortedItems.Sort((a, b) => b.wealth.CompareTo(a.wealth));
 
         // 정렬된 순서대로 버튼 생성
         int createdCount = 0;
-        int currentRank = 1;
         foreach (var item in sortedItems)
         {
             GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
@@ -221,16 +230,15 @@ public class MarketPanel : BasePanel
 
             if (item.isPlayer)
             {
-                // 플레이어 버튼 초기화 (순위 전달)
-                traderBtn.OnInitializePlayer(_traderPanel, _dataManager, currentRank);
+                // 플레이어 버튼 초기화 (계산된 순위 전달)
+                traderBtn.OnInitializePlayer(_traderPanel, _dataManager, item.rank);
             }
             else
             {
-                // NPC 액터 버튼 초기화
+                // NPC 액터 버튼 초기화 (MarketActorState.rank 사용)
                 traderBtn.OnInitialize(_traderPanel, item.entry);
             }
             createdCount++;
-            currentRank++;
         }
 
         if (createdCount > 0)

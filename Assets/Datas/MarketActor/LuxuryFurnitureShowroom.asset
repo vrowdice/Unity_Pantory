@@ -18,7 +18,6 @@ MonoBehaviour:
   description: An upscale furniture retailer specializing in premium and custom-made
     furniture for affluent clients and luxury estates.
   archetype: 2
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

@@ -13,30 +13,27 @@ MonoBehaviour:
   m_Name: airplane
   m_EditorClassIdentifier: 
   id: airplane
-  displayName: Airplane
-  baseValue: 90000
-  marketSensitivity: 0.28
+  displayName: Fighter Jet
+  baseValue: 12000
+  marketSensitivity: 0.3
   meanReversionStrength: 0.7
-  maxDailySwing: 0.008
+  volatilityMultiplier: 1
   scarcityWeight: 0.95
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
   rarity: 0.2
-  type: 9
+  type: 8
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: e668180682ff5c54c88a6f708b89527d, type: 3}
-  description: A sophisticated aircraft capable of flight. Represents the pinnacle of
-    engineering and modern transportation technology.
+  description: The ruler of the skies. Requires aluminum and advanced electronic
+    equipment. The pinnacle of precision industry.
   requirements:
   - resource: {fileID: 11400000, guid: 3fc829e6c43fdc245882ae5c87c6f421, type: 2}
     count: 2
   - resource: {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
-    count: 8
-  - resource: {fileID: 11400000, guid: baf2dc70a77de7346ae9a105ab388248, type: 2}
-    count: 4
-  - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
-    count: 6
+    count: 10
   - resource: {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
-    count: 3
-  - resource: {fileID: 11400000, guid: 707bdf8bad3258b4b80e6bc374ece4de, type: 2}
-    count: 2
+    count: 5
+  - resource: {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
+    count: 1
   initialAmount: 0
-

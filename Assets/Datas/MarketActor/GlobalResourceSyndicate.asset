@@ -18,7 +18,6 @@ MonoBehaviour:
   description: Empire-spanning traders that consolidate precious metals, fine lumber,
     and refined ingots for government and corporate contracts.
   archetype: 2
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

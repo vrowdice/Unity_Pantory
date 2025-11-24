@@ -234,7 +234,7 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", b
             except Exception as e:
                 error_str = str(e)
                 if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str or "quota" in error_str.lower():
-                    print(f"  ⚠️  API 할당량 초과: 일일 70회 제한에 도달했습니다.")
+                    print(f"  API 할당량 초과: 일일 70회 제한에 도달했습니다.")
                     print(f"     내일 다시 시도하거나 Google AI 플랜을 업그레이드하세요.")
                     print(f"     https://ai.dev/usage?tab=rate-limit 에서 사용량 확인 가능")
                 else:

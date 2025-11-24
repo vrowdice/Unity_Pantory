@@ -19,7 +19,6 @@ MonoBehaviour:
     essential resources across provinces while maintaining strategic reserves for
     imperial operations.
   archetype: 0
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

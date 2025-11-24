@@ -20,6 +20,7 @@ public class MarketTraderBtn : MonoBehaviour
         _actorEntry = actorEntry;
         _isPlayer = false;
         _dataManager = null;
+        _rank = 0; // NPC는 MarketActorState.rank 사용
 
         if (_actorEntry?.data != null)
         {
@@ -130,7 +131,7 @@ public class MarketTraderBtn : MonoBehaviour
         }
         else if (_actorEntry != null)
         {
-            // NPC 트레이더 정보 표시 (경제력 기반)
+            // NPC 트레이더 정보 표시 (자산 기준)
             var state = _actorEntry.state;
             if (state == null)
             {
@@ -141,6 +142,7 @@ public class MarketTraderBtn : MonoBehaviour
             {
                 float wealth = state.GetWealth();
                 float previousWealth = GetPreviousWealth();
+                // MarketActorState.rank 사용 (이미 자산 기준으로 계산됨)
                 int rank = state.GetRank();
                 float economicPower = state.CalculateEconomicPower();
                 string healthStatus = state.GetHealthStatus();
@@ -157,20 +159,20 @@ public class MarketTraderBtn : MonoBehaviour
 
                 if (rank > 0 && wealth > 0f)
                 {
-                    // 순위, 자산, 경제력, 거래액 표시
+                    // 순위, 자산, 거래액 표시 (자산 기준 순위)
                     indicator = $"#{rank} Wealth {ReplaceUtils.FormatNumber((long)wealth)} ({changeText}) | " +
-                        $"Power {(economicPower * 100f):F0}% | Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)}";
+                        $"Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)}";
                     color = GetWealthChangeColor(wealth, previousWealth);
                 }
                 else if (wealth > 0f)
                 {
                     indicator = $"Wealth {ReplaceUtils.FormatNumber((long)wealth)} ({changeText}) | " +
-                        $"Power {(economicPower * 100f):F0}% [{healthStatus}]";
+                        $"Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)} [{healthStatus}]";
                     color = GetWealthChangeColor(wealth, previousWealth);
                 }
                 else
                 {
-                    indicator = $"No Wealth | Power {(economicPower * 100f):F0}% [{healthStatus}]";
+                    indicator = $"No Wealth | Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)} [{healthStatus}]";
                     color = Color.gray;
                 }
             }
@@ -187,16 +189,7 @@ public class MarketTraderBtn : MonoBehaviour
             return 0f;
         }
 
-        float previous = 0f;
-        if (_actorEntry.state.provider != null)
-        {
-            previous += _actorEntry.state.provider.previousWealth;
-        }
-        if (_actorEntry.state.consumer != null)
-        {
-            previous += _actorEntry.state.consumer.previousWealth;
-        }
-        return previous;
+        return _actorEntry.state.previousWealth;
     }
 
     private Color GetWealthChangeColor(float currentWealth, float previousWealth)

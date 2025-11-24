@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: pure_gold
   displayName: Pure Gold
-  baseValue: 450
+  baseValue: 400
   marketSensitivity: 0.2
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

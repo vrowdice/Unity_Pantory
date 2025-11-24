@@ -17,7 +17,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 392cf9cb0648ceb40b4e291b8aec57e9, type: 3}
   description: Heavy-industry magnates who churn out tools and alloys for inland factories while swallowing iron and timber supplies.
   archetype: 1
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

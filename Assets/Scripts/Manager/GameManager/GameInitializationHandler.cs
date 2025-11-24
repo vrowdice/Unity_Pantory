@@ -94,7 +94,6 @@ namespace Pantory.Managers
                     vmObject.name = "VisualManager";
                     Object.DontDestroyOnLoad(vmObject);
                     _visualManager = vmObject.GetComponent<VisualManager>();
-                    Debug.Log("[GameInitializationHandler] VisualManager created from prefab.");
                     return true;
                 }
                 else
@@ -146,7 +145,6 @@ namespace Pantory.Managers
                     gdmObject.name = "GameDataManager";
                     Object.DontDestroyOnLoad(gdmObject);
                     _gameDataManager = gdmObject.GetComponent<GameDataManager>();
-                    Debug.Log("[GameInitializationHandler] GameDataManager created from prefab.");
                     return true;
                 }
                 else

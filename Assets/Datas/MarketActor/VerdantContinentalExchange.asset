@@ -17,7 +17,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: ce6601d5ab80c364aa129eac85fcafd2, type: 3}
   description: Pan-regional wholesalers that keep carpenters supplied with every grade of wood and basic arms for militias.
   archetype: 3
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

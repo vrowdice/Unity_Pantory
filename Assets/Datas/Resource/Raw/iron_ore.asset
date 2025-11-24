@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ore
   displayName: Iron Ore
-  baseValue: 10
-  marketSensitivity: 0.18
-  meanReversionStrength: 0.6
-  maxDailySwing: 0.014
-  scarcityWeight: 0.45
+  baseValue: 15
+  marketSensitivity: 0.15
+  meanReversionStrength: 0.7
+  volatilityMultiplier: 0.8
+  scarcityWeight: 0.4
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
   rarity: 0.8
   type: 0
   nextStage: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   icon: {fileID: 21300000, guid: 52f061358b1c6294e8f542ed23a26f4e, type: 3}
-  description: A rough chunk of iron-bearing rock, common yet essential. The foundation
-    of metalworking and industry.
+  description: The foundation of industry. The primary material for steel and machine parts.
   requirements: []
-  initialAmount: 1000
+  initialAmount: 2000

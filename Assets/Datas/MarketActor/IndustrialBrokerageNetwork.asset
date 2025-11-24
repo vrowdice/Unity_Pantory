@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A sophisticated trading network specializing in metals, tools, and
     weapons for industrial and military clients.
   archetype: 2
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

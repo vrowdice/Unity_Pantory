@@ -18,7 +18,6 @@ MonoBehaviour:
   description: Government-sanctioned brokers who balance the capital's supply of
     lumber, ore, and luxury goods through tightly regulated auctions.
   archetype: 2
-  roles: 3
   providerProfile:
     outputs: []
     upkeep: []

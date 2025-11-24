@@ -18,7 +18,6 @@ MonoBehaviour:
   description: High-end logistics company specializing in sourcing premium metals,
     tools, and weapons for industrial facilities and military contractors.
   archetype: 2
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

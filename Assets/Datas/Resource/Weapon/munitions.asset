@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a173e744a3c2d4b8f37babb9010ae3, type: 3}
+  m_Name: munitions
+  m_EditorClassIdentifier: 
+  id: munitions
+  displayName: Munitions
+  baseValue: 300
+  marketSensitivity: 0.5
+  meanReversionStrength: 0.6
+  volatilityMultiplier: 1.2
+  scarcityWeight: 0.8
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
+  rarity: 0.5
+  type: 4
+  nextStage: {fileID: 0}
+  icon: {fileID: 21300000, guid: c5d50760f5670aa45bc93b1c225b1ec6, type: 3}
+  description: The fuel of war. Bullets, shells, and explosives consumed continuously
+    as long as conflict persists. Demand becomes nearly infinite during wartime.
+  requirements:
+  - resource: {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+    count: 1
+  - resource: {fileID: 11400000, guid: 8f1295d50d37e804fb5038b0bb217e8d, type: 2}
+    count: 1
+  - resource: {fileID: 11400000, guid: 860e934b5e404b443a88fea11fccc787, type: 2}
+    count: 1
+  initialAmount: 0
+

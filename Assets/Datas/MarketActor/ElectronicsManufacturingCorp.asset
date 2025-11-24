@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A major electronics manufacturer producing motors, light bulbs, and wiring
     for industrial and consumer markets.
   archetype: 1
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

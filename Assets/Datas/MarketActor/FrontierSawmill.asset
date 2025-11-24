@@ -18,7 +18,6 @@ MonoBehaviour:
   description: Pioneering lumber mills that flood the market with processed timber
     and furniture while buying raw logs in bulk from suppliers.
   archetype: 1
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

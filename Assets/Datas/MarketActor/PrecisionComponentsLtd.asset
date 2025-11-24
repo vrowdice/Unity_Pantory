@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A specialized manufacturer producing precision gears, bolts, and mechanical
     components for industrial machinery and vehicles.
   archetype: 0
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

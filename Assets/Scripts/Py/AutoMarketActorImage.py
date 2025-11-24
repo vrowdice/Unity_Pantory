@@ -38,9 +38,17 @@ elif GOOGLE_AI_API_KEY:
         print(f"Imagen 클라이언트 초기화 실패: {e}")
         imagen_client = None
 
-# 프로젝트 루트 디렉토리 (이미 위에서 정의됨)
+# 프로젝트 루트 디렉토리
 DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/MarketActor")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/MarketActor")
+
+# Archetype별 로고 스타일 키워드
+ARCHETYPE_STYLES = {
+    0: "general trading company, logistics symbol, versatile business emblem",
+    1: "manufacturing company, industrial symbol, production facility emblem",
+    2: "trading network, brokerage symbol, merchant emblem, exchange logo",
+    3: "guild symbol, consortium emblem, collective organization badge"
+}
 
 def parse_asset_file(file_path):
     """Unity .asset 파일에서 정보 추출"""
@@ -73,61 +81,35 @@ def parse_asset_file(file_path):
     
     return data
 
-def get_archetype_name(archetype_num):
-    """Archetype 번호를 이름으로 변환"""
-    archetypes = {
-        0: "Generalist",
-        1: "Specialist",
-        2: "Trader",
-        3: "Guild"
-    }
-    return archetypes.get(archetype_num, "unknown")
-
-def generate_image_prompt(item_data):
-    """MarketActor 데이터를 기반으로 이미지 생성 프롬프트 만들기"""
-    name = item_data.get('displayName', 'Unknown Actor')
-    description = item_data.get('description', '')
-    archetype = item_data.get('archetype', 0)
-    archetype_name = get_archetype_name(archetype)
+def build_image_prompt(description="", archetype=0):
+    """
+    이미지 생성 프롬프트 빌드 (단순화된 버전)
     
-    # Archetype별 로고 스타일 설정
-    if archetype == 0:  # Generalist
-        logo_style = "simple company logo, general trading company, logistics symbol, versatile business emblem"
-    elif archetype == 1:  # Specialist
-        logo_style = "simple company logo, manufacturing company, industrial symbol, production facility emblem"
-    elif archetype == 2:  # Trader
-        logo_style = "simple company logo, trading network, brokerage symbol, merchant emblem, exchange logo"
-    elif archetype == 3:  # Guild
-        logo_style = "simple company logo, guild symbol, consortium emblem, collective organization badge"
-    else:
-        logo_style = "simple company logo, business organization emblem"
+    Args:
+        description: 회사 설명 (선택)
+        archetype: Archetype 번호 (0-3)
     
-    # description이 있으면 프롬프트에 포함 (텍스트가 아닌 개념으로만 사용)
-    desc_text = f"\nConcept: {description}" if description else ""
+    Returns:
+        str: 생성된 프롬프트
+    """
+    # Archetype 스타일 가져오기
+    archetype_style = ARCHETYPE_STYLES.get(archetype, "business organization emblem")
     
-    prompt = f"""Create a simple abstract company logo symbol.{desc_text}
+    # Description 추가 (있는 경우)
+    desc_part = f", {description}" if description else ""
     
-CRITICAL REQUIREMENTS:
-- Perfect pixel art style, image dimensions are 512 by 512 pixels (this is a technical specification, NOT text to include in the image)
-- Pure white background #FFFFFF - completely solid white, no other background colors
-- ABSOLUTELY NO text, NO letters, NO characters, NO words, NO labels, NO numbers anywhere in the image
-- DO NOT include the company name "{name}" as text in the image
-- DO NOT write "512", "512x512", "512 512", or ANY numbers or text in the image
-- The numbers "512" or "512x512" are ONLY technical specifications for image size, they must NEVER appear as text in the image itself
-- If you see "512" or "512x512" in this prompt, it refers to image dimensions only, NOT text to render
-- NO alphabet characters, NO typography, NO writing of any kind
-- NO anti-aliasing, sharp crisp pixels only
-- Simple clean logo design, centered composition
-- Minimalist company logo style
-- Limited color palette (max 6 colors)
-- Icon or symbol that represents the company concept (visual symbol only, no text)
-- High contrast, clear visibility
-- No broken or corrupted pixels
-- Professional game asset quality
-- Simple geometric shapes or abstract symbols only
-- {logo_style}
-- Visual symbol only, no text elements whatsoever
-"""
+    # 단순화된 프롬프트
+    prompt = (
+        f"pixel art simple abstract company logo symbol{desc_part}, "
+        f"{archetype_style}, "
+        "minimalist logo design, simple geometric shapes, "
+        "pure white background #FFFFFF, "
+        "512x512 pixels, "
+        "no text no letters no numbers no typography, "
+        "sharp pixels no anti-aliasing, "
+        "high contrast, limited color palette, "
+        "professional game asset quality"
+    )
     
     return prompt
 
@@ -149,29 +131,29 @@ def process_generated_image(img, item_name):
         print(f"  이미지 후처리 오류: {e}")
         return img
 
-def generate_image_with_imagen(prompt, output_path, item_name, description="", archetype=0):
-    """Google Imagen 4.0 API를 사용해서 이미지 생성"""
+def generate_image_with_imagen(output_path, item_name, description="", archetype=0):
+    """
+    Google Imagen 4.0 API를 사용해서 이미지 생성
+    
+    Args:
+        output_path: 출력 이미지 경로
+        item_name: 아이템 이름 (로깅용)
+        description: 회사 설명
+        archetype: Archetype 번호
+    
+    Returns:
+        bool: 성공 여부
+    """
     try:
-        # description이 있으면 간단한 프롬프트에도 포함
-        desc_part = f", {description}" if description else ""
+        # 프롬프트 생성
+        prompt = build_image_prompt(description, archetype)
         
-        # Archetype별 로고 스타일 키워드 추가
-        archetype_keywords = {
-            0: "simple company logo, general trading company, logistics symbol, versatile business emblem",
-            1: "simple company logo, manufacturing company, industrial symbol, production facility emblem",
-            2: "simple company logo, trading network, brokerage symbol, merchant emblem, exchange logo",
-            3: "simple company logo, guild symbol, consortium emblem, collective organization badge"
-        }
-        archetype_style = archetype_keywords.get(archetype, "simple company logo, business organization emblem")
-        
-        simple_prompt = f"pixel art simple abstract company logo symbol{desc_part}, {archetype_style}, minimalist logo design, simple geometric shapes or abstract symbol, image size specification 512 by 512 pixels this is technical info not text to render, pure white background #FFFFFF, absolutely no text no letters no characters no words no labels no numbers no typography no writing, do not include company name as text, do not write 512 or 512x512 or 512 512 or any numbers as text in image, the numbers 512 are only image dimensions not text to include, visual symbol only, sharp pixels, retro RPG style, high quality, clean design, no anti-aliasing, professional game asset, company logo icon"
-        
-        # Imagen으로 실제 이미지 생성
+        # Imagen으로 이미지 생성
         if imagen_client:
             try:
                 response = imagen_client.models.generate_images(
                     model=IMAGEN_MODEL,
-                    prompt=simple_prompt,
+                    prompt=prompt,
                     config=types.GenerateImagesConfig(
                         number_of_images=1,
                     )
@@ -221,7 +203,7 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", a
             except Exception as e:
                 error_str = str(e)
                 if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str or "quota" in error_str.lower():
-                    print(f"  ⚠️  API 할당량 초과: 일일 70회 제한에 도달했습니다.")
+                    print(f"  API 할당량 초과: 일일 70회 제한에 도달했습니다.")
                     print(f"     내일 다시 시도하거나 Google AI 플랜을 업그레이드하세요.")
                     print(f"     https://ai.dev/usage?tab=rate-limit 에서 사용량 확인 가능")
                 else:
@@ -265,17 +247,16 @@ def process_market_actors():
             print(f"  건너뜀: {item_name} (이미지 이미 존재)")
             continue
         
-        prompt = generate_image_prompt(item_data)
         description = item_data.get('description', '')
         archetype = item_data.get('archetype', 0)
-        success = generate_image_with_imagen(prompt, output_image_path, item_name, description, archetype)
+        success = generate_image_with_imagen(output_image_path, item_name, description, archetype)
         
         # API가 작동하지 않으면 아무것도 생성하지 않음
         if not success:
             print(f"  생성 실패: {item_name} (API 미사용)")
             # 할당량 초과 시 더 이상 시도하지 않음
             if "429" in str(success) or "quota" in str(success).lower():
-                print(f"\n⚠️  API 할당량 초과로 인해 처리를 중단합니다.")
+                print(f"\nAPI 할당량 초과로 인해 처리를 중단합니다.")
                 break
         
         time.sleep(2.0)  # 할당량 절약을 위해 대기 시간 증가

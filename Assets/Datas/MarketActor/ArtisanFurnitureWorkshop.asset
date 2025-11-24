@@ -18,7 +18,6 @@ MonoBehaviour:
   description: Master craftsmen who turn premium wood into bespoke furniture and
     architectural elements for luxury estates.
   archetype: 1
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

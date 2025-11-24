@@ -11,9 +11,6 @@ public class MarketActorData : ScriptableObject
     public string description;
     public MarketActorArchetype archetype = MarketActorArchetype.Generalist;
 
-    [Header("Roles")]
-    public MarketRoleFlags roles = MarketRoleFlags.Provider;
-
     [Header("Profiles")]
     public ProviderProfile providerProfile;
     public ConsumerProfile consumerProfile;

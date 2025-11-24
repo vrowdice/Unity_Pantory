@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A prestige weapons conglomerate that outfits military units and security
     forces with premium steel, gold, and advanced weaponry.
   archetype: 0
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:

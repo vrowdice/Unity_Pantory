@@ -10,14 +10,6 @@ public enum MarketActorArchetype
     Guild
 }
 
-[Flags]
-public enum MarketRoleFlags
-{
-    None = 0,
-    Provider = 1 << 0,
-    Consumer = 1 << 1
-}
-
 public enum MarketActorScale
 {
     Small,

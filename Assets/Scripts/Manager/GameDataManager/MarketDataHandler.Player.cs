@@ -45,13 +45,12 @@ public partial class MarketDataHandler
     }
 
     /// <summary>
-    /// 플레이어가 자원을 구매합니다. 구매 시 시장 수요에 즉시 반영됩니다.
+    /// 플레이어 거래 검증을 수행합니다.
     /// </summary>
-    /// <param name="resourceId">구매할 자원 ID</param>
-    /// <param name="amount">구매할 수량</param>
-    /// <returns>성공 시 true, 실패 시 false</returns>
-    public bool TryPlayerBuyResource(string resourceId, long amount)
+    private bool ValidatePlayerTrade(string resourceId, long amount, out ResourceEntry resourceEntry)
     {
+        resourceEntry = null;
+        
         if (_gameDataManager?.Resource == null || _gameDataManager.Finances == null)
         {
             Debug.LogWarning("[MarketDataHandler] GameDataManager or required handlers are not available.");
@@ -60,14 +59,30 @@ public partial class MarketDataHandler
 
         if (string.IsNullOrEmpty(resourceId) || amount <= 0)
         {
-            Debug.LogWarning($"[MarketDataHandler] Invalid buy request: resourceId={resourceId}, amount={amount}");
+            Debug.LogWarning($"[MarketDataHandler] Invalid trade request: resourceId={resourceId}, amount={amount}");
             return false;
         }
 
-        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
         if (resourceEntry == null)
         {
             Debug.LogWarning($"[MarketDataHandler] Resource not found: {resourceId}");
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 플레이어가 자원을 구매합니다. 구매 시 시장 수요에 즉시 반영됩니다.
+    /// </summary>
+    /// <param name="resourceId">구매할 자원 ID</param>
+    /// <param name="amount">구매할 수량</param>
+    /// <returns>성공 시 true, 실패 시 false</returns>
+    public bool TryPlayerBuyResource(string resourceId, long amount)
+    {
+        if (!ValidatePlayerTrade(resourceId, amount, out var resourceEntry))
+        {
             return false;
         }
 
@@ -148,22 +163,8 @@ public partial class MarketDataHandler
     /// <returns>성공 시 true, 실패 시 false</returns>
     public bool TryPlayerSellResource(string resourceId, long amount)
     {
-        if (_gameDataManager?.Resource == null || _gameDataManager.Finances == null)
+        if (!ValidatePlayerTrade(resourceId, amount, out var resourceEntry))
         {
-            Debug.LogWarning("[MarketDataHandler] GameDataManager or required handlers are not available.");
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(resourceId) || amount <= 0)
-        {
-            Debug.LogWarning($"[MarketDataHandler] Invalid sell request: resourceId={resourceId}, amount={amount}");
-            return false;
-        }
-
-        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
-        if (resourceEntry == null)
-        {
-            Debug.LogWarning($"[MarketDataHandler] Resource not found: {resourceId}");
             return false;
         }
 

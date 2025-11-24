@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A nationwide clothing retailer offering both basic and premium fashion
     for everyday consumers and luxury markets.
   archetype: 1
-  roles: 2
   providerProfile:
     outputs: []
     upkeep: []

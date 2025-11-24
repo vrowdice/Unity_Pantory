@@ -13,12 +13,6 @@ public class ProviderState
     public int reassignmentCountdown;
     public List<string> activeResourceIds = new();
 
-    [Header("Wealth & Ranking")]
-    public float wealth; // 자산 (현재 보유 자산, 손익에 따라 증감)
-    public float previousWealth; // 전일 자산 (비교용)
-    public int rank; // 순위
-    [Header("Business Health")]
-    public float health = 1f; // 건강도 (0~1, 단순화)
     [Header("Trading Statistics")]
     public float dailySalesRevenue; // 일일 매출액
     public float dailySalesVolume; // 일일 판매량
@@ -32,27 +26,6 @@ public class ProviderState
         cooldownTimer = 0f;
         activeContracts = 0;
         reassignmentCountdown = 0;
-        wealth = 0f;
-        previousWealth = 0f;
-        rank = 0;
-        health = 1f;
-        dailySalesRevenue = 0f;
-        dailySalesVolume = 0f;
-        dailyProductionCost = 0f;
-        dailyNetProfit = 0f;
-    }
-
-    public ProviderState(float initialWealth, float initialHealth)
-    {
-        priceDelta = 0f;
-        productionProgress = 0f;
-        cooldownTimer = 0f;
-        activeContracts = 0;
-        reassignmentCountdown = 0;
-        wealth = initialWealth;
-        previousWealth = initialWealth;
-        rank = 0;
-        health = initialHealth;
         dailySalesRevenue = 0f;
         dailySalesVolume = 0f;
         dailyProductionCost = 0f;
@@ -70,12 +43,6 @@ public class ConsumerState
     public int reassignmentCountdown;
     public List<string> activeResourceIds = new();
 
-    [Header("Wealth & Ranking")]
-    public float wealth; // 자산 (현재 보유 자산, 손익에 따라 증감)
-    public float previousWealth; // 전일 자산 (비교용)
-    public int rank; // 순위
-    [Header("Business Health")]
-    public float health = 1f; // 건강도 (0~1, 단순화)
     [Header("Trading Statistics")]
     public float dailyPurchaseExpense; // 일일 구매 비용
     public float dailyPurchaseVolume; // 일일 구매량
@@ -87,25 +54,6 @@ public class ConsumerState
         satisfaction = 1f;
         desireTimer = 0f;
         reassignmentCountdown = 0;
-        wealth = 0f;
-        previousWealth = 0f;
-        rank = 0;
-        health = 1f;
-        dailyPurchaseExpense = 0f;
-        dailyPurchaseVolume = 0f;
-        dailyConsumptionValue = 0f;
-    }
-
-    public ConsumerState(float initialWealth, float initialHealth)
-    {
-        currentBudget = 0f;
-        satisfaction = 1f;
-        desireTimer = 0f;
-        reassignmentCountdown = 0;
-        wealth = initialWealth;
-        previousWealth = initialWealth;
-        rank = 0;
-        health = initialHealth;
         dailyPurchaseExpense = 0f;
         dailyPurchaseVolume = 0f;
         dailyConsumptionValue = 0f;
@@ -118,21 +66,18 @@ public class MarketActorState
     public ProviderState provider;
     public ConsumerState consumer;
 
+    [Header("Unified Actor State")]
+    public float wealth; // 통합 자산 (공급/소비 모두 포함)
+    public float previousWealth; // 전일 자산 (비교용)
+    public float health = 1f; // 통합 건강도 (0~1)
+    public int rank; // 통합 순위
+
     /// <summary>
-    /// 액터의 총 자산을 반환합니다 (Provider + Consumer 합계).
+    /// 액터의 총 자산을 반환합니다.
     /// </summary>
     public float GetWealth()
     {
-        float totalWealth = 0f;
-        if (provider != null)
-        {
-            totalWealth += provider.wealth;
-        }
-        if (consumer != null)
-        {
-            totalWealth += consumer.wealth;
-        }
-        return totalWealth;
+        return wealth;
     }
 
     /// <summary>
@@ -192,33 +137,19 @@ public class MarketActorState
     }
 
     /// <summary>
-    /// 액터의 순위를 반환합니다 (더 높은 자산 기준).
+    /// 액터의 순위를 반환합니다.
     /// </summary>
     public int GetRank()
     {
-        int providerRank = provider?.rank ?? int.MaxValue;
-        int consumerRank = consumer?.rank ?? int.MaxValue;
-        return Math.Min(providerRank, consumerRank);
+        return rank;
     }
 
     /// <summary>
-    /// 액터의 평균 건강도를 반환합니다.
+    /// 액터의 건강도를 반환합니다.
     /// </summary>
     public float GetHealth()
     {
-        float totalHealth = 0f;
-        int count = 0;
-        if (provider != null)
-        {
-            totalHealth += provider.health;
-            count++;
-        }
-        if (consumer != null)
-        {
-            totalHealth += consumer.health;
-            count++;
-        }
-        return count > 0 ? totalHealth / count : 1f;
+        return health;
     }
 
     /// <summary>

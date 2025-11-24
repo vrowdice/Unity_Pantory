@@ -16,15 +16,9 @@ public partial class MarketDataHandler
             return;
         }
 
-        if (entry.data.roles.HasFlag(MarketRoleFlags.Consumer))
-        {
-            RefreshConsumer(entry);
-        }
-
-        if (entry.data.roles.HasFlag(MarketRoleFlags.Provider))
-        {
-            RefreshProvider(entry);
-        }
+        // All actors handle both supply and consumption
+        RefreshConsumer(entry);
+        RefreshProvider(entry);
     }
 
     /// <summary>
@@ -34,8 +28,15 @@ public partial class MarketDataHandler
     {
         var profile = entry.GetConsumerProfile();
         var state = entry.state.consumer;
-        if (profile == null || state == null)
+        if (profile == null || state == null || entry.data == null)
         {
+            return;
+        }
+
+        // 시스템 액터(일반 시민): 무한 예산 유지
+        if (entry.data.id == "sys_populace")
+        {
+            state.currentBudget = profile.budgetRange.max; // 항상 최대 예산
             return;
         }
 
@@ -50,13 +51,22 @@ public partial class MarketDataHandler
             else
             {
                 // 예산 범위가 없는 경우 자산의 일부를 예산으로 사용
+                // 구매력 향상을 위해 예산 비율 증가
                 float budgetRatio = entry.data.scale switch
                 {
-                    MarketActorScale.Small => 0.3f,
-                    MarketActorScale.Large => 0.4f,
-                    _ => 0.35f
+                    MarketActorScale.Small => _marketSettings != null ? _marketSettings.smallBudgetRatio : 0.5f,
+                    MarketActorScale.Large => _marketSettings != null ? _marketSettings.largeBudgetRatio : 0.6f,
+                    _ => _marketSettings != null ? _marketSettings.mediumBudgetRatio : 0.55f
                 };
-                state.currentBudget = Mathf.Max(100f, state.wealth * budgetRatio);
+                // Ensure minimum budget to allow consumption even with low initial wealth
+                float calculatedBudget = entry.state.wealth * budgetRatio;
+                float minBudget = entry.data.scale switch
+                {
+                    MarketActorScale.Small => _marketSettings != null ? _marketSettings.smallMinBudget : 500f,
+                    MarketActorScale.Large => _marketSettings != null ? _marketSettings.largeMinBudget : 2000f,
+                    _ => _marketSettings != null ? _marketSettings.mediumMinBudget : 1000f
+                };
+                state.currentBudget = Mathf.Max(minBudget, calculatedBudget);
             }
         }
 
@@ -121,105 +131,88 @@ public partial class MarketDataHandler
                 continue;
             }
 
-            // Provider 건강 효과
-            if (entry.state.provider != null)
+            // 통합 건강 효과 계산
+            float wealthChange = entry.state.wealth - entry.state.previousWealth;
+            var consumerProfile = entry.GetConsumerProfile();
+            var consumerState = entry.state.consumer;
+
+            // 자산 증가 시 건강도 회복
+            if (wealthChange > 0f)
             {
-                var state = entry.state.provider;
-                float wealthChange = state.wealth - state.previousWealth;
-
-                // 자산 증가 시 건강도 회복
-                if (wealthChange > 0f)
-                {
-                    float recovery = _marketSettings != null ? _marketSettings.providerWealthGainHealthRecovery : 0.02f;
-                    state.health = Mathf.Min(1f, state.health + recovery);
-                }
-                // 자산 감소 시 건강도 감소
-                else if (wealthChange < 0f)
-                {
-                    float damage = _marketSettings != null ? _marketSettings.providerWealthLossHealthDamage : 0.05f;
-                    state.health = Mathf.Max(0.2f, state.health - damage);
-                }
-
-                // 경쟁 페널티 (순위가 낮을수록)
-                if (state.rank > 1)
-                {
-                    float penaltyRate = _marketSettings != null ? _marketSettings.providerRankPenalty : 0.005f;
-                    float penalty = (state.rank - 1) * penaltyRate;
-                    state.health = Mathf.Max(0.3f, state.health - penalty);
-                }
-
-                // 자연 감소 (매우 작게)
-                float naturalDecay = _marketSettings != null ? _marketSettings.providerNaturalDecay : 0.002f;
-                state.health = Mathf.Max(0.2f, state.health - naturalDecay);
+                float recovery = _marketSettings != null ? _marketSettings.providerWealthGainHealthRecovery : 0.02f;
+                entry.state.health = Mathf.Min(1f, entry.state.health + recovery);
+            }
+            // 자산 감소 시 건강도 감소
+            else if (wealthChange < 0f)
+            {
+                float damage = _marketSettings != null ? _marketSettings.providerWealthLossHealthDamage : 0.05f;
+                entry.state.health = Mathf.Max(0.2f, entry.state.health - damage);
             }
 
-            // Consumer 건강 효과
-            if (entry.state.consumer != null)
+            // 경쟁 페널티 (순위가 낮을수록)
+            if (entry.state.rank > 1)
             {
-                var state = entry.state.consumer;
-                var profile = entry.GetConsumerProfile();
+                float penaltyRate = _marketSettings != null ? _marketSettings.providerRankPenalty : 0.005f;
+                float penalty = (entry.state.rank - 1) * penaltyRate;
+                entry.state.health = Mathf.Max(0.3f, entry.state.health - penalty);
+            }
 
+            // 자연 감소 (매우 작게)
+            float naturalDecay = _marketSettings != null ? _marketSettings.providerNaturalDecay : 0.002f;
+            entry.state.health = Mathf.Max(0.2f, entry.state.health - naturalDecay);
+
+            // Consumer 예산 및 만족도 효과
+            if (consumerState != null && consumerProfile != null)
+            {
                 // 예산 부족 시 건강도 감소
                 float shortageThreshold = _marketSettings != null ? _marketSettings.budgetShortageThreshold : 0.3f;
-                if (profile != null && state.currentBudget < profile.budgetRange.min * shortageThreshold)
+                if (consumerState.currentBudget < consumerProfile.budgetRange.min * shortageThreshold)
                 {
                     float damage = _marketSettings != null ? _marketSettings.consumerBudgetShortageDamage : 0.03f;
-                    state.health = Mathf.Max(0.2f, state.health - damage);
+                    entry.state.health = Mathf.Max(0.2f, entry.state.health - damage);
                 }
                 else
                 {
                     // 예산 충분 시 건강도 회복
                     float recovery = _marketSettings != null ? _marketSettings.consumerBudgetSufficientRecovery : 0.01f;
-                    state.health = Mathf.Min(1f, state.health + recovery);
+                    entry.state.health = Mathf.Min(1f, entry.state.health + recovery);
                 }
 
                 // 만족도에 따른 건강도
                 float lerpRate = _marketSettings != null ? _marketSettings.consumerSatisfactionLerp : 0.1f;
-                state.health = Mathf.Lerp(state.health, state.satisfaction, lerpRate);
-                state.health = Mathf.Clamp(state.health, 0.2f, 1f);
+                entry.state.health = Mathf.Lerp(entry.state.health, consumerState.satisfaction, lerpRate);
             }
+
+            entry.state.health = Mathf.Clamp(entry.state.health, 0.2f, 1f);
         }
     }
 
+    // 순위 계산 최적화를 위한 캐시 리스트
+    private List<MarketActorEntry> _cachedActorList = new List<MarketActorEntry>();
+
     /// <summary>
-    /// 모든 액터의 경제력 기반 순위를 계산하고 업데이트합니다.
+    /// 모든 액터의 자산 기준 순위를 계산하고 업데이트합니다.
     /// </summary>
     private void UpdateRevenueRankings()
     {
-        // Provider 순위 계산 (경제력 기준)
-        var providerEntries = new List<(MarketActorEntry entry, float economicPower)>();
+        // 캐시 리스트 재사용 (GC 부하 감소)
+        _cachedActorList.Clear();
         foreach (var kvp in _actors)
         {
             var entry = kvp.Value;
-            if (entry?.state?.provider != null)
+            if (entry?.state != null)
             {
-                float economicPower = entry.state.CalculateEconomicPower();
-                providerEntries.Add((entry, economicPower));
+                _cachedActorList.Add(entry);
             }
         }
 
-        providerEntries.Sort((a, b) => b.economicPower.CompareTo(a.economicPower)); // 내림차순 정렬
-        for (int i = 0; i < providerEntries.Count; i++)
-        {
-            providerEntries[i].entry.state.provider.rank = i + 1;
-        }
+        // 자산 기준 내림차순 정렬
+        _cachedActorList.Sort((a, b) => b.state.GetWealth().CompareTo(a.state.GetWealth()));
 
-        // Consumer 순위 계산 (경제력 기준)
-        var consumerEntries = new List<(MarketActorEntry entry, float economicPower)>();
-        foreach (var kvp in _actors)
+        // 순위 할당
+        for (int i = 0; i < _cachedActorList.Count; i++)
         {
-            var entry = kvp.Value;
-            if (entry?.state?.consumer != null)
-            {
-                float economicPower = entry.state.CalculateEconomicPower();
-                consumerEntries.Add((entry, economicPower));
-            }
-        }
-
-        consumerEntries.Sort((a, b) => b.economicPower.CompareTo(a.economicPower)); // 내림차순 정렬
-        for (int i = 0; i < consumerEntries.Count; i++)
-        {
-            consumerEntries[i].entry.state.consumer.rank = i + 1;
+            _cachedActorList[i].state.rank = i + 1;
         }
     }
 }

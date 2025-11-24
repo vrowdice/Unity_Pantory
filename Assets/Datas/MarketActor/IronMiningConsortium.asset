@@ -17,7 +17,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: c3336f6ddcb9c8a44b1e68f213f412ca, type: 3}
   description: A cartel of deep-shaft mines that floods the market with cheap ore and undercuts rivals with ruthless efficiency.
   archetype: 1
-  roles: 1
   providerProfile:
     outputs: []
     upkeep: []

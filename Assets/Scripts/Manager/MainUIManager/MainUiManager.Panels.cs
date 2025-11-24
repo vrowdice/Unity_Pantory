@@ -53,7 +53,6 @@ public partial class MainUiManager
         {
             ClosePanelInternal(panelType);
             _currentOpenPanelType = default(MainPanelType); // 기본값으로 리셋
-            Debug.Log($"[MainUiManager] Panel {panelType} toggled off (closed).");
             return;
         }
 
@@ -66,7 +65,6 @@ public partial class MainUiManager
         // 새 패널 열기
         panel.OnOpen(_gameManager, _dataManager, this);
         _currentOpenPanelType = panelType;
-        Debug.Log($"[MainUiManager] Panel {panelType} opened.");
     }
 
     private void ClosePanelInternal(MainPanelType panelType)

@@ -18,7 +18,6 @@ MonoBehaviour:
   description: A major automotive manufacturer producing cars, trucks, and military
     vehicles for civilian and government markets.
   archetype: 0
-  roles: 3
   providerProfile:
     outputs: []
     upkeep:
