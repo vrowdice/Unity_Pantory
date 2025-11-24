@@ -36,4 +36,6 @@ MonoBehaviour:
     count: 2
   - resource: {fileID: 11400000, guid: 707bdf8bad3258b4b80e6bc374ece4de, type: 2}
     count: 2
+  - resource: {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
+    count: 1
   initialAmount: 0

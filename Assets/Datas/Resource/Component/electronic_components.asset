@@ -29,5 +29,7 @@ MonoBehaviour:
     systems. Essential for modern machinery, vehicles, and sophisticated devices.
   requirements:
   - resource: {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
-    count: 2
+    count: 1
+  - resource: {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
+    count: 1
   initialAmount: 0
