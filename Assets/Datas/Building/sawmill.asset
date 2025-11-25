@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Sawmill
   buildingType: 1
   icon: {fileID: 0}
-  buildingSprite: {fileID: 0}
+  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   description: Harvests raw timber directly from nearby forests. Produces fresh logs
     without consuming any auxiliary materials.
   baseCost: 140
