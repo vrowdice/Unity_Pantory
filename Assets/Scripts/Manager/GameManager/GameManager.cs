@@ -12,8 +12,9 @@ public class GameManager : MonoBehaviour
     private IUIManager _uiManager;
     private GameDataManager _gameDataManager;
     private MainCameraController _mainCameraController;
-    private string _currentThreadId = "Sample_Thread";
+    private string _currentThreadId = string.Empty;
 
+    private GameInitializationHandler _initializationHandler;
     private GameUiPanelHandler _uiPanelHandler;
     private GameProductionIconHandler _productionIconHandler;
     private GameWorldCanvasHandler _worldCanvasHandler;
@@ -55,22 +56,51 @@ public class GameManager : MonoBehaviour
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
 
+    [Header("GameDataManager Settings")]
+    [SerializeField] private GameObject _gameDataManagerPrefab;
+    [Tooltip("씬에 GameDataManager가 없으면 자동으로 생성합니다.")]
+    [SerializeField] private bool _autoCreateGameDataManager = true;
+
+    [Header("VisualManager Settings")]
+    [SerializeField] private GameObject _visualManagerPrefab;
+    [Tooltip("씬에 VisualManager가 없으면 자동으로 생성합니다.")]
+    [SerializeField] private bool _autoCreateVisualManager = true;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        
+        // 씬 로드 이벤트 구독
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+        // MainCameraController 초기화
+        InitializeMainCameraController();
+
+        // 초기화 핸들러 생성 및 모든 매니저 초기화
+        _initializationHandler = new GameInitializationHandler(
+            this,
+            _visualManagerPrefab,
+            _gameDataManagerPrefab,
+            _autoCreateVisualManager,
+            _autoCreateGameDataManager);
+
+        if (!_initializationHandler.InitializeAll())
         {
-            Instance = this;
-
-            DontDestroyOnLoad(gameObject);
-            
-            // 씬 로드 이벤트 구독
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            Debug.LogError("[GameManager] Initialization failed. Cannot proceed.");
+            return;
         }
 
+        // 초기화된 매니저 참조 가져오기
+        _gameDataManager = _initializationHandler.GameDataManager;
+
+        // Canvas와 UIManager 설정 (GameDataManager 초기화 후)
         var canvas = GameObject.Find("Canvas");
         if (canvas != null)
         {
@@ -84,19 +114,37 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("[GameManager] Could not find Canvas object.");
         }
+    }
 
+    void Start()
+    {
+        // GameDataManager가 완전히 초기화되었는지 다시 확인
         if (_gameDataManager == null)
         {
             _gameDataManager = GameDataManager.Instance;
         }
 
+        if (_gameDataManager == null || !IsGameDataManagerReady())
+        {
+            Debug.LogError("[GameManager] GameDataManager is not fully initialized in Start(). Handlers will not be initialized.");
+            return;
+        }
+
+        // 존재하는 스레드가 있으면 첫 번째 스레드를 사용, 없으면 빈 문자열 유지
+        var allThreads = _gameDataManager.Thread.GetAllThreads();
+        if (allThreads != null && allThreads.Count > 0)
+        {
+            _currentThreadId = allThreads.Keys.First();
+        }
+        else
+        {
+            _currentThreadId = string.Empty;
+        }
+
+        // 핸들러 초기화 (GameDataManager가 완전히 준비된 후)
         InitializeHandlers();
     }
 
-    void Start()
-    {
-
-    }
 
     void OnDestroy()
     {
@@ -105,13 +153,38 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// GameDataManager가 완전히 초기화되었는지 확인합니다.
+    /// </summary>
+    private bool IsGameDataManagerReady()
+    {
+        if (_gameDataManager == null)
+            return false;
+
+        // 모든 핵심 핸들러가 초기화되었는지 확인
+        return _gameDataManager.Time != null &&
+               _gameDataManager.Thread != null &&
+               _gameDataManager.Resource != null &&
+               _gameDataManager.Market != null &&
+               _gameDataManager.Finances != null &&
+               _gameDataManager.Employee != null &&
+               _gameDataManager.Building != null;
+    }
+
+    /// <summary>
     /// 씬이 로드될 때마다 호출되는 콜백
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // GameDataManager가 준비되었는지 확인
         if (_gameDataManager == null)
         {
             _gameDataManager = GameDataManager.Instance;
+        }
+
+        if (!IsGameDataManagerReady())
+        {
+            Debug.LogError("[GameManager] GameDataManager is not ready in OnSceneLoaded. Cannot proceed.");
+            return;
         }
 
         // Canvas와 UIManager 재설정
@@ -129,39 +202,22 @@ public class GameManager : MonoBehaviour
             Debug.LogError("[GameManager] Could not find Canvas object.");
         }
 
-        // MainUiManager 초기화
+        // MainCameraController 재초기화 (씬이 바뀔 수 있으므로)
+        InitializeMainCameraController();
+
+        // MainUiManager 초기화 (GameDataManager가 준비된 후)
         if (_uiManager != null)
         {
-            var dataManager = GameDataManager.Instance;
-            if (dataManager != null)
-            {
-                _uiManager.Initialize(this, dataManager);
-            }
-            else
-            {
-                Debug.LogError("[GameManager] GameDataManager.Instance is null. Cannot initialize MainUiManager.");
-            }
-        }
-
-        _mainCameraController = GameObject.Find("MainCamera").GetComponent<MainCameraController>();
-        if (_mainCameraController == null)
-        {
-            Debug.LogError("[GameManager] Could not find MainCameraController on Main Camera.");
+            _uiManager.Initialize(this, _gameDataManager);
         }
 
         // Main 씬이 아닐 경우 시간 정지
-        if (_gameDataManager != null)
+        if (scene.name != "Main")
         {
-            if (scene.name != "Main")
-            {
-                _gameDataManager.Time.PauseTime();
-            }
-        }
-        else
-        {
-            Debug.LogError("[GameManager] GameDataManager.Instance is null.");
+            _gameDataManager.Time?.PauseTime();
         }
 
+        // 핸들러 초기화 (GameDataManager가 준비된 후)
         InitializeHandlers();
 
         Camera targetCamera = _mainCameraController != null ? _mainCameraController.Camera : Camera.main;
@@ -396,12 +452,43 @@ public class GameManager : MonoBehaviour
         InitializeSceneManagers();
     }
 
+    /// <summary>
+    /// MainCameraController를 초기화합니다.
+    /// </summary>
+    private void InitializeMainCameraController()
+    {
+        if (_mainCameraController != null)
+        {
+            return; // 이미 초기화됨
+        }
+
+        GameObject mainCamera = GameObject.Find("MainCamera");
+        if (mainCamera != null)
+        {
+            _mainCameraController = mainCamera.GetComponent<MainCameraController>();
+            if (_mainCameraController == null)
+            {
+                Debug.LogWarning("[GameManager] MainCameraController component not found on MainCamera.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] MainCamera GameObject not found in the scene.");
+        }
+    }
+
     private void InitializeSceneManagers()
     {
         if (_gameDataManager == null)
         {
             Debug.LogWarning("[GameManager] GameDataManager is null. Cannot initialize scene managers.");
             return;
+        }
+
+        // MainCameraController가 없으면 초기화 시도
+        if (_mainCameraController == null)
+        {
+            InitializeMainCameraController();
         }
 
         GameObject sceneManagerRoot = GameObject.Find("SceneManager");

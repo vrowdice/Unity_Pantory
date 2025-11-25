@@ -12,6 +12,7 @@ public class MarketTraderBtn : MonoBehaviour
     private MarketActorEntry _actorEntry = null;
     private bool _isPlayer = false;
     private GameDataManager _dataManager = null;
+    private int _rank = 0; // 순위 정보 저장
 
     public void OnInitialize(MarketTraderPanel panel, MarketActorEntry actorEntry)
     {
@@ -19,12 +20,14 @@ public class MarketTraderBtn : MonoBehaviour
         _actorEntry = actorEntry;
         _isPlayer = false;
         _dataManager = null;
+        _rank = 0; // NPC는 MarketActorState.rank 사용
 
         if (_actorEntry?.data != null)
         {
             if (_image != null)
             {
-                _image.sprite = _actorEntry.data.portrait;
+                _image.sprite = _actorEntry.data.icon;
+                _image.enabled = _actorEntry.data.icon != null;
             }
 
             if (_nameText != null)
@@ -34,16 +37,25 @@ public class MarketTraderBtn : MonoBehaviour
                     : _actorEntry.data.displayName;
             }
         }
+        else
+        {
+            Debug.LogWarning("[MarketTraderBtn] ActorEntry or data is null.");
+            if (_nameText != null)
+            {
+                _nameText.text = "Unknown";
+            }
+        }
 
         UpdateIndicator();
     }
 
-    public void OnInitializePlayer(MarketTraderPanel panel, GameDataManager dataManager)
+    public void OnInitializePlayer(MarketTraderPanel panel, GameDataManager dataManager, int rank = 0)
     {
         _traderPanel = panel;
         _actorEntry = null;
         _isPlayer = true;
         _dataManager = dataManager;
+        _rank = rank;
 
         if (_nameText != null)
         {
@@ -78,10 +90,19 @@ public class MarketTraderBtn : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 버튼 정보를 업데이트합니다 (외부에서 호출 가능).
+    /// </summary>
+    public void RefreshIndicator()
+    {
+        UpdateIndicator();
+    }
+
     private void UpdateIndicator()
     {
         if (_changeValueText == null)
         {
+            Debug.LogWarning("[MarketTraderBtn] ChangeValueText is null, cannot update indicator.");
             return;
         }
 
@@ -94,24 +115,13 @@ public class MarketTraderBtn : MonoBehaviour
             if (_dataManager != null)
             {
                 long playerWealth = _dataManager.Finances.GetCredit();
-                var sortedActors = _dataManager.Market.GetActorsSortedByWealth(false);
                 
-                // 플레이어 순위 계산
-                int playerRank = 1;
-                foreach (var actor in sortedActors)
-                {
-                    if (actor?.state != null && actor.state.GetWealth() > playerWealth)
-                    {
-                        playerRank++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                // 전달받은 순위 사용 (없으면 계산)
+                int playerRank = _rank > 0 ? _rank : CalculatePlayerRank(playerWealth);
 
-                indicator = $"#{playerRank} Wealth {playerWealth:N0} [Player]";
-                color = Color.yellow; // 플레이어는 노란색으로 표시
+                // 플레이어는 노란색으로 표시
+                indicator = $"#{playerRank} Wealth {ReplaceUtils.FormatNumber(playerWealth)} [Player]";
+                color = Color.yellow;
             }
             else
             {
@@ -121,33 +131,50 @@ public class MarketTraderBtn : MonoBehaviour
         }
         else if (_actorEntry != null)
         {
-            // NPC 트레이더 정보 표시
-            float wealth = _actorEntry.state?.GetWealth() ?? 0f;
-            float previousWealth = GetPreviousWealth();
-            int rank = _actorEntry.state?.GetRank() ?? 0;
-            string healthStatus = _actorEntry.state?.GetHealthStatus() ?? "Normal";
-
-            if (wealth > 0f && rank > 0)
+            // NPC 트레이더 정보 표시 (자산 기준)
+            var state = _actorEntry.state;
+            if (state == null)
             {
+                indicator = "No Data";
+                color = Color.gray;
+            }
+            else
+            {
+                float wealth = state.GetWealth();
+                float previousWealth = GetPreviousWealth();
+                // MarketActorState.rank 사용 (이미 자산 기준으로 계산됨)
+                int rank = state.GetRank();
+                float economicPower = state.CalculateEconomicPower();
+                string healthStatus = state.GetHealthStatus();
+                float dailyTradeVolume = state.GetDailyTradeVolume();
+                float dailyNetProfit = state.GetDailyNetProfit();
+
+                // 자산 변화율 계산
                 float changePercent = previousWealth > 0f 
                     ? ((wealth - previousWealth) / previousWealth) * 100f 
                     : 0f;
                 string changeText = changePercent > 0f ? $"+{changePercent:F1}%" 
                     : changePercent < 0f ? $"{changePercent:F1}%" 
                     : "0%";
-                
-                indicator = $"#{rank} Wealth {wealth:N0} ({changeText}) [{healthStatus}]";
-                color = GetWealthChangeColor(wealth, previousWealth);
-            }
-            else if (wealth > 0f)
-            {
-                indicator = $"Wealth {wealth:N0} [{healthStatus}]";
-                color = GetWealthChangeColor(wealth, previousWealth);
-            }
-            else
-            {
-                indicator = $"No Wealth [{healthStatus}]";
-                color = Color.gray;
+
+                if (rank > 0 && wealth > 0f)
+                {
+                    // 순위, 자산, 거래액 표시 (자산 기준 순위)
+                    indicator = $"#{rank} Wealth {ReplaceUtils.FormatNumber((long)wealth)} ({changeText}) | " +
+                        $"Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)}";
+                    color = GetWealthChangeColor(wealth, previousWealth);
+                }
+                else if (wealth > 0f)
+                {
+                    indicator = $"Wealth {ReplaceUtils.FormatNumber((long)wealth)} ({changeText}) | " +
+                        $"Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)} [{healthStatus}]";
+                    color = GetWealthChangeColor(wealth, previousWealth);
+                }
+                else
+                {
+                    indicator = $"No Wealth | Trade {ReplaceUtils.FormatNumber((long)dailyTradeVolume)} [{healthStatus}]";
+                    color = Color.gray;
+                }
             }
         }
 
@@ -162,45 +189,45 @@ public class MarketTraderBtn : MonoBehaviour
             return 0f;
         }
 
-        float previous = 0f;
-        if (_actorEntry.state.provider != null)
-        {
-            previous += _actorEntry.state.provider.previousWealth;
-        }
-        if (_actorEntry.state.consumer != null)
-        {
-            previous += _actorEntry.state.consumer.previousWealth;
-        }
-        return previous;
+        return _actorEntry.state.previousWealth;
     }
 
     private Color GetWealthChangeColor(float currentWealth, float previousWealth)
     {
-        // 전일 대비 증감에 따른 색상
-        if (previousWealth <= 0f)
+        VisualManager visualManager = VisualManager.Instance;
+        if (visualManager != null)
         {
-            // 전일 데이터가 없으면 흰색
-            return Color.white;
+            return visualManager.GetWealthChangeColor(currentWealth, previousWealth);
+        }
+        
+        // VisualManager가 없을 경우 기본값 반환
+        return Color.white;
+    }
+
+    /// <summary>
+    /// 플레이어 순위를 계산합니다 (순위가 전달되지 않은 경우 사용).
+    /// </summary>
+    private int CalculatePlayerRank(long playerWealth)
+    {
+        if (_dataManager?.Market == null)
+        {
+            return 1;
         }
 
-        VisualManager visualManager = VisualManager.Instance;
-        float change = currentWealth - previousWealth;
-        
-        if (change > 0f)
+        var sortedActors = _dataManager.Market.GetActorsSortedByWealth(false);
+        int rank = 1;
+        foreach (var actor in sortedActors)
         {
-            // 증가 → 흑자 색상
-            return visualManager != null ? visualManager.ProfitColor : Color.blue;
+            if (actor?.state != null && actor.state.GetWealth() > playerWealth)
+            {
+                rank++;
+            }
+            else
+            {
+                break;
+            }
         }
-        else if (change < 0f)
-        {
-            // 감소 → 적자 색상
-            return visualManager != null ? visualManager.LossColor : Color.red;
-        }
-        else
-        {
-            // 변화 없음 → 흰색
-            return Color.white;
-        }
+        return rank;
     }
 }
 

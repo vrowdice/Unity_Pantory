@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: InitialMarketData
   m_EditorClassIdentifier: 
   marketFeeRate: 0.05
-  initialActorWealth: 0
+  initialActorWealth: 50000
   initialActorHealth: 1
   productionFailureChance: 0.05
   productionFailureLossRate: 0.1
@@ -29,8 +29,21 @@ MonoBehaviour:
   consumerBudgetShortageDamage: 0.03
   consumerBudgetSufficientRecovery: 0.01
   consumerSatisfactionLerp: 0.1
-  playerDemandImpact: 0.1
-  playerSupplyImpact: 0.1
+  playerDemandImpact: 0.02
+  playerSupplyImpact: 0.02
   minPriceSignal: 0.1
-  baseMaxDailySwing: 0.005
+  baseMaxDailySwing: 0.02
   noBatchSellingModifier: 0.5
+  rawProductionRange: {x: 3000, y: 6000}
+  metalProductionRange: {x: 1500, y: 3000}
+  woodProductionRange: {x: 2000, y: 4000}
+  toolProductionRange: {x: 500, y: 1000}
+  weaponProductionRange: {x: 200, y: 500}
+  otherProductionRange: {x: 800, y: 1500}
+  smallScaleMultiplier: 1.2
+  mediumScaleMultiplier: 2
+  largeScaleMultiplier: 3
+  consumerConsumptionMultiplier: 1.2
+  smallConsumerBudget: {x: 5000, y: 10000}
+  mediumConsumerBudget: {x: 20000, y: 50000}
+  largeConsumerBudget: {x: 100000, y: 300000}

@@ -14,19 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: imperial_logistics_bureau
   displayName: Imperial Logistics Bureau
-  portrait: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6fab7435ed757c641ba656473f417089, type: 3}
+  description: The empire's central distribution network, coordinating the flow of
+    essential resources across provinces while maintaining strategic reserves for
+    imperial operations.
   archetype: 0
-  roles: 2
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 0
-  - 1
-  - 2
-  providerReassignmentDays: 8
-  consumerReassignmentDays: 5
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep: []
@@ -43,4 +35,18 @@ MonoBehaviour:
     satisfactionDecay: 0.07
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 0
+  - 1
+  - 2
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  providerReassignmentDays: 8
+  consumerReassignmentDays: 5
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

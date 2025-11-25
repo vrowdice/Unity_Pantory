@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a173e744a3c2d4b8f37babb9010ae3, type: 3}
+  m_Name: oil
+  m_EditorClassIdentifier: 
+  id: oil
+  displayName: Oil
+  baseValue: 20
+  marketSensitivity: 0.4
+  meanReversionStrength: 0.3
+  volatilityMultiplier: 1.5
+  scarcityWeight: 0.9
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
+  rarity: 0.7
+  type: 0
+  nextStage: {fileID: 0}
+  icon: {fileID: 21300000, guid: 860e934b5e404b443a88fea11fccc787, type: 3}
+  description: Black gold. Material for synthetic textiles, plastics, and fuel for
+    tanks and aircraft.
+  requirements: []
+  initialAmount: 1500

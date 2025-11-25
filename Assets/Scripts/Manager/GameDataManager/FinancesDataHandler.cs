@@ -34,6 +34,20 @@ public class FinancesDataHandler
     public DailyExpenseReservation ReservedDailyExpenses => _reservedDailyExpenses;
     public bool IsProcessingReservedExpenses { get; private set; } = false;
 
+    // 크레딧 소모 원인 추적 딕셔너리 (키: ID, 값: (가격, 설명))
+    private Dictionary<string, (long cost, string reason)> _threadMaintenanceCosts = new Dictionary<string, (long, string)>();
+    private Dictionary<string, (long cost, string reason)> _resourceShortageCosts = new Dictionary<string, (long, string)>();
+    
+    /// <summary>
+    /// 스레드별 유지비 딕셔너리 (스레드 ID -> (가격, 설명))
+    /// </summary>
+    public Dictionary<string, (long cost, string reason)> ThreadMaintenanceCosts => new Dictionary<string, (long, string)>(_threadMaintenanceCosts);
+    
+    /// <summary>
+    /// 자원별 부족 비용 딕셔너리 (자원 ID -> (가격, 설명))
+    /// </summary>
+    public Dictionary<string, (long cost, string reason)> ResourceShortageCosts => new Dictionary<string, (long, string)>(_resourceShortageCosts);
+
     // GameDataManager 참조 (비용 계산에 필요)
     private readonly GameDataManager _gameDataManager;
 
@@ -161,11 +175,11 @@ public class FinancesDataHandler
 
         _reservedDailyExpenses = new DailyExpenseReservation();
 
-        // 1. 스레드 집계 (유지비, 생산, 소비)
-        CalculateThreadAggregates(out long maintenanceCost, out var totalProduction, out var totalConsumption);
+        // 1. 스레드 집계 (유지비)
+        CalculateThreadAggregates(out long maintenanceCost, out var threadMaintenanceCosts);
 
-        // 2. 자원 부족 비용 계산
-        long shortageCost = CalculateResourceShortageCost(totalProduction, totalConsumption);
+        // 2. 자원 부족 비용 계산 (내부에서 생산/소비 계산)
+        long shortageCost = CalculateResourceShortageCost(out var resourceShortageCosts, out var totalProduction, out var totalConsumption);
 
         // 3. 플레이어 자동 거래 비용/수익 계산
         CalculatePlayerTradeEconomics(totalProduction, totalConsumption, out long tradeCost, out long tradeRevenue);
@@ -178,6 +192,10 @@ public class FinancesDataHandler
         _reservedDailyExpenses.resourceShortageCost = shortageCost;
         _reservedDailyExpenses.playerTradeCost = tradeCost;
         _reservedDailyExpenses.playerTradeRevenue = tradeRevenue;
+        
+        // 크레딧 소모 원인 정보 저장 (디버깅/UI 표시용)
+        _threadMaintenanceCosts = threadMaintenanceCosts;
+        _resourceShortageCosts = resourceShortageCosts;
     }
 
     /// <summary>
@@ -200,17 +218,18 @@ public class FinancesDataHandler
         }
 
         _reservedDailyExpenses = new DailyExpenseReservation(); // 초기화
+        _threadMaintenanceCosts.Clear(); // 딕셔너리 초기화
+        _resourceShortageCosts.Clear(); // 딕셔너리 초기화
         IsProcessingReservedExpenses = false;
     }
 
     /// <summary>
-    /// 현재 배치된 스레드들의 자원 생산/소비 총합과 유지비를 계산합니다.
+    /// 현재 배치된 스레드들의 유지비를 계산합니다.
     /// </summary>
-    private void CalculateThreadAggregates(out long totalMaintenance, out Dictionary<string, long> totalProduction, out Dictionary<string, long> totalConsumption)
+    private void CalculateThreadAggregates(out long totalMaintenance, out Dictionary<string, (long cost, string reason)> threadMaintenanceCosts)
     {
         totalMaintenance = 0;
-        totalProduction = new Dictionary<string, long>();
-        totalConsumption = new Dictionary<string, long>();
+        threadMaintenanceCosts = new Dictionary<string, (long, string)>();
 
         if (_gameDataManager?.ThreadPlacement == null || _gameDataManager.Thread == null)
         {
@@ -227,14 +246,48 @@ public class FinancesDataHandler
             var threadState = _gameDataManager.Thread.GetThread(placement.ThreadId);
             if (threadState == null) continue;
 
-            // 유지비 합산
-            totalMaintenance += threadState.totalMaintenanceCost;
-
-            // 자원 합산
-            if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
+            // 유지비 합산 및 스레드별 유지비 추적
+            long maintenanceCost = threadState.totalMaintenanceCost;
+            totalMaintenance += maintenanceCost;
+            if (maintenanceCost > 0)
             {
-                AddToDict(totalProduction, prod);
-                AddToDict(totalConsumption, cons);
+                string reason = $"Thread '{placement.ThreadId}' Maintenance";
+                threadMaintenanceCosts[placement.ThreadId] = (maintenanceCost, reason);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 자원 부족 비용을 계산합니다. 내부에서 생산/소비를 계산합니다.
+    /// </summary>
+    private long CalculateResourceShortageCost(out Dictionary<string, (long cost, string reason)> resourceShortageCosts, out Dictionary<string, long> totalProduction, out Dictionary<string, long> totalConsumption)
+    {
+        resourceShortageCosts = new Dictionary<string, (long, string)>();
+        totalProduction = new Dictionary<string, long>();
+        totalConsumption = new Dictionary<string, long>();
+        
+        if (_gameDataManager?.Resource == null || _gameDataManager?.ThreadPlacement == null || _gameDataManager.Thread == null)
+        {
+            return 0;
+        }
+
+        // 스레드에서 생산/소비 집계
+        var placedThreads = _gameDataManager.ThreadPlacement.GetAllPlacedThreads();
+        if (placedThreads != null)
+        {
+            foreach (var placement in placedThreads.Values)
+            {
+                if (placement == null || string.IsNullOrEmpty(placement.ThreadId)) continue;
+
+                var threadState = _gameDataManager.Thread.GetThread(placement.ThreadId);
+                if (threadState == null) continue;
+
+                // 자원 합산
+                if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
+                {
+                    AddToDict(totalProduction, prod);
+                    AddToDict(totalConsumption, cons);
+                }
             }
         }
 
@@ -248,26 +301,16 @@ public class FinancesDataHandler
                 else target[kvp.Key] = kvp.Value;
             }
         }
-    }
 
-    /// <summary>
-    /// 자원 부족 비용을 계산합니다.
-    /// </summary>
-    private long CalculateResourceShortageCost(Dictionary<string, long> production, Dictionary<string, long> consumption)
-    {
-        if (_gameDataManager?.Resource == null)
-        {
-            return 0;
-        }
-
+        // 자원 부족 비용 계산
         long totalCost = 0;
         var allResources = _gameDataManager.Resource.GetAllResources();
 
-        foreach (var kvp in consumption)
+        foreach (var kvp in totalConsumption)
         {
             string id = kvp.Key;
             long consumeAmount = kvp.Value;
-            long produceAmount = production.ContainsKey(id) ? production[id] : 0;
+            long produceAmount = totalProduction.ContainsKey(id) ? totalProduction[id] : 0;
             long currentAmount = _gameDataManager.Resource.GetResourceQuantity(id);
 
             // 예상 보유량 = 현재 + 생산 - 소비
@@ -279,7 +322,10 @@ public class FinancesDataHandler
                 if (allResources.TryGetValue(id, out var entry))
                 {
                     float price = entry.resourceState?.currentValue ?? 0f;
-                    totalCost += (long)Math.Ceiling(price * shortage);
+                    long cost = (long)Math.Ceiling(price * shortage);
+                    totalCost += cost;
+                    string reason = $"Resource '{id}' Shortage (Shortage: {shortage}, Unit Price: {price:F2})";
+                    resourceShortageCosts[id] = (cost, reason);
                 }
             }
         }

@@ -13,20 +13,11 @@ MonoBehaviour:
   m_Name: FrontierSawmill
   m_EditorClassIdentifier: 
   id: frontier_sawmill
-  displayName: Frontier Sawmill Cooperative
-  portrait: {fileID: 0}
-  description: Pioneering lumber camps that flood the market with processed timber while buying raw logs in bulk from settlers.
+  displayName: Frontier Sawmill
+  icon: {fileID: 21300000, guid: 633e4330064f674428f43751aa52933f, type: 3}
+  description: Pioneering lumber mills that flood the market with processed timber
+    and furniture while buying raw logs in bulk from suppliers.
   archetype: 1
-  roles: 3
-  scale: 1
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 0
-  - 2
-  providerReassignmentDays: 9
-  consumerReassignmentDays: 6
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep:
@@ -45,4 +36,10 @@ MonoBehaviour:
     satisfactionDecay: 0.07
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 1
+  preferredResourceTypes: 000000000200000005000000
+  providerReassignmentDays: 9
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

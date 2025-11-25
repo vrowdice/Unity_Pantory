@@ -15,13 +15,17 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private TextMeshProUGUI _deltaCreditText;
-    [SerializeField] private InfoDatePanel _infoDatePanel;
+    [SerializeField] private DateTopInfoPanel _infoDatePanel;
+    [SerializeField] private TopInfoPanel _topInfoPanel;
 
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
     [SerializeField] private MarketPanel _marketPanel;
     [SerializeField] private EmployeePanel _employmentPanel;
     [SerializeField] private FinancePanel _financePanel;
+    [SerializeField] private ResearchPanel _researchPanel;
+    [SerializeField] private OrderPanel _orderPanel;
+    [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
@@ -94,6 +98,20 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             Debug.LogWarning("[MainUiManager] InfoDatePanel is not assigned.");
         }
 
+        if (_creditInfoPanel != null)
+        {
+            _creditInfoPanel.OnInitialize(_dataManager);
+        }
+
+        if (_topInfoPanel != null)
+        {
+            _topInfoPanel.OnInitialize(_dataManager);
+        }
+        else
+        {
+            Debug.LogWarning("[MainUiManager] TopInfoPanel is not assigned.");
+        }
+
         RefreshThreadCategories();
         RefreshThreadButtons();
         UpdateResourceSummary();
@@ -154,7 +172,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         }
 
         long resourceAmount = _dataManager.Finances.GetCredit();
-        textComponent.text = FormatResourceAmount(resourceAmount);
+        textComponent.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
     }
 
     private void UpdateDeltaCreditText(TextMeshProUGUI textComponent)
@@ -181,24 +199,22 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         }
 
         // 적자면 빨간색, 흑자면 파란색
-        string sign = deltaCredit > 0 ? "+" : "";
-        textComponent.text = $"{sign}{FormatResourceAmount(deltaCredit)}/day";
+        string sign = deltaCredit > 0 ? " +" : " ";
+        textComponent.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaCredit)} /day";
         
+        // VisualManager에서 색상 가져오기
         VisualManager visualManager = VisualManager.Instance;
-        if (deltaCredit < 0)
+        if (visualManager != null)
         {
-            textComponent.color = visualManager != null ? visualManager.LossColor : Color.red; // 적자
+            textComponent.color = visualManager.GetDeltaColor(deltaCredit);
         }
         else
         {
-            textComponent.color = visualManager != null ? visualManager.ProfitColor : Color.blue; // 흑자
+            // VisualManager가 없을 경우 기본값 반환
+            textComponent.color = Color.white;
         }
     }
 
-    private string FormatResourceAmount(long amount)
-    {
-        return amount.ToString("N0");
-    }
 
     private void OnMonthChanged()
     {
@@ -220,5 +236,29 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     {
         UpdateResourceSummary();
         UpdateDeltaCreditText(_deltaCreditText);
+    }
+
+    /// <summary>
+    /// 크레딧 정보 패널을 토글합니다.
+    /// </summary>
+    public void ToggleCreditInfo()
+    {
+        if (_creditInfoPanel != null)
+        {
+            _creditInfoPanel.ToggleCreditInfo();
+        }
+        else
+        {
+            Debug.LogWarning("[MainUiManager] CreditInfoPanel is not assigned!");
+        }
+    }
+
+    /// <summary>
+    /// FinancesDataHandler에서 크레딧 정보를 가져옵니다.
+    /// </summary>
+    /// <returns>크레딧 정보가 포함된 FinancesDataHandler, 없으면 null</returns>
+    public FinancesDataHandler GetFinancesDataHandler()
+    {
+        return _dataManager?.Finances;
     }
 }

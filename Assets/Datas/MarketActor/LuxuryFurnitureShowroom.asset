@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: LuxuryFurnitureShowroom
+  m_EditorClassIdentifier: 
+  id: luxury_furniture_showroom
+  displayName: Luxury Furniture Showroom
+  icon: {fileID: 21300000, guid: d402a55f448d3e244819731df0c3dbb9, type: 3}
+  description: An upscale furniture retailer specializing in premium and custom-made
+    furniture for affluent clients and luxury estates.
+  archetype: 2
+  providerProfile:
+    outputs: []
+    upkeep: []
+    basePriceModifier: 1
+    productionCooldownRange: {x: 12, y: 24}
+    allowBatchSelling: 1
+    maxConcurrentContracts: 1
+  consumerProfile:
+    budgetRange:
+      min: 1500
+      max: 2800
+    desiredResources: []
+    patienceSeconds: 6000
+    satisfactionDecay: 0.1
+    allowBulkBuying: 0
+    persistentOrders: 1
+  useDynamicResourceAllocation: 1
+  scale: 1
+  preferredResourceTypes:
+  - 2
+  - 5
+  providerReassignmentDays: 8
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

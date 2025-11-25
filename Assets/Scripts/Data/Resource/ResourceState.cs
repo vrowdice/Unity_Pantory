@@ -44,7 +44,9 @@ public class ResourceState
         }
 
         count = data.initialAmount;
-        currentValue = Mathf.Max(0.01f, data.baseValue);
+        // Initialize price to match effective baseline to avoid immediate mean reversion pressure
+        float effectiveBaseline = GetEffectiveBaseline(data.baseValue);
+        currentValue = Mathf.Max(0.01f, effectiveBaseline);
         RecordPrice(currentValue);
     }
 

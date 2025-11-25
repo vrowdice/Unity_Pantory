@@ -13,32 +13,27 @@ MonoBehaviour:
   m_Name: tank
   m_EditorClassIdentifier: 
   id: tank
-  displayName: Tank
-  baseValue: 150000
-  marketSensitivity: 0.3
+  displayName: Battle Tank
+  baseValue: 25000
+  marketSensitivity: 0.35
   meanReversionStrength: 0.72
-  maxDailySwing: 0.007
+  volatilityMultiplier: 1
   scarcityWeight: 1
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
   rarity: 0.15
-  type: 1
+  type: 8
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
-  description: A heavily armored combat vehicle with powerful armament. The ultimate
-    expression of military engineering and industrial might.
+  icon: {fileID: 21300000, guid: f3a22151301228e4a8d55d558b1bdffd, type: 3}
+  description: The king of ground warfare. A combination of steel and heavy artillery.
+    Consumes massive amounts of steel and heavy arms during wartime production.
   requirements:
   - resource: {fileID: 11400000, guid: 3fc829e6c43fdc245882ae5c87c6f421, type: 2}
-    count: 2
-  - resource: {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
-    count: 12
-  - resource: {fileID: 11400000, guid: baf2dc70a77de7346ae9a105ab388248, type: 2}
-    count: 6
-  - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
-    count: 8
-  - resource: {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
-    count: 2
-  - resource: {fileID: 11400000, guid: 707bdf8bad3258b4b80e6bc374ece4de, type: 2}
     count: 1
   - resource: {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
     count: 1
+  - resource: {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+    count: 20
+  - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
+    count: 5
   initialAmount: 0
-

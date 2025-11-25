@@ -6,22 +6,32 @@ using TMPro;
 public class MarketTraderPanel : MonoBehaviour
 {
     private GameDataManager _dataManager;
+    private GameManager _gameManager;
     private MarketActorEntry _selectedActor;
+    private List<GameObject> _providerResourceIcons = new List<GameObject>();
+    private List<GameObject> _consumerResourceIcons = new List<GameObject>();
+    private bool _isSubscribedToDayChange;
 
     [Header("Details")]
     [SerializeField] private Image _portrait;
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private TextMeshProUGUI _rolesText;
-    [SerializeField] private TextMeshProUGUI _archetypeText;
+    [SerializeField] private TextMeshProUGUI _descriptionText;
+    [SerializeField] private TextMeshProUGUI _activityText;   // active resources / contracts / holdings summary
     [SerializeField] private TextMeshProUGUI _tendencyText;
     [SerializeField] private TextMeshProUGUI _budgetText;
-    [SerializeField] private TextMeshProUGUI _satisfactionText;
-    [SerializeField] private TextMeshProUGUI _activityText;   // active resources / contracts / holdings summary
+    [SerializeField] private TextMeshProUGUI _assetChangeText;
 
-    public void OnInitialize(GameDataManager dataManager)
+    [Header("Resource Lists")]
+    [SerializeField] private Transform _providerResourceContentTransform;
+    [SerializeField] private Transform _consumerResourceContentTransform;
+
+
+    public void OnInitialize(GameManager gameManager, GameDataManager dataManager)
     {
+        _gameManager = gameManager;
         _dataManager = dataManager;
         ClearDetails();
+        SubscribeToDayChange();
     }
 
     public void HandleTraderButtonClicked(MarketActorEntry actorEntry)
@@ -44,8 +54,8 @@ public class MarketTraderPanel : MonoBehaviour
         // Portrait & Name
         if (_portrait != null)
         {
-            _portrait.sprite = data.portrait;
-            _portrait.enabled = data.portrait != null;
+            _portrait.sprite = data.icon;
+            _portrait.enabled = data.icon != null;
         }
 
         if (_nameText != null)
@@ -54,14 +64,9 @@ public class MarketTraderPanel : MonoBehaviour
         }
 
         // Roles & Archetype
-        if (_rolesText != null)
+        if (_descriptionText != null)
         {
-            _rolesText.text = GetRoleSummary(data.roles);
-        }
-
-        if (_archetypeText != null)
-        {
-            _archetypeText.text = data.archetype.ToString();
+            _descriptionText.text = data.description;
         }
 
         // Tendency (Provider)
@@ -69,7 +74,7 @@ public class MarketTraderPanel : MonoBehaviour
         {
             string tendency = "-";
             Color color = Color.white;
-            if (state?.provider != null && data.roles.HasFlag(MarketRoleFlags.Provider))
+            if (state?.provider != null)
             {
                 float delta = state.provider.priceDelta;
                 tendency = $"Tendency {delta:+0.##;-0.##;0}";
@@ -80,44 +85,193 @@ public class MarketTraderPanel : MonoBehaviour
         }
 
         // Budget & Satisfaction (Consumer)
+        // currentBudget: 하루에 사용할 수 있는 예산 (자산과는 다름)
+        // wealth: 액터의 총 자산
         if (_budgetText != null)
         {
             string budgetStr = "-";
             Color color = Color.white;
-            if (state?.consumer != null && data.roles.HasFlag(MarketRoleFlags.Consumer))
+            if (state?.consumer != null)
             {
                 float budget = state.consumer.currentBudget;
-                budgetStr = $"Budget {budget:N0}";
-                color = GetBudgetColor(budget);
+                float wealth = state.GetWealth();
+                
+                // 예산이 0이면 자산 기반으로 계산된 예산 표시
+                if (budget <= 0f && wealth > 0f)
+                {
+                    var consumerProfile = _selectedActor.GetConsumerProfile();
+                    if (consumerProfile != null)
+                    {
+                        float budgetRatio = _selectedActor.data?.scale switch
+                        {
+                            MarketActorScale.Small => 0.5f,
+                            MarketActorScale.Large => 0.6f,
+                            _ => 0.55f
+                        };
+                        float calculatedBudget = wealth * budgetRatio;
+                        budgetStr = $"Daily Budget: {calculatedBudget:N0} (from {ReplaceUtils.FormatNumber((long)wealth)} wealth)";
+                    }
+                    else
+                    {
+                        budgetStr = $"Daily Budget: 0 (Wealth: {ReplaceUtils.FormatNumber((long)wealth)})";
+                    }
+                }
+                else if (budget > 0f)
+                {
+                    budgetStr = $"Daily Budget: {budget:N0}";
+                }
+                else
+                {
+                    budgetStr = $"Daily Budget: 0 (No Wealth)";
+                }
+                color = GetBudgetColor(budget > 0f ? budget : wealth);
             }
             _budgetText.text = budgetStr;
             _budgetText.color = color;
         }
 
-        if (_satisfactionText != null)
+        // 자산 변화량
+        if (_assetChangeText != null)
         {
-            string satStr = "-";
-            if (state?.consumer != null && data.roles.HasFlag(MarketRoleFlags.Consumer))
+            if (state != null)
             {
-                satStr = $"Satisfaction {(state.consumer.satisfaction * 100f):0.#}%";
+                float wealthChange = state.wealth - state.previousWealth;
+                string changeStr = wealthChange >= 0
+                    ? $"+{ReplaceUtils.FormatNumber((long)wealthChange)}"
+                    : ReplaceUtils.FormatNumber((long)wealthChange);
+                _assetChangeText.text = $"Asset Change: {changeStr}";
+                _assetChangeText.color = GetDeltaColor(wealthChange);
             }
-            _satisfactionText.text = satStr;
+            else
+            {
+                _assetChangeText.text = "Asset Change: -";
+                _assetChangeText.color = Color.white;
+            }
         }
 
-        // Activity Summary
+        // Activity Summary (거래 통계 및 경제력) - 3줄로 축약
         if (_activityText != null)
         {
-            int providerActive = state?.provider?.activeResourceIds?.Count ?? 0;
-            int providerContracts = state?.provider?.activeContracts ?? 0;
-            int providerStocks = state?.provider?.stocks?.Count ?? 0;
+            var summary = new System.Text.StringBuilder();
 
-            int consumerActive = state?.consumer?.activeResourceIds?.Count ?? 0;
-            int consumerHoldings = state?.consumer?.holdings?.Count ?? 0;
+            // 기본 정보
+            float wealth = state?.GetWealth() ?? 0f;
+            int rank = state?.GetRank() ?? 0;
+            float economicPower = state?.CalculateEconomicPower() ?? 0f;
+            string healthStatus = state?.GetHealthStatus() ?? "Normal";
 
-            _activityText.text =
-                $"Provider: active {providerActive}, contracts {providerContracts}, stocks {providerStocks}\n" +
-                $"Consumer: active {consumerActive}, holdings {consumerHoldings}";
+            // 1줄: 기본 정보 통합
+            summary.AppendLine($"Rank: #{rank} | Power: {(economicPower * 100f):F1}% | Health: {healthStatus} | Wealth: {ReplaceUtils.FormatNumber((long)wealth)}");
+
+            // 2줄: 거래 정보 통합
+            float salesRevenue = state?.provider?.dailySalesRevenue ?? 0f;
+            float purchaseExpense = state?.consumer?.dailyPurchaseExpense ?? 0f;
+            float dailyTradeVolume = state?.GetDailyTradeVolume() ?? 0f;
+            summary.AppendLine($"Sales: {ReplaceUtils.FormatNumber((long)salesRevenue)} | Purchase: {ReplaceUtils.FormatNumber((long)purchaseExpense)} | Volume: {ReplaceUtils.FormatNumber((long)dailyTradeVolume)}");
+
+            // 3줄: 순이익
+            float dailyNetProfit = state?.GetDailyNetProfit() ?? 0f;
+            summary.Append($"Net Profit: {ReplaceUtils.FormatNumber((long)dailyNetProfit)}");
+
+            _activityText.text = summary.ToString();
         }
+
+        // 자원 아이콘 업데이트
+        UpdateResourceIcons();
+    }
+
+    private void UpdateResourceIcons()
+    {
+        // 기존 아이콘 정리
+        ClearResourceIcons();
+
+        if (_selectedActor?.data == null || _dataManager == null || _gameManager == null)
+        {
+            return;
+        }
+
+        // Provider 자원 (판매하는 자원) 표시
+        if (_providerResourceContentTransform != null)
+        {
+            var providerProfile = _selectedActor.GetProviderProfile();
+            if (providerProfile?.outputs != null && providerProfile.outputs.Count > 0)
+            {
+                foreach (var output in providerProfile.outputs)
+                {
+                    if (output?.resource == null || string.IsNullOrEmpty(output.resource.id))
+                    {
+                        continue;
+                    }
+
+                    var resourceEntry = _dataManager.Resource.GetResourceEntry(output.resource.id);
+                    if (resourceEntry != null && _gameManager.ProductionInfoImage != null)
+                    {
+                        var iconObj = Instantiate(_gameManager.ProductionInfoImage, _providerResourceContentTransform);
+                        var iconComponent = iconObj.GetComponent<ProductionInfoImage>();
+                        if (iconComponent != null)
+                        {
+                            // 수량 범위 표시 (desiredMin-desiredMax)
+                            int avgAmount = (int)((output.desiredMin + output.desiredMax) / 2);
+                            iconComponent.OnInitialize(resourceEntry, avgAmount);
+                        }
+                        _providerResourceIcons.Add(iconObj);
+                    }
+                }
+            }
+        }
+
+        // Consumer 자원 (구매하는 자원) 표시
+        if (_consumerResourceContentTransform != null)
+        {
+            var consumerProfile = _selectedActor.GetConsumerProfile();
+            if (consumerProfile?.desiredResources != null && consumerProfile.desiredResources.Count > 0)
+            {
+                foreach (var resource in consumerProfile.desiredResources)
+                {
+                    if (resource?.resource == null || string.IsNullOrEmpty(resource.resource.id))
+                    {
+                        continue;
+                    }
+
+                    var resourceEntry = _dataManager.Resource.GetResourceEntry(resource.resource.id);
+                    if (resourceEntry != null && _gameManager.ProductionInfoImage != null)
+                    {
+                        var iconObj = Instantiate(_gameManager.ProductionInfoImage, _consumerResourceContentTransform);
+                        var iconComponent = iconObj.GetComponent<ProductionInfoImage>();
+                        if (iconComponent != null)
+                        {
+                            // 수량 범위 표시 (desiredMin-desiredMax)
+                            int avgAmount = (int)((resource.desiredMin + resource.desiredMax) / 2);
+                            iconComponent.OnInitialize(resourceEntry, avgAmount);
+                        }
+                        _consumerResourceIcons.Add(iconObj);
+                    }
+                }
+            }
+        }
+    }
+
+    private void ClearResourceIcons()
+    {
+        // Provider 아이콘 정리
+        foreach (var icon in _providerResourceIcons)
+        {
+            if (icon != null)
+            {
+                Destroy(icon);
+            }
+        }
+        _providerResourceIcons.Clear();
+
+        // Consumer 아이콘 정리
+        foreach (var icon in _consumerResourceIcons)
+        {
+            if (icon != null)
+            {
+                Destroy(icon);
+            }
+        }
+        _consumerResourceIcons.Clear();
     }
 
     private void ClearDetails()
@@ -128,23 +282,16 @@ public class MarketTraderPanel : MonoBehaviour
             _portrait.enabled = false;
         }
         if (_nameText != null) _nameText.text = "-";
-        if (_rolesText != null) _rolesText.text = "-";
-        if (_archetypeText != null) _archetypeText.text = "-";
+        if (_descriptionText != null) _descriptionText.text = "-";
         if (_tendencyText != null) { _tendencyText.text = "-"; _tendencyText.color = Color.white; }
         if (_budgetText != null) { _budgetText.text = "-"; _budgetText.color = Color.white; }
-        if (_satisfactionText != null) _satisfactionText.text = "-";
         if (_activityText != null) _activityText.text = "-";
+        if (_assetChangeText != null) { _assetChangeText.text = "-"; _assetChangeText.color = Color.white; }
+
+        // 자원 아이콘 정리
+        ClearResourceIcons();
     }
 
-    private static string GetRoleSummary(MarketRoleFlags roles)
-    {
-        bool isProvider = roles.HasFlag(MarketRoleFlags.Provider);
-        bool isConsumer = roles.HasFlag(MarketRoleFlags.Consumer);
-        if (isProvider && isConsumer) return "Provider · Consumer";
-        if (isProvider) return "Provider";
-        if (isConsumer) return "Consumer";
-        return "None";
-    }
 
     private static Color GetDeltaColor(float delta)
     {
@@ -158,5 +305,61 @@ public class MarketTraderPanel : MonoBehaviour
         if (budget >= 1000f) return Color.green;
         if (budget <= 100f) return Color.red;
         return Color.white;
+    }
+
+    private void SubscribeToDayChange()
+    {
+        // 중복 구독 방지
+        if (_isSubscribedToDayChange)
+        {
+            return;
+        }
+
+        if (_dataManager?.Time == null)
+        {
+            return;
+        }
+
+        _dataManager.Time.OnDayChanged += HandleDayChanged;
+        _isSubscribedToDayChange = true;
+    }
+
+    private void UnsubscribeFromDayChange()
+    {
+        if (!_isSubscribedToDayChange)
+        {
+            return;
+        }
+
+        if (_dataManager?.Time == null)
+        {
+            _isSubscribedToDayChange = false;
+            return;
+        }
+
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        _isSubscribedToDayChange = false;
+    }
+
+    private void HandleDayChanged()
+    {
+        // 선택된 액터가 있으면 정보 갱신
+        if (_selectedActor != null)
+        {
+            UpdateDetails();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            UnsubscribeFromDayChange();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromDayChange();
     }
 }

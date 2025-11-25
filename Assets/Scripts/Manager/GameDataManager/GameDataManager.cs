@@ -95,6 +95,12 @@ public class GameDataManager : MonoBehaviour
         _initialMarketData?.ApplyToMarket(Market);
         _initialEmployeeData?.ApplyToEmployeeHandler(Employee);
 
+        // [솔루션 4] 초기 마중물: 시장에 재고와 자금 충전
+        Market?.InitializeMarketChaos();
+        
+        // 시스템 액터 초기화 (일반 시민, 무역항)
+        Market?.InitializeSystemActors();
+
         // 데이터 로드 및 초기 상태 계산
         LoadThreadData();
         UpdateResourceDeltasFromPlacedThreads(); // 초기 델타 계산

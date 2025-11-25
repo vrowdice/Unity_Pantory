@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
+  m_Name: vehicle_plant
+  m_EditorClassIdentifier: 
+  id: vehicle_plant
+  displayName: Vehicle Assembly Plant
+  buildingType: 1
+  icon: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
+  buildingSprite: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
+  description: A massive industrial facility for assembling vehicles. Requires extensive
+    components, electronics, and materials to produce cars, airplanes, and tanks.
+  baseCost: 800
+  baseMaintenanceCost: 40
+  size: {x: 3, y: 3}
+  allowedResourceTypes: 09000000
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 3, y: 1}
+  baseProductionRate: 0.5
+  processingTime: 3
+

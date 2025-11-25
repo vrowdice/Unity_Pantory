@@ -1,17 +1,36 @@
 import os
 import re
 import time
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from PIL import Image
 from io import BytesIO
 
-# Google AI API 키 설정 (환경 변수에서 가져오기)
-GOOGLE_AI_API_KEY = "AIzaSyDQhgensoGa0ov1_-LJg0rd8VgIG1rcJ8A"
+# .env 파일에서 환경 변수 로드
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+PY_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 프로젝트 루트의 .env 파일 먼저 시도
+env_path = os.path.join(PROJECT_ROOT, ".env")
+load_dotenv(env_path)
+
+# Py 폴더의 Api.env 파일도 시도 (fallback)
+api_env_path = os.path.join(PY_SCRIPT_DIR, "Api.env")
+if not os.getenv("GOOGLE_AI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
+    load_dotenv(api_env_path)
+
+# Google AI API 키 설정 (.env 파일 또는 환경 변수에서 가져오기)
+GOOGLE_AI_API_KEY = os.getenv("GOOGLE_AI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+IMAGEN_MODEL = os.getenv("IMAGEN_MODEL", "imagen-4.0-fast-generate-001")
 
 # Imagen 클라이언트 초기화
 imagen_client = None
-if GOOGLE_AI_API_KEY:
+if not GOOGLE_AI_API_KEY:
+    print("⚠️  경고: GOOGLE_AI_API_KEY가 설정되지 않았습니다.")
+    print(f"   프로젝트 루트에 .env 파일을 생성하고 GOOGLE_AI_API_KEY=your_key를 추가하세요.")
+    print(f"   또는 환경 변수로 설정하세요.\n")
+elif GOOGLE_AI_API_KEY:
     try:
         os.environ["GOOGLE_API_KEY"] = GOOGLE_AI_API_KEY
         imagen_client = genai.Client(api_key=GOOGLE_AI_API_KEY)
@@ -19,8 +38,7 @@ if GOOGLE_AI_API_KEY:
         print(f"Imagen 클라이언트 초기화 실패: {e}")
         imagen_client = None
 
-# 프로젝트 루트 디렉토리
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+# 프로젝트 루트 디렉토리 (이미 위에서 정의됨)
 DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/Resource")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/Resource")
 
@@ -54,10 +72,16 @@ def parse_asset_file(file_path):
 def get_resource_type_name(type_num):
     """타입 번호를 이름으로 변환"""
     types = {
-        0: "metal",
-        1: "wood",
-        2: "tool",
-        3: "weapon"
+        0: "raw",
+        1: "metal",
+        2: "wood",
+        3: "tool",
+        4: "weapon",
+        5: "furniture",
+        6: "clothing",
+        7: "component",
+        8: "electronics",
+        9: "vehicle"
     }
     return types.get(type_num, "unknown")
 
@@ -67,14 +91,26 @@ def generate_image_prompt(item_data, category):
     description = item_data.get('description', '')
     
     # 카테고리별 스타일 설정
-    if category == "Metal":
-        style = "pixel art game item icon, metal ingot or ore, shiny metallic material"
+    if category == "Raw":
+        style = "pixel art game item icon, raw material or ore, natural resource"
+    elif category == "Metal":
+        style = "pixel art game item icon, metal ingot or refined metal, shiny metallic material"
     elif category == "Wood":
         style = "pixel art game item icon, wooden log or plank, natural wood texture"
     elif category == "Tool":
-        style = "pixel art game item icon, craftsman tool"
+        style = "pixel art game item icon, industrial tool or craftsman tool"
     elif category == "Weapon":
-        style = "pixel art game item icon, medieval weapon"
+        style = "pixel art game item icon, early 20th century weapon, World War era firearm, vintage military weapon"
+    elif category == "Furniture":
+        style = "pixel art game item icon, furniture piece or home decor item"
+    elif category == "Clothing":
+        style = "pixel art game item icon, clothing item or garment"
+    elif category == "Component":
+        style = "pixel art game item icon, mechanical component or industrial part"
+    elif category == "Electronics":
+        style = "pixel art game item icon, early 20th century electronic device, vintage tech component"
+    elif category == "Vehicle":
+        style = "pixel art game item icon, early 20th century vehicle, vintage automobile, 1920s-1940s style transportation, World War era vehicle"
     else:
         style = "pixel art game item icon"
     
@@ -129,20 +165,50 @@ def process_generated_image(img, item_name):
         print(f"  이미지 후처리 오류: {e}")
         return img
 
-def generate_image_with_imagen(prompt, output_path, item_name, description=""):
+def generate_image_with_imagen(prompt, output_path, item_name, description="", category=""):
     """Google Imagen 4.0 API를 사용해서 이미지 생성"""
     try:
         # description이 있으면 간단한 프롬프트에도 포함
         desc_part = f", {description}" if description else ""
         
+        # 카테고리별 스타일 키워드 추가
+        category_keywords = {
+            "Raw": "raw material, ore, natural resource",
+            "Metal": "metal ingot, shiny metallic",
+            "Wood": "wooden, natural wood texture",
+            "Tool": "industrial tool, craftsman tool",
+            "Weapon": "early 20th century weapon, World War era firearm, vintage military weapon",
+            "Furniture": "furniture, home decor",
+            "Clothing": "clothing, garment, apparel",
+            "Component": "mechanical component, industrial part",
+            "Electronics": "early 20th century electronic device, vintage tech component",
+            "Vehicle": "early 20th century vehicle, vintage automobile, 1920s-1940s style, World War era vehicle"
+        }
+        category_style = category_keywords.get(category, "game item")
+        
         # 픽셀아트 프롬프트 (품질 강화) - 흰색 배경 사용
-        simple_prompt = f"64x64 pixel art game icon of {item_name}{desc_part}, pure white background #FFFFFF, no text no letters, sharp pixels, retro RPG style, high quality, clean design, no anti-aliasing, professional game asset"
+        # Vehicle과 Weapon은 근대 스타일 강조
+        era_style = ""
+        if category == "Vehicle":
+            era_style = ", 1920s-1940s era, vintage style, early industrial age"
+        elif category == "Weapon":
+            era_style = ", World War era, early 20th century military style"
+        elif category == "Electronics":
+            era_style = ", early 20th century, vintage technology"
+        
+        # Motor는 엔진/원동기 스타일로 특별 처리
+        motor_style = ""
+        if item_name.lower() == "motor" or "prime mover" in description.lower() or "engine" in description.lower() or "combustion" in description.lower():
+            motor_style = ", internal combustion engine, mechanical prime mover, early 20th century industrial engine, not electric motor"
+            category_style = "mechanical engine, prime mover, industrial power source"
+        
+        simple_prompt = f"64x64 pixel art game icon of {item_name}{desc_part}, {category_style}{era_style}{motor_style}, pure white background #FFFFFF, no text no letters, sharp pixels, retro RPG style, high quality, clean design, no anti-aliasing, professional game asset"
         
         # Imagen으로 실제 이미지 생성
         if imagen_client:
             try:
                 response = imagen_client.models.generate_images(
-                    model='imagen-3.0-generate-002',
+                    model=IMAGEN_MODEL,
                     prompt=simple_prompt,
                     config=types.GenerateImagesConfig(
                         number_of_images=1,
@@ -260,7 +326,7 @@ def process_category(category_name):
         
         prompt = generate_image_prompt(item_data, category_name)
         description = item_data.get('description', '')
-        success = generate_image_with_imagen(prompt, output_image_path, item_name, description)
+        success = generate_image_with_imagen(prompt, output_image_path, item_name, description, category_name)
         
         # API가 작동하지 않으면 아무것도 생성하지 않음
         if not success:

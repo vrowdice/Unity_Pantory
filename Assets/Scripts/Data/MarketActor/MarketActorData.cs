@@ -6,13 +6,10 @@ public class MarketActorData : ScriptableObject
     [Header("Identity")]
     public string id;
     public string displayName;
-    public Sprite portrait;
+    public Sprite icon;
     [TextArea(3, 10)]
     public string description;
     public MarketActorArchetype archetype = MarketActorArchetype.Generalist;
-
-    [Header("Roles")]
-    public MarketRoleFlags roles = MarketRoleFlags.Provider;
 
     [Header("Profiles")]
     public ProviderProfile providerProfile;

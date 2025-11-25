@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
+  m_Name: weapon_plant
+  m_EditorClassIdentifier: 
+  id: weapon_plant
+  displayName: Weapon Factory
+  buildingType: 1
+  icon: {fileID: 21300000, guid: b9dca41e3d54514499f16447cac3cab3, type: 3}
+  buildingSprite: {fileID: 21300000, guid: b9dca41e3d54514499f16447cac3cab3, type: 3}
+  description: A military-grade manufacturing facility for producing firearms and
+    weapons. Requires precision components and skilled craftsmanship.
+  baseCost: 400
+  baseMaintenanceCost: 20
+  size: {x: 2, y: 2}
+  allowedResourceTypes: 04000000
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 1.5
+

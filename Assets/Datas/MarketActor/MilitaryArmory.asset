@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: MilitaryArmory
+  m_EditorClassIdentifier: 
+  id: military_armory
+  displayName: Military Armory
+  icon: {fileID: 21300000, guid: 0293ec71dfcbace46be78cc16f58f7d2, type: 3}
+  description: The capital's military workshop, renowned for disciplined output of
+    military-grade weapons and equipment for armed forces.
+  archetype: 0
+  providerProfile:
+    outputs: []
+    upkeep:
+    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+      count: 4
+    - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
+      count: 2
+    - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
+      count: 1
+    basePriceModifier: 1.1
+    productionCooldownRange: {x: 18, y: 32}
+    allowBatchSelling: 0
+    maxConcurrentContracts: 1
+  consumerProfile:
+    budgetRange:
+      min: 0
+      max: 0
+    desiredResources: []
+    patienceSeconds: 30
+    satisfactionDecay: 0.1
+    allowBulkBuying: 1
+    persistentOrders: 0
+  useDynamicResourceAllocation: 1
+  scale: 1
+  preferredResourceTypes:
+  - 4
+  - 7
+  - 9
+  providerReassignmentDays: 8
+  consumerReassignmentDays: 8
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

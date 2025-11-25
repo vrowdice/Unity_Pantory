@@ -13,11 +13,23 @@ pip install -r requirements.txt
 필요한 패키지:
 - `google-genai` - Google Imagen 4.0 API
 - `Pillow` - 이미지 처리
+- `python-dotenv` - .env 파일 지원
 
 ### 2. API 키 설정
 
 **✅ 중요: Imagen 4.0을 사용하려면 API 키가 필요합니다!**
 
+프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 API 키를 추가하세요:
+
+```bash
+# 프로젝트 루트에 .env 파일 생성
+# (Assets/Scripts/Py/.env.example을 참고하세요)
+
+# .env 파일 내용:
+GOOGLE_AI_API_KEY=your_api_key_here
+```
+
+**또는 환경 변수로 설정:**
 ```bash
 # Windows (PowerShell)
 $env:GOOGLE_AI_API_KEY="your_api_key_here"
@@ -34,6 +46,7 @@ export GOOGLE_AI_API_KEY=your_api_key_here
 2. Google 계정으로 로그인
 3. "Create API Key" 클릭
 4. API 키 복사
+5. `.env` 파일에 추가 (프로젝트 루트 디렉토리)
 
 ### 3. 스크립트 실행
 

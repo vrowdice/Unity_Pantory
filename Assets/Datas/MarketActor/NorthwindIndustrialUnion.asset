@@ -14,29 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: northwind_industrial_union
   displayName: Northwind Industrial Union
-  portrait: {fileID: 0}
+  icon: {fileID: 21300000, guid: 392cf9cb0648ceb40b4e291b8aec57e9, type: 3}
   description: Heavy-industry magnates who churn out tools and alloys for inland factories while swallowing iron and timber supplies.
   archetype: 1
-  roles: 3
-  scale: 2
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 1
-  - 2
-  - 3
-  providerReassignmentDays: 6
-  consumerReassignmentDays: 6
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep:
     - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
-      count: 28
+      count: 12
     - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
-      count: 18
+      count: 8
     basePriceModifier: 1.05
-    productionCooldownRange: {x: 8, y: 16}
+    productionCooldownRange: {x: 10, y: 18}
     allowBatchSelling: 1
     maxConcurrentContracts: 3
   consumerProfile:
@@ -48,4 +37,16 @@ MonoBehaviour:
     satisfactionDecay: 0.085
     allowBulkBuying: 1
     persistentOrders: 1
+  useDynamicResourceAllocation: 1
+  scale: 2
+  preferredResourceTypes:
+  - 1
+  - 2
+  - 3
+  - 7
+  - 8
+  providerReassignmentDays: 6
+  consumerReassignmentDays: 6
+  providerSlotOverride: -1
+  consumerSlotOverride: -1
 

@@ -15,16 +15,17 @@ MonoBehaviour:
   id: copper_ore
   displayName: Copper Ore
   baseValue: 25
-  marketSensitivity: 0.2
-  meanReversionStrength: 0.58
-  maxDailySwing: 0.014
+  marketSensitivity: 0.22
+  meanReversionStrength: 0.5
+  volatilityMultiplier: 1.0
   scarcityWeight: 0.5
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
   rarity: 0.7
   type: 0
   nextStage: {fileID: 11400000, guid: c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9, type: 2}
-  icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
-  description: A reddish-brown ore rich in copper. Essential for electrical wiring and
-    modern machinery.
+  icon: {fileID: 21300000, guid: 77230f07dd3f48648ac0d2a6773252b9, type: 3}
+  description: Highly conductive metal. Essential for electronic component production.
   requirements: []
-  initialAmount: 0
+  initialAmount: 1000
 

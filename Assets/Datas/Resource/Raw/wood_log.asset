@@ -14,16 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: wood_log
   displayName: Raw Wood
-  baseValue: 6
-  marketSensitivity: 0.16
-  meanReversionStrength: 0.55
-  maxDailySwing: 0.014
-  scarcityWeight: 0.35
+  baseValue: 10
+  marketSensitivity: 0.15
+  meanReversionStrength: 0.7
+  volatilityMultiplier: 0.8
+  scarcityWeight: 0.3
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
   rarity: 0.9
   type: 0
-  nextStage: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-  icon: {fileID: 21300000, guid: 4f84b3f03165ded4e9a5f7c502138450, type: 3}
-  description: Freshly cut timber from the forest, still rough and unprocessed. The
-    basic building block for countless creations.
+  nextStage: {fileID: 0}
+  icon: {fileID: -5327396383486028306, guid: 06fc44997e2d55444930032664b749e8, type: 3}
+  description: The most basic resource. Material for furniture, tools, and early
+    textiles (pulp).
   requirements: []
-  initialAmount: 1000
+  initialAmount: 2000

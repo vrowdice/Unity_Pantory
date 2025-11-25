@@ -31,7 +31,7 @@ namespace Pantory.Managers
             return;
 
         _isActive = true;
-        _cameraController?.SetDragEnabled(false);
+        // 카메라 드래그는 MainCameraController에서 자동으로 비활성화됨
     }
 
     public void CancelRemoval()
@@ -40,7 +40,7 @@ namespace Pantory.Managers
             return;
 
         _isActive = false;
-        _cameraController?.SetDragEnabled(true);
+        // 카메라 드래그는 MainCameraController에서 자동으로 활성화됨
         ResetHighlight();
     }
 

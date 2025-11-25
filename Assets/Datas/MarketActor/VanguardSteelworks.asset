@@ -14,18 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: vanguard_steelworks
   displayName: Vanguard Steelworks
-  portrait: {fileID: 0}
-  description: A disciplined foundry house that converts premium ore into dependable steel for the realm’s armies and builders alike.
+  icon: {fileID: 21300000, guid: e591b95c1ee68c348a4fcb487411dc5d, type: 3}
+  description: A disciplined foundry house that converts premium ore into dependable steel
+    for the nation's military and construction industries.
   archetype: 0
-  roles: 3
-  scale: 1
-  useDynamicResourceAllocation: 1
-  preferredResourceTypes:
-  - 1
-  providerReassignmentDays: 7
-  consumerReassignmentDays: 7
-  providerSlotOverride: -1
-  consumerSlotOverride: -1
   providerProfile:
     outputs: []
     upkeep:
@@ -46,4 +38,12 @@ MonoBehaviour:
     satisfactionDecay: 0.08
     allowBulkBuying: 1
     persistentOrders: 1
-
+  useDynamicResourceAllocation: 1
+  scale: 1
+  preferredResourceTypes:
+  - 1
+  - 7
+  providerReassignmentDays: 7
+  consumerReassignmentDays: 7
+  providerSlotOverride: -1
+  consumerSlotOverride: -1

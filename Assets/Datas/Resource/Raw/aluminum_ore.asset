@@ -14,17 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: aluminum_ore
   displayName: Aluminum Ore
-  baseValue: 35
-  marketSensitivity: 0.19
-  meanReversionStrength: 0.6
-  maxDailySwing: 0.013
-  scarcityWeight: 0.55
+  baseValue: 40
+  marketSensitivity: 0.25
+  meanReversionStrength: 0.5
+  volatilityMultiplier: 1.1
+  scarcityWeight: 0.6
+  priceResistanceThreshold: 3
+  maxPriceMultiplier: 10
   rarity: 0.65
   type: 0
   nextStage: {fileID: 11400000, guid: d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0, type: 2}
-  icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
-  description: A lightweight ore containing aluminum. Valued for its strength-to-weight
-    ratio in modern construction.
+  icon: {fileID: 21300000, guid: 31ea3ce6dfcb5d04988666ef59c0331b, type: 3}
+  description: Lightweight and strong metal. Material for aircraft and advanced vehicles.
   requirements: []
-  initialAmount: 0
+  initialAmount: 500
 
