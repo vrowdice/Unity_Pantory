@@ -20,14 +20,14 @@ MonoBehaviour:
   providerProfile:
     outputs: []
     upkeep: []
-    basePriceModifier: 0.85
+    basePriceModifier: 1
     productionCooldownRange: {x: 6, y: 12}
     allowBatchSelling: 1
     maxConcurrentContracts: 3
   consumerProfile:
     budgetRange:
-      min: 0
-      max: 0
+      min: 50000
+      max: 50000
     desiredResources: []
     patienceSeconds: 30
     satisfactionDecay: 0.1
@@ -38,7 +38,7 @@ MonoBehaviour:
   preferredResourceTypes:
   - 0
   - 1
-  providerReassignmentDays: 4
+  providerReassignmentDays: 14
   consumerReassignmentDays: 8
   providerSlotOverride: -1
   consumerSlotOverride: -1

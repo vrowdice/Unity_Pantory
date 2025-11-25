@@ -5,11 +5,17 @@ using UnityEngine;
 [Serializable]
 public class ResourceState
 {
-    public long count;                 // 보유 수량
+    [Header("Market Inventory")]
+    public long count;                 // 시장 전체 유통 재고 (Market Inventory)
+    
+    [Header("Player Inventory")]
+    public long playerInventory;       // 플레이어 개인 창고 (Player Storage)
+    public long playerInventoryDelta;  // 플레이어 재고 변화량 (생산/소비/거래)
+    
     public float currentValue;         // 현재 가격
     public float priceChangeRate;      // 시장 압력에 따른 변동률
     public bool isEnchanted;           // 마법 주문 적용 여부
-    public long deltaCount;            // 최근 변화 수량
+    public long deltaCount;            // 최근 변화 수량 (시장 재고용)
 
     [Header("Player Transactions")]
     public long playerTransactionDelta; // 플레이어 거래 델타 (매수 +, 매도 -)
@@ -91,6 +97,8 @@ public class ResourceState
         currentValue = 0f;
         priceChangeRate = 0f;
         count = 0;
+        playerInventory = 0;
+        playerInventoryDelta = 0;
         deltaCount = 0;
         playerTransactionDelta = 0;
         permanentModifier = 1f;

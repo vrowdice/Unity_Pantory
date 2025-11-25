@@ -178,7 +178,27 @@ public class BuildingInfoPanel : MonoBehaviour
 
         if (_designUiManager.GameManager != null)
         {
-            _designUiManager.GameManager.ShowSelectResourcePanel(_currentBuildingData.AllowedResourceTypes, _onOutputResourceSelected);
+            // 생산 가능한 자원 목록 가져오기
+            List<ResourceData> producibleResources = null;
+            
+            // ProductionBuildingData인 경우 생산 가능한 자원 목록 사용
+            if (_currentBuildingData is ProductionBuildingData productionData)
+            {
+                if (productionData.ProducibleResources != null && productionData.ProducibleResources.Count > 0)
+                {
+                    producibleResources = new List<ResourceData>(productionData.ProducibleResources);
+                }
+            }
+            // RawMaterialFactoryData인 경우 생산 가능한 원자재 목록 사용
+            else if (_currentBuildingData is RawMaterialFactoryData rawMaterialData)
+            {
+                if (rawMaterialData.ProducibleRawResources != null && rawMaterialData.ProducibleRawResources.Count > 0)
+                {
+                    producibleResources = new List<ResourceData>(rawMaterialData.ProducibleRawResources);
+                }
+            }
+            
+            _designUiManager.GameManager.ShowSelectResourcePanel(_currentBuildingData.AllowedResourceTypes, _onOutputResourceSelected, producibleResources);
         }
         else
         {

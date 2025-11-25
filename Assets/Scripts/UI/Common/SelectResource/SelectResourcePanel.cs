@@ -12,15 +12,21 @@ public class SelectResourcePanel : MonoBehaviour
     private GameDataManager _gameDataManager = null;
     private List<ResourceType> _resourceTypes = null;
     private Action<ResourceEntry> _onResourceSelected = null;
+    private List<ResourceData> _producibleResources = null; // 생산 가능한 자원 목록 (옵션)
 
     /// <summary>
-    /// �г� �ʱ�ȭ (BasePanel���� ȣ��)
+    /// 패널 초기화
     /// </summary>
-    public void OnInitialize(GameDataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null)
+    /// <param name="gameDataManager">게임 데이터 매니저</param>
+    /// <param name="resourceTypes">허용된 자원 타입 목록</param>
+    /// <param name="onResourceSelected">자원 선택 콜백</param>
+    /// <param name="producibleResources">생산 가능한 자원 목록 (null이면 해당 타입의 모든 자원 표시)</param>
+    public void OnInitialize(GameDataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
         _gameDataManager = gameDataManager;
         _resourceTypes = resourceTypes;
         _onResourceSelected = onResourceSelected;
+        _producibleResources = producibleResources;
 
         if (_gameDataManager == null)
         {
@@ -49,12 +55,34 @@ public class SelectResourcePanel : MonoBehaviour
     public void OnResourceTypeClick(ResourceType resourceType)
     {
         GameObjectUtils.ClearChildren(_resourceScrollViewContentTransform);
-        foreach (var resourceEntry in _gameDataManager.Resource.GetAllResources())
+        
+        // 생산 가능한 자원 목록이 있으면 그것만 표시, 없으면 해당 타입의 모든 자원 표시
+        if (_producibleResources != null && _producibleResources.Count > 0)
         {
-            if (resourceEntry.Value.resourceData.type == resourceType)
+            // 생산 가능한 자원 중에서 해당 타입인 것만 필터링하여 표시
+            foreach (var producibleResource in _producibleResources)
             {
-                Instantiate(_selectResourceBtnPrefab, _resourceScrollViewContentTransform).
-                    GetComponent<SelectResourceBtn>().OnInitialize(this ,resourceEntry.Value);
+                if (producibleResource != null && producibleResource.type == resourceType)
+                {
+                    ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(producibleResource.id);
+                    if (resourceEntry != null)
+                    {
+                        Instantiate(_selectResourceBtnPrefab, _resourceScrollViewContentTransform).
+                            GetComponent<SelectResourceBtn>().OnInitialize(this, resourceEntry);
+                    }
+                }
+            }
+        }
+        else
+        {
+            // 생산 가능한 자원 목록이 없으면 해당 타입의 모든 자원 표시
+            foreach (var resourceEntry in _gameDataManager.Resource.GetAllResources())
+            {
+                if (resourceEntry.Value.resourceData.type == resourceType)
+                {
+                    Instantiate(_selectResourceBtnPrefab, _resourceScrollViewContentTransform).
+                        GetComponent<SelectResourceBtn>().OnInitialize(this, resourceEntry.Value);
+                }
             }
         }
     }

@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.4
-  type: 6
+  type: 4
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 2acc38a86d3323444a620723ac2ab7ed, type: 3}
   description: Exquisite furniture crafted from premium wood with fine details and

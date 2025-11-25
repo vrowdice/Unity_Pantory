@@ -50,12 +50,6 @@ public class InitialTimeData : ScriptableObject
         timeService.SetDaysPerMonth(daysPerMonth);
         timeService.SetMonthsPerYear(monthsPerYear);
         timeService.SetDate(startYear, startMonth, startDay);
-
-        Debug.Log($"[TimeSettingsData] Time settings applied: " +
-                  $"RealSecondsPerHour={realSecondsPerHour}, " +
-                  $"DaysPerMonth={daysPerMonth}, " +
-                  $"MonthsPerYear={monthsPerYear}, " +
-                  $"StartDate=Y{startYear} M{startMonth} D{startDay}");
     }
 
     /// <summary>

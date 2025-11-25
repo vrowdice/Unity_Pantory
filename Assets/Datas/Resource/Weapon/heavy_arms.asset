@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.2
-  type: 4
+  type: 2
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 34af123674ec0b64286ed185f3649ddb, type: 3}
   description: High-value strategic weapons. Field artillery and anti-aircraft guns

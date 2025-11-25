@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
+  m_Name: light_factory
+  m_EditorClassIdentifier: 
+  id: light_factory
+  displayName: Light Factory
+  buildingType: 1
+  icon: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
+  buildingSprite: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
+  description: A versatile light industry facility that produces consumer goods including
+    furniture, clothing, and simple tools. Flexible production allows switching between
+    different product lines based on market demand.
+  baseCost: 240
+  baseMaintenanceCost: 12
+  size: {x: 2, y: 2}
+  allowedResourceTypes: 0300000005000000
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 0.9
+  _producibleResources:
+  - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
+  - {fileID: 11400000, guid: d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4, type: 2}
+  - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}

@@ -365,13 +365,15 @@ public class FinancesDataHandler
             else // 매도
             {
                 long sellRequest = -delta;
-                long current = _gameDataManager.Resource.GetResourceQuantity(id);
+                // 플레이어 재고 확인 (시장 재고가 아님!)
+                long currentPlayerInventory = _gameDataManager.Resource.GetPlayerResourceQuantity(id);
                 long prod = production.ContainsKey(id) ? production[id] : 0;
                 long cons = consumption.ContainsKey(id) ? consumption[id] : 0;
 
-                // 델타 적용 후 예상 보유량 기준 판매 가능 수량 확인
-                long expectedAmount = current + prod - cons;
-                long actualSell = Math.Max(0, Math.Min(sellRequest, expectedAmount));
+                // 플레이어 재고 + 생산 - 소비 = 예상 플레이어 보유량
+                long expectedPlayerAmount = currentPlayerInventory + prod - cons;
+                // 실제 판매 가능 수량 = 요청량과 예상 보유량 중 작은 값 (0 이상)
+                long actualSell = Math.Max(0, Math.Min(sellRequest, expectedPlayerAmount));
 
                 if (actualSell > 0)
                 {

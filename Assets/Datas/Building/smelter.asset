@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
+  m_Name: smelter
+  m_EditorClassIdentifier: 
+  id: smelter
+  displayName: Smelter
+  buildingType: 1
+  icon: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
+  description: A smelting facility that transforms raw ores into refined metal ingots.
+    Processes iron ore, copper ore, aluminum ore, and gold ore into their respective
+    ingots. Essential for metalworking industries.
+  baseCost: 200
+  baseMaintenanceCost: 12
+  size: {x: 2, y: 2}
+  allowedResourceTypes: 01000000
+  _producibleResources:
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
+  - {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 1.2

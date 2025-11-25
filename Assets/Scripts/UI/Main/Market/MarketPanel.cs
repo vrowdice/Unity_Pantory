@@ -80,7 +80,7 @@ public class MarketPanel : BasePanel
             _resourcePanel.gameObject.SetActive(true);
             _traderPanel.gameObject.SetActive(false);
         }
-        _resourcePanel?.OnInitialize(_dataManager);
+        _resourcePanel?.OnInitialize(_dataManager, this);
         RefreshResourceList();
     }
 
@@ -323,7 +323,6 @@ public class MarketPanel : BasePanel
 
     private void HandleDayChanged()
     {
-        Debug.Log($"[MarketPanel] Day changed, refreshing {(_isResourceView ? "resource" : "trader")} list.");
         if (_isResourceView)
         {
             RefreshResourceList();
@@ -370,6 +369,30 @@ public class MarketPanel : BasePanel
         if (updatedCount > 0)
         {
             Debug.Log($"[MarketPanel] Updated {updatedCount} trader buttons.");
+        }
+    }
+
+    /// <summary>
+    /// 리소스 버튼들의 거래 값(매수/매도)을 업데이트합니다.
+    /// </summary>
+    public void RefreshResourceButtons()
+    {
+        if (_marketScrollViewContent == null || !_isResourceView)
+        {
+            return;
+        }
+
+        int updatedCount = 0;
+        // 모든 자식 버튼의 거래 값 업데이트
+        for (int i = 0; i < _marketScrollViewContent.childCount; i++)
+        {
+            Transform child = _marketScrollViewContent.GetChild(i);
+            MarketResourceBtn resourceBtn = child.GetComponent<MarketResourceBtn>();
+            if (resourceBtn != null)
+            {
+                resourceBtn.RefreshTradeValue();
+                updatedCount++;
+            }
         }
     }
 

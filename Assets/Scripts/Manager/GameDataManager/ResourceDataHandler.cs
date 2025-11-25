@@ -129,16 +129,32 @@ public class ResourceDataHandler
     // ----------------- Public Getters (읽기 전용) -----------------
 
     /// <summary>
-    /// 특정 자원의 보유량을 반환합니다. (deltaCount를 고려한 실제 사용 가능한 수량)
+    /// 특정 자원의 시장 재고량을 반환합니다. (deltaCount를 고려한 실제 사용 가능한 수량)
     /// </summary>
     /// <param name="resourceId">자원 ID</param>
-    /// <returns>해당 자원의 보유량 (count + deltaCount)</returns>
+    /// <returns>해당 자원의 시장 재고량 (count + deltaCount)</returns>
     public long GetResourceQuantity(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
-            // deltaCount를 고려한 실제 사용 가능한 자원량 반환
+            // deltaCount를 고려한 실제 사용 가능한 시장 재고량 반환
             return entry.resourceState.count + entry.resourceState.deltaCount;
+        }
+        
+        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
+        return 0;
+    }
+
+    /// <summary>
+    /// 특정 자원의 플레이어 보유량을 반환합니다.
+    /// </summary>
+    /// <param name="resourceId">자원 ID</param>
+    /// <returns>해당 자원의 플레이어 보유량</returns>
+    public long GetPlayerResourceQuantity(string resourceId)
+    {
+        if (_resources.TryGetValue(resourceId, out var entry))
+        {
+            return entry.resourceState.playerInventory;
         }
         
         Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
@@ -198,7 +214,64 @@ public class ResourceDataHandler
     // ----------------- Public Methods (자원 수량 관리) -----------------
 
     /// <summary>
-    /// 특정 자원의 수량을 추가합니다.
+    /// 시장 재고를 수정합니다 (시장 액터 생산/소비용).
+    /// </summary>
+    /// <param name="resourceId">자원 ID</param>
+    /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
+    public void ModifyMarketInventory(string resourceId, long amount)
+    {
+        if (!_resources.TryGetValue(resourceId, out var entry))
+        {
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
+            return;
+        }
+
+        // deltaCount만 누적 (count는 ApplyResourceDeltas에서 반영)
+        entry.resourceState.deltaCount += amount;
+        
+        OnResourceChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 플레이어 창고를 수정합니다 (생산, 구매, 판매 시 사용).
+    /// </summary>
+    /// <param name="resourceId">자원 ID</param>
+    /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
+    public void ModifyPlayerInventory(string resourceId, long amount)
+    {
+        if (!_resources.TryGetValue(resourceId, out var entry))
+        {
+            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
+            return;
+        }
+
+        // 감소 시 재고 확인 (재고가 부족하면 변경하지 않음)
+        if (amount < 0)
+        {
+            long availableInventory = entry.resourceState.playerInventory;
+            if (availableInventory < -amount) // amount는 음수이므로 -amount가 필요량
+            {
+                Debug.LogWarning($"[ResourceService] Cannot modify player inventory for {resourceId}: insufficient stock (requested: {-amount}, available: {availableInventory})");
+                return; // 재고가 부족하면 변경하지 않음 (playerInventoryDelta도 변경하지 않음)
+            }
+        }
+
+        // 재고가 충분하면 변경
+        entry.resourceState.playerInventory += amount;
+        entry.resourceState.playerInventoryDelta += amount; // 플레이어 재고 변화량 누적
+        
+        // 플레이어 재고는 절대 음수가 될 수 없음 (안전장치)
+        if (entry.resourceState.playerInventory < 0)
+        {
+            Debug.LogError($"[ResourceService] Player inventory underflow for {resourceId}! Setting to 0. This should not happen.");
+            entry.resourceState.playerInventory = 0;
+        }
+        
+        OnResourceChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 특정 자원의 수량을 추가합니다 (시장 재고용 - 하위 호환성 유지).
     /// </summary>
     /// <param name="resourceId">추가할 자원 ID</param>
     /// <param name="amount">추가할 수량</param>
@@ -331,7 +404,7 @@ public class ResourceDataHandler
     }
 
     /// <summary>
-    /// 특정 자원이 충분한지 확인합니다.
+    /// 특정 자원의 시장 재고가 충분한지 확인합니다.
     /// </summary>
     /// <param name="resourceId">확인할 자원 ID</param>
     /// <param name="amount">필요한 수량</param>
@@ -343,7 +416,41 @@ public class ResourceDataHandler
             return false;
         }
         
-        // deltaCount를 고려한 실제 사용 가능한 자원량 반환
+        // deltaCount를 고려한 실제 사용 가능한 시장 재고량 반환
+        long availableCount = entry.resourceState.count + entry.resourceState.deltaCount;
+        return availableCount >= amount;
+    }
+
+    /// <summary>
+    /// 플레이어 재고가 충분한지 확인합니다.
+    /// </summary>
+    /// <param name="resourceId">확인할 자원 ID</param>
+    /// <param name="amount">필요한 수량</param>
+    /// <returns>충분하면 true, 부족하면 false</returns>
+    public bool HasEnoughPlayerResource(string resourceId, long amount)
+    {
+        if (!_resources.TryGetValue(resourceId, out var entry))
+        {
+            return false;
+        }
+        
+        return entry.resourceState.playerInventory >= amount;
+    }
+
+    /// <summary>
+    /// 시장 재고가 충분한지 확인합니다 (플레이어가 구매 가능한지 체크용).
+    /// </summary>
+    /// <param name="resourceId">확인할 자원 ID</param>
+    /// <param name="amount">필요한 수량</param>
+    /// <returns>충분하면 true, 부족하면 false</returns>
+    public bool HasEnoughMarketInventory(string resourceId, long amount)
+    {
+        if (!_resources.TryGetValue(resourceId, out var entry))
+        {
+            return false;
+        }
+        
+        // deltaCount를 고려한 실제 사용 가능한 시장 재고량 반환
         long availableCount = entry.resourceState.count + entry.resourceState.deltaCount;
         return availableCount >= amount;
     }
@@ -443,6 +550,9 @@ public class ResourceDataHandler
             {
                 continue;
             }
+
+            // 플레이어 재고 델타는 항상 초기화 (일일 업데이트 시점)
+            entry.resourceState.playerInventoryDelta = 0;
 
             long delta = entry.resourceState.deltaCount;
             if (delta == 0)

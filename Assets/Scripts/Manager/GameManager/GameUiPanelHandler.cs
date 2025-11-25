@@ -29,7 +29,7 @@ namespace Pantory.Managers
             _selectResourcePanelPrefab = selectResourcePanelPrefab;
             _manageThreadPanelPrefab = manageThreadPanelPrefab;
             _manageThreadCategoryPanelPrefab = manageThreadCategoryPanelPrefab;
-
+            
             UpdateReferences(uiManager, gameDataManager);
         }
 
@@ -68,7 +68,7 @@ namespace Pantory.Managers
             }
         }
 
-        public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected)
+        public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
         {
             if (!ValidateCanvasAndPrefab(_selectResourcePanelPrefab, "[GameUiPanelHandler] Select resource panel prefab is not assigned."))
                 return null;
@@ -82,7 +82,7 @@ namespace Pantory.Managers
             GameObject selectResourcePanel = UnityEngine.Object.Instantiate(_selectResourcePanelPrefab, CanvasTransform);
             if (selectResourcePanel.TryGetComponent(out SelectResourcePanel panelComponent))
             {
-                panelComponent.OnInitialize(_gameDataManager, resourceTypes, onResourceSelected);
+                panelComponent.OnInitialize(_gameDataManager, resourceTypes, onResourceSelected, producibleResources);
                 Debug.Log("[GameUiPanelHandler] Select resource panel displayed.");
                 return panelComponent;
             }

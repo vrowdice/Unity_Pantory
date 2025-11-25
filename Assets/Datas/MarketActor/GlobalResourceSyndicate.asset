@@ -35,8 +35,8 @@ MonoBehaviour:
     maxConcurrentContracts: 3
   consumerProfile:
     budgetRange:
-      min: 3200
-      max: 5200
+      min: 1000000
+      max: 1000000
     desiredResources: []
     patienceSeconds: 7200
     satisfactionDecay: 0.08
@@ -52,7 +52,7 @@ MonoBehaviour:
   - 5
   - 6
   - 7
-  providerReassignmentDays: 5
+  providerReassignmentDays: 3
   consumerReassignmentDays: 5
   providerSlotOverride: -1
   consumerSlotOverride: -1

@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.7
-  type: 5
+  type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
   description: A basic household tool set including hammer, saw, and wrench. Essential

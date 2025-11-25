@@ -37,8 +37,8 @@ MonoBehaviour:
     maxConcurrentContracts: 2
   consumerProfile:
     budgetRange:
-      min: 4200
-      max: 7200
+      min: 800000
+      max: 800000
     desiredResources: []
     patienceSeconds: 6600
     satisfactionDecay: 0.09

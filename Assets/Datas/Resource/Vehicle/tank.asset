@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.15
-  type: 8
+  type: 6
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: f3a22151301228e4a8d55d558b1bdffd, type: 3}
   description: The king of ground warfare. A combination of steel and heavy artillery.

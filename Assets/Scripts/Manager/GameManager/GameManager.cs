@@ -266,8 +266,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="resourceTypes">선택 가능한 자원 타입 목록</param>
     /// <param name="onResourceSelected">자원 선택 시 호출될 콜백</param>
+    /// <param name="producibleResources">생산 가능한 자원 목록 (null이면 해당 타입의 모든 자원 표시)</param>
     /// <returns>생성된 SelectResourcePanel 컴포넌트</returns>
-    public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected)
+    public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
     {
         if (_uiPanelHandler == null)
         {
@@ -275,7 +276,7 @@ public class GameManager : MonoBehaviour
             return null;
         }
 
-        return _uiPanelHandler.ShowSelectResourcePanel(resourceTypes, onResourceSelected);
+        return _uiPanelHandler.ShowSelectResourcePanel(resourceTypes, onResourceSelected, producibleResources);
     }
 
     /// <summary>

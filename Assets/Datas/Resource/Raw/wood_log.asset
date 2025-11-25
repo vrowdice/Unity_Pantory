@@ -24,7 +24,7 @@ MonoBehaviour:
   rarity: 0.9
   type: 0
   nextStage: {fileID: 0}
-  icon: {fileID: -5327396383486028306, guid: 06fc44997e2d55444930032664b749e8, type: 3}
+  icon: {fileID: 0}
   description: The most basic resource. Material for furniture, tools, and early
     textiles (pulp).
   requirements: []

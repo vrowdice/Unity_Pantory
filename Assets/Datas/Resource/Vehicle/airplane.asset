@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.2
-  type: 8
+  type: 6
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: e668180682ff5c54c88a6f708b89527d, type: 3}
   description: The ruler of the skies. Requires aluminum and advanced electronic

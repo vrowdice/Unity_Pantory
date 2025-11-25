@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.35
-  type: 4
+  type: 2
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 680cc434b4dbd3f438fa0970ae8b9e91, type: 3}
   description: Basic infantry weapons including rifles, pistols, and combat knives.

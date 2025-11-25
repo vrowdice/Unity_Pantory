@@ -36,10 +36,12 @@ public partial class MarketDataHandler
                 // 양수: 매수 (예약 시스템을 통해 처리되므로 자원만 추가)
                 ExecutePlayerBuyResourceWithoutPayment(kvp.Key, delta);
             }
-            else
+            else if (delta < 0)
             {
                 // 음수: 매도 (예약 시스템을 통해 처리되므로 자원만 제거)
-                ExecutePlayerSellResourceWithoutPayment(kvp.Key, -delta);
+                long requestedAmount = -delta;
+                // 재고가 없으면 판매하지 않음 (playerTransactionDelta는 그대로 유지)
+                ExecutePlayerSellResourceWithoutPayment(kvp.Key, requestedAmount);
             }
         }
     }
@@ -86,6 +88,13 @@ public partial class MarketDataHandler
             return false;
         }
 
+        // 시장에 재고가 있는지 확인
+        if (!_gameDataManager.Resource.HasEnoughMarketInventory(resourceId, amount))
+        {
+            Debug.LogWarning($"[MarketDataHandler] Market has insufficient stock for {resourceEntry.resourceData.displayName}. Required: {amount}, Available: {_gameDataManager.Resource.GetResourceQuantity(resourceId)}");
+            return false;
+        }
+
         float unitPrice = resourceEntry.resourceState.currentValue;
         long baseCost = (long)Mathf.Ceil(unitPrice * amount);
         
@@ -117,7 +126,9 @@ public partial class MarketDataHandler
             _gameDataManager.Finances.TryRemoveCredit(totalCost);
         }
         
-        _gameDataManager.Resource.AddResource(resourceId, amount);
+        // 자원 이동: 시장(감소) -> 플레이어(증가)
+        _gameDataManager.Resource.ModifyMarketInventory(resourceId, -amount);
+        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, amount);
 
         // 시장 수요에 즉시 반영
         ApplyPlayerDemand(resourceEntry, amount);
@@ -148,8 +159,15 @@ public partial class MarketDataHandler
             return;
         }
 
-        // 자원 추가
-        _gameDataManager.Resource.AddResource(resourceId, amount);
+        // 시장에 재고가 있는지 확인
+        if (!_gameDataManager.Resource.HasEnoughMarketInventory(resourceId, amount))
+        {
+            return;
+        }
+
+        // 자원 이동: 시장(감소) -> 플레이어(증가)
+        _gameDataManager.Resource.ModifyMarketInventory(resourceId, -amount);
+        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, amount);
 
         // 시장 수요에 즉시 반영
         ApplyPlayerDemand(resourceEntry, amount);
@@ -168,10 +186,10 @@ public partial class MarketDataHandler
             return false;
         }
 
-        // 자원 확인
-        if (!_gameDataManager.Resource.HasEnoughResource(resourceId, amount))
+        // 플레이어 재고 확인
+        if (!_gameDataManager.Resource.HasEnoughPlayerResource(resourceId, amount))
         {
-            Debug.LogWarning($"[MarketDataHandler] Insufficient resources for sale. Required: {amount}, Available: {_gameDataManager.Resource.GetResourceQuantity(resourceId)}");
+            Debug.LogWarning($"[MarketDataHandler] Insufficient resources in player storage. Required: {amount}, Available: {_gameDataManager.Resource.GetPlayerResourceQuantity(resourceId)}");
             return false;
         }
 
@@ -183,8 +201,9 @@ public partial class MarketDataHandler
         long marketFee = (long)Mathf.Floor(baseRevenue * feeRate);
         long totalRevenue = baseRevenue - marketFee;
 
-        // 거래 실행
-        _gameDataManager.Resource.TryRemoveResource(resourceId, amount);
+        // 거래 실행: 자원 이동: 플레이어(감소) -> 시장(증가)
+        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, -amount);
+        _gameDataManager.Resource.ModifyMarketInventory(resourceId, amount);
         
         // 예약된 비용 처리 중이면 수익 추가를 하지 않음 (이미 예약된 비용에서 처리됨)
         bool shouldAdd = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
@@ -205,34 +224,49 @@ public partial class MarketDataHandler
     /// <summary>
     /// 플레이어 자동 거래용 매도 (예약 시스템을 통해 처리되므로 금액 변경 없이 자원만 처리)
     /// </summary>
-    private void ExecutePlayerSellResourceWithoutPayment(string resourceId, long amount)
+    /// <returns>실제 판매된 수량 (재고 부족 시 요청량보다 적을 수 있음)</returns>
+    private long ExecutePlayerSellResourceWithoutPayment(string resourceId, long amount)
     {
         if (_gameDataManager?.Resource == null)
         {
-            return;
+            return 0;
         }
 
         if (string.IsNullOrEmpty(resourceId) || amount <= 0)
         {
-            return;
+            return 0;
         }
 
         var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
         if (resourceEntry == null)
         {
-            return;
+            return 0;
         }
 
-        // 자원 확인 및 제거
-        if (!_gameDataManager.Resource.HasEnoughResource(resourceId, amount))
+        // 플레이어 재고 확인
+        long availableInventory = _gameDataManager.Resource.GetPlayerResourceQuantity(resourceId);
+        if (availableInventory <= 0)
         {
-            return;
+            Debug.LogWarning($"[MarketDataHandler] Cannot sell {resourceId}: player has no inventory (requested: {amount}, available: {availableInventory})");
+            return 0;
         }
 
-        _gameDataManager.Resource.TryRemoveResource(resourceId, amount);
+        // 실제 판매 가능 수량 = 요청량과 보유량 중 작은 값
+        long actualSellAmount = System.Math.Min(amount, availableInventory);
+        
+        if (actualSellAmount < amount)
+        {
+            Debug.LogWarning($"[MarketDataHandler] Insufficient player inventory for {resourceId}. Requested: {amount}, Available: {availableInventory}, Selling: {actualSellAmount}");
+        }
+
+        // 자원 이동: 플레이어(감소) -> 시장(증가)
+        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, -actualSellAmount);
+        _gameDataManager.Resource.ModifyMarketInventory(resourceId, actualSellAmount);
 
         // 시장 공급에 즉시 반영
-        ApplyPlayerSupply(resourceEntry, amount);
+        ApplyPlayerSupply(resourceEntry, actualSellAmount);
+        
+        return actualSellAmount;
     }
 
     /// <summary>

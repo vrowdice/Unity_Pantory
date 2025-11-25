@@ -180,8 +180,6 @@ public partial class MarketDataHandler
                 }
             }
         }
-
-        Debug.Log("[MarketDataHandler] Market chaos initialized: All resources stocked, all actors funded.");
     }
 
     /// <summary>
@@ -543,22 +541,42 @@ public partial class MarketDataHandler
                 supplyBoost = Mathf.Max(supplyBoost, minSupply);
 
                 res.resourceState.lastSupply += supplyBoost;
-                res.resourceState.count += (long)supplyBoost;
+                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, (long)supplyBoost);
 
                 // [핵심] 공급을 늘렸으니, 가격도 즉시 하락 압력을 줌 (수입품이 싸게 들어옴)
                 float priceDropRate = _marketSettings != null ? _marketSettings.tradePortPriceDropRate : 0.9f;
                 res.resourceState.currentValue *= priceDropRate;
-                
-                Debug.Log($"[TradePort] Importing cheap {res.resourceData.displayName} to lower price. (Price: {currentPrice:F2} -> {res.resourceState.currentValue:F2}, Supply: +{supplyBoost:F0})");
             }
-            // [기존 로직 유지] 긴급 자재 수혈 (수입): 재고가 바닥이면 시스템이 공급
-            else if (res.resourceState.count < 10L)
+            // [수정] 안전 재고 유지 (Minimum Stock Maintenance)
+            // 자원 타입에 따라 최소 유지량을 다르게 설정
+            long minStockTarget = 100L; // 기본값
+
+            // 1. 많이 쓰이는 중간재(Component, Essentials)는 재고를 넉넉히 확보
+            if (res.resourceData.type == ResourceType.component || 
+                res.resourceData.type == ResourceType.Essentials)
             {
-                float emergencySupply = _marketSettings != null ? _marketSettings.tradePortEmergencySupply : 100f;
-                res.resourceState.lastSupply += emergencySupply;
-                res.resourceState.count += (long)emergencySupply;
+                minStockTarget = 1000L; // 최소 1000개는 항상 깔려있게 함
+            }
+            // 2. 원자재는 더 많이
+            else if (res.resourceData.type == ResourceType.raw)
+            {
+                minStockTarget = 2000L;
+            }
+
+            // 현재 재고가 목표치보다 적으면 부족분만큼 즉시 수입(채워넣기)
+            if (res.resourceState.count < minStockTarget)
+            {
+                long deficit = minStockTarget - res.resourceState.count;
                 
-                // 긴급 수혈은 가격을 올리지 않음 (가격 안정화 우선)
+                // 너무 조금씩(1~2개) 채우면 연산 낭비니까, 한 번 채울 때 넉넉히(최소 100개 단위)
+                long importAmount = Math.Max(deficit, 100L);
+
+                res.resourceState.lastSupply += importAmount;
+                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, importAmount);
+                
+                // 수입 비용 반영 (재고가 없어서 급히 채웠으니 가격 소폭 상승 유도)
+                // 단, 너무 자주 발생하면 인플레가 오므로 1.01~1.05배 정도로 살짝만
+                res.resourceState.currentValue *= 1.02f;
             }
             // [기존 로직 유지] 악성 재고 처리 (수출): 공급이 수요보다 너무 많고 가격이 너무 쌀 때만 수출
             float exportSurplusRatio = _marketSettings != null ? _marketSettings.tradePortExportSurplusRatio : 2.0f;
@@ -571,7 +589,7 @@ public partial class MarketDataHandler
                 
                 // 시장에서 물량 제거 (수출됨)
                 res.resourceState.lastSupply -= dumpAmount;
-                res.resourceState.count = Math.Max(0L, res.resourceState.count - (long)dumpAmount);
+                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, -(long)dumpAmount);
             }
         }
     }

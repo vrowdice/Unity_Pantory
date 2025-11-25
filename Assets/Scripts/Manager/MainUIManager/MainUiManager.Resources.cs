@@ -32,7 +32,8 @@ public partial class MainUiManager
                 continue;
             }
 
-            if(entry.resourceState.deltaCount == 0 && entry.resourceState.count == 0)
+            // 플레이어 재고가 있는 자원만 표시
+            if(entry.resourceState.playerInventory == 0)
             {
                 continue;
             }

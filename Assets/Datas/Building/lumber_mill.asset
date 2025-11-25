@@ -9,25 +9,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1af18d5a9edb4f35b7fe389f0d0e25fb, type: 3}
-  m_Name: sawmill
+  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
+  m_Name: lumber_mill
   m_EditorClassIdentifier: 
-  id: sawmill
-  displayName: Sawmill
+  id: lumber_mill
+  displayName: Lumber Mill
   buildingType: 1
   icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  description: Harvests raw timber directly from nearby forests. Produces fresh logs
-    without consuming any auxiliary materials.
-  baseCost: 140
-  baseMaintenanceCost: 7
+  description: A wood processing facility that transforms raw logs into fine wood
+    and fabric. Processes wood logs into usable lumber and can also produce fabric
+    from wood pulp. Most efficient when placed near sawmills.
+  baseCost: 180
+  baseMaintenanceCost: 10
   size: {x: 2, y: 2}
-  allowedResourceTypes: 00000000
+  allowedResourceTypes: 05000000
   _producibleResources:
-  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
-  inputPosition: {x: 0, y: 0}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  inputPosition: {x: -1, y: 1}
   outputPosition: {x: 2, y: 1}
   baseProductionRate: 1
   processingTime: 1
-  _producibleRawResources:
-  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}

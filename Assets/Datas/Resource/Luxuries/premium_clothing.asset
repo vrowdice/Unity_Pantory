@@ -22,7 +22,7 @@ MonoBehaviour:
   priceResistanceThreshold: 3
   maxPriceMultiplier: 10
   rarity: 0.45
-  type: 6
+  type: 4
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 1c784837bcae5a346bcc98eac3fac7db, type: 3}
   description: High-quality clothing crafted from fine materials with exquisite tailoring.
