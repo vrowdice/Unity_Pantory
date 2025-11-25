@@ -22,6 +22,7 @@ MonoBehaviour:
   baseCost: 800
   baseMaintenanceCost: 40
   size: {x: 3, y: 3}
+  requiredTier: 2
   allowedResourceTypes: 06000000
   _producibleResources:
   - {fileID: 11400000, guid: fabba59ec3e95354394bd2fdcb52f3c4, type: 2}

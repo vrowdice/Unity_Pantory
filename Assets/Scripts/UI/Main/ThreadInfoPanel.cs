@@ -9,8 +9,8 @@ using TMPro;
 public class ThreadInfoPanel : MonoBehaviour
 {
     [Header("Resource References")]
-    [SerializeField] private Transform _inputResourceContentTransform;
-    [SerializeField] private Transform _outputResourceContentTransform;
+    [SerializeField] private Transform _provideContentTransform;
+    [SerializeField] private Transform _consumeContentTransform;
 
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI _nameText;
@@ -146,10 +146,10 @@ public class ThreadInfoPanel : MonoBehaviour
             return;
 
         // 기존 내용 지우기
-        if (_inputResourceContentTransform != null)
-            GameObjectUtils.ClearChildren(_inputResourceContentTransform);
-        if (_outputResourceContentTransform != null)
-            GameObjectUtils.ClearChildren(_outputResourceContentTransform);
+        if (_provideContentTransform != null)
+            GameObjectUtils.ClearChildren(_provideContentTransform);
+        if (_consumeContentTransform != null)
+            GameObjectUtils.ClearChildren(_consumeContentTransform);
 
         // ThreadState에서 집계된 자원 정보 가져오기
         if (_currentThreadState.TryGetAggregatedResourceCounts(
@@ -157,28 +157,28 @@ public class ThreadInfoPanel : MonoBehaviour
             out Dictionary<string, int> productionCounts))
         {
             // 입력 자원 표시
-            if (consumptionCounts != null && consumptionCounts.Count > 0 && _inputResourceContentTransform != null)
+            if (consumptionCounts != null && consumptionCounts.Count > 0 && _provideContentTransform != null)
             {
                 foreach (var kvp in consumptionCounts)
                 {
                     ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
                     if (resourceEntry != null && _mainUiManager.ProductionInfoImage != null)
                     {
-                        Instantiate(_mainUiManager.ProductionInfoImage, _inputResourceContentTransform)
+                        Instantiate(_mainUiManager.ProductionInfoImage, _provideContentTransform)
                             .GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
                     }
                 }
             }
 
             // 출력 자원 표시
-            if (productionCounts != null && productionCounts.Count > 0 && _outputResourceContentTransform != null)
+            if (productionCounts != null && productionCounts.Count > 0 && _consumeContentTransform != null)
             {
                 foreach (var kvp in productionCounts)
                 {
                     ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
                     if (resourceEntry != null && _mainUiManager.ProductionInfoImage != null)
                     {
-                        Instantiate(_mainUiManager.ProductionInfoImage, _outputResourceContentTransform)
+                        Instantiate(_mainUiManager.ProductionInfoImage, _consumeContentTransform)
                             .GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
                     }
                 }

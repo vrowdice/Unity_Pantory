@@ -31,6 +31,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     #region Private 변수 및 핸들러
 
     private string _currentThreadId = "";
+    private string _pendingThreadId = ""; // DataManager가 준비될 때까지 대기 중인 스레드 ID
     private BoxCollider2D _cameraCollider;
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
@@ -182,6 +183,14 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
             {
                 _mainCamera.TryGetComponent(out _mainCameraController);
             }
+        }
+
+        // DataManager가 준비되었고 대기 중인 스레드 ID가 있으면 설정
+        if (_dataManager != null && _dataManager.Thread != null && !string.IsNullOrEmpty(_pendingThreadId))
+        {
+            string pendingId = _pendingThreadId;
+            _pendingThreadId = ""; // 먼저 초기화하여 재귀 호출 방지
+            SetCurrentThread(pendingId);
         }
     }
 
@@ -442,18 +451,27 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         if (string.IsNullOrEmpty(threadId)) return;
         if (_currentThreadId == threadId) return;
 
-        // DataManager가 없으면 스레드 ID만 설정하지 않고 경고만 출력
-        // 초기화 중에는 DataManager가 아직 준비되지 않았을 수 있으므로 스레드 ID를 설정하지 않음
+        // DataManager가 없으면 스레드 ID를 대기 목록에 저장하고 나중에 설정
+        // 초기화 중에는 DataManager가 아직 준비되지 않았을 수 있으므로 스레드 ID를 대기 목록에 저장
         if (_dataManager == null || _dataManager.Thread == null)
         {
-            Debug.LogWarning($"[BuildingTileManager] SetCurrentThread called but DataManager/Thread is null. Thread ID '{threadId}' will be set when DataManager is ready.");
+            _pendingThreadId = threadId;
+            //Debug.LogWarning($"[BuildingTileManager] SetCurrentThread called but DataManager/Thread is null. Thread ID '{threadId}' will be set when DataManager is ready.");
             return;
+        }
+
+        // 대기 중인 스레드 ID가 있으면 먼저 처리
+        if (!string.IsNullOrEmpty(_pendingThreadId) && _pendingThreadId != threadId)
+        {
+            // 대기 중인 스레드 ID가 현재 요청과 다르면 무시하고 새 요청 처리
+            _pendingThreadId = "";
         }
 
         // 이전 임시 데이터 버림
         if (_isTempDataDirty) Debug.Log($"[BuildingTileManager] Discarding temporary building data for thread: {_currentThreadId}");
 
         _currentThreadId = threadId;
+        _pendingThreadId = ""; // 대기 목록 초기화
         _isTempDataDirty = false;
         _tempBuildingStates.Clear();
 
@@ -471,7 +489,18 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> 임시 저장된 건물 데이터를 DataManager에 반영합니다. </summary>
     public void ApplyTempBuildingDataToDataManager()
     {
-        if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null) return;
+        if (string.IsNullOrEmpty(_currentThreadId) || _dataManager == null || _dataManager.Thread == null) 
+        {
+            Debug.LogWarning($"[BuildingTileManager] Cannot apply temp building data: Thread ID or DataManager is null.");
+            return;
+        }
+
+        // 스레드가 존재하는지 확인 (빈 스레드 저장 방지)
+        if (!_dataManager.Thread.HasThread(_currentThreadId))
+        {
+            Debug.LogWarning($"[BuildingTileManager] Cannot apply temp building data: Thread '{_currentThreadId}' does not exist. Create thread first.");
+            return;
+        }
 
         if (!_isTempDataDirty && _tempBuildingStates.Count == (_dataManager.Thread.GetBuildingStates(_currentThreadId)?.Count ?? 0))
         {
@@ -488,10 +517,22 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> 최종 저장 로직을 통합 관리합니다. (UI에서 호출) </summary>
     public void SaveThreadChanges(string threadName, string categoryId)
     {
-        if (_dataManager == null) return;
+        if (_dataManager == null || _dataManager.Thread == null) 
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot save thread changes: DataManager or Thread handler is null.");
+            return;
+        }
 
         // 1. Thread ID 결정 및 생성/업데이트
         string newThreadId = _designUiManager.GetThreadIdFromTitle(threadName);
+        
+        // 빈 스레드 저장 방지: 건물이 없으면 스레드를 생성하지 않음
+        if (_tempBuildingStates == null || _tempBuildingStates.Count == 0)
+        {
+            Debug.LogWarning($"[BuildingTileManager] Cannot save thread '{threadName}': No buildings to save. Thread will not be created.");
+            return;
+        }
+
         _dataManager.Thread.CreateThread(newThreadId, threadName);
 
         // 2. 임시 데이터를 DataManager에 반영
@@ -512,6 +553,9 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         // 5. 유지비 계산 및 저장
         int totalMaintenance = CalculateTotalMaintenanceCost(newThreadId);
         
+        // 6. 직원 요구사항 계산 및 저장
+        CalculateAndSetEmployeeRequirements(newThreadId);
+        
         ThreadState thread = _dataManager.Thread.GetThread(newThreadId);
         if (thread != null)
         {
@@ -521,11 +565,11 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
             }
             thread.totalMaintenanceCost = totalMaintenance;
             
-            // totalMaintenanceCost와 previewImagePath 변경사항을 저장
+            // totalMaintenanceCost, previewImagePath, 직원 요구사항 변경사항을 저장
             _dataManager.Thread.Save();
         }
 
-        // 6. GameManager 및 화면 갱신
+        // 7. GameManager 및 화면 갱신
         _gameManager?.SetCurrentThreadId(newThreadId);
         SetCurrentThread(newThreadId); // 임시 데이터 초기화 및 로드/갱신
 
@@ -806,6 +850,57 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     public int CalculateTotalMaintenanceCost(string threadId)
     {
         return _calculateHandler?.CalculateTotalMaintenanceCost(threadId) ?? 0;
+    }
+
+    /// <summary> Thread의 직원 요구사항을 계산하고 ThreadState에 저장합니다. </summary>
+    public void CalculateAndSetEmployeeRequirements(string threadId)
+    {
+        if (_dataManager == null || _dataManager.Thread == null || _dataManager.Building == null)
+        {
+            Debug.LogWarning("[BuildingTileManager] Cannot calculate employee requirements: DataManager or handlers are null.");
+            return;
+        }
+
+        ThreadState thread = _dataManager.Thread.GetThread(threadId);
+        if (thread == null)
+        {
+            Debug.LogWarning($"[BuildingTileManager] Thread not found: {threadId}");
+            return;
+        }
+
+        int totalWorkers = 0;
+        int totalTechnicians = 0;
+        int totalResearchers = 0;
+        int totalManagers = 0;
+
+        // 현재 스레드의 건물 상태 가져오기
+        List<BuildingState> buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
+
+        if (buildingStates != null)
+        {
+            foreach (var buildingState in buildingStates)
+            {
+                if (buildingState == null || string.IsNullOrEmpty(buildingState.buildingId))
+                    continue;
+
+                BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
+                if (buildingData != null)
+                {
+                    totalWorkers += buildingData.requiredWorkers;
+                    totalTechnicians += buildingData.requiredTechnicians;
+                    totalResearchers += buildingData.requiredResearchers;
+                    totalManagers += buildingData.requiredManagers;
+                }
+            }
+        }
+
+        // ThreadState에 저장
+        thread.requiredWorkers = totalWorkers;
+        thread.requiredTechnicians = totalTechnicians;
+        thread.requiredResearchers = totalResearchers;
+        thread.requiredManagers = totalManagers;
+
+        Debug.Log($"[BuildingTileManager] Employee requirements calculated for thread '{threadId}': Workers={totalWorkers}, Technicians={totalTechnicians}, Researchers={totalResearchers}, Managers={totalManagers}");
     }
 
     /// <summary> Thread의 입력 자원 ID 목록을 수집합니다. </summary>

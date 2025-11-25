@@ -58,7 +58,7 @@ public partial class DesignUiManager
             if (firstThread != null && !string.IsNullOrEmpty(firstThread.threadName))
             {
                 _currentThreadTitle = firstThread.threadName;
-                if (_buildingTileManager != null)
+                if (_buildingTileManager != null && _dataManager != null && _dataManager.Thread != null)
                 {
                     _buildingTileManager.SetCurrentThread(firstThread.threadId);
                 }

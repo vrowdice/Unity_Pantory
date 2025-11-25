@@ -15,6 +15,12 @@ public class ThreadState
     public string previewImagePath = string.Empty; // 건물 레이아웃 미리보기 이미지 경로
     public int totalMaintenanceCost = 0;           // 스레드의 총 유지비 (월간)
     
+    [Header("Employee Requirements")]
+    public int requiredWorkers = 0;               // 필요한 Worker 직원 수
+    public int requiredTechnicians = 0;           // 필요한 Technician 직원 수
+    public int requiredResearchers = 0;            // 필요한 Researcher 직원 수
+    public int requiredManagers = 0;              // 필요한 Manager 직원 수
+    
     public ThreadState()
     {
     }

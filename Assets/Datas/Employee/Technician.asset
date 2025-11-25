@@ -15,6 +15,7 @@ MonoBehaviour:
   id: technician
   displayName: Technician
   role: 1
+  tier: 2
   icon: {fileID: 21300000, guid: be40cd7d02703244dbe8af74759055fa, type: 3}
   Image: {fileID: 21300000, guid: be40cd7d02703244dbe8af74759055fa, type: 3}
   description: A skilled craftsman with technical expertise. Proficient in complex

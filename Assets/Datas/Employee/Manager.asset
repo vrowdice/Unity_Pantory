@@ -15,6 +15,7 @@ MonoBehaviour:
   id: manager
   displayName: Manager
   role: 3
+  tier: 2
   icon: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
   Image: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
   description: An experienced leader who oversees operations and staff. Boosts team

@@ -15,6 +15,7 @@ MonoBehaviour:
   id: researcher
   displayName: Researcher
   role: 2
+  tier: 3
   icon: {fileID: 21300000, guid: 2b137ab373abcff409331e050b59c3c4, type: 3}
   Image: {fileID: 21300000, guid: 2b137ab373abcff409331e050b59c3c4, type: 3}
   description: A brilliant mind dedicated to innovation and discovery. Unlocks new
