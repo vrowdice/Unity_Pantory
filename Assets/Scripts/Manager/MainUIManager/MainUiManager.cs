@@ -44,6 +44,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private GameObject _threadBtnPrefab;
     [SerializeField] private GameObject _threadPlusBtnPrefab;
     [SerializeField] private Transform _threadScrollViewContent;
+    [SerializeField] private ThreadInfoPanel _threadInfoPanel;
 
     private GameObject _productionInfoImage;
     

@@ -23,6 +23,7 @@ MonoBehaviour:
   baseCost: 500
   baseMaintenanceCost: 25
   size: {x: 2, y: 2}
+  requiredEmployees: 8
   allowedResourceTypes: 00000000
   _producibleResources:
   - {fileID: 11400000, guid: c96478f871047914fa5e4676ff47d872, type: 2}

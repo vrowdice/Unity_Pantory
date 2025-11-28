@@ -43,6 +43,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     private BuildingGridHandler _gridGenHandler;
     private BuildingPlacementHandler _placementHandler;
     private BuildingRemovalHandler _removalHandler;
+    // BuildingCalculateHandler는 경로 탐색이 필요한 경우에만 사용 (CalculateThreadOutputs)
     private BuildingCalculateHandler _calculateHandler;
 
     // 공용 World Space Canvas
@@ -840,6 +841,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     }
 
     /// <summary> 유효한 생산 건물의 수를 계산합니다. </summary>
+    /// <remarks>경로 탐색이 필요하므로 BuildingCalculateHandler 사용</remarks>
     public int CalculateCurrentThreadOutputs()
     {
         if (string.IsNullOrEmpty(_currentThreadId) || _calculateHandler == null) return 0;
@@ -849,13 +851,15 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
     /// <summary> Thread의 총 유지비를 계산합니다. </summary>
     public int CalculateTotalMaintenanceCost(string threadId)
     {
-        return _calculateHandler?.CalculateTotalMaintenanceCost(threadId) ?? 0;
+        if (_dataManager?.ThreadCalculate == null) return 0;
+        var buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
+        return _dataManager.ThreadCalculate.CalculateTotalMaintenanceCost(threadId, buildingStates);
     }
 
     /// <summary> Thread의 직원 요구사항을 계산하고 ThreadState에 저장합니다. </summary>
     public void CalculateAndSetEmployeeRequirements(string threadId)
     {
-        if (_dataManager == null || _dataManager.Thread == null || _dataManager.Building == null)
+        if (_dataManager == null || _dataManager.Thread == null || _dataManager.ThreadCalculate == null)
         {
             Debug.LogWarning("[BuildingTileManager] Cannot calculate employee requirements: DataManager or handlers are null.");
             return;
@@ -868,51 +872,32 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
             return;
         }
 
-        int totalWorkers = 0;
-        int totalTechnicians = 0;
-        int totalResearchers = 0;
-        int totalManagers = 0;
-
         // 현재 스레드의 건물 상태 가져오기
         List<BuildingState> buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
 
-        if (buildingStates != null)
-        {
-            foreach (var buildingState in buildingStates)
-            {
-                if (buildingState == null || string.IsNullOrEmpty(buildingState.buildingId))
-                    continue;
-
-                BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
-                if (buildingData != null)
-                {
-                    totalWorkers += buildingData.requiredWorkers;
-                    totalTechnicians += buildingData.requiredTechnicians;
-                    totalResearchers += buildingData.requiredResearchers;
-                    totalManagers += buildingData.requiredManagers;
-                }
-            }
-        }
+        // ThreadCalculateHandler를 사용하여 계산
+        int totalEmployees = _dataManager.ThreadCalculate.CalculateRequiredEmployees(threadId, buildingStates);
 
         // ThreadState에 저장
-        thread.requiredWorkers = totalWorkers;
-        thread.requiredTechnicians = totalTechnicians;
-        thread.requiredResearchers = totalResearchers;
-        thread.requiredManagers = totalManagers;
+        thread.requiredEmployees = totalEmployees;
 
-        Debug.Log($"[BuildingTileManager] Employee requirements calculated for thread '{threadId}': Workers={totalWorkers}, Technicians={totalTechnicians}, Researchers={totalResearchers}, Managers={totalManagers}");
+        Debug.Log($"[BuildingTileManager] Employee requirements calculated for thread '{threadId}': Total Employees={totalEmployees}");
     }
 
     /// <summary> Thread의 입력 자원 ID 목록을 수집합니다. </summary>
     public List<string> CollectInputProductionIds(string threadId)
     {
-        return _calculateHandler?.CollectInputProductionIds(threadId) ?? new List<string>();
+        if (_dataManager?.ThreadCalculate == null) return new List<string>();
+        var buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
+        return _dataManager.ThreadCalculate.CollectInputProductionIds(threadId, buildingStates);
     }
 
     /// <summary> Thread의 출력 자원 ID 목록을 수집합니다. </summary>
     public List<string> CollectOutputProductionIds(string threadId)
     {
-        return _calculateHandler?.CollectOutputProductionIds(threadId) ?? new List<string>();
+        if (_dataManager?.ThreadCalculate == null) return new List<string>();
+        var buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
+        return _dataManager.ThreadCalculate.CollectOutputProductionIds(threadId, buildingStates);
     }
 
     /// <summary> 생산 체인 연결 정보를 계산합니다. </summary>
@@ -922,11 +907,12 @@ public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
         inputResourceCounts = new Dictionary<string, int>();
         outputResourceIds = new List<string>();
         outputResourceCounts = new Dictionary<string, int>();
-        if (_calculateHandler == null) return;
+        
+        if (_dataManager?.ThreadCalculate == null) return;
 
         List<BuildingState> buildingStatesToUse = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
 
-        _calculateHandler.CalculateProductionChain(threadId, buildingStatesToUse, out inputResourceIds, out inputResourceCounts, out outputResourceIds, out outputResourceCounts);
+        _dataManager.ThreadCalculate.CalculateProductionChain(threadId, buildingStatesToUse, out inputResourceIds, out inputResourceCounts, out outputResourceIds, out outputResourceCounts);
     }
 
     /// <summary> 스프라이트의 스케일을 타일 크기에 맞게 계산합니다. </summary>

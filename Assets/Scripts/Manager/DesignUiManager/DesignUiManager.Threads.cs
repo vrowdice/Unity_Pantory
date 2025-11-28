@@ -34,11 +34,11 @@ public partial class DesignUiManager
         int totalMaintenance = _buildingTileManager.CalculateTotalMaintenanceCost(threadId);
         
         // 직원 요구사항 계산
-        CalculateThreadEmployeeRequirements(threadId, out int requiredWorkers, out int requiredTechnicians, out int requiredResearchers, out int requiredManagers);
+        CalculateThreadEmployeeRequirements(threadId, out int requiredEmployee);
 
         _saveInfoPanel.OnShow(threadTitle, inputResourceIds, inputResourceCounts, outputResourceIds, outputResourceCounts, totalMaintenance, this);
         Debug.Log($"[DesignUiManager] Save info panel shown. Thread ID used for calculation: {threadId}");
-        Debug.Log($"[DesignUiManager] Employee requirements: Workers={requiredWorkers}, Technicians={requiredTechnicians}, Researchers={requiredResearchers}, Managers={requiredManagers}");
+        Debug.Log($"[DesignUiManager] Employee requirements: Workers={requiredEmployee}");
     }
 
     public void SaveThreadChanges(string threadName, string categoryId)
@@ -93,12 +93,9 @@ public partial class DesignUiManager
     }
 
     /// <summary> 스레드의 직원 요구사항을 계산합니다. </summary>
-    private void CalculateThreadEmployeeRequirements(string threadId, out int requiredWorkers, out int requiredTechnicians, out int requiredResearchers, out int requiredManagers)
+    private void CalculateThreadEmployeeRequirements(string threadId, out int requiredEmployee)
     {
-        requiredWorkers = 0;
-        requiredTechnicians = 0;
-        requiredResearchers = 0;
-        requiredManagers = 0;
+        requiredEmployee = 0;
 
         if (_buildingTileManager == null || _dataManager == null || _dataManager.Building == null)
         {
@@ -119,14 +116,11 @@ public partial class DesignUiManager
                 BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
-                    requiredWorkers += buildingData.requiredWorkers;
-                    requiredTechnicians += buildingData.requiredTechnicians;
-                    requiredResearchers += buildingData.requiredResearchers;
-                    requiredManagers += buildingData.requiredManagers;
+                    requiredEmployee += buildingData.requiredEmployees;
                 }
             }
         }
 
-        Debug.Log($"[DesignUiManager] Calculated employee requirements for thread '{threadId}': Workers={requiredWorkers}, Technicians={requiredTechnicians}, Researchers={requiredResearchers}, Managers={requiredManagers}");
+        Debug.Log($"[DesignUiManager] Calculated employee requirements for thread '{threadId}': Workers={requiredEmployee}");
     }
 }

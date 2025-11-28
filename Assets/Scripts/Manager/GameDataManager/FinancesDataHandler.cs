@@ -241,18 +241,18 @@ public class FinancesDataHandler
 
         foreach (var placement in placedThreads.Values)
         {
-            if (placement == null || string.IsNullOrEmpty(placement.ThreadId)) continue;
+            if (placement == null || placement.RuntimeState == null) continue;
 
-            var threadState = _gameDataManager.Thread.GetThread(placement.ThreadId);
-            if (threadState == null) continue;
+            // 각 배치된 인스턴스의 독립적인 상태를 가져옴
+            ThreadState threadState = placement.RuntimeState;
 
             // 유지비 합산 및 스레드별 유지비 추적
             long maintenanceCost = threadState.totalMaintenanceCost;
             totalMaintenance += maintenanceCost;
             if (maintenanceCost > 0)
             {
-                string reason = $"Thread '{placement.ThreadId}' Maintenance";
-                threadMaintenanceCosts[placement.ThreadId] = (maintenanceCost, reason);
+                string reason = $"Thread '{threadState.threadId}' Maintenance";
+                threadMaintenanceCosts[threadState.threadId] = (maintenanceCost, reason);
             }
         }
     }
@@ -277,9 +277,10 @@ public class FinancesDataHandler
         {
             foreach (var placement in placedThreads.Values)
             {
-                if (placement == null || string.IsNullOrEmpty(placement.ThreadId)) continue;
+                if (placement == null || placement.RuntimeState == null) continue;
 
-                var threadState = _gameDataManager.Thread.GetThread(placement.ThreadId);
+                // 각 배치된 인스턴스의 독립적인 상태를 가져옴
+                ThreadState threadState = placement.RuntimeState;
                 if (threadState == null) continue;
 
                 // 자원 합산

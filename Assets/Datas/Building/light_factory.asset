@@ -23,6 +23,7 @@ MonoBehaviour:
   baseCost: 240
   baseMaintenanceCost: 12
   size: {x: 2, y: 2}
+  requiredEmployees: 6
   allowedResourceTypes: 0300000005000000
   inputPosition: {x: -1, y: 1}
   outputPosition: {x: 2, y: 1}

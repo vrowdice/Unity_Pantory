@@ -22,6 +22,7 @@ MonoBehaviour:
   baseCost: 140
   baseMaintenanceCost: 7
   size: {x: 2, y: 2}
+  requiredEmployees: 5
   requiredTier: 1
   allowedResourceTypes: 00000000
   _producibleResources:

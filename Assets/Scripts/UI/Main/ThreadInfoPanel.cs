@@ -19,12 +19,15 @@ public class ThreadInfoPanel : MonoBehaviour
     [SerializeField] private Image _image;
 
     [Header("Employee Assignment")]
-    [SerializeField] private Transform _employeeAssignmentContentTransform;
-    [SerializeField] private GameObject _employeeAssignmentButtonPrefab;
+    [SerializeField] private Slider _productionEfficiencySlider;
+    [SerializeField] private Slider _productionProgressSlider;
+    [SerializeField] private TextMeshProUGUI _currentWorkersText;
+    [SerializeField] private TextMeshProUGUI _currentTechniciansText;
 
     private ThreadState _currentThreadState;
     private GameDataManager _dataManager;
     private MainUiManager _mainUiManager;
+    private bool _isSubscribed = false;
 
     /// <summary>
     /// 패널을 초기화합니다.
@@ -41,7 +44,66 @@ public class ThreadInfoPanel : MonoBehaviour
             return;
         }
 
+        // 이벤트 구독 (하루마다 정보 업데이트)
+        SubscribeToDayChanged();
+        
         UpdateUI();
+    }
+
+    void OnEnable()
+    {
+        // 패널이 활성화될 때 이벤트 구독
+        if (!_isSubscribed)
+        {
+            SubscribeToDayChanged();
+        }
+    }
+
+    void OnDisable()
+    {
+        // 패널이 비활성화될 때 이벤트 구독 해제
+        UnsubscribeFromDayChanged();
+    }
+
+    void OnDestroy()
+    {
+        // 파괴될 때 이벤트 구독 해제
+        UnsubscribeFromDayChanged();
+    }
+
+    /// <summary>
+    /// 하루 변경 이벤트를 구독합니다.
+    /// </summary>
+    private void SubscribeToDayChanged()
+    {
+        if (_dataManager?.Time != null && !_isSubscribed)
+        {
+            _dataManager.Time.OnDayChanged += OnDayChanged;
+            _isSubscribed = true;
+        }
+    }
+
+    /// <summary>
+    /// 하루 변경 이벤트 구독을 해제합니다.
+    /// </summary>
+    private void UnsubscribeFromDayChanged()
+    {
+        if (_dataManager?.Time != null && _isSubscribed)
+        {
+            _dataManager.Time.OnDayChanged -= OnDayChanged;
+            _isSubscribed = false;
+        }
+    }
+
+    /// <summary>
+    /// 하루가 지날 때 호출되는 콜백
+    /// </summary>
+    private void OnDayChanged()
+    {
+        if (gameObject.activeSelf)
+        {
+            UpdateUI();
+        }
     }
 
     /// <summary>
@@ -56,8 +118,12 @@ public class ThreadInfoPanel : MonoBehaviour
         if (_nameText != null)
             _nameText.text = _currentThreadState.threadName;
 
+        // 카테고리 이름 가져오기
         if (_categoryText != null)
-            _categoryText.text = _currentThreadState.categoryId;
+        {
+            string categoryName = GetCategoryName(_currentThreadState.categoryId);
+            _categoryText.text = categoryName;
+        }
 
         // 유지비는 ThreadState에 저장된 값 사용
         if (_maintenanceText != null)
@@ -76,6 +142,26 @@ public class ThreadInfoPanel : MonoBehaviour
 
         // 직원 할당 정보 업데이트
         UpdateEmployeeAssignment();
+
+        // 생산 진행도 및 효율 슬라이더 업데이트
+        UpdateProductionStatus();
+    }
+
+    /// <summary>
+    /// 카테고리 이름을 가져옵니다.
+    /// </summary>
+    private string GetCategoryName(string categoryId)
+    {
+        if (string.IsNullOrEmpty(categoryId) || _dataManager == null)
+            return "None";
+
+        var category = _dataManager.Thread.GetCategory(categoryId);
+        if (category != null)
+        {
+            return category.categoryName;
+        }
+
+        return "None";
     }
 
     /// <summary>
@@ -123,8 +209,8 @@ public class ThreadInfoPanel : MonoBehaviour
             return;
         }
 
-        // Resources 폴더에서 이미지 로드
-        Sprite loadedSprite = Resources.Load<Sprite>(_currentThreadState.previewImagePath);
+        // 파일 시스템 경로에서 이미지 로드 (ThreadBtn과 동일한 방식)
+        Sprite loadedSprite = SpriteUtils.LoadSpriteFromFile(_currentThreadState.previewImagePath);
         if (loadedSprite != null)
         {
             _image.sprite = loadedSprite;
@@ -188,60 +274,345 @@ public class ThreadInfoPanel : MonoBehaviour
 
     /// <summary>
     /// 직원 할당 UI를 업데이트합니다.
-    /// TODO: 직원 할당 기능 구현 필요
     /// </summary>
     private void UpdateEmployeeAssignment()
     {
-        // TODO: 직원 할당 기능 구현
-        // 1. ThreadState에 직원 할당 정보가 있는지 확인
-        // 2. 사용 가능한 직원 목록 가져오기 (GameDataManager에서)
-        // 3. 현재 할당된 직원 표시
-        // 4. 직원 할당/해제 버튼 생성
-        // 5. 직원 할당 시 ThreadState 업데이트
-        
-        if (_employeeAssignmentContentTransform != null && _employeeAssignmentButtonPrefab != null)
+        if (_currentThreadState == null)
+            return;
+
+        // 필요한 직원 수 계산 (건물들의 requiredEmployees 합계)
+        int requiredWorkers = CalculateRequiredWorkers();
+        int requiredTechnicians = CalculateRequiredTechnicians();
+
+        // Worker 텍스트 업데이트: "현재 / 필요한"
+        if (_currentWorkersText != null)
         {
-            GameObjectUtils.ClearChildren(_employeeAssignmentContentTransform);
-            
-            // TODO: 직원 할당 UI 구현
-            // 예시:
-            // var availableEmployees = _dataManager.GetAvailableEmployees();
-            // foreach (var employee in availableEmployees)
-            // {
-            //     var button = Instantiate(_employeeAssignmentButtonPrefab, _employeeAssignmentContentTransform);
-            //     // 버튼 설정 및 이벤트 연결
-            // }
+            _currentWorkersText.text = $"{_currentThreadState.currentWorkers} / {requiredWorkers}";
+        }
+
+        // Technician 텍스트 업데이트: "현재 / 필요한"
+        if (_currentTechniciansText != null)
+        {
+            _currentTechniciansText.text = $"{_currentThreadState.currentTechnicians} / {requiredTechnicians}";
+        }
+    }
+
+    /// <summary>
+    /// 생산 진행도 및 효율 슬라이더를 업데이트합니다.
+    /// </summary>
+    private void UpdateProductionStatus()
+    {
+        if (_currentThreadState == null)
+            return;
+
+        // 생산 효율 슬라이더 업데이트 (0.0 ~ 1.0)
+        if (_productionEfficiencySlider != null)
+        {
+            _productionEfficiencySlider.value = _currentThreadState.currentProductionEfficiency;
+        }
+
+        // 생산 진행도 슬라이더 업데이트 (0.0 ~ 1.0)
+        if (_productionProgressSlider != null)
+        {
+            _productionProgressSlider.value = _currentThreadState.currentProductionProgress;
+        }
+    }
+
+    /// <summary>
+    /// 필요한 Worker 수를 반환합니다.
+    /// requiredEmployees를 그대로 사용합니다 (구분 없이).
+    /// </summary>
+    private int CalculateRequiredWorkers()
+    {
+        if (_currentThreadState == null)
+            return 0;
+
+        // requiredEmployees를 그대로 반환 (구분 없이 사용)
+        return _currentThreadState.requiredEmployees;
+    }
+
+    /// <summary>
+    /// 필요한 Technician 수를 반환합니다.
+    /// requiredEmployees를 그대로 사용합니다 (구분 없이).
+    /// </summary>
+    private int CalculateRequiredTechnicians()
+    {
+        if (_currentThreadState == null)
+            return 0;
+
+        // requiredEmployees를 그대로 반환 (구분 없이 사용)
+        return _currentThreadState.requiredEmployees;
+    }
+
+    /// <summary>
+    /// Worker를 1명 증가시킵니다 (버튼용).
+    /// </summary>
+    public void AddWorker()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        int requiredWorkers = CalculateRequiredWorkers();
+        int currentTotal = _currentThreadState.currentWorkers + _currentThreadState.currentTechnicians;
+
+        // requiredEmployees를 초과하지 않도록 체크
+        if (currentTotal >= _currentThreadState.requiredEmployees)
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot add worker: Maximum employees reached ({_currentThreadState.requiredEmployees})");
+            return;
+        }
+
+        // 할당 가능한 Worker가 있는지 확인
+        int availableWorkers = _dataManager.Employee.GetAvailableEmployeeCount("worker");
+        if (availableWorkers <= 0)
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot add worker: No available workers (hired: {_dataManager.Employee.GetEmployeeCount("worker")}, assigned: {_dataManager.Employee.GetAssignedEmployeeCount("worker")})");
+            return;
+        }
+
+        // Worker 할당 (TryAssignEmployee가 assignedCount를 체크하여 배치된 인원은 다른 스레드에 배치될 수 없도록 보장)
+        if (_dataManager.Employee.TryAssignEmployee("worker", 1))
+        {
+            _currentThreadState.currentWorkers++;
+            // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+            UpdateEmployeeAssignment();
+            UpdateProductionStatus();
+        }
+    }
+
+    /// <summary>
+    /// Technician을 1명 증가시킵니다 (버튼용).
+    /// </summary>
+    public void AddTechnician()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        int requiredTechnicians = CalculateRequiredTechnicians();
+        int currentTotal = _currentThreadState.currentWorkers + _currentThreadState.currentTechnicians;
+
+        // requiredEmployees를 초과하지 않도록 체크
+        if (currentTotal >= _currentThreadState.requiredEmployees)
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot add technician: Maximum employees reached ({_currentThreadState.requiredEmployees})");
+            return;
+        }
+
+        // 할당 가능한 Technician이 있는지 확인
+        int availableTechnicians = _dataManager.Employee.GetAvailableEmployeeCount("technician");
+        if (availableTechnicians <= 0)
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot add technician: No available technicians (hired: {_dataManager.Employee.GetEmployeeCount("technician")}, assigned: {_dataManager.Employee.GetAssignedEmployeeCount("technician")})");
+            return;
+        }
+
+        // Technician 할당 (TryAssignEmployee가 assignedCount를 체크하여 배치된 인원은 다른 스레드에 배치될 수 없도록 보장)
+        if (_dataManager.Employee.TryAssignEmployee("technician", 1))
+        {
+            _currentThreadState.currentTechnicians++;
+            // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+            UpdateEmployeeAssignment();
+            UpdateProductionStatus();
+        }
+    }
+
+    /// <summary>
+    /// Worker로 requiredEmployees의 최대 직원까지 추가합니다 (이미 들어가있는 직원 제외, 버튼용).
+    /// </summary>
+    public void FillWorkersToMax()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        int currentTotal = _currentThreadState.currentWorkers + _currentThreadState.currentTechnicians;
+        int availableSlots = _currentThreadState.requiredEmployees - currentTotal;
+
+        if (availableSlots <= 0)
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot fill workers: No available slots (current: {currentTotal}, max: {_currentThreadState.requiredEmployees})");
+            return;
+        }
+
+        // 할당 가능한 Worker 수 확인
+        int availableWorkers = _dataManager.Employee.GetAvailableEmployeeCount("worker");
+        int workersToAdd = Mathf.Min(availableSlots, availableWorkers);
+
+        if (workersToAdd > 0)
+        {
+            if (_dataManager.Employee.TryAssignEmployee("worker", workersToAdd))
+            {
+                _currentThreadState.currentWorkers += workersToAdd;
+                // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+                _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+                UpdateEmployeeAssignment();
+                UpdateProductionStatus();
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot fill workers: No available workers (hired: {_dataManager.Employee.GetEmployeeCount("worker")}, assigned: {_dataManager.Employee.GetAssignedEmployeeCount("worker")})");
+        }
+    }
+
+    /// <summary>
+    /// Technician으로 requiredEmployees의 최대 직원까지 추가합니다 (이미 들어가있는 직원 제외, 버튼용).
+    /// </summary>
+    public void FillTechniciansToMax()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        int currentTotal = _currentThreadState.currentWorkers + _currentThreadState.currentTechnicians;
+        int availableSlots = _currentThreadState.requiredEmployees - currentTotal;
+
+        if (availableSlots <= 0)
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot fill technicians: No available slots (current: {currentTotal}, max: {_currentThreadState.requiredEmployees})");
+            return;
+        }
+
+        // 할당 가능한 Technician 수 확인
+        int availableTechnicians = _dataManager.Employee.GetAvailableEmployeeCount("technician");
+        int techniciansToAdd = Mathf.Min(availableSlots, availableTechnicians);
+
+        if (techniciansToAdd > 0)
+        {
+            if (_dataManager.Employee.TryAssignEmployee("technician", techniciansToAdd))
+            {
+                _currentThreadState.currentTechnicians += techniciansToAdd;
+                // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+                _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+                UpdateEmployeeAssignment();
+                UpdateProductionStatus();
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[ThreadInfoPanel] Cannot fill technicians: No available technicians (hired: {_dataManager.Employee.GetEmployeeCount("technician")}, assigned: {_dataManager.Employee.GetAssignedEmployeeCount("technician")})");
+        }
+    }
+
+    /// <summary>
+    /// Worker를 1명 감소시킵니다 (버튼용).
+    /// </summary>
+    public void RemoveWorker()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        if (_currentThreadState.currentWorkers <= 0)
+        {
+            Debug.LogWarning("[ThreadInfoPanel] Cannot remove worker: No workers assigned");
+            return;
+        }
+
+        // Worker 할당 해제
+        if (_dataManager.Employee.TryUnassignEmployee("worker", 1))
+        {
+            _currentThreadState.currentWorkers--;
+            // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+            UpdateEmployeeAssignment();
+            UpdateProductionStatus();
+        }
+    }
+
+    /// <summary>
+    /// Technician을 1명 감소시킵니다 (버튼용).
+    /// </summary>
+    public void RemoveTechnician()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        if (_currentThreadState.currentTechnicians <= 0)
+        {
+            Debug.LogWarning("[ThreadInfoPanel] Cannot remove technician: No technicians assigned");
+            return;
+        }
+
+        // Technician 할당 해제
+        if (_dataManager.Employee.TryUnassignEmployee("technician", 1))
+        {
+            _currentThreadState.currentTechnicians--;
+            // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+            UpdateEmployeeAssignment();
+            UpdateProductionStatus();
+        }
+    }
+
+    /// <summary>
+    /// 모든 Worker를 제거합니다 (버튼용).
+    /// </summary>
+    public void RemoveAllWorkers()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        if (_currentThreadState.currentWorkers <= 0)
+        {
+            return;
+        }
+
+        int workersToRemove = _currentThreadState.currentWorkers;
+        if (_dataManager.Employee.TryUnassignEmployee("worker", workersToRemove))
+        {
+            _currentThreadState.currentWorkers = 0;
+            // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+            UpdateEmployeeAssignment();
+            UpdateProductionStatus();
+        }
+    }
+
+    /// <summary>
+    /// 모든 Technician을 제거합니다 (버튼용).
+    /// </summary>
+    public void RemoveAllTechnicians()
+    {
+        if (_currentThreadState == null || _dataManager == null)
+            return;
+
+        if (_currentThreadState.currentTechnicians <= 0)
+        {
+            return;
+        }
+
+        int techniciansToRemove = _currentThreadState.currentTechnicians;
+        if (_dataManager.Employee.TryUnassignEmployee("technician", techniciansToRemove))
+        {
+            _currentThreadState.currentTechnicians = 0;
+            // 직원 할당 상태 즉시 동기화 (다른 스레드에서도 최신 상태 반영)
+            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+            UpdateEmployeeAssignment();
+            UpdateProductionStatus();
         }
     }
 
     /// <summary>
     /// 직원을 스레드에 할당합니다.
-    /// TODO: 직원 할당 로직 구현 필요
     /// </summary>
     public void AssignEmployee(string employeeId, int count)
     {
         if (_currentThreadState == null || _dataManager == null)
             return;
 
-        // TODO: 직원 할당 로직 구현
-        // 1. 직원이 사용 가능한지 확인
-        // 2. ThreadState에 직원 할당 정보 추가
-        // 3. UI 업데이트
+        // 직원 할당 로직은 AddWorker/AddTechnician으로 처리
         Debug.Log($"[ThreadInfoPanel] AssignEmployee called: {employeeId}, count: {count}");
     }
 
     /// <summary>
     /// 스레드에서 직원 할당을 해제합니다.
-    /// TODO: 직원 할당 해제 로직 구현 필요
     /// </summary>
     public void UnassignEmployee(string employeeId, int count)
     {
         if (_currentThreadState == null || _dataManager == null)
             return;
 
-        // TODO: 직원 할당 해제 로직 구현
-        // 1. ThreadState에서 직원 할당 정보 제거
-        // 2. UI 업데이트
+        // 직원 할당 해제 로직은 RemoveWorker/RemoveTechnician으로 처리
         Debug.Log($"[ThreadInfoPanel] UnassignEmployee called: {employeeId}, count: {count}");
     }
 

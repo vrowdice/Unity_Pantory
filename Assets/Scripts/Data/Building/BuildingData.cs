@@ -24,16 +24,7 @@ public abstract class BuildingData : ScriptableObject
     public Vector2Int size = new Vector2Int(1, 1);
 
     [Header("Employee Requirements")]
-    [Tooltip("건물이 요구하는 최소 기술 수준 티어 (1=Worker, 2=Technician, 3=Researcher)")]
-    public int requiredTier = 1;        // 요구되는 최소 기술 수준
-    [Tooltip("필요한 Worker 직원 수")]
-    public int requiredWorkers = 0;
-    [Tooltip("필요한 Technician 직원 수")]
-    public int requiredTechnicians = 0;
-    [Tooltip("필요한 Researcher 직원 수")]
-    public int requiredResearchers = 0;
-    [Tooltip("필요한 Manager 직원 수")]
-    public int requiredManagers = 0;
+    public int requiredEmployees = 0;
 
     // 가상 속성들 - 파생 클래스에서 구현
     /// <summary>

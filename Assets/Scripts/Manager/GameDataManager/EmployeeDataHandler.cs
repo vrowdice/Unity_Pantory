@@ -552,5 +552,169 @@ public class EmployeeDataHandler
     {
         return _employees.ContainsKey(employeeId);
     }
+
+    // ----------------- 직원 할당 관리 (assignedCount) -----------------
+
+    /// <summary>
+    /// 특정 직원 유형의 할당된 인원 수를 증가시킵니다.
+    /// </summary>
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="count">증가시킬 인원 수</param>
+    /// <returns>성공 시 true, 인원 부족 시 false</returns>
+    public bool TryAssignEmployee(string employeeId, int count)
+    {
+        if (count <= 0)
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Assign count must be greater than 0. (input: {count})");
+            return false;
+        }
+
+        if (!_employees.TryGetValue(employeeId, out var entry))
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            return false;
+        }
+
+        // 할당 가능한 인원 수 확인 (고용된 인원 - 이미 할당된 인원)
+        int availableCount = entry.employeeState.count - entry.employeeState.assignedCount;
+        
+        if (availableCount >= count)
+        {
+            entry.employeeState.assignedCount += count;
+            OnEmployeeChanged?.Invoke();
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Not enough available employees for {employeeId}: (requested: {count}, available: {availableCount}, total: {entry.employeeState.count}, assigned: {entry.employeeState.assignedCount})");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 특정 직원 유형의 할당된 인원 수를 감소시킵니다.
+    /// </summary>
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="count">감소시킬 인원 수</param>
+    /// <returns>성공 시 true, 할당된 인원 부족 시 false</returns>
+    public bool TryUnassignEmployee(string employeeId, int count)
+    {
+        if (count <= 0)
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unassign count must be greater than 0. (input: {count})");
+            return false;
+        }
+
+        if (!_employees.TryGetValue(employeeId, out var entry))
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            return false;
+        }
+
+        if (entry.employeeState.assignedCount >= count)
+        {
+            entry.employeeState.assignedCount -= count;
+            // assignedCount는 음수가 될 수 없음
+            if (entry.employeeState.assignedCount < 0)
+            {
+                entry.employeeState.assignedCount = 0;
+            }
+            OnEmployeeChanged?.Invoke();
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Not enough assigned employees for {employeeId}: (requested: {count}, assigned: {entry.employeeState.assignedCount})");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 특정 직원 유형의 할당 가능한 인원 수를 반환합니다.
+    /// </summary>
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <returns>할당 가능한 인원 수 (고용된 인원 - 이미 할당된 인원)</returns>
+    public int GetAvailableEmployeeCount(string employeeId)
+    {
+        if (!_employees.TryGetValue(employeeId, out var entry))
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            return 0;
+        }
+
+        int available = entry.employeeState.count - entry.employeeState.assignedCount;
+        return Mathf.Max(0, available);
+    }
+
+    /// <summary>
+    /// 특정 직원 유형의 할당된 인원 수를 반환합니다.
+    /// </summary>
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <returns>할당된 인원 수</returns>
+    public int GetAssignedEmployeeCount(string employeeId)
+    {
+        if (!_employees.TryGetValue(employeeId, out var entry))
+        {
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            return 0;
+        }
+
+        return entry.employeeState.assignedCount;
+    }
+
+    /// <summary>
+    /// 모든 배치된 스레드 인스턴스의 직원 할당 상태를 동기화합니다.
+    /// ThreadPlacementDataHandler의 실제 배치된 인스턴스들의 currentWorkers와 currentTechnicians를 기반으로 assignedCount를 업데이트합니다.
+    /// 배치된 인원은 다른 스레드에 배치될 수 없도록 보장합니다.
+    /// </summary>
+    public void SyncAssignedCountsFromThreads(ThreadPlacementDataHandler threadPlacementHandler)
+    {
+        if (threadPlacementHandler == null)
+            return;
+
+        // 모든 직원의 assignedCount를 0으로 초기화
+        foreach (var entry in _employees.Values)
+        {
+            entry.employeeState.assignedCount = 0;
+        }
+
+        // 실제 배치된 모든 스레드 인스턴스의 직원 할당을 집계
+        var allPlacements = threadPlacementHandler.GetAllPlacedThreads();
+        if (allPlacements == null)
+        {
+            OnEmployeeChanged?.Invoke();
+            return;
+        }
+
+        foreach (var placement in allPlacements.Values)
+        {
+            if (placement == null || placement.RuntimeState == null)
+                continue;
+
+            ThreadState threadState = placement.RuntimeState;
+
+            // Worker 할당 집계
+            if (threadState.currentWorkers > 0)
+            {
+                var workerEntry = GetEmployeeEntry("worker");
+                if (workerEntry != null)
+                {
+                    workerEntry.employeeState.assignedCount += threadState.currentWorkers;
+                }
+            }
+
+            // Technician 할당 집계
+            if (threadState.currentTechnicians > 0)
+            {
+                var technicianEntry = GetEmployeeEntry("technician");
+                if (technicianEntry != null)
+                {
+                    technicianEntry.employeeState.assignedCount += threadState.currentTechnicians;
+                }
+            }
+        }
+
+        OnEmployeeChanged?.Invoke();
+    }
 }
 

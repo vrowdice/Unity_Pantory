@@ -82,6 +82,12 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
     {
         _placementHandler?.Update();
         _removalHandler?.Update();
+        
+        // 배치/제거 모드가 아닐 때만 클릭 처리
+        if (!IsPlacementMode && !IsRemovalMode)
+        {
+            HandleThreadClick();
+        }
     }
 
     #region Public API
@@ -142,22 +148,30 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
         }
     }
 
-    public bool PlaceThread(Vector2Int gridPos, ThreadState threadState)
+    public bool PlaceThread(Vector2Int gridPos, ThreadState templateThread)
     {
-        if (threadState == null || _gridHandler == null)
+        if (templateThread == null || _gridHandler == null || _dataManager == null || _threadPlacementHandler == null)
             return false;
 
         if (!_gridHandler.CanPlaceThread(gridPos))
             return false;
 
-        ThreadObject threadObject = _gridHandler.CreateThreadObject(gridPos, threadState);
+        // ThreadPlacementDataHandler에서 템플릿을 복사하여 새로운 인스턴스 생성 및 배치
+        ThreadState newThreadInstance = _threadPlacementHandler.PlaceThread(gridPos, templateThread.threadId);
+        if (newThreadInstance == null)
+        {
+            Debug.LogError($"[ThreadTileManager] Failed to place thread instance from template: {templateThread.threadId}");
+            return false;
+        }
+
+        // 새로운 인스턴스로 ThreadObject 생성
+        ThreadObject threadObject = _gridHandler.CreateThreadObject(gridPos, newThreadInstance);
         if (threadObject == null)
             return false;
 
         threadObject.SetGridPosition(gridPos);
         _gridHandler.SetTileOccupied(gridPos, true);
 
-        _threadPlacementHandler?.SetPlacedThread(gridPos, threadState.threadId);
         return true;
     }
 
@@ -170,12 +184,9 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
         {
             placementRemoved = _threadPlacementHandler.RemovePlacedThread(gridPos);
 
-            if (!placementRemoved && threadObject?.ThreadState != null)
-            {
-                // placement 데이터가 없더라도 ThreadState 정보를 기반으로 이벤트를 트리거하기 위해 임시 등록 후 제거
-                _threadPlacementHandler.SetPlacedThread(gridPos, threadObject.ThreadState.threadId);
-                placementRemoved = _threadPlacementHandler.RemovePlacedThread(gridPos);
-            }
+            // 레거시 호환: placement 데이터가 없더라도 ThreadState 정보를 기반으로 이벤트를 트리거
+            // 하지만 새로운 구조에서는 ThreadPlacementDataHandler가 직접 관리하므로 이 로직은 불필요
+            // 주석 처리: if (!placementRemoved && threadObject?.ThreadState != null) { ... }
         }
 
         if (threadObject == null && !placementRemoved)
@@ -205,7 +216,8 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
 
         foreach (var kvp in _threadPlacementHandler.GetAllPlacedThreads())
         {
-            ThreadState threadState = _dataManager.Thread.GetThread(kvp.Value.ThreadId);
+            // 각 배치된 인스턴스의 독립적인 상태를 가져옴
+            ThreadState threadState = kvp.Value.RuntimeState;
             if (threadState == null)
                 continue;
 
@@ -304,6 +316,56 @@ public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
         }
 
         _sharedThreadLabelCanvas = canvasRect.gameObject;
+    }
+
+    #endregion
+
+    #region Thread Click Handling
+
+    /// <summary>
+    /// 스레드 클릭을 처리합니다.
+    /// </summary>
+    private void HandleThreadClick()
+    {
+        if (UnityEngine.EventSystems.EventSystem.current != null && 
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0f;
+            
+            // 그리드 위치로 변환
+            if (_gridHandler != null)
+            {
+                Vector2Int gridPos = _gridHandler.WorldToGridPosition(mouseWorldPos);
+                ThreadObject clickedThread = GetThreadObjectAt(gridPos);
+
+                if (clickedThread != null && !clickedThread.IsPreview)
+                {
+                    OnThreadClicked(clickedThread);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 스레드가 클릭되었을 때 정보 패널을 표시합니다.
+    /// </summary>
+    private void OnThreadClicked(ThreadObject threadObject)
+    {
+        if (threadObject == null || threadObject.ThreadState == null)
+            return;
+
+        if (_mainUiManager != null)
+        {
+            _mainUiManager.ShowThreadInfo(threadObject.ThreadState);
+        }
+        else
+        {
+            Debug.LogWarning("[ThreadTileManager] MainUiManager is not assigned. Cannot show thread info.");
+        }
     }
 
     #endregion

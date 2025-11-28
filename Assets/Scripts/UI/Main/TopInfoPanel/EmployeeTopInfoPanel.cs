@@ -67,9 +67,10 @@ public class EmployeeTopInfoPanel : MonoBehaviour
     /// </summary>
     private void UpdateEmployeeTypeDisplay(EmployeeType type, TextMeshProUGUI countText, TextMeshProUGUI satisfactionText)
     {
-        // Get total count and weighted average satisfaction for this type
+        // Get total count, assigned count, and weighted average satisfaction for this type
         // If there are multiple employee entries with the same role, calculate weighted average
         int totalCount = 0;
+        int assignedCount = 0;
         float weightedSatisfactionSum = 0f;
         bool hasEmployees = false;
 
@@ -83,7 +84,9 @@ public class EmployeeTopInfoPanel : MonoBehaviour
                     if (entry?.employeeData != null && entry.employeeData.role == type)
                     {
                         int count = entry.employeeState.count;
+                        int assigned = entry.employeeState.assignedCount;
                         totalCount += count;
+                        assignedCount += assigned;
                         
                         // Weight satisfaction by count (if there are multiple employee types with same role)
                         if (count > 0)
@@ -96,10 +99,10 @@ public class EmployeeTopInfoPanel : MonoBehaviour
             }
         }
 
-        // Update count text
+        // Update count text: "전체 / 할당" 형식
         if (countText != null)
         {
-            countText.text = totalCount.ToString();
+            countText.text = $"{totalCount} / {assignedCount}";
         }
 
         // Update satisfaction text (weighted average if multiple types, or direct value if single type)
@@ -117,16 +120,16 @@ public class EmployeeTopInfoPanel : MonoBehaviour
     /// </summary>
     private void ClearAllDisplays()
     {
-        if (_workerCountText != null) _workerCountText.text = "0";
+        if (_workerCountText != null) _workerCountText.text = "0 / 0";
         if (_workerSatisfactionText != null) _workerSatisfactionText.text = "0%";
         
-        if (_technicianCountText != null) _technicianCountText.text = "0";
+        if (_technicianCountText != null) _technicianCountText.text = "0 / 0";
         if (_technicianSatisfactionText != null) _technicianSatisfactionText.text = "0%";
         
-        if (_researcherCountText != null) _researcherCountText.text = "0";
+        if (_researcherCountText != null) _researcherCountText.text = "0 / 0";
         if (_researcherSatisfactionText != null) _researcherSatisfactionText.text = "0%";
         
-        if (_managerCountText != null) _managerCountText.text = "0";
+        if (_managerCountText != null) _managerCountText.text = "0 / 0";
         if (_managerSatisfactionText != null) _managerSatisfactionText.text = "0%";
     }
 

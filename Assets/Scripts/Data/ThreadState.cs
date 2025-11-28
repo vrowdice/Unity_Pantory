@@ -14,12 +14,16 @@ public class ThreadState
     public List<BuildingState> buildingStateList = new List<BuildingState>();
     public string previewImagePath = string.Empty; // 건물 레이아웃 미리보기 이미지 경로
     public int totalMaintenanceCost = 0;           // 스레드의 총 유지비 (월간)
+    public int requiredConstructionCost = 0;      // 스레드 건설 시 필요한 금액
+    
+    [Header("Production Status")]
+    public float currentProductionProgress = 0f;   // 현재 생산 진행도 (0.0 ~ 1.0)
+    public float currentProductionEfficiency = 0f; // 현재 생산 효율 퍼센테이지 (0.0 ~ 1.0)
     
     [Header("Employee Requirements")]
-    public int requiredWorkers = 0;               // 필요한 Worker 직원 수
-    public int requiredTechnicians = 0;           // 필요한 Technician 직원 수
-    public int requiredResearchers = 0;            // 필요한 Researcher 직원 수
-    public int requiredManagers = 0;              // 필요한 Manager 직원 수
+    public int requiredEmployees = 0;               // 필요한 Employee 직원 수
+    public int currentWorkers = 0;                // 현재 일하고 있는 Worker 직원 수
+    public int currentTechnicians = 0;            // 현재 일하고 있는 Technician 직원 수
     
     public ThreadState()
     {

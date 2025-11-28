@@ -27,6 +27,7 @@ public class GameDataManager : MonoBehaviour
     public EmployeeDataHandler Employee { get; private set; }
     public BuildingDataHandler Building { get; private set; }
     public SaveLoadHandler SaveLoad { get; private set; }
+    public ThreadCalculateHandler ThreadCalculate { get; private set; }
     #endregion
 
     #region 이벤트 중계 (주요 이벤트만 유지)
@@ -86,6 +87,7 @@ public class GameDataManager : MonoBehaviour
         Finances = new FinancesDataHandler(this);
         Employee = new EmployeeDataHandler(this);
         Building = new BuildingDataHandler(this);
+        ThreadCalculate = new ThreadCalculateHandler(this);
 
         Debug.Log("[GameDataManager] All services initialized.");
 
@@ -103,6 +105,10 @@ public class GameDataManager : MonoBehaviour
 
         // 데이터 로드 및 초기 상태 계산
         LoadThreadData();
+        
+        // 모든 스레드의 생산량 등 초기화
+        ThreadCalculate?.InitializeAllThreads(Thread);
+        
         // 초기화 시에는 생산을 즉시 적용하지 않음 (로드된 데이터가 있다면 이미 적용되어 있을 수 있음)
         // 생산은 하루가 지날 때만 적용됩니다 (HandleDayChanged에서 처리)
         ReserveDailyExpenses();                  // 초기 비용 계산
@@ -131,19 +137,23 @@ public class GameDataManager : MonoBehaviour
         // 1. 직원 상태 업데이트 (만족도 및 효율성)
         Employee?.UpdateDailyEmployeeStatus();
         
-        // 2. 예약된 비용 처리 (이전 날에 예약된 비용을 먼저 적용)
+        // 2. 스레드 직원 할당 상태 동기화 (assignedCount 업데이트)
+        // 실제 배치된 인스턴스만 집계하여 배치된 인원이 다른 스레드에 배치될 수 없도록 보장
+        Employee?.SyncAssignedCountsFromThreads(ThreadPlacement);
+        
+        // 3. 예약된 비용 처리 (이전 날에 예약된 비용을 먼저 적용)
         ApplyReservedDailyExpenses();
         
-        // 3. 스레드 생산/소비 적용 (하루가 지날 때만 실제 생산이 일어남)
+        // 4. 스레드 생산/소비 적용 (하루가 지날 때만 실제 생산이 일어남)
         UpdateResourceDeltasFromPlacedThreads();
         
-        // 4. 자원 증감 적용 (생산/소비 델타를 실제 재고에 반영)
+        // 5. 자원 증감 적용 (생산/소비 델타를 실제 재고에 반영)
         Resource?.ApplyResourceDeltas();
         
-        // 5. 다음 날 비용 예약 (현재 상태 기준)
+        // 6. 다음 날 비용 예약 (현재 상태 기준)
         ReserveDailyExpenses();
         
-        // 6. 시장 업데이트 (가격 변동 및 자동 거래 실행)
+        // 7. 시장 업데이트 (가격 변동 및 자동 거래 실행)
         Market?.TickDailyMarket();
     }
 
@@ -206,80 +216,132 @@ public class GameDataManager : MonoBehaviour
             if (entry?.resourceState != null) entry.resourceState.deltaCount = 0;
         }
 
-        // 2. 집계된 생산/소비량을 플레이어 창고에 적용
-        // 생산품: 플레이어 창고로 직접 추가 (델타만 업데이트, 실제 재고는 ApplyResourceDeltas에서 적용)
-        // 소비품: 플레이어 창고에서 차감 (부족하면 시장에서 구매)
-        
         var placedThreads = ThreadPlacement.GetAllPlacedThreads();
         if (placedThreads == null) return;
 
         foreach (var placement in placedThreads.Values)
         {
-            if (placement == null || string.IsNullOrEmpty(placement.ThreadId)) continue;
+            if (placement == null || placement.RuntimeState == null) continue;
             
-            var threadState = Thread.GetThread(placement.ThreadId);
-            if (threadState == null) continue;
+            // 각 배치된 인스턴스의 독립적인 상태를 가져옴
+            ThreadState threadState = placement.RuntimeState;
 
-            if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
-            {
-                // 생산품: 플레이어 창고로 추가 (델타만 업데이트)
-                ApplyPlayerProduction(prod);
-                // 소비품: 플레이어 창고에서 차감 (부족하면 시장에서 구매)
-                ApplyPlayerConsumption(cons);
-            }
-        }
+            // 2-1. 직원 수 기반 생산 효율 및 진행도 계산
+            UpdateThreadProductionProgress(threadState);
 
-        void ApplyPlayerProduction(Dictionary<string, int> production)
-        {
-            if (production == null) return;
-            foreach (var kvp in production)
+            // 생산 진행도가 1.0 이상일 때만 생산 및 소비 로직을 실행
+            if (threadState.currentProductionProgress >= 1.0f)
             {
-                // 생산품은 플레이어 창고로 직접 추가 (델타만 업데이트)
-                // 실제 재고는 ApplyResourceDeltas에서 playerInventoryDelta를 playerInventory에 반영
-                Resource.ModifyPlayerInventory(kvp.Key, kvp.Value);
-            }
-        }
+                // 생산 횟수 계산 (예: 진행도 2.5면 2번 생산)
+                int productionCount = Mathf.FloorToInt(threadState.currentProductionProgress);
 
-        void ApplyPlayerConsumption(Dictionary<string, int> consumption)
-        {
-            if (consumption == null) return;
-            foreach (var kvp in consumption)
-            {
-                var resourceId = kvp.Key;
-                var requiredAmount = kvp.Value;
-                
-                // 플레이어 창고에서 차감 시도
-                long playerAmount = Resource.GetPlayerResourceQuantity(resourceId);
-                
-                if (playerAmount >= requiredAmount)
+                if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
                 {
-                    // 플레이어 창고에 충분하면 차감 (델타만 업데이트)
-                    Resource.ModifyPlayerInventory(resourceId, -requiredAmount);
+                    // 생산품 추가 (횟수만큼)
+                    ApplyPlayerProduction(prod, productionCount);
+                    
+                    // 소비품 차감 (횟수만큼)
+                    ApplyPlayerConsumption(cons, productionCount);
+                }
+
+                // 사용한 진행도 차감
+                threadState.currentProductionProgress -= productionCount;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 스레드의 생산 진행도와 효율을 업데이트합니다.
+    /// </summary>
+    private void UpdateThreadProductionProgress(ThreadState threadState)
+    {
+        if (threadState == null) return;
+
+        // requiredEmployees는 건물에서 필요한 실제 직원 수 (BuildingTileManager에서 계산된 값)
+        // 덮어쓰지 않고 그대로 사용
+
+        // 생산 효율 계산 (현재 직원 수 / 필요한 직원 수, 0~1 범위)
+        // requiredEmployees가 0이면 효율 0, 그 외에는 현재 직원 수 비율로 계산
+        if (threadState.requiredEmployees > 0)
+        {
+            int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
+            // 현재 직원 수가 필요한 직원 수의 백분율로 효율 결정
+            threadState.currentProductionEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
+        }
+        else
+        {
+            // 직원이 필요 없으면 효율 0
+            threadState.currentProductionEfficiency = 0f;
+        }
+
+        // 생산 진행도 증가 (합연산)
+        threadState.currentProductionProgress += threadState.currentProductionEfficiency;
+    }
+
+    /// <summary>
+    /// 생산품을 플레이어 창고에 추가합니다. (로직 단순화)
+    /// </summary>
+    private void ApplyPlayerProduction(Dictionary<string, int> production, int multiplier)
+    {
+        if (production == null || multiplier <= 0) return;
+
+        foreach (var kvp in production)
+        {
+            // 생산량 = 기본 생산량 * 생산 횟수(multiplier)
+            int actualProduction = kvp.Value * multiplier;
+            
+            // 생산품은 플레이어 창고로 직접 추가 (델타만 업데이트)
+            // 실제 재고는 ApplyResourceDeltas에서 playerInventoryDelta를 playerInventory에 반영
+            Resource.ModifyPlayerInventory(kvp.Key, actualProduction);
+        }
+    }
+
+    /// <summary>
+    /// 소비품을 플레이어 창고에서 차감합니다.
+    /// </summary>
+    private void ApplyPlayerConsumption(Dictionary<string, int> consumption, int multiplier)
+    {
+        if (consumption == null || multiplier <= 0) return;
+
+        foreach (var kvp in consumption)
+        {
+            var resourceId = kvp.Key;
+            // 소비량 = 기본 소비량 * 생산 횟수(multiplier)
+            var requiredAmount = kvp.Value * multiplier;
+            
+            // 플레이어 창고에서 차감 시도
+            long playerAmount = Resource.GetPlayerResourceQuantity(resourceId);
+            
+            if (playerAmount >= requiredAmount)
+            {
+                // 플레이어 창고에 충분하면 차감 (델타만 업데이트)
+                Resource.ModifyPlayerInventory(resourceId, -requiredAmount);
+            }
+            else
+            {
+                // 플레이어 창고에 부족하면
+                long shortage = requiredAmount - playerAmount;
+                
+                // 플레이어 창고 전부 차감
+                if (playerAmount > 0)
+                {
+                    Resource.ModifyPlayerInventory(resourceId, -playerAmount);
+                }
+                
+                // 부족분은 시장에서 구매 (시장 재고 감소, 플레이어 인벤토리 증가)
+                // 마켓과의 관계: 없는 재고 구매 이외에는 관계 없음
+                if (Resource.HasEnoughMarketInventory(resourceId, shortage))
+                {
+                    Resource.ModifyMarketInventory(resourceId, -shortage);
+                    Resource.ModifyPlayerInventory(resourceId, shortage);
+                    // 구매한 만큼 다시 차감 (구매 후 즉시 소모)
+                    Resource.ModifyPlayerInventory(resourceId, -shortage);
+                    Debug.Log($"[GameDataManager] Auto-purchased {shortage} {resourceId} from market for production.");
                 }
                 else
                 {
-                    // 플레이어 창고에 부족하면
-                    long shortage = requiredAmount - playerAmount;
-                    
-                    // 플레이어 창고 전부 차감
-                    if (playerAmount > 0)
-                    {
-                        Resource.ModifyPlayerInventory(resourceId, -playerAmount);
-                    }
-                    
-                    // 부족분은 시장에서 구매 (시장 재고 감소, 플레이어 인벤토리 증가)
-                    // 마켓과의 관계: 없는 재고 구매 이외에는 관계 없음
-                    if (Resource.HasEnoughMarketInventory(resourceId, shortage))
-                    {
-                        Resource.ModifyMarketInventory(resourceId, -shortage);
-                        Resource.ModifyPlayerInventory(resourceId, shortage);
-                        Debug.Log($"[GameDataManager] Auto-purchased {shortage} {resourceId} from market for production.");
-                    }
-                    else
-                    {
-                        // 시장에도 부족하면 생산 중단 (경고만 출력, 실제 재고는 차감하지 않음)
-                        Debug.LogWarning($"[GameDataManager] Insufficient resources for production: {resourceId} (required: {requiredAmount}, player: {playerAmount}");
-                    }
+                    // 시장에도 부족하면 생산 중단 (경고만 출력, 실제 재고는 차감하지 않음)
+                    Debug.LogWarning($"[GameDataManager] Insufficient resources for production: {resourceId} (required: {requiredAmount}, player: {playerAmount})");
                 }
             }
         }

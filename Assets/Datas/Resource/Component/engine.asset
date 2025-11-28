@@ -28,10 +28,10 @@ MonoBehaviour:
   description: A prime mover engine converting fuel energy into mechanical power.
     Powers machinery, vehicles, and industrial equipment through combustion or steam.
   requirements:
-  - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-    count: 3
-  - resource: {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
-    count: 2
-  - resource: {fileID: 11400000, guid: baf2dc70a77de7346ae9a105ab388248, type: 2}
+  - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
+    count: 1
+  - resource: {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
+    count: 1
+  - resource: {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
     count: 1
   initialAmount: 0

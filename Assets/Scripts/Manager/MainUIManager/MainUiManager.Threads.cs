@@ -223,4 +223,25 @@ public partial class MainUiManager
                 : Color.white;
         }
     }
+
+    /// <summary>
+    /// 스레드 정보 패널을 표시합니다.
+    /// </summary>
+    public void ShowThreadInfo(ThreadState threadState)
+    {
+        if (_threadInfoPanel == null)
+        {
+            Debug.LogWarning("[MainUiManager] ThreadInfoPanel is not assigned!");
+            return;
+        }
+
+        if (threadState == null)
+        {
+            Debug.LogWarning("[MainUiManager] ThreadState is null!");
+            return;
+        }
+
+        _threadInfoPanel.OnInitialize(threadState, this, _dataManager);
+        _threadInfoPanel.gameObject.SetActive(true);
+    }
 }
