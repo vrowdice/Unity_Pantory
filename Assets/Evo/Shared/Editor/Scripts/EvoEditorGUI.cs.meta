@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 1cece814cefe9034da71a220e61abe4e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 310303
+  packageName: Evo UI - Modern UI Framework
+  packageVersion: 1.1.1
+  assetPath: Assets/Evo/Shared/Editor/Scripts/EvoEditorGUI.cs
+  uploadId: 827088

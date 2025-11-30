@@ -81,12 +81,12 @@ public class DateTopInfoPanel : MonoBehaviour
         // 현재 시간 상태에 따라 이미지 변경
         if (_isTimePaused)
         {
-            // 일시정지 상태면 재생(▶) 아이콘 표시
+            // 일시정지 상태면 재생 아이콘 표시
             _playPauseButtonImage.sprite = _playImage;
         }
         else
         {
-            // 재생 상태면 일시정지(⏸) 아이콘 표시
+            // 재생 상태면 일시정지 아이콘 표시
             _playPauseButtonImage.sprite = _pauseImage;
         }
     }

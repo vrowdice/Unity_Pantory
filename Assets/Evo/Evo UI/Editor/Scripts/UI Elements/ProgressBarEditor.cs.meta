@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 17b58577be4a62f4ea195326521bc334
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 310303
+  packageName: Evo UI - Modern UI Framework
+  packageVersion: 1.1.1
+  assetPath: Assets/Evo/Evo UI/Editor/Scripts/UI Elements/ProgressBarEditor.cs
+  uploadId: 827088

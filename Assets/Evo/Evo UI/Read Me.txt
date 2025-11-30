@@ -1,0 +1,5 @@
+Evo UI (1.1.1) [Unity 2022.3]
+------------------------------------------
+Documentation: https://evo.michsky.com/docs/evo-ui
+Email: https://www.michsky.com/contact
+Discord: https://discord.gg/VXpHyUt

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 165bbef8635b7e849933f03235e2731a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 310303
+  packageName: Evo UI - Modern UI Framework
+  packageVersion: 1.1.1
+  assetPath: Assets/Evo/Evo UI/Scripts/Core/Definitions.cs
+  uploadId: 827088
