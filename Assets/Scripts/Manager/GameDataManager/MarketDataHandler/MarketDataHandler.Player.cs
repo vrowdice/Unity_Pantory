@@ -279,10 +279,10 @@ public partial class MarketDataHandler
             return;
         }
 
-        // 수요 증가
-        resourceEntry.resourceState.lastDemand += amount;
+        // 1. 누적 수요 기록 (다음 날 시뮬레이션에 반영)
+        resourceEntry.resourceState.accumulatedPlayerDemand += amount;
 
-        // 즉시 가격 조정 (시장 전체 공급/수요에 비해 상대적으로 작은 영향)
+        // 2. 즉시 가격 조정
         float impactRate = _marketSettings != null ? _marketSettings.playerDemandImpact : 0.02f;
         float totalMarketSupply = resourceEntry.resourceState.lastSupply;
         float totalMarketDemand = resourceEntry.resourceState.lastDemand;
@@ -290,11 +290,29 @@ public partial class MarketDataHandler
         
         // 플레이어의 영향력을 시장 규모에 비례하여 감소
         float normalizedImpact = amount / marketVolume;
-        float demandImpact = normalizedImpact * impactRate * 100f; // 시장 규모에 비례하여 영향력 감소
+        float baseDemandImpact = normalizedImpact * impactRate * 100f;
+        
+        // 3. [개선] 시장 장악력에 따른 지수적 가격 상승
+        float currentMarketInventory = resourceEntry.resourceState.count;
+        float dominationRatio = (float)amount / Mathf.Max(1f, currentMarketInventory);
+
+        // 시장 재고의 10% 이상을 사면 가격 충격 발생
+        float monopolyImpact = 0f;
+        if (dominationRatio > 0.1f)
+        {
+            // 제곱 비례로 충격 (많이 살수록 기하급수적으로 비싸짐)
+            monopolyImpact = dominationRatio * dominationRatio * 5.0f;
+        }
+        
+        // 기본 영향력 + 독점 충격
+        float finalImpact = baseDemandImpact + monopolyImpact;
         float currentPrice = resourceEntry.resourceState.currentValue;
-        float priceAdjustment = demandImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
+        float priceAdjustment = finalImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
         resourceEntry.resourceState.RecordPrice(resourceEntry.resourceState.currentValue);
+        
+        // 즉시 반영용 (레거시 호환)
+        resourceEntry.resourceState.lastDemand += amount;
     }
 
     /// <summary>
@@ -307,10 +325,10 @@ public partial class MarketDataHandler
             return;
         }
 
-        // 공급 증가
-        resourceEntry.resourceState.lastSupply += amount;
+        // 1. 누적 공급 기록 (다음 날 시뮬레이션에 반영)
+        resourceEntry.resourceState.accumulatedPlayerSupply += amount;
 
-        // 즉시 가격 조정 (시장 전체 공급/수요에 비해 상대적으로 작은 영향)
+        // 2. 즉시 가격 조정
         float impactRate = _marketSettings != null ? _marketSettings.playerSupplyImpact : 0.02f;
         float totalMarketSupply = resourceEntry.resourceState.lastSupply;
         float totalMarketDemand = resourceEntry.resourceState.lastDemand;
@@ -318,11 +336,14 @@ public partial class MarketDataHandler
         
         // 플레이어의 영향력을 시장 규모에 비례하여 감소
         float normalizedImpact = amount / marketVolume;
-        float supplyImpact = normalizedImpact * impactRate * 100f; // 시장 규모에 비례하여 영향력 감소
+        float supplyImpact = normalizedImpact * impactRate * 100f;
         float currentPrice = resourceEntry.resourceState.currentValue;
         float priceAdjustment = -supplyImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
         resourceEntry.resourceState.RecordPrice(resourceEntry.resourceState.currentValue);
+        
+        // 즉시 반영용 (레거시 호환)
+        resourceEntry.resourceState.lastSupply += amount;
     }
 }
 

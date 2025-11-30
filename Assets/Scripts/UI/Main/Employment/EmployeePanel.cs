@@ -9,6 +9,8 @@ using TMPro;
 public class EmployeePanel : BasePanel
 {
     #region Inspector Variables
+    [SerializeField] private Slider _managementSlider;
+    [SerializeField] private TextMeshProUGUI _managementRatioText;
 
     [Header("Role Buttons")]
     [SerializeField] private Transform EmployeeActionBtnContent;
@@ -33,6 +35,9 @@ public class EmployeePanel : BasePanel
     [Header("Salary Level")]
     [SerializeField] private List<Toggle> _salaryLevelToggles;
 
+    [Header("Status Scroll View Contents")]
+    [SerializeField] private Transform _efficiencyStatusScrollViewContentTransform;
+    [SerializeField] private Transform _satisfactionStatusScrollViewContentTransform;
     #endregion
 
     #region Private Variables
@@ -326,6 +331,49 @@ public class EmployeePanel : BasePanel
 
         // 급여 레벨 토글 업데이트
         UpdateSalaryLevelToggles(state.salaryLevel);
+        
+        // 관리 비율 업데이트
+        UpdateManagementRatio();
+    }
+    
+    /// <summary>
+    /// 관리 비율 슬라이더와 텍스트를 업데이트합니다.
+    /// </summary>
+    private void UpdateManagementRatio()
+    {
+        if (_dataManager == null || _dataManager.Employee == null)
+        {
+            return;
+        }
+
+        // GetManagementRatio()는 0.0 ~ 1.0 범위의 값을 반환
+        float managementRatio = _dataManager.Employee.GetManagementRatio();
+
+        // 슬라이더 업데이트 (0.0 ~ 1.0 범위)
+        if (_managementSlider != null)
+        {
+            _managementSlider.value = managementRatio;
+        }
+
+        // 텍스트 업데이트 (간단하고 직관적인 표시)
+        if (_managementRatioText != null)
+        {
+            _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
+            
+            if (requiredManagers <= 0 || currentManagers >= requiredManagers)
+            {
+                // 충분함: 깔끔하게 100%만 표시
+                _managementRatioText.text = "100%";
+                _managementRatioText.color = Color.green; // 혹은 흰색
+            }
+            else
+            {
+                // 부족함: 비율과 부족한 인원수만 괄호로 표시
+                int shortage = requiredManagers - currentManagers;
+                _managementRatioText.text = $"{managementRatio:P0} (-{shortage})"; // 예: "80% (-1)"
+                _managementRatioText.color = Color.red; // 경고색
+            }
+        }
     }
 
     /// <summary>
@@ -383,6 +431,10 @@ public class EmployeePanel : BasePanel
         
         // 급여 레벨 토글 초기화 (기본값: 보통 = 2)
         UpdateSalaryLevelToggles(2);
+        
+        // 관리 비율 초기화
+        if (_managementSlider != null) _managementSlider.value = 0f;
+        if (_managementRatioText != null) _managementRatioText.text = "0%";
     }
 
     /// <summary>
@@ -486,13 +538,6 @@ public class EmployeePanel : BasePanel
         _isSubscribedToEmployeeChanged = false;
     }
 
-    /// <summary>
-    /// 일일 변경 핸들러
-    /// </summary>
-    private void HandleDayChanged()
-    {
-        RefreshEmployeeUI();
-    }
 
     /// <summary>
     /// 직원 변경 핸들러
@@ -500,6 +545,18 @@ public class EmployeePanel : BasePanel
     private void HandleEmployeeChanged()
     {
         RefreshEmployeeUI();
+        // 관리 비율도 업데이트 (직원 변경 시 영향받음)
+        UpdateManagementRatio();
+    }
+    
+    /// <summary>
+    /// 일일 변경 핸들러
+    /// </summary>
+    private void HandleDayChanged()
+    {
+        RefreshEmployeeUI();
+        // 관리 비율도 업데이트 (일일 업데이트 시 영향받음)
+        UpdateManagementRatio();
     }
 
     #endregion

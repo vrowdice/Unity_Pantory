@@ -19,6 +19,8 @@ public class ResourceState
 
     [Header("Player Transactions")]
     public long playerTransactionDelta; // 플레이어 거래 델타 (매수 +, 매도 -)
+    public float accumulatedPlayerDemand; // 하루 동안 누적된 플레이어 구매량 (시장 영향력 계산용)
+    public float accumulatedPlayerSupply; // 하루 동안 누적된 플레이어 판매량 (시장 영향력 계산용)
 
     [Header("Market Modifiers")]
     public float permanentModifier;    // 영구적인 가치 조정 (기술, 연구 등)
@@ -101,6 +103,8 @@ public class ResourceState
         playerInventoryDelta = 0;
         deltaCount = 0;
         playerTransactionDelta = 0;
+        accumulatedPlayerDemand = 0f;
+        accumulatedPlayerSupply = 0f;
         permanentModifier = 1f;
         temporaryModifier = 1f;
         temporaryModifierDuration = 0f;
@@ -146,6 +150,7 @@ public class ResourceState
     public void ResetPlayerTransactions()
     {
         playerTransactionDelta = 0;
+        // accumulatedPlayerDemand와 accumulatedPlayerSupply는 ApplyPriceAdjustments에서 사용 후 초기화
     }
 
     public void RecordPrice(float price)

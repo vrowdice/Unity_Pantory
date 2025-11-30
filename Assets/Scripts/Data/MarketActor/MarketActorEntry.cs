@@ -40,6 +40,29 @@ public class MarketActorEntry
             }
             // budgetRange가 없으면 0으로 남김 (ApplyInitialMarketSettings나 RefreshConsumer에서 설정됨)
         }
+
+        // [추가] 생성 즉시 최소 자산 보장 (안전장치 1)
+        float minWealth = data.scale switch
+        {
+            MarketActorScale.Large => 1000000f,  // 대기업: 100만
+            MarketActorScale.Medium => 200000f,  // 중기업: 20만
+            _ => 50000f                          // 소기업: 5만
+        };
+        state.wealth = minWealth;
+        state.previousWealth = minWealth;
+
+        // [추가] 예산도 즉시 할당
+        if (state.consumer != null)
+        {
+            if (consumerProfile != null && consumerProfile.budgetRange.max > 0f)
+            {
+                state.consumer.currentBudget = consumerProfile.budgetRange.GetRandomBudget();
+            }
+            else
+            {
+                state.consumer.currentBudget = state.wealth * 0.2f;
+            }
+        }
     }
 
     /// <summary>
@@ -53,48 +76,64 @@ public class MarketActorEntry
             state = new MarketActorState();
         }
 
-        // 초기 자산이 0이면 기본값 설정 (액터가 시장에 참여할 수 있도록)
-        float initialWealth = settings?.initialActorWealth ?? 0f;
-        if (initialWealth <= 0f)
+        // 1. [핵심 수정] 스케일별 '최소 보장 자산' 설정 (밸런싱 패치 반영)
+        // 기존: 5천 / 1만 / 2만 (너무 적음)
+        // 수정: 5만 / 20만 / 100만 (현실적)
+        float minStartingWealth = data.scale switch
         {
-            // 스케일에 따라 다른 초기 자산 설정
-            // data가 null이거나 scale이 없으면 Medium으로 간주
-            MarketActorScale scale = data?.scale ?? MarketActorScale.Medium;
-            initialWealth = scale switch
-            {
-                MarketActorScale.Small => 5000f,
-                MarketActorScale.Large => 20000f,
-                _ => 10000f // Medium
-            };
+            MarketActorScale.Small => 50000f,    // 소기업: 최소 5만
+            MarketActorScale.Medium => 200000f,  // 중기업: 최소 20만
+            MarketActorScale.Large => 1000000f,  // 대기업: 최소 100만
+            _ => 50000f
+        };
+
+        // 현재 자산이 최소치보다 적으면 강제로 채워넣음 (기존 세이브 파일 보정용)
+        if (state.wealth < minStartingWealth)
+        {
+            state.wealth = minStartingWealth;
+            // 디버깅용 (필요시 주석 해제)
+            // Debug.Log($"[MarketActor] Wealth Boost for {data.displayName}: {minStartingWealth}");
         }
 
-        // Initialize unified actor state (이미 설정된 값이 있으면 유지, 없으면 초기화)
-        if (state.wealth <= 0f)
-        {
-            state.wealth = initialWealth;
-        }
+        // 전일 자산 동기화
         if (state.previousWealth <= 0f)
         {
             state.previousWealth = state.wealth;
         }
-        if (state.health <= 0f)
+        
+        // 건강도 초기화
+        if (state.health <= 0.2f)
         {
             state.health = settings?.initialActorHealth ?? 1f;
         }
 
+        // 2. Consumer 예산(Budget) 재설정
         if (state.consumer != null)
         {
             var consumerProfile = GetConsumerProfile();
             
-            // [개선] 현재 예산이 0일 때만 초기화 (생성자에서 설정한 값 보존)
-            // 또한 프로필에 budgetRange가 명시적으로 설정된 경우(max > 0)는 
-            // 자산 비율 계산보다 프로필 설정을 우선시함
+            // 예산이 너무 적으면(1000 이하) 자산의 10%~20%를 예산으로 강제 할당
+            if (state.consumer.currentBudget < 1000f)
+            {
+                float budgetRatio = data.scale == MarketActorScale.Large ? 0.3f : 0.1f;
+                state.consumer.currentBudget = state.wealth * budgetRatio;
+            }
+            
+            // 프로필에 설정된 예산 범위가 있다면 그것을 우선시
             bool hasExplicitProfileBudget = consumerProfile != null && consumerProfile.budgetRange.max > 0f;
             
-            if (state.consumer.currentBudget <= 0f && !hasExplicitProfileBudget)
+            if (hasExplicitProfileBudget)
             {
-                // 예산 범위가 없는 경우에만 자산 기반으로 자동 계산
-                float budgetRatio = data?.scale switch
+                // 현재 예산이 설정된 최소치보다 낮으면 범위 내 랜덤값으로 재설정
+                if (state.consumer.currentBudget < consumerProfile.budgetRange.min)
+                {
+                    state.consumer.currentBudget = consumerProfile.budgetRange.GetRandomBudget();
+                }
+            }
+            // 프로필 예산이 없으면 자산 비율로 계산 (기존 로직 유지하되 수치 상향)
+            else if (state.consumer.currentBudget <= 0f)
+            {
+                float budgetRatio = data.scale switch
                 {
                     MarketActorScale.Small => 0.5f,
                     MarketActorScale.Large => 0.6f,
@@ -102,13 +141,11 @@ public class MarketActorEntry
                 };
                 
                 float dailyBudget = state.wealth * budgetRatio;
-                
-                // 최소 생계비 보장
-                float minBudget = data?.scale switch
+                float minBudget = data.scale switch
                 {
-                    MarketActorScale.Small => 300f,
-                    MarketActorScale.Large => 1000f,
-                    _ => 500f
+                    MarketActorScale.Small => 5000f,
+                    MarketActorScale.Large => 50000f,
+                    _ => 10000f
                 };
                 
                 state.consumer.currentBudget = Mathf.Max(minBudget, dailyBudget);

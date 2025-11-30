@@ -22,17 +22,10 @@ public class GameManager : MonoBehaviour
     public IUIManager UiManager => _uiManager;
     public string CurrentThreadId => _currentThreadId;
     public GameObject ProductionInfoImage => _productionInfoImagePrefab;
+    public GameObject TextPairPanelPrefab => _textPairPanelPrefab;
     public GameObject ActionBtnPrefab => _actionBtnPrefab;
-    public MainCameraController MainCameraController => _mainCameraController;
-    /// <summary>
-    /// 현재 Thread ID를 설정합니다.
-    /// </summary>
-    public void SetCurrentThreadId(string threadId)
-    {
-        _currentThreadId = threadId;
-        Debug.Log($"[GameManager] Current thread ID set to: {threadId}");
-    }
     public GameObject GridSortContentPrefab => _gridSortContentPrefab;
+    public MainCameraController MainCameraController => _mainCameraController;
     public float ProductionIconScale => _productionIconScale;
 
     [Header("World Space Canvas Settings")]
@@ -51,6 +44,7 @@ public class GameManager : MonoBehaviour
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
     [SerializeField] private GameObject _gridSortContentPrefab;
+    [SerializeField] private GameObject _textPairPanelPrefab;
     [SerializeField] private GameObject _actionBtnPrefab;
     
     [Header("Production Icon Settings")]
@@ -65,6 +59,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _visualManagerPrefab;
     [Tooltip("씬에 VisualManager가 없으면 자동으로 생성합니다.")]
     [SerializeField] private bool _autoCreateVisualManager = true;
+
+    /// <summary>
+    /// 현재 Thread ID를 설정합니다.
+    /// </summary>
+    public void SetCurrentThreadId(string threadId)
+    {
+        _currentThreadId = threadId;
+        Debug.Log($"[GameManager] Current thread ID set to: {threadId}");
+    }
 
     void Awake()
     {

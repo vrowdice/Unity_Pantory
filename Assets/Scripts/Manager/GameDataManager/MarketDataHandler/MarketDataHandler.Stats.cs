@@ -133,20 +133,28 @@ public partial class MarketDataHandler
 
             // 통합 건강 효과 계산
             float wealthChange = entry.state.wealth - entry.state.previousWealth;
+            float currentWealth = Mathf.Max(1f, entry.state.previousWealth); // 0 나누기 방지
             var consumerProfile = entry.GetConsumerProfile();
             var consumerState = entry.state.consumer;
 
-            // 자산 증가 시 건강도 회복
-            if (wealthChange > 0f)
+            // [수정] 변동률(Rate) 기반 건강도 변화 (노이즈 필터링)
+            // 자산의 0.1% 이상 변동이 있을 때만 건강도에 영향을 줌
+            float changeRate = wealthChange / currentWealth;
+            float threshold = 0.001f; // 0.1%
+
+            if (changeRate > threshold)
             {
+                // 이익: 회복 (변동폭이 클수록 더 많이 회복, 최대 2배)
                 float recovery = _marketSettings != null ? _marketSettings.providerWealthGainHealthRecovery : 0.02f;
-                entry.state.health = Mathf.Min(1f, entry.state.health + recovery);
+                float boost = Mathf.Clamp(changeRate * 10f, 1f, 2f);
+                entry.state.health = Mathf.Min(1f, entry.state.health + (recovery * boost));
             }
-            // 자산 감소 시 건강도 감소
-            else if (wealthChange < 0f)
+            else if (changeRate < -threshold)
             {
+                // 손실: 데미지 (변동폭이 클수록 더 많이 감소, 최대 2배)
                 float damage = _marketSettings != null ? _marketSettings.providerWealthLossHealthDamage : 0.05f;
-                entry.state.health = Mathf.Max(0.2f, entry.state.health - damage);
+                float boost = Mathf.Clamp(Mathf.Abs(changeRate) * 10f, 1f, 2f);
+                entry.state.health = Mathf.Max(0.2f, entry.state.health - (damage * boost));
             }
 
             // 경쟁 페널티 (순위가 낮을수록)

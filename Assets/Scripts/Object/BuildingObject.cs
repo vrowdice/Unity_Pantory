@@ -93,12 +93,7 @@ public class BuildingObject : MonoBehaviour
         marker.name = $"IOMarker_{name}";
         
         // 부모의 스케일 영향을 제거하여 마커가 원래 크기로 보이도록 함
-        Vector3 parentScale = transform.localScale;
-        marker.transform.localScale = new Vector3(
-            1f / parentScale.x,
-            1f / parentScale.y,
-            1f / parentScale.z
-        );
+        GameObjectUtils.CompensateParentScale(marker.transform, transform);
         
         return marker;
     }

@@ -27,20 +27,13 @@ public partial class MarketDataHandler
     }
 
     /// <summary>
-    /// 시스템 액터(일반 시민, 무역항)를 생성합니다.
+    /// 시스템 액터(일반 시민)를 생성합니다.
     /// </summary>
     private void CreateSystemActors()
     {
-        if (_gameDataManager?.Resource == null)
-        {
-            return;
-        }
-
+        if (_gameDataManager?.Resource == null) return;
         var allResources = _gameDataManager.Resource.GetAllResources();
-        if (allResources == null || allResources.Count == 0)
-        {
-            return;
-        }
+        if (allResources == null || allResources.Count == 0) return;
 
         // 1. 일반 시민 (기초 수요 담당)
         var populaceData = ScriptableObject.CreateInstance<MarketActorData>();
@@ -51,50 +44,48 @@ public partial class MarketDataHandler
         populaceData.scale = MarketActorScale.Large;
         populaceData.useDynamicResourceAllocation = false; // 직업 변경 안 함
         
-        // Consumer 프로필 설정: 모든 생필품 소비
+        // Consumer 프로필 설정
         populaceData.consumerProfile = new ConsumerProfile();
-        float budgetMin = _marketSettings != null ? _marketSettings.systemPopulaceBudget.x : 5000f;
-        float budgetMax = _marketSettings != null ? _marketSettings.systemPopulaceBudget.y : 10000f;
-        populaceData.consumerProfile.budgetRange = new BudgetRange { min = budgetMin, max = budgetMax }; // 무한 예산 (절대 파산 안 함)
+        float budgetMin = _marketSettings != null ? _marketSettings.systemPopulaceBudget.x : 1000000f;
+        float budgetMax = _marketSettings != null ? _marketSettings.systemPopulaceBudget.y : 5000000f;
+        populaceData.consumerProfile.budgetRange = new BudgetRange { min = budgetMin, max = budgetMax }; 
         populaceData.consumerProfile.desiredResources = new List<ResourcePreference>();
         populaceData.consumerProfile.patienceSeconds = 7200f;
-        populaceData.consumerProfile.satisfactionDecay = 0.05f; // 낮은 감소율
+        populaceData.consumerProfile.satisfactionDecay = 0.05f;
         populaceData.consumerProfile.allowBulkBuying = true;
         populaceData.consumerProfile.persistentOrders = true;
         
-        // 생필품 자원 타입: furniture, clothing, tool (기초 소비재)
-        var basicConsumerTypes = new[] { ResourceType.Essentials, ResourceType.Luxuries };
+        // 생필품(Essentials) 및 1차 가공품 일부 소비
+        var basicConsumerTypes = new[] { ResourceType.Essentials }; // ConsumerGoods가 있다면 포함
+
         foreach (var resource in allResources.Values)
         {
-            if (resource?.resourceData == null)
-            {
-                continue;
-            }
+            if (resource?.resourceData == null) continue;
 
-            // 생필품 타입만 소비
-            if (System.Array.IndexOf(basicConsumerTypes, resource.resourceData.type) >= 0)
+            // 해당 타입이거나, 특정 ID(예: wood_log)도 일부 소비 가능
+            bool isTarget = System.Array.IndexOf(basicConsumerTypes, resource.resourceData.type) >= 0;
+
+            if (isTarget)
             {
-                float quantityMin = _marketSettings != null ? _marketSettings.systemPopulaceQuantityRange.x : 50f;
-                float quantityMax = _marketSettings != null ? _marketSettings.systemPopulaceQuantityRange.y : 150f;
-                float priceSens = _marketSettings != null ? _marketSettings.systemPopulacePriceSensitivity : 2.0f;
-                float urgency = _marketSettings != null ? _marketSettings.systemPopulaceUrgency : 0.0f;
+                float quantityMin = _marketSettings != null ? _marketSettings.systemPopulaceQuantityRange.x : 100f;
+                float quantityMax = _marketSettings != null ? _marketSettings.systemPopulaceQuantityRange.y : 300f;
+                float priceSens = _marketSettings != null ? _marketSettings.systemPopulacePriceSensitivity : 1.2f;
+                float urgency = _marketSettings != null ? _marketSettings.systemPopulaceUrgency : 0.2f;
                 
                 var preference = new ResourcePreference
                 {
                     resource = resource.resourceData,
-                    // [수정] 일반 시민의 구매 수량 감소
-                    // 기존: 200 ~ 500 -> 수정: 50 ~ 150
-                    // 시민들은 '최소한의 생필품'만 소비하게 하고, 나머지는 다른 액터들이 소비하게 유도
                     desiredMin = (long)quantityMin,
                     desiredMax = (long)quantityMax,
-                    priceSensitivity = priceSens, // [수정] 가격이 비싸면 정말 안 사게 민감도 상향
-                    urgency = urgency          // [수정] 급하지 않음 (비싸면 안 먹고 맒)
+                    priceSensitivity = priceSens,
+                    urgency = urgency
                 };
                 populaceData.consumerProfile.desiredResources.Add(preference);
             }
         }
         
         RegisterActor(populaceData);
+        Debug.Log($"[Market] System actor created: {SYSTEM_POPULACE_ID}");
     }
 
     /// <summary>
@@ -125,61 +116,66 @@ public partial class MarketDataHandler
     }
 
     /// <summary>
-    /// [솔루션 4] 초기 마중물: 게임 시작 시 시장에 재고와 자금을 충전합니다.
+    /// [초기화] 시장 마중물: 재고 충전 및 액터 초기 자금 강제 주입
     /// </summary>
     public void InitializeMarketChaos()
     {
-        if (_gameDataManager?.Resource == null)
-        {
-            return;
-        }
-
+        if (_gameDataManager?.Resource == null) return;
         var allResources = _gameDataManager.Resource.GetAllResources();
-        if (allResources == null)
-        {
-            return;
-        }
+        if (allResources == null) return;
 
-        // 1. 모든 자원 재고 1000개씩 충전
+        // 1. 자원 재고 차등 충전 (원자재는 더 많이)
         foreach (var res in allResources.Values)
         {
-            if (res?.resourceState == null || res.resourceData == null)
-            {
-                continue;
-            }
+            if (res?.resourceState == null || res.resourceData == null) continue;
 
-            long initialCount = _marketSettings != null ? _marketSettings.initialResourceCount : 1000L;
-            float initialSupply = _marketSettings != null ? _marketSettings.initialLastSupply : 500f;
+            long initialCount = (res.resourceData.type == ResourceType.raw) 
+                ? (_marketSettings != null ? _marketSettings.initialResourceCount * 2L : 2000L)
+                : (_marketSettings != null ? _marketSettings.initialResourceCount : 500L);
+            
             res.resourceState.count = initialCount;
-            res.resourceState.lastSupply = initialSupply; // 어제 공급이 있었던 것처럼 속임
+            res.resourceState.lastSupply = initialCount * 0.5f;
         }
 
-        // 2. 모든 액터에게 초기 자금 보너스
+        // 2. [핵심] 액터들에게 "초기 자본금(Startup Capital)" 강제 지급
         foreach (var actor in _actors.Values)
         {
-            if (actor?.state == null)
-            {
-                continue;
-            }
+            if (actor?.state == null || actor.data == null) continue;
+            if (actor.data.id.StartsWith("sys_")) continue;
 
-            float wealthBonus = _marketSettings != null ? _marketSettings.initialWealthBonus : 10000f;
-            actor.state.wealth += wealthBonus; // 부자 되세요
+            // 스케일별 목표 자산 설정 (기획 의도: 잘나가는 기업)
+            float targetWealth = actor.data.scale switch
+            {
+                MarketActorScale.Large => 2000000f,  // 대기업 200만
+                MarketActorScale.Medium => 500000f,  // 중견 50만
+                _ => 100000f                         // 소기업 10만
+            };
+
+            // 현재 돈이 목표치보다 적으면 목표치로 강제 설정 (리셋)
+            if (actor.state.wealth < targetWealth)
+            {
+                actor.state.wealth = targetWealth;
+                actor.state.previousWealth = targetWealth;
+                actor.state.health = 1.0f;
+            }
             
-            // Consumer 예산도 충전
+            // 예산도 재설정
             if (actor.state.consumer != null)
             {
-                var consumerProfile = actor.GetConsumerProfile();
-                if (consumerProfile != null && consumerProfile.budgetRange.max > 0f)
+                var profile = actor.GetConsumerProfile();
+                if (profile != null && profile.budgetRange.max > 0f)
                 {
-                    actor.state.consumer.currentBudget = consumerProfile.budgetRange.GetRandomBudget();
+                    actor.state.consumer.currentBudget = profile.budgetRange.max;
                 }
-                else if (actor.state.consumer.currentBudget <= 0f)
+                else
                 {
-                    // 예산이 없으면 자산의 일부를 예산으로
-                    actor.state.consumer.currentBudget = actor.state.wealth * 0.3f;
+                    actor.state.consumer.currentBudget = actor.state.wealth * 0.2f;
                 }
             }
         }
+        
+        Debug.Log("[Market] 💰 Market initialized with robust stocks and wealthy actors.");
+        OnMarketUpdated?.Invoke();
     }
 
     /// <summary>
@@ -321,6 +317,9 @@ public partial class MarketDataHandler
 
         var totalSupply = new Dictionary<string, float>();
         var totalDemand = new Dictionary<string, float>();
+
+        // [필수] 0. 유동성 강제 확보 (여기서 0원을 멸종시킴)
+        EnsureMarketLiquidity();
 
         // 전일 자산 저장 (초기화 로직은 제거 - 무한 부활 버그 방지)
         foreach (var entry in _actors.Values)
@@ -595,162 +594,164 @@ public partial class MarketDataHandler
     }
 
     /// <summary>
-    /// 전쟁 상태를 설정합니다. 전쟁 발발 시 군사/정부 액터들의 예산과 긴급도를 조작합니다.
+    /// 전쟁 상태를 설정합니다.
     /// </summary>
     public void SetWarState(bool isWar)
     {
-        if (_isWarState == isWar)
-        {
-            return; // 이미 같은 상태
-        }
-
+        if (_isWarState == isWar) return;
         _isWarState = isWar;
-        Debug.Log($"[MarketDataHandler] War state changed: {isWar}");
+        Debug.Log($"[Market] War State Changed: {isWar}");
 
         foreach (var entry in _actors.Values)
         {
-            if (entry?.data == null || entry.state == null)
-            {
-                continue;
-            }
+            if (entry?.data == null || entry.state == null) continue;
+            if (entry.data.id.StartsWith("sys_")) continue;
 
-            // 시스템 액터는 제외
-            if (entry.data.id == SYSTEM_POPULACE_ID || entry.data.id == SYSTEM_TRADE_PORT_ID)
-            {
-                continue;
-            }
+            // 군사 액터 판단 (Archetype 우선, 없으면 이름 체크)
+            bool isMilitary = entry.data.archetype == MarketActorArchetype.Generalist || 
+                              entry.data.displayName.Contains("Defense") ||
+                              entry.data.displayName.Contains("Military") ||
+                              entry.data.displayName.Contains("Armory") ||
+                              entry.data.displayName.Contains("Security");
 
-            // 군사/정부 태그가 있는 액터 찾기 (archetype이 Generalist이고 이름에 "Defense", "Military", "Armory", "Security" 포함)
-            bool isMilitaryActor = entry.data.displayName.Contains("Defense") ||
-                                   entry.data.displayName.Contains("Military") ||
-                                   entry.data.displayName.Contains("Armory") ||
-                                   entry.data.displayName.Contains("Security") ||
-                                   entry.data.displayName.Contains("Armaments");
-
-            if (isMilitaryActor)
+            if (isMilitary)
             {
-                var consumerProfile = entry.GetOrCreateConsumerProfile();
-                if (consumerProfile != null && entry.state.consumer != null)
+                var profile = entry.GetOrCreateConsumerProfile();
+                if (profile != null && entry.state.consumer != null)
                 {
                     if (isWar)
                     {
-                        // 전쟁 시: 예산 폭증, 긴급도 상승
-                        float warBudgetMult = _marketSettings != null ? _marketSettings.warBudgetMultiplier : 10f;
+                        // 전쟁 시: 예산 5배 증액
+                        float warBudgetMult = _marketSettings != null ? _marketSettings.warBudgetMultiplier : 5.0f;
                         entry.state.consumer.currentBudget *= warBudgetMult;
                         
-                        // 모든 desiredResources의 urgency를 최대로 설정
+                        // 긴급도 최대
                         float warUrg = _marketSettings != null ? _marketSettings.warUrgency : 1.0f;
                         float warPriceSens = _marketSettings != null ? _marketSettings.warPriceSensitivity : 0.1f;
-                        foreach (var pref in consumerProfile.desiredResources)
-                        {
-                            if (pref != null)
-                            {
-                                pref.urgency = warUrg; // 최대 긴급도
-                                pref.priceSensitivity = warPriceSens; // 가격 불문하고 매수
-                            }
-                        }
                         
-                        Debug.Log($"[MarketDataHandler] War mode activated for: {entry.data.displayName}");
+                        foreach (var r in profile.desiredResources)
+                        {
+                            r.urgency = warUrg;
+                            r.priceSensitivity = warPriceSens;
+                        }
                     }
                     else
                     {
-                        // 평화 시: 예산 정상화
+                        // 평화 시: 예산 및 긴급도 복구
                         entry.ApplyInitialMarketSettings(_marketSettings);
                         
-                        // urgency를 기본값으로 복원
                         float peaceUrg = _marketSettings != null ? _marketSettings.peaceUrgency : 0.25f;
                         float peacePriceSens = _marketSettings != null ? _marketSettings.peacePriceSensitivity : 0.55f;
-                        foreach (var pref in consumerProfile.desiredResources)
-                        {
-                            if (pref != null)
-                            {
-                                pref.urgency = peaceUrg; // 기본 긴급도
-                                pref.priceSensitivity = peacePriceSens; // 기본 가격 민감도
-                            }
-                        }
                         
-                        Debug.Log($"[MarketDataHandler] Peace mode restored for: {entry.data.displayName}");
+                        foreach (var r in profile.desiredResources)
+                        {
+                            r.urgency = peaceUrg;
+                            r.priceSensitivity = peacePriceSens;
+                        }
                     }
                 }
             }
             else
             {
-                // 민간 액터 (사치재 등)
-                if (entry.data.displayName.Contains("Luxury") || 
-                    entry.data.displayName.Contains("Fashion") ||
-                    entry.data.displayName.Contains("Furniture"))
+                // 민간 액터 (사치재 등): 불황
+                bool isLuxury = entry.data.displayName.Contains("Luxury") || 
+                                entry.data.displayName.Contains("Fashion");
+                                
+                if (isLuxury && entry.state.consumer != null)
                 {
                     if (isWar)
                     {
-                        // 전쟁 시: 민간 위축 (예산 삭감)
-                        float civilianReduction = _marketSettings != null ? _marketSettings.civilianBudgetReduction : 0.5f;
-                        if (entry.state.consumer != null)
-                        {
-                            entry.state.consumer.currentBudget *= civilianReduction;
-                        }
-                        Debug.Log($"[MarketDataHandler] Civilian budget reduced for: {entry.data.displayName}");
+                        float reduction = _marketSettings != null ? _marketSettings.civilianBudgetReduction : 0.5f;
+                        entry.state.consumer.currentBudget *= reduction;
                     }
                     else
                     {
-                        // 평화 시: 예산 정상화
                         entry.ApplyInitialMarketSettings(_marketSettings);
                     }
                 }
             }
         }
 
-        // 시장 재계산 강제 실행 (선택사항)
-        // TickDailyMarket();
+        OnMarketUpdated?.Invoke(); // [필수] 전쟁 선포 시 UI 즉시 반영
     }
 
+    public bool IsWarState() => _isWarState;
+
     /// <summary>
-    /// 현재 전쟁 상태를 반환합니다.
+    /// [절대 방어선] 매 틱마다 자산이 비정상적으로 낮은 액터를 강제로 회복시킵니다.
     /// </summary>
-    public bool IsWarState()
+    private void EnsureMarketLiquidity()
     {
-        return _isWarState;
+        foreach (var entry in _actors.Values)
+        {
+            if (entry?.state == null || entry.data == null) continue;
+            if (entry.data.id.StartsWith("sys_")) continue;
+
+            // 최소 생존 자금 기준 (대기업 10만, 중소 1만)
+            float survivalWealth = entry.data.scale == MarketActorScale.Large ? 100000f : 10000f;
+
+            // 0원이거나 생존 자금 미만이면 -> 즉시 강제 주입
+            if (entry.state.wealth < survivalWealth)
+            {
+                // 목표치(50만/5만)로 리셋
+                float targetWealth = survivalWealth * 5f;
+                entry.state.wealth = targetWealth;
+                
+                // 그래프 튀는 것 방지
+                if (entry.state.previousWealth <= 1f) entry.state.previousWealth = targetWealth;
+
+                // 예산 복구
+                if (entry.state.consumer != null && entry.state.consumer.currentBudget < 1000f)
+                {
+                    entry.state.consumer.currentBudget = targetWealth * 0.2f;
+                }
+                
+                // Debug.Log($"[Market] 🚑 Emergency Liquidity: {entry.data.displayName} reset to {targetWealth}");
+            }
+        }
     }
 
     /// <summary>
-    /// [솔루션 2] 국가 보조금 지급: 파산 직전 액터 구제 및 예산 부족 액터 지원
-    /// 시스템 액터는 제외합니다.
+    /// [수정] 구제 금융 (Bailout): 파산 위기 기업 지원
+    /// 규모에 비례한 빈곤선을 설정하여 현실적인 구제금융을 제공합니다.
     /// </summary>
     private void ProvideStimulusPackages()
     {
         foreach (var entry in _actors.Values)
         {
-            if (entry?.state == null || entry.data == null)
-            {
-                continue;
-            }
+            if (entry?.state == null || entry.data == null) continue;
+            if (entry.data.id.StartsWith("sys_")) continue;
 
-            // 시스템 액터는 제외 (무한 예산이므로 보조금 불필요)
-            if (entry.data.id == SYSTEM_POPULACE_ID || entry.data.id == SYSTEM_TRADE_PORT_ID)
-            {
-                continue;
-            }
+            // 빈곤선 (Poverty Line): 기업 규모에 따라 다름
+            float povertyLine = entry.data.scale == MarketActorScale.Large 
+                ? (_marketSettings != null ? _marketSettings.stimulusWealthThreshold * 100f : 100000f)
+                : (_marketSettings != null ? _marketSettings.stimulusWealthThreshold * 10f : 10000f);
 
-            // 1. 파산 직전인 액터 구제
-            float wealthThreshold = _marketSettings != null ? _marketSettings.stimulusWealthThreshold : 1000f;
-            if (entry.state.wealth < wealthThreshold)
+            // 자산이 빈곤선 미만이면 구조 자금 투입
+            if (entry.state.wealth < povertyLine)
             {
-                float subsidy = _marketSettings != null ? _marketSettings.stimulusSubsidyAmount : 500f;
-                entry.state.wealth += subsidy;
+                // 빈곤선의 2배까지 회복
+                float bailout = (povertyLine * 2f) - entry.state.wealth;
+                entry.state.wealth += bailout;
                 
-                // (선택) 패널티: 건강도 감소 (좀비 기업이라는 표시)
-                float healthPenalty = _marketSettings != null ? _marketSettings.stimulusHealthPenalty : 0.05f;
+                // 패널티: 신용 등급(건강도) 하락
+                float healthPenalty = _marketSettings != null ? _marketSettings.stimulusHealthPenalty : 0.1f;
                 entry.state.health = Mathf.Max(0.1f, entry.state.health - healthPenalty);
+                
+                // 예산 재설정
+                if (entry.state.consumer != null)
+                {
+                    entry.state.consumer.currentBudget = entry.state.wealth * 0.2f;
+                }
+                
+                // Debug.Log($"[Market] Bailout: {entry.data.displayName} (+{bailout:F0})");
             }
             
-            // 2. 예산이 없는 Consumer에게 "재난 지원금" 지급
-            float budgetThreshold = _marketSettings != null ? _marketSettings.stimulusBudgetThreshold : 100f;
-            if (entry.state.consumer != null && entry.state.consumer.currentBudget < budgetThreshold)
+            // 예산이 아예 없는 경우 긴급 지원 (Small 액터 등)
+            if (entry.state.consumer != null && entry.state.consumer.currentBudget < 100f)
             {
-                float disasterRelief = _marketSettings != null ? _marketSettings.stimulusDisasterRelief : 500f;
-                entry.state.consumer.currentBudget += disasterRelief;
+                entry.state.consumer.currentBudget += 5000f; // 최소 활동비
             }
         }
     }
-
 }
-

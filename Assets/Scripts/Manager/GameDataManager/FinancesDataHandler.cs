@@ -271,7 +271,7 @@ public class FinancesDataHandler
             return 0;
         }
 
-        // 스레드에서 생산/소비 집계
+        // 스레드에서 생산/소비 집계 (직원이 할당된 스레드만)
         var placedThreads = _gameDataManager.ThreadPlacement.GetAllPlacedThreads();
         if (placedThreads != null)
         {
@@ -283,11 +283,32 @@ public class FinancesDataHandler
                 ThreadState threadState = placement.RuntimeState;
                 if (threadState == null) continue;
 
+                // [수정] 직원이 할당된 스레드만 생산/소비 집계에 포함
+                // 생산 효율이 0이면 생산 진행도가 증가하지 않아 생산/소비가 실행되지 않음
+                // 따라서 생산 효율이 0보다 큰 스레드만 집계
+                bool hasEmployees = threadState.currentWorkers + threadState.currentTechnicians > 0;
+                bool hasProductionEfficiency = threadState.currentProductionEfficiency > 0f;
+                
+                if (!hasEmployees && !hasProductionEfficiency)
+                {
+                    // 직원이 없고 생산 효율도 0이면 생산/소비하지 않음
+                    continue;
+                }
+
                 // 자원 합산
                 if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
                 {
-                    AddToDict(totalProduction, prod);
-                    AddToDict(totalConsumption, cons);
+                    // 생산 효율에 비례하여 실제 생산/소비량 조정
+                    float efficiencyMultiplier = hasProductionEfficiency 
+                        ? threadState.currentProductionEfficiency 
+                        : 0f;
+                    
+                    // 생산 효율이 있으면 그 비율만큼만 집계
+                    if (efficiencyMultiplier > 0f)
+                    {
+                        AddToDictWithMultiplier(totalProduction, prod, efficiencyMultiplier);
+                        AddToDictWithMultiplier(totalConsumption, cons, efficiencyMultiplier);
+                    }
                 }
             }
         }
@@ -300,6 +321,18 @@ public class FinancesDataHandler
             {
                 if (target.ContainsKey(kvp.Key)) target[kvp.Key] += kvp.Value;
                 else target[kvp.Key] = kvp.Value;
+            }
+        }
+
+        // 생산 효율 배율을 적용한 헬퍼
+        void AddToDictWithMultiplier(Dictionary<string, long> target, Dictionary<string, int> source, float multiplier)
+        {
+            if (source == null || multiplier <= 0f) return;
+            foreach (var kvp in source)
+            {
+                long adjustedValue = (long)Mathf.Ceil(kvp.Value * multiplier);
+                if (target.ContainsKey(kvp.Key)) target[kvp.Key] += adjustedValue;
+                else target[kvp.Key] = adjustedValue;
             }
         }
 

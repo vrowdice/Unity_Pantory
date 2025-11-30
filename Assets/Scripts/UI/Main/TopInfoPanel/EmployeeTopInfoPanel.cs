@@ -1,9 +1,13 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class EmployeeTopInfoPanel : MonoBehaviour
 {
+    [SerializeField] private Slider _managementSlider;
+    [SerializeField] private TextMeshProUGUI _managementRatioText;
+
     [Header("UI References - Worker")]
     [SerializeField] private TextMeshProUGUI _workerCountText;
     [SerializeField] private TextMeshProUGUI _workerSatisfactionText;
@@ -60,6 +64,49 @@ public class EmployeeTopInfoPanel : MonoBehaviour
         UpdateEmployeeTypeDisplay(EmployeeType.Technician, _technicianCountText, _technicianSatisfactionText);
         UpdateEmployeeTypeDisplay(EmployeeType.Researcher, _researcherCountText, _researcherSatisfactionText);
         UpdateEmployeeTypeDisplay(EmployeeType.Manager, _managerCountText, _managerSatisfactionText);
+        
+        // Update management ratio
+        UpdateManagementRatio();
+    }
+    
+    /// <summary>
+    /// 관리 비율 슬라이더와 텍스트를 업데이트합니다.
+    /// </summary>
+    private void UpdateManagementRatio()
+    {
+        if (_dataManager == null || _dataManager.Employee == null)
+        {
+            return;
+        }
+
+        // GetManagementRatio()는 0.0 ~ 1.0 범위의 값을 반환
+        float managementRatio = _dataManager.Employee.GetManagementRatio();
+
+        // 슬라이더 업데이트 (0.0 ~ 1.0 범위)
+        if (_managementSlider != null)
+        {
+            _managementSlider.value = managementRatio;
+        }
+
+        // 텍스트 업데이트 (간단하고 직관적인 표시)
+        if (_managementRatioText != null)
+        {
+            _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
+            
+            if (requiredManagers <= 0 || currentManagers >= requiredManagers)
+            {
+                // 충분함: 깔끔하게 100%만 표시
+                _managementRatioText.text = "100%";
+                _managementRatioText.color = Color.green; // 혹은 흰색
+            }
+            else
+            {
+                // 부족함: 비율과 부족한 인원수만 괄호로 표시
+                int shortage = requiredManagers - currentManagers;
+                _managementRatioText.text = $"{managementRatio:P0} (-{shortage})"; // 예: "80% (-1)"
+                _managementRatioText.color = Color.red; // 경고색
+            }
+        }
     }
 
     /// <summary>
@@ -131,6 +178,10 @@ public class EmployeeTopInfoPanel : MonoBehaviour
         
         if (_managerCountText != null) _managerCountText.text = "0 / 0";
         if (_managerSatisfactionText != null) _managerSatisfactionText.text = "0%";
+        
+        // 관리 비율 초기화
+        if (_managementSlider != null) _managementSlider.value = 0f;
+        if (_managementRatioText != null) _managementRatioText.text = "0%";
     }
 
     void OnDestroy()

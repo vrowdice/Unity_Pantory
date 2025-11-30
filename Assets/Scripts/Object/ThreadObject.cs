@@ -13,6 +13,8 @@ public class ThreadObject : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Color _baseColor = Color.white;
     private Vector2Int _gridPosition;
+    [SerializeField] private Vector2 _targetWorldSize = new Vector2(1f, 1f); // 스프라이트 목표 월드 크기
+    [SerializeField] private bool _keepAspectRatio = true; // 비율 유지 여부
     [SerializeField] private float _threadTitleYOffset = 0.6f;
     [SerializeField] private float _threadTitleScale = 0.01f;
     [SerializeField] private float _consumptionYOffset = 0.2f;
@@ -119,8 +121,18 @@ public class ThreadObject : MonoBehaviour
             sprite = SpriteUtils.LoadSpriteFromFile(_threadState.previewImagePath);
         }
 
-        //나중에
-        //_spriteRenderer.sprite = sprite;
+        if (sprite != null)
+        {
+            _spriteRenderer.sprite = sprite;
+            _spriteRenderer.enabled = true;
+
+            // GameObjectUtils를 사용하여 크기 자동 조절
+            GameObjectUtils.SetSpriteToWorldSize(transform, sprite, _targetWorldSize, _keepAspectRatio);
+        }
+        else
+        {
+            _spriteRenderer.enabled = false;
+        }
     }
 
     private void UpdateThreadTitle()

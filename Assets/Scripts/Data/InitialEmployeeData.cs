@@ -58,6 +58,53 @@ public class InitialEmployeeData : ScriptableObject
     [Range(0f, 2f)]
     public float baseEfficiencyFromSatisfaction = 1f;
 
+    [Header("Satisfaction Penalty from Unassignment")]
+    [Tooltip("직원 할당 해제 시 기본 만족도 패널티 (해제당)")]
+    [Range(-50f, 0f)]
+    public float baseUnassignmentSatisfactionPenalty = -5f;
+    
+    [Tooltip("고용된 직원 수에 따른 만족도 패널티 계수 (인원당 추가 패널티)")]
+    [Range(0f, 5f)]
+    public float employeeCountSatisfactionPenaltyRatio = 0.1f;
+    
+    [Tooltip("최대 만족도 패널티 (너무 큰 패널티 방지)")]
+    [Range(-100f, 0f)]
+    public float maxUnassignmentSatisfactionPenalty = -30f;
+
+    [Header("Satisfaction Penalty from Firing")]
+    [Tooltip("최대 공포치 (전원 해고 시 만족도 패널티, 비율 기반 계산의 최대값)")]
+    [Range(0f, 200f)]
+    public float maxFirePanic = 100f;
+    
+    [Tooltip("최소 패널티 (아무리 적은 비율의 해고라도 최소 이만큼은 깎임)")]
+    [Range(0f, 20f)]
+    public float minFireSatisfactionPenalty = 1f;
+    
+    [Tooltip("다른 직군으로의 만족도 전파 비율 (0.3 = 30% 영향)")]
+    [Range(0f, 1f)]
+    public float crossEmployeeTypeSatisfactionPenaltyRatio = 0.3f;
+    
+    [Header("Management System")]
+    [Tooltip("매니저 1명이 커버할 수 있는 직원 수 (예: 20명)")]
+    [Range(1, 100)]
+    public int managerCoverage = 20;
+    
+    [Tooltip("관리 비율 1.0 미만일 때 효율 감소 최대치 (0.2 = 최대 20% 감소)")]
+    [Range(0f, 1f)]
+    public float maxEfficiencyPenalty = 0.2f;
+    
+    [Tooltip("관리 비율 1.0 미만일 때 만족도 하락 최대치")]
+    [Range(0f, 50f)]
+    public float maxSatisfactionPenalty = 5.0f;
+    
+    [Header("Manager Mitigation (Optional - for Firing Penalty)")]
+    [Tooltip("관리자에 의한 해고 패널티 완화 활성화 여부")]
+    public bool enableManagerMitigation = true;
+    
+    [Tooltip("충분한 관리자 커버 시 해고 패널티 감소율 (0.5 = 50% 감소)")]
+    [Range(0f, 1f)]
+    public float managerMitigationRatio = 0.5f;
+
     /// <summary>
     /// 급여 레벨에 따른 일일 만족도 변화량을 반환합니다.
     /// </summary>
@@ -146,6 +193,19 @@ public class InitialEmployeeData : ScriptableObject
         
         satisfactionToEfficiencyRatio = Mathf.Clamp(satisfactionToEfficiencyRatio, 0f, 0.1f);
         baseEfficiencyFromSatisfaction = Mathf.Clamp(baseEfficiencyFromSatisfaction, 0f, 2f);
+        
+        baseUnassignmentSatisfactionPenalty = Mathf.Clamp(baseUnassignmentSatisfactionPenalty, -50f, 0f);
+        employeeCountSatisfactionPenaltyRatio = Mathf.Clamp(employeeCountSatisfactionPenaltyRatio, 0f, 5f);
+        maxUnassignmentSatisfactionPenalty = Mathf.Clamp(maxUnassignmentSatisfactionPenalty, -100f, 0f);
+        
+        maxFirePanic = Mathf.Clamp(maxFirePanic, 0f, 200f);
+        minFireSatisfactionPenalty = Mathf.Clamp(minFireSatisfactionPenalty, 0f, 20f);
+        crossEmployeeTypeSatisfactionPenaltyRatio = Mathf.Clamp(crossEmployeeTypeSatisfactionPenaltyRatio, 0f, 1f);
+        
+        managerCoverage = Mathf.Clamp(managerCoverage, 1, 100);
+        maxEfficiencyPenalty = Mathf.Clamp(maxEfficiencyPenalty, 0f, 1f);
+        maxSatisfactionPenalty = Mathf.Clamp(maxSatisfactionPenalty, 0f, 50f);
+        managerMitigationRatio = Mathf.Clamp(managerMitigationRatio, 0f, 1f);
     }
 }
 
