@@ -173,8 +173,7 @@ public partial class MarketDataHandler
                 }
             }
         }
-        
-        Debug.Log("[Market] 💰 Market initialized with robust stocks and wealthy actors.");
+
         OnMarketUpdated?.Invoke();
     }
 
