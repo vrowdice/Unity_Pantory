@@ -6,6 +6,8 @@ public class DateTopInfoPanel : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI _dateText;
+    [SerializeField] private TextMeshProUGUI _timeText;   // 시간 전용 텍스트 (선택 사항)
+    [SerializeField] private Slider _dayProgressSlider;   // 24시간 진행도 슬라이더 (0~1, 선택 사항)
 
     [Header("Button Sprites")]
     [SerializeField] private Sprite _pauseImage;
@@ -36,21 +38,16 @@ public class DateTopInfoPanel : MonoBehaviour
         // 초기 UI 업데이트
         UpdateDateText();
         UpdatePlayPauseButtonImage();
+        UpdateDayProgressSlider();
     }
 
     // ----------------- UI 업데이트 -----------------
 
     /// <summary>
-    /// 날짜 텍스트를 업데이트합니다.
+    /// 날짜/시간 텍스트를 업데이트합니다.
     /// </summary>
     private void UpdateDateText()
     {
-        if (_dateText == null)
-        {
-            Debug.LogWarning("[InfoDatePanel] Date text component is null.");
-            return;
-        }
-
         if (_dataManager == null)
         {
             Debug.LogWarning("[InfoDatePanel] DataManager is null. Cannot update date text.");
@@ -62,9 +59,31 @@ public class DateTopInfoPanel : MonoBehaviour
         int month = _dataManager.Time.Month;
         int day = _dataManager.Time.Day;
 
-        // 날짜 텍스트 업데이트
+        // 시간 문자열
         string timeText = _dataManager.Time.GetTimeString();
-        _dateText.text = $"Y{year} M{month} D{day}  {timeText}";
+
+        // 날짜 텍스트 (연/월/일)
+        if (_dateText != null)
+        {
+            _dateText.text = $"Y{year} M{month} D{day}";
+        }
+        else
+        {
+            Debug.LogWarning("[InfoDatePanel] Date text component is null.");
+        }
+
+        // 시간 텍스트 (시:분) - 별도 필드가 없으면 기존처럼 날짜 텍스트 뒤에 붙여서 사용
+        if (_timeText != null)
+        {
+            _timeText.text = timeText;
+        }
+        else if (_dateText != null)
+        {
+            // 하위 호환: 시간 전용 텍스트가 없으면 한 줄에 같이 표시
+            _dateText.text = $"Y{year} M{month} D{day}  {timeText}";
+        }
+
+        UpdateDayProgressSlider();
     }
 
     /// <summary>
@@ -183,6 +202,27 @@ public class DateTopInfoPanel : MonoBehaviour
     private void OnHourChanged()
     {
         UpdateDateText();
+    }
+
+    /// <summary>
+    /// 하루 24시간 진행도를 슬라이더로 표현 (0.0 ~ 1.0)
+    /// </summary>
+    private void UpdateDayProgressSlider()
+    {
+        if (_dayProgressSlider == null)
+        {
+            return;
+        }
+
+        if (_dataManager == null)
+        {
+            Debug.LogWarning("[InfoDatePanel] DataManager is null. Cannot update day progress slider.");
+            return;
+        }
+
+        // TimeDataHandler에서 하루 진행도(0~1)를 가져와 슬라이더에 반영
+        float progress = _dataManager.Time.GetDayProgress();
+        _dayProgressSlider.normalizedValue = Mathf.Clamp01(progress);
     }
 
     void OnDestroy()

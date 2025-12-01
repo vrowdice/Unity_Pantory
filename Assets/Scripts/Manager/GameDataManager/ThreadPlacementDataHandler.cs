@@ -77,8 +77,6 @@ public class ThreadPlacementDataHandler
         // 6. 배치 상태 생성 및 저장
         var placement = new ThreadPlacementState(gridPosition, templateId, newState);
         _placedThreads[gridPosition] = placement;
-
-        Debug.Log($"[ThreadPlacementDataHandler] Placed thread instance: {uniqueInstanceId} from template: {templateId} at {gridPosition}");
         RaisePlacementChanged();
         
         return newState;

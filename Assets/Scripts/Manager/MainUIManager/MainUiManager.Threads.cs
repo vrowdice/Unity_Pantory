@@ -148,13 +148,13 @@ public partial class MainUiManager
         {
             _threadTileManager.CancelPlacementMode();
             UpdateThreadModeButtons(false, false);
+            _quickMovePanelToggleBtn.SetOpened();
             return;
         }
 
         _threadTileManager.StartPlacementMode(threadState);
         UpdateThreadModeButtons(true, false);
-
-        _quickMovePanelAni.ClosePanel();
+        _quickMovePanelToggleBtn.SetClosed();
     }
 
     public void CancelThreadPlacement()
@@ -166,8 +166,7 @@ public partial class MainUiManager
 
         _threadTileManager.CancelPlacementMode();
         UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
-
-        _quickMovePanelAni.OpenPanel();
+        _quickMovePanelToggleBtn.SetOpened();
     }
 
     public void ToggleThreadRemovalMode()
@@ -183,11 +182,11 @@ public partial class MainUiManager
 
         if(_threadTileManager.IsRemovalMode)
         {
-            _quickMovePanelAni.ClosePanel();
+            _quickMovePanelToggleBtn.SetClosed();
         }
         else
         {
-            _quickMovePanelAni.OpenPanel();
+            _quickMovePanelToggleBtn.SetOpened();
         }
     }
 

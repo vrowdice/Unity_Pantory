@@ -261,8 +261,6 @@ public class ThreadCalculateHandler
             InitializeThread(threadState, threadDataHandler);
             initializedCount++;
         }
-
-        Debug.Log($"[ThreadCalculateHandler] Initialized {initializedCount} threads.");
     }
 
     /// <summary>
@@ -365,8 +363,6 @@ public class ThreadCalculateHandler
                 }
             }
         }
-
-        Debug.Log($"[ThreadCalculateHandler] Initialized thread '{threadState.threadId}': Maintenance={totalMaintenance}, Employees={requiredEmployees}, Inputs={inputResourceIds.Count}, Outputs={outputResourceIds.Count}");
     }
 
     #endregion

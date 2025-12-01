@@ -574,7 +574,6 @@ public class ThreadDataHandler
             loadedCount++;
         }
 
-        Debug.Log($"[ThreadService] Loaded {loadedCount} threads, skipped {skippedCount} duplicates");
         OnThreadChanged?.Invoke();
     }
 

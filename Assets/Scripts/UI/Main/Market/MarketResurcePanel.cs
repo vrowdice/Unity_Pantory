@@ -18,7 +18,6 @@ public class MarketResurcePanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _resourcePriceText;
     [SerializeField] private Slider _resourceInventorySlider;
     [SerializeField] private TextMeshProUGUI _resourceInventoryText;
-    [SerializeField] private Image _resourceInventoryFillImage; // 슬라이더 Fill 영역의 Image 컴포넌트
 
     private readonly List<MarketResourceBtn> _resourceBtns = new List<MarketResourceBtn>();
     private bool _isSubscribedToDayChange;
@@ -278,56 +277,6 @@ public class MarketResurcePanel : MonoBehaviour
         {
             _resourceInventoryText.text = $"{currentInventory:N0} / {maxValue:N0}";
         }
-
-        // 재고량에 따른 색상 변경
-        UpdateInventorySliderColor(currentInventory, maxValue);
-    }
-
-    /// <summary>
-    /// 재고량에 따라 슬라이더 색상을 변경합니다.
-    /// </summary>
-    /// <param name="currentInventory">현재 재고량</param>
-    /// <param name="maxValue">최대 재고량</param>
-    private void UpdateInventorySliderColor(long currentInventory, long maxValue)
-    {
-        if (_resourceInventoryFillImage == null)
-        {
-            return;
-        }
-
-        // 재고량 비율 계산 (0.0 ~ 1.0)
-        float ratio = maxValue > 0 ? Mathf.Clamp01((float)currentInventory / maxValue) : 0f;
-
-        Color sliderColor;
-        
-        // 재고량에 따른 색상 결정
-        if (ratio < 0.2f)
-        {
-            // 매우 낮음 (0-20%): 빨간색
-            sliderColor = Color.red;
-        }
-        else if (ratio < 0.4f)
-        {
-            // 낮음 (20-40%): 주황색
-            sliderColor = new Color(1f, 0.5f, 0f); // Orange
-        }
-        else if (ratio < 0.6f)
-        {
-            // 보통 (40-60%): 노란색
-            sliderColor = Color.yellow;
-        }
-        else if (ratio < 0.8f)
-        {
-            // 충분 (60-80%): 연두색
-            sliderColor = new Color(0.5f, 1f, 0f); // Light Green
-        }
-        else
-        {
-            // 매우 충분 (80-100%): 초록색
-            sliderColor = Color.green;
-        }
-
-        _resourceInventoryFillImage.color = sliderColor;
     }
 
     private void OnDisable()

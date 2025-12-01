@@ -314,7 +314,7 @@ public class FinancesDataHandler
         }
 
         // 로컬 헬퍼
-        void AddToDict(Dictionary<string, long> target, Dictionary<string, int> source)
+/*        void AddToDict(Dictionary<string, long> target, Dictionary<string, int> source)
         {
             if (source == null) return;
             foreach (var kvp in source)
@@ -322,7 +322,7 @@ public class FinancesDataHandler
                 if (target.ContainsKey(kvp.Key)) target[kvp.Key] += kvp.Value;
                 else target[kvp.Key] = kvp.Value;
             }
-        }
+        }*/
 
         // 생산 효율 배율을 적용한 헬퍼
         void AddToDictWithMultiplier(Dictionary<string, long> target, Dictionary<string, int> source, float multiplier)

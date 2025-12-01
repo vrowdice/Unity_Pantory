@@ -31,7 +31,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;
     [SerializeField] private Transform _quickMovePanelContent;
-    [SerializeField] private PanelDoAni _quickMovePanelAni;
+    [SerializeField] private ToggleBtn _quickMovePanelToggleBtn;
 
     [Header("Resouce ScrollView")]
     [SerializeField] private GameObject _mainScrollViewResouceBtn;

@@ -85,7 +85,6 @@ public partial class MarketDataHandler
         }
         
         RegisterActor(populaceData);
-        Debug.Log($"[Market] System actor created: {SYSTEM_POPULACE_ID}");
     }
 
     /// <summary>

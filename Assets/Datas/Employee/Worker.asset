@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Worker
   role: 0
   tier: 1
-  icon: {fileID: 21300000, guid: 464bf877083243147b2c878eaab154cd, type: 3}
+  icon: {fileID: 21300000, guid: a4330e27775ac0a4197def656464ddb8, type: 3}
   Image: {fileID: 21300000, guid: 464bf877083243147b2c878eaab154cd, type: 3}
   description: A basic laborer skilled in manual tasks. The backbone of any workshop,
     handling physical work and basic crafting.

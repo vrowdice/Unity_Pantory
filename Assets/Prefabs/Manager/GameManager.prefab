@@ -55,7 +55,8 @@ MonoBehaviour:
   _manageThreadCartegoryPanelPrefab: {fileID: 2639419400245874255, guid: f65e8985534c69643be32468ceb4c333, type: 3}
   _productionInfoImagePrefab: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
   _gridSortContentPrefab: {fileID: 9210800356017659960, guid: 4f082e6a291457548b44223e7a304a2c, type: 3}
-  _actionBtnPrefab: {fileID: 1695366217497328035, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
+  _textPairPanelPrefab: {fileID: 5195975711048486128, guid: 2af1b22cca5536341a68e8ab542df466, type: 3}
+  _actionBtnPrefab: {fileID: 6252256842686782447, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
   _productionIconScale: 0.8
   _gameDataManagerPrefab: {fileID: 8528956353445437084, guid: 10c608d4ef825d14b8a641b7ad998c7f, type: 3}
   _autoCreateGameDataManager: 1

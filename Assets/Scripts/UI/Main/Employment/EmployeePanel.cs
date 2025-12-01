@@ -17,6 +17,7 @@ public class EmployeePanel : BasePanel
 
     [Header("Basic Information")]
     [SerializeField] private Image _employeeImage;
+    [SerializeField] private Image _employeeIconImage;
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
 
@@ -281,6 +282,11 @@ public class EmployeePanel : BasePanel
         if (_employeeImage != null && data.Image != null)
         {
             _employeeImage.sprite = data.Image;
+        }
+
+        if (_employeeIconImage != null && data.icon != null)
+        {
+            _employeeIconImage.sprite = data.icon;
         }
 
         if (_titleText != null)
