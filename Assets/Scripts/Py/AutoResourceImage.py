@@ -27,7 +27,7 @@ IMAGEN_MODEL = os.getenv("IMAGEN_MODEL", "imagen-4.0-fast-generate-001")
 # Imagen 클라이언트 초기화
 imagen_client = None
 if not GOOGLE_AI_API_KEY:
-    print("⚠️  경고: GOOGLE_AI_API_KEY가 설정되지 않았습니다.")
+    print("  경고: GOOGLE_AI_API_KEY가 설정되지 않았습니다.")
     print(f"   프로젝트 루트에 .env 파일을 생성하고 GOOGLE_AI_API_KEY=your_key를 추가하세요.")
     print(f"   또는 환경 변수로 설정하세요.\n")
 elif GOOGLE_AI_API_KEY:
@@ -70,18 +70,15 @@ def parse_asset_file(file_path):
     return data
 
 def get_resource_type_name(type_num):
-    """타입 번호를 이름으로 변환"""
+    """타입 번호를 이름으로 변환 (ResourceType.cs와 일치)"""
     types = {
-        0: "raw",
-        1: "metal",
-        2: "wood",
-        3: "tool",
-        4: "weapon",
-        5: "furniture",
-        6: "clothing",
-        7: "component",
-        8: "electronics",
-        9: "vehicle"
+        0: "raw",           # raw = 0
+        1: "metal",         # metal = 1
+        2: "weapon",        # weapon = 2
+        3: "Essentials",    # Essentials = 3
+        4: "Luxuries",      # Luxuries = 4
+        5: "component",     # component = 5
+        6: "vehicle"        # vehicle = 6
     }
     return types.get(type_num, "unknown")
 
@@ -90,25 +87,19 @@ def generate_image_prompt(item_data, category):
     name = item_data.get('displayName', 'Unknown Item')
     description = item_data.get('description', '')
     
-    # 카테고리별 스타일 설정
+    # 카테고리별 스타일 설정 (ResourceType.cs와 일치)
     if category == "Raw":
         style = "pixel art game item icon, raw material or ore, natural resource"
     elif category == "Metal":
         style = "pixel art game item icon, metal ingot or refined metal, shiny metallic material"
-    elif category == "Wood":
-        style = "pixel art game item icon, wooden log or plank, natural wood texture"
-    elif category == "Tool":
-        style = "pixel art game item icon, industrial tool or craftsman tool"
     elif category == "Weapon":
         style = "pixel art game item icon, early 20th century weapon, World War era firearm, vintage military weapon"
-    elif category == "Furniture":
-        style = "pixel art game item icon, furniture piece or home decor item"
-    elif category == "Clothing":
-        style = "pixel art game item icon, clothing item or garment"
+    elif category == "Essentials":
+        style = "pixel art game item icon, essential items, basic necessities, simple tools, basic furniture, basic clothing"
+    elif category == "Luxuries":
+        style = "pixel art game item icon, luxury items, premium goods, high-quality furniture, premium clothing, luxury goods"
     elif category == "Component":
         style = "pixel art game item icon, mechanical component or industrial part"
-    elif category == "Electronics":
-        style = "pixel art game item icon, early 20th century electronic device, vintage tech component"
     elif category == "Vehicle":
         style = "pixel art game item icon, early 20th century vehicle, vintage automobile, 1920s-1940s style transportation, World War era vehicle"
     else:
@@ -171,17 +162,14 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", c
         # description이 있으면 간단한 프롬프트에도 포함
         desc_part = f", {description}" if description else ""
         
-        # 카테고리별 스타일 키워드 추가
+        # 카테고리별 스타일 키워드 추가 (ResourceType.cs와 일치)
         category_keywords = {
             "Raw": "raw material, ore, natural resource",
             "Metal": "metal ingot, shiny metallic",
-            "Wood": "wooden, natural wood texture",
-            "Tool": "industrial tool, craftsman tool",
             "Weapon": "early 20th century weapon, World War era firearm, vintage military weapon",
-            "Furniture": "furniture, home decor",
-            "Clothing": "clothing, garment, apparel",
+            "Essentials": "essential items, basic necessities, simple tools, basic furniture, basic clothing",
+            "Luxuries": "luxury items, premium goods, high-quality furniture, premium clothing, luxury goods",
             "Component": "mechanical component, industrial part",
-            "Electronics": "early 20th century electronic device, vintage tech component",
             "Vehicle": "early 20th century vehicle, vintage automobile, 1920s-1940s style, World War era vehicle"
         }
         category_style = category_keywords.get(category, "game item")
@@ -193,8 +181,6 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", c
             era_style = ", 1920s-1940s era, vintage style, early industrial age"
         elif category == "Weapon":
             era_style = ", World War era, early 20th century military style"
-        elif category == "Electronics":
-            era_style = ", early 20th century, vintage technology"
         
         # Motor는 엔진/원동기 스타일로 특별 처리
         motor_style = ""
