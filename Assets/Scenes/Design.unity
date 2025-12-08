@@ -857,7 +857,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Left
+  m_text: Left (q)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2331,7 +2331,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &405737241
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3258,7 +3258,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Right
+  m_text: Right (e)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5184,6 +5184,8 @@ MonoBehaviour:
   _outputMarkerPrefab: {fileID: 4329135525379065979, guid: 3983bd3e3a5ec024997cd1a1a0d233a4, type: 3}
   _gridWidth: 10
   _gridHeight: 10
+  _resourceItemPrefab: {fileID: 5170135693805334320, guid: 2a169d6b53610674585dc30cc4a0546b, type: 3}
+  _resourceSpawnInterval: 2
 --- !u!1 &1048607430
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,6 +26,9 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
 
+    [Header("Animation Settings")]
+    [SerializeField] private GameObject _resourceItemPrefab; 
+    [SerializeField] private float _resourceSpawnInterval = 2.0f;
     #endregion
 
     #region Private 변수 및 핸들러
@@ -43,6 +46,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     private BuildingGridHandler _gridGenHandler;
     private BuildingPlacementHandler _placementHandler;
     private BuildingRemovalHandler _removalHandler;
+    private ResourceAnimHandler _resourceAnimHandler;
     // BuildingCalculateHandler는 경로 탐색이 필요한 경우에만 사용 (CalculateThreadOutputs)
     private BuildingCalculateHandler _calculateHandler;
 
@@ -63,6 +67,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     public BuildingGridHandler GridGenHandler => _gridGenHandler;
     public BuildingPlacementHandler PlacementHandler => _placementHandler;
     public BuildingRemovalHandler RemovalHandler => _removalHandler;
+    public BuildingCalculateHandler CalculateHandler => _calculateHandler;
     public DesignUiManager DesignUiManager => _designUiManager;
     public Transform SharedProductionIconCanvas
     {
@@ -121,6 +126,11 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
         if (!IsPlacementMode && !IsRemovalMode && !string.IsNullOrEmpty(_currentThreadId))
         {
             HandleBuildingClick();
+        }
+
+        if (!string.IsNullOrEmpty(_currentThreadId))
+        {
+            _resourceAnimHandler?.Update();
         }
     }
 
@@ -201,7 +211,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
         _placementHandler = new BuildingPlacementHandler(this, _buildingObjectPrefab);
         _removalHandler = new BuildingRemovalHandler(this);
         _calculateHandler = new BuildingCalculateHandler(this);
-
+        _resourceAnimHandler = new ResourceAnimHandler(this, _resourceItemPrefab, _resourceSpawnInterval);
         if (_visualManager != null)
         {
             _placementHandler.SetColors(_visualManager.ValidColor, _visualManager.InvalidColor);
@@ -665,6 +675,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
                 }
             }
         }
+        _resourceAnimHandler?.SetRoutesDirty();
     }
 
     /// <summary> 건물 클릭을 처리합니다. </summary>

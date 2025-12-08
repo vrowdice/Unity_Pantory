@@ -485,4 +485,80 @@ public class BuildingCalculateHandler
     }
 
     #endregion
+
+    // BuildingCalculateHandler.cs 안에 추가
+
+/// <summary>
+/// 시작점부터 목표(상역소/하역소)까지의 도로 경로를 찾아서 반환합니다.
+/// </summary>
+public List<Vector2Int> GetPathViaRoad(Vector2Int startPos, bool isUnloadStation, bool isLoadStation)
+{
+    var buildingStates = _buildingTileManager.GetCurrentBuildingStates();
+    if (buildingStates == null) return null;
+
+    Queue<Vector2Int> queue = new Queue<Vector2Int>();
+    HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+    // 경로 역추적을 위한 부모 맵 (Key: 현재위치, Value: 어디서 왔는지)
+    Dictionary<Vector2Int, Vector2Int> parentMap = new Dictionary<Vector2Int, Vector2Int>();
+
+    queue.Enqueue(startPos);
+    visited.Add(startPos);
+    parentMap[startPos] = startPos; // 시작점 마킹
+
+    Vector2Int targetPos = new Vector2Int(-1, -1);
+    bool found = false;
+
+    while (queue.Count > 0)
+    {
+        Vector2Int current = queue.Dequeue();
+
+        // 4방향 탐색
+        foreach (var dir in new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) })
+        {
+            Vector2Int next = current + dir;
+            if (visited.Contains(next)) continue;
+
+            BuildingData nextData = GetBuildingDataAt(next, buildingStates, DataManager);
+            
+            if (nextData != null)
+            {
+                // 도로라면 계속 탐색
+                if (nextData.IsRoad)
+                {
+                    visited.Add(next);
+                    queue.Enqueue(next);
+                    parentMap[next] = current; // 어디서 왔는지 기록
+                }
+                // 목표 건물을 만났다면
+                else if ((isUnloadStation && nextData.IsUnloadStation) || (isLoadStation && nextData.IsLoadStation))
+                {
+                    visited.Add(next);
+                    parentMap[next] = current;
+                    targetPos = next;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (found) break;
+    }
+
+    if (!found) return null;
+
+    // 경로 역추적 (도착점 -> 시작점)
+    List<Vector2Int> path = new List<Vector2Int>();
+    Vector2Int curr = targetPos;
+    
+    while (curr != startPos)
+    {
+        path.Add(curr);
+        curr = parentMap[curr];
+    }
+    path.Add(startPos);
+    
+    path.Reverse(); // 시작점 -> 도착점 순서로 뒤집기
+    return path;
+}
+
+
 }
