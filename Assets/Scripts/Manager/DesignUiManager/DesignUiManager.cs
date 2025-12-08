@@ -23,9 +23,12 @@ public partial class DesignUiManager : MonoBehaviour, IUIManager
     private GameDataManager _dataManager;
     private List<BuildingData> _buildingDataList;
     private BuildingData _selectedBuilding;
+    private BuildingType _selectedBuildingType = BuildingType.Distribution;
     private bool _isRemovalMode;
     private GameObject _productionInfoImage;
     private string _currentThreadTitle = DefaultThreadTitle;
+    private List<BuildingTypeBtn> _buildingTypeBtns = new List<BuildingTypeBtn>();
+    private List<BuildingBtn> _buildingBtns = new List<BuildingBtn>();
 
     public Transform CanvasTrans => transform;
     public BuildingTileManager BuildingTileManager => _buildingTileManager;
@@ -46,7 +49,12 @@ public partial class DesignUiManager : MonoBehaviour, IUIManager
         EnumUtils.GetAllEnumValues<BuildingType>().ForEach(buildingType =>
         {
             var btn = Instantiate(_buildingTypeBtnPrefab, _buildingTypeBtnContent);
-            btn.GetComponent<BuildingTypeBtn>().Initialize(this, buildingType);
+            var buildingTypeBtn = btn.GetComponent<BuildingTypeBtn>();
+            if (buildingTypeBtn != null)
+            {
+                buildingTypeBtn.Initialize(this, buildingType);
+                _buildingTypeBtns.Add(buildingTypeBtn);
+            }
         });
 
         SelectBuildingType(BuildingType.Distribution);

@@ -18,6 +18,7 @@ public partial class DesignUiManager
         }
 
         UpdateModeBtnImages(true, false);
+        UpdateBuildingButtonStates();
         Debug.Log($"[DesignUiManager] Building selected: {buildingData.displayName}");
     }
 
@@ -29,6 +30,7 @@ public partial class DesignUiManager
         _buildingTileManager?.CancelPlacementMode();
 
         UpdateModeBtnImages(false, false);
+        UpdateBuildingButtonStates();
         Debug.Log("[DesignUiManager] Building deselected");
     }
 

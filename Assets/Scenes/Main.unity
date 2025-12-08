@@ -7535,7 +7535,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -160, y: -280}
+  m_AnchoredPosition: {x: -160, y: -279.99997}
   m_SizeDelta: {x: 280, y: -295}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &433257407
@@ -9156,7 +9156,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -9206,7 +9206,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15424,7 +15424,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 1647824761
-  m_SortingOrder: -1
+  m_SortingOrder: -10
   m_TargetDisplay: 0
 --- !u!224 &789901297
 RectTransform:
@@ -22170,7 +22170,7 @@ MonoBehaviour:
   _productionEfficiencySlider: {fileID: 2047126556}
   _productionProgressSlider: {fileID: 39536445}
   _productionEfficiencyText: {fileID: 1497059088}
-  _productionProgressText: {fileID: 222678725}
+  _productionProgressText: {fileID: 2137678889}
   _currentWorkersText: {fileID: 1889060443}
   _currentTechniciansText: {fileID: 1682459259}
   _maxWorkersText: {fileID: 1490421334}
@@ -23385,7 +23385,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 44e6de856418a9b4aa4859bdb9d5bd4e, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

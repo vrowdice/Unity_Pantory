@@ -212,6 +212,8 @@ public class MarketPanel : BasePanel
 
         // 정렬된 순서대로 버튼 생성
         int createdCount = 0;
+        MarketActorEntry firstRankTrader = null; // 1순위 트레이더 저장
+        
         foreach (var item in sortedItems)
         {
             GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
@@ -237,8 +239,20 @@ public class MarketPanel : BasePanel
             {
                 // NPC 액터 버튼 초기화 (MarketActorState.rank 사용)
                 traderBtn.OnInitialize(_traderPanel, item.entry);
+                
+                // 1순위 NPC 트레이더 저장 (플레이어가 아닌 첫 번째 트레이더)
+                if (firstRankTrader == null && item.entry != null)
+                {
+                    firstRankTrader = item.entry;
+                }
             }
             createdCount++;
+        }
+
+        // 1순위 트레이더 자동 선택
+        if (firstRankTrader != null && _traderPanel != null)
+        {
+            _traderPanel.HandleTraderButtonClicked(firstRankTrader);
         }
 
         if (createdCount > 0)
