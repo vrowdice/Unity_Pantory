@@ -3,7 +3,7 @@ using Pantory.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ThreadTileManager : MonoBehaviour, ISceneManagerComponent
+public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
 {
     [Header("UI Manager")]
     [SerializeField] private MainUiManager _mainUiManager;

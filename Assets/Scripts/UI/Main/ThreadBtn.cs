@@ -6,7 +6,9 @@ using TMPro;
 public class ThreadBtn : MonoBehaviour
 {
     [SerializeField] private Image _image = null;
+    [SerializeField] private Image _focusedImage = null;
     [SerializeField] private TextMeshProUGUI _text = null;
+
     private MainUiManager _mainUiManager = null;
     private ThreadState _threadState;
 
@@ -51,4 +53,16 @@ public class ThreadBtn : MonoBehaviour
         _mainUiManager.StartThreadPlacement(_threadState);
     }
 
+    public void SetFocused(bool isFocused)
+    {
+        if (_focusedImage != null)
+        {
+            _focusedImage.gameObject.SetActive(isFocused);
+        }
+    }
+
+    public ThreadState GetThreadState()
+    {
+        return _threadState;
+    }
 }

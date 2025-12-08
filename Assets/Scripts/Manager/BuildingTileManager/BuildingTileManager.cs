@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// 건물 타일 시스템의 메인 매니저 (조율자).
 /// - 그리드, 배치/제거 모드, 임시 데이터 및 최종 저장 로직을 관리합니다.
 /// </summary>
-public class BuildingTileManager : MonoBehaviour, ISceneManagerComponent
+public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
 {
     #region 인스펙터 설정
 

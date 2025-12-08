@@ -495,7 +495,7 @@ public class GameManager : MonoBehaviour
             InitializeMainCameraController();
         }
 
-        GameObject sceneManagerRoot = GameObject.Find("SceneManager");
+        GameObject sceneManagerRoot = GameObject.Find("GameSceneManager");
         if (sceneManagerRoot == null)
         {
             Debug.Log("[GameManager] SceneManager object not found in the scene. Skipping scene manager initialization.");
@@ -504,7 +504,7 @@ public class GameManager : MonoBehaviour
 
         var managers = sceneManagerRoot
             .GetComponentsInChildren<MonoBehaviour>(true)
-            .OfType<ISceneManagerComponent>()
+            .OfType<IGameSceneManagerComponent>()
             .ToList();
 
         if (managers.Count == 0)

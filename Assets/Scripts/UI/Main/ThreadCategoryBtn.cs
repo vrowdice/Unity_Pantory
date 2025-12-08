@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class ThreadCategoryBtn : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _titleText = null;
+    [SerializeField] private Image _focusedImage = null;
 
     private string _categoryId = string.Empty;
     private System.Action<ThreadCategoryBtn> _onClickCallback = null;
@@ -24,5 +26,13 @@ public class ThreadCategoryBtn : MonoBehaviour
     public void OnClick()
     {
         _onClickCallback?.Invoke(this);
+    }
+
+    public void SetFocused(bool isFocused)
+    {
+        if (_focusedImage != null)
+        {
+            _focusedImage.gameObject.SetActive(isFocused);
+        }
     }
 }

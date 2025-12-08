@@ -103,6 +103,8 @@ public partial class MainUiManager
         {
             Instantiate(_threadPlusBtnPrefab, _threadScrollViewContent);
         }
+
+        UpdateThreadButtonStates();
     }
 
     private void HandleThreadCategoryButtonClicked(ThreadCategoryBtn btn)
@@ -148,12 +150,14 @@ public partial class MainUiManager
         {
             _threadTileManager.CancelPlacementMode();
             UpdateThreadModeButtons(false, false);
+            UpdateThreadButtonStates();
             _quickMovePanelToggleBtn.SetOpened();
             return;
         }
 
         _threadTileManager.StartPlacementMode(threadState);
         UpdateThreadModeButtons(true, false);
+        UpdateThreadButtonStates();
         _quickMovePanelToggleBtn.SetClosed();
     }
 
@@ -166,6 +170,7 @@ public partial class MainUiManager
 
         _threadTileManager.CancelPlacementMode();
         UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
+        UpdateThreadButtonStates();
         _quickMovePanelToggleBtn.SetOpened();
     }
 
@@ -195,12 +200,27 @@ public partial class MainUiManager
         foreach (var btn in _threadCategoryBtns)
         {
             bool isActive = btn.CategoryId == _selectedThreadCategoryId;
+            btn.SetFocused(isActive);
+        }
+    }
 
-            Image image = btn.GetComponent<Image>();
-            if (image != null)
-            {
-                image.color = isActive ? Color.yellow : Color.white;
-            }
+    private void UpdateThreadButtonStates()
+    {
+        ThreadState currentPlacementThread = null;
+        if (_threadTileManager != null && _threadTileManager.IsPlacementMode)
+        {
+            currentPlacementThread = _threadTileManager.CurrentPlacementThread;
+        }
+
+        foreach (var btn in _threadBtns)
+        {
+            if (btn == null)
+                continue;
+
+            ThreadState btnThreadState = btn.GetThreadState();
+            bool isActive = (currentPlacementThread != null && btnThreadState != null && 
+                           currentPlacementThread == btnThreadState);
+            btn.SetFocused(isActive);
         }
     }
 

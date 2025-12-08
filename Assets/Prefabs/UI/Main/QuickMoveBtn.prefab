@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 80}
+  m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &759411590148383441
 MonoBehaviour:
@@ -165,7 +165,7 @@ MonoBehaviour:
   iconSize: 22
   enableText: 1
   text: Button
-  textSize: 32
+  textSize: 28
   dynamicScale: 1
   reverseArrangement: 0
   spacing: 15
@@ -530,7 +530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09411765, g: 0.09411765, b: 0.105882354, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -563,7 +563,7 @@ MonoBehaviour:
   targetImage: {fileID: 4581864896609099473}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Primary
+  colorID: Secondary
   fontID: Inter - Thin
   useCustomColor: 0
   overrideAlpha: 0
@@ -911,19 +911,19 @@ MonoBehaviour:
   enableInteraction: 1
   interactableObject: {fileID: 759411590148383441}
   disabledColor:
-    stylerID: Primary (Tint)
+    stylerID: Secondary
     color: {r: 1, g: 1, b: 1, a: 0.19607843}
   normalColor:
-    stylerID: Secondary
+    stylerID: Primary
     color: {r: 1, g: 1, b: 1, a: 1}
   highlightedColor:
-    stylerID: Secondary
+    stylerID: Primary (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   pressedColor:
-    stylerID: Secondary
+    stylerID: Primary (Tint)
     color: {r: 0, g: 0, b: 0, a: 1}
   selectedColor:
-    stylerID: Secondary
+    stylerID: Primary (Soft)
     color: {r: 0, g: 0, b: 0, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -957,8 +957,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279965720
-  m_fontColor: {r: 0.09411765, g: 0.09411765, b: 0.105882354, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -975,8 +975,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
-  m_fontSizeBase: 32
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

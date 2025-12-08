@@ -1,4 +1,4 @@
-public interface ISceneManagerComponent
+public interface IGameSceneManagerComponent
 {
     /// <summary>
     /// GameManager에서 호출되는 초기화 메서드.

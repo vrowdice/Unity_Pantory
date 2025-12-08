@@ -105,7 +105,7 @@ MonoBehaviour:
     offset: {x: 0, y: 0}
     fadeDuration: 0.1
   sfxSource: 2
-  stylerPreset: {fileID: 0}
+  stylerPreset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
   highlightedSFX:
     stylerID: Hover SFX
     audioClip: {fileID: 0}
@@ -164,8 +164,8 @@ MonoBehaviour:
   settingsFoldout: 1
   styleFoldout: 1
   navigationFoldout: 0
-  referencesFoldout: 1
-  eventsFoldout: 0
+  referencesFoldout: 0
+  eventsFoldout: 1
   enableIcon: 1
   icon: {fileID: 21300000, guid: d6175a21c35fc2847b6862477c12d68a, type: 3}
   iconSize: 30
