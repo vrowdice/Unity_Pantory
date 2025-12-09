@@ -24,7 +24,7 @@ MonoBehaviour:
   rarity: 0.7
   type: 0
   nextStage: {fileID: 0}
-  icon: {fileID: 21300000, guid: 860e934b5e404b443a88fea11fccc787, type: 3}
+  icon: {fileID: 21300000, guid: da9e73387f0ab3644bf0dbe9ebd100ce, type: 3}
   description: Black gold. Material for synthetic textiles, plastics, and fuel for
     tanks and aircraft.
   requirements: []

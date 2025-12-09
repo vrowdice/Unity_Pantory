@@ -10,8 +10,8 @@ public partial class MainUiManager
             { MainPanelType.Storage, _storagePanel },
             { MainPanelType.Market, _marketPanel },
             { MainPanelType.Employment, _employmentPanel },
-            { MainPanelType.Finance, _financePanel },
             { MainPanelType.Research, _researchPanel },
+            { MainPanelType.Event, _eventPanel },
             { MainPanelType.Order, _orderPanel }
         };
     }

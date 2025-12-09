@@ -14,7 +14,7 @@ except ImportError:
 # ============================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # 처리를 원하는 폴더 경로 (여기에 덮어씌워집니다)
-TARGET_DIR = os.path.join(BASE_DIR, "../../Images/Resource/Component")
+TARGET_DIR = os.path.join(BASE_DIR, "../../Images/Resource/Raw")
 
 THRESH_LOWER = 200
 THRESH_UPPER = 250

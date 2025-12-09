@@ -45,7 +45,7 @@ public class VisualManager : MonoBehaviour
             return LossColor;
         }
 
-        return Color.white;
+        return Color.black;
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class VisualManager : MonoBehaviour
         // 전일 데이터가 없으면 흰색
         if (previousWealth <= 0f)
         {
-            return Color.white;
+            return Color.black;
         }
 
         float change = currentWealth - previousWealth;
@@ -77,7 +77,7 @@ public class VisualManager : MonoBehaviour
         else
         {
             // 변화 없음 → 흰색
-            return Color.white;
+            return Color.black;
         }
     }
 }

@@ -57,7 +57,7 @@ public class MarketResourceBtn : MonoBehaviour
         }
         
         // VisualManager가 없을 경우 기본값 반환
-        return Color.white;
+        return Color.black;
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class MarketResourceBtn : MonoBehaviour
         {
             // 거래 없음
             _tradeValueText.text = "0";
-            _tradeValueText.color = Color.white;
+            _tradeValueText.color = Color.black;
         }
     }
 

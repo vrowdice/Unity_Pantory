@@ -22,7 +22,6 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private StoragePanel _storagePanel;
     [SerializeField] private MarketPanel _marketPanel;
     [SerializeField] private EmployeePanel _employmentPanel;
-    [SerializeField] private FinancePanel _financePanel;
     [SerializeField] private EventPanel _eventPanel;
     [SerializeField] private ResearchPanel _researchPanel;
     [SerializeField] private OrderPanel _orderPanel;

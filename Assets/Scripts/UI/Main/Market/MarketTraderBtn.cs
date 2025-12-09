@@ -201,7 +201,7 @@ public class MarketTraderBtn : MonoBehaviour
         }
         
         // VisualManager가 없을 경우 기본값 반환
-        return Color.white;
+        return Color.black;
     }
 
     /// <summary>
