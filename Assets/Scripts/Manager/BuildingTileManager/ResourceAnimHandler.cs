@@ -78,6 +78,19 @@ public class ResourceAnimHandler
         var states = _tileManager.GetCurrentBuildingStates();
         if (states == null) return;
 
+        Dictionary<Vector2Int, BuildingState> stateMap = new Dictionary<Vector2Int, BuildingState>();
+        foreach (var state in states)
+        {
+            state.ResetRuntimeStatus(); // 기존 상태 리셋
+            stateMap[new Vector2Int(state.positionX, state.positionY)] = state;
+            
+            // 정거장(Station)은 자신이 취급하는 자원을 미리 설정
+            BuildingData bData = _tileManager.DataManager.Building.GetBuildingData(state.buildingId);
+            if (bData != null && bData.handlingResource != null)
+            {
+                state.currentResourceId = bData.handlingResource.id;
+            }
+        }
         bool conflictDetected = false;
 
         foreach (var state in states)
@@ -97,8 +110,16 @@ public class ResourceAnimHandler
                 if (path != null && path.Count > 1)
                 {
                     path.Reverse(); 
-                    if (ValidateAndRegisterRoute(path, inputId)) AddRoute(path, inputId);
-                    else conflictDetected = true;
+                    if (ValidateAndRegisterRoute(path, inputId, stateMap)) 
+                    {
+                        AddRoute(path, inputId);
+                        UpdateRoadStates(path, inputId, stateMap); // [추가] 성공 시 도로에 자원 기록
+                    }
+                    else 
+                    {
+                        conflictDetected = true;
+                        MarkConflicts(path, stateMap); // [추가] 실패 시 충돌 기록
+                    }
                 }
             }
 
@@ -112,8 +133,16 @@ public class ResourceAnimHandler
 
                 if (path != null && path.Count > 1)
                 {
-                    if (ValidateAndRegisterRoute(path, outputId)) AddRoute(path, outputId);
-                    else conflictDetected = true;
+                    if (ValidateAndRegisterRoute(path, outputId, stateMap)) 
+                    {
+                        AddRoute(path, outputId);
+                        UpdateRoadStates(path, outputId, stateMap);
+                    }
+                    else 
+                    {
+                        conflictDetected = true;
+                        MarkConflicts(path, stateMap);
+                    }
                 }
             }
         }
@@ -124,24 +153,52 @@ public class ResourceAnimHandler
         }
     }
 
-    private bool ValidateAndRegisterRoute(List<Vector2Int> path, string resourceId)
+    private bool ValidateAndRegisterRoute(List<Vector2Int> path, string resourceId, Dictionary<Vector2Int, BuildingState> stateMap)
     {
-        // 검사
         foreach (var pos in path)
         {
-            if (_roadOccupancyMap.TryGetValue(pos, out string existingId))
+            if (stateMap.TryGetValue(pos, out BuildingState state))
             {
-                if (existingId != resourceId) return false; 
+                // 이미 자원이 있는데, 내가 보내려는거랑 다르면 충돌
+                if (!string.IsNullOrEmpty(state.currentResourceId) && state.currentResourceId != resourceId)
+                    return false; 
+                
+                // 이미 충돌난 곳이면 통과 불가
+                if (state.hasResourceConflict)
+                    return false;
             }
-        }
-        // 등록
-        foreach (var pos in path)
-        {
-            if (!_roadOccupancyMap.ContainsKey(pos)) _roadOccupancyMap[pos] = resourceId;
         }
         return true;
     }
+    //도로 State에 자원 ID 기록 (UI 표시용)
+    private void UpdateRoadStates(List<Vector2Int> path, string resourceId, Dictionary<Vector2Int, BuildingState> stateMap)
+    {
+        foreach (var pos in path)
+        {
+            if (stateMap.TryGetValue(pos, out BuildingState state))
+            {
+                state.currentResourceId = resourceId;
+            }
+        }
+    }
 
+    //도로 State에 충돌 마킹 (UI 표시용)
+    private void MarkConflicts(List<Vector2Int> path, Dictionary<Vector2Int, BuildingState> stateMap)
+    {
+        foreach (var pos in path)
+        {
+            if (stateMap.TryGetValue(pos, out BuildingState state))
+            {
+                BuildingData bd = _tileManager.DataManager.Building.GetBuildingData(state.buildingId);
+                // 도로인 경우에만 빨간불 켜기
+                if (bd != null && bd.IsRoad)
+                {
+                     state.hasResourceConflict = true;
+                     state.currentResourceId = null; // 충돌 시 자원 안보이게
+                }
+            }
+        }
+    }
     private void AddRoute(List<Vector2Int> path, string resourceId)
     {
         // ResourceData 접근 수정 (icon 경로 확인)

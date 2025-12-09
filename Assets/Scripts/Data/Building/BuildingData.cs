@@ -26,6 +26,8 @@ public abstract class BuildingData : ScriptableObject
     [Header("Employee Requirements")]
     public int requiredEmployees = 0;
 
+    [Header("Station Settings")]
+    public ResourceData handlingResource; 
     // 가상 속성들 - 파생 클래스에서 구현
     /// <summary>
     /// 생산 건물인지 여부 (ProductionBuildingData 또는 그 파생 클래스)

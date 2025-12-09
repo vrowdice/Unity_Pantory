@@ -25,13 +25,21 @@ public int positionX;
     public Vector2Int inputPosition;
     public Vector2Int outputPosition;
 
+    // 현재 이 건물을 지나가거나 처리 중인 자원 ID (null이면 없음)
+    public string currentResourceId; 
+    
+    // 자원 충돌 발생 여부 (여러 자원이 겹침)
+    public bool hasResourceConflict;
+    
     public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData, int rotation = 0)
     {
         this.buildingId = buildingId;
         this.positionX = position.x;
         this.positionY = position.y;
         this.rotation = rotation;
-        
+        this.currentResourceId = null;
+        this.hasResourceConflict = false;
+
         // 건물의 배치 위치 + 회전된 상대 위치 = 스레드 기준 절대 좌표
         // InputPosition이 zero가 아니면 계산, zero면 건물 중심으로 설정
         if (buildingData.InputPosition != Vector2Int.zero)
@@ -58,7 +66,14 @@ public int positionX;
         inputProductionIds = new List<string>();
         outputProductionIds = new List<string>();
     }
-    
+    /// <summary>
+    /// 런타임 상태를 초기화합니다 (매 프레임 경로 계산 전 호출)
+    /// </summary>
+    public void ResetRuntimeStatus()
+    {
+        currentResourceId = null;
+        hasResourceConflict = false;
+    }
     /// <summary>
     /// 건물 크기를 고려하여 중심을 기준으로 위치를 회전합니다.
     /// </summary>
