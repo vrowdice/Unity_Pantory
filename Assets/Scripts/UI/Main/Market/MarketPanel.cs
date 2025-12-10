@@ -254,15 +254,6 @@ public class MarketPanel : BasePanel
         {
             _traderPanel.HandleTraderButtonClicked(firstRankTrader);
         }
-
-        if (createdCount > 0)
-        {
-            Debug.Log($"[MarketPanel] Refreshed trader list: {createdCount} traders created (including player).");
-        }
-        else
-        {
-            Debug.LogWarning("[MarketPanel] No trader buttons were created.");
-        }
     }
 
     private void SubscribeToDayChange()
@@ -378,11 +369,6 @@ public class MarketPanel : BasePanel
                 traderBtn.RefreshIndicator();
                 updatedCount++;
             }
-        }
-
-        if (updatedCount > 0)
-        {
-            Debug.Log($"[MarketPanel] Updated {updatedCount} trader buttons.");
         }
     }
 

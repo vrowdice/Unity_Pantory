@@ -8,11 +8,15 @@ public class VisualManager : MonoBehaviour
     public Color InvalidColor => _invalidColor;
     public Color ProfitColor => _profitColor;  // 흑자 색상 (양수, 증가)
     public Color LossColor => _lossColor;     // 적자 색상 (음수, 감소)
+    public Color ManagementSufficientColor => _managementSufficientColor;  // 관리 충분 색상
+    public Color ManagementInsufficientColor => _managementInsufficientColor;  // 관리 부족 색상
 
     [SerializeField]private Color _validColor = new Color(0, 1, 0, 0.2f);
     [SerializeField]private Color _invalidColor = new Color(1, 0, 0, 0.2f);
     [SerializeField]private Color _profitColor = Color.blue;   // 흑자: 파란색
     [SerializeField]private Color _lossColor = Color.red;       // 적자: 빨간색
+    [SerializeField]private Color _managementSufficientColor = Color.green;  // 관리 충분: 초록색
+    [SerializeField]private Color _managementInsufficientColor = Color.red;  // 관리 부족: 빨간색
 
     private void Awake()
     {

@@ -1,16 +1,5 @@
-using UnityEngine;
-
-public class ResearchState : MonoBehaviour
+public class ResearchState
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public bool isCompleted = false;
+    public long researchPoint = 0;
 }

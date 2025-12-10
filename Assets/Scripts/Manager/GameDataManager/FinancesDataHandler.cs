@@ -345,7 +345,7 @@ public class FinancesDataHandler
             string id = kvp.Key;
             long consumeAmount = kvp.Value;
             long produceAmount = totalProduction.ContainsKey(id) ? totalProduction[id] : 0;
-            long currentAmount = _gameDataManager.Resource.GetResourceQuantity(id);
+            long currentAmount = _gameDataManager.Resource.GetMarketResourceQuantity(id);
 
             // 예상 보유량 = 현재 + 생산 - 소비
             long expectedAmount = currentAmount + produceAmount - consumeAmount;

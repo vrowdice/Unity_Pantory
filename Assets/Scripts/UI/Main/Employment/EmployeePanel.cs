@@ -10,6 +10,7 @@ public class EmployeePanel : BasePanel
 {
     #region Inspector Variables
     [SerializeField] private Slider _managementSlider;
+    [SerializeField] private Image _managementFillImage;
     [SerializeField] private TextMeshProUGUI _managementRatioText;
 
     [Header("Role Buttons")]
@@ -370,14 +371,39 @@ public class EmployeePanel : BasePanel
             {
                 // 충분함: 깔끔하게 100%만 표시
                 _managementRatioText.text = "100%";
-                _managementRatioText.color = Color.green; // 혹은 흰색
             }
             else
             {
                 // 부족함: 비율과 부족한 인원수만 괄호로 표시
                 int shortage = requiredManagers - currentManagers;
                 _managementRatioText.text = $"{managementRatio:P0} (-{shortage})"; // 예: "80% (-1)"
-                _managementRatioText.color = Color.red; // 경고색
+            }
+        }
+        
+        // Fill 이미지 색상 업데이트
+        if (_managementFillImage != null)
+        {
+            _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
+            
+            if (VisualManager.Instance != null)
+            {
+                if (requiredManagers <= 0 || currentManagers >= requiredManagers)
+                {
+                    // 충분함: VisualManager에서 색상 가져오기
+                    _managementFillImage.color = VisualManager.Instance.ManagementSufficientColor;
+                }
+                else
+                {
+                    // 부족함: VisualManager에서 색상 가져오기
+                    _managementFillImage.color = VisualManager.Instance.ManagementInsufficientColor;
+                }
+            }
+            else
+            {
+                // VisualManager가 없으면 기본 색상 사용
+                _managementFillImage.color = requiredManagers <= 0 || currentManagers >= requiredManagers 
+                    ? Color.green 
+                    : Color.red;
             }
         }
     }

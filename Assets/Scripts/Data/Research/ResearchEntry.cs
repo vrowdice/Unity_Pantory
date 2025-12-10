@@ -1,16 +1,6 @@
-using UnityEngine;
-
-public class ResearchEntry : MonoBehaviour
+public class ResearchEntry
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string researchId;
+    public ResearchData researchData;
+    public ResearchState researchState;
 }

@@ -30,11 +30,13 @@ public partial class EmployeeDataHandler
 
     /// <summary>
     /// 지정된 경로에서 모든 EmployeeData를 자동으로 로드하여 등록합니다.
+    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
     /// </summary>
     /// <param name="employeePaths">검색할 폴더 경로 배열 (예: "Datas/Employee")</param>
     public void AutoLoadEmployees(string[] employeePaths)
     {
 #if UNITY_EDITOR
+        // 에디터 모드: AssetDatabase를 사용하여 지정된 경로에서 EmployeeData 찾기
         int loadedCount = 0;
         
         foreach (string path in employeePaths)
@@ -57,16 +59,30 @@ public partial class EmployeeDataHandler
         
         Debug.Log($"[EmployeeService] Auto load completed: {loadedCount} employee types registered");
 #else
-        Debug.LogWarning("[EmployeeService] AutoLoadEmployees is only available in editor mode.");
+        // 빌드 모드: Resources 폴더에서 로드
+        // 주의: employeePaths의 첫 번째 경로를 사용하거나, 기본 경로 "Datas/Employee" 사용
+        string resourcePath = employeePaths != null && employeePaths.Length > 0 ? employeePaths[0] : "Datas/Employee";
+        EmployeeData[] employeeDataList = Resources.LoadAll<EmployeeData>(resourcePath);
+        if (employeeDataList != null && employeeDataList.Length > 0)
+        {
+            RegisterEmployees(employeeDataList);
+            Debug.Log($"[EmployeeService] Runtime load completed: {employeeDataList.Length} employee types registered from {resourcePath}.");
+        }
+        else
+        {
+            Debug.LogWarning($"[EmployeeService] No EmployeeData found in Resources/{resourcePath}. Make sure EmployeeData files are placed in the Resources folder.");
+        }
 #endif
     }
 
     /// <summary>
     /// 모든 EmployeeData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
+    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
     /// </summary>
     public void AutoLoadAllEmployees()
     {
 #if UNITY_EDITOR
+        // 에디터 모드: AssetDatabase를 사용하여 모든 EmployeeData 찾기
         string[] guids = UnityEditor.AssetDatabase.FindAssets("t:EmployeeData");
         int loadedCount = 0;
         
@@ -84,7 +100,18 @@ public partial class EmployeeDataHandler
         
         Debug.Log($"[EmployeeService] Full auto load completed: {loadedCount} employee types registered");
 #else
-        Debug.LogWarning("[EmployeeService] AutoLoadAllEmployees is only available in editor mode.");
+        // 빌드 모드: Resources 폴더에서 로드
+        // 주의: EmployeeData 파일들이 Resources/Datas/Employee 폴더에 있어야 합니다.
+        EmployeeData[] employeeDataList = Resources.LoadAll<EmployeeData>("Datas/Employee");
+        if (employeeDataList != null && employeeDataList.Length > 0)
+        {
+            RegisterEmployees(employeeDataList);
+            Debug.Log($"[EmployeeService] Runtime load completed: {employeeDataList.Length} employee types registered.");
+        }
+        else
+        {
+            Debug.LogWarning("[EmployeeService] No EmployeeData found in Resources/Datas/Employee. Make sure EmployeeData files are placed in the Resources folder.");
+        }
 #endif
     }
 

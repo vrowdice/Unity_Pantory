@@ -186,11 +186,13 @@ public partial class MarketDataHandler
 
     /// <summary>
     /// 지정된 경로에서 모든 MarketActorData를 자동으로 로드하여 등록합니다.
+    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
     /// </summary>
     /// <param name="actorPaths">검색할 폴더 경로 배열 (예: "Datas/MarketActor")</param>
     public void AutoLoadActors(string[] actorPaths)
     {
 #if UNITY_EDITOR
+        // 에디터 모드: AssetDatabase를 사용하여 지정된 경로에서 MarketActorData 찾기
         int loadedCount = 0;
         
         foreach (string path in actorPaths)
@@ -213,16 +215,30 @@ public partial class MarketDataHandler
         
         Debug.Log($"[MarketDataHandler] Auto load completed: {loadedCount} actors registered");
 #else
-        Debug.LogWarning("[MarketDataHandler] AutoLoadActors is only available in editor mode.");
+        // 빌드 모드: Resources 폴더에서 로드
+        // 주의: actorPaths의 첫 번째 경로를 사용하거나, 기본 경로 "Datas/MarketActor" 사용
+        string resourcePath = actorPaths != null && actorPaths.Length > 0 ? actorPaths[0] : "Datas/MarketActor";
+        MarketActorData[] actorDataList = Resources.LoadAll<MarketActorData>(resourcePath);
+        if (actorDataList != null && actorDataList.Length > 0)
+        {
+            RegisterActors(actorDataList);
+            Debug.Log($"[MarketDataHandler] Runtime load completed: {actorDataList.Length} actors registered from {resourcePath}.");
+        }
+        else
+        {
+            Debug.LogWarning($"[MarketDataHandler] No MarketActorData found in Resources/{resourcePath}. Make sure MarketActorData files are placed in the Resources folder.");
+        }
 #endif
     }
 
     /// <summary>
     /// 모든 MarketActorData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
+    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
     /// </summary>
     public void AutoLoadAllActors()
     {
 #if UNITY_EDITOR
+        // 에디터 모드: AssetDatabase를 사용하여 모든 MarketActorData 찾기
         string[] guids = UnityEditor.AssetDatabase.FindAssets("t:MarketActorData");
         int loadedCount = 0;
         
@@ -240,7 +256,18 @@ public partial class MarketDataHandler
         
         Debug.Log($"[MarketDataHandler] Full auto load completed: {loadedCount} actors registered");
 #else
-        Debug.LogWarning("[MarketDataHandler] AutoLoadAllActors is only available in editor mode.");
+        // 빌드 모드: Resources 폴더에서 로드
+        // 주의: MarketActorData 파일들이 Resources/Datas/MarketActor 폴더에 있어야 합니다.
+        MarketActorData[] actorDataList = Resources.LoadAll<MarketActorData>("Datas/MarketActor");
+        if (actorDataList != null && actorDataList.Length > 0)
+        {
+            RegisterActors(actorDataList);
+            Debug.Log($"[MarketDataHandler] Runtime load completed: {actorDataList.Length} actors registered.");
+        }
+        else
+        {
+            Debug.LogWarning("[MarketDataHandler] No MarketActorData found in Resources/Datas/MarketActor. Make sure MarketActorData files are placed in the Resources folder.");
+        }
 #endif
     }
 

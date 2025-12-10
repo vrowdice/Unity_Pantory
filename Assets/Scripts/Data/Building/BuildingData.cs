@@ -26,6 +26,13 @@ public abstract class BuildingData : ScriptableObject
     [Header("Employee Requirements")]
     public int requiredEmployees = 0;
 
+    [Header("Research Requirements")]
+    /// <summary>
+    /// 이 건물을 언락하기 위해 필요한 연구 ID
+    /// null이거나 빈 문자열이면 연구 없이 언락 가능
+    /// </summary>
+    public string requiredResearchId;
+
     [Header("Station Settings")]
     public ResourceData handlingResource; 
     // 가상 속성들 - 파생 클래스에서 구현

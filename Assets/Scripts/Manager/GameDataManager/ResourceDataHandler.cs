@@ -62,10 +62,12 @@ public class ResourceDataHandler
 
     /// <summary>
     /// 모든 ResourceData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
+    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
     /// </summary>
     public void AutoLoadAllResources()
     {
 #if UNITY_EDITOR
+        // 에디터 모드: AssetDatabase를 사용하여 모든 ResourceData 찾기
         string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResourceData");
         int loadedCount = 0;
         
@@ -83,7 +85,18 @@ public class ResourceDataHandler
         
         Debug.Log($"[ResourceService] Full auto load completed: {loadedCount} resources registered");
 #else
-        Debug.LogWarning("[ResourceService] AutoLoadAllResources is only available in editor mode.");
+        // 빌드 모드: Resources 폴더에서 로드
+        // 주의: ResourceData 파일들이 Resources/Datas/Resource 폴더에 있어야 합니다.
+        ResourceData[] resourceDataList = Resources.LoadAll<ResourceData>("Datas/Resource");
+        if (resourceDataList != null && resourceDataList.Length > 0)
+        {
+            RegisterResources(resourceDataList);
+            Debug.Log($"[ResourceService] Runtime load completed: {resourceDataList.Length} resources registered.");
+        }
+        else
+        {
+            Debug.LogWarning("[ResourceService] No ResourceData found in Resources/Datas/Resource. Make sure ResourceData files are placed in the Resources folder.");
+        }
 #endif
     }
 
@@ -133,7 +146,18 @@ public class ResourceDataHandler
     /// </summary>
     /// <param name="resourceId">자원 ID</param>
     /// <returns>해당 자원의 시장 재고량 (count + deltaCount)</returns>
+    [Obsolete("Use GetMarketResourceQuantity instead. This method will be removed in a future version.")]
     public long GetResourceQuantity(string resourceId)
+    {
+        return GetMarketResourceQuantity(resourceId);
+    }
+
+    /// <summary>
+    /// 특정 자원의 시장 재고량을 반환합니다. (deltaCount를 고려한 실제 사용 가능한 수량)
+    /// </summary>
+    /// <param name="resourceId">자원 ID</param>
+    /// <returns>해당 자원의 시장 재고량 (count + deltaCount)</returns>
+    public long GetMarketResourceQuantity(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
@@ -234,6 +258,13 @@ public class ResourceDataHandler
 
     /// <summary>
     /// 플레이어 창고를 수정합니다 (생산, 구매, 판매 시 사용).
+    /// 
+    /// 주의: 플레이어 재고는 시장 재고와 달리 즉시 반영됩니다.
+    /// - playerInventory: 즉시 반영되는 플레이어의 실제 보유량 (게임 중 실시간으로 사용 가능)
+    /// - playerInventoryDelta: 일일 변화량을 기록하는 통계 변수 (ApplyResourceDeltas에서 초기화됨)
+    /// 
+    /// 시장 재고(count + deltaCount)와 달리, 플레이어 재고는 게임 진행 중 즉시 사용 가능해야 하므로
+    /// 델타 시스템을 사용하지 않고 즉시 반영합니다.
     /// </summary>
     /// <param name="resourceId">자원 ID</param>
     /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
@@ -257,8 +288,10 @@ public class ResourceDataHandler
         }
 
         // 재고가 충분하면 변경
+        // 플레이어 재고는 즉시 반영 (게임 진행 중 실시간 사용 가능)
         entry.resourceState.playerInventory += amount;
-        entry.resourceState.playerInventoryDelta += amount; // 플레이어 재고 변화량 누적
+        // 플레이어 재고 변화량 누적 (통계 및 일일 변화량 추적용)
+        entry.resourceState.playerInventoryDelta += amount;
         
         // 플레이어 재고는 절대 음수가 될 수 없음 (안전장치)
         if (entry.resourceState.playerInventory < 0)
@@ -388,7 +421,7 @@ public class ResourceDataHandler
             {
                 var entry = GetResourceEntry(kvp.Key);
                 string displayName = entry != null ? entry.resourceData.displayName : kvp.Key;
-                long available = GetResourceQuantity(kvp.Key);
+                long available = GetMarketResourceQuantity(kvp.Key);
                 Debug.LogWarning($"[ResourceService] Transaction failed due to insufficient resources: {displayName} (required: {kvp.Value}, available: {available})");
                 return false;
             }

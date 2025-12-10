@@ -15,7 +15,7 @@ public class BuildingState
     public List<string> outputProductionIds;
 
     // 건물 배치 위치
-public int positionX;
+    public int positionX;
     public int positionY;
     
     // 건물 회전 (0=0도, 1=90도, 2=180도, 3=270도)
@@ -74,6 +74,37 @@ public int positionX;
         currentResourceId = null;
         hasResourceConflict = false;
     }
+    
+    /// <summary>
+    /// 이 건물이 연구를 통해 언락되었는지 확인합니다.
+    /// GameDataManager를 통해 연구 완료 상태를 확인합니다.
+    /// </summary>
+    /// <param name="gameDataManager">게임 데이터 매니저 (연구 상태 확인용)</param>
+    /// <returns>언락되었으면 true, 연구가 필요 없거나 완료되었으면 true</returns>
+    public bool IsUnlocked(GameDataManager gameDataManager)
+    {
+        if (gameDataManager == null || string.IsNullOrEmpty(buildingId))
+            return false;
+            
+        // BuildingData 가져오기
+        var buildingData = gameDataManager?.Building?.GetBuildingData(buildingId);
+        if (buildingData == null)
+            return false;
+            
+        // 연구가 필요 없으면 언락됨
+        if (string.IsNullOrEmpty(buildingData.requiredResearchId))
+            return true;
+            
+        // ResearchDataHandler를 통해 연구 완료 상태 확인
+        if (gameDataManager.Research != null)
+        {
+            return gameDataManager.Research.IsResearchCompleted(buildingData.requiredResearchId);
+        }
+        
+        // ResearchDataHandler가 없으면 연구가 필요한데 완료되지 않은 것으로 간주
+        return false;
+    }
+    
     /// <summary>
     /// 건물 크기를 고려하여 중심을 기준으로 위치를 회전합니다.
     /// </summary>

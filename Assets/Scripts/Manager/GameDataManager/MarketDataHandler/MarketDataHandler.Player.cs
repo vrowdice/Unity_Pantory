@@ -91,7 +91,7 @@ public partial class MarketDataHandler
         // 시장에 재고가 있는지 확인
         if (!_gameDataManager.Resource.HasEnoughMarketInventory(resourceId, amount))
         {
-            Debug.LogWarning($"[MarketDataHandler] Market has insufficient stock for {resourceEntry.resourceData.displayName}. Required: {amount}, Available: {_gameDataManager.Resource.GetResourceQuantity(resourceId)}");
+            Debug.LogWarning($"[MarketDataHandler] Market has insufficient stock for {resourceEntry.resourceData.displayName}. Required: {amount}, Available: {_gameDataManager.Resource.GetMarketResourceQuantity(resourceId)}");
             return false;
         }
 

@@ -28,6 +28,8 @@ public class GameDataManager : MonoBehaviour
     public BuildingDataHandler Building { get; private set; }
     public SaveLoadHandler SaveLoad { get; private set; }
     public ThreadCalculateHandler ThreadCalculate { get; private set; }
+    public EffectDataHandler Effect { get; private set; }
+    public ResearchDataHandler Research { get; private set; }
     #endregion
 
     #region 이벤트 중계 (주요 이벤트만 유지)
@@ -62,7 +64,17 @@ public class GameDataManager : MonoBehaviour
 
     void Update()
     {
-        Time?.Update(UnityEngine.Time.deltaTime);
+        float dt = UnityEngine.Time.deltaTime;
+
+        // 1. 시간 흐름 업데이트
+        Time?.Update(dt);
+
+        // 2. 기간제 효과 시간 업데이트
+        // Time이 일시정지 상태가 아닐 때만 효과 시간도 흐르게 함
+        if (Time != null && !Time.IsTimePaused())
+        {
+            Effect?.UpdateEffectsTime(dt);
+        }
     }
 
     void OnDestroy()
@@ -88,6 +100,8 @@ public class GameDataManager : MonoBehaviour
         Employee = new EmployeeDataHandler(this);
         Building = new BuildingDataHandler(this);
         ThreadCalculate = new ThreadCalculateHandler(this);
+        Effect = new EffectDataHandler(this);
+        Research = new ResearchDataHandler(this);
 
         Debug.Log("[GameDataManager] All services initialized.");
 
@@ -109,9 +123,7 @@ public class GameDataManager : MonoBehaviour
         // 모든 스레드의 생산량 등 초기화
         ThreadCalculate?.InitializeAllThreads(Thread);
         
-        // 초기화 시에는 생산을 즉시 적용하지 않음 (로드된 데이터가 있다면 이미 적용되어 있을 수 있음)
-        // 생산은 하루가 지날 때만 적용됩니다 (HandleDayChanged에서 처리)
-        ReserveDailyExpenses();                  // 초기 비용 계산
+        ReserveDailyExpenses();
     }
     #endregion
 
@@ -153,7 +165,10 @@ public class GameDataManager : MonoBehaviour
         // 6. 다음 날 비용 예약 (현재 상태 기준)
         ReserveDailyExpenses();
         
-        // 7. 시장 업데이트 (가격 변동 및 자동 거래 실행)
+        // 7. 연구력 생산 및 특허 수익 처리
+        Research?.OnDayChanged();
+        
+        // 8. 시장 업데이트 (가격 변동 및 자동 거래 실행)
         Market?.TickDailyMarket();
     }
 
