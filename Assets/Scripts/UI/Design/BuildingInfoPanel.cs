@@ -79,20 +79,41 @@ public class BuildingInfoPanel : MonoBehaviour
 
         if (_resourceTypesText != null)
         {
-            if (_currentBuildingData.AllowedResourceTypes != null && _currentBuildingData.AllowedResourceTypes.Count > 0)
+            var btn = _changeProductionBtn != null ? _changeProductionBtn.GetComponent<Button>() : null;
+
+            if (_currentBuildingData.IsProductionBuilding)
             {
-                string resourceTypes = "Allowed Resources:";
-                foreach (var resourceType in _currentBuildingData.AllowedResourceTypes)
+                if (btn != null) btn.interactable = true;
+                _changeProductionBtn?.SetActive(true);
+
+                if (_currentBuildingData.AllowedResourceTypes != null && _currentBuildingData.AllowedResourceTypes.Count > 0)
                 {
-                    resourceTypes += $" {resourceType}";
+                    string resourceTypes = "Allowed Resources:";
+                    foreach (var resourceType in _currentBuildingData.AllowedResourceTypes)
+                    {
+                        resourceTypes += $" {resourceType}";
+                    }
+                    _resourceTypesText.text = resourceTypes;
                 }
-                _resourceTypesText.text = resourceTypes;
-                _changeProductionBtn.SetActive(true);
+                else
+                {
+                    _resourceTypesText.text = "Allowed Resources: None";
+                }
             }
             else
             {
-                _changeProductionBtn.SetActive(false);
-                _resourceTypesText.text = "Allowed Resources: None";
+                // 비생산 건물: 버튼을 보여주되 클릭은 막음 (자식 Grid들이 숨지 않게)
+                _changeProductionBtn?.SetActive(true);
+                if (btn != null) btn.interactable = false;
+
+                if (_currentBuildingData.HandlingResource != null)
+                {
+                    _resourceTypesText.text = $"Handling: {_currentBuildingData.HandlingResource.displayName}";
+                }
+                else
+                {
+                    _resourceTypesText.text = "Handling: None";
+                }
             }
         }
 
@@ -141,6 +162,54 @@ public class BuildingInfoPanel : MonoBehaviour
     {
         // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_outputGridContentTransform);
+
+        // 비생산 건물(road/load/unload 등)은 handlingResource 또는 runtime 자원을 표시
+        if (!_currentBuildingData.IsProductionBuilding)
+        {
+            GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
+
+            string handlingId = null;
+            string handlingNameFallback = null;
+
+            if (_currentBuildingData.HandlingResource != null)
+            {
+                handlingId = _currentBuildingData.HandlingResource.id;
+                handlingNameFallback = _currentBuildingData.HandlingResource.displayName;
+            }
+            else if (_currentBuildingState != null && !string.IsNullOrEmpty(_currentBuildingState.currentResourceId))
+            {
+                // ResourceAnimHandler 등에서 runtime으로 채워주는 currentResourceId가 있으면 우선 사용
+                handlingId = _currentBuildingState.currentResourceId;
+            }
+
+            if (!string.IsNullOrEmpty(handlingId))
+            {
+                ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(handlingId);
+
+                if (resourceEntry != null)
+                {
+                    Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform)
+                        .GetComponent<ProductionInfoImage>()
+                        .OnInitialize(resourceEntry, 1);
+
+                    Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
+                        .GetComponent<TextMeshProUGUI>().text =
+                        $"Handling: {resourceEntry.resourceData.displayName}\nPrice: {resourceEntry.resourceState.currentValue}";
+                }
+                else
+                {
+                    Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
+                        .GetComponent<TextMeshProUGUI>().text =
+                        $"Handling: {handlingNameFallback ?? handlingId}";
+                }
+            }
+            else
+            {
+                Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
+                    .GetComponent<TextMeshProUGUI>().text = "Handling: None";
+            }
+            return;
+        }
         
         Dictionary<string, int> outputCounts = AggregateResourceCounts(_currentBuildingState.outputProductionIds);
         if (outputCounts.Count == 0)
@@ -157,9 +226,11 @@ public class BuildingInfoPanel : MonoBehaviour
                 Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
                 GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
 
+                string requireText = BuildRequirementText(resourceEntry.resourceData);
+
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Output: {resourceEntry.resourceData.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.resourceState.currentValue}";
+                 $"Output: {resourceEntry.resourceData.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.resourceState.currentValue}{requireText}";
             }
         }
     }
@@ -320,5 +391,25 @@ public class BuildingInfoPanel : MonoBehaviour
         }
 
         return counts;
+    }
+
+    private string BuildRequirementText(ResourceData data)
+    {
+        if (data == null || data.requirements == null || data.requirements.Count == 0)
+            return "";
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.Append("\nRequires: ");
+
+        bool first = true;
+        foreach (var req in data.requirements)
+        {
+            if (req?.resource == null) continue;
+            if (!first) sb.Append(", ");
+            sb.Append($"{req.resource.displayName} x{Mathf.Max(1, req.count)}");
+            first = false;
+        }
+
+        return sb.ToString();
     }
 }

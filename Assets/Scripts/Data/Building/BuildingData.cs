@@ -35,6 +35,11 @@ public abstract class BuildingData : ScriptableObject
 
     [Header("Station Settings")]
     public ResourceData handlingResource; 
+
+    /// <summary>
+    /// 도로/정거장 등에서 시각화를 위해 취급 자원을 노출합니다.
+    /// </summary>
+    public virtual ResourceData HandlingResource => handlingResource;
     // 가상 속성들 - 파생 클래스에서 구현
     /// <summary>
     /// 생산 건물인지 여부 (ProductionBuildingData 또는 그 파생 클래스)

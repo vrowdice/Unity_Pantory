@@ -21,6 +21,7 @@ public class ResourceAnimHandler
     private Dictionary<Vector2Int, string> _roadOccupancyMap = new Dictionary<Vector2Int, string>();
     private List<ActiveRoute> _validRoutes = new List<ActiveRoute>();
     private bool _isRoutesDirty = true;
+    private bool _hasConflicts = false;
 
 
     // 내부 클래스
@@ -91,7 +92,11 @@ public class ResourceAnimHandler
         if (_timer >= _spawnInterval)
         {
             _timer = 0f;
-            SpawnFromValidRoutes();
+            // 충돌이 있으면 애니메이션 스폰을 멈춘다
+            if (!_hasConflicts)
+            {
+                SpawnFromValidRoutes();
+            }
         }
     }
 
@@ -109,6 +114,7 @@ public class ResourceAnimHandler
     {
         _validRoutes.Clear();
         _roadOccupancyMap.Clear();
+        _hasConflicts = false;
         
         var states = _tileManager.GetCurrentBuildingStates();
         if (states == null) return;
@@ -184,6 +190,7 @@ public class ResourceAnimHandler
 
         if (conflictDetected)
         {
+            _hasConflicts = true;
             Debug.LogWarning("⚠️ [ResourceAnimHandler] 자원 경로 충돌 감지됨.");
         }
     }
