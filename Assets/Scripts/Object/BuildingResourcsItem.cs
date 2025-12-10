@@ -1,17 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using UnityEngine.Pool;
 public class ResourceItem : MonoBehaviour
 {
     private List<Vector3> _pathPoints;
     private int _targetIndex = 0;
     private float _speed = 2.0f; // 이동 속도
-
-    public void Initialize(List<Vector3> pathPoints, Sprite resourceSprite, float speed)
+    private IObjectPool<ResourceItem> _managedPool;
+    public void Initialize(List<Vector3> pathPoints, Sprite resourceSprite, float speed, IObjectPool<ResourceItem> pool)
     {
         _pathPoints = pathPoints;
         _speed = speed;
         _targetIndex = 0;
+        _managedPool = pool;
 
         // 스프라이트 설정
         var renderer = GetComponent<SpriteRenderer>();
@@ -32,19 +33,28 @@ public class ResourceItem : MonoBehaviour
     {
         if (_pathPoints == null || _targetIndex >= _pathPoints.Count)
         {
-            Destroy(gameObject); // 목적지 도착 시 삭제
+            ReturnToPool();
             return;
         }
 
         Vector3 targetPos = _pathPoints[_targetIndex];
         
-        // 목표 지점을 향해 이동
         transform.position = Vector3.MoveTowards(transform.position, targetPos, _speed * Time.deltaTime);
 
-        // 목표 지점에 거의 도달했으면 다음 지점으로
         if (Vector3.Distance(transform.position, targetPos) < 0.05f)
         {
             _targetIndex++;
+        }
+    }
+    private void ReturnToPool()
+    {
+        if (_managedPool != null)
+        {
+            _managedPool.Release(this); 
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 }

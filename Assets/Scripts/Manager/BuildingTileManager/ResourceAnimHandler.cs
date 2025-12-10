@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Pool;
 
 /// <summary>
 /// 도로 위 자원 애니메이션을 관리하는 핸들러 (Non-MonoBehaviour)
@@ -9,6 +10,7 @@ public class ResourceAnimHandler
     // ==================== References ====================
     private readonly BuildingTileManager _tileManager;
     private readonly GameObject _resourceItemPrefab;
+    private IObjectPool<ResourceItem> _itemPool;
     
     // ==================== Settings ====================
     private float _spawnInterval;
@@ -19,6 +21,7 @@ public class ResourceAnimHandler
     private Dictionary<Vector2Int, string> _roadOccupancyMap = new Dictionary<Vector2Int, string>();
     private List<ActiveRoute> _validRoutes = new List<ActiveRoute>();
     private bool _isRoutesDirty = true;
+
 
     // 내부 클래스
     private class ActiveRoute
@@ -35,8 +38,40 @@ public class ResourceAnimHandler
         _resourceItemPrefab = resourceItemPrefab;
         _spawnInterval = spawnInterval;
         _timer = 0f;
+        _itemPool = new ObjectPool<ResourceItem>(
+            createFunc: CreateResourceItem,
+            actionOnGet: OnGetItem,
+            actionOnRelease: OnReleaseItem,
+            actionOnDestroy: OnDestroyItem,
+            defaultCapacity: 50,
+            maxSize: 500
+        );
+    }
+    // ==================== Pool Callback Methods (추가됨) ====================
+    
+    // 1. 생성
+    private ResourceItem CreateResourceItem()
+    {
+        GameObject go = Object.Instantiate(_resourceItemPrefab);
+        ResourceItem item = go.GetComponent<ResourceItem>();
+        go.transform.SetParent(_tileManager.transform); 
+        return item;
     }
 
+    private void OnGetItem(ResourceItem item)
+    {
+        item.gameObject.SetActive(true);
+    }
+
+    private void OnReleaseItem(ResourceItem item)
+    {
+        item.gameObject.SetActive(false);
+    }
+
+    private void OnDestroyItem(ResourceItem item)
+    {
+        Object.Destroy(item.gameObject);
+    }
     // ==================== Public Methods ====================
 
     /// <summary>
@@ -235,12 +270,10 @@ public class ResourceAnimHandler
 
         if (_resourceItemPrefab != null)
         {
-            // MonoBehaviour가 아니어도 Object.Instantiate 사용 가능
-            GameObject go = Object.Instantiate(_resourceItemPrefab);
-            ResourceItem item = go.GetComponent<ResourceItem>();
+            ResourceItem item = _itemPool.Get();
             if (item != null)
             {
-                item.Initialize(worldPath, sprite, 2.0f);
+                item.Initialize(worldPath, sprite, 2.0f, _itemPool);
             }
         }
     }
