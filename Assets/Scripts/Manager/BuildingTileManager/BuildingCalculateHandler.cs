@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// 건물의 생산 체인, 유지비, 유효성 등 복잡한 계산을 처리하는 핸들러.
@@ -85,51 +86,67 @@ public class BuildingCalculateHandler
     /// </summary>
     private bool IsConnectedViaRoadToTarget(Vector2Int startPos, bool isUnloadStation = false, bool isLoadStation = false)
     {
-        if (DataManager == null)
-            return false;
+        // 경로를 찾으면 true, 못 찾으면 false
+        // 성능 최적화: 경로 리스트 생성을 피하고 싶다면 별도 로직이 필요하지만, 
+        // 코드 중복 제거를 우선하여 FindPath를 재사용합니다.
+        return FindPath(startPos, isUnloadStation, isLoadStation) != null;
+    }
 
-        // 현재 편집 중인 건물 상태 목록을 사용합니다.
+    /// <summary>
+    /// 실제 경로 리스트가 필요할 때 사용합니다. (기존 GetPathViaRoad 대체)
+    /// </summary>
+    public List<Vector2Int> GetPathViaRoad(Vector2Int startPos, bool isUnloadStation, bool isLoadStation)
+    {
+        return FindPath(startPos, isUnloadStation, isLoadStation);
+    }
+
+    /// <summary>
+    /// [핵심 엔진] BFS를 사용하여 도로를 따라 목표까지의 경로를 탐색합니다.
+    /// </summary>
+    private List<Vector2Int> FindPath(Vector2Int startPos, bool findUnloadStation, bool findLoadStation)
+    {
+        if (DataManager == null) return null;
+
         var buildingStates = _buildingTileManager.GetCurrentBuildingStates();
-        if (buildingStates == null)
-            return false;
+        if (buildingStates == null) return null;
 
+        // BFS 초기화
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
         HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+        Dictionary<Vector2Int, Vector2Int> parentMap = new Dictionary<Vector2Int, Vector2Int>();
 
-        // 시작점에서 인접한 도로를 찾아 탐색 시작
-        List<Vector2Int> startingPoints = new List<Vector2Int>();
-
-        // 1. 시작점 자체가 도로인 경우
-        BuildingData buildingDataAtStart = GetBuildingDataAt(startPos, buildingStates, DataManager);
-        if (buildingDataAtStart != null && buildingDataAtStart.IsRoad)
+        // 시작점 찾기 (기존 IsConnectedViaRoadToTarget의 더 꼼꼼한 로직을 채택)
+        // 시작점이 바로 도로라면 큐에 넣고, 아니라면 인접한 도로들을 큐에 넣습니다.
+        BuildingData startData = GetBuildingDataAt(startPos, buildingStates, DataManager);
+        if (startData != null && startData.IsRoad)
         {
-            startingPoints.Add(startPos);
+            queue.Enqueue(startPos);
+            visited.Add(startPos);
+            parentMap[startPos] = startPos;
         }
         else
         {
-            // 2. 시작점 주변의 인접한 도로를 찾아야 하는 경우 (생산 건물 입/출력 엔드포인트 등)
+            // 시작점이 건물의 입출력 포트(빈 땅)일 수 있으므로 인접한 도로를 찾습니다.
             foreach (var dir in _neighbors)
             {
                 Vector2Int next = startPos + dir;
-                BuildingData buildingDataAtNext = GetBuildingDataAt(next, buildingStates, DataManager);
-
-                if (buildingDataAtNext != null && buildingDataAtNext.IsRoad)
+                BuildingData nextData = GetBuildingDataAt(next, buildingStates, DataManager);
+                if (nextData != null && nextData.IsRoad)
                 {
-                    startingPoints.Add(next);
+                    if (!visited.Contains(next))
+                    {
+                        queue.Enqueue(next);
+                        visited.Add(next);
+                        parentMap[next] = next; // 시작점의 대리인으로 설정
+                    }
                 }
             }
         }
 
-        foreach (var point in startingPoints)
-        {
-            if (!visited.Contains(point))
-            {
-                queue.Enqueue(point);
-                visited.Add(point);
-            }
-        }
+        Vector2Int targetPos = new Vector2Int(-1, -1);
+        bool found = false;
 
-        // BFS 탐색
+        // BFS 루프
         while (queue.Count > 0)
         {
             Vector2Int current = queue.Dequeue();
@@ -137,36 +154,53 @@ public class BuildingCalculateHandler
             foreach (var dir in _neighbors)
             {
                 Vector2Int next = current + dir;
-                if (visited.Contains(next))
-                    continue;
+                if (visited.Contains(next)) continue;
 
-                BuildingData buildingData = GetBuildingDataAt(next, buildingStates, DataManager);
+                BuildingData nextData = GetBuildingDataAt(next, buildingStates, DataManager);
+                if (nextData == null) continue;
 
-                if (buildingData != null)
+                // 1. 도로인 경우: 계속 이동
+                if (nextData.IsRoad)
                 {
-                    if (buildingData.IsRoad)
-                    {
-                        // 계속해서 도로를 따라 이동
-                        queue.Enqueue(next);
-                        visited.Add(next);
-                    }
-                    else
-                    {
-                        // 도로가 아닌 다른 건물을 만났을 때, 목표 건물인지 확인
-                        if ((isUnloadStation && buildingData.IsUnloadStation) ||
-                            (isLoadStation && buildingData.IsLoadStation))
-                        {
-                            Debug.Log($"[BuildingCalculateHandler] Road connection found from {startPos} to target station at {next}");
-                            return true; // 목표 건물 도달 성공
-                        }
-                    }
+                    visited.Add(next);
+                    queue.Enqueue(next);
+                    parentMap[next] = current;
                 }
-                // 빈 땅이거나 타일이 없는 경우는 탐색을 멈춤
+                // 2. 목표 건물인 경우: 탐색 종료
+                else if ((findUnloadStation && nextData.IsUnloadStation) || 
+                         (findLoadStation && nextData.IsLoadStation))
+                {
+                    visited.Add(next);
+                    parentMap[next] = current;
+                    targetPos = next;
+                    found = true;
+                    break; 
+                }
             }
+            if (found) break;
         }
 
-        Debug.Log($"[BuildingCalculateHandler] Road connection failed from {startPos}");
-        return false;
+        if (!found) return null;
+
+        // 경로 역추적 (Backtracking)
+        List<Vector2Int> path = new List<Vector2Int>();
+        Vector2Int curr = targetPos;
+
+        // 시작점의 대리인(혹은 시작점 자체)에 도달할 때까지 추적
+        while (parentMap.ContainsKey(curr) && parentMap[curr] != curr)
+        {
+            path.Add(curr);
+            curr = parentMap[curr];
+        }
+        path.Add(curr); // 루프 빠져나온 마지막 지점(도로 시작점) 추가
+
+        // 만약 startPos가 도로가 아니어서 인접 도로에서 시작했다면,
+        // path에는 인접 도로까지만 들어있으므로 startPos는 포함되지 않을 수 있음.
+        // 필요하다면 path.Add(startPos); 를 할 수도 있지만, 
+        // 보통 도로 위의 이동 경로만 필요하므로 여기서는 유지합니다.
+        
+        path.Reverse(); // 정방향으로 뒤집기
+        return path;
     }
 
     /// <summary>
@@ -485,80 +519,4 @@ public class BuildingCalculateHandler
     }
 
     #endregion
-
-    // BuildingCalculateHandler.cs 안에 추가
-
-/// <summary>
-/// 시작점부터 목표(상역소/하역소)까지의 도로 경로를 찾아서 반환합니다.
-/// </summary>
-public List<Vector2Int> GetPathViaRoad(Vector2Int startPos, bool isUnloadStation, bool isLoadStation)
-{
-    var buildingStates = _buildingTileManager.GetCurrentBuildingStates();
-    if (buildingStates == null) return null;
-
-    Queue<Vector2Int> queue = new Queue<Vector2Int>();
-    HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-    // 경로 역추적을 위한 부모 맵 (Key: 현재위치, Value: 어디서 왔는지)
-    Dictionary<Vector2Int, Vector2Int> parentMap = new Dictionary<Vector2Int, Vector2Int>();
-
-    queue.Enqueue(startPos);
-    visited.Add(startPos);
-    parentMap[startPos] = startPos; // 시작점 마킹
-
-    Vector2Int targetPos = new Vector2Int(-1, -1);
-    bool found = false;
-
-    while (queue.Count > 0)
-    {
-        Vector2Int current = queue.Dequeue();
-
-        // 4방향 탐색
-        foreach (var dir in new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) })
-        {
-            Vector2Int next = current + dir;
-            if (visited.Contains(next)) continue;
-
-            BuildingData nextData = GetBuildingDataAt(next, buildingStates, DataManager);
-            
-            if (nextData != null)
-            {
-                // 도로라면 계속 탐색
-                if (nextData.IsRoad)
-                {
-                    visited.Add(next);
-                    queue.Enqueue(next);
-                    parentMap[next] = current; // 어디서 왔는지 기록
-                }
-                // 목표 건물을 만났다면
-                else if ((isUnloadStation && nextData.IsUnloadStation) || (isLoadStation && nextData.IsLoadStation))
-                {
-                    visited.Add(next);
-                    parentMap[next] = current;
-                    targetPos = next;
-                    found = true;
-                    break;
-                }
-            }
-        }
-        if (found) break;
-    }
-
-    if (!found) return null;
-
-    // 경로 역추적 (도착점 -> 시작점)
-    List<Vector2Int> path = new List<Vector2Int>();
-    Vector2Int curr = targetPos;
-    
-    while (curr != startPos)
-    {
-        path.Add(curr);
-        curr = parentMap[curr];
-    }
-    path.Add(startPos);
-    
-    path.Reverse(); // 시작점 -> 도착점 순서로 뒤집기
-    return path;
-}
-
-
 }
