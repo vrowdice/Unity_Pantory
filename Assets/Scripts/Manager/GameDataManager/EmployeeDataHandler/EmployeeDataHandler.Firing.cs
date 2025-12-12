@@ -12,6 +12,9 @@ public partial class EmployeeDataHandler
     /// <param name="employeeId">해고할 직원 유형 ID</param>
     /// <param name="count">해고할 인원 수</param>
     /// <returns>성공 시 true, 인원 부족 시 false</returns>
+    /// <summary>
+    /// EmployeeDataHandler 해고 파트 (Firing)
+    /// </summary>
     public bool TryFireEmployee(string employeeId, int count)
     {
         if (count <= 0)

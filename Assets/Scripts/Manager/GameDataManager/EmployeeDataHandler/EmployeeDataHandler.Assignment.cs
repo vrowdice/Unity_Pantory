@@ -11,6 +11,9 @@ public partial class EmployeeDataHandler
     /// <param name="employeeId">직원 유형 ID</param>
     /// <param name="count">증가시킬 인원 수</param>
     /// <returns>성공 시 true, 인원 부족 시 false</returns>
+    /// <summary>
+    /// EmployeeDataHandler 할당 파트 (Assignment)
+    /// </summary>
     public bool TryAssignEmployee(string employeeId, int count)
     {
         if (count <= 0)

@@ -9,8 +9,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     private GameManager _gameManager;
     private GameDataManager _dataManager;
 
-    [Header("Managers")]
-    [SerializeField] private ThreadTileManager _threadTileManager;
+
 
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
@@ -18,50 +17,11 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
-    [Header("Panels")]
-    [SerializeField] private StoragePanel _storagePanel;
-    [SerializeField] private MarketPanel _marketPanel;
-    [SerializeField] private EmployeePanel _employmentPanel;
-    [SerializeField] private EventPanel _eventPanel;
-    [SerializeField] private ResearchPanel _researchPanel;
-    [SerializeField] private OrderPanel _orderPanel;
-    [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
-    [Header("Quick Move")]
-    [SerializeField] private GameObject _quickMoveBtnPrefeb;
-    [SerializeField] private Transform _quickMovePanelContent;
-    [SerializeField] private ToggleBtn _quickMovePanelToggleBtn;
-
-    [Header("Resouce ScrollView")]
-    [SerializeField] private GameObject _mainScrollViewResouceBtn;
-    [SerializeField] private Transform _resouceScrollViewContent;
-
-    [Header("Thread")]
-    [SerializeField] private Image _cancelPlacementBtnImage;
-    [SerializeField] private Image _removalModeBtnImage;
-    [SerializeField] private GameObject _threadCategoryBtnPrefab;
-    [SerializeField] private Transform _threadCategoryScrollViewContent;
-    [SerializeField] private GameObject _threadBtnPrefab;
-    [SerializeField] private GameObject _threadPlusBtnPrefab;
-    [SerializeField] private Transform _threadScrollViewContent;
-    [SerializeField] private ThreadInfoPanel _threadInfoPanel;
 
     private GameObject _productionInfoImage;
     
-    // Panels
-    private Dictionary<MainPanelType, BasePanel> _panelDict;
-    private MainPanelType _currentOpenPanelType;
-    
-    // Quick Move
-    private readonly List<QuickMoveBtn> _quickMoveBtns = new List<QuickMoveBtn>();
-    
-    // Resources
-    private readonly List<MainScrollViewResouceBtn> _resourceBtns = new List<MainScrollViewResouceBtn>();
-    
-    // Threads
-    private readonly List<ThreadCategoryBtn> _threadCategoryBtns = new List<ThreadCategoryBtn>();
-    private readonly List<ThreadBtn> _threadBtns = new List<ThreadBtn>();
-    private string _selectedThreadCategoryId = string.Empty;
+
 
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;

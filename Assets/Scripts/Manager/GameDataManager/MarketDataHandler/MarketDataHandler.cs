@@ -432,57 +432,12 @@ public partial class MarketDataHandler
         OnMarketUpdated?.Invoke();
     }
 
-    // 메서드들이 partial 파일로 분리되었습니다:
-    // - Simulation 관련: MarketDataHandler.Simulation.cs
-    // - Player 거래 관련: MarketDataHandler.Player.cs
-    // - Stats 및 후처리: MarketDataHandler.Stats.cs
+
 
     /// <summary>
     /// 각 자원별로 생산하는 액터 수를 계산합니다 (경쟁 과열 방지용).
     /// </summary>
-    private Dictionary<string, int> CalculateProviderCounts()
-    {
-        var counts = new Dictionary<string, int>();
-        
-        foreach (var entry in _actors.Values)
-        {
-            if (entry?.state?.provider == null || entry.data == null)
-            {
-                continue;
-            }
 
-            // 동적 할당이 활성화된 경우 activeResourceIds 사용
-            if (entry.data.useDynamicResourceAllocation && entry.state.provider.activeResourceIds != null)
-            {
-                foreach (var resourceId in entry.state.provider.activeResourceIds)
-                {
-                    if (!string.IsNullOrEmpty(resourceId))
-                    {
-                        counts.TryGetValue(resourceId, out int currentCount);
-                        counts[resourceId] = currentCount + 1;
-                    }
-                }
-            }
-            else
-            {
-                // 정적 할당인 경우 profile의 outputs 사용
-                var profile = entry.GetProviderProfile();
-                if (profile?.outputs != null)
-                {
-                    foreach (var output in profile.outputs)
-                    {
-                        if (output?.resource != null && !string.IsNullOrEmpty(output.resource.id))
-                        {
-                            counts.TryGetValue(output.resource.id, out int currentCount);
-                            counts[output.resource.id] = currentCount + 1;
-                        }
-                    }
-                }
-            }
-        }
-
-        return counts;
-    }
 
     /// <summary>
     /// 자산 기준으로 정렬된 액터 리스트를 반환합니다 (캐시 최적화).
@@ -533,90 +488,7 @@ public partial class MarketDataHandler
     /// [솔루션 1] 무역항 처리: 잉여 물량 수출(시장에서 제거), 부족 물량 수입(시장에 공급)
     /// [강화] 가격 안정화 장치: 가격이 비쌀 때 수입품 대량 공급
     /// </summary>
-    private void ProcessGlobalTradePort(Dictionary<string, ResourceEntry> resources)
-    {
-        if (resources == null)
-        {
-            return;
-        }
 
-        foreach (var res in resources.Values)
-        {
-            if (res?.resourceState == null || res.resourceData == null)
-            {
-                continue;
-            }
-
-            float currentPrice = res.resourceState.currentValue;
-            float basePrice = res.resourceData.baseValue;
-            float priceThreshold = _marketSettings != null ? _marketSettings.tradePortPriceThreshold : 1.3f;
-            float targetPrice = basePrice * priceThreshold; // 기준가의 배율을 '적정 가격 상한선'으로 설정
-
-            // [핵심] 가격 안정화 로직 (Price Stabilization)
-            // 가격이 너무 비싸면 무역항에서 '저렴한 수입품'을 대량 공급하여 가격을 강제로 떨어뜨림
-            if (currentPrice > targetPrice && basePrice > 0.01f)
-            {
-                // 가격이 비쌀수록 더 많은 물량을 공급 (시장 수요의 비율만큼 추가 공급)
-                float supplyBoostRatio = _marketSettings != null ? _marketSettings.tradePortSupplyBoostRatio : 0.5f;
-                float supplyBoost = res.resourceState.lastDemand * supplyBoostRatio;
-                
-                // 최소 공급량 보장
-                float minSupply = _marketSettings != null ? _marketSettings.tradePortMinSupply : 100f;
-                supplyBoost = Mathf.Max(supplyBoost, minSupply);
-
-                res.resourceState.lastSupply += supplyBoost;
-                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, (long)supplyBoost);
-
-                // [핵심] 공급을 늘렸으니, 가격도 즉시 하락 압력을 줌 (수입품이 싸게 들어옴)
-                float priceDropRate = _marketSettings != null ? _marketSettings.tradePortPriceDropRate : 0.9f;
-                res.resourceState.currentValue *= priceDropRate;
-            }
-            // [수정] 안전 재고 유지 (Minimum Stock Maintenance)
-            // 자원 타입에 따라 최소 유지량을 다르게 설정
-            long minStockTarget = 100L; // 기본값
-
-            // 1. 많이 쓰이는 중간재(Component, Essentials)는 재고를 넉넉히 확보
-            if (res.resourceData.type == ResourceType.component || 
-                res.resourceData.type == ResourceType.Essentials)
-            {
-                minStockTarget = 1000L; // 최소 1000개는 항상 깔려있게 함
-            }
-            // 2. 원자재는 더 많이
-            else if (res.resourceData.type == ResourceType.raw)
-            {
-                minStockTarget = 2000L;
-            }
-
-            // 현재 재고가 목표치보다 적으면 부족분만큼 즉시 수입(채워넣기)
-            if (res.resourceState.count < minStockTarget)
-            {
-                long deficit = minStockTarget - res.resourceState.count;
-                
-                // 너무 조금씩(1~2개) 채우면 연산 낭비니까, 한 번 채울 때 넉넉히(최소 100개 단위)
-                long importAmount = Math.Max(deficit, 100L);
-
-                res.resourceState.lastSupply += importAmount;
-                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, importAmount);
-                
-                // 수입 비용 반영 (재고가 없어서 급히 채웠으니 가격 소폭 상승 유도)
-                // 단, 너무 자주 발생하면 인플레가 오므로 1.01~1.05배 정도로 살짝만
-                res.resourceState.currentValue *= 1.02f;
-            }
-            // [기존 로직 유지] 악성 재고 처리 (수출): 공급이 수요보다 너무 많고 가격이 너무 쌀 때만 수출
-            float exportSurplusRatio = _marketSettings != null ? _marketSettings.tradePortExportSurplusRatio : 2.0f;
-            float exportPriceThreshold = _marketSettings != null ? _marketSettings.tradePortExportPriceThreshold : 0.8f;
-            if (res.resourceState.lastSupply > res.resourceState.lastDemand * exportSurplusRatio && currentPrice < basePrice * exportPriceThreshold)
-            {
-                float surplus = res.resourceState.lastSupply - res.resourceState.lastDemand;
-                float dumpRatio = _marketSettings != null ? _marketSettings.tradePortExportDumpRatio : 0.5f;
-                float dumpAmount = surplus * dumpRatio; // 잉여분의 비율만큼 걷어감
-                
-                // 시장에서 물량 제거 (수출됨)
-                res.resourceState.lastSupply -= dumpAmount;
-                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, -(long)dumpAmount);
-            }
-        }
-    }
 
     /// <summary>
     /// 전쟁 상태를 설정합니다.

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -23,6 +25,87 @@ public class EmployeeEntry
             employeeState.currentEfficiency = Mathf.Clamp(data.baseEfficiency, 0f, 2f);
             // 급여 레벨 기본값: 보통 (2)
             employeeState.salaryLevel = 2;
+        }
+    }
+
+    // ========================================================================
+    // Effect Management
+    // ========================================================================
+
+    /// <summary>
+    /// 새로운 효과를 적용합니다.
+    /// </summary>
+    public void AddEffect(EffectData data)
+    {
+        if (data == null) return;
+        if (employeeState.activeEffects == null) employeeState.activeEffects = new List<EffectState>();
+
+        var runtimeEffect = new EffectState(data);
+        employeeState.activeEffects.Add(runtimeEffect);
+    }
+
+    /// <summary>
+    /// 특정 ID를 가진 효과를 제거합니다.
+    /// </summary>
+    public void RemoveEffectById(string effectId)
+    {
+        if (employeeState.activeEffects == null) return;
+        employeeState.activeEffects.RemoveAll(e => e.Data.id == effectId);
+    }
+
+    /// <summary>
+    /// 현재 활성화된 효과들을 반영하여 스탯을 계산합니다.
+    /// </summary>
+    public float CalculateStat(StatType statType, float baseValue)
+    {
+        if (employeeState.activeEffects == null || employeeState.activeEffects.Count == 0)
+        {
+            return baseValue;
+        }
+
+        float flatSum = 0f;
+        float percentAddSum = 0f;
+        float percentMultTotal = 1f;
+
+        foreach (var effect in employeeState.activeEffects)
+        {
+            // StatType 체크
+            if (effect.Data.statType != statType) continue;
+
+            switch (effect.Data.type)
+            {
+                case ModifierType.Flat:
+                    flatSum += effect.Data.value;
+                    break;
+                case ModifierType.PercentAdd:
+                    percentAddSum += effect.Data.value;
+                    break;
+                case ModifierType.PercentMult:
+                    percentMultTotal *= effect.Data.value;
+                    break;
+            }
+        }
+
+        return (baseValue + flatSum) * (1f + percentAddSum) * percentMultTotal;
+    }
+
+    /// <summary>
+    /// 기간제 효과의 시간을 업데이트합니다.
+    /// </summary>
+    public void UpdateEffectsTime(float daysPassed)
+    {
+        if (employeeState.activeEffects == null) return;
+
+        for (int i = employeeState.activeEffects.Count - 1; i >= 0; i--)
+        {
+            var effect = employeeState.activeEffects[i];
+            if (effect.IsPermanent) continue;
+
+            effect.RemainingDays -= daysPassed;
+            if (effect.RemainingDays <= 0)
+            {
+                employeeState.activeEffects.RemoveAt(i);
+            }
         }
     }
 }

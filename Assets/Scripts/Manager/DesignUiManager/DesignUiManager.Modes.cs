@@ -1,7 +1,15 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public partial class DesignUiManager
 {
+    [Header("Mode References")]
+    [SerializeField] private Image _deselectBuildingBtnImage;
+    [SerializeField] private Image _removalModeBtnImage;
+
+    private BuildingData _selectedBuilding;
+    private bool _isRemovalMode;
+
     public void SelectBuilding(BuildingData buildingData)
     {
         _selectedBuilding = buildingData;

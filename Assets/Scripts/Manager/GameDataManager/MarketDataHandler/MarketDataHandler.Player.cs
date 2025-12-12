@@ -10,6 +10,9 @@ public partial class MarketDataHandler
     /// 플레이어 자동 거래를 실행합니다 (playerTransactionDelta 기반)
     /// 예약 시스템을 통해 처리되므로 직접 금액 변경 없이 자원만 처리합니다.
     /// </summary>
+    /// <summary>
+    /// MarketDataHandler 플레이어 거래 파트
+    /// </summary>
     private void ExecutePlayerAutoTrades(Dictionary<string, ResourceEntry> resources)
     {
         if (resources == null || _gameDataManager == null)
