@@ -3,6 +3,17 @@ using System.Collections.Generic;
 
 public partial class DesignUiManager
 {
+    [Header("UI Prefabs & Contents")]
+    [SerializeField] private GameObject _buildingTypeBtnPrefab;
+    [SerializeField] private Transform _buildingTypeBtnContent;
+    [SerializeField] private GameObject _buildingBtnPrefab;
+    [SerializeField] private Transform _buildingBtnContent;
+
+    private List<BuildingData> _buildingDataList;
+    private BuildingType _selectedBuildingType = BuildingType.Distribution;
+    private List<BuildingTypeBtn> _buildingTypeBtns = new List<BuildingTypeBtn>();
+    private List<BuildingBtn> _buildingBtns = new List<BuildingBtn>();
+
     public void SelectBuildingType(BuildingType buildingType)
     {
         if (_dataManager == null)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 /// <summary>
 /// 직원 관리 패널
@@ -38,6 +39,7 @@ public class EmployeePanel : BasePanel
     [SerializeField] private List<Toggle> _salaryLevelToggles;
 
     [Header("Status Scroll View Contents")]
+    [SerializeField] private GameObject _efficiencyStatusTextPairPanelPrefab;
     [SerializeField] private Transform _efficiencyStatusScrollViewContentTransform;
     [SerializeField] private Transform _satisfactionStatusScrollViewContentTransform;
     #endregion
@@ -341,6 +343,9 @@ public class EmployeePanel : BasePanel
         
         // 관리 비율 업데이트
         UpdateManagementRatio();
+        
+        // 이펙트 정보 업데이트
+        UpdateEffectStatus();
     }
     
     /// <summary>
@@ -467,6 +472,9 @@ public class EmployeePanel : BasePanel
         // 관리 비율 초기화
         if (_managementSlider != null) _managementSlider.value = 0f;
         if (_managementRatioText != null) _managementRatioText.text = "0%";
+        
+        // 이펙트 상태 초기화
+        ClearEffectStatus();
     }
 
     /// <summary>
@@ -485,6 +493,186 @@ public class EmployeePanel : BasePanel
         {
             _selectedEmployeeEntry = entry;
             UpdateEmployeeUI();
+        }
+    }
+
+    #endregion
+
+    #region Effect Status Display
+
+    /// <summary>
+    /// 효율성 및 만족도 관련 이펙트 상태를 업데이트합니다.
+    /// </summary>
+    private void UpdateEffectStatus()
+    {
+        if (_dataManager?.Effect == null)
+        {
+            ClearEffectStatus();
+            return;
+        }
+
+        // 효율성 관련 이펙트 표시 (만족도 이펙트를 표시 - 만족도가 효율성에 영향을 주므로)
+        UpdateEfficiencyEffectStatus();
+        
+        // 만족도 관련 이펙트 표시
+        UpdateSatisfactionEffectStatus();
+    }
+
+    /// <summary>
+    /// 효율성 관련 이펙트 상태를 업데이트합니다.
+    /// </summary>
+    /// <summary>
+    /// 효율성 관련 이펙트 상태를 업데이트합니다.
+    /// </summary>
+    private void UpdateEfficiencyEffectStatus()
+    {
+        if (_efficiencyStatusScrollViewContentTransform == null || 
+            _efficiencyStatusTextPairPanelPrefab == null ||
+            _dataManager?.Effect == null)
+        {
+            return;
+        }
+
+        // 기존 패널 제거
+        GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
+
+        var combinedEffects = new List<EffectState>();
+
+        // 1. 전역 효율성 이펙트
+        var globalEffects = _dataManager.Effect.GetActiveEffects(StatType.EfficiencyBonus);
+        if (globalEffects != null) 
+        {
+            combinedEffects.AddRange(globalEffects);
+        }
+
+        // 2. 직원 개별 효율성 이펙트
+        if (_selectedEmployeeEntry?.employeeState?.activeEffects != null)
+        {
+            var localEffects = _selectedEmployeeEntry.employeeState.activeEffects
+                .Where(e => e.Data.statType == StatType.EfficiencyBonus);
+            combinedEffects.AddRange(localEffects);
+        }
+
+        if (combinedEffects.Count > 0)
+        {
+            // 각 이펙트에 대해 패널 생성
+            foreach (var effectState in combinedEffects)
+            {
+                if (effectState?.Data == null) continue;
+
+                var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _efficiencyStatusScrollViewContentTransform);
+                var panel = panelObj.GetComponent<TextPairPanel>();
+                
+                if (panel != null)
+                {
+                    string effectDescription = effectState.Data.displayName ?? effectState.Data.id;
+                    string changeValue = FormatEffectValue(effectState.Data.value, effectState.Data.type);
+                    
+                    panel.OnInitialize(effectDescription, changeValue);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 만족도 관련 이펙트 상태를 업데이트합니다.
+    /// </summary>
+    /// <summary>
+    /// 만족도 관련 이펙트 상태를 업데이트합니다.
+    /// </summary>
+    private void UpdateSatisfactionEffectStatus()
+    {
+        if (_satisfactionStatusScrollViewContentTransform == null || 
+            _efficiencyStatusTextPairPanelPrefab == null ||
+            _dataManager?.Effect == null)
+        {
+            return;
+        }
+
+        // 기존 패널 제거
+        GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
+
+        var combinedEffects = new List<EffectState>();
+
+        // 1. 전역 만족도 이펙트
+        var globalEffects = _dataManager.Effect.GetActiveEffects(StatType.SatisfactionChangePerDay);
+        if (globalEffects != null)
+        {
+            combinedEffects.AddRange(globalEffects);
+        }
+
+        // 2. 직원 개별 만족도 이펙트
+        if (_selectedEmployeeEntry?.employeeState?.activeEffects != null)
+        {
+            var localEffects = _selectedEmployeeEntry.employeeState.activeEffects
+                .Where(e => e.Data.statType == StatType.SatisfactionChangePerDay);
+            combinedEffects.AddRange(localEffects);
+        }
+
+        if (combinedEffects.Count == 0)
+        {
+            return;
+        }
+
+        // 각 이펙트에 대해 패널 생성
+        foreach (var effectState in combinedEffects)
+        {
+            if (effectState?.Data == null) continue;
+
+            var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _satisfactionStatusScrollViewContentTransform);
+            var panel = panelObj.GetComponent<TextPairPanel>();
+            
+            if (panel != null)
+            {
+                string effectDescription = effectState.Data.displayName ?? effectState.Data.id;
+                string changeValue = FormatEffectValue(effectState.Data.value, effectState.Data.type);
+                
+                panel.OnInitialize(effectDescription, changeValue);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 이펙트 값을 포맷팅합니다.
+    /// </summary>
+    /// <param name="value">이펙트 값</param>
+    /// <param name="modifierType">연산 방식</param>
+    /// <returns>포맷팅된 문자열</returns>
+    private string FormatEffectValue(float value, ModifierType modifierType)
+    {
+        switch (modifierType)
+        {
+            case ModifierType.Flat:
+                // 합연산: +2.0 또는 -1.5 형식
+                return value >= 0 ? $"+{value:F1}" : $"{value:F1}";
+            
+            case ModifierType.PercentAdd:
+                // 합연산 퍼센트: +10% 또는 -5% 형식
+                float percentAdd = value * 100f;
+                return percentAdd >= 0 ? $"+{percentAdd:F1}%" : $"{percentAdd:F1}%";
+            
+            case ModifierType.PercentMult:
+                // 곱연산 퍼센트: x1.5 또는 x0.8 형식
+                return $"x{value:F2}";
+            
+            default:
+                return value.ToString("F1");
+        }
+    }
+
+    /// <summary>
+    /// 이펙트 상태 표시를 초기화합니다.
+    /// </summary>
+    private void ClearEffectStatus()
+    {
+        if (_efficiencyStatusScrollViewContentTransform != null)
+        {
+            GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
+        }
+        
+        if (_satisfactionStatusScrollViewContentTransform != null)
+        {
+            GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
         }
     }
 

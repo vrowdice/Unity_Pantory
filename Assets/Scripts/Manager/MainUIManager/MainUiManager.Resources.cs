@@ -3,6 +3,13 @@ using UnityEngine;
 
 public partial class MainUiManager
 {
+    [Header("Resouce ScrollView")]
+    [SerializeField] private GameObject _mainScrollViewResouceBtn;
+    [SerializeField] private Transform _resouceScrollViewContent;
+
+    // Resources
+    private readonly List<MainScrollViewResouceBtn> _resourceBtns = new List<MainScrollViewResouceBtn>();
+
     private void RefreshResourceScrollView()
     {
         if (_dataManager == null || _resouceScrollViewContent == null)

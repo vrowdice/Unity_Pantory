@@ -3,6 +3,12 @@ using UnityEngine;
 
 public partial class DesignUiManager
 {
+    [Header("Thread References")]
+    [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel;
+
+    private string _currentThreadTitle = DefaultThreadTitle;
+    private const string DefaultThreadTitle = "Main Line";
+
     public void OnClickSaveBtn()
     {
         if (_saveInfoPanel == null || _buildingTileManager == null || _dataManager == null)

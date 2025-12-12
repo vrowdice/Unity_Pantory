@@ -275,19 +275,50 @@ public class GameDataManager : MonoBehaviour
         // requiredEmployees는 건물에서 필요한 실제 직원 수 (BuildingTileManager에서 계산된 값)
         // 덮어쓰지 않고 그대로 사용
 
-        // 생산 효율 계산 (현재 직원 수 / 필요한 직원 수, 0~1 범위)
-        // requiredEmployees가 0이면 효율 0, 그 외에는 현재 직원 수 비율로 계산
+        float quantityEfficiency = 0f;
+        float qualityEfficiency = 1.0f;
+
+        // 1. 수량 효율 계산 (현재 직원 수 / 필요한 직원 수, 0~1 범위)
         if (threadState.requiredEmployees > 0)
         {
             int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
-            // 현재 직원 수가 필요한 직원 수의 백분율로 효율 결정
-            threadState.currentProductionEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
+            // 현재 직원 수가 필요한 직원 수의 백분율로 수량 효율 결정
+            quantityEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
+            
+            // 2. 품질 효율 계산 (직원들의 현재 효율성 반영)
+            if (Employee != null && currentEmployees > 0)
+            {
+                float totalEfficiencySum = 0f;
+                
+                // 워커 효율 합산
+                if (threadState.currentWorkers > 0)
+                {
+                    var workerEntry = Employee.GetEmployeeEntry("worker");
+                    float workerEff = workerEntry?.employeeState?.currentEfficiency ?? 1.0f;
+                    totalEfficiencySum += threadState.currentWorkers * workerEff;
+                }
+                
+                // 기술자 효율 합산
+                if (threadState.currentTechnicians > 0)
+                {
+                    var techEntry = Employee.GetEmployeeEntry("technician");
+                    float techEff = techEntry?.employeeState?.currentEfficiency ?? 1.0f;
+                    totalEfficiencySum += threadState.currentTechnicians * techEff;
+                }
+                
+                // 가중 평균 계산
+                qualityEfficiency = totalEfficiencySum / currentEmployees;
+            }
         }
         else
         {
-            // 직원이 필요 없으면 효율 0
-            threadState.currentProductionEfficiency = 0f;
+            // 직원이 필요 없으면 수량 효율은 기본적으로 0이지만, 자동화된 시설이라면 1이 될 수도 있음.
+            // 현재 로직상 직원이 0이면 효율 0으로 처리 (유지)
+            quantityEfficiency = 0f;
         }
+
+        // 3. 최종 효율 = 수량 효율 * 품질 효율 (직원이 적으면 느리고, 직원 상태가 나빠도 느림)
+        threadState.currentProductionEfficiency = quantityEfficiency * qualityEfficiency;
 
         // 생산 진행도 증가 (합연산)
         threadState.currentProductionProgress += threadState.currentProductionEfficiency;

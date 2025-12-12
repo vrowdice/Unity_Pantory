@@ -14,4 +14,10 @@ public enum StatType
     // 경영 관련
     GlobalSpeedMultiplier,   // 게임 전체 속도 (무한 연구 등)
     FactoryMaintenanceCost,  // 공장 유지비
+    
+    // 직원 만족도 관련
+    SatisfactionChangePerDay, // 일일 만족도 증감 (이펙트로 적용)
+    
+    // 직원 효율성 관련
+    EfficiencyBonus,          // 효율성 영구 증가 (일일 변화 아님, 기본 효율성에 추가)
 }

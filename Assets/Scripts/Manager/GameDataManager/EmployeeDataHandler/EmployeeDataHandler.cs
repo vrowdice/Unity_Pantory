@@ -17,11 +17,15 @@ public partial class EmployeeDataHandler
     // 급여 비율 설정
     protected InitialEmployeeData _salarySettings;
 
+    // GameDataManager 참조 (이펙트 시스템 접근용)
+    protected GameDataManager _gameDataManager;
+
     /// <summary>
     /// EmployeeService 생성자
     /// </summary>
     public EmployeeDataHandler(GameDataManager gameDataManager)
     {
+        _gameDataManager = gameDataManager;
         _employees = new Dictionary<string, EmployeeEntry>();
         AutoLoadAllEmployees(); // 게임 시작 시 자동으로 모든 직원 데이터 로드
     }
@@ -397,15 +401,65 @@ public partial class EmployeeDataHandler
 
         // 급여 레벨 범위 검증 (0~4)
         salaryLevel = Mathf.Clamp(salaryLevel, 0, 4);
+        
+        // 이전 급여 레벨 저장
+        int previousSalaryLevel = entry.employeeState.salaryLevel;
+        
+        // 급여 레벨 변경
         entry.employeeState.salaryLevel = salaryLevel;
         
         // 해당 직원의 급여 재계산
         UpdateSalary(entry);
         
+        // 급여 레벨에 따른 만족도 이펙트 부여
+        ApplySalaryLevelSatisfactionEffect(employeeId, salaryLevel, previousSalaryLevel);
+        
         string levelName = _salarySettings.GetSalaryLevelName(salaryLevel);
-        Debug.Log($"[EmployeeDataHandler] {entry.employeeData.displayName} salary level set to: {levelName}");
         
         OnEmployeeChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// 급여 레벨에 따른 만족도 이펙트를 부여합니다.
+    /// </summary>
+
+    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="newSalaryLevel">새 급여 레벨</param>
+    /// <param name="previousSalaryLevel">이전 급여 레벨</param>
+    private void ApplySalaryLevelSatisfactionEffect(string employeeId, int newSalaryLevel, int previousSalaryLevel)
+    {
+        if (_gameDataManager?.Effect == null || _salarySettings == null)
+        {
+            return;
+        }
+
+        var entry = GetEmployeeEntry(employeeId);
+        if (entry == null) return;
+
+        // 이전 급여 이펙트 제거 (ID를 "Salary_Satisfaction" 으로 통일하여 관리)
+        entry.RemoveEffectById("Salary_Satisfaction");
+
+        // 새 급여 레벨에 따른 만족도 변화량 가져오기
+        float satisfactionChange = _salarySettings.GetSatisfactionChangePerDay(newSalaryLevel);
+
+        // 만족도 변화가 0이 아니면 이펙트 부여
+        if (Mathf.Abs(satisfactionChange) > 0.001f)
+        {
+            // 급여 레벨별 만족도 이펙트 생성
+            EffectData salaryEffect = new EffectData
+            {
+                id = "Salary_Satisfaction", // 직원의 지역 이펙트이므로 단순화된 ID 사용
+                displayName = $"Salary Level Satisfaction ({_salarySettings.GetSalaryLevelName(newSalaryLevel)})",
+                statType = StatType.SatisfactionChangePerDay,
+                type = ModifierType.Flat,
+                value = satisfactionChange,
+                targetCategory = null, 
+                durationDays = 0f // 영구 효과
+            };
+
+            entry.AddEffect(salaryEffect);
+            Debug.Log($"[EmployeeDataHandler] Applied local satisfaction effect for {employeeId}: {satisfactionChange:F1} per day");
+        }
     }
 
     /// <summary>

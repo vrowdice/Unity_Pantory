@@ -3,6 +3,19 @@ using UnityEngine;
 
 public partial class MainUiManager
 {
+    [Header("Panels")]
+    [SerializeField] private StoragePanel _storagePanel;
+    [SerializeField] private MarketPanel _marketPanel;
+    [SerializeField] private EmployeePanel _employmentPanel;
+    [SerializeField] private EventPanel _eventPanel;
+    [SerializeField] private ResearchPanel _researchPanel;
+    [SerializeField] private OrderPanel _orderPanel;
+    [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
+
+    // Panels
+    private Dictionary<MainPanelType, BasePanel> _panelDict;
+    private MainPanelType _currentOpenPanelType;
+
     private void InitializePanelDictionary()
     {
         _panelDict = new Dictionary<MainPanelType, BasePanel>

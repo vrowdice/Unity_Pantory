@@ -175,8 +175,8 @@ public class EffectDataHandler
         // (기본값 + 고정합) * (1 + 합연산%) * 곱연산%
         // ※ 직원이 0명이라 baseValue가 0이어도, flatSum이 있으면 생산됨 (자동화)
         float result = (baseValue + flatSum) * (1f + percentAddSum) * percentMultTotal;
-
-        return Mathf.Max(0, result); // 음수 방지
+        
+        return result;
     }
 
     // ========================================================================

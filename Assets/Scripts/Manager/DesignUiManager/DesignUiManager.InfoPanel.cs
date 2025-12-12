@@ -2,6 +2,9 @@ using UnityEngine;
 
 public partial class DesignUiManager
 {
+    [Header("Panel References")]
+    [SerializeField] private BuildingInfoPanel _buildingInfoPanel;
+
     public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState)
     {
         if (_buildingInfoPanel != null)

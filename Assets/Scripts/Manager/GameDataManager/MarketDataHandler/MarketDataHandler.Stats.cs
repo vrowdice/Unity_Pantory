@@ -9,6 +9,9 @@ public partial class MarketDataHandler
     /// <summary>
     /// 액터 상태를 갱신합니다.
     /// </summary>
+    /// <summary>
+    /// MarketDataHandler 통계 파트
+    /// </summary>
     private void RefreshActor(MarketActorEntry entry)
     {
         if (entry?.data == null)

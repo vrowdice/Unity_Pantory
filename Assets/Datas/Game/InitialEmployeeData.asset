@@ -17,3 +17,21 @@ MonoBehaviour:
   normalSalaryMultiplier: 1
   highSalaryMultiplier: 1.25
   veryHighSalaryMultiplier: 1.5
+  veryLowSalarySatisfactionChange: -0.5
+  lowSalarySatisfactionChange: -0.1
+  normalSalarySatisfactionChange: 0
+  highSalarySatisfactionChange: 0.1
+  veryHighSalarySatisfactionChange: 0.5
+  satisfactionToEfficiencyRatio: 0.01
+  baseEfficiencyFromSatisfaction: 1
+  baseUnassignmentSatisfactionPenalty: -5
+  employeeCountSatisfactionPenaltyRatio: 0.1
+  maxUnassignmentSatisfactionPenalty: -30
+  maxFirePanic: 100
+  minFireSatisfactionPenalty: 0.5
+  crossEmployeeTypeSatisfactionPenaltyRatio: 0.3
+  managerCoverage: 20
+  maxEfficiencyPenalty: 0.1
+  maxSatisfactionPenalty: 1
+  enableManagerMitigation: 1
+  managerMitigationRatio: 0.5
