@@ -57,29 +57,7 @@ public class DateTopInfoPanel : MonoBehaviour
         int month = _dataManager.Time.Month;
         int day = _dataManager.Time.Day;
 
-        // 시간 문자열
-        string timeText = _dataManager.Time.GetTimeString();
-
-        // 날짜 텍스트 (연/월/일)
-        if (_dateText != null)
-        {
-            _dateText.text = $"Y{year} M{month} D{day}";
-        }
-        else
-        {
-            Debug.LogWarning("[InfoDatePanel] Date text component is null.");
-        }
-
-        // 시간 텍스트 (시:분) - 별도 필드가 없으면 기존처럼 날짜 텍스트 뒤에 붙여서 사용
-        if (_timeText != null)
-        {
-            _timeText.text = timeText;
-        }
-        else if (_dateText != null)
-        {
-            // 하위 호환: 시간 전용 텍스트가 없으면 한 줄에 같이 표시
-            _dateText.text = $"Y{year} M{month} D{day}  {timeText}";
-        }
+        _dateText.text = $"Y{year} M{month} D{day}";
 
         UpdateDayProgressSlider();
     }
@@ -215,7 +193,7 @@ public class DateTopInfoPanel : MonoBehaviour
         }
 
         // TimeDataHandler에서 하루 진행도(0~1)를 가져와 슬라이더에 반영
-        float progress = _dataManager.Time.GetDayProgress();
+        float progress = _dataManager.Time.DayProgress;
         _dayProgressSlider.normalizedValue = Mathf.Clamp01(progress);
     }
 

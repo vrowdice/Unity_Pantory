@@ -201,9 +201,9 @@ public partial class MainUiManager
         }
 
         _threadTileManager.ToggleRemovalMode();
-        UpdateThreadModeButtons(_threadTileManager.IsPlacementMode, _threadTileManager.IsRemovalMode);
-
-        if(_threadTileManager.IsRemovalMode)
+        UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
+        UpdateThreadButtonStates();
+        if (_threadTileManager.IsRemovalMode)
         {
             _quickMovePanelToggleBtn.SetClosed();
         }

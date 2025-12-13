@@ -8,10 +8,6 @@ using System;
 /// </summary>
 public partial class MarketDataHandler
 {
-    // ==================================================================================
-    // 1. 헬퍼 함수: 자산 비례 스케일링 & 가격 시그널
-    // ==================================================================================
-
     /// <summary>
     /// 액터의 현재 자산 수준에 따른 생산/소비 규모 배율을 계산합니다.
     /// </summary>
@@ -46,10 +42,6 @@ public partial class MarketDataHandler
         
         return Mathf.Max(minSignal, signal);
     }
-
-    // ==================================================================================
-    // 2. 공급 시뮬레이션 (Provider Production)
-    // ==================================================================================
 
     /// <summary>
     /// 각 자원별로 생산하는 액터 수를 계산합니다 (경쟁 과열 방지용).
@@ -99,8 +91,8 @@ public partial class MarketDataHandler
     }
 
     /// <summary>
-    /// [솔루션 1] 무역항 처리: 잉여 물량 수출(시장에서 제거), 부족 물량 수입(시장에 공급)
-    /// [강화] 가격 안정화 장치: 가격이 비쌀 때 수입품 대량 공급
+    /// 무역항 처리: 잉여 물량 수출(시장에서 제거), 부족 물량 수입(시장에 공급)
+    /// 가격 안정화 장치: 가격이 비쌀 때 수입품 대량 공급
     /// </summary>
     private void ProcessGlobalTradePort(Dictionary<string, ResourceEntry> resources)
     {
@@ -121,7 +113,7 @@ public partial class MarketDataHandler
             float priceThreshold = _marketSettings != null ? _marketSettings.tradePortPriceThreshold : 1.3f;
             float targetPrice = basePrice * priceThreshold; // 기준가의 배율을 '적정 가격 상한선'으로 설정
 
-            // [핵심] 가격 안정화 로직 (Price Stabilization)
+            // 가격 안정화 로직 (Price Stabilization)
             // 가격이 너무 비싸면 무역항에서 '저렴한 수입품'을 대량 공급하여 가격을 강제로 떨어뜨림
             if (currentPrice > targetPrice && basePrice > 0.01f)
             {
@@ -265,10 +257,6 @@ public partial class MarketDataHandler
         }
     }
 
-    // ==================================================================================
-    // 3. 수요 시뮬레이션 (Consumer Demand)
-    // ==================================================================================
-
     private void SimulateConsumerDemand(
         MarketActorEntry entry,
         Dictionary<string, ResourceEntry> resources,
@@ -322,10 +310,6 @@ public partial class MarketDataHandler
             AddToMap(totalDemand, preference.resource.id, desiredAmount);
         }
     }
-
-    // ==================================================================================
-    // 4. 거래 실행 (Execute Trades) 및 누락되었던 개별 처리 함수들
-    // ==================================================================================
 
     private void ExecuteTrades(
         Dictionary<string, ResourceEntry> resources,
@@ -576,10 +560,6 @@ public partial class MarketDataHandler
         }
     }
 
-    // ==================================================================================
-    // 6. 비용 계산 (Cost Calculation)
-    // ==================================================================================
-
     private float CalculateProviderCost(
         ProviderProfile profile,
         Dictionary<string, ResourceEntry> resources,
@@ -608,10 +588,6 @@ public partial class MarketDataHandler
         float operationCost = outputAmount * 2.0f; 
         return (totalMaterialCost * outputAmount) + operationCost;
     }
-
-    // ==================================================================================
-    // 7. 유틸리티 함수들 (복원됨)
-    // ==================================================================================
 
     private static void AddToMap(Dictionary<string, float> map, string resourceId, float value)
     {

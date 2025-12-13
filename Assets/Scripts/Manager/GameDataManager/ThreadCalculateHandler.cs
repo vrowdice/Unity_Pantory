@@ -14,8 +14,6 @@ public class ThreadCalculateHandler
         _gameDataManager = gameDataManager;
     }
 
-    //---------------------------------------------------------
-
     #region 자원 및 비용 계산
 
     /// <summary>

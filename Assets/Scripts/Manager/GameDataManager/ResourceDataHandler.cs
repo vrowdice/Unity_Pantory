@@ -18,14 +18,23 @@ public class ResourceDataHandler
     /// <summary>
     /// ResourceService 생성자
     /// </summary>
-    public ResourceDataHandler(GameDataManager gameDataManager)
+    public ResourceDataHandler(GameDataManager gameDataManager, List<ResourceData> resourceDataList = null)
     {
         _gameDataManager = gameDataManager;
         _resources = new Dictionary<string, ResourceEntry>();
-        AutoLoadAllResources(); // 게임 시작 시 자동으로 모든 리소스 로드
+        
+        if (resourceDataList != null && resourceDataList.Count > 0)
+        {
+            // 리스트에서 딕셔너리로 변환
+            RegisterResources(resourceDataList.ToArray());
+            Debug.Log($"[ResourceService] Initialized with {resourceDataList.Count} resources from list.");
+        }
+        else
+        {
+            // 리스트가 없으면 기존 방식으로 자동 로드
+            AutoLoadAllResources();
+        }
     }
-
-    // ----------------- 초기화 -----------------
 
     /// <summary>
     /// 지정된 경로에서 모든 ResourceData를 자동으로 로드하여 등록합니다.
@@ -85,8 +94,6 @@ public class ResourceDataHandler
         
         Debug.Log($"[ResourceService] Full auto load completed: {loadedCount} resources registered");
 #else
-        // 빌드 모드: Resources 폴더에서 로드
-        // 주의: ResourceData 파일들이 Resources/Datas/Resource 폴더에 있어야 합니다.
         ResourceData[] resourceDataList = Resources.LoadAll<ResourceData>("Datas/Resource");
         if (resourceDataList != null && resourceDataList.Length > 0)
         {
@@ -235,8 +242,6 @@ public class ResourceDataHandler
         return new List<string>(_resources.Keys);
     }
 
-    // ----------------- Public Methods (자원 수량 관리) -----------------
-
     /// <summary>
     /// 시장 재고를 수정합니다 (시장 액터 생산/소비용).
     /// </summary>
@@ -244,25 +249,13 @@ public class ResourceDataHandler
     /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
     public void ModifyMarketInventory(string resourceId, long amount)
     {
-        if (!_resources.TryGetValue(resourceId, out var entry))
-        {
-            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
-            return;
-        }
-
-        // deltaCount만 누적 (count는 ApplyResourceDeltas에서 반영)
+        if (!_resources.TryGetValue(resourceId, out var entry)) return;
         entry.resourceState.deltaCount += amount;
-        
         OnResourceChanged?.Invoke();
     }
 
     /// <summary>
     /// 플레이어 창고를 수정합니다 (생산, 구매, 판매 시 사용).
-    /// 
-    /// 주의: 플레이어 재고는 시장 재고와 달리 즉시 반영됩니다.
-    /// - playerInventory: 즉시 반영되는 플레이어의 실제 보유량 (게임 중 실시간으로 사용 가능)
-    /// - playerInventoryDelta: 일일 변화량을 기록하는 통계 변수 (ApplyResourceDeltas에서 초기화됨)
-    /// 
     /// 시장 재고(count + deltaCount)와 달리, 플레이어 재고는 게임 진행 중 즉시 사용 가능해야 하므로
     /// 델타 시스템을 사용하지 않고 즉시 반영합니다.
     /// </summary>
@@ -270,36 +263,22 @@ public class ResourceDataHandler
     /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
     public void ModifyPlayerInventory(string resourceId, long amount)
     {
-        if (!_resources.TryGetValue(resourceId, out var entry))
-        {
-            Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
-            return;
-        }
+        if (!_resources.TryGetValue(resourceId, out var entry)) return;
 
-        // 감소 시 재고 확인 (재고가 부족하면 변경하지 않음)
         if (amount < 0)
         {
-            long availableInventory = entry.resourceState.playerInventory;
-            if (availableInventory < -amount) // amount는 음수이므로 -amount가 필요량
+            if (entry.resourceState.playerInventory < -amount)
             {
-                Debug.LogWarning($"[ResourceService] Cannot modify player inventory for {resourceId}: insufficient stock (requested: {-amount}, available: {availableInventory})");
-                return; // 재고가 부족하면 변경하지 않음 (playerInventoryDelta도 변경하지 않음)
+                Debug.LogWarning($"[Resource] Insufficient player inventory for {resourceId}.");
+                return;
             }
         }
 
-        // 재고가 충분하면 변경
-        // 플레이어 재고는 즉시 반영 (게임 진행 중 실시간 사용 가능)
         entry.resourceState.playerInventory += amount;
-        // 플레이어 재고 변화량 누적 (통계 및 일일 변화량 추적용)
         entry.resourceState.playerInventoryDelta += amount;
-        
-        // 플레이어 재고는 절대 음수가 될 수 없음 (안전장치)
-        if (entry.resourceState.playerInventory < 0)
-        {
-            Debug.LogError($"[ResourceService] Player inventory underflow for {resourceId}! Setting to 0. This should not happen.");
-            entry.resourceState.playerInventory = 0;
-        }
-        
+
+        if (entry.resourceState.playerInventory < 0) entry.resourceState.playerInventory = 0;
+
         OnResourceChanged?.Invoke();
     }
 
@@ -401,10 +380,17 @@ public class ResourceDataHandler
     /// <param name="resources">추가할 자원 딕셔너리 (ID -> 수량)</param>
     public void AddResources(Dictionary<string, long> resources)
     {
+        bool changed = false;
         foreach (var kvp in resources)
         {
-            AddResource(kvp.Key, kvp.Value);
+            if (_resources.TryGetValue(kvp.Key, out var entry))
+            {
+                entry.resourceState.deltaCount += kvp.Value;
+                changed = true;
+            }
         }
+
+        if (changed) OnResourceChanged?.Invoke();
     }
 
     /// <summary>
@@ -537,19 +523,27 @@ public class ResourceDataHandler
     /// </summary>
     public void UpdateAllPrices()
     {
+        bool changed = false;
         foreach (var entry in _resources.Values)
         {
-            if (entry?.resourceState == null)
-            {
-                continue;
-            }
+            if (entry?.resourceState == null) continue;
 
             float multiplier = 1f + entry.resourceState.priceChangeRate;
-            entry.resourceState.currentValue = Mathf.Max(0.01f, entry.resourceState.currentValue * multiplier);
-            entry.resourceState.RecordPrice(entry.resourceState.currentValue);
+
+            // 가격 변화가 거의 없으면 스킵 (부동소수점 오차 고려)
+            if (Mathf.Abs(multiplier - 1f) < 0.0001f) continue;
+
+            float newPrice = Mathf.Max(0.01f, entry.resourceState.currentValue * multiplier);
+
+            if (Mathf.Abs(newPrice - entry.resourceState.currentValue) > 0.001f)
+            {
+                entry.resourceState.currentValue = newPrice;
+                entry.resourceState.RecordPrice(newPrice);
+                changed = true;
+            }
         }
-        
-        OnResourceChanged?.Invoke();
+
+        if (changed) OnResourceChanged?.Invoke();
     }
 
     // ----------------- Utility Methods -----------------
@@ -597,7 +591,7 @@ public class ResourceDataHandler
             if (newCount < 0)
             {
                 long deficit = -newCount;
-                HandleResourceShortage(entry, deficit);
+                ApplyMarketDemand(entry, deficit);
                 newCount = 0;
             }
 
@@ -620,21 +614,6 @@ public class ResourceDataHandler
     public bool IsResourceRegistered(string resourceId)
     {
         return _resources.ContainsKey(resourceId);
-    }
-
-    private void HandleResourceShortage(ResourceEntry entry, long deficit)
-    {
-        if (entry == null || deficit <= 0)
-        {
-            return;
-        }
-
-        // 예약 시스템을 통해 처리되므로 직접 비용 차감하지 않음
-        // ReserveDailyExpenses()에서 CalculateResourceShortageCost()로 이미 계산되어
-        // ApplyReservedDailyExpenses()에서 처리됨
-        
-        // 시장 수요에 반영 (자원 추가 없이 수요만 증가)
-        ApplyMarketDemand(entry, deficit);
     }
 
     /// <summary>

@@ -191,7 +191,7 @@ public class ResourceAnimHandler
         if (conflictDetected)
         {
             _hasConflicts = true;
-            Debug.LogWarning("⚠️ [ResourceAnimHandler] 자원 경로 충돌 감지됨.");
+            Debug.LogWarning("[ResourceAnimHandler] 자원 경로 충돌 감지됨.");
         }
     }
 

@@ -23,14 +23,23 @@ public partial class EmployeeDataHandler
     /// <summary>
     /// EmployeeService 생성자
     /// </summary>
-    public EmployeeDataHandler(GameDataManager gameDataManager)
+    public EmployeeDataHandler(GameDataManager gameDataManager, List<EmployeeData> employeeDataList = null)
     {
         _gameDataManager = gameDataManager;
         _employees = new Dictionary<string, EmployeeEntry>();
-        AutoLoadAllEmployees(); // 게임 시작 시 자동으로 모든 직원 데이터 로드
+        
+        if (employeeDataList != null && employeeDataList.Count > 0)
+        {
+            // 리스트에서 딕셔너리로 변환
+            RegisterEmployees(employeeDataList.ToArray());
+            Debug.Log($"[EmployeeService] Initialized with {employeeDataList.Count} employees from list.");
+        }
+        else
+        {
+            // 리스트가 없으면 기존 방식으로 자동 로드
+            AutoLoadAllEmployees();
+        }
     }
-
-    // ----------------- 초기화 -----------------
 
     /// <summary>
     /// 지정된 경로에서 모든 EmployeeData를 자동으로 로드하여 등록합니다.
@@ -63,8 +72,6 @@ public partial class EmployeeDataHandler
         
         Debug.Log($"[EmployeeService] Auto load completed: {loadedCount} employee types registered");
 #else
-        // 빌드 모드: Resources 폴더에서 로드
-        // 주의: employeePaths의 첫 번째 경로를 사용하거나, 기본 경로 "Datas/Employee" 사용
         string resourcePath = employeePaths != null && employeePaths.Length > 0 ? employeePaths[0] : "Datas/Employee";
         EmployeeData[] employeeDataList = Resources.LoadAll<EmployeeData>(resourcePath);
         if (employeeDataList != null && employeeDataList.Length > 0)
@@ -157,8 +164,6 @@ public partial class EmployeeDataHandler
             RegisterEmployee(data);
         }
     }
-
-    // ----------------- Public Getters (읽기 전용) -----------------
 
     /// <summary>
     /// 특정 직원 유형의 인원 수를 반환합니다.

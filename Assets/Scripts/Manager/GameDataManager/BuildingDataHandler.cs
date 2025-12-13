@@ -18,10 +18,21 @@ public class BuildingDataHandler
     /// <summary>
     /// BuildingService 생성자
     /// </summary>
-    public BuildingDataHandler(GameDataManager gameDataManager)
+    public BuildingDataHandler(GameDataManager gameDataManager, List<BuildingData> buildingDataList = null)
     {
         _buildings = new Dictionary<string, BuildingData>();
-        AutoLoadAllBuildings(); // 게임 시작 시 자동으로 모든 건물 데이터 로드
+        
+        if (buildingDataList != null && buildingDataList.Count > 0)
+        {
+            // 리스트에서 딕셔너리로 변환
+            RegisterBuildings(buildingDataList.ToArray());
+            Debug.Log($"[BuildingService] Initialized with {buildingDataList.Count} buildings from list.");
+        }
+        else
+        {
+            // 리스트가 없으면 기존 방식으로 자동 로드
+            AutoLoadAllBuildings();
+        }
     }
 
     // ----------------- 초기화 -----------------

@@ -198,11 +198,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         _removalHandler = new BuildingRemovalHandler(this);
         _calculateHandler = new BuildingCalculateHandler(this);
         _resourceAnimHandler = new ResourceAnimHandler(this, _resourceItemPrefab, _resourceSpawnInterval);
-        if (_visualManager != null)
-        {
-            _placementHandler.SetColors(_visualManager.ValidColor, _visualManager.InvalidColor);
-            _removalHandler.SetColor(_visualManager.ValidColor, _visualManager.InvalidColor);
-        }
     }
 
     private void InitializeThread()

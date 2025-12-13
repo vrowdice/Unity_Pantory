@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// 플레이어 거래 시스템
@@ -10,72 +11,29 @@ public partial class MarketDataHandler
     /// 플레이어 자동 거래를 실행합니다 (playerTransactionDelta 기반)
     /// 예약 시스템을 통해 처리되므로 직접 금액 변경 없이 자원만 처리합니다.
     /// </summary>
-    /// <summary>
-    /// MarketDataHandler 플레이어 거래 파트
-    /// </summary>
     private void ExecutePlayerAutoTrades(Dictionary<string, ResourceEntry> resources)
     {
-        if (resources == null || _gameDataManager == null)
-        {
-            return;
-        }
+        if (resources == null || _gameDataManager == null) return;
 
-        foreach (var kvp in resources)
+        foreach (KeyValuePair<string, ResourceEntry> kvp in resources)
         {
-            var entry = kvp.Value;
-            if (entry?.resourceState == null)
-            {
-                continue;
-            }
+            ResourceEntry entry = kvp.Value;
+            if (entry == null || entry.resourceState == null) continue;
 
             long delta = entry.resourceState.playerTransactionDelta;
-            if (delta == 0)
-            {
-                continue; // 거래 설정이 없으면 스킵
-            }
+
+            if (delta == 0) continue;
 
             if (delta > 0)
             {
-                // 양수: 매수 (예약 시스템을 통해 처리되므로 자원만 추가)
                 ExecutePlayerBuyResourceWithoutPayment(kvp.Key, delta);
             }
-            else if (delta < 0)
+            else
             {
-                // 음수: 매도 (예약 시스템을 통해 처리되므로 자원만 제거)
                 long requestedAmount = -delta;
-                // 재고가 없으면 판매하지 않음 (playerTransactionDelta는 그대로 유지)
                 ExecutePlayerSellResourceWithoutPayment(kvp.Key, requestedAmount);
             }
         }
-    }
-
-    /// <summary>
-    /// 플레이어 거래 검증을 수행합니다.
-    /// </summary>
-    private bool ValidatePlayerTrade(string resourceId, long amount, out ResourceEntry resourceEntry)
-    {
-        resourceEntry = null;
-        
-        if (_gameDataManager?.Resource == null || _gameDataManager.Finances == null)
-        {
-            Debug.LogWarning("[MarketDataHandler] GameDataManager or required handlers are not available.");
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(resourceId) || amount <= 0)
-        {
-            Debug.LogWarning($"[MarketDataHandler] Invalid trade request: resourceId={resourceId}, amount={amount}");
-            return false;
-        }
-
-        resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
-        if (resourceEntry == null)
-        {
-            Debug.LogWarning($"[MarketDataHandler] Resource not found: {resourceId}");
-            return false;
-        }
-
-        return true;
     }
 
     /// <summary>
@@ -86,17 +44,7 @@ public partial class MarketDataHandler
     /// <returns>성공 시 true, 실패 시 false</returns>
     public bool TryPlayerBuyResource(string resourceId, long amount)
     {
-        if (!ValidatePlayerTrade(resourceId, amount, out var resourceEntry))
-        {
-            return false;
-        }
-
-        // 시장에 재고가 있는지 확인
-        if (!_gameDataManager.Resource.HasEnoughMarketInventory(resourceId, amount))
-        {
-            Debug.LogWarning($"[MarketDataHandler] Market has insufficient stock for {resourceEntry.resourceData.displayName}. Required: {amount}, Available: {_gameDataManager.Resource.GetMarketResourceQuantity(resourceId)}");
-            return false;
-        }
+        ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
 
         float unitPrice = resourceEntry.resourceState.currentValue;
         long baseCost = (long)Mathf.Ceil(unitPrice * amount);
@@ -124,15 +72,10 @@ public partial class MarketDataHandler
     }
 
     /// <summary>
-    /// 플레이어 자동 거래용 매수 (예약 시스템을 통해 처리되므로 금액 변경 없이 자원만 처리)
+    /// 플레이어 자동 거래용 매수
     /// </summary>
     private void ExecutePlayerBuyResourceWithoutPayment(string resourceId, long amount)
     {
-        if (_gameDataManager?.Resource == null)
-        {
-            return;
-        }
-
         if (string.IsNullOrEmpty(resourceId) || amount <= 0)
         {
             return;
@@ -144,17 +87,8 @@ public partial class MarketDataHandler
             return;
         }
 
-        // 시장에 재고가 있는지 확인
-        if (!_gameDataManager.Resource.HasEnoughMarketInventory(resourceId, amount))
-        {
-            return;
-        }
-
-        // 자원 이동: 시장(감소) -> 플레이어(증가)
         _gameDataManager.Resource.ModifyMarketInventory(resourceId, -amount);
         _gameDataManager.Resource.ModifyPlayerInventory(resourceId, amount);
-
-        // 시장 수요에 즉시 반영
         ApplyPlayerDemand(resourceEntry, amount);
     }
 
@@ -166,17 +100,14 @@ public partial class MarketDataHandler
     /// <returns>성공 시 true, 실패 시 false</returns>
     public bool TryPlayerSellResource(string resourceId, long amount)
     {
-        if (!ValidatePlayerTrade(resourceId, amount, out var resourceEntry))
-        {
-            return false;
-        }
-
         // 플레이어 재고 확인
         if (!_gameDataManager.Resource.HasEnoughPlayerResource(resourceId, amount))
         {
             Debug.LogWarning($"[MarketDataHandler] Insufficient resources in player storage. Required: {amount}, Available: {_gameDataManager.Resource.GetPlayerResourceQuantity(resourceId)}");
             return false;
         }
+
+        ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
 
         float unitPrice = resourceEntry.resourceState.currentValue;
         long baseRevenue = (long)Mathf.Floor(unitPrice * amount);
@@ -203,23 +134,12 @@ public partial class MarketDataHandler
     /// <returns>실제 판매된 수량 (재고 부족 시 요청량보다 적을 수 있음)</returns>
     private long ExecutePlayerSellResourceWithoutPayment(string resourceId, long amount)
     {
-        if (_gameDataManager?.Resource == null)
-        {
-            return 0;
-        }
-
         if (string.IsNullOrEmpty(resourceId) || amount <= 0)
         {
             return 0;
         }
 
-        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
-        if (resourceEntry == null)
-        {
-            return 0;
-        }
-
-        // 플레이어 재고 확인
+        ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
         long availableInventory = _gameDataManager.Resource.GetPlayerResourceQuantity(resourceId);
         if (availableInventory <= 0)
         {
@@ -235,11 +155,8 @@ public partial class MarketDataHandler
             Debug.LogWarning($"[MarketDataHandler] Insufficient player inventory for {resourceId}. Requested: {amount}, Available: {availableInventory}, Selling: {actualSellAmount}");
         }
 
-        // 자원 이동: 플레이어(감소) -> 시장(증가)
         _gameDataManager.Resource.ModifyPlayerInventory(resourceId, -actualSellAmount);
         _gameDataManager.Resource.ModifyMarketInventory(resourceId, actualSellAmount);
-
-        // 시장 공급에 즉시 반영
         ApplyPlayerSupply(resourceEntry, actualSellAmount);
         
         return actualSellAmount;
@@ -250,16 +167,11 @@ public partial class MarketDataHandler
     /// </summary>
     private void ApplyPlayerDemand(ResourceEntry resourceEntry, long amount)
     {
-        if (resourceEntry?.resourceState == null)
-        {
-            return;
-        }
-
         // 1. 누적 수요 기록 (다음 날 시뮬레이션에 반영)
         resourceEntry.resourceState.accumulatedPlayerDemand += amount;
 
         // 2. 즉시 가격 조정
-        float impactRate = _marketSettings != null ? _marketSettings.playerDemandImpact : 0.02f;
+        float impactRate = _marketSettings.playerDemandImpact;
         float totalMarketSupply = resourceEntry.resourceState.lastSupply;
         float totalMarketDemand = resourceEntry.resourceState.lastDemand;
         float marketVolume = Mathf.Max(1f, totalMarketSupply + totalMarketDemand);
@@ -296,11 +208,6 @@ public partial class MarketDataHandler
     /// </summary>
     private void ApplyPlayerSupply(ResourceEntry resourceEntry, long amount)
     {
-        if (resourceEntry?.resourceState == null)
-        {
-            return;
-        }
-
         // 1. 누적 공급 기록 (다음 날 시뮬레이션에 반영)
         resourceEntry.resourceState.accumulatedPlayerSupply += amount;
 

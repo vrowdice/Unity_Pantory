@@ -10,8 +10,7 @@ using UnityEngine;
 public class SaveLoadHandler
 {
     private const string THREAD_SAVE_FILE = "ThreadData.json";
-
-    // ==================== 생성자 (MonoBehaviour의 경우 필요 없지만, 명시적 호출 방지/허용을 위해 추가 가능) ====================
+    
     /// <summary>
     /// SaveLoadHandler의 기본 생성자.
     /// NOTE: MonoBehaviour 클래스는 일반적으로 new로 생성되지 않고 AddComponent를 사용합니다.

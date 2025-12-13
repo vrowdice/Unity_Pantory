@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -88,9 +89,6 @@ public partial class EmployeeDataHandler
     /// <summary>
     /// 일일 직원 상태 업데이트 (만족도 및 효율성)를 수행합니다.
     /// </summary>
-    /// <summary>
-    /// 일일 직원 상태 업데이트 (만족도 및 효율성)를 수행합니다.
-    /// </summary>
     public void UpdateDailyEmployeeStatus()
     {
         if (_salarySettings == null)
@@ -106,7 +104,7 @@ public partial class EmployeeDataHandler
         // 2. 매니저 부족 시 만족도 감소 이펙트 적용/제거
         UpdateManagementDeficitEffect(deficit);
 
-        foreach (var entry in _employees.Values)
+        foreach (EmployeeEntry entry in _employees.Values)
         {
             if (entry == null || entry.employeeData == null || entry.employeeState == null)
             {

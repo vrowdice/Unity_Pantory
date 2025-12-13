@@ -23,10 +23,47 @@ public class ResearchDataHandler
     public event Action OnResearchPointsChanged;
     public event Action<string> OnResearchUnlocked; // 해금된 연구 ID 전달
 
-    public ResearchDataHandler(GameDataManager manager)
+    public ResearchDataHandler(GameDataManager manager, List<ResearchData> researchDataList = null)
     {
         _manager = manager;
-        AutoLoadAllResearch();
+        
+        if (researchDataList != null && researchDataList.Count > 0)
+        {
+            // 리스트에서 딕셔너리로 변환
+            RegisterResearchList(researchDataList);
+            Debug.Log($"[Research] Initialized with {researchDataList.Count} research entries from list.");
+        }
+        else
+        {
+            // 리스트가 없으면 기존 방식으로 자동 로드
+            AutoLoadAllResearch();
+        }
+    }
+
+    /// <summary>
+    /// 리스트에서 연구 데이터를 등록합니다.
+    /// </summary>
+    private void RegisterResearchList(List<ResearchData> researchDataList)
+    {
+        foreach (var data in researchDataList)
+        {
+            if (data == null || string.IsNullOrEmpty(data.id))
+                continue;
+
+            if (_researchEntries.ContainsKey(data.id))
+            {
+                Debug.LogWarning($"[Research] Duplicate research ID: {data.id}");
+                continue;
+            }
+
+            var entry = new ResearchEntry
+            {
+                researchId = data.id,
+                researchData = data,
+                researchState = new ResearchState { isCompleted = false }
+            };
+            _researchEntries.Add(data.id, entry);
+        }
     }
 
     // ========================================================================

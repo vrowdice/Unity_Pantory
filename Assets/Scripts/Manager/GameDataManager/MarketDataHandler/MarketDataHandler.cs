@@ -21,10 +21,22 @@ public partial class MarketDataHandler
     /// </summary>
     public event Action OnMarketUpdated;
 
-    public MarketDataHandler(GameDataManager manager)
+    public MarketDataHandler(GameDataManager manager, List<MarketActorData> marketActorDataList = null)
     {
         _gameDataManager = manager;
-        AutoLoadAllActors();
+        
+        if (marketActorDataList != null && marketActorDataList.Count > 0)
+        {
+            // 리스트에서 딕셔너리로 변환
+            RegisterActors(marketActorDataList);
+            Debug.Log($"[MarketDataHandler] Initialized with {marketActorDataList.Count} actors from list.");
+        }
+        else
+        {
+            // 리스트가 없으면 기존 방식으로 자동 로드
+            AutoLoadAllActors();
+        }
+        
         CreateSystemActors();
     }
 

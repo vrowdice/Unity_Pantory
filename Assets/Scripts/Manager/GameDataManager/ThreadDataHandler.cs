@@ -51,8 +51,6 @@ public class ThreadDataHandler
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region Utility & Data Initialization
 
     /// <summary> Thread 데이터를 초기화하고 저장합니다. </summary>
@@ -87,8 +85,6 @@ public class ThreadDataHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region Thread Getters (Read Operations)
 
@@ -166,8 +162,6 @@ public class ThreadDataHandler
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region Thread CRUD (Write Operations)
 
     /// <summary> 새로운 Thread를 추가합니다. </summary>
@@ -208,63 +202,6 @@ public class ThreadDataHandler
         return null;
     }
 
-    /// <summary>
-    /// [레거시/사용 중단] 템플릿 스레드를 복사하여 새로운 인스턴스를 생성합니다.
-    /// 
-    /// ⚠️ 이 메서드는 더 이상 사용되지 않습니다.
-    /// 인스턴스 생성은 ThreadPlacementDataHandler.PlaceThread()에서 처리됩니다.
-    /// ThreadDataHandler는 템플릿(설계도)만 관리하는 역할입니다.
-    /// </summary>
-    [System.Obsolete("Use ThreadPlacementDataHandler.PlaceThread() instead. This method is kept for backward compatibility only.")]
-    public ThreadState CreateThreadInstanceFromTemplate(ThreadState templateThread, Vector2Int gridPosition)
-    {
-        Debug.LogWarning("[ThreadDataHandler] CreateThreadInstanceFromTemplate is deprecated. Use ThreadPlacementDataHandler.PlaceThread() instead.");
-        
-        if (templateThread == null)
-        {
-            Debug.LogWarning("[ThreadDataHandler] Template thread is null. Cannot create instance.");
-            return null;
-        }
-
-        // 고유한 ThreadId 생성 (템플릿 ID + 그리드 위치 + GUID)
-        string uniqueThreadId = $"{templateThread.threadId}_{gridPosition.x}_{gridPosition.y}_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
-        
-        // 이미 존재하는 경우 재사용하지 않고 새로운 ID 생성
-        while (_threads.ContainsKey(uniqueThreadId))
-        {
-            uniqueThreadId = $"{templateThread.threadId}_{gridPosition.x}_{gridPosition.y}_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
-        }
-
-        // ThreadState 복사 (JSON 직렬화/역직렬화 사용)
-        string json = JsonUtility.ToJson(templateThread);
-        ThreadState newInstance = JsonUtility.FromJson<ThreadState>(json);
-        
-        // 고유 ID와 이름 설정
-        newInstance.threadId = uniqueThreadId;
-        newInstance.threadName = $"{templateThread.threadName} ({gridPosition.x}, {gridPosition.y})";
-        
-        // 직원 수 초기화 (각 인스턴스는 독립적으로 관리)
-        newInstance.currentWorkers = 0;
-        newInstance.currentTechnicians = 0;
-        newInstance.currentProductionProgress = 0f;
-        newInstance.currentProductionEfficiency = 0f;
-
-        // ThreadDataHandler에 추가
-        if (AddThread(newInstance))
-        {
-            // 새로 생성된 인스턴스 초기화 (유지비, 직원 요구사항, 생산 체인 계산)
-            if (_gameDataManager?.ThreadCalculate != null)
-            {
-                _gameDataManager.ThreadCalculate.InitializeThread(newInstance, this);
-            }
-            
-            Debug.Log($"[ThreadDataHandler] Created thread instance: {uniqueThreadId} from template: {templateThread.threadId}");
-            return newInstance;
-        }
-
-        return null;
-    }
-
     /// <summary> Thread를 제거합니다. </summary>
     public bool RemoveThread(string threadId)
     {
@@ -293,8 +230,6 @@ public class ThreadDataHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region Building Management
 
@@ -378,8 +313,6 @@ public class ThreadDataHandler
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region Category Getters (Read Operations)
 
     /// <summary> 특정 카테고리를 반환합니다. </summary>
@@ -428,8 +361,6 @@ public class ThreadDataHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region Category CRUD (Write Operations)
 
@@ -534,8 +465,6 @@ public class ThreadDataHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region Save/Load Data Access
 

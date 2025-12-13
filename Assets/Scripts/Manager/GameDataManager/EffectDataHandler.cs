@@ -9,8 +9,6 @@ public class EffectDataHandler
 {
     private GameDataManager _gameDataManager;
     private readonly Dictionary<StatType, List<EffectState>> _activeEffects = new();
-    
-
 
     public EffectDataHandler(GameDataManager gameDataManager) 
     {

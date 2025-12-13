@@ -27,7 +27,6 @@ public partial class DesignUiManager
 
         UpdateModeBtnImages(true, false);
         UpdateBuildingButtonStates();
-        Debug.Log($"[DesignUiManager] Building selected: {buildingData.displayName}");
     }
 
     public void DeselectBuilding()
@@ -35,11 +34,9 @@ public partial class DesignUiManager
         _selectedBuilding = null;
         _isRemovalMode = false;
 
-        _buildingTileManager?.CancelPlacementMode();
-
+        _buildingTileManager.CancelPlacementMode();
         UpdateModeBtnImages(false, false);
         UpdateBuildingButtonStates();
-        Debug.Log("[DesignUiManager] Building deselected");
     }
 
     public void StartRemovalMode()
@@ -47,28 +44,19 @@ public partial class DesignUiManager
         _isRemovalMode = true;
         _selectedBuilding = null;
 
-        if (_buildingTileManager != null)
-        {
-            if (_buildingTileManager.IsPlacementMode)
-            {
-                _buildingTileManager.CancelPlacementMode();
-            }
-
-            _buildingTileManager.StartRemovalMode();
-        }
+        _buildingTileManager.CancelPlacementMode();
+        _buildingTileManager.StartRemovalMode();
 
         UpdateModeBtnImages(false, true);
-        Debug.Log("[DesignUiManager] Removal mode started");
+        UpdateBuildingButtonStates();
     }
 
     public void CancelRemovalMode()
     {
         _isRemovalMode = false;
-
-        _buildingTileManager?.CancelRemovalMode();
-
+        _buildingTileManager.CancelRemovalMode();
         UpdateModeBtnImages(false, false);
-        Debug.Log("[DesignUiManager] Removal mode cancelled");
+        UpdateBuildingButtonStates();
     }
 
     public void RemovalModeToggle()
@@ -76,12 +64,10 @@ public partial class DesignUiManager
         if (_isRemovalMode)
         {
             CancelRemovalMode();
-            Debug.Log("[DesignUiManager] Removal mode toggled OFF");
         }
         else
         {
             StartRemovalMode();
-            Debug.Log("[DesignUiManager] Removal mode toggled ON");
         }
     }
 }

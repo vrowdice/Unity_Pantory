@@ -6,44 +6,33 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class BuildingPlacementHandler
 {
-    // ==================== References ====================
     private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridHandler;
     private readonly GameDataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
     private readonly DesignUiManager _designUiManager;
 
-    // ==================== State ====================
     private bool _isActive = false;
     private bool _isDragging = false;
     private bool _canPlace = false;
     
-    // ==================== Building Data ====================
     private BuildingData _selectedBuilding = null;
     private Vector2Int _currentGridPos;
     private Vector2Int _lastPlacedGridPos = new Vector2Int(int.MinValue, int.MinValue);
-    private int _currentRotation = 0; // 0=0도, 1=90도, 2=180도, 3=270도
-    
-    // ==================== Preview Objects ====================
+    private int _currentRotation = 0;
+   
     private GameObject _previewObject = null;
     private SpriteRenderer _previewRenderer = null;
     private BuildingObject _previewBuildingComponent = null;
     
-    // ==================== Prefabs ====================
     private GameObject _buildingObjectPrefab;
     private GameObject _inputMarkerPrefab;
     private GameObject _outputMarkerPrefab;
-    
-    // ==================== Colors ====================
-    private Color _validColor = new Color(0, 1, 0, 0.5f);
-    private Color _invalidColor = new Color(1, 0, 0, 0.5f);
 
-    // ==================== Properties ====================
     public bool IsActive => _isActive;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int CurrentRotation => _currentRotation;
 
-    // ==================== Constructor ====================
     public BuildingPlacementHandler(BuildingTileManager buildingTileManager, GameObject buildingObjectPrefab)
     {
         _buildingTileManager = buildingTileManager;
@@ -56,18 +45,7 @@ public class BuildingPlacementHandler
         _inputMarkerPrefab = _buildingTileManager.GetInputMarkerPrefab();
         _outputMarkerPrefab = _buildingTileManager.GetOutputMarkerPrefab();
     }
-
-    // ==================== Public Methods ====================
     
-    /// <summary>
-    /// Preview 색상을 설정합니다.
-    /// </summary>
-    public void SetColors(Color validColor, Color invalidColor)
-    {
-        _validColor = validColor;
-        _invalidColor = invalidColor;
-    }
-
     /// <summary>
     /// 배치 모드를 시작합니다.
     /// </summary>
@@ -77,13 +55,15 @@ public class BuildingPlacementHandler
 
         _isActive = true;
         _selectedBuilding = buildingData;
-        _currentRotation = 0; // 회전 초기화
+        _currentRotation = 0;
         
         CreatePreviewObject();
-        _gridHandler.SetAllTilesOutline(true, _validColor);  // 타일 윤곽선 표시
+        Color validColor = VisualManager.Instance?.ValidColor ?? new Color(0, 1, 0, 0.5f);
+        _gridHandler.SetAllTilesOutline(true, validColor);
         
         _designUiManager.UpdateModeBtnImages(true, false);
-        Debug.Log($"[BuildingPlacementHandler] Placement mode started: {buildingData.displayName}");
+
+        _mainCameraController.SetDragEnabled(false);
     }
 
     /// <summary>
@@ -98,10 +78,11 @@ public class BuildingPlacementHandler
         _currentRotation = 0;
         
         DestroyPreviewObject();
-        _gridHandler.SetAllTilesOutline(false);  // 타일 윤곽선 숨김
+        _gridHandler.SetAllTilesOutline(false);
         
         _designUiManager.UpdateModeBtnImages(false, false);
-        Debug.Log("[BuildingPlacementHandler] Placement mode cancelled");
+
+        _mainCameraController.SetDragEnabled(true);
     }
 
     /// <summary>
@@ -126,7 +107,6 @@ public class BuildingPlacementHandler
 
         _currentRotation = (_currentRotation + 3) % 4; // -1과 동일 (반시계)
         UpdatePreviewRotation();
-        Debug.Log($"[BuildingPlacementHandler] Rotated left: {_currentRotation * 90} degrees");
     }
 
     /// <summary>
@@ -139,10 +119,7 @@ public class BuildingPlacementHandler
 
         _currentRotation = (_currentRotation + 1) % 4;
         UpdatePreviewRotation();
-        Debug.Log($"[BuildingPlacementHandler] Rotated right: {_currentRotation * 90} degrees");
     }
-
-    // ==================== Private Methods ====================
     
     /// <summary>
     /// 회전에 따라 건물 크기를 계산합니다.
@@ -150,7 +127,6 @@ public class BuildingPlacementHandler
     private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
     {
         rotation = rotation % 4;
-        // 90도 또는 270도 회전 시 가로/세로 바뀜
         if (rotation == 1 || rotation == 3)
         {
             return new Vector2Int(size.y, size.x);
@@ -168,9 +144,8 @@ public class BuildingPlacementHandler
 
         // 회전 적용
         float angle = _currentRotation * 90f;
-        _previewObject.transform.rotation = Quaternion.Euler(0, 0, -angle); // Unity는 반시계방향이 양수
-        
-        // 크기 재계산 (스프라이트 스케일은 회전에 영향 받지 않음)
+        _previewObject.transform.rotation = Quaternion.Euler(0, 0, -angle);
+
         Vector2Int rotatedSize = GetRotatedSize(_selectedBuilding.size, _currentRotation);
         Vector3 scale = _buildingTileManager.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
         _previewObject.transform.localScale = scale;
@@ -215,7 +190,9 @@ public class BuildingPlacementHandler
         // 프리뷰 위치 및 색상 업데이트
         Vector3 worldPos = _gridHandler.GridToWorldPosition(gridPos, rotatedSize);
         _previewObject.transform.position = worldPos;
-        _previewRenderer.color = _canPlace ? _validColor : _invalidColor;
+        Color validColor = VisualManager.Instance?.ValidColor ?? new Color(0, 1, 0, 0.5f);
+        Color invalidColor = VisualManager.Instance?.InvalidColor ?? new Color(1, 0, 0, 0.5f);
+        _previewRenderer.color = _canPlace ? validColor : invalidColor;
         
         // Input/Output 프리뷰 마커 위치 업데이트 (BuildingObject를 통해)
         if (_previewBuildingComponent != null)
@@ -233,7 +210,7 @@ public class BuildingPlacementHandler
         if (Input.GetMouseButtonDown(0))
         {
             _isDragging = true;
-            _lastPlacedGridPos = new Vector2Int(int.MinValue, int.MinValue); // 드래그 시작 시 초기화
+            _lastPlacedGridPos = new Vector2Int(int.MinValue, int.MinValue);
         }
 
         // 마우스 버튼을 떼었을 때
@@ -300,14 +277,9 @@ public class BuildingPlacementHandler
             return;
         }
 
-        // BuildingState 생성 및 임시 저장소에 추가 (회전 정보 포함)
         BuildingState buildingState = new BuildingState(buildingData.id, gridPos, buildingData, rotation);
         _buildingTileManager.AddBuildingToTemp(buildingState);
-        
-        // 데이터만 추가하고, 실제 오브젝트는 RefreshBuildings로 생성
         _buildingTileManager.RefreshBuildings();
-        
-        Debug.Log($"[BuildingPlacementHandler] Building placed (temp): {buildingData.displayName} at {gridPos}, Rotation: {rotation * 90}°, Input: {buildingState.inputPosition}, Output: {buildingState.outputPosition}");
     }
 
     /// <summary>
