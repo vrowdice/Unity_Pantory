@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// 건물 타일 시스템의 메인 매니저 (조율자).
 /// - 그리드, 배치/제거 모드, 임시 데이터 및 최종 저장 로직을 관리합니다.
 /// </summary>
-public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
+public class BuildingTileManager : MonoBehaviour, IGameSceneManager
 {
     #region 인스펙터 설정
 
@@ -34,7 +34,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     #region Private 변수 및 핸들러
 
     private string _currentThreadId = "";
-    private string _pendingThreadId = ""; // DataManager가 준비될 때까지 대기 중인 스레드 ID
     private BoxCollider2D _cameraCollider;
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
@@ -47,7 +46,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     private BuildingPlacementHandler _placementHandler;
     private BuildingRemovalHandler _removalHandler;
     private ResourceAnimHandler _resourceAnimHandler;
-    // BuildingCalculateHandler는 경로 탐색이 필요한 경우에만 사용 (CalculateThreadOutputs)
     private BuildingCalculateHandler _calculateHandler;
 
     // 공용 World Space Canvas
@@ -55,7 +53,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     // 임시 저장 상태
     private List<BuildingState> _tempBuildingStates = new List<BuildingState>();
-    private bool _isTempDataDirty = false; // 임시 데이터 변경 여부
+    private bool _isTempDataDirty = false;
     private bool _handlersInitialized = false;
     private bool _isInitialized = false;
 
@@ -76,7 +74,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
             if (_sharedProductionIconCanvas == null && _gameManager != null)
             {
                 Camera targetCamera = _mainCamera ?? Camera.main;
-                RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
+                RectTransform canvasRect = _gameManager.GetWorldCanvas();
                 if (canvasRect != null)
                 {
                     _sharedProductionIconCanvas = canvasRect.gameObject;
@@ -95,15 +93,13 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region Unity 생명주기
 
     void Start()
     {
         if (!_isInitialized)
         {
-            Initialize(GameManager.Instance, GameDataManager.Instance);
+            OnInitialize(GameManager.Instance, GameDataManager.Instance);
         }
     }
 
@@ -136,11 +132,9 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region 초기화 메서드
 
-    public void Initialize(GameManager gameManager, GameDataManager dataManager)
+    public void OnInitialize(GameManager gameManager, GameDataManager dataManager)
     {
         InitializeReferences(gameManager, dataManager ?? GameDataManager.Instance);
 
@@ -195,14 +189,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
                 _mainCamera.TryGetComponent(out _mainCameraController);
             }
         }
-
-        // DataManager가 준비되었고 대기 중인 스레드 ID가 있으면 설정
-        if (_dataManager != null && _dataManager.Thread != null && !string.IsNullOrEmpty(_pendingThreadId))
-        {
-            string pendingId = _pendingThreadId;
-            _pendingThreadId = ""; // 먼저 초기화하여 재귀 호출 방지
-            SetCurrentThread(pendingId);
-        }
     }
 
     private void InitializeHandlers()
@@ -228,62 +214,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
         else
         {
             Debug.LogWarning("[BuildingTileManager] GameManager or CurrentThreadId is null/empty. Starting with an empty thread.");
-        }
-    }
-
-    /// <summary>
-    /// 스레드 ID가 없을 때 자동으로 설정합니다.
-    /// </summary>
-    /// <param name="createIfNotExists">스레드가 없을 때 자동으로 생성할지 여부 (기본값: false)</param>
-    public void EnsureThreadId(bool createIfNotExists = false)
-    {
-        if (!string.IsNullOrEmpty(_currentThreadId))
-            return;
-
-        // 1. GameManager에서 가져오기
-        if (_gameManager != null && !string.IsNullOrEmpty(_gameManager.CurrentThreadId))
-        {
-            _currentThreadId = _gameManager.CurrentThreadId;
-            Debug.Log($"[BuildingTileManager] Thread ID set from GameManager: {_currentThreadId}");
-            return;
-        }
-
-        // 2. DataManager에서 존재하는 첫 번째 스레드 사용
-        if (_dataManager != null && _dataManager.Thread != null)
-        {
-            var allThreads = _dataManager.Thread.GetAllThreads();
-            if (allThreads != null && allThreads.Count > 0)
-            {
-                _currentThreadId = allThreads.Keys.First();
-                Debug.Log($"[BuildingTileManager] Thread ID set from existing thread: {_currentThreadId}");
-                return;
-            }
-        }
-
-        // 3. 스레드가 없을 때의 처리
-        if (createIfNotExists && _dataManager != null && _dataManager.Thread != null)
-        {
-            // 사용자가 명시적으로 요청한 경우에만 기본 스레드 생성 (예: 건물 배치 시)
-            string defaultThreadId = "thread_main_line";
-            string defaultThreadName = "Main Line";
-            _dataManager.Thread.CreateThread(defaultThreadId, defaultThreadName);
-            _currentThreadId = defaultThreadId;
-            
-            if (_gameManager != null)
-            {
-                _gameManager.SetCurrentThreadId(defaultThreadId);
-            }
-            
-            Debug.Log($"[BuildingTileManager] Default thread created: {defaultThreadId}");
-        }
-        else if (!createIfNotExists)
-        {
-            // 스레드가 없고 생성하지 않는 경우 - 정상적인 상황 (초기화 시)
-            Debug.Log("[BuildingTileManager] No thread ID available. Thread will be created when needed (e.g., when placing a building).");
-        }
-        else
-        {
-            Debug.LogWarning("[BuildingTileManager] Cannot ensure thread ID: DataManager or Thread handler is null.");
         }
     }
 
@@ -337,7 +267,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
         }
 
         Camera targetCamera = _mainCamera ?? Camera.main;
-        RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
+        RectTransform canvasRect = _gameManager.GetWorldCanvas();
 
         if (canvasRect == null)
         {
@@ -346,12 +276,9 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
         }
 
         _sharedProductionIconCanvas = canvasRect.gameObject;
-        Debug.Log("[BuildingTileManager] Shared Production Icon Canvas acquired from GameManager.");
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region 그리드 및 카메라 관리
 
@@ -402,19 +329,11 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region 건물 배치 및 제거 모드 제어
 
     /// <summary> 건물 배치 모드를 시작합니다. </summary>
     public void StartPlacementMode(BuildingData buildingData)
     {
-        // 스레드 ID가 없으면 자동으로 생성 (건물 배치 시에는 생성 허용)
-        if (string.IsNullOrEmpty(_currentThreadId))
-        {
-            EnsureThreadId(createIfNotExists: true);
-        }
-        
         if (IsRemovalMode) _removalHandler?.CancelRemoval();
         _placementHandler?.StartPlacement(buildingData);
     }
@@ -452,8 +371,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region 스레드 및 임시 데이터 관리 (Temp-First Logic)
 
     /// <summary> 현재 편집 중인 Thread ID를 설정하고 데이터를 로드합니다. </summary>
@@ -462,27 +379,10 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
         if (string.IsNullOrEmpty(threadId)) return;
         if (_currentThreadId == threadId) return;
 
-        // DataManager가 없으면 스레드 ID를 대기 목록에 저장하고 나중에 설정
-        // 초기화 중에는 DataManager가 아직 준비되지 않았을 수 있으므로 스레드 ID를 대기 목록에 저장
-        if (_dataManager == null || _dataManager.Thread == null)
-        {
-            _pendingThreadId = threadId;
-            //Debug.LogWarning($"[BuildingTileManager] SetCurrentThread called but DataManager/Thread is null. Thread ID '{threadId}' will be set when DataManager is ready.");
-            return;
-        }
-
-        // 대기 중인 스레드 ID가 있으면 먼저 처리
-        if (!string.IsNullOrEmpty(_pendingThreadId) && _pendingThreadId != threadId)
-        {
-            // 대기 중인 스레드 ID가 현재 요청과 다르면 무시하고 새 요청 처리
-            _pendingThreadId = "";
-        }
-
         // 이전 임시 데이터 버림
         if (_isTempDataDirty) Debug.Log($"[BuildingTileManager] Discarding temporary building data for thread: {_currentThreadId}");
 
         _currentThreadId = threadId;
-        _pendingThreadId = ""; // 대기 목록 초기화
         _isTempDataDirty = false;
         _tempBuildingStates.Clear();
 
@@ -493,7 +393,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
             _tempBuildingStates = new List<BuildingState>(buildingStates);
         }
 
-        Debug.Log($"[BuildingTileManager] Current thread set to: {threadId} (loaded {_tempBuildingStates.Count} buildings)");
         RefreshBuildings();
     }
 
@@ -580,8 +479,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
             _dataManager.Thread.Save();
         }
 
-        // 7. GameManager 및 화면 갱신
-        _gameManager?.SetCurrentThreadId(newThreadId);
         SetCurrentThread(newThreadId); // 임시 데이터 초기화 및 로드/갱신
 
         Debug.Log($"[BuildingTileManager] Save operation completed for Thread: {newThreadId}");
@@ -627,8 +524,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region 건물 렌더링 및 클릭 이벤트
 
@@ -729,8 +624,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManagerComponent
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region 계산 및 유틸리티 메서드
 

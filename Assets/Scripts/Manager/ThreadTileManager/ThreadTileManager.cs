@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using Pantory.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
+public class ThreadTileManager : MonoBehaviour, IGameSceneManager
 {
     [Header("UI Manager")]
     [SerializeField] private MainUiManager _mainUiManager;
@@ -22,8 +21,6 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
     private BoxCollider2D _cameraCollider;
 
     private ThreadGridHandler _gridHandler;
-    private ThreadPlacementHandler _placementHandler;
-    private ThreadRemovalHandler _removalHandler;
 
     private GameObject _sharedThreadLabelCanvas;
 
@@ -32,9 +29,9 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
     private bool _isInitialized;
 
     internal GameObject ThreadObjectPrefab => _threadObjectPrefab;
-    public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
-    public bool IsRemovalMode => _removalHandler != null && _removalHandler.IsActive;
-    public ThreadState CurrentPlacementThread => _placementHandler?.SelectedThread;
+    public bool IsPlacementMode => _gridHandler != null && _gridHandler.IsPlacementActive;
+    public bool IsRemovalMode => _gridHandler != null && _gridHandler.IsRemovalActive;
+    public ThreadState CurrentPlacementThread => _gridHandler?.SelectedThread;
     public Transform SharedThreadLabelCanvas
     {
         get
@@ -42,7 +39,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
             if (_sharedThreadLabelCanvas == null && _gameManager != null)
             {
                 Camera targetCamera = _mainCamera ?? Camera.main;
-                RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
+                RectTransform canvasRect = _gameManager.GetWorldCanvas();
                 if (canvasRect != null)
                 {
                     _sharedThreadLabelCanvas = canvasRect.gameObject;
@@ -57,7 +54,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
     {
         if (!_isInitialized)
         {
-            Initialize(GameManager.Instance, GameDataManager.Instance);
+            OnInitialize(GameManager.Instance, GameDataManager.Instance);
         }
     }
 
@@ -80,8 +77,8 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     void Update()
     {
-        _placementHandler?.Update();
-        _removalHandler?.Update();
+        _gridHandler?.UpdatePlacement();
+        _gridHandler?.UpdateRemoval();
         
         // 배치/제거 모드가 아닐 때만 클릭 처리
         if (!IsPlacementMode && !IsRemovalMode)
@@ -109,38 +106,38 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
 
         if (IsRemovalMode)
         {
-            _removalHandler.CancelRemoval();
+            _gridHandler?.CancelRemoval();
         }
 
-        _placementHandler?.StartPlacement(threadState);
+        _gridHandler?.StartPlacement(threadState);
         return true;
     }
 
     public void CancelPlacementMode()
     {
-        _placementHandler?.CancelPlacement();
+        _gridHandler?.CancelPlacement();
     }
 
     public void StartRemovalMode()
     {
         if (IsPlacementMode)
         {
-            _placementHandler.CancelPlacement();
+            _gridHandler?.CancelPlacement();
         }
 
-        _removalHandler?.StartRemoval();
+        _gridHandler?.StartRemoval();
     }
 
     public void CancelRemovalMode()
     {
-        _removalHandler?.CancelRemoval();
+        _gridHandler?.CancelRemoval();
     }
 
     public void ToggleRemovalMode()
     {
         if (IsRemovalMode)
         {
-            _removalHandler?.CancelRemoval();
+            _gridHandler?.CancelRemoval();
         }
         else
         {
@@ -229,22 +226,11 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
             }
         }
     }
-
-    public bool HasThreadTile(Vector2Int gridPos)
-    {
-        return _gridHandler != null && _gridHandler.HasTile(gridPos);
-    }
-
-    public ThreadTile GetThreadTile(Vector2Int gridPos)
-    {
-        return _gridHandler?.GetTile(gridPos);
-    }
-
     #endregion
 
     #region Initialization
 
-    public void Initialize(GameManager gameManager, GameDataManager dataManager)
+    public void OnInitialize(GameManager gameManager, GameDataManager dataManager)
     {
         _gameManager = gameManager ?? GameManager.Instance;
         InitializeReferences(_gameManager, dataManager ?? GameDataManager.Instance);
@@ -290,9 +276,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
 
     private void InitializeHandlers()
     {
-        _gridHandler = new ThreadGridHandler(this, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight);
-        _placementHandler = new ThreadPlacementHandler(this, _gridHandler, _mainCameraController);
-        _removalHandler = new ThreadRemovalHandler(this, _gridHandler, _mainCameraController);
+        _gridHandler = new ThreadGridHandler(this, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight, _mainCameraController);
     }
 
     private void CreateSharedThreadLabelCanvas()
@@ -307,7 +291,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManagerComponent
         }
 
         Camera targetCamera = _mainCamera ?? Camera.main;
-        RectTransform canvasRect = _gameManager.GetWorldCanvas(transform, targetCamera);
+        RectTransform canvasRect = _gameManager.GetWorldCanvas();
 
         if (canvasRect == null)
         {

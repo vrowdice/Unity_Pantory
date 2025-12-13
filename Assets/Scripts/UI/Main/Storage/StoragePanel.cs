@@ -25,20 +25,18 @@ public class StoragePanel : BasePanel
             return;
         }
 
-        // 자원 변화 이벤트 구독 (패널이 열려 있을 때만 UI 새로고침)
-        _dataManager.OnResourceChanged -= RefreshCurrentResourceTypeList;
-        _dataManager.OnResourceChanged += RefreshCurrentResourceTypeList;
-
         InitializeResourceTypeButtons();
         RefreshCurrentResourceTypeList();
     }
 
+    private void Start()
+    {
+        _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;
+    }
+
     private void OnDestroy()
     {
-        if (_dataManager != null)
-        {
-            _dataManager.OnResourceChanged -= RefreshCurrentResourceTypeList;
-        }
+        _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
     }
 
     /// <summary>

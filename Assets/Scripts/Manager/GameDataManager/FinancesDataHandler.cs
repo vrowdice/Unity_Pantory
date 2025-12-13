@@ -406,7 +406,6 @@ public class FinancesDataHandler
 
                 // 플레이어 재고 + 생산 - 소비 = 예상 플레이어 보유량
                 long expectedPlayerAmount = currentPlayerInventory + prod - cons;
-                // 실제 판매 가능 수량 = 요청량과 예상 보유량 중 작은 값 (0 이상)
                 long actualSell = Math.Max(0, Math.Min(sellRequest, expectedPlayerAmount));
 
                 if (actualSell > 0)

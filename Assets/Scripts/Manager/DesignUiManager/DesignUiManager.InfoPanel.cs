@@ -11,7 +11,6 @@ public partial class DesignUiManager
         {
             _buildingInfoPanel.gameObject.SetActive(true);
             _buildingInfoPanel.ShowBuildingInfo(buildingData, buildingState, this);
-            Debug.Log($"[DesignUiManager] Showing building info for: {buildingData.displayName}");
         }
         else
         {

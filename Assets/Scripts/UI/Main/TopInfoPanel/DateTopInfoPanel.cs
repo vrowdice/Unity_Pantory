@@ -6,8 +6,8 @@ public class DateTopInfoPanel : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI _dateText;
-    [SerializeField] private TextMeshProUGUI _timeText;   // 시간 전용 텍스트 (선택 사항)
-    [SerializeField] private Slider _dayProgressSlider;   // 24시간 진행도 슬라이더 (0~1, 선택 사항)
+    [SerializeField] private TextMeshProUGUI _timeText;
+    [SerializeField] private Slider _dayProgressSlider;
 
     [Header("Button Sprites")]
     [SerializeField] private Sprite _pauseImage;
@@ -40,8 +40,6 @@ public class DateTopInfoPanel : MonoBehaviour
         UpdatePlayPauseButtonImage();
         UpdateDayProgressSlider();
     }
-
-    // ----------------- UI 업데이트 -----------------
 
     /// <summary>
     /// 날짜/시간 텍스트를 업데이트합니다.
@@ -110,8 +108,6 @@ public class DateTopInfoPanel : MonoBehaviour
         }
     }
 
-    // ----------------- 시간 제어 함수 (버튼용) -----------------
-
     /// <summary>
     /// Play/Pause 버튼을 토글합니다. (UI 버튼에서 호출)
     /// </summary>
@@ -178,8 +174,6 @@ public class DateTopInfoPanel : MonoBehaviour
         // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
     }
-
-    // ----------------- 이벤트 핸들러 -----------------
 
     /// <summary>
     /// 한 달이 지났을 때 호출됩니다.

@@ -27,6 +27,7 @@ public class ThreadState
     
     public ThreadState()
     {
+
     }
     
     public ThreadState(string id, string name, string div = "", string catId = "")

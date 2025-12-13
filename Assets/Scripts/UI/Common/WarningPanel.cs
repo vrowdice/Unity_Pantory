@@ -15,29 +15,10 @@ public class WarningPanel : MonoBehaviour
     /// </summary>
     [SerializeField] private TextMeshProUGUI _messageText;
 
-    // Start is called before the first frame update
-    void Start()
+    public void OnInitialized(string message)
     {
-        if (m_ani != null)
-        {
-            m_ani.SetTrigger("Open");
-        }
-    }
-
-    /// <summary>
-    /// 경고 메시지를 설정합니다.
-    /// </summary>
-    /// <param name="message">표시할 메시지</param>
-    public void SetMessage(string message)
-    {
-        if (_messageText != null)
-        {
-            _messageText.text = message;
-        }
-        else
-        {
-            Debug.LogWarning("[WarningPanel] Message text component is not assigned.");
-        }
+        _messageText.text = message;
+        m_ani.SetTrigger("Open");
     }
 
     /// <summary>

@@ -3,280 +3,151 @@ using UnityEngine;
 using TMPro;
 
 /// <summary>
-/// 월드 상에 배치되는 스레드 오브젝트
+/// 월드 상에 배치되는 스레드(건물/오브젝트)의 시각적 요소와 정보 UI를 관리합니다.
 /// </summary>
 public class ThreadObject : MonoBehaviour
 {
-    private const float PREVIEW_ALPHA = 0.6f;
 
+    [Header("Size Settings")]
+    [SerializeField] private Vector2 _targetWorldSize = Vector2.one;
+    [SerializeField] private float _threadTitleScale = 0.01f;
+    [SerializeField] private float _resourceIconScale = 0.005f;
+
+    [Header("Offset Settings")]
+    [SerializeField] private float _threadTitleYOffset = 0.6f;
+    [SerializeField] private float _consumptionYOffset = 0.2f;
+    [SerializeField] private float _productionYOffset = 0.4f;
+
+    private GameManager _gameManager;
     private ThreadState _threadState;
     private SpriteRenderer _spriteRenderer;
     private Color _baseColor = Color.white;
     private Vector2Int _gridPosition;
-    [SerializeField] private Vector2 _targetWorldSize = new Vector2(1f, 1f); // 스프라이트 목표 월드 크기
-    [SerializeField] private bool _keepAspectRatio = true; // 비율 유지 여부
-    [SerializeField] private float _threadTitleYOffset = 0.6f;
-    [SerializeField] private float _threadTitleScale = 0.01f;
-    [SerializeField] private float _consumptionYOffset = 0.2f;
-    [SerializeField] private float _productionYOffset = 0.4f;
 
     private RectTransform _threadTitleRect;
     private TextMeshProUGUI _threadTitleLabel;
     private GameObject _consumptionIconContainer;
     private GameObject _productionIconContainer;
-    private Transform _sharedCanvas;
     private Camera _mainCamera;
 
     public ThreadState ThreadState => _threadState;
     public Vector2Int GridPosition => _gridPosition;
     public bool IsPreview { get; private set; }
 
-    void Awake()
+    /// <summary>
+    /// 실제 배치된 스레드 오브젝트를 초기화합니다.
+    /// </summary>
+    public void OnInitialize(ThreadState threadState, GameManager gameManager)
     {
+        _gameManager = gameManager;
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        if (_spriteRenderer != null)
-        {
-            _baseColor = _spriteRenderer.color;
-        }
-    }
 
-    /// <summary>
-    /// 실제 배치된 스레드를 초기화합니다.
-    /// </summary>
-    public void Initialize(ThreadState threadState, Transform sharedCanvas = null)
-    {
-        _threadState = threadState;
-        IsPreview = false;
-        _sharedCanvas = sharedCanvas;
-        ApplyVisual();
+        InitializeCommon(threadState, false);
         ResetColor();
-        UpdateThreadTitle();
-        UpdateResourceIcons();
     }
 
     /// <summary>
-    /// 프리뷰 용도로 초기화합니다.
+    /// 배치 전 프리뷰 모드로 초기화합니다.
     /// </summary>
-    public void InitializePreview(ThreadState threadState, Transform sharedCanvas = null)
+    public void InitializePreview(ThreadState threadState)
+    {
+        _gameManager = GameManager.Instance;
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        InitializeCommon(threadState, true);
+        SetPreviewColor(true);
+    }
+
+    private void InitializeCommon(ThreadState threadState, bool isPreview)
     {
         _threadState = threadState;
-        IsPreview = true;
-        _sharedCanvas = sharedCanvas;
-        ApplyVisual();
-        SetPreviewColor(true);
-        UpdateThreadTitle();
-        UpdateResourceIcons();
-    }
-    public void SetGridPosition(Vector2Int gridPos)
-    {
-        _gridPosition = gridPos;
-        PositionThreadTitle();
-    }
+        IsPreview = isPreview;
 
-
-    /// <summary>
-    /// 프리뷰 가능 여부에 따라 색상을 조정합니다.
-    /// </summary>
-    public void SetPreviewColor(bool canPlace)
-    {
-        if (_spriteRenderer == null || !IsPreview)
-            return;
-
-        Color color = canPlace ? Color.green : Color.red;
-        color.a = PREVIEW_ALPHA;
-        _spriteRenderer.color = color;
-    }
-
-    /// <summary>
-    /// 제거 모드 등에서 하이라이트 색상을 적용합니다.
-    /// </summary>
-    public void SetHighlight(Color highlightColor)
-    {
-        if (_spriteRenderer == null)
-            return;
-
-        _spriteRenderer.color = highlightColor;
-    }
-
-    /// <summary>
-    /// 색상을 초기 상태로 되돌립니다.
-    /// </summary>
-    public void ResetColor()
-    {
-        if (_spriteRenderer == null)
-            return;
-
-        _spriteRenderer.color = _baseColor;
-    }
-
-    private void ApplyVisual()
-    {
-        if (_spriteRenderer == null)
-            return;
-
-        Sprite sprite = null;
-
-        if (_threadState != null && !string.IsNullOrEmpty(_threadState.previewImagePath))
-        {
-            sprite = SpriteUtils.LoadSpriteFromFile(_threadState.previewImagePath);
-        }
+        Sprite sprite = SpriteUtils.LoadSpriteFromFile(_threadState.previewImagePath);
+        _spriteRenderer.sprite = sprite;
+        _spriteRenderer.enabled = sprite != null;
 
         if (sprite != null)
         {
-            _spriteRenderer.sprite = sprite;
-            _spriteRenderer.enabled = true;
+            GameObjectUtils.SetSpriteToWorldSize(transform, sprite, _targetWorldSize);
+        }
 
-            // GameObjectUtils를 사용하여 크기 자동 조절
-            GameObjectUtils.SetSpriteToWorldSize(transform, sprite, _targetWorldSize, _keepAspectRatio);
-        }
-        else
-        {
-            _spriteRenderer.enabled = false;
-        }
+        UpdateThreadTitle();
+        UpdateResourceIcons();
+    }
+
+    public void SetGridPosition(Vector2Int gridPos)
+    {
+        _gridPosition = gridPos;
+        UpdatePositions();
+    }
+
+    /// <summary>
+    /// 배치 가능 여부에 따라 프리뷰 색상을 변경합니다.
+    /// </summary>
+    public void SetPreviewColor(bool canPlace)
+    {
+        if (!IsPreview || _spriteRenderer == null) return;
+
+        VisualManager visualManager = VisualManager.Instance;
+        Color baseColor = canPlace 
+            ? (visualManager != null ? visualManager.ThreadPreviewValidColor : Color.green)
+            : (visualManager != null ? visualManager.ThreadPreviewInvalidColor : Color.red);
+        
+        float alpha = visualManager != null ? visualManager.ThreadPreviewAlpha : 0.6f;
+        baseColor.a = alpha;
+        _spriteRenderer.color = baseColor;
+    }
+
+    public void SetHighlight(Color highlightColor)
+    {
+        if (_spriteRenderer != null) _spriteRenderer.color = highlightColor;
+    }
+
+    public void ResetColor()
+    {
+        if (_spriteRenderer != null) _spriteRenderer.color = _baseColor;
     }
 
     private void UpdateThreadTitle()
     {
-        if (IsPreview || _threadState == null)
-        {
-            SetThreadTitleActive(false);
-            return;
-        }
-
-        string title = string.IsNullOrWhiteSpace(_threadState.threadName)
-            ? _threadState.threadId
-            : _threadState.threadName;
-
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            SetThreadTitleActive(false);
-            ClearResourceIconContainers();
-            return;
-        }
-
-        if (!EnsureThreadTitleLabel())
-            return;
+        string title = string.IsNullOrWhiteSpace(_threadState.threadName) ? _threadState.threadId : _threadState.threadName;
+        if (string.IsNullOrWhiteSpace(title) || !EnsureThreadTitleLabel()) return;
 
         _threadTitleLabel.text = title;
-        PositionThreadTitle();
-        SetThreadTitleActive(true);
-        UpdateResourceIcons();
     }
 
-    private void PositionThreadTitle()
+    private void UpdatePositions()
     {
-        if (_threadTitleRect == null)
-            return;
-
-        float yOffset = _threadTitleYOffset;
-
-        Vector3 worldPosition = transform.position + new Vector3(0f, yOffset, -0.1f);
-        _threadTitleRect.position = worldPosition;
-    }
-
-    private void PositionResourceIcons()
-    {
-        if (_consumptionIconContainer != null)
+        _threadTitleRect.position = transform.position + new Vector3(0.0f, _threadTitleYOffset, 0.0f);
+        if( _consumptionIconContainer != null || _productionIconContainer != null )
         {
-            Vector3 consumptionPosition = transform.position + new Vector3(0f, _consumptionYOffset, -0.12f);
-            _consumptionIconContainer.transform.position = consumptionPosition;
-        }
-
-        if (_productionIconContainer != null)
-        {
-            Vector3 productionPosition = transform.position + new Vector3(0f, _productionYOffset, -0.12f);
-            _productionIconContainer.transform.position = productionPosition;
+            _consumptionIconContainer.transform.position = transform.position + new Vector3(0.0f, _consumptionYOffset, 0.0f);
+            _productionIconContainer.transform.position = transform.position + new Vector3(0.0f, _productionYOffset, 0.0f);
         }
     }
 
-    private void SetThreadTitleActive(bool active)
+    private void LateUpdate()
     {
-        if (active && _threadTitleLabel == null)
-        {
-            if (!EnsureThreadTitleLabel())
-                return;
-        }
-
-        if (_threadTitleRect != null)
-        {
-            _threadTitleRect.gameObject.SetActive(active);
-        }
-
-        if (!active)
-        {
-            ClearResourceIconContainers();
-        }
-    }
-
-    void LateUpdate()
-    {
-        bool hasActiveLabel = _threadTitleRect != null && _threadTitleRect.gameObject.activeSelf;
-        bool hasIcons = _consumptionIconContainer != null || _productionIconContainer != null;
-
-        if (!hasActiveLabel && !hasIcons)
-            return;
-
-        if (hasActiveLabel)
-        {
-            PositionThreadTitle();
-        }
-
-        if (hasIcons)
-        {
-            PositionResourceIcons();
-        }
-
-        EnsureMainCamera();
-        if (_mainCamera != null)
-        {
-            Quaternion rotation = Quaternion.identity;
-            Vector3 toCameraLabel = hasActiveLabel ? (_mainCamera.transform.position - _threadTitleRect.position) : Vector3.zero;
-            if (hasActiveLabel && toCameraLabel.sqrMagnitude > 0.0001f)
-            {
-                rotation = Quaternion.LookRotation(-toCameraLabel.normalized, Vector3.up);
-                _threadTitleRect.rotation = rotation;
-            }
-            Vector3 toCameraIcons = _mainCamera.transform.position - transform.position;
-            Quaternion iconRotation = Quaternion.identity;
-            if (toCameraIcons.sqrMagnitude > 0.0001f)
-            {
-                iconRotation = Quaternion.LookRotation(-toCameraIcons.normalized, Vector3.up);
-            }
-
-            if (_consumptionIconContainer != null)
-            {
-                _consumptionIconContainer.transform.rotation = iconRotation;
-            }
-
-            if (_productionIconContainer != null)
-            {
-                _productionIconContainer.transform.rotation = iconRotation;
-            }
-        }
+        UpdatePositions();
     }
 
     private bool EnsureThreadTitleLabel()
     {
-        if (_threadTitleLabel != null)
-            return true;
-
-        if (_sharedCanvas == null)
-            return false;
+        if (_threadTitleLabel != null) return true;
+        if (_gameManager == null) return false;
+        
+        Transform sharedCanvas = _gameManager.GetWorldCanvas();
+        if (sharedCanvas == null) return false;
 
         GameObject titleObj = new GameObject("ThreadTitleLabel", typeof(RectTransform));
         _threadTitleRect = titleObj.GetComponent<RectTransform>();
-        _threadTitleRect.SetParent(_sharedCanvas, false);
+        _threadTitleRect.SetParent(sharedCanvas, false);
         _threadTitleRect.localScale = Vector3.one * _threadTitleScale;
-        _threadTitleRect.localRotation = Quaternion.identity;
-        _threadTitleRect.sizeDelta = new Vector2(200f, 60f);
 
         _threadTitleLabel = titleObj.AddComponent<TextMeshProUGUI>();
         _threadTitleLabel.fontSize = 20f;
         _threadTitleLabel.alignment = TextAlignmentOptions.Center;
         _threadTitleLabel.color = Color.black;
-        _threadTitleLabel.textWrappingMode = TextWrappingModes.NoWrap;
-        _threadTitleLabel.outlineWidth = 0.2f;
-        _threadTitleLabel.outlineColor = Color.black;
         _threadTitleLabel.raycastTarget = false;
 
         return true;
@@ -284,100 +155,73 @@ public class ThreadObject : MonoBehaviour
 
     private void UpdateResourceIcons()
     {
-        ClearResourceIconContainers();
+        ClearProductionIconContainers();
+        if (IsPreview || _threadState == null) return;
 
-        if (IsPreview || _threadState == null || _sharedCanvas == null || GameManager.Instance == null)
-            return;
+        if (!EnsureGameManager()) return;
 
-        if (!_threadState.TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts))
-            return;
+        Transform sharedCanvas = _gameManager.GetWorldCanvas();
+        if (sharedCanvas == null) return;
 
-        GameDataManager dataManager = GameDataManager.Instance;
+        if (!_threadState.TryGetAggregatedResourceCounts(out var consumption, out var production)) return;
 
-        if (consumptionCounts.Count > 0)
-        {
-            _consumptionIconContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
-                _sharedCanvas,
-                $"ThreadConsumption_{_threadState.threadId}",
-                transform.position,
-                0.005f
-                );
-
-            if (_consumptionIconContainer != null)
-            {
-                GameManager.Instance.CreateProductionIcons(
-                    _consumptionIconContainer.transform,
-                    consumptionCounts,
-                    dataManager
-                    );
-            }
-        }
-
-        if (productionCounts.Count > 0)
-        {
-            _productionIconContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
-                _sharedCanvas,
-                $"ThreadProduction_{_threadState.threadId}",
-                transform.position,
-                0.005f
-                );
-
-            if (_productionIconContainer != null)
-            {
-                GameManager.Instance.CreateProductionIcons(
-                    _productionIconContainer.transform,
-                    productionCounts,
-                    dataManager);
-            }
-        }
-
-        PositionResourceIcons();
+        _consumptionIconContainer = CreateProductionIconContainer(consumption, "Consumption", _consumptionYOffset, sharedCanvas);
+        _productionIconContainer = CreateProductionIconContainer(production, "Production", _productionYOffset, sharedCanvas);
     }
 
-    private void ClearResourceIconContainers()
+    /// <summary>
+    /// Production Icon 컨테이너를 생성합니다.
+    /// </summary>
+    private GameObject CreateProductionIconContainer(Dictionary<string, int> counts, string suffix, float yOffset, Transform sharedCanvas)
+    {
+        if (counts == null || counts.Count == 0 || _gameManager == null)
+            return null;
+
+        Vector3 worldPosition = transform.position + new Vector3(0f, yOffset, 0f);
+        
+        GameObject container = _gameManager.CreateProductionIconContainer(
+            sharedCanvas, 
+            $"Thread{suffix}_{_threadState.threadId}", 
+            worldPosition, 
+            _resourceIconScale,
+            counts);
+        
+        return container;
+    }
+
+    /// <summary>
+    /// GameManager 참조를 확인하고 가져옵니다.
+    /// </summary>
+    private bool EnsureGameManager()
+    {
+        if (_gameManager != null)
+            return true;
+        
+        _gameManager = GameManager.Instance;
+        return _gameManager != null;
+    }
+
+    /// <summary>
+    /// Production Icon 컨테이너들을 정리합니다.
+    /// </summary>
+    private void ClearProductionIconContainers()
     {
         if (_consumptionIconContainer != null)
         {
-            Object.Destroy(_consumptionIconContainer);
+            Destroy(_consumptionIconContainer);
             _consumptionIconContainer = null;
         }
-
+        
         if (_productionIconContainer != null)
         {
-            Object.Destroy(_productionIconContainer);
+            Destroy(_productionIconContainer);
             _productionIconContainer = null;
         }
     }
 
-    private void CleanupThreadTitle()
+    private void OnDestroy()
     {
-        if (_threadTitleRect != null)
-        {
-            Destroy(_threadTitleRect.gameObject);
-            _threadTitleRect = null;
-            _threadTitleLabel = null;
-        }
-    }
-
-    private void EnsureMainCamera()
-    {
-        if (_mainCamera != null)
-            return;
-
-        if (GameManager.Instance != null && GameManager.Instance.MainCameraController != null)
-        {
-            _mainCamera = GameManager.Instance.MainCameraController.Camera;
-        }
-
-        if (_mainCamera == null)
-        {
-            _mainCamera = Camera.main;
-        }
-    }
-
-    void OnDestroy()
-    {
-        CleanupThreadTitle();
-        ClearResourceIconContainers();
+        if (_threadTitleRect != null) Destroy(_threadTitleRect.gameObject);
+        ClearProductionIconContainers();
     }
 }

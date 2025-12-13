@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 메인 카메라의 드래그, 줌, 경계 제한 기능을 관리하는 클래스
+/// 2D 환경에서 메인 카메라의 드래그 이동, 줌(Zoom-to-Cursor), 이동 경계 제한 기능을 관리합니다.
 /// </summary>
 public class MainCameraController : MonoBehaviour
 {
@@ -21,140 +21,85 @@ public class MainCameraController : MonoBehaviour
 
     private Camera _camera;
     private Vector3 _dragOrigin;
-    private bool _isDragging = false;
-    private bool _isDragEnabled = true; // 드래그 활성화 여부
-    
-    // 설치/제거 모드 확인을 위한 매니저 참조
-    private BuildingTileManager _buildingTileManager;
-    private ThreadTileManager _threadTileManager;
+    private bool _isDragging;
+    private bool _isDragEnabled = true;
 
-    private void Awake()
+    /// <summary>
+    /// 외부 매니저 등을 통해 카메라 컴포넌트를 초기화합니다.
+    /// </summary>
+    public void OnInitialize()
     {
         _camera = GetComponent<Camera>();
     }
 
-    private void Start()
-    {
-        // 설치/제거 모드 확인을 위한 매니저 찾기
-        _buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
-        _threadTileManager = FindFirstObjectByType<ThreadTileManager>();
-    }
-
     /// <summary>
-    /// 카메라 드래그 활성화/비활성화
+    /// 카메라의 드래그 기능을 활성화하거나 비활성화합니다.
     /// </summary>
+    /// <param name="enabled">활성화 여부</param>
     public void SetDragEnabled(bool enabled)
     {
         _isDragEnabled = enabled;
-        if (!enabled)
-        {
-            _isDragging = false; // 비활성화 시 현재 드래그도 중단
-        }
+        if (!enabled) _isDragging = false;
     }
 
-    void Update()
+    private void Update()
     {
         HandleDrag();
         HandleZoom();
     }
 
-    // 드래그로 카메라 이동
+    /// <summary>
+    /// 터치 또는 마우스 입력을 감지하여 카메라를 이동시킵니다.
+    /// </summary>
     private void HandleDrag()
     {
-        // 드래그가 비활성화된 경우 처리하지 않음
-        if (!_isDragEnabled)
-        {
-            _isDragging = false;
-            return;
-        }
+        if (!_isDragEnabled) return;
 
-        // 설치/제거 모드가 활성화되어 있으면 드래그 비활성화
-        if (IsPlacementOrRemovalModeActive())
-        {
-            _isDragging = false;
-            return;
-        }
-
-        // 모바일: 터치 입력 처리
+        // 1. 입력 처리 (모바일/PC 공용 로직)
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
-            
-            if (touch.phase == TouchPhase.Began)
-            {
-                // UI 위에 터치가 있으면 드래그 시작하지 않음
-                if (IsPointerOverUI())
-                {
-                    _isDragging = false;
-                    return;
-                }
-
-                _dragOrigin = _camera.ScreenToWorldPoint(touch.position);
-                _isDragging = true;
-            }
-            else if (touch.phase == TouchPhase.Moved && _isDragging)
-            {
-                Vector3 currentTouchPos = _camera.ScreenToWorldPoint(touch.position);
-                Vector3 difference = _dragOrigin - currentTouchPos;
-
-                Vector3 newPosition = transform.position + difference * _dragSpeed;
-                newPosition.z = transform.position.z; // Z 위치 고정
-
-                // 경계 제한 적용
-                if (_boundaryCollider != null)
-                {
-                    newPosition = ClampToBounds(newPosition);
-                }
-
-                transform.position = newPosition;
-
-                // dragOrigin 업데이트
-                _dragOrigin = _camera.ScreenToWorldPoint(touch.position);
-            }
-            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-            {
-                _isDragging = false;
-            }
-            
-            return; // 모바일 입력 처리 후 종료
+            ProcessTouchInput();
         }
+        else
+        {
+            ProcessMouseInput();
+        }
+    }
 
-        // PC: 마우스 왼쪽 클릭 (0)으로 드래그 시작
+    private void ProcessTouchInput()
+    {
+        Touch touch = Input.GetTouch(0);
+
+        if (touch.phase == TouchPhase.Began)
+        {
+            if (IsPointerOverUI()) return;
+            _dragOrigin = _camera.ScreenToWorldPoint(touch.position);
+            _isDragging = true;
+        }
+        else if (touch.phase == TouchPhase.Moved && _isDragging)
+        {
+            MoveCamera(touch.position);
+        }
+        else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+        {
+            _isDragging = false;
+        }
+    }
+
+    private void ProcessMouseInput()
+    {
         if (Input.GetMouseButtonDown(0))
         {
-            // UI 위에 포인터가 있을 경우 드래그 시작을 막음
-            if (IsPointerOverUI())
-            {
-                _isDragging = false;
-                return;
-            }
-
+            if (IsPointerOverUI()) return;
             _dragOrigin = _camera.ScreenToWorldPoint(Input.mousePosition);
             _isDragging = true;
         }
 
-        // 드래그 중일 때 카메라 이동
         if (Input.GetMouseButton(0) && _isDragging)
         {
-            Vector3 currentMousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 difference = _dragOrigin - currentMousePos;
-
-            Vector3 newPosition = transform.position + difference * _dragSpeed;
-            newPosition.z = transform.position.z; // Z 위치 고정
-
-            // 경계 제한 적용
-            if (_boundaryCollider != null)
-            {
-                newPosition = ClampToBounds(newPosition);
-            }
-
-            transform.position = newPosition;
-
-            // dragOrigin 업데이트: 뷰포트 내에서는 마우스 위치를 계속 추적
-            _dragOrigin = _camera.ScreenToWorldPoint(Input.mousePosition);
+            MoveCamera(Input.mousePosition);
         }
 
-        // 마우스 왼쪽 클릭 해제 시 드래그 종료
         if (Input.GetMouseButtonUp(0))
         {
             _isDragging = false;
@@ -162,47 +107,46 @@ public class MainCameraController : MonoBehaviour
     }
 
     /// <summary>
-    /// 건물 또는 스레드 설치/제거 모드가 활성화되어 있는지 확인합니다.
+    /// 특정 입력 좌표를 바탕으로 카메라 위치를 갱신합니다.
     /// </summary>
-    private bool IsPlacementOrRemovalModeActive()
+    private void MoveCamera(Vector3 screenPosition)
     {
-        bool buildingPlacementMode = _buildingTileManager != null && 
-                                     (_buildingTileManager.IsPlacementMode || _buildingTileManager.IsRemovalMode);
-        bool threadPlacementMode = _threadTileManager != null && 
-                                   (_threadTileManager.IsPlacementMode || _threadTileManager.IsRemovalMode);
-        
-        return buildingPlacementMode || threadPlacementMode;
+        Vector3 currentWorldPos = _camera.ScreenToWorldPoint(screenPosition);
+        Vector3 difference = _dragOrigin - currentWorldPos;
+
+        Vector3 newPosition = transform.position + (difference * _dragSpeed);
+        newPosition.z = transform.position.z;
+
+        if (_boundaryCollider != null)
+        {
+            newPosition = ClampToBounds(newPosition);
+        }
+
+        transform.position = newPosition;
+        _dragOrigin = _camera.ScreenToWorldPoint(screenPosition);
     }
 
-    // 마우스 휠로 줌인/줌아웃
+    /// <summary>
+    /// 마우스 휠 입력을 감지하여 커서 방향으로 줌 인/아웃을 수행합니다.
+    /// </summary>
     private void HandleZoom()
     {
         float scrollInput = Input.mouseScrollDelta.y;
 
-        // 1. 스크롤 입력이 없거나,
-        // 2. 마우스가 UI 위에 있거나,
-        // 3. 마우스가 게임 뷰포트 밖에 있다면 줌 무시
-        if (scrollInput == 0 || IsPointerOverUI() || !IsMouseInViewport())
-        {
-            return;
-        }
+        if (scrollInput == 0 || IsPointerOverUI() || !IsMouseInViewport()) return;
 
-        // 줌 전 마우스의 월드 좌표 저장
         Vector3 mouseWorldPosBefore = _camera.ScreenToWorldPoint(Input.mousePosition);
 
-        // Orthographic Size 조절
-        _camera.orthographicSize -= scrollInput * _zoomSpeed;
-        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _minZoom, _maxZoom);
+        // Orthographic 줌 적용
+        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - (scrollInput * _zoomSpeed), _minZoom, _maxZoom);
 
-        // 줌 후 마우스의 월드 좌표
         Vector3 mouseWorldPosAfter = _camera.ScreenToWorldPoint(Input.mousePosition);
 
-        // 마우스 위치가 변하지 않도록 카메라 위치 보정 (Zoom-to-Cursor)
+        // Zoom-to-Cursor: 줌 이후 마우스 월드 좌표 차이만큼 카메라 보정
         Vector3 offset = mouseWorldPosBefore - mouseWorldPosAfter;
         Vector3 newPosition = transform.position + offset;
-        newPosition.z = transform.position.z; // Z 위치 고정
+        newPosition.z = transform.position.z;
 
-        // 경계 제한 적용
         if (_boundaryCollider != null)
         {
             newPosition = ClampToBounds(newPosition);
@@ -211,12 +155,11 @@ public class MainCameraController : MonoBehaviour
         transform.position = newPosition;
     }
 
-    // 카메라 위치를 경계 내로 제한 (카메라 중심점 기준)
+    /// <summary>
+    /// 카메라의 중심 좌표가 설정된 BoxCollider2D 영역을 벗어나지 않도록 제한합니다.
+    /// </summary>
     private Vector3 ClampToBounds(Vector3 position)
     {
-        // 뷰포트 크기를 고려하여 경계를 계산해야 하지만, 
-        // 현재 로직은 카메라 중심(position)만 경계 내로 클램프합니다. 
-        // (이것이 의도된 동작이라면 유지)
         Bounds bounds = _boundaryCollider.bounds;
 
         position.x = Mathf.Clamp(position.x, bounds.min.x, bounds.max.x);
@@ -225,25 +168,21 @@ public class MainCameraController : MonoBehaviour
         return position;
     }
 
-    // UI 위에 마우스가 있는지 확인
+    /// <summary>
+    /// 현재 포인터(마우스/터치)가 UI 요소 위에 있는지 확인합니다.
+    /// </summary>
     private bool IsPointerOverUI()
     {
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     /// <summary>
-    /// 마우스 커서가 현재 게임 뷰포트(화면) 내에 있는지 확인합니다.
+    /// 마우스 커서가 게임 화면(Viewport) 내부에 위치하는지 확인합니다.
     /// </summary>
     private bool IsMouseInViewport()
     {
         Vector3 mousePos = Input.mousePosition;
-
-        // 마우스 좌표는 스크린의 왼쪽 아래가 (0, 0), 오른쪽 위가 (Screen.width, Screen.height)입니다.
-        if (mousePos.x < 0 || mousePos.x > Screen.width ||
-            mousePos.y < 0 || mousePos.y > Screen.height)
-        {
-            return false;
-        }
-        return true;
+        return mousePos.x >= 0 && mousePos.x <= Screen.width &&
+               mousePos.y >= 0 && mousePos.y <= Screen.height;
     }
 }

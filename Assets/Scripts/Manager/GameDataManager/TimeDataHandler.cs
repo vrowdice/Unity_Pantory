@@ -7,8 +7,6 @@ using UnityEngine;
 /// </summary>
 public class TimeDataHandler
 {
-    // ----------------- 시간 데이터 -----------------
-    
     private int _year;
     private int _month;
     private int _day;
@@ -16,8 +14,6 @@ public class TimeDataHandler
     public int Year => _year;
     public int Month => _month;
     public int Day => _day;
-
-    // ----------------- 시간 흐름 설정 -----------------
     
     private bool _isTimePaused = false;
     private float _timeSpeed = 1.0f;
@@ -28,8 +24,6 @@ public class TimeDataHandler
     // 현재 경과 시간
     private float _currentDayProgress = 0f;
 
-    // ----------------- 게임 설정 -----------------
-    
     // 한 달의 일 수 (영업일 기준)
     private int _daysPerMonth = 20;  // 영업일 기준 약 20일
 
@@ -38,8 +32,6 @@ public class TimeDataHandler
     
     // 한 해의 월 수
     private int _monthsPerYear = 12;
-
-    // ----------------- 이벤트 -----------------
     
     /// <summary>
     /// 하루가 지날 때 발생하는 이벤트
@@ -60,8 +52,6 @@ public class TimeDataHandler
     /// 시간이 바뀔 때 발생하는 이벤트 (정각 기준)
     /// </summary>
     public event Action OnHourChanged;
-
-    // ----------------- 생성자 -----------------
 
     /// <summary>
     /// TimeService 생성자
@@ -91,8 +81,6 @@ public class TimeDataHandler
         
         Debug.Log($"[TimeService] Initialized. Start date: Y{year} M{month} D{day}");
     }
-
-    // ----------------- Public Methods -----------------
 
     /// <summary>
     /// 시간을 업데이트합니다 (매 프레임 호출).
@@ -199,8 +187,6 @@ public class TimeDataHandler
     /// </summary>
     public int GetCurrentHour() => _currentHour;
 
-    // ----------------- Private Methods -----------------
-
     /// <summary>
     /// 하루를 진행합니다.
     /// </summary>
@@ -290,16 +276,6 @@ public class TimeDataHandler
     }
 
     /// <summary>
-    /// 현재 설정된 하루 당 실제 시간을 반환합니다.
-    /// </summary>
-    public float GetRealSecondsPerDay() => _realSecondsPerDay;
-
-    /// <summary>
-    /// 현재 설정된 한 시간 당 실제 시간을 반환합니다.
-    /// </summary>
-    public float GetRealSecondsPerHour() => _realSecondsPerDay / HOURS_PER_DAY;
-
-    /// <summary>
     /// 한 달의 일 수를 설정합니다.
     /// </summary>
     public void SetDaysPerMonth(int days)
@@ -326,16 +302,6 @@ public class TimeDataHandler
 
         _monthsPerYear = months;
     }
-
-    /// <summary>
-    /// 현재 한 달의 일 수를 반환합니다.
-    /// </summary>
-    public int GetDaysPerMonth() => _daysPerMonth;
-
-    /// <summary>
-    /// 현재 한 해의 월 수를 반환합니다.
-    /// </summary>
-    public int GetMonthsPerYear() => _monthsPerYear;
 
     private void UpdateTimeOfDay(bool forceNotify = false)
     {

@@ -27,7 +27,7 @@ public partial class DesignUiManager : MonoBehaviour, IUIManager
 
 
 
-    public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
+    public void OnInitialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;

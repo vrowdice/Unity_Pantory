@@ -9,26 +9,19 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     private GameManager _gameManager;
     private GameDataManager _dataManager;
 
-
-
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private TextMeshProUGUI _deltaCreditText;
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
-
-
     private GameObject _productionInfoImage;
-    
-
-
     public Transform CanvasTrans => transform;
     public GameDataManager DataManager => _dataManager;
     public GameObject ProductionInfoImage => _productionInfoImage;
     public ThreadTileManager ThreadTileManager => _threadTileManager;
 
-    public void Initialize(GameManager argGameManager, GameDataManager argGameDataManager)
+    public void OnInitialize(GameManager argGameManager, GameDataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
@@ -41,8 +34,8 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
         if (_dataManager != null)
         {
-            _dataManager.OnResourceChanged += UpdateAllMainText;
-            _dataManager.OnCreditChanged += UpdateAllMainText;
+            _dataManager.Resource.OnResourceChanged += UpdateAllMainText;
+            _dataManager.Finances.OnCreditChanged += UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged += OnThreadPlacementChanged;
 
             _dataManager.Time.OnDayChanged += OnDayChanged;
@@ -114,8 +107,8 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     {
         if (_dataManager != null)
         {
-            _dataManager.OnResourceChanged -= UpdateAllMainText;
-            _dataManager.OnCreditChanged -= UpdateAllMainText;
+            _dataManager.Resource.OnResourceChanged -= UpdateAllMainText;
+            _dataManager.Finances.OnCreditChanged -= UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged -= OnThreadPlacementChanged;
 
             _dataManager.Time.OnDayChanged -= OnDayChanged;
@@ -151,7 +144,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             return;
         }
 
-        long deltaCredit = _dataManager.CalculateDailyCreditDelta();
+        long deltaCredit = _dataManager.Finances.CalculateDailyCreditDelta();
         
         if (deltaCredit == 0)
         {

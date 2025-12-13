@@ -29,8 +29,6 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region 초기화 및 표시
 
     /// <summary>
@@ -128,8 +126,6 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
     #endregion
 
-    //---------------------------------------------------------
-
     #region UI 상호작용
 
     /// <summary>
@@ -147,7 +143,6 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         // ManageThreadCartegoryPanel 생성
         _gameManager.ShowManageThreadCartegoryPanel(_dataManager, (selectedCategoryId) =>
         {
-            // 콜백: 선택된 카테고리 저장 및 UI 업데이트
             _selectedCategoryId = selectedCategoryId;
             UpdateCategoryText();
         });

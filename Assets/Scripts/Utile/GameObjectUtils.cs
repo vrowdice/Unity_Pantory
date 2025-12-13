@@ -96,4 +96,34 @@ public static class GameObjectUtils
             1f / parentScale.z
         );
     }
+
+    /// <summary>
+    /// 리소스 ID 리스트를 집계하여 ID별 개수를 딕셔너리로 반환합니다.
+    /// </summary>
+    /// <param name="resourceIds">리소스 ID 리스트</param>
+    /// <returns>ID별 개수 딕셔너리</returns>
+    public static Dictionary<string, int> AggregateResourceCounts(List<string> resourceIds)
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+
+        if (resourceIds == null)
+            return counts;
+
+        foreach (var resourceId in resourceIds)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+                continue;
+
+            if (counts.ContainsKey(resourceId))
+            {
+                counts[resourceId]++;
+            }
+            else
+            {
+                counts[resourceId] = 1;
+            }
+        }
+
+        return counts;
+    }
 }

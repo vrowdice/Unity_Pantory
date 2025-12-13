@@ -106,36 +106,18 @@ public partial class MarketDataHandler
         long marketFee = (long)Mathf.Ceil(baseCost * feeRate);
         long totalCost = baseCost + marketFee;
 
-        // 돈 확인
         if (!_gameDataManager.Finances.HasEnoughCredit(totalCost))
         {
             Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost} (base: {baseCost}, fee: {marketFee}), Available: {_gameDataManager.Finances.GetCredit()}");
             return false;
         }
-
-        // 거래 실행
-        // 예약된 비용 처리 중이면 비용 차감을 하지 않음 (이미 예약된 비용에서 처리됨)
-        bool shouldDeduct = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
         
-        if (shouldDeduct)
-        {
-            // 돈 확인
-            if (!_gameDataManager.Finances.HasEnoughCredit(totalCost))
-            {
-                Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost} (base: {baseCost}, fee: {marketFee}), Available: {_gameDataManager.Finances.GetCredit()}");
-                return false;
-            }
-            
-            _gameDataManager.Finances.TryRemoveCredit(totalCost);
-        }
-        
-        // 자원 이동: 시장(감소) -> 플레이어(증가)
+        // 자원 이동
         _gameDataManager.Resource.ModifyMarketInventory(resourceId, -amount);
         _gameDataManager.Resource.ModifyPlayerInventory(resourceId, amount);
 
         // 시장 수요에 즉시 반영
         ApplyPlayerDemand(resourceEntry, amount);
-
         Debug.Log($"[MarketDataHandler] Player bought {amount} {resourceEntry.resourceData.displayName} for {totalCost} credits (base: {baseCost}, fee: {marketFee}).");
         OnMarketUpdated?.Invoke();
         return true;
@@ -207,18 +189,9 @@ public partial class MarketDataHandler
         // 거래 실행: 자원 이동: 플레이어(감소) -> 시장(증가)
         _gameDataManager.Resource.ModifyPlayerInventory(resourceId, -amount);
         _gameDataManager.Resource.ModifyMarketInventory(resourceId, amount);
-        
-        // 예약된 비용 처리 중이면 수익 추가를 하지 않음 (이미 예약된 비용에서 처리됨)
-        bool shouldAdd = _gameDataManager == null || !_gameDataManager.IsProcessingReservedExpenses;
-        
-        if (shouldAdd)
-        {
-            _gameDataManager.Finances.AddCredit(totalRevenue);
-        }
 
         // 시장 공급에 즉시 반영
         ApplyPlayerSupply(resourceEntry, amount);
-
         Debug.Log($"[MarketDataHandler] Player sold {amount} {resourceEntry.resourceData.displayName} for {totalRevenue} credits (base: {baseRevenue}, fee: {marketFee}).");
         OnMarketUpdated?.Invoke();
         return true;

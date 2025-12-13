@@ -148,3 +148,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _productionIconContentOffset: 0.2
+  _productionIconScale: 0.01

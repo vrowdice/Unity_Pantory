@@ -7,8 +7,11 @@ using UnityEngine;
 /// </summary>
 public class BuildingObject : MonoBehaviour
 {
-    // ==================== Properties ====================
     [SerializeField] private float _productionIconContentOffset;
+    [SerializeField] private float _productionIconScale;
+
+    private GameManager _gameManager;
+    private GameDataManager _dataManager;
 
     private BuildingData _buildingData;
     private BuildingState _buildingState;
@@ -17,22 +20,20 @@ public class BuildingObject : MonoBehaviour
     private GameObject _outputMarker;
     private GameObject _inputProductionContainer;
     private GameObject _outputProductionContainer;
-    
-    // ==================== Public Properties ====================
-    public BuildingData BuildingData => _buildingData;
+
     public BuildingState BuildingState => _buildingState;
-    
-    // ==================== Initialization ====================
     
     /// <summary>
     /// 건물 오브젝트를 초기화합니다.
     /// </summary>
     public void Initialize(BuildingData buildingData, BuildingState buildingState, GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, BuildingGridHandler gridHandler)
     {
+        _gameManager = GameManager.Instance;
+        _dataManager = GameDataManager.Instance;
+
         _buildingData = buildingData;
         _buildingState = buildingState;
-        
-        // Input/Output 마커 생성
+
         CreateMarkers(inputMarkerPrefab, outputMarkerPrefab, gridHandler);
     }
     
@@ -55,8 +56,6 @@ public class BuildingObject : MonoBehaviour
             _outputMarker = CreateMarkerAsChild("PreviewOutput", outputMarkerPrefab);
         }
     }
-    
-    // ==================== Marker Management ====================
     
     /// <summary>
     /// Input/Output 마커를 생성합니다.
@@ -199,19 +198,68 @@ public class BuildingObject : MonoBehaviour
             _outputMarker.SetActive(active);
     }
     
-    // ==================== Production Icons ====================
-    
     /// <summary>
     /// 건물 위에 입출력 자원 아이콘을 표시합니다.
     /// </summary>
     /// <param name="dataManager">게임 데이터 매니저</param>
-    /// <param name="sharedCanvas">공용 World Space Canvas (성능 최적화)</param>
-    public void SetupProductionIcons(GameDataManager dataManager, Transform sharedCanvas = null)
+    public void SetupProductionIcons()
     {
-        if (_buildingState == null || dataManager == null)
+        if (_buildingState == null)
             return;
+
         
-        // 기존 컨테이너 제거
+        ClearProductionIconContainers();
+        
+        Transform sharedCanvas = _gameManager.GetWorldCanvas();
+        if (sharedCanvas == null)
+        {
+            Debug.LogWarning("[BuildingObject] Shared canvas is null. Production icons will not be displayed.");
+            return;
+        }
+
+        Dictionary<string, int> inputCounts = GameObjectUtils.AggregateResourceCounts(_buildingState.inputProductionIds);
+        Dictionary<string, int> outputCounts = GameObjectUtils.AggregateResourceCounts(_buildingState.outputProductionIds);
+        
+        // 건물 크기 계산 (회전 고려)
+        Vector2Int rotatedSize = GetRotatedSize(_buildingData.size, _buildingState.rotation);
+        float buildingHeight = rotatedSize.y;
+        
+        // Input 자원 표시 (건물 중간 위)
+        if (inputCounts.Count > 0)
+        {
+            float yOffset = buildingHeight * _productionIconContentOffset;
+            Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
+            
+            _inputProductionContainer = _gameManager.CreateProductionIconContainer(
+                sharedCanvas,
+                $"InputIcons_{gameObject.name}",
+                worldPosition,
+                _productionIconScale,
+                inputCounts
+            );
+        }
+        
+        // Output 자원 표시 (건물 중간 아래)
+        if (outputCounts.Count > 0)
+        {
+            float yOffset = -buildingHeight * _productionIconContentOffset;
+            Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
+            
+            _outputProductionContainer = _gameManager.CreateProductionIconContainer(
+                sharedCanvas,
+                $"OutputIcons_{gameObject.name}",
+                worldPosition,
+                _productionIconScale,
+                outputCounts
+            );
+        }
+    }
+
+    /// <summary>
+    /// Production Icon 컨테이너들을 정리합니다.
+    /// </summary>
+    private void ClearProductionIconContainers()
+    {
         if (_inputProductionContainer != null)
         {
             Destroy(_inputProductionContainer);
@@ -223,100 +271,8 @@ public class BuildingObject : MonoBehaviour
             Destroy(_outputProductionContainer);
             _outputProductionContainer = null;
         }
-        
-        // GameManager 확인
-        if (GameManager.Instance == null)
-        {
-            Debug.LogWarning("[BuildingObject] GameManager.Instance is null.");
-            return;
-        }
-        
-        if (sharedCanvas == null)
-        {
-            Debug.LogWarning("[BuildingObject] Shared canvas is null. Production icons will not be displayed.");
-            return;
-        }
-
-        Dictionary<string, int> inputCounts = AggregateResourceCounts(_buildingState.inputProductionIds);
-        Dictionary<string, int> outputCounts = AggregateResourceCounts(_buildingState.outputProductionIds);
-        
-        // 건물 크기 계산 (회전 고려)
-        Vector2Int rotatedSize = GetRotatedSize(_buildingData.size, _buildingState.rotation);
-        float buildingHeight = rotatedSize.y;
-        
-        // Input 자원 표시 (건물 중간 위)
-        if (inputCounts.Count > 0)
-        {
-            // 위치 계산
-            float yOffset = buildingHeight * _productionIconContentOffset;
-            
-            Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
-            _inputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
-                sharedCanvas,
-                $"InputIcons_{gameObject.name}",
-                worldPosition
-            );
-            
-            if (_inputProductionContainer != null)
-            {
-                // 아이콘들 생성 (GameManager 헬퍼 사용)
-                GameManager.Instance.CreateProductionIcons(
-                    _inputProductionContainer.transform, 
-                    inputCounts, 
-                    dataManager
-                );
-            }
-        }
-        
-        // Output 자원 표시 (건물 중간 아래)
-        if (outputCounts.Count > 0)
-        {
-            // 위치 계산
-            float yOffset = -buildingHeight * _productionIconContentOffset;
-            
-            Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
-            _outputProductionContainer = GameManager.Instance.CreateProductionIconContainerWithoutCanvas(
-                sharedCanvas,
-                $"OutputIcons_{gameObject.name}",
-                worldPosition
-            );
-            
-            if (_outputProductionContainer != null)
-            {
-                // 아이콘들 생성 (GameManager 헬퍼 사용)
-                GameManager.Instance.CreateProductionIcons(
-                    _outputProductionContainer.transform, 
-                    outputCounts, 
-                    dataManager
-                );
-            }
-        }
     }
 
-    private Dictionary<string, int> AggregateResourceCounts(List<string> resourceIds)
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-
-        if (resourceIds == null)
-            return counts;
-
-        foreach (var resourceId in resourceIds)
-        {
-            if (string.IsNullOrEmpty(resourceId))
-                continue;
-
-            if (counts.ContainsKey(resourceId))
-            {
-                counts[resourceId]++;
-            }
-            else
-            {
-                counts[resourceId] = 1;
-            }
-        }
-
-        return counts;
-    }
     
     /// <summary>
     /// 회전에 따라 건물 크기를 계산합니다.
@@ -324,7 +280,6 @@ public class BuildingObject : MonoBehaviour
     private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
     {
         rotation = rotation % 4;
-        // 90도 또는 270도 회전 시 가로/세로 바뀜
         if (rotation == 1 || rotation == 3)
         {
             return new Vector2Int(size.y, size.x);
@@ -332,15 +287,8 @@ public class BuildingObject : MonoBehaviour
         return size;
     }
     
-    // ==================== Cleanup ====================
-    
     void OnDestroy()
     {
-        // 마커들과 컨테이너들은 자식 오브젝트이므로 자동으로 삭제됨
-        if (_inputProductionContainer != null)
-            Destroy(_inputProductionContainer);
-        
-        if (_outputProductionContainer != null)
-            Destroy(_outputProductionContainer);
+        ClearProductionIconContainers();
     }
 }

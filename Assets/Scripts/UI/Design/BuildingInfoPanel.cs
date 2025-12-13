@@ -136,7 +136,7 @@ public class BuildingInfoPanel : MonoBehaviour
         // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_inputGridContentTransform);
         
-        Dictionary<string, int> inputCounts = AggregateResourceCounts(_currentBuildingState.inputProductionIds);
+        Dictionary<string, int> inputCounts = GameObjectUtils.AggregateResourceCounts(_currentBuildingState.inputProductionIds);
         if (inputCounts.Count == 0)
         {
             return;
@@ -211,7 +211,7 @@ public class BuildingInfoPanel : MonoBehaviour
             return;
         }
         
-        Dictionary<string, int> outputCounts = AggregateResourceCounts(_currentBuildingState.outputProductionIds);
+        Dictionary<string, int> outputCounts = GameObjectUtils.AggregateResourceCounts(_currentBuildingState.outputProductionIds);
         if (outputCounts.Count == 0)
         {
             return;
@@ -368,30 +368,6 @@ public class BuildingInfoPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private Dictionary<string, int> AggregateResourceCounts(List<string> resourceIds)
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-
-        if (resourceIds == null)
-            return counts;
-
-        foreach (var resourceId in resourceIds)
-        {
-            if (string.IsNullOrEmpty(resourceId))
-                continue;
-
-            if (counts.ContainsKey(resourceId))
-            {
-                counts[resourceId]++;
-            }
-            else
-            {
-                counts[resourceId] = 1;
-            }
-        }
-
-        return counts;
-    }
 
     private string BuildRequirementText(ResourceData data)
     {

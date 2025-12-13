@@ -25,8 +25,6 @@ public class BuildingCalculateHandler
         _buildingTileManager = buildingTileManager;
     }
 
-    //---------------------------------------------------------
-
     #region 생산 유효성 및 간단 산출량 계산
 
     /// <summary>
@@ -75,8 +73,6 @@ public class BuildingCalculateHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region 경로 탐색 (Pathfinding) 유틸리티
 
@@ -227,8 +223,6 @@ public class BuildingCalculateHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region 자원 및 비용 계산
 
@@ -461,8 +455,6 @@ public class BuildingCalculateHandler
     }
 
     #endregion
-
-    //---------------------------------------------------------
 
     #region 좌표 및 회전 유틸리티
 
