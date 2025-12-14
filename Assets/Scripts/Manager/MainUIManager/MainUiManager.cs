@@ -112,7 +112,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             return;
         }
 
-        string sign = deltaResearch > 0 ? " +" : " ";
+        string sign = deltaResearch > 0 ? " + " : " ";
         _deltaResearchText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
         VisualManager visualManager = VisualManager.Instance;
         _deltaResearchText.color = visualManager.GetDeltaColor(deltaResearch);

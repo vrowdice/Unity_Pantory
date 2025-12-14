@@ -18,7 +18,6 @@ public class StorageResourceBtn : MonoBehaviour
 
         _resourceIconImage.sprite = _resourceEntry.resourceData.icon;
         _resourceNameText.text = _resourceEntry.resourceData.displayName;
-        // 플레이어 개인 창고(playerInventory) 표시 (시장 재고가 아님)
         _resourceCountText.text = _resourceEntry.resourceState.playerInventory.ToString("N0");
     }
 

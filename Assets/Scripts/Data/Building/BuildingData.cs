@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 /// <summary>
 /// 건물 데이터의 기반 클래스 (abstract)
@@ -15,64 +16,20 @@ public abstract class BuildingData : ScriptableObject
     public Sprite buildingSprite;
     [TextArea(3, 10)]
     public string description;
-
-    [Header("Cost")]
+    public bool isUnlockedByDefault = false;
+    public int requiredEmployees = 0;
     public int baseCost;
     public int baseMaintenanceCost;
-
-    [Header("Size")]
     public Vector2Int size = new Vector2Int(1, 1);
-
-    [Header("Employee Requirements")]
-    public int requiredEmployees = 0;
-
-    [Header("Research Requirements")]
-    /// <summary>
-    /// 이 건물을 언락하기 위해 필요한 연구 ID
-    /// null이거나 빈 문자열이면 연구 없이 언락 가능
-    /// </summary>
     public string requiredResearchId;
+    public ResourceData handlingResource;
 
-    [Header("Station Settings")]
-    public ResourceData handlingResource; 
-
-    /// <summary>
-    /// 도로/정거장 등에서 시각화를 위해 취급 자원을 노출합니다.
-    /// </summary>
     public virtual ResourceData HandlingResource => handlingResource;
-    // 가상 속성들 - 파생 클래스에서 구현
-    /// <summary>
-    /// 생산 건물인지 여부 (ProductionBuildingData 또는 그 파생 클래스)
-    /// </summary>
     public virtual bool IsProductionBuilding => false;
-    
-    /// <summary>
-    /// 상역소(Load) 건물인지 여부
-    /// </summary>
     public virtual bool IsLoadStation => false;
-    
-    /// <summary>
-    /// 하역소(Unload) 건물인지 여부
-    /// </summary>
     public virtual bool IsUnloadStation => false;
-    
-    /// <summary>
-    /// 도로 건물인지 여부
-    /// </summary>
     public virtual bool IsRoad => false;
-    
-    /// <summary>
-    /// 입력 위치 (생산 건물만 유효)
-    /// </summary>
     public virtual Vector2Int InputPosition => Vector2Int.zero;
-    
-    /// <summary>
-    /// 출력 위치 (생산 건물만 유효)
-    /// </summary>
     public virtual Vector2Int OutputPosition => Vector2Int.zero;
-    
-    /// <summary>
-    /// 허용된 자원 타입 리스트 (생산 건물만 유효)
-    /// </summary>
-    public virtual System.Collections.Generic.List<ResourceType> AllowedResourceTypes => null;
+    public virtual List<ResourceType> AllowedResourceTypes => null;
 }
