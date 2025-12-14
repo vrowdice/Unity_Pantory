@@ -21,6 +21,7 @@ public class GameDataManager : MonoBehaviour
     [SerializeField] private List<MarketActorData> _marketActorDataList = new List<MarketActorData>();
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
+    public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
 
     public TimeDataHandler Time { get; private set; }
     public ThreadDataHandler Thread { get; private set; }
@@ -68,11 +69,11 @@ public class GameDataManager : MonoBehaviour
         SaveLoad = new SaveLoadHandler(this);
         Thread = new ThreadDataHandler(this);
         ThreadPlacement = new ThreadPlacementDataHandler(this);
-        Time = new TimeDataHandler(this);
+        Time = new TimeDataHandler(this, _timeSettingsData);
         Resource = new ResourceDataHandler(this, _resourceDataList);
-        Market = new MarketDataHandler(this, _marketActorDataList);
-        Finances = new FinancesDataHandler(this);
-        Employee = new EmployeeDataHandler(this, _employeeDataList);
+        Market = new MarketDataHandler(this, _marketActorDataList, _initialMarketData);
+        Finances = new FinancesDataHandler(this, _initialResourceData);
+        Employee = new EmployeeDataHandler(this, _employeeDataList, _initialEmployeeData);
         Building = new BuildingDataHandler(this, _buildingDataList);
         ThreadCalculate = new ThreadCalculateHandler(this);
         Effect = new EffectDataHandler(this);
@@ -81,19 +82,9 @@ public class GameDataManager : MonoBehaviour
         ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
         Time.OnDayChanged += HandleDayChanged;
 
-        Debug.Log("[GameDataManager] All services initialized.");
-
-        _timeSettingsData?.ApplyToTimeService(Time);
-        _initialResourceData?.ApplyToServices(Resource, Finances);
-        _initialMarketData?.ApplyToMarket(Market);
-        _initialEmployeeData?.ApplyToEmployeeHandler(Employee);
-
-        Market.InitializeMarketChaos();
-        Market.InitializeSystemActors();
         LoadThreadData();
-        ThreadCalculate?.InitializeAllThreads(Thread);
-        
-        Finances.ReserveDailyExpenses();
+
+        Debug.Log("[GameDataManager] All services initialized.");
     }
 
 #if UNITY_EDITOR
@@ -283,15 +274,15 @@ public class GameDataManager : MonoBehaviour
                 float totalEfficiencySum = 0f;
                 if (threadState.currentWorkers > 0)
                 {
-                    var workerEntry = Employee.GetEmployeeEntry("worker");
-                    float workerEff = workerEntry?.employeeState?.currentEfficiency ?? 1.0f;
+                    var workerEntry = Employee.GetEmployeeEntry(EmployeeType.Worker);
+                    float workerEff = workerEntry?.state?.currentEfficiency ?? 1.0f;
                     totalEfficiencySum += threadState.currentWorkers * workerEff;
                 }
 
                 if (threadState.currentTechnicians > 0)
                 {
-                    var techEntry = Employee.GetEmployeeEntry("technician");
-                    float techEff = techEntry?.employeeState?.currentEfficiency ?? 1.0f;
+                    var techEntry = Employee.GetEmployeeEntry(EmployeeType.Technician);
+                    float techEff = techEntry?.state?.currentEfficiency ?? 1.0f;
                     totalEfficiencySum += threadState.currentTechnicians * techEff;
                 }
 

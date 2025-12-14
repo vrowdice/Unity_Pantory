@@ -9,13 +9,13 @@ public partial class EmployeeDataHandler
     /// 특정 직원 유형을 해고합니다. 인원이 부족하면 실패합니다.
     /// 대량 해고 시 공포와 분노로 인해 만족도가 기하급수적으로 하락하며, 다른 직군에도 영향을 미칩니다.
     /// </summary>
-    /// <param name="employeeId">해고할 직원 유형 ID</param>
+    /// <param name="type">해고할 직원 유형</param>
     /// <param name="count">해고할 인원 수</param>
     /// <returns>성공 시 true, 인원 부족 시 false</returns>
     /// <summary>
     /// EmployeeDataHandler 해고 파트 (Firing)
     /// </summary>
-    public bool TryFireEmployee(string employeeId, int count)
+    public bool TryFireEmployee(EmployeeType type, int count)
     {
         if (count <= 0)
         {
@@ -23,16 +23,16 @@ public partial class EmployeeDataHandler
             return true;
         }
 
-        if (!_employees.TryGetValue(employeeId, out var entry))
+        if (!_employees.TryGetValue(type, out var entry))
         {
-            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {employeeId}");
+            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return false;
         }
 
-        if (entry.employeeState.count >= count)
+        if (entry.state.count >= count)
         {
             // 1. 해고 전 총 인원 저장
-            int currentTotal = entry.employeeState.count;
+            int currentTotal = entry.state.count;
             
             // 2. 해고 비율 계산 (0.0 ~ 1.0)
             float fireRatio = (float)count / Mathf.Max(1f, currentTotal);
@@ -56,16 +56,16 @@ public partial class EmployeeDataHandler
                 // 4. [선택적] 관리자에 의한 완화 (Management Mitigation)
                 if (_salarySettings.enableManagerMitigation)
                 {
-                    var managerEntry = GetEmployeeEntry("manager");
-                    if (managerEntry != null && managerEntry.employeeState != null && managerEntry.employeeState.count > 0)
+                    var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
+                    if (managerEntry != null && managerEntry.state != null && managerEntry.state.count > 0)
                     {
                         // 전체 직원 수 계산
                         int totalEmployees = 0;
                         foreach (var emp in _employees.Values)
                         {
-                            if (emp?.employeeState != null)
+                            if (emp?.state != null)
                             {
-                                totalEmployees += emp.employeeState.count;
+                                totalEmployees += emp.state.count;
                             }
                         }
                         
@@ -73,7 +73,7 @@ public partial class EmployeeDataHandler
                         {
                             // 관리자 1명당 커버 가능한 직원 수
                             int coveragePerManager = _salarySettings.managerCoverage;
-                            float managerCoverage = (float)managerEntry.employeeState.count * coveragePerManager / totalEmployees;
+                            float managerCoverage = (float)managerEntry.state.count * coveragePerManager / totalEmployees;
                             
                             // 충분한 관리 커버 시 패널티 감소
                             if (managerCoverage >= 1.0f)
@@ -97,11 +97,11 @@ public partial class EmployeeDataHandler
             }
             
             // 5. 실제 해고 실행
-            entry.employeeState.count -= count;
+            entry.state.count -= count;
             
             // 6. 만족도 적용 (해당 직군)
-            entry.employeeState.currentSatisfaction = Mathf.Clamp(
-                entry.employeeState.currentSatisfaction - penalty,
+            entry.state.currentSatisfaction = Mathf.Clamp(
+                entry.state.currentSatisfaction - penalty,
                 -100f, 100f
             );
             
@@ -112,11 +112,11 @@ public partial class EmployeeDataHandler
             
             foreach (var otherEntry in _employees.Values)
             {
-                if (otherEntry != entry && otherEntry.employeeState != null && otherEntry.employeeState.count > 0)
+                if (otherEntry != entry && otherEntry.state != null && otherEntry.state.count > 0)
                 {
                     float crossPenalty = penalty * crossPenaltyRatio;
-                    otherEntry.employeeState.currentSatisfaction = Mathf.Clamp(
-                        otherEntry.employeeState.currentSatisfaction - crossPenalty,
+                    otherEntry.state.currentSatisfaction = Mathf.Clamp(
+                        otherEntry.state.currentSatisfaction - crossPenalty,
                         -100f, 100f
                     );
                     
@@ -137,7 +137,7 @@ public partial class EmployeeDataHandler
         }
         else
         {
-            Debug.LogWarning($"[EmployeeService] {entry.employeeData.displayName} not enough employees! (required: {count}, available: {entry.employeeState.count})");
+            Debug.LogWarning($"[EmployeeService] {entry.employeeData.displayName} not enough employees! (required: {count}, available: {entry.state.count})");
             return false;
         }
     }

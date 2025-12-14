@@ -17,4 +17,9 @@ public class ResearchTierPanel : MonoBehaviour
     {
 
     }
+
+    public void RefreshResearchButtons()
+    {
+
+    }
 }

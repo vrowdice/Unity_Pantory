@@ -8,13 +8,13 @@ public partial class EmployeeDataHandler
     /// <summary>
     /// 특정 직원 유형의 할당된 인원 수를 증가시킵니다.
     /// </summary>
-    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="type">직원 유형</param>
     /// <param name="count">증가시킬 인원 수</param>
     /// <returns>성공 시 true, 인원 부족 시 false</returns>
     /// <summary>
     /// EmployeeDataHandler 할당 파트 (Assignment)
     /// </summary>
-    public bool TryAssignEmployee(string employeeId, int count)
+    public bool TryAssignEmployee(EmployeeType type, int count)
     {
         if (count <= 0)
         {
@@ -22,24 +22,24 @@ public partial class EmployeeDataHandler
             return false;
         }
 
-        if (!_employees.TryGetValue(employeeId, out var entry))
+        if (!_employees.TryGetValue(type, out var entry))
         {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return false;
         }
 
         // 할당 가능한 인원 수 확인 (고용된 인원 - 이미 할당된 인원)
-        int availableCount = entry.employeeState.count - entry.employeeState.assignedCount;
+        int availableCount = entry.state.count - entry.state.assignedCount;
         
         if (availableCount >= count)
         {
-            entry.employeeState.assignedCount += count;
+            entry.state.assignedCount += count;
             OnEmployeeChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[EmployeeDataHandler] Not enough available employees for {employeeId}: (requested: {count}, available: {availableCount}, total: {entry.employeeState.count}, assigned: {entry.employeeState.assignedCount})");
+            Debug.LogWarning($"[EmployeeDataHandler] Not enough available employees for {type}: (requested: {count}, available: {availableCount}, total: {entry.state.count}, assigned: {entry.state.assignedCount})");
             return false;
         }
     }
@@ -48,10 +48,10 @@ public partial class EmployeeDataHandler
     /// 특정 직원 유형의 할당된 인원 수를 감소시킵니다.
     /// 할당 해제는 단순히 업무 배치를 해제하는 것이므로 만족도에 영향을 주지 않습니다.
     /// </summary>
-    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="type">직원 유형</param>
     /// <param name="count">감소시킬 인원 수</param>
     /// <returns>성공 시 true, 할당된 인원 부족 시 false</returns>
-    public bool TryUnassignEmployee(string employeeId, int count)
+    public bool TryUnassignEmployee(EmployeeType type, int count)
     {
         if (count <= 0)
         {
@@ -59,19 +59,19 @@ public partial class EmployeeDataHandler
             return false;
         }
 
-        if (!_employees.TryGetValue(employeeId, out var entry))
+        if (!_employees.TryGetValue(type, out var entry))
         {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return false;
         }
 
-        if (entry.employeeState.assignedCount >= count)
+        if (entry.state.assignedCount >= count)
         {
-            entry.employeeState.assignedCount -= count;
+            entry.state.assignedCount -= count;
             // assignedCount는 음수가 될 수 없음
-            if (entry.employeeState.assignedCount < 0)
+            if (entry.state.assignedCount < 0)
             {
-                entry.employeeState.assignedCount = 0;
+                entry.state.assignedCount = 0;
             }
             
             OnEmployeeChanged?.Invoke();
@@ -79,7 +79,7 @@ public partial class EmployeeDataHandler
         }
         else
         {
-            Debug.LogWarning($"[EmployeeDataHandler] Not enough assigned employees for {employeeId}: (requested: {count}, assigned: {entry.employeeState.assignedCount})");
+            Debug.LogWarning($"[EmployeeDataHandler] Not enough assigned employees for {type}: (requested: {count}, assigned: {entry.state.assignedCount})");
             return false;
         }
     }
@@ -87,34 +87,34 @@ public partial class EmployeeDataHandler
     /// <summary>
     /// 특정 직원 유형의 할당 가능한 인원 수를 반환합니다.
     /// </summary>
-    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="type">직원 유형</param>
     /// <returns>할당 가능한 인원 수 (고용된 인원 - 이미 할당된 인원)</returns>
-    public int GetAvailableEmployeeCount(string employeeId)
+    public int GetAvailableEmployeeCount(EmployeeType type)
     {
-        if (!_employees.TryGetValue(employeeId, out var entry))
+        if (!_employees.TryGetValue(type, out var entry))
         {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return 0;
         }
 
-        int available = entry.employeeState.count - entry.employeeState.assignedCount;
+        int available = entry.state.count - entry.state.assignedCount;
         return Mathf.Max(0, available);
     }
 
     /// <summary>
     /// 특정 직원 유형의 할당된 인원 수를 반환합니다.
     /// </summary>
-    /// <param name="employeeId">직원 유형 ID</param>
+    /// <param name="type">직원 유형</param>
     /// <returns>할당된 인원 수</returns>
-    public int GetAssignedEmployeeCount(string employeeId)
+    public int GetAssignedEmployeeCount(EmployeeType type)
     {
-        if (!_employees.TryGetValue(employeeId, out var entry))
+        if (!_employees.TryGetValue(type, out var entry))
         {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {employeeId}");
+            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return 0;
         }
 
-        return entry.employeeState.assignedCount;
+        return entry.state.assignedCount;
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public partial class EmployeeDataHandler
         // 모든 직원의 assignedCount를 0으로 초기화
         foreach (var entry in _employees.Values)
         {
-            entry.employeeState.assignedCount = 0;
+            entry.state.assignedCount = 0;
         }
 
         // 실제 배치된 모든 스레드 인스턴스의 직원 할당을 집계
@@ -151,20 +151,20 @@ public partial class EmployeeDataHandler
             // Worker 할당 집계
             if (threadState.currentWorkers > 0)
             {
-                var workerEntry = GetEmployeeEntry("worker");
+                var workerEntry = GetEmployeeEntry(EmployeeType.Worker);
                 if (workerEntry != null)
                 {
-                    workerEntry.employeeState.assignedCount += threadState.currentWorkers;
+                    workerEntry.state.assignedCount += threadState.currentWorkers;
                 }
             }
 
             // Technician 할당 집계
             if (threadState.currentTechnicians > 0)
             {
-                var technicianEntry = GetEmployeeEntry("technician");
+                var technicianEntry = GetEmployeeEntry(EmployeeType.Technician);
                 if (technicianEntry != null)
                 {
-                    technicianEntry.employeeState.assignedCount += threadState.currentTechnicians;
+                    technicianEntry.state.assignedCount += threadState.currentTechnicians;
                 }
             }
         }

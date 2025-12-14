@@ -12,6 +12,8 @@ public class ThreadCalculateHandler
     public ThreadCalculateHandler(GameDataManager gameDataManager)
     {
         _gameDataManager = gameDataManager;
+
+        InitializeAllThreads();
     }
 
     #region 자원 및 비용 계산
@@ -234,15 +236,9 @@ public class ThreadCalculateHandler
     /// <summary>
     /// 모든 스레드의 생산량 등을 초기화합니다.
     /// </summary>
-    public void InitializeAllThreads(ThreadDataHandler threadDataHandler)
+    public void InitializeAllThreads()
     {
-        if (threadDataHandler == null)
-        {
-            Debug.LogWarning("[ThreadCalculateHandler] ThreadDataHandler is null. Cannot initialize threads.");
-            return;
-        }
-
-        var allThreads = threadDataHandler.GetAllThreads();
+        var allThreads = _gameDataManager.Thread.GetAllThreads();
         if (allThreads == null || allThreads.Count == 0)
         {
             Debug.Log("[ThreadCalculateHandler] No threads to initialize.");
@@ -256,7 +252,7 @@ public class ThreadCalculateHandler
             if (threadState == null || string.IsNullOrEmpty(threadState.threadId))
                 continue;
 
-            InitializeThread(threadState, threadDataHandler);
+            InitializeThread(threadState, _gameDataManager.Thread);
             initializedCount++;
         }
     }

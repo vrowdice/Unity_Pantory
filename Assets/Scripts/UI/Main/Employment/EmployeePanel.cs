@@ -47,7 +47,7 @@ public class EmployeePanel : BasePanel
     #region Private Variables
 
     private EmployeeEntry _selectedEmployeeEntry;
-    private string _selectedEmployeeId;
+    private EmployeeType _selectedEmployeeType;
     private bool _isSubscribedToDayChange;
     private bool _isSubscribedToEmployeeChanged;
     private bool _isUpdatingToggles; // 토글 업데이트 중 플래그 (무한 루프 방지)
@@ -70,8 +70,6 @@ public class EmployeePanel : BasePanel
         SetupEmployeeRoleButtons();
         SubscribeToDayChange();
         SubscribeToEmployeeChanged();
-        
-        // 첫 번째 직원 선택
         SelectFirstEmployee();
     }
 
@@ -86,12 +84,6 @@ public class EmployeePanel : BasePanel
     /// <param name="delta">변경할 수량 (양수: 증가, 음수: 감소)</param>
     public void ChangeEmployeeCount(int delta)
     {
-        if (string.IsNullOrEmpty(_selectedEmployeeId) || _dataManager?.Employee == null)
-        {
-            Debug.LogWarning("[EmployeePanel] No employee selected or Employee handler is null.");
-            return;
-        }
-
         if (delta == 0)
         {
             return;
@@ -100,13 +92,13 @@ public class EmployeePanel : BasePanel
         if (delta > 0)
         {
             // 직원 고용
-            _dataManager.Employee.HireEmployee(_selectedEmployeeId, delta);
+            _dataManager.Employee.HireEmployee(_selectedEmployeeType, delta);
         }
         else
         {
             // 직원 해고 (delta가 음수이므로 절댓값 사용)
             int fireCount = Mathf.Abs(delta);
-            _dataManager.Employee.TryFireEmployee(_selectedEmployeeId, fireCount);
+            _dataManager.Employee.TryFireEmployee(_selectedEmployeeType, fireCount);
         }
 
         // UI는 HandleEmployeeChanged 이벤트를 통해 자동으로 갱신됨
@@ -118,20 +110,12 @@ public class EmployeePanel : BasePanel
     /// <param name="salaryLevel">급여 레벨 (0=매우 적음, 1=적음, 2=보통, 3=많음, 4=매우 많음)</param>
     public void SetSelectedEmployeeSalaryLevel(int salaryLevel)
     {
-        // 토글 업데이트 중이면 무시 (무한 루프 방지)
         if (_isUpdatingToggles)
         {
             return;
         }
 
-        if (string.IsNullOrEmpty(_selectedEmployeeId) || _dataManager?.Employee == null)
-        {
-            Debug.LogWarning("[EmployeePanel] No employee selected or Employee handler is null.");
-            return;
-        }
-
-        _dataManager.Employee.SetEmployeeSalaryLevel(_selectedEmployeeId, salaryLevel);
-        // UI는 HandleEmployeeChanged 이벤트를 통해 자동으로 갱신됨
+        _dataManager.Employee.SetEmployeeSalaryLevel(_selectedEmployeeType, salaryLevel);
     }
 
     /// <summary>
@@ -140,12 +124,7 @@ public class EmployeePanel : BasePanel
     /// <returns>현재 급여 레벨 (0~4), 선택된 직원이 없으면 -1</returns>
     public int GetSelectedEmployeeSalaryLevel()
     {
-        if (string.IsNullOrEmpty(_selectedEmployeeId) || _dataManager?.Employee == null)
-        {
-            return -1;
-        }
-
-        return _dataManager.Employee.GetEmployeeSalaryLevel(_selectedEmployeeId);
+        return _dataManager.Employee.GetEmployeeSalaryLevel(_selectedEmployeeType);
     }
 
     /// <summary>
@@ -159,7 +138,7 @@ public class EmployeePanel : BasePanel
         }
 
         _selectedEmployeeEntry = entry;
-        _selectedEmployeeId = entry.employeeData.id;
+        _selectedEmployeeType = entry.employeeData.type;
         UpdateEmployeeUI();
     }
 
@@ -215,7 +194,7 @@ public class EmployeePanel : BasePanel
         EmployeeEntry foundEntry = null;
         foreach (var entry in allEmployees.Values)
         {
-            if (entry?.employeeData != null && entry.employeeData.role == role)
+            if (entry?.employeeData != null && entry.employeeData.type == role)
             {
                 foundEntry = entry;
                 break;
@@ -279,7 +258,7 @@ public class EmployeePanel : BasePanel
         }
 
         var data = _selectedEmployeeEntry.employeeData;
-        var state = _selectedEmployeeEntry.employeeState;
+        var state = _selectedEmployeeEntry.state;
 
         // 기본 정보
         if (_employeeImage != null && data.Image != null)
@@ -482,13 +461,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void RefreshEmployeeUI()
     {
-        if (string.IsNullOrEmpty(_selectedEmployeeId) || _dataManager?.Employee == null)
-        {
-            return;
-        }
-
-        // 선택된 직원 정보 다시 가져오기
-        var entry = _dataManager.Employee.GetEmployeeEntry(_selectedEmployeeId);
+        var entry = _dataManager.Employee.GetEmployeeEntry(_selectedEmployeeType);
         if (entry != null)
         {
             _selectedEmployeeEntry = entry;
@@ -546,9 +519,9 @@ public class EmployeePanel : BasePanel
         }
 
         // 2. 직원 개별 효율성 이펙트
-        if (_selectedEmployeeEntry?.employeeState?.activeEffects != null)
+        if (_selectedEmployeeEntry?.state?.activeEffects != null)
         {
-            var localEffects = _selectedEmployeeEntry.employeeState.activeEffects
+            var localEffects = _selectedEmployeeEntry.state.activeEffects
                 .Where(e => e.Data.statType == StatType.EfficiencyBonus);
             combinedEffects.AddRange(localEffects);
         }
@@ -573,10 +546,7 @@ public class EmployeePanel : BasePanel
             }
         }
     }
-
-    /// <summary>
-    /// 만족도 관련 이펙트 상태를 업데이트합니다.
-    /// </summary>
+    
     /// <summary>
     /// 만족도 관련 이펙트 상태를 업데이트합니다.
     /// </summary>
@@ -602,9 +572,9 @@ public class EmployeePanel : BasePanel
         }
 
         // 2. 직원 개별 만족도 이펙트
-        if (_selectedEmployeeEntry?.employeeState?.activeEffects != null)
+        if (_selectedEmployeeEntry?.state?.activeEffects != null)
         {
-            var localEffects = _selectedEmployeeEntry.employeeState.activeEffects
+            var localEffects = _selectedEmployeeEntry.state.activeEffects
                 .Where(e => e.Data.statType == StatType.SatisfactionChangePerDay);
             combinedEffects.AddRange(localEffects);
         }

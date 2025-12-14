@@ -25,138 +25,17 @@ public class ResourceDataHandler
         
         if (resourceDataList != null && resourceDataList.Count > 0)
         {
-            // 리스트에서 딕셔너리로 변환
-            RegisterResources(resourceDataList.ToArray());
-            Debug.Log($"[ResourceService] Initialized with {resourceDataList.Count} resources from list.");
-        }
-        else
-        {
-            // 리스트가 없으면 기존 방식으로 자동 로드
-            AutoLoadAllResources();
-        }
-    }
-
-    /// <summary>
-    /// 지정된 경로에서 모든 ResourceData를 자동으로 로드하여 등록합니다.
-    /// </summary>
-    /// <param name="resourcePaths">검색할 폴더 경로 배열 (예: "Datas/Resource/Metal")</param>
-    public void AutoLoadResources(string[] resourcePaths)
-    {
-#if UNITY_EDITOR
-        int loadedCount = 0;
-        
-        foreach (string path in resourcePaths)
-        {
-            // AssetDatabase를 사용하여 모든 ResourceData 찾기
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResourceData", new[] { "Assets/" + path });
-            
-            foreach (string guid in guids)
+            foreach (var data in resourceDataList)
             {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                ResourceData resourceData = UnityEditor.AssetDatabase.LoadAssetAtPath<ResourceData>(assetPath);
-                
-                if (resourceData != null)
+                if (data == null || string.IsNullOrEmpty(data.id)) continue;
+                if (_resources.ContainsKey(data.id))
                 {
-                    RegisterResource(resourceData);
-                    loadedCount++;
+                    Debug.LogWarning($"[ResourceService] Resource already registered: {data.id}");
+                    continue;
                 }
+                _resources[data.id] = new ResourceEntry(data);
             }
         }
-        
-        Debug.Log($"[ResourceService] Auto load completed: {loadedCount} resources registered");
-#else
-        Debug.LogWarning("[ResourceService] AutoLoadResources is only available in editor mode.");
-#endif
-    }
-
-    /// <summary>
-    /// 모든 ResourceData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
-    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
-    /// </summary>
-    public void AutoLoadAllResources()
-    {
-#if UNITY_EDITOR
-        // 에디터 모드: AssetDatabase를 사용하여 모든 ResourceData 찾기
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResourceData");
-        int loadedCount = 0;
-        
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            ResourceData resourceData = UnityEditor.AssetDatabase.LoadAssetAtPath<ResourceData>(assetPath);
-            
-            if (resourceData != null)
-            {
-                RegisterResource(resourceData);
-                loadedCount++;
-            }
-        }
-        
-        Debug.Log($"[ResourceService] Full auto load completed: {loadedCount} resources registered");
-#else
-        ResourceData[] resourceDataList = Resources.LoadAll<ResourceData>("Datas/Resource");
-        if (resourceDataList != null && resourceDataList.Length > 0)
-        {
-            RegisterResources(resourceDataList);
-            Debug.Log($"[ResourceService] Runtime load completed: {resourceDataList.Length} resources registered.");
-        }
-        else
-        {
-            Debug.LogWarning("[ResourceService] No ResourceData found in Resources/Datas/Resource. Make sure ResourceData files are placed in the Resources folder.");
-        }
-#endif
-    }
-
-    /// <summary>
-    /// ResourceData를 등록하여 관리 대상에 추가합니다.
-    /// </summary>
-    /// <param name="resourceData">등록할 ResourceData</param>
-    public void RegisterResource(ResourceData resourceData)
-    {
-        if (resourceData == null)
-        {
-            Debug.LogWarning("[ResourceService] ResourceData is null.");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(resourceData.id))
-        {
-            Debug.LogWarning("[ResourceService] ResourceData ID is empty.");
-            return;
-        }
-
-        if (_resources.ContainsKey(resourceData.id))
-        {
-            Debug.LogWarning($"[ResourceService] Resource already registered: {resourceData.id}");
-            return;
-        }
-
-        _resources[resourceData.id] = new ResourceEntry(resourceData);
-    }
-
-    /// <summary>
-    /// 여러 ResourceData를 한 번에 등록합니다.
-    /// </summary>
-    /// <param name="resourceDataList">등록할 ResourceData 배열</param>
-    public void RegisterResources(ResourceData[] resourceDataList)
-    {
-        foreach (var data in resourceDataList)
-        {
-            RegisterResource(data);
-        }
-    }
-
-    // ----------------- Public Getters (읽기 전용) -----------------
-
-    /// <summary>
-    /// 특정 자원의 시장 재고량을 반환합니다. (deltaCount를 고려한 실제 사용 가능한 수량)
-    /// </summary>
-    /// <param name="resourceId">자원 ID</param>
-    /// <returns>해당 자원의 시장 재고량 (count + deltaCount)</returns>
-    [Obsolete("Use GetMarketResourceQuantity instead. This method will be removed in a future version.")]
-    public long GetResourceQuantity(string resourceId)
-    {
-        return GetMarketResourceQuantity(resourceId);
     }
 
     /// <summary>

@@ -54,10 +54,5 @@ public partial class MainUiManager
             }
         }
     }
-
-    private void UpdateResourceSummary()
-    {
-        RefreshResourceScrollView();
-    }
 }
 

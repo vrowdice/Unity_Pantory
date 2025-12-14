@@ -21,23 +21,32 @@ public partial class MarketDataHandler
     /// </summary>
     public event Action OnMarketUpdated;
 
-    public MarketDataHandler(GameDataManager manager, List<MarketActorData> marketActorDataList = null)
+    public MarketDataHandler(GameDataManager manager, List<MarketActorData> marketActorDataList, InitialMarketData initData)
     {
         _gameDataManager = manager;
-        
+        SetMarketSettings(initData);
+
+        // 리스트에서 딕셔너리로 등록
         if (marketActorDataList != null && marketActorDataList.Count > 0)
         {
-            // 리스트에서 딕셔너리로 변환
-            RegisterActors(marketActorDataList);
-            Debug.Log($"[MarketDataHandler] Initialized with {marketActorDataList.Count} actors from list.");
+            foreach (var data in marketActorDataList)
+            {
+                if (data == null || string.IsNullOrEmpty(data.id)) continue;
+                if (_actors.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"[MarketDataHandler] Actor already registered: {data.id}");
+                    continue;
+                }
+
+                var entry = new MarketActorEntry(data);
+                _actors[data.id] = entry;
+                entry.ApplyInitialMarketSettings(_marketSettings);
+            }
         }
-        else
-        {
-            // 리스트가 없으면 기존 방식으로 자동 로드
-            AutoLoadAllActors();
-        }
-        
+
         CreateSystemActors();
+        InitializeMarketChaos();
+        InitializeSystemActors();
     }
 
     /// <summary>
@@ -458,68 +467,14 @@ public partial class MarketDataHandler
 
     public void RegisterActors(IEnumerable<MarketActorData> actors)
     {
-        if (actors == null) return;
-        foreach (var actor in actors) RegisterActor(actor);
+        foreach (var data in actors)
+        {
+            var entry = new MarketActorEntry(data);
+            _actors[data.id] = entry;
+            entry.ApplyInitialMarketSettings(_marketSettings);
+        }
     }
 
-    /// <summary>
-    /// 모든 액터 데이터를 지정된 경로 또는 기본 경로에서 자동으로 로드합니다.
-    /// (에디터: AssetDatabase / 빌드: Resources)
-    /// </summary>
-    public void AutoLoadAllActors()
-    {
-#if UNITY_EDITOR
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:MarketActorData");
-        int count = 0;
-        foreach (string guid in guids)
-        {
-            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            var data = UnityEditor.AssetDatabase.LoadAssetAtPath<MarketActorData>(path);
-            if (data != null)
-            {
-                RegisterActor(data);
-                count++;
-            }
-        }
-        Debug.Log($"[Market] Editor AutoLoad: {count} actors.");
-#else
-        var dataList = Resources.LoadAll<MarketActorData>("Datas/MarketActor");
-        if (dataList != null && dataList.Length > 0)
-        {
-            RegisterActors(dataList);
-            Debug.Log($"[Market] Runtime AutoLoad: {dataList.Length} actors.");
-        }
-#endif
-    }
-
-    /// <summary>
-    /// 지정된 경로 배열에서 액터 데이터를 로드합니다.
-    /// </summary>
-    public void AutoLoadActors(string[] actorPaths)
-    {
-#if UNITY_EDITOR
-        int count = 0;
-        foreach (string path in actorPaths)
-        {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:MarketActorData", new[] { "Assets/" + path });
-            foreach (string guid in guids)
-            {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var data = UnityEditor.AssetDatabase.LoadAssetAtPath<MarketActorData>(assetPath);
-                if (data != null)
-                {
-                    RegisterActor(data);
-                    count++;
-                }
-            }
-        }
-        Debug.Log($"[Market] Editor PathLoad: {count} actors.");
-#else
-        string path = (actorPaths != null && actorPaths.Length > 0) ? actorPaths[0] : "Datas/MarketActor";
-        var dataList = Resources.LoadAll<MarketActorData>(path);
-        RegisterActors(dataList);
-#endif
-    }
 
     public Dictionary<string, MarketActorEntry> GetAllActors()
     {

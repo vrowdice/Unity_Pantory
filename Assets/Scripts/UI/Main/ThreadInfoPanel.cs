@@ -5,58 +5,59 @@ using TMPro;
 using Evo;
 
 /// <summary>
-/// 스레드 정보를 표시하고 직원을 할당할 수 있는 패널
-/// (버튼 로직 제거됨: 오직 슬라이더로만 제어)
+/// 스레드(생산 시설)의 정보를 표시하고 직원을 할당/해제하는 UI 패널을 관리합니다.
+/// <para>슬라이더를 통해 직원 수를 제어하며, 생산 효율 및 리소스 소비/생산 현황을 시각화합니다.</para>
 /// </summary>
 public class ThreadInfoPanel : MonoBehaviour
 {
-    [Header("Resource References")]
+    #region UI References
+
+    [Header("Resource Visualization")]
     [SerializeField] private Transform _provideContentTransform;
     [SerializeField] private Transform _consumeContentTransform;
 
-    [Header("UI References")]
+    [Header("Basic Info")]
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _maintenanceText;
     [SerializeField] private TextMeshProUGUI _categoryText;
-    [SerializeField] private Image _image;
+    [SerializeField] private Image _previewImage;
 
-    [Header("Employee Assignment")]
+    [Header("Production Stats")]
     [SerializeField] private Slider _productionEfficiencySlider;
-    [SerializeField] private Slider _productionProgressSlider;
-
-    // [수정] 효율 및 진행도 텍스트 참조
     [SerializeField] private TextMeshProUGUI _productionEfficiencyText;
+    [SerializeField] private Slider _productionProgressSlider;
     [SerializeField] private TextMeshProUGUI _productionProgressText;
 
-    // 전체 고용된 인원 표시용 (Global Hired)
+    [Header("Employee Assignment (Global Stats)")]
     [SerializeField] private TextMeshProUGUI _currentWorkersText;
     [SerializeField] private TextMeshProUGUI _currentTechniciansText;
 
-    // 현재 스레드의 최대 수용 인원 표시용 (Local Max)
+    [Header("Employee Assignment (Local Stats)")]
     [SerializeField] private TextMeshProUGUI _maxWorkersText;
     [SerializeField] private TextMeshProUGUI _maxTechniciansText;
-
-    // 현재 스레드에 할당된 인원 표시용 (Local Assigned)
     [SerializeField] private TextMeshProUGUI _assignedWorkersText;
     [SerializeField] private TextMeshProUGUI _assignedTechniciansText;
-
     [SerializeField] private Slider _workerSlider;
     [SerializeField] private Slider _technicianSlider;
 
-    // 상수 정의
-    private const string ID_WORKER = "worker";
-    private const string ID_TECHNICIAN = "technician";
+    #endregion
+
+    #region Internal Fields
 
     private ThreadState _currentThreadState;
     private GameDataManager _dataManager;
     private MainUiManager _mainUiManager;
-    private bool _isSubscribed = false;
 
-    // UI 갱신 중 이벤트 발생을 차단하기 위한 플래그
+    private bool _isSubscribed = false;
     private bool _isUpdatingUI = false;
 
-    #region 초기화 및 이벤트 관리
+    #endregion
 
+    #region Initialization & Events
+
+    /// <summary>
+    /// 패널을 초기화하고 데이터를 연결합니다.
+    /// </summary>
     public void OnInitialize(ThreadState threadState, MainUiManager mainUiManager, GameDataManager dataManager)
     {
         _currentThreadState = threadState;
@@ -65,317 +66,294 @@ public class ThreadInfoPanel : MonoBehaviour
 
         if (_currentThreadState == null)
         {
-            Debug.LogWarning("[ThreadInfoPanel] ThreadState is null!");
+            Debug.LogWarning("[ThreadInfoPanel] ThreadState is null during initialization.");
             return;
         }
 
         SubscribeToDayChanged();
-        UpdateUI();
+        RefreshAllUI();
     }
 
-    void OnEnable()
-    {
-        if (!_isSubscribed) SubscribeToDayChanged();
-    }
-
-    void OnDisable()
-    {
-        UnsubscribeFromDayChanged();
-    }
-
-    void OnDestroy()
-    {
-        UnsubscribeFromDayChanged();
-    }
+    private void OnEnable() => SubscribeToDayChanged();
+    private void OnDisable() => UnsubscribeFromDayChanged();
+    private void OnDestroy() => UnsubscribeFromDayChanged();
 
     private void SubscribeToDayChanged()
     {
-        if (_dataManager?.Time != null && !_isSubscribed)
-        {
-            _dataManager.Time.OnDayChanged += OnDayChanged;
-            _isSubscribed = true;
-        }
+        if (_isSubscribed || _dataManager?.Time == null) return;
+
+        _dataManager.Time.OnDayChanged += OnDayChanged;
+        _isSubscribed = true;
     }
 
     private void UnsubscribeFromDayChanged()
     {
-        if (_dataManager?.Time != null && _isSubscribed)
-        {
-            _dataManager.Time.OnDayChanged -= OnDayChanged;
-            _isSubscribed = false;
-        }
+        if (!_isSubscribed || _dataManager?.Time == null) return;
+
+        _dataManager.Time.OnDayChanged -= OnDayChanged;
+        _isSubscribed = false;
     }
 
     private void OnDayChanged()
     {
-        if (gameObject.activeSelf) UpdateUI();
+        if (gameObject.activeSelf) RefreshAllUI();
+    }
+
+    /// <summary>
+    /// 패널을 숨깁니다.
+    /// </summary>
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 
     #endregion
 
-    #region UI 업데이트
+    #region UI Update Logic
 
-    private void UpdateUI()
+    /// <summary>
+    /// 모든 UI 요소를 현재 데이터 기반으로 갱신합니다.
+    /// <para>이벤트 루프를 방지하기 위해 <see cref="_isUpdatingUI"/> 플래그를 사용합니다.</para>
+    /// </summary>
+    private void RefreshAllUI()
     {
         if (_currentThreadState == null) return;
 
-        // UI 업데이트 시작 시 플래그 설정 (이벤트 루프 방지)
         _isUpdatingUI = true;
-
         try
         {
-            // 1. 텍스트 정보 업데이트
-            if (_nameText != null) _nameText.text = _currentThreadState.threadName;
-
-            if (_categoryText != null)
-                _categoryText.text = GetCategoryName(_currentThreadState.categoryId);
-
-            if (_maintenanceText != null)
-                _maintenanceText.text = $"Maintenance: {_currentThreadState.totalMaintenanceCost:N0}/month";
-
-            // 2. 이미지 및 리소스 업데이트
-            LoadPreviewImage();
-            UpdateResourceDisplay();
-
-            // 3. 직원 및 슬라이더 업데이트
-            UpdateEmployeeAssignment();
+            UpdateBasicInfo();
+            UpdateResourceIcons();
+            UpdateEmployeeStatus();
             UpdateProductionStatus();
         }
         finally
         {
-            // UI 업데이트가 끝나면 반드시 플래그 해제
             _isUpdatingUI = false;
         }
     }
 
-    private void UpdateResourceDisplay()
+    private void UpdateBasicInfo()
     {
-        if (_currentThreadState == null || _dataManager == null || _mainUiManager == null) return;
+        if (_nameText != null)
+            _nameText.text = _currentThreadState.threadName;
 
+        if (_categoryText != null)
+            _categoryText.text = GetCategoryName(_currentThreadState.categoryId);
+
+        if (_maintenanceText != null)
+            _maintenanceText.text = $"Maintenance: {_currentThreadState.totalMaintenanceCost:N0}/month";
+
+        LoadPreviewImage();
+    }
+
+    private void UpdateResourceIcons()
+    {
+        if (_dataManager == null || _mainUiManager == null) return;
+
+        // 기존 아이콘 제거
         if (_provideContentTransform != null) GameObjectUtils.ClearChildren(_provideContentTransform);
         if (_consumeContentTransform != null) GameObjectUtils.ClearChildren(_consumeContentTransform);
 
+        // 소비 및 생산 리소스 가져오기
         if (_currentThreadState.TryGetAggregatedResourceCounts(out var consumption, out var production))
         {
-            SpawnResourceIcons(consumption, _provideContentTransform);
-            SpawnResourceIcons(production, _consumeContentTransform);
+            SpawnIcons(consumption, _provideContentTransform);
+            SpawnIcons(production, _consumeContentTransform);
         }
     }
 
-    private void SpawnResourceIcons(Dictionary<string, int> resources, Transform parent)
+    private void SpawnIcons(Dictionary<string, int> resources, Transform parent)
     {
-        if (resources == null || parent == null) return;
+        if (resources == null || parent == null || _mainUiManager.ProductionInfoImage == null) return;
 
         foreach (var kvp in resources)
         {
             var entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
-            if (entry != null && _mainUiManager.ProductionInfoImage != null)
+            if (entry != null)
             {
-                Instantiate(_mainUiManager.ProductionInfoImage, parent)
-                    .GetComponent<ProductionInfoImage>().OnInitialize(entry, kvp.Value);
+                var iconObj = Instantiate(_mainUiManager.ProductionInfoImage, parent);
+                iconObj.GetComponent<ProductionInfoImage>().OnInitialize(entry, kvp.Value);
             }
         }
     }
 
-    private void UpdateEmployeeAssignment()
+    private void UpdateEmployeeStatus()
     {
-        if (_currentThreadState == null || _dataManager?.Employee == null) return;
+        if (_dataManager?.Employee == null) return;
 
         int requiredTotal = _currentThreadState.requiredEmployees;
+        int currentWorkers = _currentThreadState.currentWorkers;
+        int currentTechs = _currentThreadState.currentTechnicians;
 
         // 전역 데이터 조회
-        int hiredWorkers = _dataManager.Employee.GetEmployeeCount(ID_WORKER);
-        int hiredTechs = _dataManager.Employee.GetEmployeeCount(ID_TECHNICIAN);
-        int availWorkers = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(ID_WORKER));
-        int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(ID_TECHNICIAN));
+        int hiredWorkers = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker).state.count;
+        int hiredTechs = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician).state.count;
+        int availWorkers = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker));
+        int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
 
-        // --- 텍스트 업데이트 ---
+        // 1. 텍스트 업데이트
+        UpdateEmployeeTexts(requiredTotal, currentWorkers, currentTechs, hiredWorkers, hiredTechs);
 
-        // 1. 최대 수용 인원 (Local Max)
-        if (_maxWorkersText != null) _maxWorkersText.text = $"Max: {requiredTotal}";
-        if (_maxTechniciansText != null) _maxTechniciansText.text = $"Max: {requiredTotal}";
-
-        // 2. 전체 고용 인원 (Global Hired)
-        if (_currentWorkersText != null) _currentWorkersText.text = hiredWorkers.ToString("N0");
-        if (_currentTechniciansText != null) _currentTechniciansText.text = hiredTechs.ToString("N0");
-
-        // 3. 현재 스레드 배치 인원 (Local Assigned)
-        if (_assignedWorkersText != null)
-            _assignedWorkersText.text = _currentThreadState.currentWorkers.ToString("N0");
-
-        if (_assignedTechniciansText != null)
-            _assignedTechniciansText.text = _currentThreadState.currentTechnicians.ToString("N0");
-
-
-        // --- 슬라이더 업데이트 ---
-        UpdateSliderState(_workerSlider, _currentThreadState.currentWorkers, availWorkers, requiredTotal);
-        UpdateSliderState(_technicianSlider, _currentThreadState.currentTechnicians, availTechs, requiredTotal);
+        // 2. 슬라이더 업데이트 (Logic Max 계산 포함)
+        UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal);
+        UpdateSliderState(_technicianSlider, currentTechs, availTechs, requiredTotal);
     }
 
+    private void UpdateEmployeeTexts(int max, int currW, int currT, int hiredW, int hiredT)
+    {
+        if (_maxWorkersText) _maxWorkersText.text = $"Max: {max}";
+        if (_maxTechniciansText) _maxTechniciansText.text = $"Max: {max}";
+
+        if (_currentWorkersText) _currentWorkersText.text = hiredW.ToString("N0");
+        if (_currentTechniciansText) _currentTechniciansText.text = hiredT.ToString("N0");
+
+        if (_assignedWorkersText) _assignedWorkersText.text = currW.ToString("N0");
+        if (_assignedTechniciansText) _assignedTechniciansText.text = currT.ToString("N0");
+    }
+
+    /// <summary>
+    /// 슬라이더의 최대값과 현재값을 안전하게 설정합니다.
+    /// <para>슬라이더의 Max값은 (현재 할당된 인원 + 가용 인원)과 (시설 최대 인원) 중 작은 값입니다.</para>
+    /// </summary>
     private void UpdateSliderState(Slider slider, int currentAssigned, int availableGlobal, int maxRequired)
     {
         if (slider == null) return;
 
+        // 사용자가 슬라이더로 조절 가능한 최대 범위 계산
         int logicMax = Mathf.Min(maxRequired, currentAssigned + availableGlobal);
 
-        // 1. 값 안전 초기화 (OnValueChanged 트리거 방지용 SetValueWithoutNotify)
         slider.SetValueWithoutNotify(Mathf.Clamp(currentAssigned, 0, logicMax));
-
-        // 2. MaxValue 설정
         slider.maxValue = logicMax;
-
-        // 3. 값 재확정
         slider.SetValueWithoutNotify(Mathf.Clamp(currentAssigned, 0, logicMax));
     }
 
-    /// <summary>
-    /// [수정됨] 생산 진행도 및 효율 슬라이더와 텍스트를 업데이트합니다.
-    /// </summary>
     private void UpdateProductionStatus()
     {
-        if (_currentThreadState == null) return;
-
         float efficiency = _currentThreadState.currentProductionEfficiency;
         float progress = _currentThreadState.currentProductionProgress;
 
-        // --- 슬라이더 업데이트 ---
-        if (_productionEfficiencySlider != null)
-            _productionEfficiencySlider.value = efficiency;
+        if (_productionEfficiencySlider) _productionEfficiencySlider.value = efficiency;
+        if (_productionProgressSlider) _productionProgressSlider.value = progress;
 
-        if (_productionProgressSlider != null)
-            _productionProgressSlider.value = progress;
+        if (_productionEfficiencyText) _productionEfficiencyText.text = $"{Mathf.RoundToInt(efficiency * 100)}%";
+        if (_productionProgressText) _productionProgressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
+    }
 
-        // --- 텍스트 업데이트 (추가됨) ---
-        if (_productionEfficiencyText != null)
+    private void LoadPreviewImage()
+    {
+        if (_previewImage == null) return;
+
+        bool hasImage = !string.IsNullOrEmpty(_currentThreadState.previewImagePath);
+        if (hasImage)
         {
-            // 0.0 ~ 1.0 값을 0% ~ 100% 형식으로 변환
-            _productionEfficiencyText.text = $"{Mathf.RoundToInt(efficiency * 100)}%";
+            Sprite sprite = SpriteUtils.LoadSpriteFromFile(_currentThreadState.previewImagePath);
+            if (sprite != null)
+            {
+                _previewImage.sprite = sprite;
+                _previewImage.enabled = true;
+                return;
+            }
         }
 
-        if (_productionProgressText != null)
-        {
-            _productionProgressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
-        }
+        // 이미지 경로가 없거나 로드 실패 시 숨김
+        _previewImage.enabled = false;
     }
 
     #endregion
 
-    #region 상호작용 (오직 슬라이더)
+    #region Interaction Handlers (Sliders)
 
-    // --- 슬라이더 콜백 ---
-
+    /// <summary>
+    /// Worker 슬라이더 값 변경 시 호출됩니다.
+    /// </summary>
     public void OnWorkerSliderChanged()
     {
-        // UI 갱신 중(초기화 중)이라면 로직 실행 차단
         if (_isUpdatingUI) return;
-
-        HandleEmployeeSliderChanged(ID_WORKER, _workerSlider,
+        ProcessEmployeeAssignment(EmployeeType.Worker, _workerSlider,
             ref _currentThreadState.currentWorkers, _currentThreadState.currentTechnicians);
     }
 
+    /// <summary>
+    /// Technician 슬라이더 값 변경 시 호출됩니다.
+    /// </summary>
     public void OnTechnicianSliderChanged()
     {
-        // UI 갱신 중(초기화 중)이라면 로직 실행 차단
         if (_isUpdatingUI) return;
-
-        HandleEmployeeSliderChanged(ID_TECHNICIAN, _technicianSlider,
+        ProcessEmployeeAssignment(EmployeeType.Technician, _technicianSlider,
             ref _currentThreadState.currentTechnicians, _currentThreadState.currentWorkers);
     }
 
-    private void HandleEmployeeSliderChanged(string empId, Slider slider, ref int currentCount, int otherCount)
+    /// <summary>
+    /// 실제 직원 할당/해제 로직을 처리합니다.
+    /// </summary>
+    /// <param name="type">직원 타입</param>
+    /// <param name="slider">조작된 슬라이더</param>
+    /// <param name="currentCount">변경할 현재 할당 수 (ref)</param>
+    /// <param name="otherCount">다른 타입 직원의 현재 할당 수 (최대 인원 체크용)</param>
+    private void ProcessEmployeeAssignment(EmployeeType type, Slider slider, ref int currentCount, int otherCount)
     {
-        if (_currentThreadState == null || _dataManager == null || slider == null) return;
+        if (_dataManager == null || slider == null) return;
 
-        int desiredCount = Mathf.RoundToInt(slider.value);
-        int delta = desiredCount - currentCount;
+        int targetCount = Mathf.RoundToInt(slider.value);
+        int delta = targetCount - currentCount;
 
         if (delta == 0) return;
 
-        bool success = false;
+        bool isSuccess = false;
 
-        if (delta > 0) // 추가
+        if (delta > 0) // 고용 (Assign)
         {
             int remainingSlots = Mathf.Max(0, _currentThreadState.requiredEmployees - (currentCount + otherCount));
-            int availableGlobal = _dataManager.Employee.GetAvailableEmployeeCount(empId);
+            int availableGlobal = _dataManager.Employee.GetAvailableEmployeeCount(type);
+            int addAmount = Mathf.Min(delta, availableGlobal, remainingSlots);
 
-            int addCount = Mathf.Min(delta, availableGlobal, remainingSlots);
-
-            if (addCount > 0 && _dataManager.Employee.TryAssignEmployee(empId, addCount))
+            if (addAmount > 0 && _dataManager.Employee.TryAssignEmployee(type, addAmount))
             {
-                currentCount += addCount;
-                success = true;
+                currentCount += addAmount;
+                isSuccess = true;
             }
         }
-        else // 제거
+        else // 해고 (Unassign)
         {
-            int removeCount = Mathf.Min(-delta, currentCount);
+            int removeAmount = Mathf.Min(-delta, currentCount);
 
-            if (removeCount > 0 && _dataManager.Employee.TryUnassignEmployee(empId, removeCount))
+            if (removeAmount > 0 && _dataManager.Employee.TryUnassignEmployee(type, removeAmount))
             {
-                currentCount -= removeCount;
-                success = true;
+                currentCount -= removeAmount;
+                isSuccess = true;
             }
         }
 
-        if (success)
+        if (isSuccess)
         {
-            SyncAndRefreshUI();
+            SyncAndRefresh();
         }
         else
         {
-            // 실패 시 UI 갱신 플래그를 켜고 값을 되돌림
+            // 실패 시 UI 값을 원래대로 복구 (이벤트 트리거 없이)
             _isUpdatingUI = true;
             slider.SetValueWithoutNotify(currentCount);
             _isUpdatingUI = false;
         }
     }
 
+    private void SyncAndRefresh()
+    {
+        // 데이터 매니저와 동기화 후 UI 갱신
+        _dataManager?.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+        RefreshAllUI();
+    }
+
     #endregion
 
-    #region 유틸리티
-
-    private void SyncAndRefreshUI()
-    {
-        if (_dataManager != null)
-        {
-            _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
-        }
-
-        UpdateUI(); // 전체 UI 갱신
-    }
+    #region Helpers
 
     private string GetCategoryName(string categoryId)
     {
         if (string.IsNullOrEmpty(categoryId) || _dataManager == null) return "None";
         var category = _dataManager.Thread.GetCategory(categoryId);
         return category != null ? category.categoryName : "None";
-    }
-
-    private void LoadPreviewImage()
-    {
-        if (_image == null) return;
-
-        if (string.IsNullOrEmpty(_currentThreadState.previewImagePath))
-        {
-            _image.enabled = false;
-            return;
-        }
-
-        Sprite loadedSprite = SpriteUtils.LoadSpriteFromFile(_currentThreadState.previewImagePath);
-        if (loadedSprite != null)
-        {
-            _image.sprite = loadedSprite;
-            _image.enabled = true;
-        }
-        else
-        {
-            _image.enabled = false;
-        }
-    }
-
-    public void Hide()
-    {
-        gameObject.SetActive(false);
     }
 
     #endregion

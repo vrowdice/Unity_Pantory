@@ -244,22 +244,6 @@ public class InitialMarketData : ScriptableObject
     public float peacePriceSensitivity = 0.55f;
 
     /// <summary>
-    /// Applies initial market data to MarketDataHandler.
-    /// </summary>
-    /// <param name="marketHandler">MarketDataHandler to apply to</param>
-    public void ApplyToMarket(MarketDataHandler marketHandler)
-    {
-        if (marketHandler == null)
-        {
-            Debug.LogError("[InitialMarketData] MarketDataHandler is null.");
-            return;
-        }
-
-        marketHandler.SetMarketSettings(this);
-        // 액터는 MarketDataHandler 생성자에서 AutoLoadAllActors()로 자동 로드됩니다.
-    }
-
-    /// <summary>
     /// Validates values in the Editor (prevents invalid values).
     /// </summary>
     private void OnValidate()

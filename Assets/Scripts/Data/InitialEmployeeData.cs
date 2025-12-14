@@ -105,6 +105,10 @@ public class InitialEmployeeData : ScriptableObject
     [Range(0f, 1f)]
     public float managerMitigationRatio = 0.5f;
 
+    [Header("Research System")]
+    [Tooltip("연구자명당 연구 포인트 증가 수치")]
+    public int researchPointsPerResearcher = 5;
+
     /// <summary>
     /// 급여 레벨에 따른 일일 만족도 변화량을 반환합니다.
     /// </summary>
@@ -157,21 +161,6 @@ public class InitialEmployeeData : ScriptableObject
             case 4: return "Very High";      // 매우 많음
             default: return "Normal";
         }
-    }
-
-    /// <summary>
-    /// EmployeeDataHandler에 초기 데이터를 적용합니다.
-    /// </summary>
-    /// <param name="employeeHandler">EmployeeDataHandler to apply to</param>
-    public void ApplyToEmployeeHandler(EmployeeDataHandler employeeHandler)
-    {
-        if (employeeHandler == null)
-        {
-            Debug.LogError("[InitialEmployeeData] EmployeeDataHandler is null.");
-            return;
-        }
-
-        employeeHandler.SetSalaryMultipliers(this);
     }
 
     /// <summary>

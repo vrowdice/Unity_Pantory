@@ -7,50 +7,20 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TimeSettingsData", menuName = "Game Data/Time Settings Data", order = 2)]
 public class InitialTimeData : ScriptableObject
 {
-    [Header("Time Flow Settings")]
-    [Tooltip("Real seconds it takes for one in-game HOUR to pass")]
+    [Range(1, 48)]
+    public int hoursPerDay = 24;
     [Range(0.01f, 1.0f)]
     public float realSecondsPerHour = 0.1f;
-
-    [Header("Calendar Settings")]
-    [Tooltip("Number of days in a month (business days)")]
     [Range(1, 31)]
     public int daysPerMonth = 20;
-    
-    [Tooltip("Number of months in a year")]
     [Range(1, 24)]
     public int monthsPerYear = 12;
-
-    [Header("Starting Date")]
-    [Tooltip("Starting year")]
     [Range(0, 999)]
     public int startYear = 0;
-    
-    [Tooltip("Starting month")]
     [Range(0, 23)]
     public int startMonth = 0;
-    
-    [Tooltip("Starting day")]
     [Range(0, 30)]
     public int startDay = 0;
-
-    /// <summary>
-    /// Applies time settings to TimeService.
-    /// </summary>
-    /// <param name="timeService">TimeService to apply to</param>
-    public void ApplyToTimeService(TimeDataHandler timeService)
-    {
-        if (timeService == null)
-        {
-            Debug.LogError("[TimeSettingsData] TimeService is null.");
-            return;
-        }
-
-        timeService.SetRealSecondsPerHour(realSecondsPerHour);
-        timeService.SetDaysPerMonth(daysPerMonth);
-        timeService.SetMonthsPerYear(monthsPerYear);
-        timeService.SetDate(startYear, startMonth, startDay);
-    }
 
     /// <summary>
     /// Validates values in the Editor.

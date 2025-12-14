@@ -7,21 +7,22 @@ using UnityEngine;
 public class EmployeeData : ScriptableObject
 {
     [Header("Basic Info")]
-    public string id;                    // 직원 유형 ID (예: "worker")
-    public string displayName;           // 표시 이름 (예: "Worker")
-    public EmployeeType role;            // 직원 역할
-    [Tooltip("직원의 기술 수준 티어 (1=Worker, 2=Technician, 3=Researcher)")]
-    public int tier = 1;                 // 기술 수준 티어
+    public string id;
+    public string displayName;
+    public EmployeeType type;
+    [Tooltip("1=Worker, 2=Technician, 3=Researcher")]
+    public int tier = 1;
     public Sprite icon;
     public Sprite Image;
     [TextArea(3, 10)]
     public string description;
 
     [Header("Initial Stats")]
-    public float baseEfficiency;              // 기본 생산 효율
+    [Range(0f, 2f)]
+    public float baseEfficiency;
     [Range(-100f, 100f)]
-    public float baseSatisfaction;       // 기본 만족도
+    public float baseSatisfaction;
     
     [Header("Salary")]
-    public long baseSalary;              // 기본 급여
+    public long baseSalary;
 }

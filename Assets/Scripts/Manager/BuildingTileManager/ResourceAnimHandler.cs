@@ -7,17 +7,13 @@ using UnityEngine.Pool;
 /// </summary>
 public class ResourceAnimHandler
 {
-    // ==================== References ====================
     private readonly BuildingTileManager _tileManager;
     private readonly GameObject _resourceItemPrefab;
     private IObjectPool<ResourceItem> _itemPool;
-    
-    // ==================== Settings ====================
+
     private float _spawnInterval;
     private float _timer;
 
-    // ==================== State ====================
-    // 경로 충돌 감지를 위한 맵 (Key: 그리드좌표, Value: 자원ID)
     private Dictionary<Vector2Int, string> _roadOccupancyMap = new Dictionary<Vector2Int, string>();
     private List<ActiveRoute> _validRoutes = new List<ActiveRoute>();
     private bool _isRoutesDirty = true;
@@ -32,7 +28,6 @@ public class ResourceAnimHandler
         public string resourceId;
     }
 
-    // ==================== Constructor ====================
     public ResourceAnimHandler(BuildingTileManager tileManager, GameObject resourceItemPrefab, float spawnInterval)
     {
         _tileManager = tileManager;
@@ -48,7 +43,6 @@ public class ResourceAnimHandler
             maxSize: 500
         );
     }
-    // ==================== Pool Callback Methods (추가됨) ====================
     
     // 1. 생성
     private ResourceItem CreateResourceItem()
@@ -73,7 +67,6 @@ public class ResourceAnimHandler
     {
         Object.Destroy(item.gameObject);
     }
-    // ==================== Public Methods ====================
 
     /// <summary>
     /// BuildingTileManager의 Update에서 호출됩니다.
@@ -107,8 +100,6 @@ public class ResourceAnimHandler
     {
         _isRoutesDirty = true;
     }
-
-    // ==================== Private Methods ====================
 
     private void CalculateAllRoutes()
     {

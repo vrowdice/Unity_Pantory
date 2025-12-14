@@ -17,15 +17,16 @@ public partial class EmployeeDataHandler
     {
         if (_salarySettings == null) return 1f;
 
-        int managerCount = GetEmployeeCount("manager");
+        var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
+        int managerCount = managerEntry != null && managerEntry.state != null ? managerEntry.state.count : 0;
         int totalEmployees = 0;
 
         // 1. 전체 직원 수 계산
         foreach (var entry in _employees.Values)
         {
-            if (entry?.employeeState != null)
+            if (entry?.state != null)
             {
-                totalEmployees += entry.employeeState.count;
+                totalEmployees += entry.state.count;
             }
         }
 
@@ -60,14 +61,15 @@ public partial class EmployeeDataHandler
             return;
         }
 
-        currentManagers = GetEmployeeCount("manager");
+        var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
+        currentManagers = managerEntry != null && managerEntry.state != null ? managerEntry.state.count : 0;
 
         int totalEmployees = 0;
         foreach (var entry in _employees.Values)
         {
-            if (entry?.employeeState != null)
+            if (entry?.state != null)
             {
-                totalEmployees += entry.employeeState.count;
+                totalEmployees += entry.state.count;
             }
         }
 
@@ -106,16 +108,16 @@ public partial class EmployeeDataHandler
 
         foreach (EmployeeEntry entry in _employees.Values)
         {
-            if (entry == null || entry.employeeData == null || entry.employeeState == null)
+            if (entry == null || entry.employeeData == null || entry.state == null)
             {
                 continue;
             }
 
             // [추가] 직원이 0명이면 만족도와 효율성을 기본값으로 리셋하고 스킵
-            if (entry.employeeState.count == 0)
+            if (entry.state.count == 0)
             {
-                entry.employeeState.currentSatisfaction = entry.employeeData.baseSatisfaction;
-                entry.employeeState.currentEfficiency = Mathf.Clamp(entry.employeeData.baseEfficiency, 0f, 2f);
+                entry.state.currentSatisfaction = entry.employeeData.baseSatisfaction;
+                entry.state.currentEfficiency = Mathf.Clamp(entry.employeeData.baseEfficiency, 0f, 2f);
                 // 효과도 제거해야 할 수 있지만, 일단 기본값 복구만 수행
                 continue;
             }
@@ -137,8 +139,8 @@ public partial class EmployeeDataHandler
             totalSatisfactionChange = entry.CalculateStat(StatType.SatisfactionChangePerDay, totalSatisfactionChange);
 
             // B. 만족도 업데이트 (-100 ~ 100 범위로 클램프)
-            entry.employeeState.currentSatisfaction = Mathf.Clamp(
-                entry.employeeState.currentSatisfaction + totalSatisfactionChange,
+            entry.state.currentSatisfaction = Mathf.Clamp(
+                entry.state.currentSatisfaction + totalSatisfactionChange,
                 -100f, 100f
             );
 
@@ -146,15 +148,15 @@ public partial class EmployeeDataHandler
             UpdateEfficiencyFromSatisfaction(entry);
 
             // D. [추가] 관리 부족 효율성 패널티 적용 (매니저 제외)
-            if (deficit > 0.01f && entry.employeeData.id != "manager")
+            if (deficit > 0.01f && entry.employeeData.type != EmployeeType.Manager)
             {
                 // 부족분에 비례해서 효율성 패널티 적용
                 float effDrop = _salarySettings.maxEfficiencyPenalty * deficit;
 
                 // 효율성은 계산된 값에서 추가로 감소 (최소 0.1 보장)
-                entry.employeeState.currentEfficiency = Mathf.Max(
+                entry.state.currentEfficiency = Mathf.Max(
                     0.1f,
-                    entry.employeeState.currentEfficiency - effDrop
+                    entry.state.currentEfficiency - effDrop
                 );
             }
         }
@@ -171,7 +173,7 @@ public partial class EmployeeDataHandler
     /// </summary>
     private void UpdateEfficiencyFromSatisfaction(EmployeeEntry entry)
     {
-        if (_salarySettings == null || entry == null || entry.employeeData == null || entry.employeeState == null)
+        if (_salarySettings == null || entry == null || entry.employeeData == null || entry.state == null)
         {
             return;
         }
@@ -179,7 +181,7 @@ public partial class EmployeeDataHandler
         float baseEfficiency = entry.employeeData.baseEfficiency;
 
         // 1. 만족도에 따른 효율성 변화 계산
-        float currentSatisfaction = entry.employeeState.currentSatisfaction;
+        float currentSatisfaction = entry.state.currentSatisfaction;
         float satisfactionEfficiencyBonus = currentSatisfaction * _salarySettings.satisfactionToEfficiencyRatio;
 
         // 2. 만족도 효율 보너스를 이펙트로 변환하여 등록 (UI 표시 및 통합 계산용)
@@ -224,12 +226,12 @@ public partial class EmployeeDataHandler
         );
 
         // [Debug] 효율성이 200%에 도달했을 때 상세 로그 출력 (원인 분석용)
-        if (finalEfficiency >= 1.99f && entry.employeeState.currentEfficiency < 1.99f) // 변경되는 시점에만 로그
+        if (finalEfficiency >= 1.99f && entry.state.currentEfficiency < 1.99f) // 변경되는 시점에만 로그
         {
             Debug.Log($"[Efficiency Maxed] ID: {entry.employeeData.id} | Base: {baseEfficiency} | Sat: {currentSatisfaction} (Bonus: {satisfactionEfficiencyBonus}) | Total Calc: {currentEfficiency}");
         }
 
-        entry.employeeState.currentEfficiency = finalEfficiency;
+        entry.state.currentEfficiency = finalEfficiency;
     }
 
     /// <summary>

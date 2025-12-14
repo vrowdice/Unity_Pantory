@@ -10,27 +10,20 @@ using UnityEngine;
 public class EmployeeEntry
 {
     public EmployeeData employeeData;      // 직원의 정적 데이터 (ScriptableObject)
-    public EmployeeState employeeState;    // 직원의 동적 상태
+    public EmployeeState state;    // 직원의 동적 상태
 
     public EmployeeEntry(EmployeeData data)
     {
         employeeData = data;
-        employeeState = new EmployeeState();
-        
-        // 초기 상태를 baseData로 설정
+        state = new EmployeeState();
+
         if (data != null)
         {
-            employeeState.currentSatisfaction = data.baseSatisfaction;
-            // 효율성은 0~200% 범위 (0.0~2.0)
-            employeeState.currentEfficiency = Mathf.Clamp(data.baseEfficiency, 0f, 2f);
-            // 급여 레벨 기본값: 보통 (2)
-            employeeState.salaryLevel = 2;
+            state.currentSatisfaction = data.baseSatisfaction;
+            state.currentEfficiency = Mathf.Clamp(data.baseEfficiency, 0f, 2f);
+            state.salaryLevel = 2;
         }
     }
-
-    // ========================================================================
-    // Effect Management
-    // ========================================================================
 
     /// <summary>
     /// 새로운 효과를 적용합니다.
@@ -38,10 +31,10 @@ public class EmployeeEntry
     public void AddEffect(EffectData data)
     {
         if (data == null) return;
-        if (employeeState.activeEffects == null) employeeState.activeEffects = new List<EffectState>();
+        if (state.activeEffects == null) state.activeEffects = new List<EffectState>();
 
         var runtimeEffect = new EffectState(data);
-        employeeState.activeEffects.Add(runtimeEffect);
+        state.activeEffects.Add(runtimeEffect);
     }
 
     /// <summary>
@@ -49,8 +42,8 @@ public class EmployeeEntry
     /// </summary>
     public void RemoveEffectById(string effectId)
     {
-        if (employeeState.activeEffects == null) return;
-        employeeState.activeEffects.RemoveAll(e => e.Data.id == effectId);
+        if (state.activeEffects == null) return;
+        state.activeEffects.RemoveAll(e => e.Data.id == effectId);
     }
 
     /// <summary>
@@ -58,7 +51,7 @@ public class EmployeeEntry
     /// </summary>
     public float CalculateStat(StatType statType, float baseValue)
     {
-        if (employeeState.activeEffects == null || employeeState.activeEffects.Count == 0)
+        if (state.activeEffects == null || state.activeEffects.Count == 0)
         {
             return baseValue;
         }
@@ -67,7 +60,7 @@ public class EmployeeEntry
         float percentAddSum = 0f;
         float percentMultTotal = 1f;
 
-        foreach (var effect in employeeState.activeEffects)
+        foreach (var effect in state.activeEffects)
         {
             // StatType 체크
             if (effect.Data.statType != statType) continue;
@@ -94,17 +87,17 @@ public class EmployeeEntry
     /// </summary>
     public void UpdateEffectsTime(float daysPassed)
     {
-        if (employeeState.activeEffects == null) return;
+        if (state.activeEffects == null) return;
 
-        for (int i = employeeState.activeEffects.Count - 1; i >= 0; i--)
+        for (int i = state.activeEffects.Count - 1; i >= 0; i--)
         {
-            var effect = employeeState.activeEffects[i];
+            var effect = state.activeEffects[i];
             if (effect.IsPermanent) continue;
 
             effect.RemainingDays -= daysPassed;
             if (effect.RemainingDays <= 0)
             {
-                employeeState.activeEffects.RemoveAt(i);
+                state.activeEffects.RemoveAt(i);
             }
         }
     }

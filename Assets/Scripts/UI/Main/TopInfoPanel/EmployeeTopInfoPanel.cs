@@ -154,17 +154,17 @@ public class EmployeeTopInfoPanel : MonoBehaviour
             {
                 foreach (var entry in allEmployees.Values)
                 {
-                    if (entry?.employeeData != null && entry.employeeData.role == type)
+                    if (entry?.employeeData != null && entry.employeeData.type == type)
                     {
-                        int count = entry.employeeState.count;
-                        int assigned = entry.employeeState.assignedCount;
+                        int count = entry.state.count;
+                        int assigned = entry.state.assignedCount;
                         totalCount += count;
                         assignedCount += assigned;
                         
                         // Weight satisfaction by count (if there are multiple employee types with same role)
                         if (count > 0)
                         {
-                            weightedSatisfactionSum += entry.employeeState.currentSatisfaction * count;
+                            weightedSatisfactionSum += entry.state.currentSatisfaction * count;
                             hasEmployees = true;
                         }
                     }

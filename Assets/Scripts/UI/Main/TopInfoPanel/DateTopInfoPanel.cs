@@ -19,9 +19,9 @@ public class DateTopInfoPanel : MonoBehaviour
     private GameDataManager _dataManager;
     private bool _isTimePaused = false;
 
-    public void OnInitialize(GameDataManager argDataManager)
+    public void OnInitialize(GameDataManager dataManager)
     {
-        _dataManager = argDataManager;
+        _dataManager = dataManager;
 
         if (_dataManager == null)
         {
@@ -52,12 +52,12 @@ public class DateTopInfoPanel : MonoBehaviour
             return;
         }
 
-        // TimeService에서 날짜 정보 가져오기
         int year = _dataManager.Time.Year;
         int month = _dataManager.Time.Month;
         int day = _dataManager.Time.Day;
 
         _dateText.text = $"Y{year} M{month} D{day}";
+        _timeText.text = _dataManager.Time.CurrentHour.ToString("D2") + ":00";
 
         UpdateDayProgressSlider();
     }
@@ -76,12 +76,10 @@ public class DateTopInfoPanel : MonoBehaviour
         // 현재 시간 상태에 따라 이미지 변경
         if (_isTimePaused)
         {
-            // 일시정지 상태면 재생 아이콘 표시
             _playPauseButtonImage.sprite = _playImage;
         }
         else
         {
-            // 재생 상태면 일시정지 아이콘 표시
             _playPauseButtonImage.sprite = _pauseImage;
         }
     }
@@ -97,21 +95,17 @@ public class DateTopInfoPanel : MonoBehaviour
             return;
         }
 
-        // 현재 상태를 토글
         _isTimePaused = !_isTimePaused;
 
         if (_isTimePaused)
         {
-            // 일시정지
             _dataManager.Time.PauseTime();
         }
         else
         {
-            // 재생 (1배속)
             _dataManager.Time.ResumeTime();
         }
 
-        // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
     }
 
@@ -126,11 +120,8 @@ public class DateTopInfoPanel : MonoBehaviour
             return;
         }
 
-        // 2배속으로 설정하면 자동으로 일시정지 해제
         _isTimePaused = false;
         _dataManager.Time.SetTimeSpeed(2.0f);
-        
-        // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
     }
 
@@ -145,11 +136,8 @@ public class DateTopInfoPanel : MonoBehaviour
             return;
         }
 
-        // 4배속으로 설정하면 자동으로 일시정지 해제
         _isTimePaused = false;
         _dataManager.Time.SetTimeSpeed(4.0f);
-        
-        // 버튼 이미지 업데이트
         UpdatePlayPauseButtonImage();
     }
 
@@ -192,7 +180,6 @@ public class DateTopInfoPanel : MonoBehaviour
             return;
         }
 
-        // TimeDataHandler에서 하루 진행도(0~1)를 가져와 슬라이더에 반영
         float progress = _dataManager.Time.DayProgress;
         _dayProgressSlider.normalizedValue = Mathf.Clamp01(progress);
     }

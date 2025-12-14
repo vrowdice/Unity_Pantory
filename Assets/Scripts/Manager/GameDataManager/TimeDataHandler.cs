@@ -7,6 +7,7 @@ using UnityEngine;
 public class TimeDataHandler
 {
     private readonly GameDataManager _gameDataManager;
+    private InitialTimeData _initialTimeData;
 
     public int Year { get; private set; }
     public int Month { get; private set; }
@@ -20,35 +21,30 @@ public class TimeDataHandler
     private float _realSecondsPerDay = 2.0f;
     private int _daysPerMonth = 20;
     private int _monthsPerYear = 12;
-    private const int HOURS_PER_DAY = 24;
-
-
-    public InitialTimeData InitialTimeData => _gameDataManager.InitialTimeData;
-    public float RealSecondsPerDay => _realSecondsPerDay;
-    public float RealSecondsPerHour => _realSecondsPerDay;
-    public int DaysPerMonth => _daysPerMonth;
-    public int MonthsPerYear => _monthsPerYear;
 
     public event Action OnHourChanged;
     public event Action OnDayChanged;
     public event Action OnMonthChanged;
     public event Action OnYearChanged;
 
-    public TimeDataHandler(GameDataManager gameDataManager)
+    public TimeDataHandler(GameDataManager gameDataManager, InitialTimeData initData)
     {
         _gameDataManager = gameDataManager;
+        _initialTimeData = initData;
+
+        SetRealSecondsPerHour(initData.realSecondsPerHour);
+        SetDaysPerMonth(initData.daysPerMonth);
+        SetMonthsPerYear(initData.monthsPerYear);
+        SetDate(initData.startYear, initData.startMonth, initData.startDay);
     }
 
     public void Update(float deltaTime)
     {
         if (IsPaused) return;
 
-        // 시간 진행
         DayProgress += (deltaTime / _realSecondsPerDay) * TimeSpeed;
-
         UpdateHourLogic();
 
-        // 하루 경과 체크
         if (DayProgress >= 1.0f)
         {
             DayProgress -= 1.0f;
@@ -58,7 +54,7 @@ public class TimeDataHandler
 
     private void UpdateHourLogic(bool forceNotify = false)
     {
-        int newHour = Mathf.Clamp(Mathf.FloorToInt(DayProgress * HOURS_PER_DAY), 0, HOURS_PER_DAY - 1);
+        int newHour = Mathf.Clamp(Mathf.FloorToInt(DayProgress * _initialTimeData.hoursPerDay), 0, _initialTimeData.hoursPerDay - 1);
 
         if (newHour != CurrentHour || forceNotify)
         {
@@ -128,7 +124,7 @@ public class TimeDataHandler
 
     public void SetRealSecondsPerHour(float seconds)
     {
-        if (seconds > 0) _realSecondsPerDay = seconds * HOURS_PER_DAY;
+        if (seconds > 0) _realSecondsPerDay = seconds * _initialTimeData.hoursPerDay;
     }
 
     public void SetDaysPerMonth(int days)

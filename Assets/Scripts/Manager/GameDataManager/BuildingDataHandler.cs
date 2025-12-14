@@ -9,11 +9,7 @@ using UnityEngine;
 /// </summary>
 public class BuildingDataHandler
 {
-    // 건물 데이터를 저장하는 딕셔너리 (건물 ID -> BuildingData)
     private Dictionary<string, BuildingData> _buildings;
-
-    // 건물 데이터 변경 이벤트 (데이터 로드 완료 등)
-    //public event Action OnBuildingChanged;
 
     /// <summary>
     /// BuildingService 생성자
@@ -24,104 +20,18 @@ public class BuildingDataHandler
         
         if (buildingDataList != null && buildingDataList.Count > 0)
         {
-            // 리스트에서 딕셔너리로 변환
-            RegisterBuildings(buildingDataList.ToArray());
-            Debug.Log($"[BuildingService] Initialized with {buildingDataList.Count} buildings from list.");
-        }
-        else
-        {
-            // 리스트가 없으면 기존 방식으로 자동 로드
-            AutoLoadAllBuildings();
-        }
-    }
-
-    // ----------------- 초기화 -----------------
-
-    /// <summary>
-    /// 지정된 경로에서 모든 BuildingData를 자동으로 로드하여 등록합니다.
-    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
-    /// </summary>
-    /// <param name="buildingPaths">검색할 폴더 경로 배열 (예: "Datas/Building")</param>
-    public void AutoLoadBuildings(string[] buildingPaths)
-    {
-#if UNITY_EDITOR
-        // 에디터 모드: AssetDatabase를 사용하여 지정된 경로에서 BuildingData 찾기
-        int loadedCount = 0;
-        
-        foreach (string path in buildingPaths)
-        {
-            // AssetDatabase를 사용하여 모든 BuildingData 찾기
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:BuildingData", new[] { "Assets/" + path });
-            
-            foreach (string guid in guids)
+            // 리스트에서 딕셔너리로 등록
+            foreach (var data in buildingDataList)
             {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                BuildingData buildingData = UnityEditor.AssetDatabase.LoadAssetAtPath<BuildingData>(assetPath);
-                
-                if (buildingData != null)
+                if (data == null || string.IsNullOrEmpty(data.id)) continue;
+                if (_buildings.ContainsKey(data.id))
                 {
-                    RegisterBuilding(buildingData);
-                    loadedCount++;
+                    Debug.LogWarning($"[BuildingService] Building type already registered: {data.id}");
+                    continue;
                 }
+                _buildings[data.id] = data;
             }
         }
-        
-        Debug.Log($"[BuildingService] Auto load completed: {loadedCount} building types registered");
-#else
-        // 빌드 모드: Resources 폴더에서 로드
-        // 주의: buildingPaths의 첫 번째 경로를 사용하거나, 기본 경로 "Datas/Building" 사용
-        string resourcePath = buildingPaths != null && buildingPaths.Length > 0 ? buildingPaths[0] : "Datas/Building";
-        BuildingData[] buildingDataList = Resources.LoadAll<BuildingData>(resourcePath);
-        if (buildingDataList != null && buildingDataList.Length > 0)
-        {
-            RegisterBuildings(buildingDataList);
-            Debug.Log($"[BuildingService] Runtime load completed: {buildingDataList.Length} building types registered from {resourcePath}.");
-        }
-        else
-        {
-            Debug.LogWarning($"[BuildingService] No BuildingData found in Resources/{resourcePath}. Make sure BuildingData files are placed in the Resources folder.");
-        }
-#endif
-    }
-
-    /// <summary>
-    /// 모든 BuildingData를 자동으로 검색하여 등록합니다. (전체 Assets 폴더)
-    /// 에디터에서는 AssetDatabase를 사용하고, 빌드된 게임에서는 Resources 폴더를 사용합니다.
-    /// </summary>
-    public void AutoLoadAllBuildings()
-    {
-#if UNITY_EDITOR
-        // 에디터 모드: AssetDatabase를 사용하여 모든 BuildingData 찾기
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:BuildingData");
-        int loadedCount = 0;
-        
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            BuildingData buildingData = UnityEditor.AssetDatabase.LoadAssetAtPath<BuildingData>(assetPath);
-            
-            if (buildingData != null)
-            {
-                RegisterBuilding(buildingData);
-                loadedCount++;
-            }
-        }
-        
-        Debug.Log($"[BuildingService] Full auto load completed: {loadedCount} building types registered");
-#else
-        // 빌드 모드: Resources 폴더에서 로드
-        // 주의: BuildingData 파일들이 Resources/Datas/Building 폴더에 있어야 합니다.
-        BuildingData[] buildingDataList = Resources.LoadAll<BuildingData>("Datas/Building");
-        if (buildingDataList != null && buildingDataList.Length > 0)
-        {
-            RegisterBuildings(buildingDataList);
-            Debug.Log($"[BuildingService] Runtime load completed: {buildingDataList.Length} building types registered.");
-        }
-        else
-        {
-            Debug.LogWarning("[BuildingService] No BuildingData found in Resources/Datas/Building. Make sure BuildingData files are placed in the Resources folder.");
-        }
-#endif
     }
 
     /// <summary>
@@ -162,8 +72,6 @@ public class BuildingDataHandler
             RegisterBuilding(data);
         }
     }
-
-    // ----------------- Public Getters (읽기 전용) -----------------
 
     /// <summary>
     /// 특정 건물의 BuildingData를 반환합니다.
@@ -218,8 +126,6 @@ public class BuildingDataHandler
         
         return result;
     }
-
-    // ----------------- Utility Methods -----------------
 
     /// <summary>
     /// 특정 건물이 등록되어 있는지 확인합니다.

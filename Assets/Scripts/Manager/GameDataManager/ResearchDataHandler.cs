@@ -2,115 +2,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 /// <summary>
 /// 연구 데이터를 관리하고 연구력(RP) 생산, 연구 해금, 효과 적용을 담당하는 핸들러
 /// </summary>
 public class ResearchDataHandler
 {
-    private readonly GameDataManager _manager;
+    private readonly GameDataManager _gameDataManager;
     private Dictionary<string, ResearchEntry> _researchEntries = new();
+    private long _researchPoint;
+    private bool _isAutoPatentMode = false;
 
-    // ----------------- 전역 연구력 (Global RP) -----------------
-    public long CurrentResearchPoints { get; private set; }
+    public long ResearchPoint => _researchPoint;
+    public bool IsAutoPatentMode => _isAutoPatentMode;
 
-    // ----------------- 특허 수익 설정 -----------------
-    // true면 RP가 쌓이는 대신 자동으로 크레딧으로 전환됨 (후반부용)
-    public bool IsAutoPatentMode { get; set; } = false; 
-    private const int RP_TO_CREDIT_RATIO = 10; // 10 RP = 1 Credit (밸런스 조절 필요)
-
-    // ----------------- 이벤트 -----------------
     public event Action OnResearchPointsChanged;
-    public event Action<string> OnResearchUnlocked; // 해금된 연구 ID 전달
+    public event Action<string> OnResearchUnlocked;
 
     public ResearchDataHandler(GameDataManager manager, List<ResearchData> researchDataList = null)
     {
-        _manager = manager;
+        _gameDataManager = manager;
         
         if (researchDataList != null && researchDataList.Count > 0)
         {
-            // 리스트에서 딕셔너리로 변환
-            RegisterResearchList(researchDataList);
-            Debug.Log($"[Research] Initialized with {researchDataList.Count} research entries from list.");
-        }
-        else
-        {
-            // 리스트가 없으면 기존 방식으로 자동 로드
-            AutoLoadAllResearch();
-        }
-    }
-
-    /// <summary>
-    /// 리스트에서 연구 데이터를 등록합니다.
-    /// </summary>
-    private void RegisterResearchList(List<ResearchData> researchDataList)
-    {
-        foreach (var data in researchDataList)
-        {
-            if (data == null || string.IsNullOrEmpty(data.id))
-                continue;
-
-            if (_researchEntries.ContainsKey(data.id))
+            // 리스트에서 딕셔너리로 등록
+            foreach (var data in researchDataList)
             {
-                Debug.LogWarning($"[Research] Duplicate research ID: {data.id}");
-                continue;
-            }
-
-            var entry = new ResearchEntry
-            {
-                researchId = data.id,
-                researchData = data,
-                researchState = new ResearchState { isCompleted = false }
-            };
-            _researchEntries.Add(data.id, entry);
-        }
-    }
-
-    // ========================================================================
-    // 1. 초기화 및 로드
-    // ========================================================================
-
-    /// <summary>
-    /// 모든 연구 데이터를 자동으로 로드합니다.
-    /// </summary>
-    public void AutoLoadAllResearch()
-    {
-#if UNITY_EDITOR
-        // 에디터 모드: AssetDatabase를 사용하여 모든 ResearchData 찾기
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResearchData");
-        int loadedCount = 0;
-        
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            ResearchData researchData = UnityEditor.AssetDatabase.LoadAssetAtPath<ResearchData>(assetPath);
-            
-            if (researchData != null && !string.IsNullOrEmpty(researchData.id))
-            {
-                if (!_researchEntries.ContainsKey(researchData.id))
-                {
-                    var entry = new ResearchEntry
-                    {
-                        researchId = researchData.id,
-                        researchData = researchData,
-                        researchState = new ResearchState { isCompleted = false }
-                    };
-                    _researchEntries.Add(researchData.id, entry);
-                    loadedCount++;
-                }
-            }
-        }
-        
-        Debug.Log($"[Research] Editor load completed: {loadedCount} research entries loaded.");
-#else
-        // 빌드 모드: Resources 폴더에서 로드
-        ResearchData[] dataList = Resources.LoadAll<ResearchData>("Datas/Research");
-        if (dataList != null && dataList.Length > 0)
-        {
-            foreach (var data in dataList)
-            {
-                if (string.IsNullOrEmpty(data.id) || _researchEntries.ContainsKey(data.id))
+                if (data == null || string.IsNullOrEmpty(data.id))
                     continue;
+
+                if (_researchEntries.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"[Research] Duplicate research ID: {data.id}");
+                    continue;
+                }
 
                 var entry = new ResearchEntry
                 {
@@ -120,43 +46,25 @@ public class ResearchDataHandler
                 };
                 _researchEntries.Add(data.id, entry);
             }
-            Debug.Log($"[Research] Runtime load completed: {_researchEntries.Count} research entries loaded.");
+            Debug.Log($"[Research] Initialized with {researchDataList.Count} research entries from list.");
         }
-        else
-        {
-            Debug.LogWarning("[Research] No ResearchData found in Resources/Datas/Research. Make sure ResearchData files are placed in the Resources folder.");
-        }
-#endif
     }
-
-    // ========================================================================
-    // 2. 일일 로직 (RP 생산 및 특허)
-    // ========================================================================
 
     /// <summary>
     /// 하루가 지날 때 호출 (GameDataManager.HandleDayChanged에서 연결)
     /// </summary>
     public void OnDayChanged()
     {
-        // 1. 직원들에 의한 총 연구력 생산량 계산
         long generatedRP = CalculateDailyRPProduction();
 
         if (generatedRP <= 0) return;
 
-        // 2. 특허 수익 모드인지 확인
         if (IsAutoPatentMode)
         {
-            // 돈으로 환전 (RP -> Credit)
-            long creditsEarned = generatedRP / RP_TO_CREDIT_RATIO;
-            if (creditsEarned > 0)
-            {
-                _manager?.Finances?.AddCredit(creditsEarned);
-                Debug.Log($"[Research] Patent Revenue: Sold {generatedRP} RP for {creditsEarned} Credits.");
-            }
+            _gameDataManager.Finances.AddCredit(generatedRP);
         }
         else
         {
-            // RP 누적
             AddResearchPoints(generatedRP);
         }
     }
@@ -164,44 +72,12 @@ public class ResearchDataHandler
     /// <summary>
     /// 현재 고용된 연구원들의 효율을 기반으로 하루 생산 RP를 계산합니다.
     /// </summary>
-    private long CalculateDailyRPProduction()
+    public long CalculateDailyRPProduction()
     {
-        if (_manager?.Employee == null)
-            return 0;
-
-        // 모든 직원 중 Researcher 타입 찾기
-        var allEmployees = _manager.Employee.GetAllEmployees();
-        if (allEmployees == null || allEmployees.Count == 0)
-            return 0;
-
-        long totalRP = 0;
-
-        foreach (var entry in allEmployees.Values)
-        {
-            if (entry?.employeeData == null || entry.employeeState == null)
-                continue;
-
-            // Researcher 타입인 직원만 계산
-            if (entry.employeeData.role == EmployeeType.Researcher)
-            {
-                // 기본 생산량 (예: 1명당 100)
-                long baseOutputPerHead = 100; 
-                
-                // 직원 효율 (만족도 등에 영향받음)
-                float efficiency = entry.employeeState.currentEfficiency;
-
-                // 할당된 직원 수만큼 생산
-                long rpFromThisType = (long)(entry.employeeState.assignedCount * baseOutputPerHead * efficiency);
-                totalRP += rpFromThisType;
-            }
-        }
-
+        EmployeeEntry employee = _gameDataManager.Employee.GetEmployeeEntry(EmployeeType.Researcher);
+        long totalRP = (long)(employee.state.count * _gameDataManager.InitialEmployeeData.researchPointsPerResearcher * employee.state.currentEfficiency);
         return totalRP;
     }
-
-    // ========================================================================
-    // 3. 연구 해금 로직 (즉시 완료)
-    // ========================================================================
 
     /// <summary>
     /// 연구 해금을 시도합니다.
@@ -229,16 +105,14 @@ public class ResearchDataHandler
         }
 
         // 3. 비용(RP) 확인
-        if (CurrentResearchPoints < entry.researchData.researchPointCost)
+        if (ResearchPoint < entry.researchData.researchPointCost)
         {
-            Debug.Log($"[Research] Not enough RP. Need: {entry.researchData.researchPointCost}, Have: {CurrentResearchPoints}");
+            Debug.Log($"[Research] Not enough RP. Need: {entry.researchData.researchPointCost}, Have: {ResearchPoint}");
             return false;
         }
 
-        // --- 해금 진행 ---
-
         // 4. RP 차감
-        CurrentResearchPoints -= entry.researchData.researchPointCost;
+        _researchPoint -= entry.researchData.researchPointCost;
         OnResearchPointsChanged?.Invoke();
 
         // 5. 상태 업데이트
@@ -288,7 +162,7 @@ public class ResearchDataHandler
         if (data.unlockEffects == null || data.unlockEffects.Count == 0)
             return;
 
-        if (_manager?.Effect == null)
+        if (_gameDataManager?.Effect == null)
         {
             Debug.LogWarning("[Research] EffectDataHandler is null. Cannot apply research effects.");
             return;
@@ -300,13 +174,9 @@ public class ResearchDataHandler
                 continue;
 
             // EffectDataHandler로 효과 전송
-            _manager.Effect.AddEffect(effect);
+            _gameDataManager.Effect.AddEffect(effect);
         }
     }
-
-    // ========================================================================
-    // 4. 유틸리티
-    // ========================================================================
 
     /// <summary>
     /// 연구력을 추가합니다.
@@ -315,7 +185,7 @@ public class ResearchDataHandler
     {
         if (amount <= 0) return;
         
-        CurrentResearchPoints += amount;
+        _researchPoint += amount;
         OnResearchPointsChanged?.Invoke();
     }
 
@@ -376,4 +246,3 @@ public class ResearchDataHandler
             .ToList();
     }
 }
-

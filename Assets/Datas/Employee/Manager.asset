@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: manager
   displayName: Manager
-  role: 3
+  type: 3
   tier: 2
   icon: {fileID: 21300000, guid: 23146b55090e00e44924e063ba593029, type: 3}
   Image: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
@@ -22,4 +22,4 @@ MonoBehaviour:
     morale and reduces fatigue through efficient management.
   baseEfficiency: 1
   baseSatisfaction: 0
-  baseSalary: 200
+  baseSalary: 40

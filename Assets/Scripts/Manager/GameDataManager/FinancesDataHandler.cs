@@ -23,45 +23,30 @@ public struct DailyExpenseReservation
 /// </summary>
 public class FinancesDataHandler
 {
-    // 현재 보유 금액
+    private readonly GameDataManager _gameDataManager;
+
     private long _credit;
-
-    // 금액 변경 이벤트
     public event Action OnCreditChanged;
-
-    // 일일 비용 예약
     private DailyExpenseReservation _reservedDailyExpenses;
     public DailyExpenseReservation ReservedDailyExpenses => _reservedDailyExpenses;
     public bool IsProcessingReservedExpenses { get; private set; } = false;
 
-    // 크레딧 소모 원인 추적 딕셔너리 (키: ID, 값: (가격, 설명))
     private Dictionary<string, (long cost, string reason)> _threadMaintenanceCosts = new Dictionary<string, (long, string)>();
     private Dictionary<string, (long cost, string reason)> _resourceShortageCosts = new Dictionary<string, (long, string)>();
-    
-    /// <summary>
-    /// 스레드별 유지비 딕셔너리 (스레드 ID -> (가격, 설명))
-    /// </summary>
     public Dictionary<string, (long cost, string reason)> ThreadMaintenanceCosts => new Dictionary<string, (long, string)>(_threadMaintenanceCosts);
-    
-    /// <summary>
-    /// 자원별 부족 비용 딕셔너리 (자원 ID -> (가격, 설명))
-    /// </summary>
     public Dictionary<string, (long cost, string reason)> ResourceShortageCosts => new Dictionary<string, (long, string)>(_resourceShortageCosts);
-
-    // GameDataManager 참조 (비용 계산에 필요)
-    private readonly GameDataManager _gameDataManager;
 
     /// <summary>
     /// FinancesService 생성자
     /// </summary>
-    public FinancesDataHandler(GameDataManager gameDataManager)
+    public FinancesDataHandler(GameDataManager gameDataManager, InitialResourceData initData)
     {
         _gameDataManager = gameDataManager;
-        _credit = 0;
+        _credit = initData.initialCredit;
         _reservedDailyExpenses = new DailyExpenseReservation();
-    }
 
-    // ----------------- Public Getters (읽기 전용) -----------------
+        ReserveDailyExpenses();
+    }
 
     /// <summary>
     /// 현재 보유 금액을 반환합니다.
@@ -71,8 +56,6 @@ public class FinancesDataHandler
     {
         return _credit;
     }
-
-    // ----------------- Public Methods (재정 관리) -----------------
 
     /// <summary>
     /// 금액을 추가합니다.
@@ -151,8 +134,6 @@ public class FinancesDataHandler
         _credit = 0;
         OnCreditChanged?.Invoke();
     }
-
-    // ----------------- 일일 비용 예약 시스템 -----------------
 
     /// <summary>
     /// 일일 예상 크레딧 변화량을 반환합니다 (예약된 비용 기준)
@@ -312,17 +293,6 @@ public class FinancesDataHandler
                 }
             }
         }
-
-        // 로컬 헬퍼
-/*        void AddToDict(Dictionary<string, long> target, Dictionary<string, int> source)
-        {
-            if (source == null) return;
-            foreach (var kvp in source)
-            {
-                if (target.ContainsKey(kvp.Key)) target[kvp.Key] += kvp.Value;
-                else target[kvp.Key] = kvp.Value;
-            }
-        }*/
 
         // 생산 효율 배율을 적용한 헬퍼
         void AddToDictWithMultiplier(Dictionary<string, long> target, Dictionary<string, int> source, float multiplier)

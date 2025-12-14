@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEditor.Rendering;
 
 public partial class MainUiManager : MonoBehaviour, IUIManager
 {
@@ -12,6 +13,9 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private TextMeshProUGUI _deltaCreditText;
+    [SerializeField] private TextMeshProUGUI _researchText;
+    [SerializeField] private TextMeshProUGUI _deltaResearchText;
+
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
@@ -36,6 +40,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         {
             _dataManager.Resource.OnResourceChanged += UpdateAllMainText;
             _dataManager.Finances.OnCreditChanged += UpdateAllMainText;
+            _dataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged += OnThreadPlacementChanged;
 
             _dataManager.Time.OnDayChanged += OnDayChanged;
@@ -43,64 +48,25 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
             _dataManager.Time.OnYearChanged += OnYearChanged;
         }
 
-        if (_infoDatePanel != null)
-        {
-            _infoDatePanel.OnInitialize(_dataManager);
-        }
-        else
-        {
-            Debug.LogWarning("[MainUiManager] InfoDatePanel is not assigned.");
-        }
+        _infoDatePanel.OnInitialize(_dataManager);
+        _creditInfoPanel.OnInitialize(_dataManager);
+        _topInfoPanel.OnInitialize(_dataManager);
 
-        if (_creditInfoPanel != null)
-        {
-            _creditInfoPanel.OnInitialize(_dataManager);
-        }
-
-        if (_topInfoPanel != null)
-        {
-            _topInfoPanel.OnInitialize(_dataManager);
-        }
-        else
-        {
-            Debug.LogWarning("[MainUiManager] TopInfoPanel is not assigned.");
-        }
-
-        RefreshThreadCategories();
-        RefreshThreadButtons();
-        UpdateResourceSummary();
-        
-        // 초기화 시 크레딧 변화량 표시
-        UpdateDeltaCreditText(_deltaCreditText);
-    }
-
-    private void Awake()
-    {
         InitializePanelDictionary();
-    }
-
-    private void Start()
-    {
         InitializePanels();
         CreateQuickMoveBtns();
         UpdateAllMainText();
 
         RefreshThreadCategories();
         RefreshThreadButtons();
-        UpdateResourceSummary();
+        RefreshResourceScrollView();
+        UpdateAllMainText();
     }
 
     public void UpdateAllMainText()
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[MainUiManager] DataManager is null. Cannot update main text.");
-            return;
-        }
-
-        UpdateCreditText(_creditText);
-        UpdateDeltaCreditText(_deltaCreditText);
-        UpdateResourceSummary();
+        UpdateCreditText();
+        UpdateResearchText();
     }
 
     private void OnDestroy()
@@ -109,6 +75,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         {
             _dataManager.Resource.OnResourceChanged -= UpdateAllMainText;
             _dataManager.Finances.OnCreditChanged -= UpdateAllMainText;
+            _dataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
             _dataManager.OnThreadPlacementChanged -= OnThreadPlacementChanged;
 
             _dataManager.Time.OnDayChanged -= OnDayChanged;
@@ -117,58 +84,39 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         }
     }
 
-    private void UpdateCreditText(TextMeshProUGUI textComponent)
+    private void UpdateCreditText()
     {
-        if (textComponent == null)
-        {
-            Debug.LogWarning("[MainUiManager] Text component for Credit is null.");
-            return;
-        }
-
         long resourceAmount = _dataManager.Finances.GetCredit();
-        textComponent.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
-    }
-
-    private void UpdateDeltaCreditText(TextMeshProUGUI textComponent)
-    {
-        if (textComponent == null)
-        {
-            Debug.LogWarning("[MainUiManager] DeltaCreditText component is null.");
-            return;
-        }
-
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[MainUiManager] DataManager is null. Cannot update delta credit text.");
-            textComponent.text = "";
-            return;
-        }
-
+        _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
         long deltaCredit = _dataManager.Finances.CalculateDailyCreditDelta();
-        
         if (deltaCredit == 0)
         {
-            textComponent.text = "";
+            _deltaCreditText.text = "";
             return;
         }
 
-        // 적자면 빨간색, 흑자면 파란색
         string sign = deltaCredit > 0 ? " +" : " ";
-        textComponent.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaCredit)} /day";
-        
-        // VisualManager에서 색상 가져오기
+        _deltaCreditText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaCredit)}";
         VisualManager visualManager = VisualManager.Instance;
-        if (visualManager != null)
-        {
-            textComponent.color = visualManager.GetDeltaColor(deltaCredit);
-        }
-        else
-        {
-            // VisualManager가 없을 경우 기본값 반환
-            textComponent.color = Color.white;
-        }
+        _deltaCreditText.color = visualManager.GetDeltaColor(deltaCredit);
     }
 
+    private void UpdateResearchText()
+    {
+        long researchPoints = _dataManager.Research.ResearchPoint;
+        _researchText.text = ReplaceUtils.FormatNumberWithCommas(researchPoints);
+        long deltaResearch = _dataManager.Research.CalculateDailyRPProduction();
+        if (deltaResearch == 0)
+        {
+            _deltaResearchText.text = "";
+            return;
+        }
+
+        string sign = deltaResearch > 0 ? " +" : " ";
+        _deltaResearchText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
+        VisualManager visualManager = VisualManager.Instance;
+        _deltaResearchText.color = visualManager.GetDeltaColor(deltaResearch);
+    }
 
     private void OnMonthChanged()
     {
@@ -182,14 +130,14 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
     private void OnDayChanged()
     {
-        UpdateResourceSummary();
-        UpdateDeltaCreditText(_deltaCreditText);
+        RefreshResourceScrollView();
+        UpdateAllMainText();
     }
 
     private void OnThreadPlacementChanged()
     {
-        UpdateResourceSummary();
-        UpdateDeltaCreditText(_deltaCreditText);
+        RefreshResourceScrollView();
+        UpdateAllMainText();
     }
 
     /// <summary>
