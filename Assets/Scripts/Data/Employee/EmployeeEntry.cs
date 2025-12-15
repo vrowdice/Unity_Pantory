@@ -9,12 +9,12 @@ using UnityEngine;
 [Serializable]
 public class EmployeeEntry
 {
-    public EmployeeData employeeData;      // 직원의 정적 데이터 (ScriptableObject)
-    public EmployeeState state;    // 직원의 동적 상태
+    public EmployeeData data;
+    public EmployeeState state;
 
     public EmployeeEntry(EmployeeData data)
     {
-        employeeData = data;
+        this.data = data;
         state = new EmployeeState();
 
         if (data != null)
@@ -26,76 +26,110 @@ public class EmployeeEntry
     }
 
     /// <summary>
-    /// 새로운 효과를 적용합니다.
+    /// 직원별 이펙트를 설정/업데이트/제거합니다.
     /// </summary>
-    public void AddEffect(EffectData data)
+    public void SetOrUpdateEffect(string id, StatType type, float value, string displayName, ModifierType modType, float duration = 0f)
     {
-        if (data == null) return;
-        if (state.activeEffects == null) state.activeEffects = new List<EffectState>();
+        if (state == null) return;
 
-        var runtimeEffect = new EffectState(data);
-        state.activeEffects.Add(runtimeEffect);
-    }
-
-    /// <summary>
-    /// 특정 ID를 가진 효과를 제거합니다.
-    /// </summary>
-    public void RemoveEffectById(string effectId)
-    {
-        if (state.activeEffects == null) return;
-        state.activeEffects.RemoveAll(e => e.Data.id == effectId);
-    }
-
-    /// <summary>
-    /// 현재 활성화된 효과들을 반영하여 스탯을 계산합니다.
-    /// </summary>
-    public float CalculateStat(StatType statType, float baseValue)
-    {
-        if (state.activeEffects == null || state.activeEffects.Count == 0)
+        // 값이 사실상 0이면 이펙트 제거
+        if (Mathf.Abs(value) <= 0.001f)
         {
-            return baseValue;
+            EffectState existing = GetEffect(type, id);
+            if (existing != null) RemoveEffect(existing);
+            return;
         }
 
-        float flatSum = 0f;
-        float percentAddSum = 0f;
-        float percentMultTotal = 1f;
+        // 이펙트 조회
+        EffectState effect = GetEffect(type, id);
 
-        foreach (var effect in state.activeEffects)
+        if (effect != null)
         {
-            // StatType 체크
-            if (effect.Data.statType != statType) continue;
-
-            switch (effect.Data.type)
+            // 갱신 (값이 다를 때만)
+            if (!Mathf.Approximately(effect.value, value))
             {
-                case ModifierType.Flat:
-                    flatSum += effect.Data.value;
-                    break;
-                case ModifierType.PercentAdd:
-                    percentAddSum += effect.Data.value;
-                    break;
-                case ModifierType.PercentMult:
-                    percentMultTotal *= effect.Data.value;
-                    break;
+                effect.value = value;
+                effect.displayName = displayName;
             }
         }
-
-        return (baseValue + flatSum) * (1f + percentAddSum) * percentMultTotal;
+        else
+        {
+            // 신규 생성
+            effect = new EffectState
+            {
+                id = id,
+                statType = type,
+                value = value,
+                displayName = displayName,
+                type = modType,
+                durationDays = duration,
+                remainingDays = duration
+            };
+            ApplyEffect(effect);
+        }
     }
 
     /// <summary>
-    /// 기간제 효과의 시간을 업데이트합니다.
+    /// 이펙트 ID로 이펙트를 조회합니다.
     /// </summary>
-    public void UpdateEffectsTime(float daysPassed)
+    public EffectState GetEffect(string effectId)
     {
-        if (state.activeEffects == null) return;
+        if (state?.activeEffects == null) return null;
+        return state.activeEffects.FirstOrDefault(e => e != null && e.id == effectId);
+    }
+
+    /// <summary>
+    /// StatType과 이펙트 ID로 이펙트를 조회합니다.
+    /// </summary>
+    public EffectState GetEffect(StatType statType, string effectId)
+    {
+        if (state?.activeEffects == null) return null;
+        return state.activeEffects.FirstOrDefault(e => e != null && e.statType == statType && e.id == effectId);
+    }
+
+    /// <summary>
+    /// 이펙트를 추가합니다.
+    /// </summary>
+    public void ApplyEffect(EffectState effect)
+    {
+        if (effect == null || state == null) return;
+        if (state.activeEffects == null) state.activeEffects = new List<EffectState>();
+        state.activeEffects.Add(effect);
+    }
+
+    /// <summary>
+    /// 이펙트를 제거합니다.
+    /// </summary>
+    public void RemoveEffect(EffectState effect)
+    {
+        if (effect == null || state?.activeEffects == null) return;
+        state.activeEffects.Remove(effect);
+    }
+
+    /// <summary>
+    /// 특정 StatType의 활성 이펙트 목록을 반환합니다.
+    /// </summary>
+    public List<EffectState> GetActiveEffects(StatType statType)
+    {
+        if (state?.activeEffects == null) return new List<EffectState>();
+        return state.activeEffects.Where(e => e != null && e.statType == statType).ToList();
+    }
+
+    /// <summary>
+    /// 날짜 경과에 따라 이펙트의 남은 시간을 업데이트하고 만료된 이펙트를 제거합니다.
+    /// </summary>
+    public void ProcessDayPass()
+    {
+        if (state?.activeEffects == null) return;
 
         for (int i = state.activeEffects.Count - 1; i >= 0; i--)
         {
-            var effect = state.activeEffects[i];
-            if (effect.IsPermanent) continue;
+            EffectState effect = state.activeEffects[i];
+            if (effect == null || effect.IsPermanent) continue;
 
-            effect.RemainingDays -= daysPassed;
-            if (effect.RemainingDays <= 0)
+            effect.remainingDays -= 1;
+
+            if (effect.remainingDays <= 0)
             {
                 state.activeEffects.RemoveAt(i);
             }

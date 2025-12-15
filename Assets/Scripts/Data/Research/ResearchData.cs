@@ -15,5 +15,5 @@ public class ResearchData : ScriptableObject
     public List<string> prerequisiteIds;
 
     [Header("Rewards")]
-    public List<EffectData> unlockEffects;
+    public List<EffectState> appleyEffects;
 }

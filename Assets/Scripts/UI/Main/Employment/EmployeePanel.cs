@@ -132,13 +132,13 @@ public class EmployeePanel : BasePanel
     /// </summary>
     public void HandleEmployeeButtonClicked(EmployeeEntry entry)
     {
-        if (entry == null || entry.employeeData == null)
+        if (entry == null || entry.data == null)
         {
             return;
         }
 
         _selectedEmployeeEntry = entry;
-        _selectedEmployeeType = entry.employeeData.type;
+        _selectedEmployeeType = entry.data.type;
         UpdateEmployeeUI();
     }
 
@@ -194,7 +194,7 @@ public class EmployeePanel : BasePanel
         EmployeeEntry foundEntry = null;
         foreach (var entry in allEmployees.Values)
         {
-            if (entry?.employeeData != null && entry.employeeData.type == role)
+            if (entry?.data != null && entry.data.type == role)
             {
                 foundEntry = entry;
                 break;
@@ -234,7 +234,7 @@ public class EmployeePanel : BasePanel
         // 첫 번째 직원 선택
         foreach (var entry in allEmployees.Values)
         {
-            if (entry != null && entry.employeeData != null)
+            if (entry != null && entry.data != null)
             {
                 HandleEmployeeButtonClicked(entry);
                 break;
@@ -251,79 +251,26 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEmployeeUI()
     {
-        if (_selectedEmployeeEntry == null || _selectedEmployeeEntry.employeeData == null)
-        {
-            ClearEmployeeUI();
-            return;
-        }
-
-        var data = _selectedEmployeeEntry.employeeData;
+        var data = _selectedEmployeeEntry.data;
         var state = _selectedEmployeeEntry.state;
 
-        // 기본 정보
-        if (_employeeImage != null && data.Image != null)
-        {
-            _employeeImage.sprite = data.Image;
-        }
+        _employeeImage.sprite = data.Image;
+        _employeeIconImage.sprite = data.icon;
+        _titleText.text = data.displayName ?? data.id;
+        _descriptionText.text = data.description ?? string.Empty;
+        _employeeCountText.text = $"Count: {state.count}";
+        _totalSalatyText.text = $"Total Salary: {state.totalSalary:N0}";
+        
+        float normalizedEfficiency = Mathf.Clamp(state.currentEfficiency, 0f, 2f) / 2f;
+        _efficiencySlider.value = normalizedEfficiency;
+        _efficiencyValueText.text = $"{(state.currentEfficiency * 100f):F1}%";
 
-        if (_employeeIconImage != null && data.icon != null)
-        {
-            _employeeIconImage.sprite = data.icon;
-        }
+        float normalizedSatisfaction = (state.currentSatisfaction + 100f) / 200f;
+        _satisfactionSlider.value = Mathf.Clamp01(normalizedSatisfaction);
+        _satisfactionValueText.text = $"{state.currentSatisfaction:F1}";
 
-        if (_titleText != null)
-        {
-            _titleText.text = data.displayName ?? data.id;
-        }
-
-        if (_descriptionText != null)
-        {
-            _descriptionText.text = data.description ?? string.Empty;
-        }
-
-        // 직원 수 및 급여
-        if (_employeeCountText != null)
-        {
-            _employeeCountText.text = $"Count: {state.count}";
-        }
-
-        if (_totalSalatyText != null)
-        {
-            _totalSalatyText.text = $"Total Salary: {state.totalSalary:N0}";
-        }
-
-        // 효율성 슬라이더 (0~200% 범위를 0~1로 정규화: 0.0 = 0%, 1.0 = 100%, 2.0 = 200%)
-        if (_efficiencySlider != null)
-        {
-            // currentEfficiency는 0.0~2.0 범위, 슬라이더는 0.0~1.0 범위
-            float normalizedEfficiency = Mathf.Clamp(state.currentEfficiency, 0f, 2f) / 2f;
-            _efficiencySlider.value = normalizedEfficiency;
-        }
-
-        if (_efficiencyValueText != null)
-        {
-            _efficiencyValueText.text = $"{(state.currentEfficiency * 100f):F1}%";
-        }
-
-        // 만족도 슬라이더 (-100~100 범위를 0~1로 정규화)
-        if (_satisfactionSlider != null)
-        {
-            float normalizedSatisfaction = (state.currentSatisfaction + 100f) / 200f;
-            _satisfactionSlider.value = Mathf.Clamp01(normalizedSatisfaction);
-        }
-
-        if (_satisfactionValueText != null)
-        {
-            _satisfactionValueText.text = $"{state.currentSatisfaction:F1}";
-        }
-
-        // 급여 레벨 토글 업데이트
         UpdateSalaryLevelToggles(state.salaryLevel);
-        
-        // 관리 비율 업데이트
         UpdateManagementRatio();
-        
-        // 이펙트 정보 업데이트
         UpdateEffectStatus();
     }
     
@@ -339,8 +286,6 @@ public class EmployeePanel : BasePanel
 
         // GetManagementRatio()는 0.0 ~ 1.0 범위의 값을 반환
         float managementRatio = _dataManager.Employee.GetManagementRatio();
-
-        // 슬라이더 업데이트 (0.0 ~ 1.0 범위)
         if (_managementSlider != null)
         {
             _managementSlider.value = managementRatio;
@@ -353,14 +298,12 @@ public class EmployeePanel : BasePanel
             
             if (requiredManagers <= 0 || currentManagers >= requiredManagers)
             {
-                // 충분함: 깔끔하게 100%만 표시
                 _managementRatioText.text = "100%";
             }
             else
             {
-                // 부족함: 비율과 부족한 인원수만 괄호로 표시
                 int shortage = requiredManagers - currentManagers;
-                _managementRatioText.text = $"{managementRatio:P0} (-{shortage})"; // 예: "80% (-1)"
+                _managementRatioText.text = $"{managementRatio:P0} (-{shortage})";
             }
         }
         
@@ -373,21 +316,12 @@ public class EmployeePanel : BasePanel
             {
                 if (requiredManagers <= 0 || currentManagers >= requiredManagers)
                 {
-                    // 충분함: VisualManager에서 색상 가져오기
                     _managementFillImage.color = VisualManager.Instance.ManagementSufficientColor;
                 }
                 else
                 {
-                    // 부족함: VisualManager에서 색상 가져오기
                     _managementFillImage.color = VisualManager.Instance.ManagementInsufficientColor;
                 }
-            }
-            else
-            {
-                // VisualManager가 없으면 기본 색상 사용
-                _managementFillImage.color = requiredManagers <= 0 || currentManagers >= requiredManagers 
-                    ? Color.green 
-                    : Color.red;
             }
         }
     }
@@ -405,8 +339,6 @@ public class EmployeePanel : BasePanel
 
         // 급여 레벨 범위 검증
         salaryLevel = Mathf.Clamp(salaryLevel, 0, 4);
-
-        // 토글 업데이트 중 플래그 설정 (무한 루프 방지)
         _isUpdatingToggles = true;
 
         try
@@ -432,31 +364,6 @@ public class EmployeePanel : BasePanel
     }
 
     /// <summary>
-    /// 직원 UI 초기화
-    /// </summary>
-    private void ClearEmployeeUI()
-    {
-        if (_titleText != null) _titleText.text = string.Empty;
-        if (_descriptionText != null) _descriptionText.text = string.Empty;
-        if (_employeeCountText != null) _employeeCountText.text = "Count: 0";
-        if (_totalSalatyText != null) _totalSalatyText.text = "Total Salary: 0";
-        if (_efficiencySlider != null) _efficiencySlider.value = 0f;
-        if (_efficiencyValueText != null) _efficiencyValueText.text = "0%";
-        if (_satisfactionSlider != null) _satisfactionSlider.value = 0f;
-        if (_satisfactionValueText != null) _satisfactionValueText.text = "0";
-        
-        // 급여 레벨 토글 초기화 (기본값: 보통 = 2)
-        UpdateSalaryLevelToggles(2);
-        
-        // 관리 비율 초기화
-        if (_managementSlider != null) _managementSlider.value = 0f;
-        if (_managementRatioText != null) _managementRatioText.text = "0%";
-        
-        // 이펙트 상태 초기화
-        ClearEffectStatus();
-    }
-
-    /// <summary>
     /// 직원 UI 갱신
     /// </summary>
     private void RefreshEmployeeUI()
@@ -478,22 +385,11 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEffectStatus()
     {
-        if (_dataManager?.Effect == null)
-        {
-            ClearEffectStatus();
-            return;
-        }
-
-        // 효율성 관련 이펙트 표시 (만족도 이펙트를 표시 - 만족도가 효율성에 영향을 주므로)
+        ClearEffectStatus();
         UpdateEfficiencyEffectStatus();
-        
-        // 만족도 관련 이펙트 표시
         UpdateSatisfactionEffectStatus();
     }
 
-    /// <summary>
-    /// 효율성 관련 이펙트 상태를 업데이트합니다.
-    /// </summary>
     /// <summary>
     /// 효율성 관련 이펙트 상태를 업데이트합니다.
     /// </summary>
@@ -501,29 +397,34 @@ public class EmployeePanel : BasePanel
     {
         if (_efficiencyStatusScrollViewContentTransform == null || 
             _efficiencyStatusTextPairPanelPrefab == null ||
-            _dataManager?.Effect == null)
+            _dataManager?.Effect == null ||
+            _selectedEmployeeEntry?.data == null)
         {
             return;
         }
 
         // 기존 패널 제거
         GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
-
         var combinedEffects = new List<EffectState>();
 
-        // 1. 전역 효율성 이펙트
+        // 1. 전역 효율성 이펙트 (모든 전역 이펙트 표시)
         var globalEffects = _dataManager.Effect.GetActiveEffects(StatType.EfficiencyBonus);
         if (globalEffects != null) 
         {
-            combinedEffects.AddRange(globalEffects);
+            foreach (var effect in globalEffects)
+            {
+                if (effect != null)
+                {
+                    combinedEffects.Add(effect);
+                }
+            }
         }
 
-        // 2. 직원 개별 효율성 이펙트
-        if (_selectedEmployeeEntry?.state?.activeEffects != null)
+        // 2. 선택된 직원의 개별 효율성 이펙트
+        var employeeEffects = _selectedEmployeeEntry.GetActiveEffects(StatType.EfficiencyBonus);
+        if (employeeEffects != null && employeeEffects.Count > 0)
         {
-            var localEffects = _selectedEmployeeEntry.state.activeEffects
-                .Where(e => e.Data.statType == StatType.EfficiencyBonus);
-            combinedEffects.AddRange(localEffects);
+            combinedEffects.AddRange(employeeEffects);
         }
 
         if (combinedEffects.Count > 0)
@@ -531,17 +432,16 @@ public class EmployeePanel : BasePanel
             // 각 이펙트에 대해 패널 생성
             foreach (var effectState in combinedEffects)
             {
-                if (effectState?.Data == null) continue;
+                if (effectState == null) continue;
 
                 var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _efficiencyStatusScrollViewContentTransform);
                 var panel = panelObj.GetComponent<TextPairPanel>();
                 
                 if (panel != null)
                 {
-                    string effectDescription = effectState.Data.displayName ?? effectState.Data.id;
-                    string changeValue = FormatEffectValue(effectState.Data.value, effectState.Data.type);
-                    
-                    panel.OnInitialize(effectDescription, changeValue);
+                    string effectDescription = effectState.displayName ?? effectState.id;
+                    string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
+                    panel.OnInitialize(effectDescription, changeValue, effectState.value);
                 }
             }
         }
@@ -552,31 +452,27 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateSatisfactionEffectStatus()
     {
-        if (_satisfactionStatusScrollViewContentTransform == null || 
-            _efficiencyStatusTextPairPanelPrefab == null ||
-            _dataManager?.Effect == null)
-        {
-            return;
-        }
-
-        // 기존 패널 제거
         GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
+        List<EffectState> combinedEffects = new List<EffectState>();
 
-        var combinedEffects = new List<EffectState>();
-
-        // 1. 전역 만족도 이펙트
-        var globalEffects = _dataManager.Effect.GetActiveEffects(StatType.SatisfactionChangePerDay);
+        // 1. 전역 만족도 이펙트 (모든 전역 이펙트 표시)
+        List<EffectState> globalEffects = _dataManager.Effect.GetActiveEffects(StatType.SatisfactionChangePerDay);
         if (globalEffects != null)
         {
-            combinedEffects.AddRange(globalEffects);
+            foreach (var effect in globalEffects)
+            {
+                if (effect != null)
+                {
+                    combinedEffects.Add(effect);
+                }
+            }
         }
 
-        // 2. 직원 개별 만족도 이펙트
-        if (_selectedEmployeeEntry?.state?.activeEffects != null)
+        // 2. 선택된 직원의 개별 만족도 이펙트
+        var employeeEffects = _selectedEmployeeEntry.GetActiveEffects(StatType.SatisfactionChangePerDay);
+        if (employeeEffects != null && employeeEffects.Count > 0)
         {
-            var localEffects = _selectedEmployeeEntry.state.activeEffects
-                .Where(e => e.Data.statType == StatType.SatisfactionChangePerDay);
-            combinedEffects.AddRange(localEffects);
+            combinedEffects.AddRange(employeeEffects);
         }
 
         if (combinedEffects.Count == 0)
@@ -587,46 +483,19 @@ public class EmployeePanel : BasePanel
         // 각 이펙트에 대해 패널 생성
         foreach (var effectState in combinedEffects)
         {
-            if (effectState?.Data == null) continue;
+            if (effectState == null) continue;
 
             var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _satisfactionStatusScrollViewContentTransform);
             var panel = panelObj.GetComponent<TextPairPanel>();
             
             if (panel != null)
             {
-                string effectDescription = effectState.Data.displayName ?? effectState.Data.id;
-                string changeValue = FormatEffectValue(effectState.Data.value, effectState.Data.type);
+                string effectDescription = effectState.displayName ?? effectState.id;
+                string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
                 
-                panel.OnInitialize(effectDescription, changeValue);
+                // 포맷팅된 문자열과 숫자 값을 전달하여 색상 자동 적용
+                panel.OnInitialize(effectDescription, changeValue, effectState.value);
             }
-        }
-    }
-
-    /// <summary>
-    /// 이펙트 값을 포맷팅합니다.
-    /// </summary>
-    /// <param name="value">이펙트 값</param>
-    /// <param name="modifierType">연산 방식</param>
-    /// <returns>포맷팅된 문자열</returns>
-    private string FormatEffectValue(float value, ModifierType modifierType)
-    {
-        switch (modifierType)
-        {
-            case ModifierType.Flat:
-                // 합연산: +2.0 또는 -1.5 형식
-                return value >= 0 ? $"+{value:F1}" : $"{value:F1}";
-            
-            case ModifierType.PercentAdd:
-                // 합연산 퍼센트: +10% 또는 -5% 형식
-                float percentAdd = value * 100f;
-                return percentAdd >= 0 ? $"+{percentAdd:F1}%" : $"{percentAdd:F1}%";
-            
-            case ModifierType.PercentMult:
-                // 곱연산 퍼센트: x1.5 또는 x0.8 형식
-                return $"x{value:F2}";
-            
-            default:
-                return value.ToString("F1");
         }
     }
 
@@ -745,7 +614,6 @@ public class EmployeePanel : BasePanel
     private void HandleDayChanged()
     {
         RefreshEmployeeUI();
-        // 관리 비율도 업데이트 (일일 업데이트 시 영향받음)
         UpdateManagementRatio();
     }
 

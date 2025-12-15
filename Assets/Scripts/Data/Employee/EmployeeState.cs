@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// 직원의 현재 상태를 저장하는 클래스
+/// 직원의 현재 상태를 저장하는 클래스 (데이터 저장용)
 /// </summary>
 [Serializable]
 public class EmployeeState

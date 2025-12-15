@@ -159,22 +159,15 @@ public class ResearchDataHandler
     /// </summary>
     private void ApplyResearchEffects(ResearchData data)
     {
-        if (data.unlockEffects == null || data.unlockEffects.Count == 0)
+        if (data.appleyEffects == null || data.appleyEffects.Count == 0)
             return;
 
-        if (_gameDataManager?.Effect == null)
-        {
-            Debug.LogWarning("[Research] EffectDataHandler is null. Cannot apply research effects.");
-            return;
-        }
-
-        foreach (var effect in data.unlockEffects)
+        foreach (EffectState effect in data.appleyEffects)
         {
             if (effect == null)
                 continue;
 
-            // EffectDataHandler로 효과 전송
-            _gameDataManager.Effect.AddEffect(effect);
+            _gameDataManager.Effect.ApplyEffect(effect);
         }
     }
 

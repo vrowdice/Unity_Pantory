@@ -7,7 +7,7 @@ public partial class EmployeeDataHandler
     protected Dictionary<EmployeeType, EmployeeEntry> _employees;
     public event Action OnEmployeeChanged;
     protected GameDataManager _gameDataManager;
-    InitialEmployeeData _salarySettings;
+    InitialEmployeeData _initialEmployeeData;
 
     /// <summary>
     /// EmployeeService 생성자
@@ -16,7 +16,7 @@ public partial class EmployeeDataHandler
     {
         _gameDataManager = gameDataManager;
         _employees = new Dictionary<EmployeeType, EmployeeEntry>();
-        _salarySettings = initData;
+        _initialEmployeeData = initData;
 
         if (employeeDataList != null && employeeDataList.Count > 0)
         {
@@ -96,7 +96,7 @@ public partial class EmployeeDataHandler
         entry.state.count += count;
         UpdateSalary(entry);
         
-        OnEmployeeChanged?.Invoke();
+        OnEmployeeChanged.Invoke();
     }
 
     /// <summary>
@@ -120,9 +120,9 @@ public partial class EmployeeDataHandler
 
         entry.state.count = count;
         UpdateSalary(entry);
-        Debug.Log($"[EmployeeService] {entry.employeeData.displayName} count = {count}");
+        Debug.Log($"[EmployeeService] {entry.data.displayName} count = {count}");
         
-        OnEmployeeChanged?.Invoke();
+        OnEmployeeChanged.Invoke();
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public partial class EmployeeDataHandler
             return;
         }
         
-        OnEmployeeChanged?.Invoke();
+        OnEmployeeChanged.Invoke();
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public partial class EmployeeDataHandler
             return;
         }
         
-        OnEmployeeChanged?.Invoke();
+        OnEmployeeChanged.Invoke();
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public partial class EmployeeDataHandler
 
         entry.state.currentSatisfaction = Mathf.Clamp(satisfaction, 0f, 100f);
         
-        OnEmployeeChanged?.Invoke();
+        OnEmployeeChanged.Invoke();
     }
 
     /// <summary>
@@ -188,24 +188,14 @@ public partial class EmployeeDataHandler
             return;
         }
 
-        // 급여 레벨 범위 검증 (0~4)
         salaryLevel = Mathf.Clamp(salaryLevel, 0, 4);
-        
-        // 이전 급여 레벨 저장
         int previousSalaryLevel = entry.state.salaryLevel;
-        
-        // 급여 레벨 변경
         entry.state.salaryLevel = salaryLevel;
-        
-        // 해당 직원의 급여 재계산
         UpdateSalary(entry);
-        
-        // 급여 레벨에 따른 만족도 이펙트 부여
         ApplySalaryLevelSatisfactionEffect(type, salaryLevel, previousSalaryLevel);
+        string levelName = _initialEmployeeData.GetSalaryLevelName(salaryLevel);
         
-        string levelName = _salarySettings.GetSalaryLevelName(salaryLevel);
-        
-        OnEmployeeChanged?.Invoke();
+        OnEmployeeChanged.Invoke();
     }
 
     /// <summary>
@@ -216,33 +206,27 @@ public partial class EmployeeDataHandler
     /// <param name="previousSalaryLevel">이전 급여 레벨</param>
     private void ApplySalaryLevelSatisfactionEffect(EmployeeType type, int newSalaryLevel, int previousSalaryLevel)
     {
-        var entry = GetEmployeeEntry(type);
-        if (entry == null) return;
+        EmployeeEntry entry = GetEmployeeEntry(type);
+        if (entry == null || entry.data == null || entry.state == null) return;
 
-        // 이전 급여 이펙트 제거 (ID를 "Salary_Satisfaction" 으로 통일하여 관리)
-        entry.RemoveEffectById("Salary_Satisfaction");
-
-        // 새 급여 레벨에 따른 만족도 변화량 가져오기
-        float satisfactionChange = _salarySettings.GetSatisfactionChangePerDay(newSalaryLevel);
-
-        // 만족도 변화가 0이 아니면 이펙트 부여
-        if (Mathf.Abs(satisfactionChange) > 0.001f)
+        float satisfactionChange = _initialEmployeeData.GetSatisfactionChangePerDay(newSalaryLevel);
+        
+        // 급여 레벨 이펙트 ID (직원별 고유 ID 사용)
+        string effectId = entry.data.satisfactionEffectId;
+        if (string.IsNullOrEmpty(effectId))
         {
-            // 급여 레벨별 만족도 이펙트 생성
-            EffectData salaryEffect = new EffectData
-            {
-                id = "Salary_Satisfaction", // 직원의 지역 이펙트이므로 단순화된 ID 사용
-                displayName = $"Salary Level Satisfaction ({_salarySettings.GetSalaryLevelName(newSalaryLevel)})",
-                statType = StatType.SatisfactionChangePerDay,
-                type = ModifierType.Flat,
-                value = satisfactionChange,
-                targetCategory = null, 
-                durationDays = 0f // 영구 효과
-            };
-
-            entry.AddEffect(salaryEffect);
-            Debug.Log($"[EmployeeDataHandler] Applied local satisfaction effect for {type}: {satisfactionChange:F1} per day");
+            effectId = $"Salary_Satisfaction_{type}";
         }
+
+        // 직원별 이펙트로 설정/업데이트/제거 (값이 0이면 자동 제거)
+        entry.SetOrUpdateEffect(
+            effectId,
+            StatType.SatisfactionChangePerDay,
+            satisfactionChange,
+            $"Salary Level Satisfaction ({_initialEmployeeData.GetSalaryLevelName(newSalaryLevel)})",
+            ModifierType.Flat,
+            0f
+        );
     }
 
     /// <summary>
@@ -266,8 +250,8 @@ public partial class EmployeeDataHandler
     /// </summary>
     protected void UpdateSalary(EmployeeEntry entry)
     {
-        float salaryMultiplier = _salarySettings.GetSalaryMultiplier(entry.state.salaryLevel);
-        entry.state.totalSalary = (long)(entry.employeeData.baseSalary * salaryMultiplier * entry.state.count);
+        float salaryMultiplier = _initialEmployeeData.GetSalaryMultiplier(entry.state.salaryLevel);
+        entry.state.totalSalary = (long)(entry.data.baseSalary * salaryMultiplier * entry.state.count);
     }
 
     /// <summary>
@@ -275,39 +259,11 @@ public partial class EmployeeDataHandler
     /// </summary>
     protected void RefreshAllSalaries()
     {
-        foreach (var entry in _employees.Values)
+        foreach (EmployeeEntry entry in _employees.Values)
         {
             UpdateSalary(entry);
         }
-        OnEmployeeChanged?.Invoke();
-    }
 
-    /// <summary>
-    /// 모든 직원을 초기화합니다.
-    /// </summary>
-    public void ResetAllEmployees()
-    {
-        foreach (var entry in _employees.Values)
-        {
-            entry.state.count = 0;
-            entry.state.currentSatisfaction = entry.employeeData.baseSatisfaction;
-            entry.state.currentEfficiency = Mathf.Clamp(entry.employeeData.baseEfficiency, 0f, 2f);
-            entry.state.assignedCount = 0;
-            entry.state.totalSalary = 0;
-            entry.state.salaryLevel = 2; // 기본값: 보통
-        }
-        Debug.Log("[EmployeeService] All employees have been reset.");
-        
         OnEmployeeChanged?.Invoke();
-    }
-
-    /// <summary>
-    /// 특정 직원 유형이 등록되어 있는지 확인합니다.
-    /// </summary>
-    /// <param name="type">확인할 직원 유형</param>
-    /// <returns>등록되어 있으면 true</returns>
-    public bool IsEmployeeRegistered(EmployeeType type)
-    {
-        return _employees.ContainsKey(type);
     }
 }

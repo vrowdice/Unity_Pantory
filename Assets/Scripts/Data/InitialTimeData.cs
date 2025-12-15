@@ -1,29 +1,36 @@
 using UnityEngine;
 
 /// <summary>
-/// ScriptableObject that stores time settings for balancing.
-/// Allows time flow configuration through the Inspector.
+/// 밸런싱을 위한 시간 설정을 저장하는 ScriptableObject
+/// Inspector를 통해 시간 흐름 구성을 조정할 수 있습니다.
 /// </summary>
 [CreateAssetMenu(fileName = "TimeSettingsData", menuName = "Game Data/Time Settings Data", order = 2)]
 public class InitialTimeData : ScriptableObject
 {
     [Range(1, 48)]
+    [Tooltip("하루당 시간 수")]
     public int hoursPerDay = 24;
     [Range(0.01f, 1.0f)]
+    [Tooltip("시간당 실제 초 (게임 시간 속도 조절)")]
     public float realSecondsPerHour = 0.1f;
     [Range(1, 31)]
+    [Tooltip("한 달당 일수")]
     public int daysPerMonth = 20;
     [Range(1, 24)]
+    [Tooltip("한 해당 월수")]
     public int monthsPerYear = 12;
     [Range(0, 999)]
+    [Tooltip("시작 연도")]
     public int startYear = 0;
     [Range(0, 23)]
+    [Tooltip("시작 월 (0부터 시작)")]
     public int startMonth = 0;
     [Range(0, 30)]
+    [Tooltip("시작 일 (0부터 시작)")]
     public int startDay = 0;
 
     /// <summary>
-    /// Validates values in the Editor.
+    /// Editor에서 값 검증
     /// </summary>
     private void OnValidate()
     {

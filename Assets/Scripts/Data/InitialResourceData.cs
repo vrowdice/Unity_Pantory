@@ -1,18 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// ScriptableObject that stores initial resource data.
-/// Allows initial resource balancing through the Inspector.
+/// 초기 리소스 데이터를 저장하는 ScriptableObject
+/// Inspector를 통해 초기 리소스 밸런싱을 조정할 수 있습니다.
 /// </summary>
 [CreateAssetMenu(fileName = "InitialResourceData", menuName = "Game Data/Initial Resource Data", order = 1)]
 public class InitialResourceData : ScriptableObject
 {
     [Header("Initial Resource Settings")]
-    [Tooltip("Silver granted at game start")]
+    [Tooltip("게임 시작 시 부여되는 은화")]
     public long initialCredit = 1000;
 
     /// <summary>
-    /// Validates values in the Editor (prevents negative values).
+    /// Editor에서 값 검증 (음수 값 방지)
     /// </summary>
     private void OnValidate()
     {

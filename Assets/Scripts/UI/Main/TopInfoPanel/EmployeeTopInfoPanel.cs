@@ -154,7 +154,7 @@ public class EmployeeTopInfoPanel : MonoBehaviour
             {
                 foreach (var entry in allEmployees.Values)
                 {
-                    if (entry?.employeeData != null && entry.employeeData.type == type)
+                    if (entry?.data != null && entry.data.type == type)
                     {
                         int count = entry.state.count;
                         int assigned = entry.state.assignedCount;

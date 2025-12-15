@@ -108,6 +108,9 @@ public class InitialEmployeeData : ScriptableObject
     [Header("Research System")]
     [Tooltip("연구자명당 연구 포인트 증가 수치")]
     public int researchPointsPerResearcher = 5;
+    
+    [Tooltip("연구 효과 상태")]
+    public string managementDeficitEffectId = "Management_Deficit_Satisfaction";
 
     /// <summary>
     /// 급여 레벨에 따른 일일 만족도 변화량을 반환합니다.

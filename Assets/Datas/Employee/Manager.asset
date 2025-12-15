@@ -23,3 +23,5 @@ MonoBehaviour:
   baseEfficiency: 1
   baseSatisfaction: 0
   baseSalary: 40
+  efficiencyEffectId: EfficiencyEffect_0
+  satisfactionEffectId: SatisfactionEffect_0

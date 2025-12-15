@@ -42,10 +42,10 @@ public partial class EmployeeDataHandler
             // 예: 50명 중 1명 해고 (2%) = 0.02 × 100 = 2점
             //     50명 중 25명 해고 (50%) = 0.5 × 100 = 50점
             float penalty = 0f;
-            if (_salarySettings != null)
+            if (_initialEmployeeData != null)
             {
-                float maxPanic = _salarySettings.maxFirePanic;
-                float minPenalty = _salarySettings.minFireSatisfactionPenalty;
+                float maxPanic = _initialEmployeeData.maxFirePanic;
+                float minPenalty = _initialEmployeeData.minFireSatisfactionPenalty;
                 
                 // 비율 기반 패널티 계산
                 penalty = fireRatio * maxPanic;
@@ -54,7 +54,7 @@ public partial class EmployeeDataHandler
                 penalty = Mathf.Max(minPenalty, penalty);
                 
                 // 4. [선택적] 관리자에 의한 완화 (Management Mitigation)
-                if (_salarySettings.enableManagerMitigation)
+                if (_initialEmployeeData.enableManagerMitigation)
                 {
                     var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
                     if (managerEntry != null && managerEntry.state != null && managerEntry.state.count > 0)
@@ -72,18 +72,18 @@ public partial class EmployeeDataHandler
                         if (totalEmployees > 0)
                         {
                             // 관리자 1명당 커버 가능한 직원 수
-                            int coveragePerManager = _salarySettings.managerCoverage;
+                            int coveragePerManager = _initialEmployeeData.managerCoverage;
                             float managerCoverage = (float)managerEntry.state.count * coveragePerManager / totalEmployees;
                             
                             // 충분한 관리 커버 시 패널티 감소
                             if (managerCoverage >= 1.0f)
                             {
-                                penalty *= _salarySettings.managerMitigationRatio; // 50% 감소
+                                penalty *= _initialEmployeeData.managerMitigationRatio; // 50% 감소
                             }
                             else
                             {
                                 // 부분적 완화
-                                float mitigation = 1.0f - (managerCoverage * (1.0f - _salarySettings.managerMitigationRatio));
+                                float mitigation = 1.0f - (managerCoverage * (1.0f - _initialEmployeeData.managerMitigationRatio));
                                 penalty *= mitigation;
                             }
                         }
@@ -106,8 +106,8 @@ public partial class EmployeeDataHandler
             );
             
             // 7. [파급 효과] 다른 직군에게도 공포 전파 (연대 책임)
-            float crossPenaltyRatio = _salarySettings != null 
-                ? _salarySettings.crossEmployeeTypeSatisfactionPenaltyRatio 
+            float crossPenaltyRatio = _initialEmployeeData != null 
+                ? _initialEmployeeData.crossEmployeeTypeSatisfactionPenaltyRatio 
                 : 0.3f;
             
             foreach (var otherEntry in _employees.Values)
@@ -128,16 +128,13 @@ public partial class EmployeeDataHandler
             // 해고된 직군의 효율성 재계산
             UpdateEfficiencyFromSatisfaction(entry);
             
-            // 로그 출력 (디버깅용)
-            Debug.Log($"[HR] Fired {count}/{currentTotal} ({fireRatio:P1}). Satisfaction Penalty: -{penalty:F1}");
-            
             UpdateSalary(entry);
             OnEmployeeChanged?.Invoke();
             return true;
         }
         else
         {
-            Debug.LogWarning($"[EmployeeService] {entry.employeeData.displayName} not enough employees! (required: {count}, available: {entry.state.count})");
+            Debug.LogWarning($"[EmployeeService] {entry.data.displayName} not enough employees! (required: {count}, available: {entry.state.count})");
             return false;
         }
     }

@@ -2,161 +2,164 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-/// <summary>
-/// 게임 내 효과(버프/디버프)의 상태를 관리하고 스탯 연산을 수행하는 핸들러 클래스입니다.
-/// </summary>
 public class EffectDataHandler
 {
     private GameDataManager _gameDataManager;
     private readonly Dictionary<StatType, List<EffectState>> _activeEffects = new();
 
-    public EffectDataHandler(GameDataManager gameDataManager) 
+    public EffectDataHandler(GameDataManager gameDataManager)
     {
         _gameDataManager = gameDataManager;
     }
 
     /// <summary>
-    /// 새로운 효과를 등록합니다. (영구 또는 기간제)
+    /// 이펙트가 있으면 갱신하고, 없으면 새로 생성하며, 값이 0이면 제거합니다.
     /// </summary>
-    /// <param name="data">등록할 효과 데이터</param>
-    public void AddEffect(EffectData data)
+    public void SetOrUpdateEffect(string id, StatType type, float value, string displayName, ModifierType modType, float duration = 0f)
     {
-        if (data == null) return;
-
-        if (!_activeEffects.ContainsKey(data.statType))
+        // 1. 값이 사실상 0이면 이펙트 제거 (의미 없는 이펙트 정리)
+        if (Mathf.Abs(value) <= 0.001f)
         {
-            _activeEffects[data.statType] = new List<EffectState>();
+            EffectState existing = GetEffect(type, id);
+            if (existing != null) RemoveEffect(existing);
+            return;
         }
 
-        var runtimeEffect = new EffectState(data);
-        _activeEffects[data.statType].Add(runtimeEffect);
+        // 2. 이펙트 조회
+        EffectState effect = GetEffect(type, id);
 
-        string durationInfo = runtimeEffect.IsPermanent ? "Permanent" : $"{data.durationDays} Days";
-        Debug.Log($"[Effect] Added: {data.id} ({data.statType} / {data.type} / {data.value}) [{durationInfo}]");
-    }
-
-    /// <summary>
-    /// 지정된 ID를 가진 효과를 즉시 제거합니다.
-    /// </summary>
-    /// <param name="effectId">제거할 효과의 ID</param>
-    public void RemoveEffectById(string effectId)
-    {
-        foreach (var list in _activeEffects.Values)
+        if (effect != null)
         {
-            int removedCount = list.RemoveAll(e => e.Data.id == effectId);
-            if (removedCount > 0)
+            // 3. 갱신 (값이 다를 때만)
+            if (!Mathf.Approximately(effect.value, value))
             {
-                Debug.Log($"[Effect] Removed: {effectId}");
+                effect.value = value;
+                effect.displayName = displayName;
             }
         }
-    }
-
-    /// <summary>
-    /// 지정된 스탯 타입에 해당하는 모든 효과를 제거합니다.
-    /// </summary>
-    /// <param name="statType">제거할 스탯 타입</param>
-    public void RemoveEffectsByStatType(StatType statType)
-    {
-        if (_activeEffects.ContainsKey(statType))
+        else
         {
-            _activeEffects[statType].Clear();
-            Debug.Log($"[Effect] Cleared all effects for Stat: {statType}");
+            // 4. 신규 생성
+            effect = new EffectState
+            {
+                id = id,
+                statType = type,
+                value = value,
+                displayName = displayName,
+                type = modType,
+                durationDays = duration,
+                remainingDays = duration
+            };
+            ApplyEffect(effect);
         }
     }
 
-    /// <summary>
-    /// 현재 적용 중인 모든 효과를 제거합니다.
-    /// </summary>
-    public void ClearAllEffects()
+    public EffectState GetEffect(string effectId)
     {
-        _activeEffects.Clear();
-        Debug.Log("[Effect] All effects cleared.");
+        foreach (var effectList in _activeEffects.Values)
+        {
+            var effect = effectList.FirstOrDefault(e => e.id == effectId);
+            if (effect != null) return effect;
+        }
+        return null;
     }
 
-    /// <summary>
-    /// 하루가 지날 때 호출되어 기간제 효과의 남은 일수를 차감하고, 만료된 효과를 제거합니다.
-    /// </summary>
-    /// <param name="daysPassed">경과한 일수 (기본값: 1)</param>
-    public void ProcessDayPass(int daysPassed = 1)
+    public EffectState GetEffect(StatType statType, string effectId)
     {
-        if (daysPassed <= 0) return;
-
-        foreach (var key in _activeEffects.Keys.ToList())
+        if (_activeEffects.TryGetValue(statType, out var list))
         {
-            var effectList = _activeEffects[key];
+            return list.FirstOrDefault(e => e.id == effectId);
+        }
+        return null;
+    }
 
-            for (int i = effectList.Count - 1; i >= 0; i--)
+    public void UpdateEffect(EffectState effect)
+    {
+        if (effect == null) return;
+        EffectState existingEffect = GetEffect(effect.statType, effect.id);
+
+        if (existingEffect != null)
+        {
+            existingEffect.value = effect.value;
+            existingEffect.durationDays = effect.durationDays;
+            existingEffect.remainingDays = effect.remainingDays;
+            existingEffect.displayName = effect.displayName;
+        }
+    }
+
+    public void ProcessDayPass(int date)
+    {
+        var statTypes = new List<StatType>(_activeEffects.Keys);
+
+        foreach (var statType in statTypes)
+        {
+            List<EffectState> effects = _activeEffects[statType];
+
+            for (int i = effects.Count - 1; i >= 0; i--)
             {
-                var effect = effectList[i];
-
+                EffectState effect = effects[i];
                 if (effect.IsPermanent) continue;
 
-                effect.RemainingDays -= daysPassed;
+                effect.remainingDays -= 1;
 
-                if (effect.RemainingDays <= 0)
+                if (effect.remainingDays <= 0)
                 {
-                    Debug.Log($"[Effect] Expired: {effect.Data.id}");
-                    effectList.RemoveAt(i);
+                    effects.RemoveAt(i);
                 }
             }
         }
     }
 
-    /// <summary>
-    /// 활성화된 효과들을 반영하여 최종 스탯 값을 계산합니다.
-    /// 계산 공식: (기본값 + 고정합) * (1 + 합연산%) * 곱연산%
-    /// </summary>
-    /// <param name="statType">계산할 스탯의 종류</param>
-    /// <param name="baseValue">기본 값</param>
-    /// <param name="category">필터링할 카테고리 (옵션)</param>
-    /// <returns>모든 효과가 적용된 최종 값</returns>
-    public float CalculateStat(StatType statType, float baseValue, string category = null)
+    public void ApplyEffect(EffectState effect)
     {
-        if (!_activeEffects.TryGetValue(statType, out var effects) || effects.Count == 0)
+        if (effect == null) return;
+        if (!_activeEffects.ContainsKey(effect.statType))
         {
-            return baseValue;
+            _activeEffects[effect.statType] = new List<EffectState>();
         }
+        _activeEffects[effect.statType].Add(effect);
+    }
 
-        float flatSum = 0f;
-        float percentAddSum = 0f;
-        float percentMultTotal = 1f;
-
-        foreach (var effect in effects)
+    public void RemoveEffect(EffectState effect)
+    {
+        if (effect == null) return;
+        if (_activeEffects.TryGetValue(effect.statType, out var list))
         {
-            if (!string.IsNullOrEmpty(effect.Data.targetCategory) &&
-                effect.Data.targetCategory != category)
-            {
-                continue;
-            }
-
-            switch (effect.Data.type)
-            {
-                case ModifierType.Flat:
-                    flatSum += effect.Data.value;
-                    break;
-                case ModifierType.PercentAdd:
-                    percentAddSum += effect.Data.value;
-                    break;
-                case ModifierType.PercentMult:
-                    percentMultTotal *= effect.Data.value;
-                    break;
-            }
+            list.Remove(effect);
         }
+    }
 
-        return (baseValue + flatSum) * (1f + percentAddSum) * percentMultTotal;
+    public List<EffectState> GetActiveEffects(StatType statType)
+    {
+        if (_activeEffects.TryGetValue(statType, out var list))
+        {
+            return list;
+        }
+        return null;
     }
 
     /// <summary>
-    /// 특정 스탯 타입에 적용 중인 모든 효과 목록을 반환합니다.
+    /// 이펙트 값을 포맷팅합니다.
     /// </summary>
-    /// <param name="statType">조회할 스탯 타입</param>
-    /// <returns>EffectState 리스트 (없으면 빈 리스트 반환)</returns>
-    public List<EffectState> GetActiveEffects(StatType statType)
+    /// <param name="value">이펙트 값</param>
+    /// <param name="modifierType">연산 방식</param>
+    /// <returns>포맷팅된 문자열</returns>
+    public string FormatEffectValue(float value, ModifierType modifierType)
     {
-        if (_activeEffects.TryGetValue(statType, out var effects))
+        switch (modifierType)
         {
-            return new List<EffectState>(effects);
+            case ModifierType.Flat:
+                return value >= 0 ? $"+{value:F1}" : $"{value:F1}";
+
+            case ModifierType.PercentAdd:
+                float percentAdd = value * 100f;
+                return percentAdd >= 0 ? $"+{percentAdd:F1}%" : $"{percentAdd:F1}%";
+
+            case ModifierType.PercentMult:
+                return $"x{value:F2}";
+
+            default:
+                return value.ToString("F1");
         }
-        return new List<EffectState>();
     }
 }
