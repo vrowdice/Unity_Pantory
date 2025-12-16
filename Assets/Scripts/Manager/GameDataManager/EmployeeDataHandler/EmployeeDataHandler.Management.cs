@@ -114,7 +114,7 @@ public partial class EmployeeDataHandler
 
             // 3. 만족도 변화 계산 (모든 SatisfactionChangePerDay 이펙트 합산)
             float totalSatisfactionChange = 0f;
-            
+
             // 전역 만족도 이펙트 (Management Deficit 등)
             var globalEffects = _gameDataManager.Effect.GetActiveEffects(StatType.SatisfactionChangePerDay);
             if (globalEffects != null)
@@ -127,7 +127,7 @@ public partial class EmployeeDataHandler
                     }
                 }
             }
-            
+
             // 직원 개별 만족도 이펙트
             var employeeSatisfactionEffects = entry.GetActiveEffects(StatType.SatisfactionChangePerDay);
             if (employeeSatisfactionEffects != null)
@@ -189,7 +189,7 @@ public partial class EmployeeDataHandler
         {
             effectId = $"Efficiency_{entry.data.type}";
         }
-        
+
         entry.SetOrUpdateEffect(
             effectId,
             StatType.EfficiencyBonus,
@@ -201,7 +201,7 @@ public partial class EmployeeDataHandler
 
         // 3. 이펙트 시스템을 통한 효율성 계산 (기본 효율성에서 시작하여 이펙트 적용)
         float currentEfficiency = baseEfficiency + satisfactionEfficiencyBonus;
-        
+
         // 4. 최종 효율성 클램프 (0f ~ 2f)
         float finalEfficiency = Mathf.Clamp(
             currentEfficiency,
@@ -224,7 +224,7 @@ public partial class EmployeeDataHandler
         }
 
         string effectId = _initialEmployeeData.managementDeficitEffectId;
-        
+
         // 부족분에 비례해서 만족도 감소 이펙트 계산 (최대 페널티에 부족 비율 곱)
         // deficit이 0.01 이하면 satisfactionPenalty는 0에 가까워지고, SetOrUpdateEffect가 자동으로 제거함
         float satisfactionPenalty = deficit > 0.01f ? _initialEmployeeData.maxSatisfactionPenalty * deficit : 0f;
@@ -240,4 +240,3 @@ public partial class EmployeeDataHandler
         );
     }
 }
-

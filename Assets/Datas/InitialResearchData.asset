@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8318e0fab1fec4d428d9a112f1d96cd9, type: 3}
   m_Name: InitialResearchData
   m_EditorClassIdentifier: 
-  maxTier: 3
+  maxTier: 4
   initialResearchPoint: 100

@@ -15,17 +15,14 @@ public class ResearchTierPanel : MonoBehaviour
 
     public void OnInitialize(int tier, List<ResearchEntry> researchEntry)
     {
-        foreach(ResearchEntry item in researchEntry)
+        _tierText.text = $"Tier {tier}";
+
+        foreach (ResearchEntry item in researchEntry)
         {
             GameObject btnObj = Instantiate(_researchBtnPrefab, _researchButtonContentTransform);
             ResearchBtn researhBtn = btnObj.GetComponent<ResearchBtn>();
 
             researhBtn.OnInitialize(item);
         }
-    }
-
-    public void RefreshResearchButtons()
-    {
-
     }
 }

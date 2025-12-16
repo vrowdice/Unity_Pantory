@@ -10,14 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
-  m_Name: Tier3_Advanced_Research
+  m_Name: 4_vehicle_assembly
   m_EditorClassIdentifier: 
-  id: tier3_advanced
-  tier: 3
-  displayName: Advanced Production Facilities
-  description: Unlock the Vehicle Assembly Plant, the pinnacle of industrial manufacturing.
-    This facility enables production of vehicles, aircraft, and tanks.
-  researchPointCost: 10000
+  id: 4_vehicle_assembly
+  tier: 4
+  displayName: Vehicle Assembly
+  description: Unlocks the construction of vehicle assembly plants. Enables production
+    of the highest-value final products including cars, fighter planes, and tanks
+    by combining engines, components, electronic parts, and more. The most complex
+    and slowest production chain, but provides the highest profits.
+  icon: {fileID: 21300000, guid: b14c3f51cf7290a4c91149bf1a5491f6, type: 3}
+  researchPointCost: 7000
   prerequisiteResearchs: []
   appleyEffects: []
   unlockableBuildings:

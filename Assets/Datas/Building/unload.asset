@@ -20,8 +20,11 @@ MonoBehaviour:
   description: An unloading station where finished products are removed from the
     production line and stored. Workers carefully handle completed items for inventory
     management.
+  isUnlockedByDefault: 1
+  requiredEmployees: 2
   baseCost: 100
   baseMaintenanceCost: 10
   size: {x: 1, y: 1}
-  requiredEmployees: 2
+  requiredResearchId: 
+  handlingResource: {fileID: 0}
   outputPosition: {x: 1, y: 0}

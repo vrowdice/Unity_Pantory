@@ -35,5 +35,5 @@ MonoBehaviour:
   maxSatisfactionPenalty: 1
   enableManagerMitigation: 1
   managerMitigationRatio: 0.5
-  researchPointsPerResearcher: 5
+  researchPointsPerResearcher: 1
   managementDeficitEffectId: Management_Deficit_Satisfaction

@@ -20,10 +20,13 @@ MonoBehaviour:
   description: A wood processing facility that transforms raw logs into fine wood
     and fabric. Processes wood logs into usable lumber and can also produce fabric
     from wood pulp. Most efficient when placed near sawmills.
+  isUnlockedByDefault: 1
+  requiredEmployees: 4
   baseCost: 180
   baseMaintenanceCost: 10
   size: {x: 2, y: 2}
-  requiredEmployees: 4
+  requiredResearchId: 
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 05000000
   _producibleResources:
   - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}

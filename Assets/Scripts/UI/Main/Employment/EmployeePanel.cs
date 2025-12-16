@@ -161,7 +161,7 @@ public class EmployeePanel : BasePanel
 
         // EmployeeType enum의 모든 역할에 대해 버튼 생성
         System.Array employeeTypes = System.Enum.GetValues(typeof(EmployeeType));
-        
+
         foreach (EmployeeType role in employeeTypes)
         {
             var btnObj = Instantiate(_gameManager.ActionBtnPrefab, EmployeeActionBtnContent);
@@ -260,7 +260,7 @@ public class EmployeePanel : BasePanel
         _descriptionText.text = data.description ?? string.Empty;
         _employeeCountText.text = $"Count: {state.count}";
         _totalSalatyText.text = $"Total Salary: {state.totalSalary:N0}";
-        
+
         float normalizedEfficiency = Mathf.Clamp(state.currentEfficiency, 0f, 2f) / 2f;
         _efficiencySlider.value = normalizedEfficiency;
         _efficiencyValueText.text = $"{(state.currentEfficiency * 100f):F1}%";
@@ -273,7 +273,7 @@ public class EmployeePanel : BasePanel
         UpdateManagementRatio();
         UpdateEffectStatus();
     }
-    
+
     /// <summary>
     /// 관리 비율 슬라이더와 텍스트를 업데이트합니다.
     /// </summary>
@@ -295,7 +295,7 @@ public class EmployeePanel : BasePanel
         if (_managementRatioText != null)
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
-            
+
             if (requiredManagers <= 0 || currentManagers >= requiredManagers)
             {
                 _managementRatioText.text = "100%";
@@ -306,12 +306,12 @@ public class EmployeePanel : BasePanel
                 _managementRatioText.text = $"{managementRatio:P0} (-{shortage})";
             }
         }
-        
+
         // Fill 이미지 색상 업데이트
         if (_managementFillImage != null)
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
-            
+
             if (VisualManager.Instance != null)
             {
                 if (requiredManagers <= 0 || currentManagers >= requiredManagers)
@@ -395,7 +395,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEfficiencyEffectStatus()
     {
-        if (_efficiencyStatusScrollViewContentTransform == null || 
+        if (_efficiencyStatusScrollViewContentTransform == null ||
             _efficiencyStatusTextPairPanelPrefab == null ||
             _dataManager?.Effect == null ||
             _selectedEmployeeEntry?.data == null)
@@ -409,7 +409,7 @@ public class EmployeePanel : BasePanel
 
         // 1. 전역 효율성 이펙트 (모든 전역 이펙트 표시)
         var globalEffects = _dataManager.Effect.GetActiveEffects(StatType.EfficiencyBonus);
-        if (globalEffects != null) 
+        if (globalEffects != null)
         {
             foreach (var effect in globalEffects)
             {
@@ -436,7 +436,7 @@ public class EmployeePanel : BasePanel
 
                 var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _efficiencyStatusScrollViewContentTransform);
                 var panel = panelObj.GetComponent<TextPairPanel>();
-                
+
                 if (panel != null)
                 {
                     string effectDescription = effectState.displayName ?? effectState.id;
@@ -446,7 +446,7 @@ public class EmployeePanel : BasePanel
             }
         }
     }
-    
+
     /// <summary>
     /// 만족도 관련 이펙트 상태를 업데이트합니다.
     /// </summary>
@@ -487,12 +487,12 @@ public class EmployeePanel : BasePanel
 
             var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _satisfactionStatusScrollViewContentTransform);
             var panel = panelObj.GetComponent<TextPairPanel>();
-            
+
             if (panel != null)
             {
                 string effectDescription = effectState.displayName ?? effectState.id;
                 string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                
+
                 // 포맷팅된 문자열과 숫자 값을 전달하여 색상 자동 적용
                 panel.OnInitialize(effectDescription, changeValue, effectState.value);
             }
@@ -508,7 +508,7 @@ public class EmployeePanel : BasePanel
         {
             GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
         }
-        
+
         if (_satisfactionStatusScrollViewContentTransform != null)
         {
             GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
@@ -607,7 +607,7 @@ public class EmployeePanel : BasePanel
         // 관리 비율도 업데이트 (직원 변경 시 영향받음)
         UpdateManagementRatio();
     }
-    
+
     /// <summary>
     /// 일일 변경 핸들러
     /// </summary>

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
+  m_Name: 3_military_production
+  m_EditorClassIdentifier: 
+  id: 3_military_production
+  tier: 3
+  displayName: Military Production
+  description: Unlocks the construction of military factories. Enables production
+    of small arms, heavy weapons, ammunition, and more using steel ingots and machine
+    parts. A national strategic resource, essential for war preparedness and dominating
+    the weapons market.
+  icon: {fileID: 21300000, guid: 48989bb88d0da3b44ae90d5dd1eafe8c, type: 3}
+  researchPointCost: 5000
+  prerequisiteResearchs: []
+  appleyEffects: []
+  unlockableBuildings:
+  - {fileID: 11400000, guid: b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7, type: 2}

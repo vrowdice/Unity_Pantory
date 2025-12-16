@@ -20,7 +20,7 @@ public partial class EmployeeDataHandler
 
         if (employeeDataList != null && employeeDataList.Count > 0)
         {
-            foreach(EmployeeData data in employeeDataList)
+            foreach (EmployeeData data in employeeDataList)
             {
                 if (data == null) continue;
                 var entry = new EmployeeEntry(data);
@@ -46,7 +46,7 @@ public partial class EmployeeDataHandler
         {
             return entry;
         }
-        
+
         Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
         return null;
     }
@@ -95,7 +95,7 @@ public partial class EmployeeDataHandler
 
         entry.state.count += count;
         UpdateSalary(entry);
-        
+
         OnEmployeeChanged.Invoke();
     }
 
@@ -121,7 +121,7 @@ public partial class EmployeeDataHandler
         entry.state.count = count;
         UpdateSalary(entry);
         Debug.Log($"[EmployeeService] {entry.data.displayName} count = {count}");
-        
+
         OnEmployeeChanged.Invoke();
     }
 
@@ -137,7 +137,7 @@ public partial class EmployeeDataHandler
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
         }
-        
+
         OnEmployeeChanged.Invoke();
     }
 
@@ -153,7 +153,7 @@ public partial class EmployeeDataHandler
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
         }
-        
+
         OnEmployeeChanged.Invoke();
     }
 
@@ -171,7 +171,7 @@ public partial class EmployeeDataHandler
         }
 
         entry.state.currentSatisfaction = Mathf.Clamp(satisfaction, 0f, 100f);
-        
+
         OnEmployeeChanged.Invoke();
     }
 
@@ -194,7 +194,7 @@ public partial class EmployeeDataHandler
         UpdateSalary(entry);
         ApplySalaryLevelSatisfactionEffect(type, salaryLevel, previousSalaryLevel);
         string levelName = _initialEmployeeData.GetSalaryLevelName(salaryLevel);
-        
+
         OnEmployeeChanged.Invoke();
     }
 
@@ -210,7 +210,7 @@ public partial class EmployeeDataHandler
         if (entry == null || entry.data == null || entry.state == null) return;
 
         float satisfactionChange = _initialEmployeeData.GetSatisfactionChangePerDay(newSalaryLevel);
-        
+
         // 급여 레벨 이펙트 ID (직원별 고유 ID 사용)
         string effectId = entry.data.satisfactionEffectId;
         if (string.IsNullOrEmpty(effectId))

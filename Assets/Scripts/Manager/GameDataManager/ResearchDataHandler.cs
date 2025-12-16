@@ -156,18 +156,23 @@ public class ResearchDataHandler
 
     /// <summary>
     /// 연구 완료 시 효과를 적용합니다.
+    /// ScriptableObject 원본 데이터를 보호하기 위해 복제본을 생성하여 적용합니다.
     /// </summary>
     private void ApplyResearchEffects(ResearchData data)
     {
         if (data.appleyEffects == null || data.appleyEffects.Count == 0)
             return;
 
-        foreach (EffectState effect in data.appleyEffects)
+        foreach (EffectState originalEffect in data.appleyEffects)
         {
-            if (effect == null)
+            if (originalEffect == null)
                 continue;
 
-            _gameDataManager.Effect.ApplyEffect(effect);
+            // 원본(ScriptableObject 데이터)을 보호하기 위해 복제본을 생성
+            EffectState clonedEffect = originalEffect.Clone();
+
+            // 복제본을 EffectDataHandler에 전달
+            _gameDataManager.Effect.ApplyEffect(clonedEffect);
         }
     }
 

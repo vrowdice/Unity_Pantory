@@ -20,16 +20,19 @@ MonoBehaviour:
   description: A versatile light industry facility that produces consumer goods including
     furniture, clothing, and simple tools. Flexible production allows switching between
     different product lines based on market demand.
+  isUnlockedByDefault: 1
+  requiredEmployees: 6
   baseCost: 240
   baseMaintenanceCost: 12
   size: {x: 2, y: 2}
-  requiredEmployees: 6
+  requiredResearchId: 
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 0300000005000000
-  inputPosition: {x: -1, y: 1}
-  outputPosition: {x: 2, y: 1}
-  baseProductionRate: 1
-  processingTime: 0.9
   _producibleResources:
   - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
   - {fileID: 11400000, guid: d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4, type: 2}
   - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 0.9

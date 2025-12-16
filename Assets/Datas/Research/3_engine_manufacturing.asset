@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
+  m_Name: 3_engine_manufacturing
+  m_EditorClassIdentifier: 
+  id: 3_engine_manufacturing
+  tier: 3
+  displayName: Engine Manufacturing
+  description: Unlocks the construction of engine factories. Enables production of
+    high-performance internal combustion engines by combining machine parts, electronic
+    components, and steel ingots. A prerequisite investment for vehicle production,
+    beginning the production of high-value intermediate materials.
+  icon: {fileID: 21300000, guid: f39c87609eff656408360ec1454d9968, type: 3}
+  researchPointCost: 3000
+  prerequisiteResearchs: []
+  appleyEffects: []
+  unlockableBuildings:
+  - {fileID: 11400000, guid: b44af6a86b952fb41ba1ff8bb60738d6, type: 2}

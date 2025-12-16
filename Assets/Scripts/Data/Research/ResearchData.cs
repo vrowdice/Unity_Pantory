@@ -9,7 +9,8 @@ public class ResearchData : ScriptableObject
     public int tier;
     public string displayName;
     [TextArea] public string description;
-    
+    public Sprite icon;
+
     [Header("Costs & Requirements")]
     public long researchPointCost;
     public List<ResearchData> prerequisiteResearchs;

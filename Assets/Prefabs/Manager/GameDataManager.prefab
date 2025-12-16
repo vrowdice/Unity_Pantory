@@ -102,9 +102,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 95e9fdae86915c844b2dbf8c38173c7d, type: 2}
   - {fileID: 11400000, guid: 8e85b0d77f93554459c197716f0cd012, type: 2}
   _researchDataList:
+  - {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
   - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
-  - {fileID: 11400000, guid: a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7, type: 2}
-  - {fileID: 11400000, guid: b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8, type: 2}
+  - {fileID: 11400000, guid: 83b8f7012fcac67439b4d0d15ceb7691, type: 2}
+  - {fileID: 11400000, guid: 4235d531f57ebdf40922de9b738db379, type: 2}
+  - {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}
+  - {fileID: 11400000, guid: 11d63bc3f292d9a4b8c4b8b56a89d9c1, type: 2}
+  - {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
+  - {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
+  - {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   _marketActorDataList:
   - {fileID: 11400000, guid: 5c8f2d1a0b3e49d5a7c8e1f2345678ab, type: 2}
   - {fileID: 11400000, guid: ec678049fb0fbc642a32b249db76ea3a, type: 2}

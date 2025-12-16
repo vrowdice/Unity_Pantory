@@ -20,6 +20,11 @@ MonoBehaviour:
   description: A transportation pathway that connects different areas of the production
     line. Essential infrastructure for moving resources and products efficiently
     between facilities.
+  isUnlockedByDefault: 1
+  requiredEmployees: 0
   baseCost: 10
   baseMaintenanceCost: 1
   size: {x: 1, y: 1}
+  requiredResearchId: 
+  handlingResource: {fileID: 0}
+  conflictIcon: {fileID: 0}
