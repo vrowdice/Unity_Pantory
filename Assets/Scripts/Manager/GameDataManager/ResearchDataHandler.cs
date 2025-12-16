@@ -26,7 +26,6 @@ public class ResearchDataHandler
         
         if (researchDataList != null && researchDataList.Count > 0)
         {
-            // 리스트에서 딕셔너리로 등록
             foreach (var data in researchDataList)
             {
                 if (data == null || string.IsNullOrEmpty(data.id))
@@ -41,12 +40,16 @@ public class ResearchDataHandler
                 var entry = new ResearchEntry
                 {
                     researchId = data.id,
-                    researchData = data,
-                    researchState = new ResearchState { isCompleted = false }
+                    data = data,
+                    state = new ResearchState { isCompleted = false }
                 };
                 _researchEntries.Add(data.id, entry);
             }
-            Debug.Log($"[Research] Initialized with {researchDataList.Count} research entries from list.");
+        }
+
+        if (_gameDataManager.InitialResearchData != null)
+        {
+            _researchPoint = _gameDataManager.InitialResearchData.initialResearchPoint;
         }
     }
 
@@ -91,37 +94,37 @@ public class ResearchDataHandler
         }
 
         // 1. 이미 완료된 연구인지 확인
-        if (entry.researchState.isCompleted)
+        if (entry.state.isCompleted)
         {
-            Debug.Log($"[Research] Already completed: {entry.researchData.displayName}");
+            Debug.Log($"[Research] Already completed: {entry.data.displayName}");
             return false;
         }
 
         // 2. 선행 연구(Prerequisites) 확인
-        if (!CheckPrerequisites(entry.researchData))
+        if (!CheckPrerequisites(entry.data))
         {
-            Debug.Log($"[Research] Prerequisites not met for: {entry.researchData.displayName}");
+            Debug.Log($"[Research] Prerequisites not met for: {entry.data.displayName}");
             return false;
         }
 
         // 3. 비용(RP) 확인
-        if (ResearchPoint < entry.researchData.researchPointCost)
+        if (ResearchPoint < entry.data.researchPointCost)
         {
-            Debug.Log($"[Research] Not enough RP. Need: {entry.researchData.researchPointCost}, Have: {ResearchPoint}");
+            Debug.Log($"[Research] Not enough RP. Need: {entry.data.researchPointCost}, Have: {ResearchPoint}");
             return false;
         }
 
         // 4. RP 차감
-        _researchPoint -= entry.researchData.researchPointCost;
+        _researchPoint -= entry.data.researchPointCost;
         OnResearchPointsChanged?.Invoke();
 
         // 5. 상태 업데이트
-        entry.researchState.isCompleted = true;
+        entry.state.isCompleted = true;
 
         // 6. 효과(Effect) 적용 [핵심 연동]
-        ApplyResearchEffects(entry.researchData);
+        ApplyResearchEffects(entry.data);
 
-        Debug.Log($"[Research] UNLOCKED: {entry.researchData.displayName}");
+        Debug.Log($"[Research] UNLOCKED: {entry.data.displayName}");
         OnResearchUnlocked?.Invoke(researchId);
 
         return true;
@@ -132,23 +135,20 @@ public class ResearchDataHandler
     /// </summary>
     public bool CheckPrerequisites(ResearchData data)
     {
-        if (data.prerequisiteIds == null || data.prerequisiteIds.Count == 0)
+        if (data.prerequisiteResearchs == null || data.prerequisiteResearchs.Count == 0)
             return true;
 
-        foreach (var preId in data.prerequisiteIds)
+        foreach (ResearchData item in data.prerequisiteResearchs)
         {
-            if (string.IsNullOrEmpty(preId))
-                continue;
-
-            if (_researchEntries.TryGetValue(preId, out var preEntry))
+            foreach(KeyValuePair<string, ResearchEntry> entry in _researchEntries)
             {
-                if (!preEntry.researchState.isCompleted) 
-                    return false;
-            }
-            else
-            {
-                Debug.LogWarning($"[Research] Missing prerequisite ID: {preId}");
-                return false;
+                if(item == entry.Value.data)
+                {
+                    if(!entry.Value.state.isCompleted)
+                    {
+                        return false; 
+                    }
+                }
             }
         }
         return true;
@@ -209,24 +209,9 @@ public class ResearchDataHandler
     {
         if (_researchEntries.TryGetValue(researchId, out var entry))
         {
-            return entry.researchState.isCompleted;
+            return entry.state.isCompleted;
         }
         return false;
-    }
-
-    /// <summary>
-    /// 특정 티어의 연구가 모두 완료되었는지 확인 (다음 티어 해금 조건용)
-    /// </summary>
-    public bool IsTierCompleted(int tier)
-    {
-        var tierResearches = _researchEntries.Values
-            .Where(e => e.researchData != null && e.researchData.tier == tier)
-            .ToList();
-
-        if (tierResearches.Count == 0) 
-            return true; // 해당 티어 연구가 없으면 완료로 간주
-
-        return tierResearches.All(e => e.researchState.isCompleted);
     }
 
     /// <summary>
@@ -234,8 +219,16 @@ public class ResearchDataHandler
     /// </summary>
     public List<ResearchEntry> GetResearchEntriesByTier(int tier)
     {
-        return _researchEntries.Values
-            .Where(e => e.researchData != null && e.researchData.tier == tier)
-            .ToList();
+        List<ResearchEntry> researchs = new List<ResearchEntry>();
+
+        foreach(KeyValuePair<string ,ResearchEntry> item in _researchEntries)
+        {
+            if(item.Value.data.tier == tier)
+            {
+                researchs.Add(item.Value);
+            }
+        }
+
+        return researchs;
     }
 }

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
+  m_Name: Tier2_Manufacturing_Research
+  m_EditorClassIdentifier: 
+  id: tier2_manufacturing
+  tier: 2
+  displayName: Manufacturing Facilities
+  description: Unlock advanced manufacturing facilities including Light Factory,
+    Heavy Factory, Chemical Plant, Component Factory, Engine Factory, and Military
+    Factory. These facilities enable production of complex goods and components.
+  researchPointCost: 7500
+  prerequisiteResearchs: []
+  appleyEffects: []
+  unlockableBuildings:
+  - {fileID: 11400000, guid: b64972c612c45a944be1d20721ab921a, type: 2}
+  - {fileID: 11400000, guid: 22f6b00305a71104b841be99e0ddcc99, type: 2}
+  - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
+  - {fileID: 11400000, guid: 960d5a7248b012544b3d054049188b94, type: 2}
+  - {fileID: 11400000, guid: b44af6a86b952fb41ba1ff8bb60738d6, type: 2}
+  - {fileID: 11400000, guid: b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7, type: 2}

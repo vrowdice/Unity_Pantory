@@ -12,7 +12,7 @@ public class BuildingUnlockResearchData : ResearchData
     /// <summary>
     /// 이 연구를 완료하면 언락되는 건물 ID 목록
     /// </summary>
-    public List<BuildingData> unlockableBuildingIds;
+    public List<BuildingData> unlockableBuildings;
     
     /// <summary>
     /// 특정 건물이 이 연구로 언락되는지 확인합니다.
@@ -21,10 +21,10 @@ public class BuildingUnlockResearchData : ResearchData
     /// <returns>언락 가능하면 true</returns>
     public bool UnlocksBuilding(BuildingData buildingData)
     {
-        if (unlockableBuildingIds == null)
+        if (unlockableBuildings == null)
             return false;
             
-        foreach (BuildingData item in unlockableBuildingIds)
+        foreach (BuildingData item in unlockableBuildings)
         {
             if (item == buildingData)
                 return true;

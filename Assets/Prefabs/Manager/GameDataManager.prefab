@@ -48,6 +48,7 @@ MonoBehaviour:
   _initialMarketData: {fileID: 11400000, guid: 44eb0611182f4f441b4c6ed01f0061ba, type: 2}
   _initialEmployeeData: {fileID: 11400000, guid: 52889a30f2392d844b470a134ffd664f, type: 2}
   _timeSettingsData: {fileID: 11400000, guid: 5fd3047d51914f34bae4791141b3a104, type: 2}
+  _initialResearchData: {fileID: 11400000, guid: 3f53f5b792a4f744996e1ed7ba0f1fda, type: 2}
   _buildingDataList:
   - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
   - {fileID: 11400000, guid: 960d5a7248b012544b3d054049188b94, type: 2}
@@ -100,7 +101,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f00a17963129ae04ba3ce7997bd1f92d, type: 2}
   - {fileID: 11400000, guid: 95e9fdae86915c844b2dbf8c38173c7d, type: 2}
   - {fileID: 11400000, guid: 8e85b0d77f93554459c197716f0cd012, type: 2}
-  _researchDataList: []
+  _researchDataList:
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
+  - {fileID: 11400000, guid: a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7, type: 2}
+  - {fileID: 11400000, guid: b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8, type: 2}
   _marketActorDataList:
   - {fileID: 11400000, guid: 5c8f2d1a0b3e49d5a7c8e1f2345678ab, type: 2}
   - {fileID: 11400000, guid: ec678049fb0fbc642a32b249db76ea3a, type: 2}
@@ -125,4 +129,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9e0d7c5b3a214c2da8f4c6b8e1d235ab, type: 2}
   - {fileID: 11400000, guid: 3f8e1d2c4b7a4f6da3c9b0e1f2d4c5a6, type: 2}
   - {fileID: 11400000, guid: 73bba9a45f77316458d9641f6e1e8ea0, type: 2}
-  _effectDataList: []

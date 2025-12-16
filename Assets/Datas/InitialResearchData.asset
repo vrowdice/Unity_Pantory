@@ -9,14 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
-  m_Name: NewResearch
+  m_Script: {fileID: 11500000, guid: 8318e0fab1fec4d428d9a112f1d96cd9, type: 3}
+  m_Name: InitialResearchData
   m_EditorClassIdentifier: 
-  id: 
-  tier: 0
-  displayName: 
-  description: 
-  researchPointCost: 5000
-  prerequisiteIds: []
-  appleyEffects: []
-  unlockableBuildingIds: []
+  maxTier: 3
+  initialResearchPoint: 100

@@ -12,7 +12,7 @@ public class ResearchData : ScriptableObject
     
     [Header("Costs & Requirements")]
     public long researchPointCost;
-    public List<string> prerequisiteIds;
+    public List<ResearchData> prerequisiteResearchs;
 
     [Header("Rewards")]
     public List<EffectState> appleyEffects;

@@ -12,6 +12,7 @@ public class GameDataManager : MonoBehaviour
     [SerializeField] private InitialMarketData _initialMarketData;
     [SerializeField] private InitialEmployeeData _initialEmployeeData;
     [SerializeField] private InitialTimeData _timeSettingsData;
+    [SerializeField] private InitialResearchData _initialResearchData;
 
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
@@ -22,6 +23,7 @@ public class GameDataManager : MonoBehaviour
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
+    public InitialResearchData InitialResearchData => _initialResearchData;
 
     public TimeDataHandler Time { get; private set; }
     public ThreadDataHandler Thread { get; private set; }

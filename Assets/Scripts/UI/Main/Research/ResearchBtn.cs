@@ -7,9 +7,9 @@ public class ResearchBtn : MonoBehaviour
     [SerializeField] private Image _image;
     [SerializeField] private TextMeshProUGUI _text;
 
-    public void OnInitialized(ResearchEntry researchEntry)
+    public void OnInitialize(ResearchEntry researchEntry)
     {
-
+        _text.text = researchEntry.data.displayName;
     }
 
     public void OnClick()

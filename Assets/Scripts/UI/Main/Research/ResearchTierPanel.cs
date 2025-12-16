@@ -13,9 +13,15 @@ public class ResearchTierPanel : MonoBehaviour
     [SerializeField] private Transform _researchButtonContentTransform;
     [SerializeField] private GameObject _researchBtnPrefab;
 
-    public void OnInitialized(int tier, List<ResearchEntry> researchEntry)
+    public void OnInitialize(int tier, List<ResearchEntry> researchEntry)
     {
+        foreach(ResearchEntry item in researchEntry)
+        {
+            GameObject btnObj = Instantiate(_researchBtnPrefab, _researchButtonContentTransform);
+            ResearchBtn researhBtn = btnObj.GetComponent<ResearchBtn>();
 
+            researhBtn.OnInitialize(item);
+        }
     }
 
     public void RefreshResearchButtons()
