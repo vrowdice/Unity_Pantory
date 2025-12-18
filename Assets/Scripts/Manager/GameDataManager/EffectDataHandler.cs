@@ -1,141 +1,305 @@
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
+/// <summary>
+/// 이펙트(버프/디버프)를 관리하는 관리자입니다.
+/// 1. 월드 전체 2. 직원 전체 공통 3. 직원 개인별 효과를 각각 관리합니다.
+/// </summary>
 public class EffectDataHandler
 {
-    private GameDataManager _gameDataManager;
-    private readonly Dictionary<StatType, List<EffectState>> _activeEffects = new();
+    private readonly GameDataManager _gameDataManager;
 
-    public EffectDataHandler(GameDataManager gameDataManager)
+    /// <summary>
+    /// 전역 이펙트
+    /// </summary>
+    private readonly Dictionary<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> _effects = new();
+
+    public Dictionary<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> Effects => _effects;
+
+    public EffectDataHandler(GameDataManager gameDataManager) 
     {
         _gameDataManager = gameDataManager;
+
+        foreach (EffectTargetType target in System.Enum.GetValues(typeof(EffectTargetType)))
+        {
+            _effects[target] = new Dictionary<EffectStatType, List<EffectState>>();
+            foreach (EffectStatType stat in System.Enum.GetValues(typeof(EffectStatType)))
+            {
+                _effects[target][stat] = new List<EffectState>();
+            }
+        }
     }
 
     /// <summary>
-    /// 이펙트가 있으면 갱신하고, 없으면 새로 생성하며, 값이 0이면 제거합니다.
+    /// 이펙트 지속시간 감소 
     /// </summary>
-    public void SetOrUpdateEffect(string id, StatType type, float value, string displayName, ModifierType modType, float duration = 0f)
-    {
-        // 1. 값이 사실상 0이면 이펙트 제거 (의미 없는 이펙트 정리)
-        if (Mathf.Abs(value) <= 0.001f)
-        {
-            EffectState existing = GetEffect(type, id);
-            if (existing != null) RemoveEffect(existing);
-            return;
-        }
-
-        // 2. 이펙트 조회
-        EffectState effect = GetEffect(type, id);
-
-        if (effect != null)
-        {
-            // 3. 갱신 (값이 다를 때만)
-            if (!Mathf.Approximately(effect.value, value))
-            {
-                effect.value = value;
-                effect.displayName = displayName;
-            }
-        }
-        else
-        {
-            // 4. 신규 생성
-            effect = new EffectState
-            {
-                id = id,
-                statType = type,
-                value = value,
-                displayName = displayName,
-                type = modType,
-                durationDays = duration,
-                remainingDays = duration
-            };
-            ApplyEffect(effect);
-        }
-    }
-
-    public EffectState GetEffect(string effectId)
-    {
-        foreach (var effectList in _activeEffects.Values)
-        {
-            var effect = effectList.FirstOrDefault(e => e.id == effectId);
-            if (effect != null) return effect;
-        }
-        return null;
-    }
-
-    public EffectState GetEffect(StatType statType, string effectId)
-    {
-        if (_activeEffects.TryGetValue(statType, out var list))
-        {
-            return list.FirstOrDefault(e => e.id == effectId);
-        }
-        return null;
-    }
-
-    public void UpdateEffect(EffectState effect)
-    {
-        if (effect == null) return;
-        EffectState existingEffect = GetEffect(effect.statType, effect.id);
-
-        if (existingEffect != null)
-        {
-            existingEffect.value = effect.value;
-            existingEffect.durationDays = effect.durationDays;
-            existingEffect.remainingDays = effect.remainingDays;
-            existingEffect.displayName = effect.displayName;
-        }
-    }
-
+    /// <param name="date">감소할 일</param>
     public void ProcessDayPass(int date)
     {
-        var statTypes = new List<StatType>(_activeEffects.Keys);
-
-        foreach (var statType in statTypes)
+        // 전역 이펙트 처리
+        foreach(var targetTypePair in _effects)
         {
-            List<EffectState> effects = _activeEffects[statType];
-
-            for (int i = effects.Count - 1; i >= 0; i--)
+            foreach(var statTypePair in targetTypePair.Value)
             {
-                EffectState effect = effects[i];
-                if (effect.IsPermanent) continue;
-
-                effect.remainingDays -= 1;
-
-                if (effect.remainingDays <= 0)
+                for(int i = statTypePair.Value.Count - 1; i >= 0; i--)
                 {
-                    effects.RemoveAt(i);
+                    EffectState effectState = statTypePair.Value[i];
+                    if(effectState.ProcessDayPass(date))
+                    {
+                        statTypePair.Value.RemoveAt(i);
+                    }
+                }
+            }
+        }
+        // 직원 이펙트 처리
+        foreach(var employeeEntry in _gameDataManager.Employee.GetAllEmployees().Values)
+        {
+            if(employeeEntry?.state?.activeEffects == null) continue;
+            
+            foreach(var statTypePair in employeeEntry.state.activeEffects)
+            {
+                if(statTypePair.Value == null) continue;
+                
+                for(int i = statTypePair.Value.Count - 1; i >= 0; i--)
+                {
+                    EffectState effectState = statTypePair.Value[i];
+                    if(effectState?.ProcessDayPass(date) == true)
+                    {
+                        statTypePair.Value.RemoveAt(i);
+                    }
                 }
             }
         }
     }
 
-    public void ApplyEffect(EffectState effect)
+    /// <summary>
+    /// 이펙트 적용
+    /// </summary>
+    /// <param name="effectData">데이터</param>
+    public void ApplyEffect(EffectData effectData, float value = float.NaN)
     {
-        if (effect == null) return;
-        if (!_activeEffects.ContainsKey(effect.statType))
+        EffectState effectState = new EffectState(effectData);
+
+        if (!float.IsNaN(value))
         {
-            _activeEffects[effect.statType] = new List<EffectState>();
+            effectState.value = value;
         }
-        _activeEffects[effect.statType].Add(effect);
+
+        // 딕셔너리 초기화 확인
+        if (!_effects.ContainsKey(effectData.targetType))
+        {
+            _effects[effectData.targetType] = new Dictionary<EffectStatType, List<EffectState>>();
+        }
+        if(!_effects[effectData.targetType].ContainsKey(effectData.statType))
+        {
+            _effects[effectData.targetType][effectData.statType] = new List<EffectState>();
+        }
+
+        // 같은 ID의 이펙트가 있으면 갱신
+        foreach (EffectState item in _effects[effectState.targetType][effectState.statType])
+        {
+            if(item.id == effectState.id)
+            {
+                item.remainingDays = effectState.durationDays;
+                item.value = effectState.value;
+                return;
+            }
+        }
+
+        // 새 이펙트 추가
+        _effects[effectData.targetType][effectData.statType].Add(effectState);
     }
 
-    public void RemoveEffect(EffectState effect)
+    /// <summary>
+    /// 직원 이펙트 적용
+    /// </summary>
+    /// <param name="effectData">이펙트 데이터</param>
+    /// <param name="employeeType">직원 타입</param>
+    public void ApplyEffect(EffectData effectData, EmployeeType employeeType, float value = float.NaN)
     {
-        if (effect == null) return;
-        if (_activeEffects.TryGetValue(effect.statType, out var list))
+        if(effectData.isGlobalEffect)
         {
-            list.Remove(effect);
+            ApplyEffect(effectData);
+            return;
+        }
+
+        EmployeeEntry employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        EffectState effectState = new EffectState(effectData);
+
+        if (!float.IsNaN(value))
+        {
+            effectState.value = value;
+        }
+
+        // 딕셔너리에 해당 StatType이 없으면 생성
+        if (!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
+        {
+            employeeEntry.state.activeEffects[effectData.statType] = new List<EffectState>();
+        }
+
+        // 같은 ID의 이펙트가 있으면 갱신
+        foreach (EffectState item in employeeEntry.state.activeEffects[effectData.statType])
+        {
+            if(item.id == effectState.id)
+            {
+                item.remainingDays = effectState.durationDays;
+                item.value = effectState.value;
+                return;
+            }
+        }
+
+        // 새 이펙트 추가
+        employeeEntry.state.activeEffects[effectData.statType].Add(effectState);
+    }
+
+    /// <summary>
+    /// 이펙트 제거
+    /// </summary>
+    /// <param name="effectData">이펙트 데이터</param>
+    public void RemoveEffect(EffectData effectData)
+    {
+        // 딕셔너리에 해당 키가 없으면 종료
+        if(!_effects.ContainsKey(effectData.targetType))
+        {
+            return;
+        }
+        if(!_effects[effectData.targetType].ContainsKey(effectData.statType))
+        {
+            return;
+        }
+
+        var effectList = _effects[effectData.targetType][effectData.statType];
+        for(int i = effectList.Count - 1; i >= 0; i--)
+        {
+            if(effectList[i].id == effectData.id)
+            {
+                effectList.RemoveAt(i);
+                return;
+            }
         }
     }
 
-    public List<EffectState> GetActiveEffects(StatType statType)
+    /// <summary>
+    /// 직원 이펙트 제거
+    /// </summary>
+    /// <param name="effectData">이펙트 데이터</param>
+    /// <param name="employeeType">직원 타입</param>
+    public void RemoveEffect(EffectData effectData, EmployeeType employeeType)
     {
-        if (_activeEffects.TryGetValue(statType, out var list))
+        var employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        
+        // 해당 StatType의 리스트가 없으면 종료
+        if(!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
         {
-            return list;
+            return;
         }
+
+        var effectList = employeeEntry.state.activeEffects[effectData.statType];
+        for(int i = effectList.Count - 1; i >= 0; i--)
+        {
+            if(effectList[i].id == effectData.id)
+            {
+                effectList.RemoveAt(i);
+                return;
+            }
+        }
+    }
+
+    public EffectState GetEffect(EffectData effectData)
+    {
+        // 딕셔너리에 해당 키가 없으면 null 반환
+        if(!_effects.ContainsKey(effectData.targetType))
+        {
+            return null;
+        }
+        if(!_effects[effectData.targetType].ContainsKey(effectData.statType))
+        {
+            return null;
+        }
+
+        foreach (EffectState item in _effects[effectData.targetType][effectData.statType])
+        {
+            if (item.id == effectData.id)
+            {
+                return item;
+            }
+        }
+
         return null;
+    }
+
+    public EffectState GetEffect(EffectData effectData, EmployeeType employeeType)
+    {
+        var employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        
+        // 해당 StatType의 리스트가 없으면 null 반환
+        if(!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
+        {
+            return null;
+        }
+
+        foreach (EffectState item in employeeEntry.state.activeEffects[effectData.statType])
+        {
+            if (item.id == effectData.id)
+            {
+                return item;
+            }
+        }
+
+        return null;
+    }
+
+    public List<EffectState> GetEffectStatEffects(EffectTargetType targetType, EffectStatType statType)
+    {
+        if(!_effects.ContainsKey(targetType))
+        {
+            return new List<EffectState>();
+        }
+        if(!_effects[targetType].ContainsKey(statType))
+        {
+            return new List<EffectState>();
+        }
+
+        return _effects[targetType][statType];
+    }
+
+    public List<EffectState> GetEffectStatEffects(EmployeeType employeeType, EffectStatType statType)
+    {
+        EmployeeEntry employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+
+        if(!employeeEntry.state.activeEffects.ContainsKey(statType))
+        {
+            return new List<EffectState>();
+        }
+        if(employeeEntry.state.activeEffects == null)
+        {
+            return new List<EffectState>();
+        }
+
+        return employeeEntry.state.activeEffects[statType];
+    }
+
+    public List<EffectState> GetAllEffects(EffectTargetType effectTargetType)
+    {
+        if (!_effects.ContainsKey(effectTargetType))
+        {
+            return new List<EffectState>();
+        }
+
+        return _effects[effectTargetType].Values.SelectMany(list => list).ToList();
+    }
+
+    public List<EffectState> GetAllEffects(EmployeeType employeeType)
+    {
+        EmployeeEntry employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        if (employeeEntry == null)
+        {
+            return new List<EffectState>();
+        }
+        return employeeEntry.state.activeEffects.Values.SelectMany(list => list).ToList(); ;
     }
 
     /// <summary>

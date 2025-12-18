@@ -13,16 +13,21 @@ public class EmployeeState
     public int assignedCount;           // 배치된 인원 수
     public long totalSalary;            // 총 급여
     public int salaryLevel;            // 급여 레벨 (0=매우 적음, 1=적음, 2=보통, 3=많음, 4=매우 많음)
-    public List<EffectState> activeEffects; // 직원 개별 적용 효과 목록
+    public Dictionary<EffectStatType, List<EffectState>> activeEffects; // 직원 개별 적용 효과 목록 (StatType별로 분류)
 
     public EmployeeState()
     {
         count = 0;
         currentSatisfaction = 0f;
-        currentEfficiency = 1f; // 기본값 100% (EmployeeEntry 생성자에서 baseEfficiency로 덮어씀)
+        currentEfficiency = 1f;
         assignedCount = 0;
         totalSalary = 0;
-        salaryLevel = 2; // 기본값: 보통
-        activeEffects = new List<EffectState>();
+        salaryLevel = 2;
+
+        activeEffects = new Dictionary<EffectStatType, List<EffectState>>();
+        foreach (EffectStatType target in Enum.GetValues(typeof(EffectStatType)))
+        {
+            activeEffects[target] = new List<EffectState>();
+        }
     }
 }

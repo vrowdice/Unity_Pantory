@@ -161,18 +161,13 @@ public class ResearchDataHandler
     private void ApplyResearchEffects(ResearchData data)
     {
         if (data.appleyEffects == null || data.appleyEffects.Count == 0)
-            return;
-
-        foreach (EffectState originalEffect in data.appleyEffects)
         {
-            if (originalEffect == null)
-                continue;
+            return;
+        }
 
-            // 원본(ScriptableObject 데이터)을 보호하기 위해 복제본을 생성
-            EffectState clonedEffect = originalEffect.Clone();
-
-            // 복제본을 EffectDataHandler에 전달
-            _gameDataManager.Effect.ApplyEffect(clonedEffect);
+        foreach (EffectData originalEffect in data.appleyEffects)
+        {
+            _gameDataManager.Effect.ApplyEffect(originalEffect);
         }
     }
 

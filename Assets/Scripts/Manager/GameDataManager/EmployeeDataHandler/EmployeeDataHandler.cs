@@ -207,26 +207,12 @@ public partial class EmployeeDataHandler
     private void ApplySalaryLevelSatisfactionEffect(EmployeeType type, int newSalaryLevel, int previousSalaryLevel)
     {
         EmployeeEntry entry = GetEmployeeEntry(type);
-        if (entry == null || entry.data == null || entry.state == null) return;
 
         float satisfactionChange = _initialEmployeeData.GetSatisfactionChangePerDay(newSalaryLevel);
 
-        // 급여 레벨 이펙트 ID (직원별 고유 ID 사용)
-        string effectId = entry.data.satisfactionEffectId;
-        if (string.IsNullOrEmpty(effectId))
-        {
-            effectId = $"Salary_Satisfaction_{type}";
-        }
+        EffectState effectData = new EffectState(_initialEmployeeData.salarySatisfactionEffect);
 
-        // 직원별 이펙트로 설정/업데이트/제거 (값이 0이면 자동 제거)
-        entry.SetOrUpdateEffect(
-            effectId,
-            StatType.SatisfactionChangePerDay,
-            satisfactionChange,
-            $"Salary Level Satisfaction ({_initialEmployeeData.GetSalaryLevelName(newSalaryLevel)})",
-            ModifierType.Flat,
-            0f
-        );
+        _gameDataManager.Effect.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, satisfactionChange);
     }
 
     /// <summary>

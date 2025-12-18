@@ -395,41 +395,18 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEfficiencyEffectStatus()
     {
-        if (_efficiencyStatusScrollViewContentTransform == null ||
-            _efficiencyStatusTextPairPanelPrefab == null ||
-            _dataManager?.Effect == null ||
-            _selectedEmployeeEntry?.data == null)
-        {
-            return;
-        }
-
-        // 기존 패널 제거
         GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
-        var combinedEffects = new List<EffectState>();
 
-        // 1. 전역 효율성 이펙트 (모든 전역 이펙트 표시)
-        var globalEffects = _dataManager.Effect.GetActiveEffects(StatType.EfficiencyBonus);
-        if (globalEffects != null)
-        {
-            foreach (var effect in globalEffects)
-            {
-                if (effect != null)
-                {
-                    combinedEffects.Add(effect);
-                }
-            }
-        }
+        List<EffectState> combinedEffects = new List<EffectState>();
 
-        // 2. 선택된 직원의 개별 효율성 이펙트
-        var employeeEffects = _selectedEmployeeEntry.GetActiveEffects(StatType.EfficiencyBonus);
-        if (employeeEffects != null && employeeEffects.Count > 0)
-        {
-            combinedEffects.AddRange(employeeEffects);
-        }
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency_Flat));
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency_Mult));
+
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Efficiency_Flat));
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Efficiency_Mult));
 
         if (combinedEffects.Count > 0)
         {
-            // 각 이펙트에 대해 패널 생성
             foreach (var effectState in combinedEffects)
             {
                 if (effectState == null) continue;
@@ -453,34 +430,12 @@ public class EmployeePanel : BasePanel
     private void UpdateSatisfactionEffectStatus()
     {
         GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
+
         List<EffectState> combinedEffects = new List<EffectState>();
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Add));
 
-        // 1. 전역 만족도 이펙트 (모든 전역 이펙트 표시)
-        List<EffectState> globalEffects = _dataManager.Effect.GetActiveEffects(StatType.SatisfactionChangePerDay);
-        if (globalEffects != null)
-        {
-            foreach (var effect in globalEffects)
-            {
-                if (effect != null)
-                {
-                    combinedEffects.Add(effect);
-                }
-            }
-        }
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Satisfaction_Add));
 
-        // 2. 선택된 직원의 개별 만족도 이펙트
-        var employeeEffects = _selectedEmployeeEntry.GetActiveEffects(StatType.SatisfactionChangePerDay);
-        if (employeeEffects != null && employeeEffects.Count > 0)
-        {
-            combinedEffects.AddRange(employeeEffects);
-        }
-
-        if (combinedEffects.Count == 0)
-        {
-            return;
-        }
-
-        // 각 이펙트에 대해 패널 생성
         foreach (var effectState in combinedEffects)
         {
             if (effectState == null) continue;
@@ -492,8 +447,6 @@ public class EmployeePanel : BasePanel
             {
                 string effectDescription = effectState.displayName ?? effectState.id;
                 string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-
-                // 포맷팅된 문자열과 숫자 값을 전달하여 색상 자동 적용
                 panel.OnInitialize(effectDescription, changeValue, effectState.value);
             }
         }
