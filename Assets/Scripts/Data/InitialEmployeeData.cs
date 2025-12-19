@@ -115,6 +115,9 @@ public class InitialEmployeeData : ScriptableObject
     [Tooltip("급여 만족도 샘플 이펙트")]
     public EffectData salarySatisfactionEffect;
 
+    [Tooltip("만족도 효율성 이펙트")]
+    public EffectData satisfactionEfficiencyEffect;
+
     /// <summary>
     /// 급여 레벨에 따른 일일 만족도 변화량을 반환합니다.
     /// </summary>

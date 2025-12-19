@@ -8,8 +8,14 @@ public class ResearchBtn : MonoBehaviour
     [SerializeField] private GameObject _focusedImage;
     [SerializeField] private TextMeshProUGUI _text;
 
-    public void OnInitialize(ResearchEntry researchEntry)
+    private MainUiManager _mainUiManager;
+    private ResearchEntry _researchEntry;
+
+    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager)
     {
+        _researchEntry = researchEntry;
+        _mainUiManager = mainUiManager;
+
         _image.sprite = researchEntry.data.icon;
         _text.text = researchEntry.data.displayName;
 
@@ -25,6 +31,6 @@ public class ResearchBtn : MonoBehaviour
 
     public void OnClick()
     {
-
+        _mainUiManager.ShowResearchInfoPanel(_researchEntry);
     }
 }

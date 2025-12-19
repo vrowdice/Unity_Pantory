@@ -17,10 +17,9 @@ public class ManageThreadPanel : MonoBehaviour
     [SerializeField] private Transform _threadScrollViewContent = null;
 
     private GameDataManager _dataManager = null;
-    private string _selectedCategoryId = string.Empty; // 현재 선택된 카테고리 ID (Empty = All)
-    private System.Action<string> _onThreadSelectedCallback = null; // 스레드 선택 시 콜백
+    private string _selectedCategoryId = string.Empty;
+    private System.Action<string> _onThreadSelectedCallback = null;
 
-    // 생성된 버튼들 추적
     private List<ManageThreadCategoryBtn> _categoryBtns = new List<ManageThreadCategoryBtn>();
     private List<ManageThreadBtn> _threadBtns = new List<ManageThreadBtn>();
 
@@ -246,9 +245,6 @@ public class ManageThreadPanel : MonoBehaviour
             {
                 GameManager.Instance.ShowWarningPanel($"Thread '{threadName}' has been deleted.");
             }
-
-            // UI는 이벤트(OnThreadChanged)에 의해 자동 갱신됩니다.
-            Debug.Log($"[ManageThreadPanel] Thread deleted: {threadId}");
         }
         else
         {

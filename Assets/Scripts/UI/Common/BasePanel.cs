@@ -8,7 +8,7 @@ public abstract class BasePanel : MonoBehaviour
 {
     protected GameManager _gameManager;
     protected GameDataManager _dataManager;
-    protected IUIManager _uiManager;
+    protected MainUiManager _uiManager;
     
     [Header("Animation")]
     [SerializeField] private bool _usePanelAnimation = true;
@@ -20,7 +20,7 @@ public abstract class BasePanel : MonoBehaviour
     /// <summary>
     /// 패널이 열릴 때 호출됩니다.
     /// </summary>
-    public void OnOpen(GameManager argGameManager ,GameDataManager argDataManager, IUIManager argUIManager)
+    public void OnOpen(GameManager argGameManager ,GameDataManager argDataManager, MainUiManager argUIManager)
     {
         _gameManager = argGameManager;
         _dataManager = argDataManager;

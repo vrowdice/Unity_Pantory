@@ -10,8 +10,6 @@ using Evo;
 /// </summary>
 public class ThreadInfoPanel : MonoBehaviour
 {
-    #region UI References
-
     [Header("Resource Visualization")]
     [SerializeField] private Transform _provideContentTransform;
     [SerializeField] private Transform _consumeContentTransform;
@@ -40,20 +38,11 @@ public class ThreadInfoPanel : MonoBehaviour
     [SerializeField] private Slider _workerSlider;
     [SerializeField] private Slider _technicianSlider;
 
-    #endregion
-
-    #region Internal Fields
-
     private ThreadState _currentThreadState;
     private GameDataManager _dataManager;
     private MainUiManager _mainUiManager;
 
     private bool _isSubscribed = false;
-    private bool _isUpdatingUI = false;
-
-    #endregion
-
-    #region Initialization & Events
 
     /// <summary>
     /// 패널을 초기화하고 데이터를 연결합니다.
@@ -64,14 +53,10 @@ public class ThreadInfoPanel : MonoBehaviour
         _mainUiManager = mainUiManager;
         _dataManager = dataManager;
 
-        if (_currentThreadState == null)
-        {
-            Debug.LogWarning("[ThreadInfoPanel] ThreadState is null during initialization.");
-            return;
-        }
-
         SubscribeToDayChanged();
         RefreshAllUI();
+
+        gameObject.SetActive(true);
     }
 
     private void OnEnable() => SubscribeToDayChanged();
@@ -100,18 +85,6 @@ public class ThreadInfoPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// 패널을 숨깁니다.
-    /// </summary>
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
-
-    #endregion
-
-    #region UI Update Logic
-
-    /// <summary>
     /// 모든 UI 요소를 현재 데이터 기반으로 갱신합니다.
     /// <para>이벤트 루프를 방지하기 위해 <see cref="_isUpdatingUI"/> 플래그를 사용합니다.</para>
     /// </summary>
@@ -119,18 +92,10 @@ public class ThreadInfoPanel : MonoBehaviour
     {
         if (_currentThreadState == null) return;
 
-        _isUpdatingUI = true;
-        try
-        {
-            UpdateBasicInfo();
-            UpdateResourceIcons();
-            UpdateEmployeeStatus();
-            UpdateProductionStatus();
-        }
-        finally
-        {
-            _isUpdatingUI = false;
-        }
+        UpdateBasicInfo();
+        UpdateResourceIcons();
+        UpdateEmployeeStatus();
+        UpdateProductionStatus();
     }
 
     private void UpdateBasicInfo()
@@ -220,9 +185,7 @@ public class ThreadInfoPanel : MonoBehaviour
     {
         if (slider == null) return;
 
-        // 사용자가 슬라이더로 조절 가능한 최대 범위 계산
         int logicMax = Mathf.Min(maxRequired, currentAssigned + availableGlobal);
-
         slider.SetValueWithoutNotify(Mathf.Clamp(currentAssigned, 0, logicMax));
         slider.maxValue = logicMax;
         slider.SetValueWithoutNotify(Mathf.Clamp(currentAssigned, 0, logicMax));
@@ -260,18 +223,13 @@ public class ThreadInfoPanel : MonoBehaviour
         _previewImage.enabled = false;
     }
 
-    #endregion
-
-    #region Interaction Handlers (Sliders)
-
     /// <summary>
     /// Worker 슬라이더 값 변경 시 호출됩니다.
     /// </summary>
     public void OnWorkerSliderChanged()
     {
-        if (_isUpdatingUI) return;
         ProcessEmployeeAssignment(EmployeeType.Worker, _workerSlider,
-            ref _currentThreadState.currentWorkers, _currentThreadState.currentTechnicians);
+                    ref _currentThreadState.currentWorkers, _currentThreadState.currentTechnicians);
     }
 
     /// <summary>
@@ -279,9 +237,8 @@ public class ThreadInfoPanel : MonoBehaviour
     /// </summary>
     public void OnTechnicianSliderChanged()
     {
-        if (_isUpdatingUI) return;
         ProcessEmployeeAssignment(EmployeeType.Technician, _technicianSlider,
-            ref _currentThreadState.currentTechnicians, _currentThreadState.currentWorkers);
+                    ref _currentThreadState.currentTechnicians, _currentThreadState.currentWorkers);
     }
 
     /// <summary>
@@ -331,10 +288,7 @@ public class ThreadInfoPanel : MonoBehaviour
         }
         else
         {
-            // 실패 시 UI 값을 원래대로 복구 (이벤트 트리거 없이)
-            _isUpdatingUI = true;
             slider.SetValueWithoutNotify(currentCount);
-            _isUpdatingUI = false;
         }
     }
 
@@ -345,16 +299,10 @@ public class ThreadInfoPanel : MonoBehaviour
         RefreshAllUI();
     }
 
-    #endregion
-
-    #region Helpers
-
     private string GetCategoryName(string categoryId)
     {
         if (string.IsNullOrEmpty(categoryId) || _dataManager == null) return "None";
         var category = _dataManager.Thread.GetCategory(categoryId);
         return category != null ? category.categoryName : "None";
     }
-
-    #endregion
 }

@@ -39,7 +39,6 @@ public class ResearchDataHandler
 
                 var entry = new ResearchEntry
                 {
-                    researchId = data.id,
                     data = data,
                     state = new ResearchState { isCompleted = false }
                 };
@@ -117,13 +116,8 @@ public class ResearchDataHandler
         // 4. RP 차감
         _researchPoint -= entry.data.researchPointCost;
         OnResearchPointsChanged?.Invoke();
-
-        // 5. 상태 업데이트
         entry.state.isCompleted = true;
-
-        // 6. 효과(Effect) 적용 [핵심 연동]
         ApplyResearchEffects(entry.data);
-
         Debug.Log($"[Research] UNLOCKED: {entry.data.displayName}");
         OnResearchUnlocked?.Invoke(researchId);
 
@@ -160,12 +154,12 @@ public class ResearchDataHandler
     /// </summary>
     private void ApplyResearchEffects(ResearchData data)
     {
-        if (data.appleyEffects == null || data.appleyEffects.Count == 0)
+        if (data.effects == null || data.effects.Count == 0)
         {
             return;
         }
 
-        foreach (EffectData originalEffect in data.appleyEffects)
+        foreach (EffectData originalEffect in data.effects)
         {
             _gameDataManager.Effect.ApplyEffect(originalEffect);
         }

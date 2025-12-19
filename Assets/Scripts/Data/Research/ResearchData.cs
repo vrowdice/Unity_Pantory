@@ -16,5 +16,5 @@ public class ResearchData : ScriptableObject
     public List<ResearchData> prerequisiteResearchs;
 
     [Header("Rewards")]
-    public List<EffectData> appleyEffects;
+    public List<EffectData> effects;
 }

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
-  m_Name: 3_oil_extraction
+  m_Name: 2_oil_extraction
   m_EditorClassIdentifier: 
-  id: 3_oil_extraction
-  tier: 3
+  id: 2_oil_extraction
+  tier: 2
   displayName: Oil Extraction
   description: Unlocks the construction of oil pumps. Enables extraction of crude
     oil from underground reserves. Marks the beginning of strategic resource self-sufficiency.

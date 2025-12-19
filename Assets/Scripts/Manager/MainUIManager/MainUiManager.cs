@@ -19,8 +19,13 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
+    [Header("Info Panel")]
+    [SerializeField] private ThreadInfoPanel _threadInfoPanel;
+    [SerializeField] private ResearchInfoPanel _researchInfoPanel;
+
     private GameObject _productionInfoImage;
     public Transform CanvasTrans => transform;
+    public GameManager GameManager => _gameManager;
     public GameDataManager DataManager => _dataManager;
     public GameObject ProductionInfoImage => _productionInfoImage;
     public ThreadTileManager ThreadTileManager => _threadTileManager;
@@ -162,5 +167,18 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     public FinancesDataHandler GetFinancesDataHandler()
     {
         return _dataManager?.Finances;
+    }
+
+    /// <summary>
+    /// 스레드 정보 패널을 표시합니다.
+    /// </summary>
+    public void ShowThreadInfoPanel(ThreadState threadState)
+    {
+        _threadInfoPanel.OnInitialize(threadState, this, _dataManager);
+    }
+
+    public void ShowResearchInfoPanel(ResearchEntry researchEntry)
+    {
+        _researchInfoPanel.OnInitialize(researchEntry, this, _dataManager);
     }
 }

@@ -67,7 +67,7 @@ public class ResearchPanel : BasePanel
             List<ResearchEntry> entrys = _dataManager.Research.GetResearchEntriesByTier(i);
             GameObject researchPanelObj = Instantiate(_researchTierPanelPrefab, _researchTirePanelContentTransform);
             ResearchTierPanel _researchPanel = researchPanelObj.GetComponent<ResearchTierPanel>();
-            _researchPanel.OnInitialize(i, entrys);
+            _researchPanel.OnInitialize(i, entrys, _uiManager);
         }
     }
 }

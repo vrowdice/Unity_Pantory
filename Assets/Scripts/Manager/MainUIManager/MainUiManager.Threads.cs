@@ -15,7 +15,6 @@ public partial class MainUiManager
     [SerializeField] private GameObject _threadBtnPrefab;
     [SerializeField] private GameObject _threadPlusBtnPrefab;
     [SerializeField] private Transform _threadScrollViewContent;
-    [SerializeField] private ThreadInfoPanel _threadInfoPanel;
 
     // Threads
     private readonly List<ThreadCategoryBtn> _threadCategoryBtns = new List<ThreadCategoryBtn>();
@@ -259,26 +258,5 @@ public partial class MainUiManager
                 ? visualManager.InvalidColor
                 : Color.white;
         }
-    }
-
-    /// <summary>
-    /// 스레드 정보 패널을 표시합니다.
-    /// </summary>
-    public void ShowThreadInfo(ThreadState threadState)
-    {
-        if (_threadInfoPanel == null)
-        {
-            Debug.LogWarning("[MainUiManager] ThreadInfoPanel is not assigned!");
-            return;
-        }
-
-        if (threadState == null)
-        {
-            Debug.LogWarning("[MainUiManager] ThreadState is null!");
-            return;
-        }
-
-        _threadInfoPanel.OnInitialize(threadState, this, _dataManager);
-        _threadInfoPanel.gameObject.SetActive(true);
     }
 }

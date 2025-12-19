@@ -9,7 +9,6 @@ using System.Linq;
 /// </summary>
 public class EmployeePanel : BasePanel
 {
-    #region Inspector Variables
     [SerializeField] private Slider _managementSlider;
     [SerializeField] private Image _managementFillImage;
     [SerializeField] private TextMeshProUGUI _managementRatioText;
@@ -39,22 +38,14 @@ public class EmployeePanel : BasePanel
     [SerializeField] private List<Toggle> _salaryLevelToggles;
 
     [Header("Status Scroll View Contents")]
-    [SerializeField] private GameObject _efficiencyStatusTextPairPanelPrefab;
     [SerializeField] private Transform _efficiencyStatusScrollViewContentTransform;
     [SerializeField] private Transform _satisfactionStatusScrollViewContentTransform;
-    #endregion
-
-    #region Private Variables
 
     private EmployeeEntry _selectedEmployeeEntry;
     private EmployeeType _selectedEmployeeType;
     private bool _isSubscribedToDayChange;
     private bool _isSubscribedToEmployeeChanged;
-    private bool _isUpdatingToggles; // 토글 업데이트 중 플래그 (무한 루프 방지)
-
-    #endregion
-
-    #region Initialization
+    private bool _isUpdatingToggles;
 
     /// <summary>
     /// (BasePanel)
@@ -72,8 +63,6 @@ public class EmployeePanel : BasePanel
         SubscribeToEmployeeChanged();
         SelectFirstEmployee();
     }
-
-    #endregion
 
     #region Public Methods
 
@@ -407,12 +396,12 @@ public class EmployeePanel : BasePanel
 
         if (combinedEffects.Count > 0)
         {
-            foreach (var effectState in combinedEffects)
+            foreach (EffectState effectState in combinedEffects)
             {
                 if (effectState == null) continue;
 
-                var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _efficiencyStatusScrollViewContentTransform);
-                var panel = panelObj.GetComponent<TextPairPanel>();
+                GameObject panelObj = Instantiate(_gameManager.EffectTextPairPanelPrefab, _efficiencyStatusScrollViewContentTransform);
+                TextPairPanel panel = panelObj.GetComponent<TextPairPanel>();
 
                 if (panel != null)
                 {
@@ -432,16 +421,15 @@ public class EmployeePanel : BasePanel
         GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Add));
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per));
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Satisfaction_Per));
 
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Satisfaction_Add));
-
-        foreach (var effectState in combinedEffects)
+        foreach (EffectState effectState in combinedEffects)
         {
             if (effectState == null) continue;
 
-            var panelObj = Instantiate(_efficiencyStatusTextPairPanelPrefab, _satisfactionStatusScrollViewContentTransform);
-            var panel = panelObj.GetComponent<TextPairPanel>();
+            GameObject panelObj = Instantiate(_gameManager.EffectTextPairPanelPrefab, _satisfactionStatusScrollViewContentTransform);
+            TextPairPanel panel = panelObj.GetComponent<TextPairPanel>();
 
             if (panel != null)
             {

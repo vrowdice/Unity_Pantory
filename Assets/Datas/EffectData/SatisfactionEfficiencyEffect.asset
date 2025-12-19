@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b7cb3d62c16d9445a06144f0660d9a7, type: 3}
-  m_Name: ManagementDeficit
+  m_Name: SatisfactionEfficiencyEffect
   m_EditorClassIdentifier: 
   targetType: 1
-  isGlobalEffect: 1
-  id: managementDeficit
-  displayName: Management Deficit
-  statType: 4
-  type: 0
+  isGlobalEffect: 0
+  id: atisfactionEfficiency
+  displayName: Satisfaction Efficiency
+  statType: 5
+  type: 1
   value: 0
   durationDays: 0

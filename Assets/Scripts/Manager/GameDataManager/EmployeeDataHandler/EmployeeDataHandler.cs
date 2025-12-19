@@ -212,7 +212,7 @@ public partial class EmployeeDataHandler
 
         EffectState effectData = new EffectState(_initialEmployeeData.salarySatisfactionEffect);
 
-        _gameDataManager.Effect.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, satisfactionChange);
+        _gameDataManager.Effect.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, entry.data.type, satisfactionChange);
     }
 
     /// <summary>

@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _gridSortContentPrefab;
     [SerializeField] private GameObject _textPairPanelPrefab;
     [SerializeField] private GameObject _actionBtnPrefab;
+    [SerializeField] private GameObject _effectTextPairPanelPrefab;
 
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
@@ -59,6 +60,9 @@ public class GameManager : MonoBehaviour
 
     [Header("VisualManager Settings")]
     [SerializeField] private GameObject _visualManagerPrefab;
+
+    public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;
+    public GameObject EffectTextPairPanelPrefab => _effectTextPairPanelPrefab;
 
     void Awake()
     {

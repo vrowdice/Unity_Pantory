@@ -344,7 +344,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManager
 
         if (_mainUiManager != null)
         {
-            _mainUiManager.ShowThreadInfo(threadObject.ThreadState);
+            _mainUiManager.ShowThreadInfoPanel(threadObject.ThreadState);
         }
         else
         {
