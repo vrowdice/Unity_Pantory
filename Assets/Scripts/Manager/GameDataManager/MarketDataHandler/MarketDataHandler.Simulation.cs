@@ -126,7 +126,7 @@ public partial class MarketDataHandler
                 supplyBoost = Mathf.Max(supplyBoost, minSupply);
 
                 res.resourceState.lastSupply += supplyBoost;
-                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, (long)supplyBoost);
+                _dataManager.Resource.ModifyMarketInventory(res.resourceData.id, (long)supplyBoost);
 
                 // [핵심] 공급을 늘렸으니, 가격도 즉시 하락 압력을 줌 (수입품이 싸게 들어옴)
                 float priceDropRate = _marketSettings != null ? _marketSettings.tradePortPriceDropRate : 0.9f;
@@ -157,7 +157,7 @@ public partial class MarketDataHandler
                 long importAmount = Math.Max(deficit, 100L);
 
                 res.resourceState.lastSupply += importAmount;
-                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, importAmount);
+                _dataManager.Resource.ModifyMarketInventory(res.resourceData.id, importAmount);
                 
                 // 수입 비용 반영 (재고가 없어서 급히 채웠으니 가격 소폭 상승 유도)
                 // 단, 너무 자주 발생하면 인플레가 오므로 1.01~1.05배 정도로 살짝만
@@ -174,7 +174,7 @@ public partial class MarketDataHandler
                 
                 // 시장에서 물량 제거 (수출됨)
                 res.resourceState.lastSupply -= dumpAmount;
-                _gameDataManager.Resource.ModifyMarketInventory(res.resourceData.id, -(long)dumpAmount);
+                _dataManager.Resource.ModifyMarketInventory(res.resourceData.id, -(long)dumpAmount);
             }
         }
     }

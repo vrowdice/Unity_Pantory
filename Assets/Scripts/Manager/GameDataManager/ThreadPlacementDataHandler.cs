@@ -8,14 +8,14 @@ using UnityEngine;
 /// </summary>
 public class ThreadPlacementDataHandler
 {
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
     private readonly Dictionary<Vector2Int, ThreadPlacementState> _placedThreads = new Dictionary<Vector2Int, ThreadPlacementState>();
 
     public event Action OnPlacementChanged;
 
     public ThreadPlacementDataHandler(dataManager gameDataManager)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
     }
 
     public bool HasPlacedThread(Vector2Int gridPosition)
@@ -39,14 +39,14 @@ public class ThreadPlacementDataHandler
     /// </summary>
     public ThreadState PlaceThread(Vector2Int gridPosition, string templateId)
     {
-        if (string.IsNullOrEmpty(templateId) || _gameDataManager?.Thread == null)
+        if (string.IsNullOrEmpty(templateId) || _dataManager?.Thread == null)
         {
             Debug.LogWarning($"[ThreadPlacementDataHandler] Invalid template ID or Thread handler is null: {templateId}");
             return null;
         }
 
         // 1. 원본 템플릿 가져오기
-        var template = _gameDataManager.Thread.GetThread(templateId);
+        var template = _dataManager.Thread.GetThread(templateId);
         if (template == null)
         {
             Debug.LogWarning($"[ThreadPlacementDataHandler] Template thread not found: {templateId}");
@@ -69,9 +69,9 @@ public class ThreadPlacementDataHandler
         newState.currentProductionEfficiency = 0f;
 
         // 5. 새로 생성된 인스턴스 초기화 (유지비, 직원 요구사항, 생산 체인 계산)
-        if (_gameDataManager.ThreadCalculate != null)
+        if (_dataManager.ThreadCalculate != null)
         {
-            _gameDataManager.ThreadCalculate.InitializeThread(newState, _gameDataManager.Thread);
+            _dataManager.ThreadCalculate.InitializeThread(newState, _dataManager.Thread);
         }
 
         // 6. 배치 상태 생성 및 저장
@@ -110,7 +110,7 @@ public class ThreadPlacementDataHandler
         {
             // ThreadId가 템플릿 ID인지 인스턴스 ID인지 확인
             // 인스턴스 ID는 보통 "{templateId}_{x}_{y}_{guid}" 형식
-            var threadState = _gameDataManager?.Thread?.GetThread(threadId);
+            var threadState = _dataManager?.Thread?.GetThread(threadId);
             if (threadState != null)
             {
                 // 이미 ThreadDataHandler에 있는 경우 (레거시 데이터)

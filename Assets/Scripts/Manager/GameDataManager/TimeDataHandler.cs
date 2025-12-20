@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class TimeDataHandler
 {
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
     private InitialTimeData _initialTimeData;
 
     public int Year { get; private set; }
@@ -29,7 +29,7 @@ public class TimeDataHandler
 
     public TimeDataHandler(dataManager gameDataManager, InitialTimeData initData)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
         _initialTimeData = initData;
 
         SetRealSecondsPerHour(initData.realSecondsPerHour);

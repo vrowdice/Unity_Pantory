@@ -9,7 +9,7 @@ using UnityEngine;
 public partial class MarketDataHandler
 {
     private readonly Dictionary<string, MarketActorEntry> _actors = new();
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
 
     private InitialMarketData _marketSettings;
     private bool _isWarState = false;
@@ -23,7 +23,7 @@ public partial class MarketDataHandler
 
     public MarketDataHandler(dataManager manager, List<MarketActorData> marketActorDataList, InitialMarketData initData)
     {
-        _gameDataManager = manager;
+        _dataManager = manager;
         SetMarketSettings(initData);
 
         // 리스트에서 딕셔너리로 등록
@@ -54,8 +54,8 @@ public partial class MarketDataHandler
     /// </summary>
     private void CreateSystemActors()
     {
-        if (_gameDataManager?.Resource == null) return;
-        var allResources = _gameDataManager.Resource.GetAllResources();
+        if (_dataManager?.Resource == null) return;
+        var allResources = _dataManager.Resource.GetAllResources();
         if (allResources == null || allResources.Count == 0) return;
 
         // 1. 일반 시민 (기초 수요 담당) 생성
@@ -135,8 +135,8 @@ public partial class MarketDataHandler
     /// </summary>
     public void InitializeMarketChaos()
     {
-        if (_gameDataManager?.Resource == null) return;
-        var allResources = _gameDataManager.Resource.GetAllResources();
+        if (_dataManager?.Resource == null) return;
+        var allResources = _dataManager.Resource.GetAllResources();
         if (allResources == null) return;
 
         // 1. 자원 초기 재고 설정 (원자재는 더 많이)
@@ -214,9 +214,9 @@ public partial class MarketDataHandler
     /// </summary>
     public void TickDailyMarket()
     {
-        if (_gameDataManager?.Resource == null || _actors.Count == 0) return;
+        if (_dataManager?.Resource == null || _actors.Count == 0) return;
 
-        var resourceSnapshot = _gameDataManager.Resource.GetAllResources();
+        var resourceSnapshot = _dataManager.Resource.GetAllResources();
         if (resourceSnapshot == null || resourceSnapshot.Count == 0) return;
 
         var totalSupply = new Dictionary<string, float>();

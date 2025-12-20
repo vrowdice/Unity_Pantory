@@ -9,7 +9,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 /// </summary>
 public class ResearchDataHandler
 {
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
     private Dictionary<string, ResearchEntry> _researchEntries = new();
     private long _researchPoint;
     private bool _isAutoPatentMode = false;
@@ -22,7 +22,7 @@ public class ResearchDataHandler
 
     public ResearchDataHandler(dataManager manager, List<ResearchData> researchDataList = null)
     {
-        _gameDataManager = manager;
+        _dataManager = manager;
         
         if (researchDataList != null && researchDataList.Count > 0)
         {
@@ -46,9 +46,9 @@ public class ResearchDataHandler
             }
         }
 
-        if (_gameDataManager.InitialResearchData != null)
+        if (_dataManager.InitialResearchData != null)
         {
-            _researchPoint = _gameDataManager.InitialResearchData.initialResearchPoint;
+            _researchPoint = _dataManager.InitialResearchData.initialResearchPoint;
         }
     }
 
@@ -63,7 +63,7 @@ public class ResearchDataHandler
 
         if (IsAutoPatentMode)
         {
-            _gameDataManager.Finances.AddCredit(generatedRP);
+            _dataManager.Finances.AddCredit(generatedRP);
         }
         else
         {
@@ -76,8 +76,8 @@ public class ResearchDataHandler
     /// </summary>
     public long CalculateDailyRPProduction()
     {
-        EmployeeEntry employee = _gameDataManager.Employee.GetEmployeeEntry(EmployeeType.Researcher);
-        long totalRP = (long)(employee.state.count * _gameDataManager.InitialEmployeeData.researchPointsPerResearcher * employee.state.currentEfficiency);
+        EmployeeEntry employee = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Researcher);
+        long totalRP = (long)(employee.state.count * _dataManager.InitialEmployeeData.researchPointsPerResearcher * employee.state.currentEfficiency);
         return totalRP;
     }
 
@@ -161,7 +161,7 @@ public class ResearchDataHandler
 
         foreach (EffectData originalEffect in data.effects)
         {
-            _gameDataManager.Effect.ApplyEffect(originalEffect);
+            _dataManager.Effect.ApplyEffect(originalEffect);
         }
     }
 

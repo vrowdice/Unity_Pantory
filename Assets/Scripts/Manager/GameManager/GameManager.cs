@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _productionIconScale = 1.0f;
 
     [Header("GameDataManager Settings")]
-    [SerializeField] private GameObject _gameDataManagerPrefab;
+    [SerializeField] private GameObject _dataManagerPrefab;
 
     [Header("VisualManager Settings")]
     [SerializeField] private GameObject _visualManagerPrefab;
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
 
         if (_dataManager == null)
         {
-            GameObject dataManagerObj = Instantiate(_gameDataManagerPrefab);
+            GameObject dataManagerObj = Instantiate(_dataManagerPrefab);
             _dataManager = dataManagerObj.GetComponent<dataManager>();
             _dataManager.OnInitialize();
         }

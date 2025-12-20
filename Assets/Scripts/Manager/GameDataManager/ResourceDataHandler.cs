@@ -10,7 +10,7 @@ public class ResourceDataHandler
 {
     // 자원을 저장하는 딕셔너리 (자원 ID -> ResourceEntry)
     private Dictionary<string, ResourceEntry> _resources;
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
 
     // 자원 변경 이벤트 (자원이 추가/제거/설정될 때 발생)
     public event Action OnResourceChanged;
@@ -20,7 +20,7 @@ public class ResourceDataHandler
     /// </summary>
     public ResourceDataHandler(dataManager gameDataManager, List<ResourceData> resourceDataList = null)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
         _resources = new Dictionary<string, ResourceEntry>();
         
         if (resourceDataList != null && resourceDataList.Count > 0)

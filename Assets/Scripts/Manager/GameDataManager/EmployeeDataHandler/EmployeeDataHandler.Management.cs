@@ -99,7 +99,7 @@ public partial class EmployeeDataHandler
 
             // 3. 만족도 변화 계산 (모든 SatisfactionChangePerDay 이펙트 합산)
             float totalSatisfactionChange = 0f;
-            List<EffectState> globalEffects = _gameDataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per);
+            List<EffectState> globalEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per);
             if (globalEffects != null)
             {
                 foreach (var effect in globalEffects)
@@ -111,7 +111,7 @@ public partial class EmployeeDataHandler
                 }
             }
 
-            List<EffectState> employeeSatisfactionEffects = _gameDataManager.Effect.GetEffectStatEffects(entry.data.type, EffectStatType.Employee_Satisfaction_Per);
+            List<EffectState> employeeSatisfactionEffects = _dataManager.Effect.GetEffectStatEffects(entry.data.type, EffectStatType.Employee_Satisfaction_Per);
             if (employeeSatisfactionEffects != null)
             {
                 foreach (var effect in employeeSatisfactionEffects)
@@ -158,7 +158,7 @@ public partial class EmployeeDataHandler
         float currentSatisfaction = entry.state.currentSatisfaction;
         float satisfactionEfficiencyBonus = currentSatisfaction * _initialEmployeeData.satisfactionToEfficiencyRatio;
 
-        _gameDataManager.Effect.ApplyEffect(_initialEmployeeData.satisfactionEfficiencyEffect, entry.data.type, satisfactionEfficiencyBonus);
+        _dataManager.Effect.ApplyEffect(_initialEmployeeData.satisfactionEfficiencyEffect, entry.data.type, satisfactionEfficiencyBonus);
 
         // 3. 이펙트 시스템을 통한 효율성 계산 (기본 효율성에서 시작하여 이펙트 적용)
         float currentEfficiency = baseEfficiency + satisfactionEfficiencyBonus;
@@ -182,12 +182,12 @@ public partial class EmployeeDataHandler
         float satisfactionPenalty = deficit > 0.01f ? _initialEmployeeData.maxSatisfactionPenalty * deficit : 0f;
         if (satisfactionPenalty <= 0f)
         {
-            _gameDataManager.Effect.RemoveEffect(_initialEmployeeData.managementDeficitEffect);
+            _dataManager.Effect.RemoveEffect(_initialEmployeeData.managementDeficitEffect);
             return;
         }
         else
         {
-            _gameDataManager.Effect.ApplyEffect(_initialEmployeeData.managementDeficitEffect, -satisfactionPenalty);
+            _dataManager.Effect.ApplyEffect(_initialEmployeeData.managementDeficitEffect, -satisfactionPenalty);
         }
     }
 }

@@ -7,11 +7,11 @@ using UnityEngine;
 /// </summary>
 public class ThreadCalculateHandler
 {
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
 
     public ThreadCalculateHandler(dataManager gameDataManager)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
 
         InitializeAllThreads();
     }
@@ -23,7 +23,7 @@ public class ThreadCalculateHandler
     /// </summary>
     public int CalculateTotalMaintenanceCost(string threadId, List<BuildingState> buildingStates)
     {
-        if (string.IsNullOrEmpty(threadId) || _gameDataManager == null || _gameDataManager.Building == null)
+        if (string.IsNullOrEmpty(threadId) || _dataManager == null || _dataManager.Building == null)
             return 0;
 
         if (buildingStates == null || buildingStates.Count == 0)
@@ -36,7 +36,7 @@ public class ThreadCalculateHandler
             if (state == null || string.IsNullOrEmpty(state.buildingId))
                 continue;
 
-            BuildingData data = _gameDataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = _dataManager.Building.GetBuildingData(state.buildingId);
             if (data != null)
             {
                 totalMaintenance += data.baseMaintenanceCost;
@@ -51,7 +51,7 @@ public class ThreadCalculateHandler
     /// </summary>
     public int CalculateRequiredEmployees(string threadId, List<BuildingState> buildingStates)
     {
-        if (string.IsNullOrEmpty(threadId) || _gameDataManager == null || _gameDataManager.Building == null)
+        if (string.IsNullOrEmpty(threadId) || _dataManager == null || _dataManager.Building == null)
             return 0;
 
         if (buildingStates == null || buildingStates.Count == 0)
@@ -64,7 +64,7 @@ public class ThreadCalculateHandler
             if (state == null || string.IsNullOrEmpty(state.buildingId))
                 continue;
 
-            BuildingData data = _gameDataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = _dataManager.Building.GetBuildingData(state.buildingId);
             if (data != null)
             {
                 totalEmployees += data.requiredEmployees;
@@ -148,7 +148,7 @@ public class ThreadCalculateHandler
         if (string.IsNullOrEmpty(threadId) || buildingStates == null || buildingStates.Count == 0)
             return;
 
-        if (_gameDataManager == null || _gameDataManager.Building == null)
+        if (_dataManager == null || _dataManager.Building == null)
             return;
 
         Dictionary<string, int> requiredInputResources = new Dictionary<string, int>();
@@ -159,7 +159,7 @@ public class ThreadCalculateHandler
             if (state == null || string.IsNullOrEmpty(state.buildingId))
                 continue;
 
-            BuildingData data = _gameDataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = _dataManager.Building.GetBuildingData(state.buildingId);
             if (data == null || !data.IsProductionBuilding)
                 continue;
 
@@ -181,11 +181,11 @@ public class ThreadCalculateHandler
             // inputProductionIds가 없으면, 출력 자원의 요구사항(requirements)에서 추론
             if (currentInputIds == null || currentInputIds.Count == 0)
             {
-                if (state.outputProductionIds != null && _gameDataManager.Resource != null)
+                if (state.outputProductionIds != null && _dataManager.Resource != null)
                 {
                     foreach (var outputId in state.outputProductionIds)
                     {
-                        ResourceEntry outputResource = _gameDataManager.Resource.GetResourceEntry(outputId);
+                        ResourceEntry outputResource = _dataManager.Resource.GetResourceEntry(outputId);
                         if (outputResource != null && outputResource.resourceData?.requirements != null)
                         {
                             foreach (var requirement in outputResource.resourceData.requirements)
@@ -238,7 +238,7 @@ public class ThreadCalculateHandler
     /// </summary>
     public void InitializeAllThreads()
     {
-        var allThreads = _gameDataManager.Thread.GetAllThreads();
+        var allThreads = _dataManager.Thread.GetAllThreads();
         if (allThreads == null || allThreads.Count == 0)
         {
             Debug.Log("[ThreadCalculateHandler] No threads to initialize.");
@@ -252,7 +252,7 @@ public class ThreadCalculateHandler
             if (threadState == null || string.IsNullOrEmpty(threadState.threadId))
                 continue;
 
-            InitializeThread(threadState, _gameDataManager.Thread);
+            InitializeThread(threadState, _dataManager.Thread);
             initializedCount++;
         }
     }
@@ -300,17 +300,17 @@ public class ThreadCalculateHandler
             if (buildingState.inputProductionIds == null || buildingState.inputProductionIds.Count == 0)
             {
                 buildingState.inputProductionIds = new List<string>();
-                if (_gameDataManager?.Building != null)
+                if (_dataManager?.Building != null)
                 {
-                    BuildingData data = _gameDataManager.Building.GetBuildingData(buildingState.buildingId);
+                    BuildingData data = _dataManager.Building.GetBuildingData(buildingState.buildingId);
                     if (data != null && data.IsProductionBuilding && buildingState.outputProductionIds != null)
                     {
                         // 출력 자원의 requirements에서 입력 자원 추론
                         foreach (var outputId in buildingState.outputProductionIds)
                         {
-                            if (_gameDataManager.Resource != null)
+                            if (_dataManager.Resource != null)
                             {
-                                ResourceEntry outputResource = _gameDataManager.Resource.GetResourceEntry(outputId);
+                                ResourceEntry outputResource = _dataManager.Resource.GetResourceEntry(outputId);
                                 if (outputResource != null && outputResource.resourceData?.requirements != null)
                                 {
                                     foreach (var requirement in outputResource.resourceData.requirements)
@@ -334,9 +334,9 @@ public class ThreadCalculateHandler
             if (buildingState.outputProductionIds == null || buildingState.outputProductionIds.Count == 0)
             {
                 buildingState.outputProductionIds = new List<string>();
-                if (_gameDataManager?.Building != null)
+                if (_dataManager?.Building != null)
                 {
-                    BuildingData data = _gameDataManager.Building.GetBuildingData(buildingState.buildingId);
+                    BuildingData data = _dataManager.Building.GetBuildingData(buildingState.buildingId);
                     if (data != null && data.IsProductionBuilding)
                     {
                         // ProductionBuildingData에서 producibleResources 가져오기

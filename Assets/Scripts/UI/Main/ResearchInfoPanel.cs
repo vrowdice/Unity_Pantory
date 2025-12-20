@@ -13,20 +13,20 @@ public class ResearchInfoPanel : MonoBehaviour
 
     private ResearchEntry _currentResearchEntry;
     private MainUiManager _mainUiManager;
-    private dataManager _gameDataManager;
+    private dataManager _dataManager;
 
     private GameManager _gameManager;
 
     private bool _isSubscribed = false;
 
     /// <summary>
-    /// ÆÐ³ÎÀ» ÃÊ±âÈ­ÇÏ°í µ¥ÀÌÅÍ¸¦ ¿¬°áÇÕ´Ï´Ù.
+    /// ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     /// </summary>
     public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager, dataManager dataManager)
     {
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;
-        _gameDataManager = dataManager;
+        _dataManager = dataManager;
 
         _gameManager = mainUiManager.GameManager;
 
@@ -42,17 +42,17 @@ public class ResearchInfoPanel : MonoBehaviour
 
     private void SubscribeToDayChanged()
     {
-        if (_isSubscribed || _gameDataManager?.Time == null) return;
+        if (_isSubscribed || _dataManager?.Time == null) return;
 
-        _gameDataManager.Time.OnDayChanged += OnDayChanged;
+        _dataManager.Time.OnDayChanged += OnDayChanged;
         _isSubscribed = true;
     }
 
     private void UnsubscribeFromDayChanged()
     {
-        if (!_isSubscribed || _gameDataManager?.Time == null) return;
+        if (!_isSubscribed || _dataManager?.Time == null) return;
 
-        _gameDataManager.Time.OnDayChanged -= OnDayChanged;
+        _dataManager.Time.OnDayChanged -= OnDayChanged;
         _isSubscribed = false;
     }
 
@@ -78,7 +78,7 @@ public class ResearchInfoPanel : MonoBehaviour
             if (panel != null)
             {
                 string effectDescription = effectState.displayName ?? effectState.id;
-                string changeValue = _gameDataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
+                string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
                 panel.OnInitialize(effectDescription, changeValue, effectState.value);
             }
         }
@@ -86,7 +86,7 @@ public class ResearchInfoPanel : MonoBehaviour
 
     public void OnClickResearchBtn()
     {
-        if (!_gameDataManager.Research.TryUnlockResearch(_currentResearchEntry.data.id))
+        if (!_dataManager.Research.TryUnlockResearch(_currentResearchEntry.data.id))
         {
             _gameManager.ShowWarningPanel("Research cannot be unlocked");
         }

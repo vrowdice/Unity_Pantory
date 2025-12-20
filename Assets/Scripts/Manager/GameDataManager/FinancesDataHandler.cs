@@ -23,7 +23,7 @@ public struct DailyExpenseReservation
 /// </summary>
 public class FinancesDataHandler
 {
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
 
     private long _credit;
     public event Action OnCreditChanged;
@@ -41,7 +41,7 @@ public class FinancesDataHandler
     /// </summary>
     public FinancesDataHandler(dataManager gameDataManager, InitialResourceData initData)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
         _credit = initData.initialCredit;
         _reservedDailyExpenses = new DailyExpenseReservation();
 
@@ -148,7 +148,7 @@ public class FinancesDataHandler
     /// </summary>
     public void ReserveDailyExpenses()
     {
-        if (_gameDataManager == null)
+        if (_dataManager == null)
         {
             Debug.LogWarning("[FinancesDataHandler] GameDataManager is null. Cannot reserve daily expenses.");
             return;
@@ -166,7 +166,7 @@ public class FinancesDataHandler
         CalculatePlayerTradeEconomics(totalProduction, totalConsumption, out long tradeCost, out long tradeRevenue);
 
         // 4. 직원 급여
-        long salaryCost = _gameDataManager.Employee != null ? _gameDataManager.Employee.GetTotalSalary() : 0;
+        long salaryCost = _dataManager.Employee != null ? _dataManager.Employee.GetTotalSalary() : 0;
         
         _reservedDailyExpenses.maintenanceCost = maintenanceCost;
         _reservedDailyExpenses.salaryCost = salaryCost;
@@ -212,12 +212,12 @@ public class FinancesDataHandler
         totalMaintenance = 0;
         threadMaintenanceCosts = new Dictionary<string, (long, string)>();
 
-        if (_gameDataManager?.ThreadPlacement == null || _gameDataManager.Thread == null)
+        if (_dataManager?.ThreadPlacement == null || _dataManager.Thread == null)
         {
             return;
         }
 
-        var placedThreads = _gameDataManager.ThreadPlacement.GetAllPlacedThreads();
+        var placedThreads = _dataManager.ThreadPlacement.GetAllPlacedThreads();
         if (placedThreads == null) return;
 
         foreach (var placement in placedThreads.Values)
@@ -247,13 +247,13 @@ public class FinancesDataHandler
         totalProduction = new Dictionary<string, long>();
         totalConsumption = new Dictionary<string, long>();
         
-        if (_gameDataManager?.Resource == null || _gameDataManager?.ThreadPlacement == null || _gameDataManager.Thread == null)
+        if (_dataManager?.Resource == null || _dataManager?.ThreadPlacement == null || _dataManager.Thread == null)
         {
             return 0;
         }
 
         // 스레드에서 생산/소비 집계 (직원이 할당된 스레드만)
-        var placedThreads = _gameDataManager.ThreadPlacement.GetAllPlacedThreads();
+        var placedThreads = _dataManager.ThreadPlacement.GetAllPlacedThreads();
         if (placedThreads != null)
         {
             foreach (var placement in placedThreads.Values)
@@ -308,14 +308,14 @@ public class FinancesDataHandler
 
         // 자원 부족 비용 계산
         long totalCost = 0;
-        var allResources = _gameDataManager.Resource.GetAllResources();
+        var allResources = _dataManager.Resource.GetAllResources();
 
         foreach (var kvp in totalConsumption)
         {
             string id = kvp.Key;
             long consumeAmount = kvp.Value;
             long produceAmount = totalProduction.ContainsKey(id) ? totalProduction[id] : 0;
-            long currentAmount = _gameDataManager.Resource.GetMarketResourceQuantity(id);
+            long currentAmount = _dataManager.Resource.GetMarketResourceQuantity(id);
 
             // 예상 보유량 = 현재 + 생산 - 소비
             long expectedAmount = currentAmount + produceAmount - consumeAmount;
@@ -344,13 +344,13 @@ public class FinancesDataHandler
         cost = 0;
         revenue = 0;
 
-        if (_gameDataManager?.Resource == null || _gameDataManager.Market == null)
+        if (_dataManager?.Resource == null || _dataManager.Market == null)
         {
             return;
         }
 
-        var allResources = _gameDataManager.Resource.GetAllResources();
-        float feeRate = _gameDataManager.Market.GetMarketFeeRate();
+        var allResources = _dataManager.Resource.GetAllResources();
+        float feeRate = _dataManager.Market.GetMarketFeeRate();
 
         foreach (var kvp in allResources)
         {
@@ -370,7 +370,7 @@ public class FinancesDataHandler
             {
                 long sellRequest = -delta;
                 // 플레이어 재고 확인 (시장 재고가 아님!)
-                long currentPlayerInventory = _gameDataManager.Resource.GetPlayerResourceQuantity(id);
+                long currentPlayerInventory = _dataManager.Resource.GetPlayerResourceQuantity(id);
                 long prod = production.ContainsKey(id) ? production[id] : 0;
                 long cons = consumption.ContainsKey(id) ? consumption[id] : 0;
 

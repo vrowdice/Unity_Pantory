@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ThreadDataHandler
 {
-    private readonly dataManager _gameDataManager = null;
+    private readonly dataManager _dataManager = null;
 
     #region Private Data Containers
 
@@ -30,16 +30,16 @@ public class ThreadDataHandler
     {
         _threads = new Dictionary<string, ThreadState>();
         _categories = new Dictionary<string, ThreadCategory>();
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
     }
 
     /// <summary> Thread 데이터를 저장합니다. </summary>
     private void SaveThreadData()
     {
-        if (_gameDataManager?.SaveLoad != null)
+        if (_dataManager?.SaveLoad != null)
         {
             // SaveLoadHandler의 SaveThreadData(this) 호출
-            _gameDataManager.SaveLoad.SaveThreadData(this);
+            _dataManager.SaveLoad.SaveThreadData(this);
         }
     }
 

@@ -6,7 +6,7 @@ public partial class EmployeeDataHandler
 {
     protected Dictionary<EmployeeType, EmployeeEntry> _employees;
     public event Action OnEmployeeChanged;
-    protected dataManager _gameDataManager;
+    protected dataManager _dataManager;
     InitialEmployeeData _initialEmployeeData;
 
     /// <summary>
@@ -14,7 +14,7 @@ public partial class EmployeeDataHandler
     /// </summary>
     public EmployeeDataHandler(dataManager gameDataManager, List<EmployeeData> employeeDataList, InitialEmployeeData initData)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
         _employees = new Dictionary<EmployeeType, EmployeeEntry>();
         _initialEmployeeData = initData;
 
@@ -212,7 +212,7 @@ public partial class EmployeeDataHandler
 
         EffectState effectData = new EffectState(_initialEmployeeData.salarySatisfactionEffect);
 
-        _gameDataManager.Effect.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, entry.data.type, satisfactionChange);
+        _dataManager.Effect.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, entry.data.type, satisfactionChange);
     }
 
     /// <summary>

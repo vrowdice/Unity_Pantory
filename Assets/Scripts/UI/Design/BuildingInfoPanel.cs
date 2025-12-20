@@ -28,7 +28,7 @@ public class BuildingInfoPanel : MonoBehaviour
     private BuildingState _currentBuildingState;
 
     private DesignUiManager _designUiManager;
-    private dataManager _gameDataManager;
+    private dataManager _dataManager;
     private System.Action<ResourceEntry> _onOutputResourceSelected;
 
     /// <summary>
@@ -45,7 +45,7 @@ public class BuildingInfoPanel : MonoBehaviour
         _currentBuildingData = buildingData;
         _currentBuildingState = buildingState;
         _designUiManager = designUiManager;
-        _gameDataManager = designUiManager.GameDataManager;
+        _dataManager = designUiManager.GameDataManager;
 
         // 자원 선택 콜백 설정
         _onOutputResourceSelected = OnOutputResourceSelected;
@@ -143,7 +143,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
         foreach (var kvp in inputCounts)
         {
-            ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(kvp.Key);
+            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
 
             if (resourceEntry != null)
             {
@@ -183,7 +183,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
             if (!string.IsNullOrEmpty(handlingId))
             {
-                ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(handlingId);
+                ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(handlingId);
 
                 if (resourceEntry != null)
                 {
@@ -218,7 +218,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
         foreach (var kvp in outputCounts)
         {
-            ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(kvp.Key);
+            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             
             if (resourceEntry != null)
             {

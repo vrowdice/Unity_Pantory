@@ -9,7 +9,7 @@ public class SelectResourcePanel : MonoBehaviour
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
-    private dataManager _gameDataManager = null;
+    private dataManager _dataManager = null;
     private List<ResourceType> _resourceTypes = null;
     private Action<ResourceEntry> _onResourceSelected = null;
     private List<ResourceData> _producibleResources = null; // 생산 가능한 자원 목록 (옵션)
@@ -23,12 +23,12 @@ public class SelectResourcePanel : MonoBehaviour
     /// <param name="producibleResources">생산 가능한 자원 목록 (null이면 해당 타입의 모든 자원 표시)</param>
     public void OnInitialize(dataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
         _resourceTypes = resourceTypes;
         _onResourceSelected = onResourceSelected;
         _producibleResources = producibleResources;
 
-        if (_gameDataManager == null)
+        if (_dataManager == null)
         {
             Debug.LogWarning("[SelectResourcePanel] DataManager is null.");
             return;
@@ -64,7 +64,7 @@ public class SelectResourcePanel : MonoBehaviour
             {
                 if (producibleResource != null && producibleResource.type == resourceType)
                 {
-                    ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(producibleResource.id);
+                    ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(producibleResource.id);
                     if (resourceEntry != null)
                     {
                         Instantiate(_selectResourceBtnPrefab, _resourceScrollViewContentTransform).
@@ -76,7 +76,7 @@ public class SelectResourcePanel : MonoBehaviour
         else
         {
             // 생산 가능한 자원 목록이 없으면 해당 타입의 모든 자원 표시
-            foreach (var resourceEntry in _gameDataManager.Resource.GetAllResources())
+            foreach (var resourceEntry in _dataManager.Resource.GetAllResources())
             {
                 if (resourceEntry.Value.resourceData.type == resourceType)
                 {

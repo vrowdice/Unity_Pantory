@@ -10,7 +10,7 @@ using static UnityEngine.Rendering.DebugUI;
 /// </summary>
 public class EffectDataHandler
 {
-    private readonly dataManager _gameDataManager;
+    private readonly dataManager _dataManager;
 
     /// <summary>
     /// 전역 이펙트
@@ -21,7 +21,7 @@ public class EffectDataHandler
 
     public EffectDataHandler(dataManager gameDataManager) 
     {
-        _gameDataManager = gameDataManager;
+        _dataManager = gameDataManager;
 
         foreach (EffectTargetType target in System.Enum.GetValues(typeof(EffectTargetType)))
         {
@@ -55,7 +55,7 @@ public class EffectDataHandler
             }
         }
         // 직원 이펙트 처리
-        foreach(var employeeEntry in _gameDataManager.Employee.GetAllEmployees().Values)
+        foreach(var employeeEntry in _dataManager.Employee.GetAllEmployees().Values)
         {
             if(employeeEntry?.state?.activeEffects == null) continue;
             
@@ -126,7 +126,7 @@ public class EffectDataHandler
             return;
         }
 
-        EmployeeEntry employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        EmployeeEntry employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
         EffectState effectState = new EffectState(effectData);
 
         if (!float.IsNaN(value))
@@ -189,7 +189,7 @@ public class EffectDataHandler
     /// <param name="employeeType">직원 타입</param>
     public void RemoveEffect(EffectData effectData, EmployeeType employeeType)
     {
-        var employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        var employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
         
         // 해당 StatType의 리스트가 없으면 종료
         if(!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
@@ -233,7 +233,7 @@ public class EffectDataHandler
 
     public EffectState GetEffect(EffectData effectData, EmployeeType employeeType)
     {
-        var employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        var employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
         
         // 해당 StatType의 리스트가 없으면 null 반환
         if(!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
@@ -268,7 +268,7 @@ public class EffectDataHandler
 
     public List<EffectState> GetEffectStatEffects(EmployeeType employeeType, EffectStatType statType)
     {
-        EmployeeEntry employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        EmployeeEntry employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
 
         if(!employeeEntry.state.activeEffects.ContainsKey(statType))
         {
@@ -294,7 +294,7 @@ public class EffectDataHandler
 
     public List<EffectState> GetAllEffects(EmployeeType employeeType)
     {
-        EmployeeEntry employeeEntry = _gameDataManager.Employee.GetEmployeeEntry(employeeType);
+        EmployeeEntry employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
         if (employeeEntry == null)
         {
             return new List<EffectState>();

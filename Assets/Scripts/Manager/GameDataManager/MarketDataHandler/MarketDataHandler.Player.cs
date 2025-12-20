@@ -13,7 +13,7 @@ public partial class MarketDataHandler
     /// </summary>
     private void ExecutePlayerAutoTrades(Dictionary<string, ResourceEntry> resources)
     {
-        if (resources == null || _gameDataManager == null) return;
+        if (resources == null || _dataManager == null) return;
 
         foreach (KeyValuePair<string, ResourceEntry> kvp in resources)
         {
@@ -44,7 +44,7 @@ public partial class MarketDataHandler
     /// <returns>성공 시 true, 실패 시 false</returns>
     public bool TryPlayerBuyResource(string resourceId, long amount)
     {
-        ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceId);
 
         float unitPrice = resourceEntry.resourceState.currentValue;
         long baseCost = (long)Mathf.Ceil(unitPrice * amount);
@@ -54,15 +54,15 @@ public partial class MarketDataHandler
         long marketFee = (long)Mathf.Ceil(baseCost * feeRate);
         long totalCost = baseCost + marketFee;
 
-        if (!_gameDataManager.Finances.HasEnoughCredit(totalCost))
+        if (!_dataManager.Finances.HasEnoughCredit(totalCost))
         {
-            Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost} (base: {baseCost}, fee: {marketFee}), Available: {_gameDataManager.Finances.GetCredit()}");
+            Debug.LogWarning($"[MarketDataHandler] Insufficient credit for purchase. Required: {totalCost} (base: {baseCost}, fee: {marketFee}), Available: {_dataManager.Finances.GetCredit()}");
             return false;
         }
         
         // 자원 이동
-        _gameDataManager.Resource.ModifyMarketInventory(resourceId, -amount);
-        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, amount);
+        _dataManager.Resource.ModifyMarketInventory(resourceId, -amount);
+        _dataManager.Resource.ModifyPlayerInventory(resourceId, amount);
 
         // 시장 수요에 즉시 반영
         ApplyPlayerDemand(resourceEntry, amount);
@@ -81,14 +81,14 @@ public partial class MarketDataHandler
             return;
         }
 
-        var resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        var resourceEntry = _dataManager.Resource.GetResourceEntry(resourceId);
         if (resourceEntry == null)
         {
             return;
         }
 
-        _gameDataManager.Resource.ModifyMarketInventory(resourceId, -amount);
-        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, amount);
+        _dataManager.Resource.ModifyMarketInventory(resourceId, -amount);
+        _dataManager.Resource.ModifyPlayerInventory(resourceId, amount);
         ApplyPlayerDemand(resourceEntry, amount);
     }
 
@@ -101,13 +101,13 @@ public partial class MarketDataHandler
     public bool TryPlayerSellResource(string resourceId, long amount)
     {
         // 플레이어 재고 확인
-        if (!_gameDataManager.Resource.HasEnoughPlayerResource(resourceId, amount))
+        if (!_dataManager.Resource.HasEnoughPlayerResource(resourceId, amount))
         {
-            Debug.LogWarning($"[MarketDataHandler] Insufficient resources in player storage. Required: {amount}, Available: {_gameDataManager.Resource.GetPlayerResourceQuantity(resourceId)}");
+            Debug.LogWarning($"[MarketDataHandler] Insufficient resources in player storage. Required: {amount}, Available: {_dataManager.Resource.GetPlayerResourceQuantity(resourceId)}");
             return false;
         }
 
-        ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceId);
 
         float unitPrice = resourceEntry.resourceState.currentValue;
         long baseRevenue = (long)Mathf.Floor(unitPrice * amount);
@@ -118,8 +118,8 @@ public partial class MarketDataHandler
         long totalRevenue = baseRevenue - marketFee;
 
         // 거래 실행: 자원 이동: 플레이어(감소) -> 시장(증가)
-        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, -amount);
-        _gameDataManager.Resource.ModifyMarketInventory(resourceId, amount);
+        _dataManager.Resource.ModifyPlayerInventory(resourceId, -amount);
+        _dataManager.Resource.ModifyMarketInventory(resourceId, amount);
 
         // 시장 공급에 즉시 반영
         ApplyPlayerSupply(resourceEntry, amount);
@@ -139,8 +139,8 @@ public partial class MarketDataHandler
             return 0;
         }
 
-        ResourceEntry resourceEntry = _gameDataManager.Resource.GetResourceEntry(resourceId);
-        long availableInventory = _gameDataManager.Resource.GetPlayerResourceQuantity(resourceId);
+        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceId);
+        long availableInventory = _dataManager.Resource.GetPlayerResourceQuantity(resourceId);
         if (availableInventory <= 0)
         {
             Debug.LogWarning($"[MarketDataHandler] Cannot sell {resourceId}: player has no inventory (requested: {amount}, available: {availableInventory})");
@@ -155,8 +155,8 @@ public partial class MarketDataHandler
             Debug.LogWarning($"[MarketDataHandler] Insufficient player inventory for {resourceId}. Requested: {amount}, Available: {availableInventory}, Selling: {actualSellAmount}");
         }
 
-        _gameDataManager.Resource.ModifyPlayerInventory(resourceId, -actualSellAmount);
-        _gameDataManager.Resource.ModifyMarketInventory(resourceId, actualSellAmount);
+        _dataManager.Resource.ModifyPlayerInventory(resourceId, -actualSellAmount);
+        _dataManager.Resource.ModifyMarketInventory(resourceId, actualSellAmount);
         ApplyPlayerSupply(resourceEntry, actualSellAmount);
         
         return actualSellAmount;
