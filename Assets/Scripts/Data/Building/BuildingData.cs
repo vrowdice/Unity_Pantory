@@ -21,7 +21,7 @@ public abstract class BuildingData : ScriptableObject
     public int baseCost;
     public int baseMaintenanceCost;
     public Vector2Int size = new Vector2Int(1, 1);
-    public string requiredResearchId;
+    public ResearchData requiredResearch;
     public ResourceData handlingResource;
 
     public virtual ResourceData HandlingResource => handlingResource;

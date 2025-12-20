@@ -19,11 +19,13 @@ MonoBehaviour:
   buildingSprite: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
   description: A massive industrial facility for assembling vehicles. Requires extensive
     components, electronics, and materials to produce cars, airplanes, and tanks.
+  isUnlockedByDefault: 0
+  requiredEmployees: 12
   baseCost: 800
   baseMaintenanceCost: 40
   size: {x: 3, y: 3}
-  requiredEmployees: 12
-  requiredTier: 2
+  requiredResearch: {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 06000000
   _producibleResources:
   - {fileID: 11400000, guid: fabba59ec3e95354394bd2fdcb52f3c4, type: 2}

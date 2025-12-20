@@ -9,7 +9,7 @@ using System;
 public class BuildingCalculateHandler
 {
     private readonly BuildingTileManager _buildingTileManager;
-    private GameDataManager DataManager => _buildingTileManager.DataManager;
+    private dataManager DataManager => _buildingTileManager.DataManager;
 
     // 인접 타일 탐색을 위한 방향 벡터
     private static readonly Vector2Int[] _neighbors = new Vector2Int[]
@@ -203,7 +203,7 @@ public class BuildingCalculateHandler
     /// 해당 그리드 좌표에 배치된 건물 데이터를 반환합니다. 없으면 null.
     /// (멀티 타일 건물도 고려하여 점유 영역을 검사합니다.)
     /// </summary>
-    private BuildingData GetBuildingDataAt(Vector2Int gridPos, List<BuildingState> buildingStates, GameDataManager dataManager)
+    private BuildingData GetBuildingDataAt(Vector2Int gridPos, List<BuildingState> buildingStates, dataManager dataManager)
     {
         // 정확히 해당 좌표를 포함하는 빌딩 상태를 찾음 (회전 고려한 영역 포함 검사)
         foreach (var state in buildingStates)
@@ -500,12 +500,12 @@ public class BuildingCalculateHandler
     }
 
     // 다음 두 메서드는 IsConnectedViaRoadToTarget의 명확한 호출을 위해 남겨둡니다.
-    private bool CanReachLoadStationFrom(Vector2Int startPos, string threadId, List<BuildingState> buildingStates, Dictionary<Vector2Int, BuildingState> positionToState, GameDataManager dataManager)
+    private bool CanReachLoadStationFrom(Vector2Int startPos, string threadId, List<BuildingState> buildingStates, Dictionary<Vector2Int, BuildingState> positionToState, dataManager dataManager)
     {
         return IsConnectedViaRoadToTarget(startPos, isUnloadStation: false, isLoadStation: true);
     }
 
-    private bool CanReachUnloadStationFrom(Vector2Int startPos, string threadId, List<BuildingState> buildingStates, Dictionary<Vector2Int, BuildingState> positionToState, GameDataManager dataManager)
+    private bool CanReachUnloadStationFrom(Vector2Int startPos, string threadId, List<BuildingState> buildingStates, Dictionary<Vector2Int, BuildingState> positionToState, dataManager dataManager)
     {
         return IsConnectedViaRoadToTarget(startPos, isUnloadStation: true, isLoadStation: false);
     }

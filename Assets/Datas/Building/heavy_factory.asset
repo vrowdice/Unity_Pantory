@@ -20,10 +20,13 @@ MonoBehaviour:
   description: A heavy industry facility specializing in precision tools and luxury
     goods. Produces precision tools and premium products from high-grade steel and
     advanced components. Requires significant investment but yields high-value products.
+  isUnlockedByDefault: 0
+  requiredEmployees: 6
   baseCost: 500
   baseMaintenanceCost: 25
   size: {x: 2, y: 2}
-  requiredEmployees: 6
+  requiredResearch: {fileID: 11400000, guid: 4235d531f57ebdf40922de9b738db379, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 04000000
   _producibleResources:
   - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}

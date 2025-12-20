@@ -7,5 +7,5 @@ public interface IUIManager
 
     void UpdateAllMainText();
 
-    void OnInitialize(GameManager argGameManager, GameDataManager argGameDataManager);
+    void OnInitialize(GameManager argGameManager, dataManager argGameDataManager);
 }

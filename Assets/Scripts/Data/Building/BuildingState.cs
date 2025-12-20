@@ -18,7 +18,6 @@ public class BuildingState
     public Vector2Int inputPosition;
     public Vector2Int outputPosition;
     public string currentResourceId; 
-    public bool hasResourceConflict;
     
     public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData, int rotation = 0)
     {
@@ -27,7 +26,6 @@ public class BuildingState
         this.positionY = position.y;
         this.rotation = rotation;
         this.currentResourceId = null;
-        this.hasResourceConflict = false;
 
         if (buildingData.InputPosition != Vector2Int.zero)
         {
@@ -50,14 +48,6 @@ public class BuildingState
         inputProductionIds = new List<string>();
         outputProductionIds = new List<string>();
     }
-    /// <summary>
-    /// 런타임 상태를 초기화합니다 (매 프레임 경로 계산 전 호출)
-    /// </summary>
-    public void ResetRuntimeStatus()
-    {
-        currentResourceId = null;
-        hasResourceConflict = false;
-    }
     
     /// <summary>
     /// 이 건물이 연구를 통해 언락되었는지 확인합니다.
@@ -65,7 +55,7 @@ public class BuildingState
     /// </summary>
     /// <param name="gameDataManager">게임 데이터 매니저 (연구 상태 확인용)</param>
     /// <returns>언락되었으면 true, 연구가 필요 없거나 완료되었으면 true</returns>
-    public bool IsUnlocked(GameDataManager gameDataManager)
+    public bool IsUnlocked(dataManager gameDataManager)
     {
         if (gameDataManager == null || string.IsNullOrEmpty(buildingId))
             return false;
@@ -74,13 +64,14 @@ public class BuildingState
         if (buildingData == null)
             return false;
 
-        if (string.IsNullOrEmpty(buildingData.requiredResearchId))
+        if (string.IsNullOrEmpty(buildingData.requiredResearch.id))
             return true;
 
         if (gameDataManager.Research != null)
         {
-            return gameDataManager.Research.IsResearchCompleted(buildingData.requiredResearchId);
+            return gameDataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
         }
+
         return false;
     }
     

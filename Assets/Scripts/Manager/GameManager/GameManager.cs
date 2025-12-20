@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
 
     private IUIManager _uiManager;
     private IGameSceneManager _sceneManager;
-    private GameDataManager _gameDataManager;
+    private dataManager _dataManager;
     private VisualManager _visualManager;
     private MainCameraController _mainCameraController;
 
@@ -75,6 +75,20 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        if (_dataManager == null)
+        {
+            GameObject dataManagerObj = Instantiate(_gameDataManagerPrefab);
+            _dataManager = dataManagerObj.GetComponent<dataManager>();
+            _dataManager.OnInitialize();
+        }
+
+        if (_visualManager == null)
+        {
+            GameObject visualManagerObj = Instantiate(_visualManagerPrefab);
+            _visualManager = visualManagerObj.GetComponent<VisualManager>();
+            _visualManager.OnInitialize();
+        }
+
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -88,18 +102,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (_gameDataManager == null)
+        if(_dataManager == null || _visualManager == null)
         {
-            GameObject dataManagerObj = Instantiate(_gameDataManagerPrefab);
-            _gameDataManager = dataManagerObj.GetComponent<GameDataManager>();
-            _gameDataManager.OnInitialize();
-        }
-
-        if (_visualManager == null)
-        {
-            GameObject visualManagerObj = Instantiate(_visualManagerPrefab);
-            _visualManager = visualManagerObj.GetComponent<VisualManager>();
-            _visualManager.OnInitialize();
+            Debug.LogError("[GameManager] DataManager or VisualManager is not initialized.");
+            return;
         }
 
         if (_sharedWorldCanvas != null)
@@ -115,13 +121,13 @@ public class GameManager : MonoBehaviour
 
         IGameSceneManager sceneManager = GameObject.Find("GameSceneManager").GetComponent<IGameSceneManager>();
         _sceneManager = sceneManager;
-        _sceneManager.OnInitialize(this, _gameDataManager);
+        _sceneManager.OnInitialize(this, _dataManager);
 
         IUIManager uiManager = GameObject.Find("Canvas").GetComponent<IUIManager>();
         _uiManager = uiManager;
-        uiManager.OnInitialize(this, _gameDataManager);
+        uiManager.OnInitialize(this, _dataManager);
 
-        _gameDataManager.Time.PauseTime();
+        _dataManager.Time.PauseTime();
     }
 
     /// <summary>
@@ -145,7 +151,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject selectResourcePanelObj = Instantiate(_selectResourcePanelPrefab, CanvasTransform);
         SelectResourcePanel selectResourcePanel = selectResourcePanelObj.GetComponent<SelectResourcePanel>();
-        selectResourcePanel.OnInitialize(_gameDataManager, resourceTypes, onResourceSelected, producibleResources);
+        selectResourcePanel.OnInitialize(_dataManager, resourceTypes, onResourceSelected, producibleResources);
         return selectResourcePanel.GetComponent<SelectResourcePanel>();
     }
 
@@ -155,7 +161,7 @@ public class GameManager : MonoBehaviour
     /// <param name="dataManager">GameDataManager</param>
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
     /// <returns>생성된 ManageThreadCartegoryPanel 컴포넌트</returns>
-    public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(GameDataManager dataManager, System.Action<string> onCategorySelected)
+    public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(dataManager dataManager, System.Action<string> onCategorySelected)
     {
         GameObject panageThreadCartegoryPanelObj = Instantiate(_manageThreadCartegoryPanelPrefab, CanvasTransform);
         ManageThreadCartegoryPanel panageThreadCartegoryPanel = panageThreadCartegoryPanelObj.GetComponent<ManageThreadCartegoryPanel>();
@@ -172,7 +178,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject manageThreadPanelObj = Instantiate(_manageThreadPanelPrefab, CanvasTransform);
         ManageThreadPanel manageThreadPanel = manageThreadPanelObj.GetComponent<ManageThreadPanel>();
-        manageThreadPanel.OnInitialize(_gameDataManager, onThreadSelected);
+        manageThreadPanel.OnInitialize(_dataManager, onThreadSelected);
         return manageThreadPanel;
     }
 
@@ -288,7 +294,7 @@ public class GameManager : MonoBehaviour
         {
             if (string.IsNullOrEmpty(resourceId)) continue;
 
-            var entry = _gameDataManager.Resource.GetResourceEntry(resourceId);
+            var entry = _dataManager.Resource.GetResourceEntry(resourceId);
             if (entry != null)
             {
                 CreateProductionIcon(parent, entry, amount);

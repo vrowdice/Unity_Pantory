@@ -20,10 +20,13 @@ MonoBehaviour:
   description: An oil drilling facility that extracts crude oil from underground
     reserves. Essential for fuel production and chemical processing. Requires high
     maintenance costs.
+  isUnlockedByDefault: 0
+  requiredEmployees: 3
   baseCost: 600
   baseMaintenanceCost: 35
   size: {x: 2, y: 2}
-  requiredEmployees: 3
+  requiredResearch: {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 00000000
   _producibleResources:
   - {fileID: 11400000, guid: 707bdf8bad3258b4b80e6bc374ece4de, type: 2}

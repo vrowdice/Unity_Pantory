@@ -11,8 +11,6 @@ using UnityEngine.UI;
 /// </summary>
 public class BuildingTileManager : MonoBehaviour, IGameSceneManager
 {
-    #region 인스펙터 설정
-
     [Header("UI Manager")]
     [SerializeField] private DesignUiManager _designUiManager;
 
@@ -27,63 +25,35 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
     [SerializeField] private int _gridHeight = 10;
 
     [Header("Animation Settings")]
-    [SerializeField] private GameObject _resourceItemPrefab; 
-    [SerializeField] private float _resourceSpawnInterval = 2.0f;
-    #endregion
-
-    #region Private 변수 및 핸들러
+    [SerializeField] private GameObject _resourceItemPrefab;
 
     private string _currentThreadId = "";
     private BoxCollider2D _cameraCollider;
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
-    private GameDataManager _dataManager;
-    private VisualManager _visualManager;
+    private dataManager _dataManager;
     private GameManager _gameManager;
 
-    // 핸들러들
     private BuildingGridHandler _gridGenHandler;
     private BuildingPlacementHandler _placementHandler;
     private BuildingRemovalHandler _removalHandler;
-    private ResourceAnimHandler _resourceAnimHandler;
     private BuildingCalculateHandler _calculateHandler;
+    private BuildingCaptureHandler _captureHandler;
 
-    // 공용 World Space Canvas
     private GameObject _sharedProductionIconCanvas;
 
-    // 임시 저장 상태
     private List<BuildingState> _tempBuildingStates = new List<BuildingState>();
     private bool _isTempDataDirty = false;
     private bool _handlersInitialized = false;
     private bool _isInitialized = false;
 
-    #endregion
-
-    #region Public 프로퍼티
-
-    public GameDataManager DataManager => _dataManager;
+    public dataManager DataManager => _dataManager;
     public BuildingGridHandler GridGenHandler => _gridGenHandler;
     public BuildingPlacementHandler PlacementHandler => _placementHandler;
     public BuildingRemovalHandler RemovalHandler => _removalHandler;
     public BuildingCalculateHandler CalculateHandler => _calculateHandler;
+    public BuildingCaptureHandler CaptureHandler => _captureHandler;
     public DesignUiManager DesignUiManager => _designUiManager;
-    public Transform SharedProductionIconCanvas
-    {
-        get
-        {
-            if (_sharedProductionIconCanvas == null && _gameManager != null)
-            {
-                Camera targetCamera = _mainCamera ?? Camera.main;
-                RectTransform canvasRect = _gameManager.GetWorldCanvas();
-                if (canvasRect != null)
-                {
-                    _sharedProductionIconCanvas = canvasRect.gameObject;
-                }
-            }
-
-            return _sharedProductionIconCanvas != null ? _sharedProductionIconCanvas.transform : null;
-        }
-    }
     public Camera MainCamera => _mainCamera;
     public MainCameraController MainCameraController => _mainCameraController;
 
@@ -91,21 +61,11 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
     public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsActive;
     public bool IsRemovalMode => _removalHandler != null && _removalHandler.IsActive;
 
-    #endregion
-
-    #region Unity 생명주기
-
-    void Start()
-    {
-        if (!_isInitialized)
-        {
-            OnInitialize(GameManager.Instance, GameDataManager.Instance);
-        }
-    }
+    public GameObject GetInputMarkerPrefab() => _inputMarkerPrefab;
+    public GameObject GetOutputMarkerPrefab() => _outputMarkerPrefab;
 
     void Update()
     {
-        // 배치 모드나 제거 모드가 활성화되어 있으면 스레드 ID 없이도 업데이트
         bool canUpdate = !string.IsNullOrEmpty(_currentThreadId) || IsPlacementMode || IsRemovalMode;
         
         if (!canUpdate)
@@ -118,25 +78,17 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
             _removalHandler?.Update(_currentThreadId);
         }
 
-        // 일반 클릭 처리 (스레드 ID 필요)
         if (!IsPlacementMode && !IsRemovalMode && !string.IsNullOrEmpty(_currentThreadId))
         {
             HandleBuildingClick();
         }
-
-        if (!string.IsNullOrEmpty(_currentThreadId))
-        {
-            _resourceAnimHandler?.Update();
-        }
     }
 
-    #endregion
-
-    #region 초기화 메서드
-
-    public void OnInitialize(GameManager gameManager, GameDataManager dataManager)
+    public void OnInitialize(GameManager gameManager, dataManager dataManager)
     {
-        InitializeReferences(gameManager, dataManager ?? GameDataManager.Instance);
+        _gameManager = gameManager;
+        _dataManager = dataManager;
+        _mainCamera = Camera.main;
 
         if (!_handlersInitialized)
         {
@@ -144,7 +96,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
             _handlersInitialized = true;
         }
 
-        InitializeThread();
+        _currentThreadId = _gameManager.CurrentThreadId;
 
         if (!_isInitialized)
         {
@@ -161,62 +113,19 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         }
     }
 
-    private void InitializeReferences(GameManager gameManager, GameDataManager dataManager)
-    {
-        _gameManager = gameManager ?? GameManager.Instance;
-        _dataManager = dataManager ?? GameDataManager.Instance;
-        _visualManager = VisualManager.Instance;
-
-        // GameManager에서 MainCameraController 가져오기 (우선순위)
-        _mainCameraController = _gameManager?.MainCameraController;
-        
-        if (_mainCameraController != null)
-        {
-            _mainCamera = _mainCameraController.Camera;
-        }
-        else
-        {
-            // GameManager에 없으면 Camera.main에서 찾기
-            if (Camera.main == null)
-            {
-                Debug.LogError("[BuildingTileManager] Main camera not found.");
-                return;
-            }
-
-            _mainCamera = Camera.main;
-            if (_mainCamera != null)
-            {
-                _mainCamera.TryGetComponent(out _mainCameraController);
-            }
-        }
-    }
-
     private void InitializeHandlers()
     {
         _gridGenHandler = new BuildingGridHandler(this, _buildingTilePrefab, _buildingObjectPrefab, _inputMarkerPrefab, _outputMarkerPrefab, _gridWidth, _gridHeight);
         _placementHandler = new BuildingPlacementHandler(this, _buildingObjectPrefab);
         _removalHandler = new BuildingRemovalHandler(this);
         _calculateHandler = new BuildingCalculateHandler(this);
-        _resourceAnimHandler = new ResourceAnimHandler(this, _resourceItemPrefab, _resourceSpawnInterval);
-    }
-
-    private void InitializeThread()
-    {
-        if (_gameManager != null && !string.IsNullOrEmpty(_gameManager.CurrentThreadId))
-        {
-            _currentThreadId = _gameManager.CurrentThreadId;
-        }
-        else
-        {
-            Debug.LogWarning("[BuildingTileManager] GameManager or CurrentThreadId is null/empty. Starting with an empty thread.");
-        }
+        _captureHandler = new BuildingCaptureHandler(this);
     }
 
     private void LoadInitialThreadState()
     {
         if (string.IsNullOrEmpty(_currentThreadId))
         {
-            // 스레드 ID가 없으면 건물 로드하지 않음 (정상적인 상황)
             _tempBuildingStates = new List<BuildingState>();
             return;
         }
@@ -273,10 +182,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         _sharedProductionIconCanvas = canvasRect.gameObject;
     }
 
-    #endregion
-
-    #region 그리드 및 카메라 관리
-
     public void SetPositionCenter()
     {
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, 11);
@@ -310,63 +215,12 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         SetCameraCollider();
     }
 
-    /// <summary> 특정 좌표의 타일을 반환합니다. </summary>
-    public GameObject GetThreadTile(Vector2Int position)
-    {
-        return _gridGenHandler?.GetTile(position);
-    }
-
-    /// <summary> 타일이 존재하는지 확인합니다. </summary>
-    public bool HasThreadTile(Vector2Int position)
-    {
-        return _gridGenHandler?.HasTile(position) ?? false;
-    }
-
-    #endregion
-
-    #region 건물 배치 및 제거 모드 제어
-
     /// <summary> 건물 배치 모드를 시작합니다. </summary>
     public void StartPlacementMode(BuildingData buildingData)
     {
         if (IsRemovalMode) _removalHandler?.CancelRemoval();
         _placementHandler?.StartPlacement(buildingData);
     }
-
-    /// <summary> 건물 배치 모드를 취소합니다. </summary>
-    public void CancelPlacementMode()
-    {
-        _placementHandler?.CancelPlacement();
-    }
-
-    /// <summary> 건물을 왼쪽으로 회전합니다. </summary>
-    public void RotateBuildingLeft()
-    {
-        if (IsPlacementMode) _placementHandler.RotateLeft();
-    }
-
-    /// <summary> 건물을 오른쪽으로 회전합니다. </summary>
-    public void RotateBuildingRight()
-    {
-        if (IsPlacementMode) _placementHandler.RotateRight();
-    }
-
-    /// <summary> 건물 제거 모드를 시작합니다. </summary>
-    public void StartRemovalMode()
-    {
-        if (IsPlacementMode) _placementHandler?.CancelPlacement();
-        _removalHandler?.StartRemoval();
-    }
-
-    /// <summary> 건물 제거 모드를 취소합니다. </summary>
-    public void CancelRemovalMode()
-    {
-        _removalHandler?.CancelRemoval();
-    }
-
-    #endregion
-
-    #region 스레드 및 임시 데이터 관리 (Temp-First Logic)
 
     /// <summary> 현재 편집 중인 Thread ID를 설정하고 데이터를 로드합니다. </summary>
     public void SetCurrentThread(string threadId)
@@ -422,16 +276,8 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
     /// <summary> 최종 저장 로직을 통합 관리합니다. (UI에서 호출) </summary>
     public void SaveThreadChanges(string threadName, string categoryId)
     {
-        if (_dataManager == null || _dataManager.Thread == null) 
-        {
-            Debug.LogWarning("[BuildingTileManager] Cannot save thread changes: DataManager or Thread handler is null.");
-            return;
-        }
-
         // 1. Thread ID 결정 및 생성/업데이트
         string newThreadId = _designUiManager.GetThreadIdFromTitle(threadName);
-        
-        // 빈 스레드 저장 방지: 건물이 없으면 스레드를 생성하지 않음
         if (_tempBuildingStates == null || _tempBuildingStates.Count == 0)
         {
             Debug.LogWarning($"[BuildingTileManager] Cannot save thread '{threadName}': No buildings to save. Thread will not be created.");
@@ -442,9 +288,9 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
 
         // 2. 임시 데이터를 DataManager에 반영
         string oldThreadId = _currentThreadId;
-        _currentThreadId = newThreadId; // 저장 대상을 새 ID로 변경
-        ApplyTempBuildingDataToDataManager(); // 임시 데이터가 newThreadId에 저장됨
-        _currentThreadId = newThreadId; // CurrentThreadId 확정
+        _currentThreadId = newThreadId;
+        ApplyTempBuildingDataToDataManager();
+        _currentThreadId = newThreadId;
 
         // 3. 카테고리 적용
         if (!string.IsNullOrEmpty(categoryId))
@@ -453,7 +299,7 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         }
 
         // 4. 레이아웃 캡처 및 이미지 경로 업데이트
-        string imagePath = CaptureThreadLayout(newThreadId);
+        string imagePath = _captureHandler?.CaptureThreadLayout(newThreadId);
         
         // 5. 유지비 계산 및 저장
         int totalMaintenance = CalculateTotalMaintenanceCost(newThreadId);
@@ -469,12 +315,10 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
                 thread.previewImagePath = imagePath;
             }
             thread.totalMaintenanceCost = totalMaintenance;
-            
-            // totalMaintenanceCost, previewImagePath, 직원 요구사항 변경사항을 저장
             _dataManager.Thread.Save();
         }
 
-        SetCurrentThread(newThreadId); // 임시 데이터 초기화 및 로드/갱신
+        SetCurrentThread(newThreadId);
 
         Debug.Log($"[BuildingTileManager] Save operation completed for Thread: {newThreadId}");
     }
@@ -517,10 +361,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         }
         return false;
     }
-
-    #endregion
-
-    #region 건물 렌더링 및 클릭 이벤트
 
     /// <summary> Thread의 건물들을 다시 로드하여 표시합니다. </summary>
     public void RefreshBuildings()
@@ -565,7 +405,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
                 }
             }
         }
-        _resourceAnimHandler?.SetRoutesDirty();
     }
 
     /// <summary> 건물 클릭을 처리합니다. </summary>
@@ -618,10 +457,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         }
     }
 
-    #endregion
-
-    #region 계산 및 유틸리티 메서드
-
     /// <summary> 회전에 따라 건물 크기를 계산합니다. </summary>
     private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
     {
@@ -630,114 +465,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
         return size;
     }
 
-    /// <summary> Input 마커 프리팹을 반환합니다. </summary>
-    public GameObject GetInputMarkerPrefab() => _inputMarkerPrefab;
-
-    /// <summary> Output 마커 프리팹을 반환합니다. </summary>
-    public GameObject GetOutputMarkerPrefab() => _outputMarkerPrefab;
-
-    /// <summary> 현재 Thread의 건물 레이아웃을 이미지로 캡처합니다. </summary>
-    public string CaptureThreadLayout(string threadId)
-    {
-        if (string.IsNullOrEmpty(threadId) || _mainCamera == null) return null;
-
-        // 경계 계산에 사용할 건물 목록 로드
-        List<BuildingState> buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
-        if (buildingStates == null || buildingStates.Count == 0) return null;
-
-        // 경계 계산
-        int minX = int.MaxValue, minY = int.MaxValue;
-        int maxX = int.MinValue, maxY = int.MinValue;
-        foreach (var buildingState in buildingStates)
-        {
-            BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
-            if (buildingData != null)
-            {
-                Vector2Int rotatedSize = GetRotatedSize(buildingData.size, buildingState.rotation);
-                minX = Mathf.Min(minX, buildingState.positionX);
-                minY = Mathf.Min(minY, buildingState.positionY);
-                maxX = Mathf.Max(maxX, buildingState.positionX + rotatedSize.x);
-                maxY = Mathf.Max(maxY, buildingState.positionY + rotatedSize.y);
-            }
-        }
-        
-        // 유효한 경계가 없는 경우 (모든 건물이 1x1이고 겹칠 때 min/max가 같을 수 있음)를 대비
-        if (minX == int.MaxValue) return null;
-
-        // 경계 및 패딩 설정
-        int padding = 2;
-        int gridWidth = (maxX + padding) - (minX - padding);
-        int gridHeight = (maxY + padding) - (minY - padding);
-        
-        // 중앙 계산
-        float centerX = (minX + maxX) / 2f;
-        float centerY = (minY + maxY) / 2f;
-
-        // 캡처 설정
-        // 렌더 텍스처 설정: 알파 채널 포함 (RGBA)
-        int width = Mathf.Max(512, gridWidth * 64);
-        int height = Mathf.Max(512, gridHeight * 64);
-        RenderTexture renderTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
-
-        // --- 카메라 상태 백업 ---
-        RenderTexture originalRT = _mainCamera.targetTexture;
-        CameraClearFlags originalClearFlags = _mainCamera.clearFlags;
-        Color originalBackgroundColor = _mainCamera.backgroundColor;
-        float originalOrthographicSize = _mainCamera.orthographicSize;
-        Vector3 originalPosition = _mainCamera.transform.position;
-        
-        try
-        {
-            // --- 카메라 캡처 설정 ---
-            _mainCamera.targetTexture = renderTexture;
-            _mainCamera.clearFlags = CameraClearFlags.Color; // SolidColor 대신 Color 사용 (Unity 5.x 이후)
-            _mainCamera.backgroundColor = new Color(0, 0, 0, 0); // 투명한 배경 설정
-            
-            // NOTE: 투명도 캡처를 위해 Layer나 DepthOnly를 사용해야 할 수 있으나, 
-            // 가장 간단한 방법은 ClearFlags를 사용하고 ARGB32 포맷을 사용하는 것입니다.
-
-            // 카메라 위치 및 줌 조정
-            _mainCamera.transform.position = new Vector3(centerX, -centerY, originalPosition.z); // Z 위치 유지
-            _mainCamera.orthographicSize = Mathf.Max(gridWidth / _mainCamera.aspect, gridHeight) / 2f + padding;
-
-            _mainCamera.Render();
-
-            // --- 캡처 및 파일 저장 ---
-            RenderTexture.active = renderTexture;
-            // TextureFormat.ARGB32 또는 RGBA32 사용 (알파 채널 지원)
-            Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false); 
-            texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            texture.Apply();
-            
-            byte[] imageBytes = texture.EncodeToPNG(); // PNG는 알파 채널 지원
-            string filePath = System.IO.Path.Combine(Application.persistentDataPath, $"ThreadPreview_{threadId}.png");
-            System.IO.File.WriteAllBytes(filePath, imageBytes);
-
-            Debug.Log($"[BuildingTileManager] Thread layout captured: {filePath} (Size: {gridWidth}x{gridHeight})");
-            return filePath;
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[BuildingTileManager] Failed to capture thread layout: {e.Message}");
-            return null;
-        }
-        finally
-        {
-            // --- 카메라 상태 복원 및 리소스 정리 ---
-            _mainCamera.targetTexture = originalRT;
-            _mainCamera.clearFlags = originalClearFlags;
-            _mainCamera.backgroundColor = originalBackgroundColor;
-            _mainCamera.orthographicSize = originalOrthographicSize;
-            _mainCamera.transform.position = originalPosition;
-            RenderTexture.active = null;
-
-            if (renderTexture != null)
-            {
-                renderTexture.Release();
-                Destroy(renderTexture);
-            }
-        }
-    }
 
     /// <summary> 유효한 생산 건물의 수를 계산합니다. </summary>
     /// <remarks>경로 탐색이 필요하므로 BuildingCalculateHandler 사용</remarks>
@@ -758,12 +485,6 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
     /// <summary> Thread의 직원 요구사항을 계산하고 ThreadState에 저장합니다. </summary>
     public void CalculateAndSetEmployeeRequirements(string threadId)
     {
-        if (_dataManager == null || _dataManager.Thread == null || _dataManager.ThreadCalculate == null)
-        {
-            Debug.LogWarning("[BuildingTileManager] Cannot calculate employee requirements: DataManager or handlers are null.");
-            return;
-        }
-
         ThreadState thread = _dataManager.Thread.GetThread(threadId);
         if (thread == null)
         {
@@ -771,13 +492,8 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
             return;
         }
 
-        // 현재 스레드의 건물 상태 가져오기
         List<BuildingState> buildingStates = (threadId == _currentThreadId) ? GetCurrentBuildingStates() : _dataManager.Thread.GetBuildingStates(threadId);
-
-        // ThreadCalculateHandler를 사용하여 계산
         int totalEmployees = _dataManager.ThreadCalculate.CalculateRequiredEmployees(threadId, buildingStates);
-
-        // ThreadState에 저장
         thread.requiredEmployees = totalEmployees;
 
         Debug.Log($"[BuildingTileManager] Employee requirements calculated for thread '{threadId}': Total Employees={totalEmployees}");
@@ -818,12 +534,8 @@ public class BuildingTileManager : MonoBehaviour, IGameSceneManager
     public Vector3 CalculateSpriteScale(Sprite sprite, Vector2Int targetSize)
     {
         if (sprite == null) return Vector3.one;
-
         float scaleX = targetSize.x / sprite.bounds.size.x;
         float scaleY = targetSize.y / sprite.bounds.size.y;
-
         return new Vector3(scaleX, scaleY, 1f);
     }
-
-    #endregion
 }

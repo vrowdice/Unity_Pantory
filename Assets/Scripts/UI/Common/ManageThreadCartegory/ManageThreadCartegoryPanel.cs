@@ -6,7 +6,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
     [SerializeField] private Transform _contentTransform;
     [SerializeField] private ManageThreadCartegoryItemBtn _itemPanelPrefab;
 
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
     private Action<string> _onCategorySelected;
 
     /// <summary>
@@ -14,7 +14,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
     /// </summary>
     /// <param name="dataManager">GameDataManager</param>
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
-    public void OnInitialize(GameDataManager dataManager, Action<string> onCategorySelected = null)
+    public void OnInitialize(dataManager dataManager, Action<string> onCategorySelected = null)
     {
         _dataManager = dataManager;
         _onCategorySelected = onCategorySelected;

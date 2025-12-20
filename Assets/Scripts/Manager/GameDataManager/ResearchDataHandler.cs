@@ -9,7 +9,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 /// </summary>
 public class ResearchDataHandler
 {
-    private readonly GameDataManager _gameDataManager;
+    private readonly dataManager _gameDataManager;
     private Dictionary<string, ResearchEntry> _researchEntries = new();
     private long _researchPoint;
     private bool _isAutoPatentMode = false;
@@ -20,7 +20,7 @@ public class ResearchDataHandler
     public event Action OnResearchPointsChanged;
     public event Action<string> OnResearchUnlocked;
 
-    public ResearchDataHandler(GameDataManager manager, List<ResearchData> researchDataList = null)
+    public ResearchDataHandler(dataManager manager, List<ResearchData> researchDataList = null)
     {
         _gameDataManager = manager;
         
@@ -205,6 +205,7 @@ public class ResearchDataHandler
         {
             return entry.state.isCompleted;
         }
+
         return false;
     }
 

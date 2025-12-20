@@ -8,7 +8,7 @@ public class BuildingRemovalHandler
 {
     private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridManager;
-    private readonly GameDataManager _dataManager;
+    private readonly dataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
     private readonly Camera _camera;
     private readonly DesignUiManager _designUiManager;
@@ -25,8 +25,6 @@ public class BuildingRemovalHandler
         _camera = _mainCameraController != null ? _mainCameraController.Camera : buildingTileManager.MainCamera;
         _designUiManager = buildingTileManager.DesignUiManager;
     }
-
-    #region Public Methods
 
     /// <summary>
     /// 제거 모드를 시작합니다.
@@ -60,10 +58,6 @@ public class BuildingRemovalHandler
         UpdatePreview(currentThreadId);
         HandleInput(currentThreadId);
     }
-
-    #endregion
-
-    #region Private Logic: Preview and Input
 
     /// <summary>
     /// 제거 프리뷰를 업데이트합니다. 마우스 아래 건물을 감지하고 하이라이트합니다.
@@ -147,10 +141,6 @@ public class BuildingRemovalHandler
         }
     }
 
-    #endregion
-
-    #region Visuals
-
     /// <summary>
     /// 건물을 하이라이트 표시합니다.
     /// </summary>
@@ -181,6 +171,4 @@ public class BuildingRemovalHandler
             _hoveredBuilding = null;
         }
     }
-
-    #endregion
 }

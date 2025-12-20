@@ -15,7 +15,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManager
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
 
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
     private MainCameraController _mainCameraController;
     private Camera _mainCamera;
     private BoxCollider2D _cameraCollider;
@@ -54,7 +54,7 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManager
     {
         if (!_isInitialized)
         {
-            OnInitialize(GameManager.Instance, GameDataManager.Instance);
+            OnInitialize(GameManager.Instance, dataManager.Instance);
         }
     }
 
@@ -230,10 +230,10 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManager
 
     #region Initialization
 
-    public void OnInitialize(GameManager gameManager, GameDataManager dataManager)
+    public void OnInitialize(GameManager gameManager, dataManager dataManager)
     {
         _gameManager = gameManager ?? GameManager.Instance;
-        InitializeReferences(_gameManager, dataManager ?? GameDataManager.Instance);
+        InitializeReferences(_gameManager, dataManager ?? dataManager.Instance);
 
         if (_gridHandler == null)
         {
@@ -252,9 +252,9 @@ public class ThreadTileManager : MonoBehaviour, IGameSceneManager
         _isInitialized = true;
     }
 
-    private void InitializeReferences(GameManager gameManager, GameDataManager dataManager)
+    private void InitializeReferences(GameManager gameManager, dataManager dataManager)
     {
-        _dataManager = dataManager ?? GameDataManager.Instance;
+        _dataManager = dataManager ?? dataManager.Instance;
 
         if (_mainUiManager == null && gameManager?.UiManager is MainUiManager uiManager)
         {

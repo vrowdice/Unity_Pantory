@@ -57,8 +57,7 @@ MonoBehaviour:
   _gridSortContentPrefab: {fileID: 9210800356017659960, guid: 4f082e6a291457548b44223e7a304a2c, type: 3}
   _textPairPanelPrefab: {fileID: 5195975711048486128, guid: 2af1b22cca5536341a68e8ab542df466, type: 3}
   _actionBtnPrefab: {fileID: 6252256842686782447, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
+  _effectTextPairPanelPrefab: {fileID: 5774520682493067643, guid: c73d844a3a8e83a4daccb49f6576b23f, type: 3}
   _productionIconScale: 0.8
   _gameDataManagerPrefab: {fileID: 8528956353445437084, guid: 10c608d4ef825d14b8a641b7ad998c7f, type: 3}
-  _autoCreateGameDataManager: 1
   _visualManagerPrefab: {fileID: 3783952558090352044, guid: a9a6b4feda52725479ea0aa16606b313, type: 3}
-  _autoCreateVisualManager: 1

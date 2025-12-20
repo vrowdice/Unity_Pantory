@@ -12,7 +12,7 @@ public class BuildingGridHandler
     private readonly GameObject _buildingObjectPrefab;
     private readonly GameObject _inputMarkerPrefab;
     private readonly GameObject _outputMarkerPrefab;
-    private readonly GameDataManager _dataManager;
+    private readonly dataManager _dataManager;
     private readonly BuildingTileManager _buildingTileManager;
 
     private int _gridWidth;

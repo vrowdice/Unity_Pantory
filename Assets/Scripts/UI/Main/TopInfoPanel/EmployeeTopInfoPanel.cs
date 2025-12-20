@@ -25,9 +25,9 @@ public class EmployeeTopInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _managerCountText;
     [SerializeField] private TextMeshProUGUI _managerSatisfactionText;
 
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
 
-    public void OnInitialize(GameDataManager dataManager)
+    public void OnInitialize(dataManager dataManager)
     {
         _dataManager = dataManager;
 

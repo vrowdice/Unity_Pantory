@@ -7,9 +7,9 @@ using UnityEngine;
 /// </summary>
 public class ThreadCalculateHandler
 {
-    private readonly GameDataManager _gameDataManager;
+    private readonly dataManager _gameDataManager;
 
-    public ThreadCalculateHandler(GameDataManager gameDataManager)
+    public ThreadCalculateHandler(dataManager gameDataManager)
     {
         _gameDataManager = gameDataManager;
 

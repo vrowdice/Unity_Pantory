@@ -20,10 +20,13 @@ MonoBehaviour:
   description: A military-grade manufacturing facility for producing weapons and
     munitions. Produces small arms, heavy arms, and munitions from steel ingots and
     machine parts. Essential for wartime production with high demand during conflicts.
+  isUnlockedByDefault: 0
+  requiredEmployees: 6
   baseCost: 450
   baseMaintenanceCost: 22
   size: {x: 2, y: 2}
-  requiredEmployees: 6
+  requiredResearch: {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 02000000
   _producibleResources:
   - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}

@@ -10,7 +10,7 @@ using static UnityEngine.Rendering.DebugUI;
 /// </summary>
 public class EffectDataHandler
 {
-    private readonly GameDataManager _gameDataManager;
+    private readonly dataManager _gameDataManager;
 
     /// <summary>
     /// 전역 이펙트
@@ -19,7 +19,7 @@ public class EffectDataHandler
 
     public Dictionary<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> Effects => _effects;
 
-    public EffectDataHandler(GameDataManager gameDataManager) 
+    public EffectDataHandler(dataManager gameDataManager) 
     {
         _gameDataManager = gameDataManager;
 

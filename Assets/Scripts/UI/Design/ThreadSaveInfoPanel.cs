@@ -22,7 +22,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
     #region Private State & Managers
 
-    private GameDataManager _dataManager = null;
+    private dataManager _dataManager = null;
     private GameManager _gameManager = null;
     private DesignUiManager _designUiManager = null;
     private string _selectedCategoryId = string.Empty; // 사용자가 선택한 카테고리 ID
@@ -34,7 +34,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// <summary>
     /// SaveLoadHandler에서 사용할 DataManager를 초기 설정합니다. (Awake/Initialize 단계)
     /// </summary>
-    public void OnInitialize(GameDataManager dataManager)
+    public void OnInitialize(dataManager dataManager)
     {
         _dataManager = dataManager;
         _gameManager = GameManager.Instance;

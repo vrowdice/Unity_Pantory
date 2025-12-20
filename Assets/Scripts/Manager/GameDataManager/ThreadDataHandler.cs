@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ThreadDataHandler
 {
-    private readonly GameDataManager _gameDataManager = null;
+    private readonly dataManager _gameDataManager = null;
 
     #region Private Data Containers
 
@@ -26,7 +26,7 @@ public class ThreadDataHandler
 
     #region Constructor & Save Logic
 
-    public ThreadDataHandler(GameDataManager gameDataManager)
+    public ThreadDataHandler(dataManager gameDataManager)
     {
         _threads = new Dictionary<string, ThreadState>();
         _categories = new Dictionary<string, ThreadCategory>();
@@ -265,23 +265,17 @@ public class ThreadDataHandler
         return true;
     }
 
-    // NOTE: AddBuilding과 RemoveBuilding은 이제 OverwriteBuildings가 최종 저장 시 호출되므로, 
-    // 임시 데이터 관리를 위해 사용될 경우 SaveThreadData() 호출 로직을 유지할 수 있으나,
-    // 여기서는 최종적으로 ApplyTempBuildingDataToDataManager()가 OverwriteBuildings를 호출하는 방식으로 통합됩니다.
-
     /// <summary> 특정 Thread에 건물을 추가합니다. </summary>
     public bool AddBuilding(string threadId, BuildingState buildingState)
     {
         if (!_threads.TryGetValue(threadId, out var thread) || buildingState == null) return false;
 
-        // 기존 위치에 건물이 있으면 제거 후 추가 (덮어쓰기)
         thread.buildingStateList.RemoveAll(b => b.positionX == buildingState.positionX && b.positionY == buildingState.positionY);
         thread.buildingStateList.Add(buildingState);
 
         Debug.Log($"[ThreadService] Building added/replaced in thread {thread.threadName}: {buildingState.buildingId}");
 
         OnThreadChanged?.Invoke();
-        // SaveThreadData(); // OverwriteBuildings가 최종 저장 시 호출된다면, 여기서는 생략 가능 (성능 최적화)
         return true;
     }
 
@@ -300,7 +294,6 @@ public class ThreadDataHandler
         Debug.Log($"[ThreadService] Building removed from thread {thread.threadName} at {position}");
 
         OnThreadChanged?.Invoke();
-        // SaveThreadData(); // OverwriteBuildings가 최종 저장 시 호출된다면, 여기서는 생략 가능 (성능 최적화)
         return true;
     }
 

@@ -8,7 +8,7 @@ public class BuildingPlacementHandler
 {
     private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridHandler;
-    private readonly GameDataManager _dataManager;
+    private readonly dataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
     private readonly DesignUiManager _designUiManager;
 

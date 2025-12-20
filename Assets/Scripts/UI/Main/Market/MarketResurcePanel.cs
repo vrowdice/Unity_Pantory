@@ -5,7 +5,7 @@ using TMPro;
 
 public class MarketResurcePanel : MonoBehaviour
 {
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
     private MarketPanel _marketPanel;
 
     [SerializeField] private WindowGraph _windowGraph;
@@ -35,7 +35,7 @@ public class MarketResurcePanel : MonoBehaviour
         return _selectedResourceId;
     }
 
-    public void OnInitialize(GameDataManager dataManager, MarketPanel marketPanel = null)
+    public void OnInitialize(dataManager dataManager, MarketPanel marketPanel = null)
     {
         _dataManager = dataManager;
         _marketPanel = marketPanel;

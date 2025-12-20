@@ -5,7 +5,7 @@ using TMPro;
 
 public class MarketTraderPanel : MonoBehaviour
 {
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
     private GameManager _gameManager;
     private MarketActorEntry _selectedActor;
     private List<GameObject> _providerResourceIcons = new List<GameObject>();
@@ -26,7 +26,7 @@ public class MarketTraderPanel : MonoBehaviour
     [SerializeField] private Transform _consumerResourceContentTransform;
 
 
-    public void OnInitialize(GameManager gameManager, GameDataManager dataManager)
+    public void OnInitialize(GameManager gameManager, dataManager dataManager)
     {
         _gameManager = gameManager;
         _dataManager = dataManager;

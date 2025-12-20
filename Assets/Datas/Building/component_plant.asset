@@ -21,16 +21,19 @@ MonoBehaviour:
     electronic components, and precision tools. Produces machine parts, electronic
     components, and precision tools from refined metals. Essential for advanced production
     chains.
+  isUnlockedByDefault: 0
+  requiredEmployees: 5
   baseCost: 280
   baseMaintenanceCost: 14
   size: {x: 2, y: 2}
-  requiredEmployees: 5
+  requiredResearch: {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 05000000
-  inputPosition: {x: -1, y: 1}
-  outputPosition: {x: 2, y: 1}
-  baseProductionRate: 1
-  processingTime: 1
   _producibleResources:
   - {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
   - {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
   - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}
+  inputPosition: {x: -1, y: 1}
+  outputPosition: {x: 2, y: 1}
+  baseProductionRate: 1
+  processingTime: 1

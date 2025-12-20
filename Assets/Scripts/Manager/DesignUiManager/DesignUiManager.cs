@@ -13,27 +13,25 @@ public partial class DesignUiManager : MonoBehaviour, IUIManager
     [SerializeField] private BuildingTileManager _buildingTileManager;
 
     private GameManager _gameManager;
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
     private GameObject _productionInfoImage;
 
 
     public Transform CanvasTrans => transform;
     public BuildingTileManager BuildingTileManager => _buildingTileManager;
     public GameManager GameManager => _gameManager;
-    public GameDataManager GameDataManager => _dataManager;
+    public dataManager GameDataManager => _dataManager;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public bool IsRemovalMode => _isRemovalMode;
     public GameObject ProductionInfoImage => _productionInfoImage;
 
-
-
-    public void OnInitialize(GameManager argGameManager, GameDataManager argGameDataManager)
+    public void OnInitialize(GameManager argGameManager, dataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;
         _productionInfoImage = argGameManager.ProductionInfoImage;
 
-        EnumUtils.GetAllEnumValues<BuildingType>().ForEach(buildingType =>
+        foreach (var buildingType in EnumUtils.GetAllEnumValues<BuildingType>())
         {
             var btn = Instantiate(_buildingTypeBtnPrefab, _buildingTypeBtnContent);
             var buildingTypeBtn = btn.GetComponent<BuildingTypeBtn>();
@@ -42,16 +40,12 @@ public partial class DesignUiManager : MonoBehaviour, IUIManager
                 buildingTypeBtn.Initialize(this, buildingType);
                 _buildingTypeBtns.Add(buildingTypeBtn);
             }
-        });
-
-        SelectBuildingType(BuildingType.Distribution);
-
-        if (_saveInfoPanel != null)
-        {
-            _saveInfoPanel.OnInitialize(_dataManager);
         }
 
+        _saveInfoPanel.OnInitialize(_dataManager);
         InitializeThreadTitle();
+
+        SelectBuildingType(BuildingType.Distribution);
     }
 
     public void UpdateAllMainText()

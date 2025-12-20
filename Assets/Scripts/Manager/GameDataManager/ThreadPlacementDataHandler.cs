@@ -8,12 +8,12 @@ using UnityEngine;
 /// </summary>
 public class ThreadPlacementDataHandler
 {
-    private readonly GameDataManager _gameDataManager;
+    private readonly dataManager _gameDataManager;
     private readonly Dictionary<Vector2Int, ThreadPlacementState> _placedThreads = new Dictionary<Vector2Int, ThreadPlacementState>();
 
     public event Action OnPlacementChanged;
 
-    public ThreadPlacementDataHandler(GameDataManager gameDataManager)
+    public ThreadPlacementDataHandler(dataManager gameDataManager)
     {
         _gameDataManager = gameDataManager;
     }

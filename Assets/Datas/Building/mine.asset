@@ -20,10 +20,13 @@ MonoBehaviour:
   description: A deep-shaft mining facility that extracts iron ore, coal, copper
     ore, gold ore, and aluminum ore from the earth. Requires significant investment
     but provides essential raw materials for industry.
+  isUnlockedByDefault: 0
+  requiredEmployees: 8
   baseCost: 500
   baseMaintenanceCost: 25
   size: {x: 2, y: 2}
-  requiredEmployees: 8
+  requiredResearch: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 00000000
   _producibleResources:
   - {fileID: 11400000, guid: c96478f871047914fa5e4676ff47d872, type: 2}

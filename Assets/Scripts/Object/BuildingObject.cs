@@ -11,7 +11,7 @@ public class BuildingObject : MonoBehaviour
     [SerializeField] private float _productionIconScale;
 
     private GameManager _gameManager;
-    private GameDataManager _dataManager;
+    private dataManager _dataManager;
 
     private BuildingData _buildingData;
     private BuildingState _buildingState;
@@ -29,7 +29,7 @@ public class BuildingObject : MonoBehaviour
     public void Initialize(BuildingData buildingData, BuildingState buildingState, GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, BuildingGridHandler gridHandler)
     {
         _gameManager = GameManager.Instance;
-        _dataManager = GameDataManager.Instance;
+        _dataManager = dataManager.Instance;
 
         _buildingData = buildingData;
         _buildingState = buildingState;

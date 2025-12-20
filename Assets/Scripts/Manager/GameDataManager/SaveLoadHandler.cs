@@ -15,7 +15,7 @@ public class SaveLoadHandler
     /// SaveLoadHandler의 기본 생성자.
     /// NOTE: MonoBehaviour 클래스는 일반적으로 new로 생성되지 않고 AddComponent를 사용합니다.
     /// </summary>
-    public SaveLoadHandler(GameDataManager gameDataManager)
+    public SaveLoadHandler(dataManager gameDataManager)
     {
 
     }

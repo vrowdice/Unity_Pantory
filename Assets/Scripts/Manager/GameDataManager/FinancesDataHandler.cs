@@ -23,7 +23,7 @@ public struct DailyExpenseReservation
 /// </summary>
 public class FinancesDataHandler
 {
-    private readonly GameDataManager _gameDataManager;
+    private readonly dataManager _gameDataManager;
 
     private long _credit;
     public event Action OnCreditChanged;
@@ -39,7 +39,7 @@ public class FinancesDataHandler
     /// <summary>
     /// FinancesService 생성자
     /// </summary>
-    public FinancesDataHandler(GameDataManager gameDataManager, InitialResourceData initData)
+    public FinancesDataHandler(dataManager gameDataManager, InitialResourceData initData)
     {
         _gameDataManager = gameDataManager;
         _credit = initData.initialCredit;

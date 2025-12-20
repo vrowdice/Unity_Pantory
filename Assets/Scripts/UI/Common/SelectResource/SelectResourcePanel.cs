@@ -9,7 +9,7 @@ public class SelectResourcePanel : MonoBehaviour
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
-    private GameDataManager _gameDataManager = null;
+    private dataManager _gameDataManager = null;
     private List<ResourceType> _resourceTypes = null;
     private Action<ResourceEntry> _onResourceSelected = null;
     private List<ResourceData> _producibleResources = null; // 생산 가능한 자원 목록 (옵션)
@@ -21,7 +21,7 @@ public class SelectResourcePanel : MonoBehaviour
     /// <param name="resourceTypes">허용된 자원 타입 목록</param>
     /// <param name="onResourceSelected">자원 선택 콜백</param>
     /// <param name="producibleResources">생산 가능한 자원 목록 (null이면 해당 타입의 모든 자원 표시)</param>
-    public void OnInitialize(GameDataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
+    public void OnInitialize(dataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
         _gameDataManager = gameDataManager;
         _resourceTypes = resourceTypes;

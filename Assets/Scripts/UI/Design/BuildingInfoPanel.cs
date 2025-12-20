@@ -28,7 +28,7 @@ public class BuildingInfoPanel : MonoBehaviour
     private BuildingState _currentBuildingState;
 
     private DesignUiManager _designUiManager;
-    private GameDataManager _gameDataManager;
+    private dataManager _gameDataManager;
     private System.Action<ResourceEntry> _onOutputResourceSelected;
 
     /// <summary>
@@ -102,7 +102,6 @@ public class BuildingInfoPanel : MonoBehaviour
             }
             else
             {
-                // 비생산 건물: 버튼을 보여주되 클릭은 막음 (자식 Grid들이 숨지 않게)
                 _changeProductionBtn?.SetActive(true);
                 if (btn != null) btn.interactable = false;
 

@@ -20,10 +20,13 @@ MonoBehaviour:
   description: A smelting facility that transforms raw ores into refined metal ingots.
     Processes iron ore, copper ore, aluminum ore, and gold ore into their respective
     ingots. Essential for metalworking industries.
+  isUnlockedByDefault: 0
+  requiredEmployees: 4
   baseCost: 200
   baseMaintenanceCost: 12
   size: {x: 2, y: 2}
-  requiredEmployees: 4
+  requiredResearch: {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}
+  handlingResource: {fileID: 0}
   allowedResourceTypes: 01000000
   _producibleResources:
   - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}

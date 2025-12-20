@@ -13,7 +13,7 @@ public class ResearchInfoPanel : MonoBehaviour
 
     private ResearchEntry _currentResearchEntry;
     private MainUiManager _mainUiManager;
-    private GameDataManager _gameDataManager;
+    private dataManager _gameDataManager;
 
     private GameManager _gameManager;
 
@@ -22,7 +22,7 @@ public class ResearchInfoPanel : MonoBehaviour
     /// <summary>
     /// 패널을 초기화하고 데이터를 연결합니다.
     /// </summary>
-    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager, GameDataManager dataManager)
+    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager, dataManager dataManager)
     {
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;
