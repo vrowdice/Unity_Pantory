@@ -1,287 +1,257 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
-/// 건물 배치용 그리드 및 타일을 관리하는 클래스
-/// (모든 건물은 정사각형이며, 본체 회전 없이 입출력 포트 위치만 변경됨)
+/// 그리드 타일의 생성, 건물 오브젝트의 배치 및 좌표 변환을 관리하는 핸들러입니다.
+/// 모든 건물은 정사각형으로 처리되며, 스프라이트 회전 없이 내부 데이터(포트 위치)만 회전합니다.
 /// </summary>
 public class BuildingGridHandler
 {
+    private readonly BuildingTileManager _manager;
     private readonly Transform _parentTransform;
-    private readonly GameObject _buildingTilePrefab;
-    private readonly GameObject _buildingObjectPrefab;
+
+    // Prefabs
+    private readonly GameObject _tilePrefab;
+    private readonly GameObject _buildingPrefab;
     private readonly GameObject _inputMarkerPrefab;
     private readonly GameObject _outputMarkerPrefab;
-    private readonly dataManager _dataManager;
-    private readonly BuildingTileManager _buildingTileManager;
 
+    // Grid Data
     private int _gridWidth;
     private int _gridHeight;
+    private readonly Dictionary<Vector2Int, GameObject> _tileMap = new Dictionary<Vector2Int, GameObject>();
+    private readonly Dictionary<Vector2Int, GameObject> _buildingMap = new Dictionary<Vector2Int, GameObject>();
 
-    private readonly Dictionary<Vector2Int, GameObject> _buildingTiles = new Dictionary<Vector2Int, GameObject>();
-    private readonly Dictionary<Vector2Int, GameObject> _placedBuildings = new Dictionary<Vector2Int, GameObject>();
+    // Constants (Depth/Z-axis)
+    private const float TileZDepth = 10f;
+    private const float BuildingZDepth = 9f;
 
-    #region Public Properties
+    public int Width => _gridWidth;
+    public int Height => _gridHeight;
 
-    public int GridWidth => _gridWidth;
-    public int GridHeight => _gridHeight;
-    public Dictionary<Vector2Int, GameObject> BuildingTiles => _buildingTiles;
-    public Dictionary<Vector2Int, GameObject> PlacedBuildings => _placedBuildings;
-
-    #endregion
-
-    #region Constructor
-
-    public BuildingGridHandler(BuildingTileManager buildingTileManager, GameObject buildingTilePrefab, GameObject buildingObjectPrefab, GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, int gridWidth, int gridHeight)
+    public BuildingGridHandler(
+        BuildingTileManager manager,
+        GameObject tilePrefab,
+        GameObject buildingPrefab,
+        GameObject inputMarker,
+        GameObject outputMarker,
+        int width,
+        int height)
     {
-        _buildingTilePrefab = buildingTilePrefab;
-        _buildingObjectPrefab = buildingObjectPrefab;
-        _inputMarkerPrefab = inputMarkerPrefab;
-        _outputMarkerPrefab = outputMarkerPrefab;
-        _dataManager = buildingTileManager.DataManager;
-        _buildingTileManager = buildingTileManager;
-        _gridWidth = gridWidth;
-        _gridHeight = gridHeight;
-
-        _parentTransform = _buildingTileManager.transform;
+        _manager = manager;
+        _parentTransform = manager.transform;
+        _tilePrefab = tilePrefab;
+        _buildingPrefab = buildingPrefab;
+        _inputMarkerPrefab = inputMarker;
+        _outputMarkerPrefab = outputMarker;
+        _gridWidth = width;
+        _gridHeight = height;
     }
 
-    #endregion
-
-    #region Grid Initialization and Clearing
+    #region Grid Initialization
 
     public void CreateGrid(int width, int height)
     {
         ClearGrid();
-
         _gridWidth = width;
         _gridHeight = height;
 
-        for (int y = 0; y < height; y++)
+        for (int y = 0; y < _gridHeight; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < _gridWidth; x++)
             {
-                Vector2Int position = new Vector2Int(x, y);
-                // 타일 생성 (Z축 정렬을 위해 y값 활용)
-                GameObject tile = Object.Instantiate(_buildingTilePrefab, new Vector3(x, -y, 10), Quaternion.identity, _parentTransform);
-                _buildingTiles[position] = tile;
+                Vector2Int gridPosition = new Vector2Int(x, y);
+                // 유니티 좌표계 특성상 y축은 아래로 생성 (-y)
+                GameObject tileObject = Object.Instantiate(_tilePrefab, new Vector3(x, -y, TileZDepth), Quaternion.identity, _parentTransform);
+                tileObject.name = "Tile_" + x + "_" + y;
 
-                var buildingTile = tile.GetComponent<BuildingTile>();
-                if (buildingTile != null)
+                BuildingTile buildingTileComponent;
+                if (tileObject.TryGetComponent<BuildingTile>(out buildingTileComponent))
                 {
-                    buildingTile.Initialize(position, null);
+                    buildingTileComponent.Initialize(gridPosition, null);
                 }
+
+                _tileMap[gridPosition] = tileObject;
             }
         }
     }
 
-    public void ExpandGrid(int newWidth, int newHeight)
-    {
-        CreateGrid(newWidth, newHeight);
-    }
+    public void ExpandGrid(int newWidth, int newHeight) => CreateGrid(newWidth, newHeight);
 
     public void ClearGrid()
     {
-        ClearAllOccupiedTiles();
         ClearAllPlacedBuildings();
-
-        foreach (var tile in _buildingTiles.Values)
+        foreach (GameObject tileObject in _tileMap.Values)
         {
-            if (tile != null) Object.Destroy(tile);
+            if (tileObject != null) Object.Destroy(tileObject);
         }
-        _buildingTiles.Clear();
+        _tileMap.Clear();
     }
 
     public void ClearAllPlacedBuildings()
     {
-        foreach (var building in _placedBuildings.Values)
+        foreach (GameObject buildingObject in _buildingMap.Values)
         {
-            if (building != null) Object.Destroy(building);
+            if (buildingObject != null) Object.Destroy(buildingObject);
         }
-        _placedBuildings.Clear();
+        _buildingMap.Clear();
+        ClearAllOccupiedStatus();
     }
 
-    public void ClearAllOccupiedTiles()
+    public void ClearAllOccupiedStatus()
     {
-        foreach (var tile in _buildingTiles.Values)
+        foreach (GameObject tileObject in _tileMap.Values)
         {
-            var buildingTile = tile.GetComponent<BuildingTile>();
-            if (buildingTile != null)
+            BuildingTile buildingTileComponent;
+            if (tileObject.TryGetComponent<BuildingTile>(out buildingTileComponent))
             {
-                buildingTile.SetOccupied(false);
+                buildingTileComponent.SetOccupied(false);
             }
         }
     }
 
     #endregion
 
-    #region Tile and Occupation Status
+    #region Occupation Logic
 
-    public GameObject GetTile(Vector2Int position)
+    public bool CanPlaceBuilding(Vector2Int gridPosition, Vector2Int size)
     {
-        return _buildingTiles.ContainsKey(position) ? _buildingTiles[position] : null;
-    }
-
-    public bool HasTile(Vector2Int position)
-    {
-        return _buildingTiles.ContainsKey(position);
-    }
-
-    public void SetAllTilesOutline(bool visible, Color color = default)
-    {
-        foreach (var tile in _buildingTiles.Values)
+        // 1. 그리드 범위 밖인지 확인
+        if (gridPosition.x < 0 || gridPosition.y < 0 ||
+            gridPosition.x + size.x > _gridWidth || gridPosition.y + size.y > _gridHeight)
         {
-            if (tile != null)
-            {
-                var buildingTile = tile.GetComponent<BuildingTile>();
-                if (buildingTile != null)
-                {
-                    buildingTile.SetOutlineVisible(visible, color);
-                }
-            }
+            return false;
         }
-    }
 
-    public void MarkTilesAsOccupied(Vector2Int startPos, Vector2Int size, bool occupied = true)
-    {
+        // 2. 해당 영역의 타일들이 비어있는지 확인
         for (int y = 0; y < size.y; y++)
         {
             for (int x = 0; x < size.x; x++)
             {
-                Vector2Int pos = new Vector2Int(startPos.x + x, startPos.y + y);
-                if (_buildingTiles.TryGetValue(pos, out GameObject tile))
-                {
-                    var buildingTile = tile.GetComponent<BuildingTile>();
-                    if (buildingTile != null)
-                    {
-                        buildingTile.SetOccupied(occupied);
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region Building Object Management
-
-    public bool CanPlaceBuilding(Vector2Int gridPos, Vector2Int size)
-    {
-        if (gridPos.x < 0 || gridPos.y < 0) return false;
-        if (gridPos.x + size.x > _gridWidth || gridPos.y + size.y > _gridHeight) return false;
-
-        for (int y = 0; y < size.y; y++)
-        {
-            for (int x = 0; x < size.x; x++)
-            {
-                Vector2Int checkPos = new Vector2Int(gridPos.x + x, gridPos.y + y);
-
-                if (_buildingTiles.TryGetValue(checkPos, out GameObject tile))
-                {
-                    var buildingTile = tile.GetComponent<BuildingTile>();
-                    if (buildingTile != null && buildingTile.IsOccupied)
-                    {
-                        return false;
-                    }
-                }
-                else
+                if (!IsTileAvailable(new Vector2Int(gridPosition.x + x, gridPosition.y + y)))
                 {
                     return false;
                 }
             }
         }
-
         return true;
     }
 
-    /// <summary>
-    /// 건물 오브젝트를 생성하고 표시합니다.
-    /// (정사각형 건물이므로 회전 로직은 제거되고, 마커 위치 계산을 위해 데이터만 전달합니다)
-    /// </summary>
-    public GameObject CreateBuildingObject(Vector2Int gridPos, BuildingData buildingData, BuildingState buildingState = null)
+    private bool IsTileAvailable(Vector2Int gridPosition)
+    {
+        GameObject tileObject;
+        if (_tileMap.TryGetValue(gridPosition, out tileObject))
+        {
+            BuildingTile buildingTileComponent;
+            if (tileObject.TryGetComponent<BuildingTile>(out buildingTileComponent))
+            {
+                return !buildingTileComponent.IsOccupied;
+            }
+        }
+        return false;
+    }
+
+    public void MarkTilesAsOccupied(Vector2Int startPosition, Vector2Int size, bool occupied = true)
+    {
+        for (int y = 0; y < size.y; y++)
+        {
+            for (int x = 0; x < size.x; x++)
+            {
+                Vector2Int currentPosition = new Vector2Int(startPosition.x + x, startPosition.y + y);
+                GameObject tileObject;
+                if (_tileMap.TryGetValue(currentPosition, out tileObject))
+                {
+                    BuildingTile buildingTileComponent;
+                    if (tileObject.TryGetComponent<BuildingTile>(out buildingTileComponent))
+                    {
+                        buildingTileComponent.SetOccupied(occupied);
+                    }
+                }
+            }
+        }
+    }
+
+    #endregion
+
+    #region Building Management
+
+    public GameObject CreateBuildingObject(Vector2Int gridPosition, BuildingData buildingData, BuildingState buildingState = null)
     {
         if (buildingData.buildingSprite == null) return null;
 
-        GameObject buildingObj;
-
-        if (_buildingObjectPrefab != null)
+        // 1. 오브젝트 생성 및 이름 설정
+        GameObject buildingObject;
+        if (_buildingPrefab != null)
         {
-            buildingObj = Object.Instantiate(_buildingObjectPrefab, _parentTransform);
-            buildingObj.name = $"Building_{buildingData.id}_{gridPos}";
+            buildingObject = Object.Instantiate(_buildingPrefab, _parentTransform);
         }
         else
         {
-            buildingObj = new GameObject($"Building_{buildingData.id}_{gridPos}");
-            buildingObj.transform.SetParent(_parentTransform);
+            buildingObject = new GameObject("Building_" + buildingData.id);
         }
 
-        // 1. 크기 확인 (정사각형이므로 회전 계산 불필요)
-        Vector2Int displaySize = buildingData.size;
+        buildingObject.name = "Building_" + buildingData.id + "_" + gridPosition;
+        buildingObject.transform.SetParent(_parentTransform);
 
-        // 2. 월드 위치 적용 (회전 없음)
-        Vector3 worldPos = GridToWorldPosition(gridPos, displaySize);
-        buildingObj.transform.position = worldPos;
-        buildingObj.transform.rotation = Quaternion.identity; // 회전 초기화 (항상 0도)
+        // 2. 위치 및 크기 설정 (정사각형 건물이므로 회전 0도 고정)
+        buildingObject.transform.position = GridToWorldPosition(gridPosition, buildingData.size);
+        buildingObject.transform.rotation = Quaternion.identity;
 
-        // 3. Sprite Renderer 설정
-        SpriteRenderer renderer = buildingObj.GetComponent<SpriteRenderer>();
-        if (renderer == null) renderer = buildingObj.AddComponent<SpriteRenderer>();
+        // 3. 비주얼 설정 (SpriteRenderer)
+        SpriteRenderer spriteRenderer = buildingObject.GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null) spriteRenderer = buildingObject.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = buildingData.buildingSprite;
 
-        renderer.sprite = buildingData.buildingSprite;
-        renderer.sortingOrder = 0;
+        // 4. 스케일 계산
+        buildingObject.transform.localScale = GameObjectUtils.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
 
-        // 건물 크기 조정
-        Vector3 scale = _buildingTileManager.CalculateSpriteScale(buildingData.buildingSprite, displaySize);
-        buildingObj.transform.localScale = scale;
+        // 5. 컴포넌트 초기화
+        BuildingObject buildingComponent = buildingObject.GetComponent<BuildingObject>();
+        if (buildingComponent == null) buildingComponent = buildingObject.AddComponent<BuildingObject>();
 
-        // 4. Collider 설정
-        BoxCollider2D collider = buildingObj.GetComponent<BoxCollider2D>();
-        if (collider == null) collider = buildingObj.AddComponent<BoxCollider2D>();
-        collider.size = new Vector2(displaySize.x, displaySize.y);
-
-        // 5. BuildingObject 컴포넌트 초기화
-        BuildingObject buildingComponent = buildingObj.GetComponent<BuildingObject>();
-        if (buildingComponent == null) buildingComponent = buildingObj.AddComponent<BuildingObject>();
+        BoxCollider2D boxCollider = buildingObject.GetComponent<BoxCollider2D>();
+        if (boxCollider == null) boxCollider = buildingObject.AddComponent<BoxCollider2D>();
+        boxCollider.size = new Vector2(buildingData.size.x, buildingData.size.y);
 
         if (buildingState != null)
         {
-            // BuildingObject 내부에서 rotation 값을 이용해 Input/Output 마커 위치만 변경함
+            // 실제 회전 데이터는 BuildingObject 내부에서 마커 위치를 정할 때만 사용됨
             buildingComponent.Initialize(buildingData, buildingState, _inputMarkerPrefab, _outputMarkerPrefab, this);
             buildingComponent.SetupProductionIcons();
         }
 
-        _placedBuildings[gridPos] = buildingObj;
-        return buildingObj;
+        _buildingMap[gridPosition] = buildingObject;
+        return buildingObject;
     }
 
-    public void RemoveBuildingObject(Vector2Int gridPos)
+    public void RemoveBuildingObject(Vector2Int gridPosition)
     {
-        if (_placedBuildings.TryGetValue(gridPos, out GameObject buildingObj))
+        GameObject buildingObject;
+        if (_buildingMap.TryGetValue(gridPosition, out buildingObject))
         {
-            Object.Destroy(buildingObj);
-            _placedBuildings.Remove(gridPos);
+            Object.Destroy(buildingObject);
+            _buildingMap.Remove(gridPosition);
         }
     }
 
-    public GameObject GetBuildingAtPosition(Vector2Int gridPos, string currentThreadId)
+    /// <summary>
+    /// 특정 좌표에 위치한 건물 오브젝트를 가져옵니다.
+    /// </summary>
+    public GameObject GetBuildingAtPosition(Vector2Int gridPosition)
     {
-        List<BuildingState> buildingStates = _buildingTileManager.GetCurrentBuildingStates();
-
-        if (buildingStates != null)
+        foreach (KeyValuePair<Vector2Int, GameObject> entry in _buildingMap)
         {
-            foreach (var buildingState in buildingStates)
-            {
-                BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
-                Vector2Int buildingPos = new Vector2Int(buildingState.positionX, buildingState.positionY);
+            Vector2Int buildingOrigin = entry.Key;
+            GameObject buildingObject = entry.Value;
 
-                if (buildingData != null && _placedBuildings.TryGetValue(buildingPos, out GameObject placedBuilding))
+            BuildingObject buildingComponent;
+            if (buildingObject.TryGetComponent<BuildingObject>(out buildingComponent))
+            {
+                Vector2Int buildingSize = buildingComponent.BuildingData.size;
+                if (gridPosition.x >= buildingOrigin.x && gridPosition.x < buildingOrigin.x + buildingSize.x &&
+                    gridPosition.y >= buildingOrigin.y && gridPosition.y < buildingOrigin.y + buildingSize.y)
                 {
-                    // 정사각형이므로 단순히 size만 체크
-                    if (gridPos.x >= buildingPos.x && gridPos.x < buildingPos.x + buildingData.size.x &&
-                        gridPos.y >= buildingPos.y && gridPos.y < buildingPos.y + buildingData.size.y)
-                    {
-                        return placedBuilding;
-                    }
+                    return buildingObject;
                 }
             }
         }
@@ -290,21 +260,22 @@ public class BuildingGridHandler
 
     #endregion
 
-    #region 좌표 변환 유틸리티
+    #region Coordinate Conversion
 
-    public Vector2Int WorldToGridPosition(Vector3 worldPos)
+    public Vector2Int WorldToGridPosition(Vector3 worldPosition)
     {
-        Vector3 localPos = worldPos - _parentTransform.position;
-        int x = Mathf.FloorToInt(localPos.x + 0.5f);
-        int y = Mathf.FloorToInt(-localPos.y + 0.5f);
-        return new Vector2Int(x, y);
+        Vector3 localPosition = worldPosition - _parentTransform.position;
+        return new Vector2Int(
+            Mathf.FloorToInt(localPosition.x + 0.5f),
+            Mathf.FloorToInt(-localPosition.y + 0.5f)
+        );
     }
 
-    public Vector3 GridToWorldPosition(Vector2Int gridPos, Vector2Int size)
+    public Vector3 GridToWorldPosition(Vector2Int gridPosition, Vector2Int size)
     {
-        float centerX = gridPos.x + (size.x - 1) * 0.5f;
-        float centerY = -gridPos.y - (size.y - 1) * 0.5f;
-        return _parentTransform.position + new Vector3(centerX, centerY, 9);
+        float centerX = gridPosition.x + (size.x - 1) * 0.5f;
+        float centerY = -gridPosition.y - (size.y - 1) * 0.5f;
+        return _parentTransform.position + new Vector3(centerX, centerY, BuildingZDepth);
     }
 
     #endregion

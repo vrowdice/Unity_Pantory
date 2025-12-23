@@ -15,7 +15,7 @@ public class SaveLoadHandler
     /// SaveLoadHandler의 기본 생성자.
     /// NOTE: MonoBehaviour 클래스는 일반적으로 new로 생성되지 않고 AddComponent를 사용합니다.
     /// </summary>
-    public SaveLoadHandler(dataManager gameDataManager)
+    public SaveLoadHandler(DataManager gameDataManager)
     {
 
     }
@@ -27,8 +27,6 @@ public class SaveLoadHandler
     {
         return Path.Combine(Application.persistentDataPath, THREAD_SAVE_FILE);
     }
-
-    #region 데이터 저장 및 로드
 
     /// <summary>
     /// Thread 데이터를 저장합니다.
@@ -147,10 +145,6 @@ public class SaveLoadHandler
         Debug.Log("[SaveLoadHandler] All thread and category data cleared internally.");
     }
 
-    #endregion
-
-    #region 파일 관리 유틸리티
-
     /// <summary>
     /// Thread 저장 파일이 존재하는지 확인합니다.
     /// </summary>
@@ -187,10 +181,6 @@ public class SaveLoadHandler
         }
     }
 
-    #endregion
-
-    #region 직렬화 Wrapper 클래스
-
     /// <summary>
     /// Thread 저장 데이터를 담는 Wrapper 클래스 (JSON 직렬화용)
     /// </summary>
@@ -223,6 +213,4 @@ public class SaveLoadHandler
             return new Vector2Int(x, y);
         }
     }
-
-    #endregion
 }

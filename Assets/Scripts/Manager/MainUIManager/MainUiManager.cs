@@ -8,7 +8,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 {
     [Header("References")]
     private GameManager _gameManager;
-    private dataManager _dataManager;
+    private DataManager _dataManager;
 
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
@@ -26,11 +26,11 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     private GameObject _productionInfoImage;
     public Transform CanvasTrans => transform;
     public GameManager GameManager => _gameManager;
-    public dataManager DataManager => _dataManager;
+    public DataManager DataManager => _dataManager;
     public GameObject ProductionInfoImage => _productionInfoImage;
     public ThreadTileManager ThreadTileManager => _threadTileManager;
 
-    public void OnInitialize(GameManager argGameManager, dataManager argGameDataManager)
+    public void OnInitialize(GameManager argGameManager, DataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;

@@ -12,6 +12,19 @@ public static class GameObjectUtils
     }
 
     /// <summary>
+    /// 스프라이트의 실제 크기를 분석하여 타일 크기(targetSize)에 맞는 스케일 값을 계산합니다.
+    /// </summary>
+    public static Vector3 CalculateSpriteScale(Sprite sprite, Vector2Int targetSize)
+    {
+        if (sprite == null) return Vector3.one;
+
+        float scaleX = targetSize.x / sprite.bounds.size.x;
+        float scaleY = targetSize.y / sprite.bounds.size.y;
+
+        return new Vector3(scaleX, scaleY, 1f);
+    }
+
+    /// <summary>
     /// 스프라이트를 지정된 월드 크기에 맞춰 자동으로 스케일을 조절합니다.
     /// </summary>
     /// <param name="transform">스케일을 조절할 Transform</param>

@@ -16,10 +16,10 @@ public class DateTopInfoPanel : MonoBehaviour
     [Header("Button Images")]
     [SerializeField] private Image _playPauseButtonImage;
 
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private bool _isTimePaused = false;
 
-    public void OnInitialize(dataManager dataManager)
+    public void OnInitialize(DataManager dataManager)
     {
         _dataManager = dataManager;
 

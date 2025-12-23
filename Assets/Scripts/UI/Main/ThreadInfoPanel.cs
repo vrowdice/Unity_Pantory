@@ -39,7 +39,7 @@ public class ThreadInfoPanel : MonoBehaviour
     [SerializeField] private Slider _technicianSlider;
 
     private ThreadState _currentThreadState;
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private MainUiManager _mainUiManager;
 
     private bool _isSubscribed = false;
@@ -47,7 +47,7 @@ public class ThreadInfoPanel : MonoBehaviour
     /// <summary>
     /// 패널을 초기화하고 데이터를 연결합니다.
     /// </summary>
-    public void OnInitialize(ThreadState threadState, MainUiManager mainUiManager, dataManager dataManager)
+    public void OnInitialize(ThreadState threadState, MainUiManager mainUiManager, DataManager dataManager)
     {
         _currentThreadState = threadState;
         _mainUiManager = mainUiManager;

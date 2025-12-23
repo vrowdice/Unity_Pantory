@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
 
     private IUIManager _uiManager;
     private IGameSceneManager _sceneManager;
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private VisualManager _visualManager;
     private MainCameraController _mainCameraController;
 
@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
         if (_dataManager == null)
         {
             GameObject dataManagerObj = Instantiate(_dataManagerPrefab);
-            _dataManager = dataManagerObj.GetComponent<dataManager>();
+            _dataManager = dataManagerObj.GetComponent<DataManager>();
             _dataManager.OnInitialize();
         }
 
@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviour
     /// <param name="dataManager">GameDataManager</param>
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
     /// <returns>생성된 ManageThreadCartegoryPanel 컴포넌트</returns>
-    public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(dataManager dataManager, System.Action<string> onCategorySelected)
+    public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(DataManager dataManager, System.Action<string> onCategorySelected)
     {
         GameObject panageThreadCartegoryPanelObj = Instantiate(_manageThreadCartegoryPanelPrefab, CanvasTransform);
         ManageThreadCartegoryPanel panageThreadCartegoryPanel = panageThreadCartegoryPanelObj.GetComponent<ManageThreadCartegoryPanel>();

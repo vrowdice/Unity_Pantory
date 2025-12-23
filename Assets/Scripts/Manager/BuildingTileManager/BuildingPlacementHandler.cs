@@ -8,7 +8,7 @@ public class BuildingPlacementHandler
 {
     private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridHandler;
-    private readonly dataManager _dataManager;
+    private readonly DataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
     private readonly DesignUiManager _designUiManager;
 
@@ -42,8 +42,8 @@ public class BuildingPlacementHandler
         _designUiManager = buildingTileManager.DesignUiManager;
         
         _buildingObjectPrefab = buildingObjectPrefab;
-        _inputMarkerPrefab = _buildingTileManager.GetInputMarkerPrefab();
-        _outputMarkerPrefab = _buildingTileManager.GetOutputMarkerPrefab();
+        _inputMarkerPrefab = _buildingTileManager.InputMarkerPrefab;
+        _outputMarkerPrefab = _buildingTileManager.OutputMarkerPrefab;
     }
     
     /// <summary>
@@ -59,7 +59,6 @@ public class BuildingPlacementHandler
         
         CreatePreviewObject();
         Color validColor = VisualManager.Instance?.ValidColor ?? new Color(0, 1, 0, 0.5f);
-        _gridHandler.SetAllTilesOutline(true, validColor);
         
         _designUiManager.UpdateModeBtnImages(true, false);
 
@@ -78,7 +77,6 @@ public class BuildingPlacementHandler
         _currentRotation = 0;
         
         DestroyPreviewObject();
-        _gridHandler.SetAllTilesOutline(false);
         
         _designUiManager.UpdateModeBtnImages(false, false);
 
@@ -147,7 +145,7 @@ public class BuildingPlacementHandler
         _previewObject.transform.rotation = Quaternion.Euler(0, 0, -angle);
 
         Vector2Int rotatedSize = GetRotatedSize(_selectedBuilding.size, _currentRotation);
-        Vector3 scale = _buildingTileManager.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
+        Vector3 scale = GameObjectUtils.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
         _previewObject.transform.localScale = scale;
     }
 
@@ -314,7 +312,7 @@ public class BuildingPlacementHandler
         _previewRenderer.sortingOrder = 0;
         
         // 프리뷰 크기를 타일 크기에 맞춤 (1타일 = 1유닛)
-        Vector3 scale = _buildingTileManager.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
+        Vector3 scale = GameObjectUtils.CalculateSpriteScale(_selectedBuilding.buildingSprite, _selectedBuilding.size);
         _previewObject.transform.localScale = scale;
 
         // BuildingObject 컴포넌트 추가 및 프리뷰 초기화

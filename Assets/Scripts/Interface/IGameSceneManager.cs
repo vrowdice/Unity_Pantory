@@ -5,6 +5,6 @@ public interface IGameSceneManager
     /// </summary>
     /// <param name="gameManager">현재 GameManager 인스턴스</param>
     /// <param name="dataManager">현재 GameDataManager 인스턴스</param>
-    void OnInitialize(GameManager gameManager, dataManager dataManager);
+    void OnInitialize(GameManager gameManager, DataManager dataManager);
 }
 

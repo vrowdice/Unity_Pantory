@@ -14,7 +14,7 @@ public class BuildingDataHandler
     /// <summary>
     /// BuildingService 생성자
     /// </summary>
-    public BuildingDataHandler(dataManager gameDataManager, List<BuildingData> buildingDataList = null)
+    public BuildingDataHandler(DataManager gameDataManager, List<BuildingData> buildingDataList = null)
     {
         _buildings = new Dictionary<string, BuildingData>();
         

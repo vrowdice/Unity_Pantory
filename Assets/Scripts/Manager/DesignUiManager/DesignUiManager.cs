@@ -4,28 +4,22 @@ using System.Collections.Generic;
 
 public partial class DesignUiManager : MonoBehaviour, IUIManager
 {
-
-
-    [Header("Mode & Panel References")]
-
-
-    [Header("Managers")]
+    [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel;
     [SerializeField] private BuildingTileManager _buildingTileManager;
 
     private GameManager _gameManager;
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private GameObject _productionInfoImage;
-
 
     public Transform CanvasTrans => transform;
     public BuildingTileManager BuildingTileManager => _buildingTileManager;
     public GameManager GameManager => _gameManager;
-    public dataManager GameDataManager => _dataManager;
+    public DataManager GameDataManager => _dataManager;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public bool IsRemovalMode => _isRemovalMode;
     public GameObject ProductionInfoImage => _productionInfoImage;
 
-    public void OnInitialize(GameManager argGameManager, dataManager argGameDataManager)
+    public void OnInitialize(GameManager argGameManager, DataManager argGameDataManager)
     {
         _gameManager = argGameManager;
         _dataManager = argGameDataManager;

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class dataManager : MonoBehaviour
+public class DataManager : MonoBehaviour
 {
-    public static dataManager Instance { get; private set; }
+    public static DataManager Instance { get; private set; }
 
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;

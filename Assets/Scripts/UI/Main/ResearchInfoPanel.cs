@@ -13,7 +13,7 @@ public class ResearchInfoPanel : MonoBehaviour
 
     private ResearchEntry _currentResearchEntry;
     private MainUiManager _mainUiManager;
-    private dataManager _dataManager;
+    private DataManager _dataManager;
 
     private GameManager _gameManager;
 
@@ -22,7 +22,7 @@ public class ResearchInfoPanel : MonoBehaviour
     /// <summary>
     /// �г��� �ʱ�ȭ�ϰ� �����͸� �����մϴ�.
     /// </summary>
-    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager, dataManager dataManager)
+    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager, DataManager dataManager)
     {
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;

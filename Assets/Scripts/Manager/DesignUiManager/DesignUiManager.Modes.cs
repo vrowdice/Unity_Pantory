@@ -49,7 +49,7 @@ public partial class DesignUiManager
         }
         else
         {
-            _buildingTileManager.StartPlacementMode(buildingData);
+            _buildingTileManager.PlacementHandler.StartPlacement(buildingData);
         }
         
         UpdateBuildingButtonStates();

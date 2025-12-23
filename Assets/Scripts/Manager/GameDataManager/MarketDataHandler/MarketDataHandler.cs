@@ -9,7 +9,7 @@ using UnityEngine;
 public partial class MarketDataHandler
 {
     private readonly Dictionary<string, MarketActorEntry> _actors = new();
-    private readonly dataManager _dataManager;
+    private readonly DataManager _dataManager;
 
     private InitialMarketData _marketSettings;
     private bool _isWarState = false;
@@ -21,7 +21,7 @@ public partial class MarketDataHandler
     /// </summary>
     public event Action OnMarketUpdated;
 
-    public MarketDataHandler(dataManager manager, List<MarketActorData> marketActorDataList, InitialMarketData initData)
+    public MarketDataHandler(DataManager manager, List<MarketActorData> marketActorDataList, InitialMarketData initData)
     {
         _dataManager = manager;
         SetMarketSettings(initData);

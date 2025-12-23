@@ -7,7 +7,7 @@ using UnityEngine;
 public abstract class BasePanel : MonoBehaviour
 {
     protected GameManager _gameManager;
-    protected dataManager _dataManager;
+    protected DataManager _dataManager;
     protected MainUiManager _uiManager;
     
     [Header("Animation")]
@@ -20,7 +20,7 @@ public abstract class BasePanel : MonoBehaviour
     /// <summary>
     /// 패널이 열릴 때 호출됩니다.
     /// </summary>
-    public void OnOpen(GameManager argGameManager ,dataManager argDataManager, MainUiManager argUIManager)
+    public void OnOpen(GameManager argGameManager ,DataManager argDataManager, MainUiManager argUIManager)
     {
         _gameManager = argGameManager;
         _dataManager = argDataManager;

@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class TimeDataHandler
 {
-    private readonly dataManager _dataManager;
+    private readonly DataManager _dataManager;
     private InitialTimeData _initialTimeData;
 
     public int Year { get; private set; }
@@ -27,7 +27,7 @@ public class TimeDataHandler
     public event Action OnMonthChanged;
     public event Action OnYearChanged;
 
-    public TimeDataHandler(dataManager gameDataManager, InitialTimeData initData)
+    public TimeDataHandler(DataManager gameDataManager, InitialTimeData initData)
     {
         _dataManager = gameDataManager;
         _initialTimeData = initData;

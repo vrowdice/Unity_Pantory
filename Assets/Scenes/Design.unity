@@ -316,7 +316,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 887731462}
         m_TargetAssemblyTypeName: DesignUiManager, Assembly-CSharp
-        m_MethodName: OnClickLoadBtn
+        m_MethodName: OnClickLoadButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2864,7 +2864,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 887731462}
         m_TargetAssemblyTypeName: DesignUiManager, Assembly-CSharp
-        m_MethodName: OnClickSaveBtn
+        m_MethodName: OnClickSaveButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5696,6 +5696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9456d8af5e75b4f9ebfd08d6404a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _saveInfoPanel: {fileID: 1682099514}
   _buildingTileManager: {fileID: 1027707964}
   _deselectBuildingBtnImage: {fileID: 1423325038}
   _removalModeBtnImage: {fileID: 527040269}
@@ -5704,7 +5705,7 @@ MonoBehaviour:
   _buildingBtnPrefab: {fileID: 412398129040250562, guid: ca8cf8656f83546468bec330025d97f7, type: 3}
   _buildingBtnContent: {fileID: 1207280451}
   _buildingInfoPanel: {fileID: 405737244}
-  _saveInfoPanel: {fileID: 1682099514}
+  _threadSaveInformationPanel: {fileID: 1682099514}
 --- !u!1 &909702200
 GameObject:
   m_ObjectHideFlags: 0
@@ -6275,10 +6276,10 @@ MonoBehaviour:
   _buildingObjectPrefab: {fileID: 4788968508785240937, guid: c11a7645413457d49842259c4ae0af64, type: 3}
   _inputMarkerPrefab: {fileID: 5812946505932702459, guid: d98818edac571cb4db322fed99d802e4, type: 3}
   _outputMarkerPrefab: {fileID: 4329135525379065979, guid: 3983bd3e3a5ec024997cd1a1a0d233a4, type: 3}
+  _resourceItemPrefab: {fileID: 5170135693805334320, guid: 2a169d6b53610674585dc30cc4a0546b, type: 3}
   _gridWidth: 10
   _gridHeight: 10
-  _resourceItemPrefab: {fileID: 5170135693805334320, guid: 2a169d6b53610674585dc30cc4a0546b, type: 3}
-  _resourceSpawnInterval: 2
+  _cameraZOffset: 11
 --- !u!1 &1048607430
 GameObject:
   m_ObjectHideFlags: 0

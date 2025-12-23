@@ -1,11 +1,12 @@
+using System.Collections.Generic;
+using System.Diagnostics;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using TMPro;
 
 public class MarketResurcePanel : MonoBehaviour
 {
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private MarketPanel _marketPanel;
 
     [SerializeField] private WindowGraph _windowGraph;
@@ -15,17 +16,15 @@ public class MarketResurcePanel : MonoBehaviour
     [Header("Info Panel")]
     [SerializeField] private Image _resouceImage;
     [SerializeField] private TextMeshProUGUI _resourceNameText;
+    [SerializeField] private TextMeshProUGUI _resourceStorageText;
     [SerializeField] private TextMeshProUGUI _resourcePriceText;
     [SerializeField] private Slider _resourceInventorySlider;
     [SerializeField] private TextMeshProUGUI _resourceInventoryText;
 
-    private readonly List<MarketResourceBtn> _resourceBtns = new List<MarketResourceBtn>();
-    private bool _isSubscribedToDayChange;
     private ResourceEntry _selectedResourceEntry;
     private string _selectedResourceId = string.Empty;
-    
-    // 시장 재고량 슬라이더 기준값 (초기 재고량 또는 평균 재고량)
-    private const long DEFAULT_INVENTORY_MAX = 10000; // 기본 최대값
+
+    private const long DEFAULT_INVENTORY_MAX = 10000;
 
     /// <summary>
     /// 현재 선택된 리소스 ID를 반환합니다.
@@ -35,16 +34,25 @@ public class MarketResurcePanel : MonoBehaviour
         return _selectedResourceId;
     }
 
-    public void OnInitialize(dataManager dataManager, MarketPanel marketPanel = null)
+    public void OnInitialize(DataManager dataManager, MarketPanel marketPanel)
     {
         _dataManager = dataManager;
         _marketPanel = marketPanel;
 
-        SubscribeToDayChange();
-        UpdateGraph();
+        _windowGraph.ShowGraph(_selectedResourceEntry.resourceState.PriceHistory);
         UpdateSelectionDetails();
 
-        _windowGraph?.OnInitialize();
+        _dataManager.Time.OnDayChanged += HandleDayChanged;
+
+        _windowGraph.OnInitialize();
+    }
+
+    private void OnDestroy()
+    {
+        if(_dataManager != null)
+        {
+            _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        }
     }
 
     public void HandleResourceButtonClicked(ResourceEntry entry)
@@ -55,15 +63,10 @@ public class MarketResurcePanel : MonoBehaviour
         }
 
         _selectedResourceEntry = entry;
-        _selectedResourceId = entry.resourceData?.id ?? string.Empty;
-        
-        // InputField에 현재 playerTransactionDelta 값 표시
-        if (_resouceTradeInputField != null && entry.resourceState != null)
-        {
-            _resouceTradeInputField.text = entry.resourceState.playerTransactionDelta.ToString();
-        }
-        
-        UpdateGraph();
+        _selectedResourceId = entry.resourceData.id;
+        _resouceTradeInputField.text = entry.resourceState.playerTransactionDelta.ToString();
+
+        _windowGraph.ShowGraph(_selectedResourceEntry.resourceState.PriceHistory);
         UpdateSelectionDetails();
     }
 
@@ -74,118 +77,43 @@ public class MarketResurcePanel : MonoBehaviour
             return;
         }
 
-        // InputField 값을 playerTransactionDelta에 설정 (양수: 매수, 음수: 매도, 0: 거래 안함)
-        string inputText = _resouceTradeInputField.text;
-        if (string.IsNullOrEmpty(inputText))
+        if (string.IsNullOrEmpty(_resouceTradeInputField.text))
         {
-            inputText = "0";
+            _resouceTradeInputField.text = "0";
         }
 
-        if (int.TryParse(inputText, out int tradeAmount))
+        if (int.TryParse(_resouceTradeInputField.text, out int tradeAmount))
         {
             _selectedResourceEntry.resourceState.playerTransactionDelta = tradeAmount;
-            
-            // 리소스 버튼들의 거래 값 업데이트
-            _marketPanel?.RefreshResourceButtons();
+            _marketPanel.RefreshResourceButtons();
         }
-    }
-
-    public void ChangeResouceTradeInputFieldValue(int argValue)
-    {
-        _resouceTradeInputField.text = (int.Parse(_resouceTradeInputField.text) + argValue).ToString();
-        ResouceTradeInputFieldChanged();
-    }
-
-    private void SubscribeToDayChange()
-    {
-        if (_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged += HandleDayChanged;
-        _isSubscribedToDayChange = true;
-    }
-
-    private void UnsubscribeFromDayChange()
-    {
-        if (!_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            _isSubscribedToDayChange = false;
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        _isSubscribedToDayChange = false;
     }
 
     private void HandleDayChanged()
     {
-        // 리스트는 MarketPanel에서 관리. 여기서는 상세 UI만 갱신.
-        UpdateGraph();
+        _windowGraph.ShowGraph(_selectedResourceEntry.resourceState.PriceHistory);
         UpdateSelectionDetails();
-    }
-
-    private void UpdateGraph()
-    {
-        if (_windowGraph == null)
-        {
-            return;
-        }
-
-        _windowGraph.ShowGraph(_selectedResourceEntry?.resourceState?.PriceHistory);
     }
 
     private void UpdateSelectionDetails()
     {
-        if (_selectedResourceEntry == null || _selectedResourceEntry.resourceData == null)
-        {
-            SetInfoTexts("-", "-", "-", "-", Color.white);
-            UpdateResourceImage(null);
-            UpdateInventorySlider(0, 0);
-            return;
-        }
+        ResourceData data = _selectedResourceEntry.resourceData;
+        ResourceState state = _selectedResourceEntry.resourceState;
 
-        var data = _selectedResourceEntry.resourceData;
-        var state = _selectedResourceEntry.resourceState;
+        _resouceImage.sprite = data.icon;
+        UpdateInventorySlider(state.count, data.initialAmount);
 
-        // 자원 이미지 업데이트
-        UpdateResourceImage(data.icon);
-
-        // 시장 재고량 업데이트
-        long marketInventory = state != null ? state.count : 0;
-        UpdateInventorySlider(marketInventory, data.initialAmount);
-
-        string priceText = state != null
-            ? $"{state.currentValue:N0}"
-            : "N/A";
-
+        string priceText = $"{state.currentValue:N0}";
         if (state != null && state.priceChangeRate != 0f)
         {
             priceText += $" ({state.priceChangeRate:+0.##;-0.##;0})";
         }
 
         string statusText = GetFriendlyStatus(state, out var statusColor);
-        string nextStageText = data.nextStage != null
-            ? data.nextStage.displayName
-            : "Final Product";
+        string nextStageText = data.nextStage.displayName;
 
-        SetInfoTexts(
-            data.displayName,
-            priceText,
-            statusText,
-            nextStageText,
-            statusColor);
+        _resourceNameText.text = name;
+        _resourcePriceText.text = priceText;
     }
 
     private string GetFriendlyStatus(ResourceState state, out Color color)
@@ -230,31 +158,6 @@ public class MarketResurcePanel : MonoBehaviour
         return status;
     }
 
-    private void SetInfoTexts(string name, string price, string status, string nextStage, Color statusColor)
-    {
-        if (_resourceNameText != null)
-        {
-            _resourceNameText.text = name;
-        }
-
-        if (_resourcePriceText != null)
-        {
-            _resourcePriceText.text = price;
-        }
-    }
-
-    /// <summary>
-    /// 자원 이미지를 업데이트합니다.
-    /// </summary>
-    private void UpdateResourceImage(Sprite icon)
-    {
-        if (_resouceImage != null)
-        {
-            _resouceImage.sprite = icon;
-            _resouceImage.enabled = icon != null;
-        }
-    }
-
     /// <summary>
     /// 시장 재고량 슬라이더를 업데이트합니다.
     /// </summary>
@@ -270,25 +173,12 @@ public class MarketResurcePanel : MonoBehaviour
         // 슬라이더 최대값 설정 (초기 재고량의 2배 또는 기본값 중 큰 값)
         long maxValue = (initialAmount * 2 > DEFAULT_INVENTORY_MAX) ? (initialAmount * 2) : DEFAULT_INVENTORY_MAX;
         _resourceInventorySlider.maxValue = maxValue;
-        _resourceInventorySlider.value = Mathf.Clamp((float)currentInventory, 0f, (float)maxValue);
+        _resourceInventorySlider.value = Mathf.Clamp(currentInventory, 0f, maxValue);
 
         // 재고량 텍스트 업데이트
         if (_resourceInventoryText != null)
         {
             _resourceInventoryText.text = $"{currentInventory:N0} / {maxValue:N0}";
         }
-    }
-
-    private void OnDisable()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            UnsubscribeFromDayChange();
-        }
-    }
-
-    private void OnDestroy()
-    {
-        UnsubscribeFromDayChange();
     }
 }

@@ -6,13 +6,13 @@ public class CreditTopInfoPanel : MonoBehaviour
     [SerializeField] private GameObject _titleDeltaTextPanelPrefab;
     [SerializeField] private PanelDoAni _panelDoAni;
 
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private readonly List<TitleDeltaTextPanel> _createdPanels = new List<TitleDeltaTextPanel>();
 
     /// <summary>
     /// 크레딧 정보 패널을 초기화합니다.
     /// </summary>
-    public void OnInitialize(dataManager dataManager)
+    public void OnInitialize(DataManager dataManager)
     {
         _dataManager = dataManager;
         

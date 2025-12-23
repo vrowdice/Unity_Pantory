@@ -3,11 +3,6 @@ using System.Linq;
 
 public partial class DesignUiManager
 {
-    public string GetCurrentThreadTitle()
-    {
-        return string.IsNullOrEmpty(_currentThreadTitle) ? DefaultThreadTitle : _currentThreadTitle;
-    }
-
     public string GetThreadIdFromTitle(string threadTitle)
     {
         if (string.IsNullOrWhiteSpace(threadTitle))

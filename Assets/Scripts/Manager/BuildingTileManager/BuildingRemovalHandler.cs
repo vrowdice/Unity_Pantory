@@ -8,7 +8,7 @@ public class BuildingRemovalHandler
 {
     private readonly BuildingTileManager _buildingTileManager;
     private readonly BuildingGridHandler _gridManager;
-    private readonly dataManager _dataManager;
+    private readonly DataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
     private readonly Camera _camera;
     private readonly DesignUiManager _designUiManager;
@@ -32,7 +32,6 @@ public class BuildingRemovalHandler
     public void StartRemoval()
     {
         _isActive = true;
-        _gridManager.SetAllTilesOutline(false);
         _designUiManager?.UpdateModeBtnImages(false, true);
     }
 
@@ -43,7 +42,6 @@ public class BuildingRemovalHandler
     {
         _isActive = false;
         ResetBuildingHighlight();
-        _gridManager.SetAllTilesOutline(false);
         _designUiManager?.UpdateModeBtnImages(false, false);
     }
 
@@ -73,7 +71,7 @@ public class BuildingRemovalHandler
         Vector2Int gridPos = _gridManager.WorldToGridPosition(mouseWorldPos);
 
         // 해당 위치에 건물이 있는지 확인 (GridManager가 크기/회전 고려)
-        GameObject buildingAtPos = _gridManager.GetBuildingAtPosition(gridPos, currentThreadId);
+        GameObject buildingAtPos = _gridManager.GetBuildingAtPosition(gridPos);
 
         // 이전에 하이라이트된 건물과 다르면 갱신
         if (buildingAtPos != _hoveredBuilding)

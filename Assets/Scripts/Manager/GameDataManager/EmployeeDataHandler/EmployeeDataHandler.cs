@@ -6,13 +6,13 @@ public partial class EmployeeDataHandler
 {
     protected Dictionary<EmployeeType, EmployeeEntry> _employees;
     public event Action OnEmployeeChanged;
-    protected dataManager _dataManager;
+    protected DataManager _dataManager;
     InitialEmployeeData _initialEmployeeData;
 
     /// <summary>
     /// EmployeeService 생성자
     /// </summary>
-    public EmployeeDataHandler(dataManager gameDataManager, List<EmployeeData> employeeDataList, InitialEmployeeData initData)
+    public EmployeeDataHandler(DataManager gameDataManager, List<EmployeeData> employeeDataList, InitialEmployeeData initData)
     {
         _dataManager = gameDataManager;
         _employees = new Dictionary<EmployeeType, EmployeeEntry>();

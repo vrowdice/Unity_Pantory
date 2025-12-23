@@ -16,7 +16,7 @@ public class ManageThreadPanel : MonoBehaviour
     [SerializeField] private Transform _threadCategoryScrollViewContent = null;
     [SerializeField] private Transform _threadScrollViewContent = null;
 
-    private dataManager _dataManager = null;
+    private DataManager _dataManager = null;
     private string _selectedCategoryId = string.Empty;
     private System.Action<string> _onThreadSelectedCallback = null;
 
@@ -26,7 +26,7 @@ public class ManageThreadPanel : MonoBehaviour
     /// <summary>
     /// 패널을 초기화하고 필요한 데이터와 콜백을 설정합니다.
     /// </summary>
-    public void OnInitialize(dataManager dataManager, System.Action<string> onThreadSelected = null)
+    public void OnInitialize(DataManager dataManager, System.Action<string> onThreadSelected = null)
     {
         if (dataManager == null)
         {

@@ -11,7 +11,7 @@ public class MarketTraderBtn : MonoBehaviour
     private MarketTraderPanel _traderPanel = null;
     private MarketActorEntry _actorEntry = null;
     private bool _isPlayer = false;
-    private dataManager _dataManager = null;
+    private DataManager _dataManager = null;
     private int _rank = 0; // 순위 정보 저장
 
     public void OnInitialize(MarketTraderPanel panel, MarketActorEntry actorEntry)
@@ -49,7 +49,7 @@ public class MarketTraderBtn : MonoBehaviour
         UpdateIndicator();
     }
 
-    public void OnInitializePlayer(MarketTraderPanel panel, dataManager dataManager, int rank = 0)
+    public void OnInitializePlayer(MarketTraderPanel panel, DataManager dataManager, int rank = 0)
     {
         _traderPanel = panel;
         _actorEntry = null;

@@ -8,8 +8,6 @@ using TMPro; // TMP_InputField, TextMeshProUGUI를 위해 필요
 /// </summary>
 public class ThreadSaveInfoPanel : MonoBehaviour
 {
-    #region Inspector Fields
-
     [Header("UI Prefabs & Contents")]
     [SerializeField] private GameObject _productionInfoIconPanel = null;
     [SerializeField] private TMP_InputField _threadTitleInputField = null;
@@ -18,23 +16,15 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     [SerializeField] private Transform _outputProductionScrollVIewContent = null;
     [SerializeField] private TextMeshProUGUI _totalMaintenanceText = null;
 
-    #endregion
-
-    #region Private State & Managers
-
-    private dataManager _dataManager = null;
+    private DataManager _dataManager = null;
     private GameManager _gameManager = null;
     private DesignUiManager _designUiManager = null;
-    private string _selectedCategoryId = string.Empty; // 사용자가 선택한 카테고리 ID
-
-    #endregion
-
-    #region 초기화 및 표시
+    private string _selectedCategoryId = string.Empty;
 
     /// <summary>
     /// SaveLoadHandler에서 사용할 DataManager를 초기 설정합니다. (Awake/Initialize 단계)
     /// </summary>
-    public void OnInitialize(dataManager dataManager)
+    public void OnInitialize(DataManager dataManager)
     {
         _dataManager = dataManager;
         _gameManager = GameManager.Instance;
@@ -44,7 +34,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// Thread 정보를 계산된 데이터로 초기화하고 패널을 표시합니다.
     /// 이 메서드는 DesignUiManager.OnClickSaveBtn()에서 호출됩니다.
     /// </summary>
-    public void OnShow(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignUiManager designUiManager)
+    public void OnInitialize(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignUiManager designUiManager)
     {
         _designUiManager = designUiManager;
 
@@ -82,10 +72,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts, isOutput: true);
 
         // 5. 총 유지비 표시
-        if (_totalMaintenanceText != null)
-        {
-            _totalMaintenanceText.text = $"total maintenance: {totalMaintenance:N0}/month";
-        }
+        _totalMaintenanceText.text = $"total maintenance: {totalMaintenance:N0}/month";
 
         gameObject.SetActive(true);
     }
@@ -123,10 +110,6 @@ public class ThreadSaveInfoPanel : MonoBehaviour
             }
         }
     }
-
-    #endregion
-
-    #region UI 상호작용
 
     /// <summary>
     /// 카테고리 선택 버튼 클릭 시 호출됩니다.
@@ -202,6 +185,4 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         // 3. 저장 완료 알림 및 패널 숨김
         gameObject.SetActive(false);
     }
-
-    #endregion
 }

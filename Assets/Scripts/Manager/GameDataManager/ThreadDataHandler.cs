@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ThreadDataHandler
 {
-    private readonly dataManager _dataManager = null;
+    private readonly DataManager _dataManager = null;
 
     #region Private Data Containers
 
@@ -26,7 +26,7 @@ public class ThreadDataHandler
 
     #region Constructor & Save Logic
 
-    public ThreadDataHandler(dataManager gameDataManager)
+    public ThreadDataHandler(DataManager gameDataManager)
     {
         _threads = new Dictionary<string, ThreadState>();
         _categories = new Dictionary<string, ThreadCategory>();

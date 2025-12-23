@@ -28,7 +28,7 @@ public class BuildingInfoPanel : MonoBehaviour
     private BuildingState _currentBuildingState;
 
     private DesignUiManager _designUiManager;
-    private dataManager _dataManager;
+    private DataManager _dataManager;
     private System.Action<ResourceEntry> _onOutputResourceSelected;
 
     /// <summary>
@@ -59,23 +59,13 @@ public class BuildingInfoPanel : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
-        // 생산 정보 초기화 (UpdateInputProductionImages와 UpdateOutputProductionImages에서 각각 처리)
         GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
 
-        if (_nameText != null)
-            _nameText.text = _currentBuildingData.displayName;
-
-        if (_typeText != null)
-            _typeText.text = $"Type: {_currentBuildingData.buildingType}";
-
-        if (_descriptionText != null)
-            _descriptionText.text = _currentBuildingData.description;
-
-        if (_costText != null)
-            _costText.text = $"Cost: {_currentBuildingData.baseCost:N0}";
-
-        if (_maintenanceText != null)
-            _maintenanceText.text = $"Maintenance: {_currentBuildingData.baseMaintenanceCost:N0}/month";
+        _nameText.text = _currentBuildingData.displayName;
+        _typeText.text = $"Type: {_currentBuildingData.buildingType}";
+        _descriptionText.text = _currentBuildingData.description;
+        _costText.text = $"Cost: {_currentBuildingData.baseCost:N0}";
+        _maintenanceText.text = $"Maintenance: {_currentBuildingData.baseMaintenanceCost:N0}/month";
 
         if (_resourceTypesText != null)
         {
@@ -132,7 +122,6 @@ public class BuildingInfoPanel : MonoBehaviour
 
     private void UpdateInputProductionImages()
     {
-        // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_inputGridContentTransform);
         
         Dictionary<string, int> inputCounts = GameObjectUtils.AggregateResourceCounts(_currentBuildingState.inputProductionIds);
@@ -159,7 +148,6 @@ public class BuildingInfoPanel : MonoBehaviour
 
     private void UpdateOutputProductionImages()
     {
-        // 기존 내용 지우기
         GameObjectUtils.ClearChildren(_outputGridContentTransform);
 
         // 비생산 건물(road/load/unload 등)은 handlingResource 또는 runtime 자원을 표시
@@ -357,14 +345,6 @@ public class BuildingInfoPanel : MonoBehaviour
         {
             Debug.LogWarning("[BuildingInfoPanel] BuildingTileManager not found.");
         }
-    }
-
-    /// <summary>
-    /// 패널을 숨깁니다.
-    /// </summary>
-    public void Hide()
-    {
-        gameObject.SetActive(false);
     }
 
 

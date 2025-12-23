@@ -53,26 +53,20 @@ public class BuildingState
     /// 이 건물이 연구를 통해 언락되었는지 확인합니다.
     /// GameDataManager를 통해 연구 완료 상태를 확인합니다.
     /// </summary>
-    /// <param name="gameDataManager">게임 데이터 매니저 (연구 상태 확인용)</param>
+    /// <param name="dataManager">게임 데이터 매니저 (연구 상태 확인용)</param>
     /// <returns>언락되었으면 true, 연구가 필요 없거나 완료되었으면 true</returns>
-    public bool IsUnlocked(dataManager gameDataManager)
+    public bool IsUnlocked(DataManager dataManager)
     {
-        if (gameDataManager == null || string.IsNullOrEmpty(buildingId))
-            return false;
-
-        var buildingData = gameDataManager?.Building?.GetBuildingData(buildingId);
+        BuildingData buildingData = dataManager.Building.GetBuildingData(buildingId);
         if (buildingData == null)
             return false;
 
-        if (string.IsNullOrEmpty(buildingData.requiredResearch.id))
-            return true;
-
-        if (gameDataManager.Research != null)
+        if(buildingData.requiredResearch == null)
         {
-            return gameDataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
+            return true;
         }
 
-        return false;
+        return dataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
     }
     
     /// <summary>
