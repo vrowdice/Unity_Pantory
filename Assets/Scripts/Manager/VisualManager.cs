@@ -95,4 +95,24 @@ public class VisualManager : MonoBehaviour
             return Color.black;
         }
     }
+
+    /// <summary>
+    /// 예산 값에 따른 색상을 반환합니다 (충분: 초록색, 부족: 빨간색, 보통: 흰색)
+    /// </summary>
+    /// <param name="budget">예산 값</param>
+    /// <returns>색상</returns>
+    public Color GetBudgetColor(float budget)
+    {
+        if (budget >= 1000f)
+        {
+            return ManagementSufficientColor;
+        }
+        
+        if (budget <= 100f)
+        {
+            return ManagementInsufficientColor;
+        }
+        
+        return Color.white;
+    }
 }

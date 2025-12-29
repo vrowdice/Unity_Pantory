@@ -11,8 +11,6 @@ public class ResourceDataHandler
     // 자원을 저장하는 딕셔너리 (자원 ID -> ResourceEntry)
     private Dictionary<string, ResourceEntry> _resources;
     private readonly DataManager _dataManager;
-
-    // 자원 변경 이벤트 (자원이 추가/제거/설정될 때 발생)
     public event Action OnResourceChanged;
 
     /// <summary>
@@ -64,7 +62,7 @@ public class ResourceDataHandler
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
-            return entry.resourceState.playerInventory;
+            return entry.resourceState.playerCount;
         }
         
         Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
@@ -146,17 +144,17 @@ public class ResourceDataHandler
 
         if (amount < 0)
         {
-            if (entry.resourceState.playerInventory < -amount)
+            if (entry.resourceState.playerCount < -amount)
             {
                 Debug.LogWarning($"[Resource] Insufficient player inventory for {resourceId}.");
                 return;
             }
         }
 
-        entry.resourceState.playerInventory += amount;
-        entry.resourceState.playerInventoryDelta += amount;
+        entry.resourceState.playerCount += amount;
+        entry.resourceState.playerCountDelta += amount;
 
-        if (entry.resourceState.playerInventory < 0) entry.resourceState.playerInventory = 0;
+        if (entry.resourceState.playerCount < 0) entry.resourceState.playerCount = 0;
 
         OnResourceChanged?.Invoke();
     }
@@ -332,7 +330,7 @@ public class ResourceDataHandler
             return false;
         }
         
-        return entry.resourceState.playerInventory >= amount;
+        return entry.resourceState.playerCount >= amount;
     }
 
     /// <summary>
@@ -425,8 +423,6 @@ public class ResourceDataHandler
         if (changed) OnResourceChanged?.Invoke();
     }
 
-    // ----------------- Utility Methods -----------------
-
     /// <summary>
     /// 모든 자원의 수량을 0으로 초기화합니다.
     /// </summary>
@@ -458,7 +454,7 @@ public class ResourceDataHandler
             }
 
             // 플레이어 재고 델타는 항상 초기화 (일일 업데이트 시점)
-            entry.resourceState.playerInventoryDelta = 0;
+            entry.resourceState.playerCountDelta = 0;
 
             long delta = entry.resourceState.deltaCount;
             if (delta == 0)

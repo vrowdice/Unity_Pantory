@@ -38,13 +38,16 @@ public class MarketResurcePanel : MonoBehaviour
     {
         _dataManager = dataManager;
         _marketPanel = marketPanel;
-
-        _windowGraph.ShowGraph(_selectedResourceEntry.resourceState.PriceHistory);
-        UpdateSelectionDetails();
-
         _dataManager.Time.OnDayChanged += HandleDayChanged;
 
+        if(_selectedResourceEntry == null)
+        {
+            _selectedResourceEntry = _dataManager.Resource.GetResourceEntry("iron_ore");
+        }
+
+        UpdateSelectionDetails();
         _windowGraph.OnInitialize();
+        _windowGraph.ShowGraph(_selectedResourceEntry.resourceState.PriceHistory);
     }
 
     private void OnDestroy()
@@ -110,9 +113,9 @@ public class MarketResurcePanel : MonoBehaviour
         }
 
         string statusText = GetFriendlyStatus(state, out var statusColor);
-        string nextStageText = data.nextStage.displayName;
 
-        _resourceNameText.text = name;
+        _resourceNameText.text = data.displayName;
+        _resourceStorageText.text = state.playerCount.ToString();
         _resourcePriceText.text = priceText;
     }
 

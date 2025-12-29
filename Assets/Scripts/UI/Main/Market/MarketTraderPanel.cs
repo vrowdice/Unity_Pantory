@@ -16,7 +16,7 @@ public class MarketTraderPanel : MonoBehaviour
     [SerializeField] private Image _portrait;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
-    [SerializeField] private TextMeshProUGUI _activityText;   // active resources / contracts / holdings summary
+    [SerializeField] private TextMeshProUGUI _activityText;
     [SerializeField] private TextMeshProUGUI _tendencyText;
     [SerializeField] private TextMeshProUGUI _budgetText;
     [SerializeField] private TextMeshProUGUI _assetChangeText;
@@ -30,8 +30,8 @@ public class MarketTraderPanel : MonoBehaviour
     {
         _gameManager = gameManager;
         _dataManager = dataManager;
-        ClearDetails();
-        SubscribeToDayChange();
+
+        _dataManager.Time.OnDayChanged += HandleDayChanged;
     }
 
     public void HandleTraderButtonClicked(MarketActorEntry actorEntry)
@@ -42,43 +42,24 @@ public class MarketTraderPanel : MonoBehaviour
 
     private void UpdateDetails()
     {
-        if (_selectedActor?.data == null)
-        {
-            ClearDetails();
-            return;
-        }
+        MarketActorData data = _selectedActor.data;
+        MarketActorState state = _selectedActor.state;
 
-        var data = _selectedActor.data;
-        var state = _selectedActor.state;
-
-        // Portrait & Name
-        if (_portrait != null)
-        {
-            _portrait.sprite = data.icon;
-            _portrait.enabled = data.icon != null;
-        }
-
-        if (_nameText != null)
-        {
-            _nameText.text = string.IsNullOrEmpty(data.displayName) ? data.id : data.displayName;
-        }
-
-        // Roles & Archetype
-        if (_descriptionText != null)
-        {
-            _descriptionText.text = data.description;
-        }
+        _portrait.sprite = data.icon;
+        _portrait.enabled = data.icon != null;
+        _nameText.text = string.IsNullOrEmpty(data.displayName) ? data.id : data.displayName;
+        _descriptionText.text = data.description;
 
         // Tendency (Provider)
         if (_tendencyText != null)
         {
             string tendency = "-";
             Color color = Color.white;
-            if (state?.provider != null)
+            if (state?.provider != null && VisualManager.Instance != null)
             {
                 float delta = state.provider.priceDelta;
                 tendency = $"Tendency {delta:+0.##;-0.##;0}";
-                color = GetDeltaColor(delta);
+                color = VisualManager.Instance.GetDeltaColor(delta);
             }
             _tendencyText.text = tendency;
             _tendencyText.color = color;
@@ -124,7 +105,9 @@ public class MarketTraderPanel : MonoBehaviour
                 {
                     budgetStr = $"Daily Budget: 0 (No Wealth)";
                 }
-                color = GetBudgetColor(budget > 0f ? budget : wealth);
+                color = VisualManager.Instance != null 
+                    ? VisualManager.Instance.GetBudgetColor(budget > 0f ? budget : wealth)
+                    : Color.white;
             }
             _budgetText.text = budgetStr;
             _budgetText.color = color;
@@ -133,14 +116,14 @@ public class MarketTraderPanel : MonoBehaviour
         // 자산 변화량
         if (_assetChangeText != null)
         {
-            if (state != null)
+            if (state != null && VisualManager.Instance != null)
             {
                 float wealthChange = state.wealth - state.previousWealth;
                 string changeStr = wealthChange >= 0
                     ? $"+{ReplaceUtils.FormatNumber((long)wealthChange)}"
                     : ReplaceUtils.FormatNumber((long)wealthChange);
                 _assetChangeText.text = $"Asset Change: {changeStr}";
-                _assetChangeText.color = GetDeltaColor(wealthChange);
+                _assetChangeText.color = VisualManager.Instance.GetDeltaColor(wealthChange);
             }
             else
             {
@@ -274,92 +257,16 @@ public class MarketTraderPanel : MonoBehaviour
         _consumerResourceIcons.Clear();
     }
 
-    private void ClearDetails()
-    {
-        if (_portrait != null)
-        {
-            _portrait.sprite = null;
-            _portrait.enabled = false;
-        }
-        if (_nameText != null) _nameText.text = "-";
-        if (_descriptionText != null) _descriptionText.text = "-";
-        if (_tendencyText != null) { _tendencyText.text = "-"; _tendencyText.color = Color.white; }
-        if (_budgetText != null) { _budgetText.text = "-"; _budgetText.color = Color.white; }
-        if (_activityText != null) _activityText.text = "-";
-        if (_assetChangeText != null) { _assetChangeText.text = "-"; _assetChangeText.color = Color.white; }
-
-        // 자원 아이콘 정리
-        ClearResourceIcons();
-    }
-
-
-    private static Color GetDeltaColor(float delta)
-    {
-        if (delta > 0f) return Color.green;
-        if (delta < 0f) return Color.red;
-        return Color.white;
-    }
-
-    private static Color GetBudgetColor(float budget)
-    {
-        if (budget >= 1000f) return Color.green;
-        if (budget <= 100f) return Color.red;
-        return Color.white;
-    }
-
-    private void SubscribeToDayChange()
-    {
-        // 중복 구독 방지
-        if (_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged += HandleDayChanged;
-        _isSubscribedToDayChange = true;
-    }
-
-    private void UnsubscribeFromDayChange()
-    {
-        if (!_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            _isSubscribedToDayChange = false;
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        _isSubscribedToDayChange = false;
-    }
-
     private void HandleDayChanged()
     {
-        // 선택된 액터가 있으면 정보 갱신
         if (_selectedActor != null)
         {
             UpdateDetails();
         }
     }
 
-    private void OnDisable()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            UnsubscribeFromDayChange();
-        }
-    }
-
     private void OnDestroy()
     {
-        UnsubscribeFromDayChange();
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
     }
 }

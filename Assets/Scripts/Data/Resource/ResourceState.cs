@@ -9,8 +9,8 @@ public class ResourceState
     public long count;                 // 시장 전체 유통 재고 (Market Inventory)
     
     [Header("Player Inventory")]
-    public long playerInventory;       // 플레이어 개인 창고 (Player Storage)
-    public long playerInventoryDelta;  // 플레이어 재고 변화량 (생산/소비/거래)
+    public long playerCount;       // 플레이어 개인 창고 (Player Storage)
+    public long playerCountDelta;  // 플레이어 재고 변화량 (생산/소비/거래)
     
     public float currentValue;         // 현재 가격
     public float priceChangeRate;      // 시장 압력에 따른 변동률
@@ -52,7 +52,6 @@ public class ResourceState
         }
 
         count = data.initialAmount;
-        // Initialize price to match effective baseline to avoid immediate mean reversion pressure
         float effectiveBaseline = GetEffectiveBaseline(data.baseValue);
         currentValue = Mathf.Max(0.01f, effectiveBaseline);
         RecordPrice(currentValue);
@@ -83,24 +82,13 @@ public class ResourceState
         }
     }
 
-    public void ApplyTemporaryModifier(float multiplier, float durationDays)
-    {
-        temporaryModifier = Mathf.Max(0.01f, multiplier);
-        temporaryModifierDuration = Mathf.Max(0f, durationDays);
-    }
-
-    public void ApplyPermanentModifier(float multiplier)
-    {
-        permanentModifier = Mathf.Max(0.01f, multiplier);
-    }
-
     private void InitializeDefaults()
     {
         currentValue = 0f;
         priceChangeRate = 0f;
         count = 0;
-        playerInventory = 0;
-        playerInventoryDelta = 0;
+        playerCount = 0;
+        playerCountDelta = 0;
         deltaCount = 0;
         playerTransactionDelta = 0;
         accumulatedPlayerDemand = 0f;
@@ -120,37 +108,6 @@ public class ResourceState
         {
             _priceHistory.Clear();
         }
-    }
-
-    /// <summary>
-    /// 플레이어 매수량을 추가합니다 (양수로 추가)
-    /// </summary>
-    public void AddPlayerBuyAmount(long amount)
-    {
-        if (amount > 0)
-        {
-            playerTransactionDelta += amount;
-        }
-    }
-
-    /// <summary>
-    /// 플레이어 매도량을 추가합니다 (음수로 추가)
-    /// </summary>
-    public void AddPlayerSellAmount(long amount)
-    {
-        if (amount > 0)
-        {
-            playerTransactionDelta -= amount;
-        }
-    }
-
-    /// <summary>
-    /// 플레이어 거래 정보를 초기화합니다 (하루가 지날 때 호출)
-    /// </summary>
-    public void ResetPlayerTransactions()
-    {
-        playerTransactionDelta = 0;
-        // accumulatedPlayerDemand와 accumulatedPlayerSupply는 ApplyPriceAdjustments에서 사용 후 초기화
     }
 
     public void RecordPrice(float price)
