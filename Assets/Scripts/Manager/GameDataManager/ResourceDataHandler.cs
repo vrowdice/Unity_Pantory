@@ -511,4 +511,12 @@ public class ResourceDataHandler
         entry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
         entry.resourceState.RecordPrice(entry.resourceState.currentValue);
     }
+
+    /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnResourceChanged = null;
+    }
 }

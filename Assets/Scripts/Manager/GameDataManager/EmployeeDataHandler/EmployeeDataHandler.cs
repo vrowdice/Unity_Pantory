@@ -10,6 +10,14 @@ public partial class EmployeeDataHandler
     InitialEmployeeData _initialEmployeeData;
 
     /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnEmployeeChanged = null;
+    }
+
+    /// <summary>
     /// EmployeeService 생성자
     /// </summary>
     public EmployeeDataHandler(DataManager gameDataManager, List<EmployeeData> employeeDataList, InitialEmployeeData initData)

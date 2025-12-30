@@ -27,6 +27,14 @@ public class FinancesDataHandler
 
     private long _credit;
     public event Action OnCreditChanged;
+
+    /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnCreditChanged = null;
+    }
     private DailyExpenseReservation _reservedDailyExpenses;
     public DailyExpenseReservation ReservedDailyExpenses => _reservedDailyExpenses;
     public bool IsProcessingReservedExpenses { get; private set; } = false;

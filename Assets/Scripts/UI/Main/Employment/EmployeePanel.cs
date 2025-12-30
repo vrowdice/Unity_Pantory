@@ -58,9 +58,13 @@ public class EmployeePanel : BasePanel
             return;
         }
 
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        _dataManager.Time.OnDayChanged += HandleDayChanged;
+
+        _dataManager.Employee.OnEmployeeChanged -= HandleEmployeeChanged;
+        _dataManager.Employee.OnEmployeeChanged += HandleEmployeeChanged;
+
         SetupEmployeeRoleButtons();
-        SubscribeToDayChange();
-        SubscribeToEmployeeChanged();
         SelectFirstEmployee();
     }
 
@@ -458,86 +462,6 @@ public class EmployeePanel : BasePanel
 
     #endregion
 
-    #region Event Subscription
-
-    /// <summary>
-    /// 일일 변경 이벤트 구독
-    /// </summary>
-    private void SubscribeToDayChange()
-    {
-        if (_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged += HandleDayChanged;
-        _isSubscribedToDayChange = true;
-    }
-
-    /// <summary>
-    /// 일일 변경 이벤트 구독 해제
-    /// </summary>
-    private void UnsubscribeFromDayChange()
-    {
-        if (!_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            _isSubscribedToDayChange = false;
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        _isSubscribedToDayChange = false;
-    }
-
-    /// <summary>
-    /// 직원 변경 이벤트 구독
-    /// </summary>
-    private void SubscribeToEmployeeChanged()
-    {
-        if (_isSubscribedToEmployeeChanged)
-        {
-            return;
-        }
-
-        if (_dataManager?.Employee == null)
-        {
-            return;
-        }
-
-        _dataManager.Employee.OnEmployeeChanged += HandleEmployeeChanged;
-        _isSubscribedToEmployeeChanged = true;
-    }
-
-    /// <summary>
-    /// 직원 변경 이벤트 구독 해제
-    /// </summary>
-    private void UnsubscribeFromEmployeeChanged()
-    {
-        if (!_isSubscribedToEmployeeChanged)
-        {
-            return;
-        }
-
-        if (_dataManager?.Employee == null)
-        {
-            _isSubscribedToEmployeeChanged = false;
-            return;
-        }
-
-        _dataManager.Employee.OnEmployeeChanged -= HandleEmployeeChanged;
-        _isSubscribedToEmployeeChanged = false;
-    }
-
 
     /// <summary>
     /// 직원 변경 핸들러
@@ -545,7 +469,6 @@ public class EmployeePanel : BasePanel
     private void HandleEmployeeChanged()
     {
         RefreshEmployeeUI();
-        // 관리 비율도 업데이트 (직원 변경 시 영향받음)
         UpdateManagementRatio();
     }
 
@@ -557,25 +480,4 @@ public class EmployeePanel : BasePanel
         RefreshEmployeeUI();
         UpdateManagementRatio();
     }
-
-    #endregion
-
-    #region Unity Lifecycle
-
-    private void OnDisable()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            UnsubscribeFromDayChange();
-            UnsubscribeFromEmployeeChanged();
-        }
-    }
-
-    private void OnDestroy()
-    {
-        UnsubscribeFromDayChange();
-        UnsubscribeFromEmployeeChanged();
-    }
-
-    #endregion
 }

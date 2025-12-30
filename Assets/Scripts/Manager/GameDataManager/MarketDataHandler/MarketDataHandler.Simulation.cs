@@ -11,9 +11,6 @@ public partial class MarketDataHandler
     /// <summary>
     /// 액터의 현재 자산 수준에 따른 생산/소비 규모 배율을 계산합니다.
     /// </summary>
-    /// <summary>
-    /// MarketDataHandler 시뮬레이션 파트
-    /// </summary>
     private float GetWealthScalingMultiplier(MarketActorEntry entry)
     {
         if (entry.state.wealth <= entry.state.previousWealth) return 1.0f;
@@ -111,68 +108,55 @@ public partial class MarketDataHandler
             float currentPrice = res.resourceState.currentValue;
             float basePrice = res.resourceData.baseValue;
             float priceThreshold = _marketSettings != null ? _marketSettings.tradePortPriceThreshold : 1.3f;
-            float targetPrice = basePrice * priceThreshold; // 기준가의 배율을 '적정 가격 상한선'으로 설정
+            float targetPrice = basePrice * priceThreshold;
 
-            // 가격 안정화 로직 (Price Stabilization)
-            // 가격이 너무 비싸면 무역항에서 '저렴한 수입품'을 대량 공급하여 가격을 강제로 떨어뜨림
             if (currentPrice > targetPrice && basePrice > 0.01f)
             {
-                // 가격이 비쌀수록 더 많은 물량을 공급 (시장 수요의 비율만큼 추가 공급)
                 float supplyBoostRatio = _marketSettings != null ? _marketSettings.tradePortSupplyBoostRatio : 0.5f;
                 float supplyBoost = res.resourceState.lastDemand * supplyBoostRatio;
                 
-                // 최소 공급량 보장
                 float minSupply = _marketSettings != null ? _marketSettings.tradePortMinSupply : 100f;
                 supplyBoost = Mathf.Max(supplyBoost, minSupply);
 
                 res.resourceState.lastSupply += supplyBoost;
                 _dataManager.Resource.ModifyMarketInventory(res.resourceData.id, (long)supplyBoost);
 
-                // [핵심] 공급을 늘렸으니, 가격도 즉시 하락 압력을 줌 (수입품이 싸게 들어옴)
                 float priceDropRate = _marketSettings != null ? _marketSettings.tradePortPriceDropRate : 0.9f;
                 res.resourceState.currentValue *= priceDropRate;
             }
-            // [수정] 안전 재고 유지 (Minimum Stock Maintenance)
-            // 자원 타입에 따라 최소 유지량을 다르게 설정
-            long minStockTarget = 100L; // 기본값
 
-            // 1. 많이 쓰이는 중간재(Component, Essentials)는 재고를 넉넉히 확보
+            long minStockTarget = 100L;
+
             if (res.resourceData.type == ResourceType.component || 
                 res.resourceData.type == ResourceType.Essentials)
             {
-                minStockTarget = 1000L; // 최소 1000개는 항상 깔려있게 함
+                minStockTarget = 1000L;
             }
-            // 2. 원자재는 더 많이
             else if (res.resourceData.type == ResourceType.raw)
             {
                 minStockTarget = 2000L;
             }
 
-            // 현재 재고가 목표치보다 적으면 부족분만큼 즉시 수입(채워넣기)
             if (res.resourceState.count < minStockTarget)
             {
                 long deficit = minStockTarget - res.resourceState.count;
-                
-                // 너무 조금씩(1~2개) 채우면 연산 낭비니까, 한 번 채울 때 넉넉히(최소 100개 단위)
                 long importAmount = Math.Max(deficit, 100L);
 
                 res.resourceState.lastSupply += importAmount;
                 _dataManager.Resource.ModifyMarketInventory(res.resourceData.id, importAmount);
                 
-                // 수입 비용 반영 (재고가 없어서 급히 채웠으니 가격 소폭 상승 유도)
-                // 단, 너무 자주 발생하면 인플레가 오므로 1.01~1.05배 정도로 살짝만
                 res.resourceState.currentValue *= 1.02f;
             }
-            // [기존 로직 유지] 악성 재고 처리 (수출): 공급이 수요보다 너무 많고 가격이 너무 쌀 때만 수출
+
+            // 악성 재고 처리 (수출)
             float exportSurplusRatio = _marketSettings != null ? _marketSettings.tradePortExportSurplusRatio : 2.0f;
             float exportPriceThreshold = _marketSettings != null ? _marketSettings.tradePortExportPriceThreshold : 0.8f;
             if (res.resourceState.lastSupply > res.resourceState.lastDemand * exportSurplusRatio && currentPrice < basePrice * exportPriceThreshold)
             {
                 float surplus = res.resourceState.lastSupply - res.resourceState.lastDemand;
                 float dumpRatio = _marketSettings != null ? _marketSettings.tradePortExportDumpRatio : 0.5f;
-                float dumpAmount = surplus * dumpRatio; // 잉여분의 비율만큼 걷어감
+                float dumpAmount = surplus * dumpRatio;
                 
-                // 시장에서 물량 제거 (수출됨)
                 res.resourceState.lastSupply -= dumpAmount;
                 _dataManager.Resource.ModifyMarketInventory(res.resourceData.id, -(long)dumpAmount);
             }
@@ -346,7 +330,6 @@ public partial class MarketDataHandler
         UpdateActorFinances();
     }
 
-    // [복원 및 수정] Provider 개별 거래 처리 (Simulate와 로직 동기화)
     private void ProcessProviderTrade(
         MarketActorEntry entry,
         Dictionary<string, ResourceEntry> resources,
@@ -366,19 +349,13 @@ public partial class MarketDataHandler
 
             float currentPrice = Mathf.Max(0.01f, resourceEntry.resourceState.currentValue);
             
-            // Simulate와 동일한 생산량 산출 (단, 랜덤값은 다시 계산됨)
-            // 정확한 시뮬레이션을 위해서는 Simulate에서 계산된 값을 저장했다가 써야 하지만,
-            // 여기서는 근사치로 재계산하여 처리 (성능 및 구조 단순화)
-            
             float priceSignal = CalculatePriceSignal(resourceEntry, preference.priceSensitivity, true);
             float baseQuantity = SampleQuantity(preference.desiredMin, preference.desiredMax);
             float quantity = baseQuantity * wealthMultiplier;
 
-            // 공급망 제약 (약식 계산: 여기서는 이미 Simulate에서 걸러졌다고 가정하고 1.0)
             float resourceAvailability = 1.0f; 
 
             float batchModifier = profile.allowBatchSelling ? 1f : (_marketSettings != null ? _marketSettings.noBatchSellingModifier : 0.5f);
-            // Simulate 때와 다른 랜덤값이 나오겠지만, 통계적으론 비슷함
             float efficiencyVariation = UnityEngine.Random.Range(0.95f, 1.05f);
 
             float output = quantity * priceSignal * profile.basePriceModifier * batchModifier * efficiencyVariation * resourceAvailability;
@@ -392,7 +369,6 @@ public partial class MarketDataHandler
         }
     }
 
-    // [복원 및 수정] Consumer 개별 거래 처리
     private void ProcessConsumerTrade(
         MarketActorEntry entry,
         Dictionary<string, ResourceEntry> resources,
@@ -414,7 +390,6 @@ public partial class MarketDataHandler
             float currentPrice = Mathf.Max(0.01f, resourceEntry.resourceState.currentValue);
             float priceSignal = CalculatePriceSignal(resourceEntry, preference.priceSensitivity, false);
 
-            // 저항선 로직 (Simulate와 동일)
             float baseValue = resourceEntry.resourceData.baseValue;
             float resistanceThreshold = baseValue * resourceEntry.resourceData.priceResistanceThreshold;
             if (currentPrice > resistanceThreshold && baseValue > 0.01f)
@@ -452,7 +427,6 @@ public partial class MarketDataHandler
         }
     }
 
-    // [복원] 자산 업데이트 함수
     private void UpdateActorFinances()
     {
         foreach (var entry in _actors.Values)
@@ -472,7 +446,6 @@ public partial class MarketDataHandler
             {
                 var cState = entry.state.consumer;
                 float purchaseLossRate = _marketSettings != null ? _marketSettings.purchaseCostLossRate : 0.5f;
-                // 소비 만족도 가치에서 지출 비용 일부를 뺀 것을 순이익으로 간주 (게임적 허용)
                 float consumerNetValue = cState.dailyConsumptionValue - (cState.dailyPurchaseExpense * purchaseLossRate);
                 netProfit += consumerNetValue;
             }
@@ -482,10 +455,6 @@ public partial class MarketDataHandler
         }
     }
 
-    // ==================================================================================
-    // 5. 가격 조정 (Price Adjustment)
-    // ==================================================================================
-    
     private void ApplyPriceAdjustments(
        Dictionary<string, ResourceEntry> resources,
        Dictionary<string, float> supply,

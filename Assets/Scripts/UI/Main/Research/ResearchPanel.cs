@@ -24,7 +24,10 @@ public class ResearchPanel : BasePanel
             return;
         }
 
+        _dataManager.Research.OnResearchPointsChanged -= ResearchChanged;
         _dataManager.Research.OnResearchPointsChanged += ResearchChanged;
+
+        _dataManager.Time.OnDayChanged -= ResearchChanged;
         _dataManager.Time.OnDayChanged += ResearchChanged;
 
         UpdateAllText();

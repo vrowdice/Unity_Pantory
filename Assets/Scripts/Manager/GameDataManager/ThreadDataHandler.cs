@@ -514,5 +514,14 @@ public class ThreadDataHandler
         OnCategoryChanged?.Invoke();
     }
 
+    /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnThreadChanged = null;
+        OnCategoryChanged = null;
+    }
+
     #endregion
 }

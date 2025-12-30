@@ -180,26 +180,22 @@ public partial class MarketDataHandler
         float normalizedImpact = amount / marketVolume;
         float baseDemandImpact = normalizedImpact * impactRate * 100f;
         
-        // 3. [개선] 시장 장악력에 따른 지수적 가격 상승
+        // 시장 장악력에 따른 지수적 가격 상승
         float currentMarketInventory = resourceEntry.resourceState.count;
         float dominationRatio = (float)amount / Mathf.Max(1f, currentMarketInventory);
 
-        // 시장 재고의 10% 이상을 사면 가격 충격 발생
         float monopolyImpact = 0f;
         if (dominationRatio > 0.1f)
         {
-            // 제곱 비례로 충격 (많이 살수록 기하급수적으로 비싸짐)
             monopolyImpact = dominationRatio * dominationRatio * 5.0f;
         }
         
-        // 기본 영향력 + 독점 충격
         float finalImpact = baseDemandImpact + monopolyImpact;
         float currentPrice = resourceEntry.resourceState.currentValue;
         float priceAdjustment = finalImpact * resourceEntry.resourceData.marketSensitivity * 0.01f;
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
         resourceEntry.resourceState.RecordPrice(resourceEntry.resourceState.currentValue);
         
-        // 즉시 반영용 (레거시 호환)
         resourceEntry.resourceState.lastDemand += amount;
     }
 
@@ -225,7 +221,6 @@ public partial class MarketDataHandler
         resourceEntry.resourceState.currentValue = Mathf.Max(0.01f, currentPrice * (1f + priceAdjustment));
         resourceEntry.resourceState.RecordPrice(resourceEntry.resourceState.currentValue);
         
-        // 즉시 반영용 (레거시 호환)
         resourceEntry.resourceState.lastSupply += amount;
     }
 }

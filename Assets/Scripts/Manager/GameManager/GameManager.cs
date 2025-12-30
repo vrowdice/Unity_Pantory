@@ -102,16 +102,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(_dataManager == null || _visualManager == null)
-        {
-            Debug.LogError("[GameManager] DataManager or VisualManager is not initialized.");
-            return;
-        }
-
         if (_sharedWorldCanvas != null)
         {
             Destroy(_sharedWorldCanvas);
         }
+
+        _dataManager.ClearAllEventSubscriptions();
+        _dataManager.Time.PauseTime();
 
         MainCameraController mainCamera = GameObject.Find("MainCamera").GetComponent<MainCameraController>();
         _mainCameraController = mainCamera;
@@ -126,8 +123,6 @@ public class GameManager : MonoBehaviour
         IUIManager uiManager = GameObject.Find("Canvas").GetComponent<IUIManager>();
         _uiManager = uiManager;
         uiManager.OnInitialize(this, _dataManager);
-
-        _dataManager.Time.PauseTime();
     }
 
     /// <summary>

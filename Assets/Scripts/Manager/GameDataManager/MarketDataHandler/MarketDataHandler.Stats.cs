@@ -9,9 +9,6 @@ public partial class MarketDataHandler
     /// <summary>
     /// 액터 상태를 갱신합니다.
     /// </summary>
-    /// <summary>
-    /// MarketDataHandler 통계 파트
-    /// </summary>
     private void RefreshActor(MarketActorEntry entry)
     {
         if (entry?.data == null)
@@ -19,7 +16,6 @@ public partial class MarketDataHandler
             return;
         }
 
-        // All actors handle both supply and consumption
         RefreshConsumer(entry);
         RefreshProvider(entry);
     }
@@ -54,14 +50,12 @@ public partial class MarketDataHandler
             else
             {
                 // 예산 범위가 없는 경우 자산의 일부를 예산으로 사용
-                // 구매력 향상을 위해 예산 비율 증가
                 float budgetRatio = entry.data.scale switch
                 {
                     MarketActorScale.Small => _marketSettings != null ? _marketSettings.smallBudgetRatio : 0.5f,
                     MarketActorScale.Large => _marketSettings != null ? _marketSettings.largeBudgetRatio : 0.6f,
                     _ => _marketSettings != null ? _marketSettings.mediumBudgetRatio : 0.55f
                 };
-                // Ensure minimum budget to allow consumption even with low initial wealth
                 float calculatedBudget = entry.state.wealth * budgetRatio;
                 float minBudget = entry.data.scale switch
                 {
@@ -197,9 +191,6 @@ public partial class MarketDataHandler
             entry.state.health = Mathf.Clamp(entry.state.health, 0.2f, 1f);
         }
     }
-
-    // 순위 계산 최적화를 위한 캐시 리스트
-    private List<MarketActorEntry> _cachedActorList = new List<MarketActorEntry>();
 
     /// <summary>
     /// 모든 액터의 자산 기준 순위를 계산하고 업데이트합니다.

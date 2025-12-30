@@ -38,18 +38,10 @@ public class DataManager : MonoBehaviour
     public EffectDataHandler Effect { get; private set; }
     public ResearchDataHandler Research { get; private set; }
 
-    public event Action OnThreadPlacementChanged;
-
     void Update()
     {
         float deltaTime = UnityEngine.Time.deltaTime;
         Time?.Update(deltaTime);
-    }
-
-    void OnDestroy()
-    {
-        ThreadPlacement.OnPlacementChanged -= HandleThreadPlacementChanged;
-        Time.OnDayChanged -= HandleDayChanged;
     }
 
     public void OnInitialize()
@@ -81,12 +73,7 @@ public class DataManager : MonoBehaviour
         Effect = new EffectDataHandler(this);
         Research = new ResearchDataHandler(this, _researchDataList);
 
-        ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
-        Time.OnDayChanged += HandleDayChanged;
-
         LoadThreadData();
-
-        Debug.Log("[GameDataManager] All services initialized.");
     }
 
 #if UNITY_EDITOR
@@ -196,6 +183,35 @@ public class DataManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 씬 전환 시 모든 핸들러의 이벤트 구독을 초기화합니다.
+    /// 각 컴포넌트가 필요할 때 다시 구독하도록 합니다.
+    /// </summary>
+    public void ClearAllEventSubscriptions()
+    {
+        ThreadPlacement.ClearAllSubscriptions();
+        Time.ClearAllSubscriptions();
+        Resource.ClearAllSubscriptions();
+        Thread.ClearAllSubscriptions();
+        Finances.ClearAllSubscriptions();
+        Employee.ClearAllSubscriptions();
+        Research.ClearAllSubscriptions();
+        Market.ClearAllSubscriptions();
+
+        ThreadPlacement.OnPlacementChanged -= HandleThreadPlacementChanged;
+        ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
+        Time.OnDayChanged -= HandleDayChanged;
+        Time.OnDayChanged += HandleDayChanged;
+
+        Debug.Log("[DataManager] All event subscriptions cleared.");
+    }
+
+    private void HandleThreadPlacementChanged()
+    {
+        Finances.ReserveDailyExpenses();
+        Employee.UpdateDailyEmployeeStatus();
+    }
+
     private void HandleDayChanged()
     {
         Employee.UpdateDailyEmployeeStatus();
@@ -210,13 +226,6 @@ public class DataManager : MonoBehaviour
         Research.OnDayChanged();
         Market.TickDailyMarket();
         Effect.ProcessDayPass(1);
-    }
-
-    private void HandleThreadPlacementChanged()
-    {
-        Finances.ReserveDailyExpenses();
-        Employee.UpdateDailyEmployeeStatus();
-        OnThreadPlacementChanged.Invoke();
     }
 
     /// <summary>

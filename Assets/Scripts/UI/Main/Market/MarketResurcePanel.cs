@@ -38,6 +38,8 @@ public class MarketResurcePanel : MonoBehaviour
     {
         _dataManager = dataManager;
         _marketPanel = marketPanel;
+
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
         _dataManager.Time.OnDayChanged += HandleDayChanged;
 
         if(_selectedResourceEntry == null)

@@ -20,6 +20,15 @@ public class ResearchDataHandler
     public event Action OnResearchPointsChanged;
     public event Action<string> OnResearchUnlocked;
 
+    /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnResearchPointsChanged = null;
+        OnResearchUnlocked = null;
+    }
+
     public ResearchDataHandler(DataManager manager, List<ResearchData> researchDataList = null)
     {
         _dataManager = manager;

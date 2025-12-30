@@ -159,6 +159,9 @@ public class MarketPanel : BasePanel
             return;
         }
 
+        // 현재 선택된 상인 ID 저장
+        string currentSelectedId = _traderPanel?.GetSelectedActorId() ?? string.Empty;
+
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
 
         var market = _dataManager.Market;
@@ -183,6 +186,9 @@ public class MarketPanel : BasePanel
         var sortedItems = new List<(bool isPlayer, float wealth, MarketActorEntry entry, int rank)>();
 
         // NPC 액터 추가 (MarketActorState.rank 사용 - 이미 자산 기준으로 계산됨)
+        MarketActorEntry selectedActor = null;
+        MarketActorEntry firstRankTrader = null;
+        
         foreach (var actor in sortedActors)
         {
             if (actor?.data == null)
@@ -191,8 +197,20 @@ public class MarketPanel : BasePanel
             }
 
             float wealth = actor.state?.GetWealth() ?? 0f;
-            int rank = actor.state?.GetRank() ?? 0; // MarketDataHandler에서 계산된 자산 기준 순위 사용
+            int rank = actor.state?.GetRank() ?? 0;
             sortedItems.Add((false, wealth, actor, rank));
+
+            // 현재 선택된 상인 찾기
+            if (!string.IsNullOrEmpty(currentSelectedId) && actor.data.id == currentSelectedId)
+            {
+                selectedActor = actor;
+            }
+
+            // 1순위 NPC 트레이더 저장 (플레이어가 아닌 첫 번째 트레이더)
+            if (firstRankTrader == null)
+            {
+                firstRankTrader = actor;
+            }
         }
 
         // 플레이어 추가 (플레이어 자산을 기준으로 순위 계산)
@@ -212,7 +230,6 @@ public class MarketPanel : BasePanel
 
         // 정렬된 순서대로 버튼 생성
         int createdCount = 0;
-        MarketActorEntry firstRankTrader = null; // 1순위 트레이더 저장
         
         foreach (var item in sortedItems)
         {
@@ -239,20 +256,15 @@ public class MarketPanel : BasePanel
             {
                 // NPC 액터 버튼 초기화 (MarketActorState.rank 사용)
                 traderBtn.OnInitialize(_traderPanel, item.entry);
-                
-                // 1순위 NPC 트레이더 저장 (플레이어가 아닌 첫 번째 트레이더)
-                if (firstRankTrader == null && item.entry != null)
-                {
-                    firstRankTrader = item.entry;
-                }
             }
             createdCount++;
         }
 
-        // 1순위 트레이더 자동 선택
-        if (firstRankTrader != null && _traderPanel != null)
+        // 현재 선택된 상인이 있으면 유지, 없으면 첫 번째 선택 (초기 진입 시에만)
+        MarketActorEntry entryToSelect = selectedActor ?? firstRankTrader;
+        if (entryToSelect != null && _traderPanel != null)
         {
-            _traderPanel.HandleTraderButtonClicked(firstRankTrader);
+            _traderPanel.HandleTraderButtonClicked(entryToSelect);
         }
     }
 

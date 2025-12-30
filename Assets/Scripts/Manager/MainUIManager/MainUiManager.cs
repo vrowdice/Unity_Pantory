@@ -36,22 +36,23 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         _dataManager = argGameDataManager;
         _productionInfoImage = argGameManager.ProductionInfoImage;
 
-        if (_threadTileManager == null)
-        {
-            Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned.");
-        }
+        _dataManager.Resource.OnResourceChanged -= UpdateAllMainText;
+        _dataManager.Finances.OnCreditChanged -= UpdateAllMainText;
+        _dataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
+        _dataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
 
-        if (_dataManager != null)
-        {
-            _dataManager.Resource.OnResourceChanged += UpdateAllMainText;
-            _dataManager.Finances.OnCreditChanged += UpdateAllMainText;
-            _dataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
-            _dataManager.OnThreadPlacementChanged += OnThreadPlacementChanged;
+        _dataManager.Time.OnDayChanged -= OnDayChanged;
+        _dataManager.Time.OnMonthChanged -= OnMonthChanged;
+        _dataManager.Time.OnYearChanged -= OnYearChanged;
 
-            _dataManager.Time.OnDayChanged += OnDayChanged;
-            _dataManager.Time.OnMonthChanged += OnMonthChanged;
-            _dataManager.Time.OnYearChanged += OnYearChanged;
-        }
+        _dataManager.Resource.OnResourceChanged += UpdateAllMainText;
+        _dataManager.Finances.OnCreditChanged += UpdateAllMainText;
+        _dataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
+        _dataManager.Thread.OnThreadChanged += OnThreadPlacementChanged;
+
+        _dataManager.Time.OnDayChanged += OnDayChanged;
+        _dataManager.Time.OnMonthChanged += OnMonthChanged;
+        _dataManager.Time.OnYearChanged += OnYearChanged;
 
         _infoDatePanel.OnInitialize(_dataManager);
         _creditInfoPanel.OnInitialize(_dataManager);
@@ -72,21 +73,6 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     {
         UpdateCreditText();
         UpdateResearchText();
-    }
-
-    private void OnDestroy()
-    {
-        if (_dataManager != null)
-        {
-            _dataManager.Resource.OnResourceChanged -= UpdateAllMainText;
-            _dataManager.Finances.OnCreditChanged -= UpdateAllMainText;
-            _dataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
-            _dataManager.OnThreadPlacementChanged -= OnThreadPlacementChanged;
-
-            _dataManager.Time.OnDayChanged -= OnDayChanged;
-            _dataManager.Time.OnMonthChanged -= OnMonthChanged;
-            _dataManager.Time.OnYearChanged -= OnYearChanged;
-        }
     }
 
     private void UpdateCreditText()

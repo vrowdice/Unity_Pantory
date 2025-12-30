@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
+using JetBrains.Annotations;
 
 public class MarketTraderPanel : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class MarketTraderPanel : MonoBehaviour
     private MarketActorEntry _selectedActor;
     private List<GameObject> _providerResourceIcons = new List<GameObject>();
     private List<GameObject> _consumerResourceIcons = new List<GameObject>();
-    private bool _isSubscribedToDayChange;
 
     [Header("Details")]
     [SerializeField] private Image _portrait;
@@ -25,19 +25,26 @@ public class MarketTraderPanel : MonoBehaviour
     [SerializeField] private Transform _providerResourceContentTransform;
     [SerializeField] private Transform _consumerResourceContentTransform;
 
-
     public void OnInitialize(GameManager gameManager, DataManager dataManager)
     {
         _gameManager = gameManager;
         _dataManager = dataManager;
 
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
         _dataManager.Time.OnDayChanged += HandleDayChanged;
+
+        HandleTraderButtonClicked(_dataManager.Market.GetActor("iron_mining_consortium"));
     }
 
     public void HandleTraderButtonClicked(MarketActorEntry actorEntry)
     {
         _selectedActor = actorEntry;
         UpdateDetails();
+    }
+
+    public string GetSelectedActorId()
+    {
+        return _selectedActor?.data?.id ?? string.Empty;
     }
 
     private void UpdateDetails()
@@ -55,12 +62,11 @@ public class MarketTraderPanel : MonoBehaviour
         {
             string tendency = "-";
             Color color = Color.white;
-            if (state?.provider != null && VisualManager.Instance != null)
-            {
-                float delta = state.provider.priceDelta;
-                tendency = $"Tendency {delta:+0.##;-0.##;0}";
-                color = VisualManager.Instance.GetDeltaColor(delta);
-            }
+
+            float delta = state.provider.priceDelta;
+            tendency = $"Tendency {delta:+0.##;-0.##;0}";
+            color = VisualManager.Instance.GetDeltaColor(delta);
+
             _tendencyText.text = tendency;
             _tendencyText.color = color;
         }
@@ -263,10 +269,5 @@ public class MarketTraderPanel : MonoBehaviour
         {
             UpdateDetails();
         }
-    }
-
-    private void OnDestroy()
-    {
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
     }
 }

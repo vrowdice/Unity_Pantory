@@ -7,11 +7,9 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class ThreadGridHandler
 {
-    private readonly ThreadTileManager _manager;
     private readonly Transform _parentTransform;
     private readonly GameObject _threadTilePrefab;
     private readonly GameObject _threadObjectPrefab;
-    private readonly MainCameraController _cameraController;
 
     private int _gridWidth;
     private int _gridHeight;
@@ -19,7 +17,6 @@ public class ThreadGridHandler
     private readonly Dictionary<Vector2Int, ThreadTile> _threadTiles = new Dictionary<Vector2Int, ThreadTile>();
     private readonly Dictionary<Vector2Int, ThreadObject> _threadObjects = new Dictionary<Vector2Int, ThreadObject>();
 
-    #region State Fields
     private ThreadState _selectedThread;
     private GameObject _previewObject;
     private ThreadObject _previewComponent;
@@ -29,42 +26,22 @@ public class ThreadGridHandler
     private bool _canPlace;
     private bool _isPlacementActive;
     private bool _isRemovalActive;
-    private Camera _cachedCamera;
-    #endregion
 
-    #region Properties
     public bool IsPlacementActive => _isPlacementActive;
     public bool IsRemovalActive => _isRemovalActive;
     public ThreadState SelectedThread => _selectedThread;
 
-    // 현재 유효한 카메라를 반환 (캐싱 로직 포함)
-    private Camera ActiveCamera
-    {
-        get
-        {
-            if (_cachedCamera != null) return _cachedCamera;
-            if (_cameraController != null && _cameraController.Camera != null) _cachedCamera = _cameraController.Camera;
-            else _cachedCamera = Camera.main;
-            return _cachedCamera;
-        }
-    }
-
     // 마우스가 UI 위에 있는지 여부
     private bool IsPointerOverUI => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-    #endregion
 
-    public ThreadGridHandler(ThreadTileManager manager, GameObject tilePrefab, GameObject objPrefab, int width, int height, MainCameraController cameraController)
+    public ThreadGridHandler(Transform parentTransform, GameObject tilePrefab, GameObject objPrefab, int width, int height)
     {
-        _manager = manager;
-        _parentTransform = manager.transform;
+        _parentTransform = parentTransform;
         _threadTilePrefab = tilePrefab;
         _threadObjectPrefab = objPrefab;
-        _cameraController = cameraController;
         _gridWidth = width;
         _gridHeight = height;
     }
-
-    #region Grid Management
     public void CreateGrid(int width, int height)
     {
         ClearGrid();
@@ -95,9 +72,7 @@ public class ThreadGridHandler
         }
         _threadTiles.Clear();
     }
-    #endregion
 
-    #region Placement Mode (생성 모드)
     public void StartPlacement(ThreadState threadState)
     {
         CancelPlacement();
@@ -111,39 +86,31 @@ public class ThreadGridHandler
         CreatePreviewObject();
     }
 
-    public void UpdatePlacement()
+    /// <summary>
+    /// 배치 모드 업데이트. 마우스 위치에 따른 프리뷰 위치와 상태를 업데이트합니다.
+    /// </summary>
+    /// <param name="mouseWorldPos">마우스의 월드 좌표</param>
+    /// <returns>현재 그리드 위치와 배치 가능 여부</returns>
+    public (Vector2Int gridPos, bool canPlace) UpdatePlacement(Vector3 mouseWorldPos)
     {
-        if (!_isPlacementActive || _previewComponent == null) return;
+        if (!_isPlacementActive || _previewComponent == null)
+            return (Vector2Int.zero, false);
 
-        // UI 위에 있으면 프리뷰 숨김
         if (IsPointerOverUI)
         {
             _previewObject.SetActive(false);
             _canPlace = false;
-            return;
+            return (Vector2Int.zero, false);
         }
 
         _previewObject.SetActive(true);
-        Vector3 mouseWorldPos = ActiveCamera.ScreenToWorldPoint(Input.mousePosition);
         _currentGridPos = WorldToGridPosition(mouseWorldPos);
         _canPlace = CanPlaceThread(_currentGridPos);
 
         _previewObject.transform.position = GridToWorldPosition(_currentGridPos);
         _previewComponent.SetPreviewColor(_canPlace);
 
-        HandlePlacementInput();
-    }
-
-    private void HandlePlacementInput()
-    {
-        if (Input.GetMouseButtonDown(0) && _canPlace)
-        {
-            _manager.PlaceThread(_currentGridPos, _selectedThread);
-        }
-        else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-        {
-            CancelPlacement();
-        }
+        return (_currentGridPos, _canPlace);
     }
 
     public void CancelPlacement()
@@ -159,22 +126,23 @@ public class ThreadGridHandler
             _previewComponent = null;
         }
     }
-    #endregion
-
-    #region Removal Mode (제거 모드)
     public void StartRemoval() => _isRemovalActive = true;
 
-    public void UpdateRemoval()
+    /// <summary>
+    /// 제거 모드 업데이트. 마우스 위치에 따른 하이라이트를 업데이트합니다.
+    /// </summary>
+    /// <param name="mouseWorldPos">마우스의 월드 좌표</param>
+    /// <returns>현재 호버된 스레드 객체 (없으면 null)</returns>
+    public ThreadObject UpdateRemoval(Vector3 mouseWorldPos)
     {
-        if (!_isRemovalActive) return;
+        if (!_isRemovalActive) return null;
 
         if (IsPointerOverUI)
         {
             ResetHighlight();
-            return;
+            return null;
         }
 
-        Vector3 mouseWorldPos = ActiveCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int gridPos = WorldToGridPosition(mouseWorldPos);
         ThreadObject threadObject = GetThreadObjectAt(gridPos);
 
@@ -190,19 +158,7 @@ public class ThreadGridHandler
             }
         }
 
-        HandleRemovalInput();
-    }
-
-    private void HandleRemovalInput()
-    {
-        if (Input.GetMouseButtonDown(0) && _hoveredThread != null)
-        {
-            if (_manager.RemoveThread(_hoveredThread.GridPosition)) ResetHighlight();
-        }
-        else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-        {
-            CancelRemoval();
-        }
+        return _hoveredThread;
     }
 
     public void CancelRemoval()
@@ -210,9 +166,15 @@ public class ThreadGridHandler
         _isRemovalActive = false;
         ResetHighlight();
     }
-    #endregion
 
-    #region Core Logic & Helpers
+    /// <summary>
+    /// 하이라이트를 초기화합니다. (외부에서 호출 가능)
+    /// </summary>
+    public void ResetHighlight()
+    {
+        if (_hoveredThread != null) _hoveredThread.ResetColor();
+        _hoveredThread = null;
+    }
     public ThreadObject CreateThreadObject(Vector2Int gridPos, ThreadState threadState)
     {
         if (_threadObjectPrefab == null) return null;
@@ -256,11 +218,6 @@ public class ThreadGridHandler
         _previewComponent.InitializePreview(_selectedThread);
     }
 
-    private void ResetHighlight()
-    {
-        if (_hoveredThread != null) _hoveredThread.ResetColor();
-        _hoveredThread = null;
-    }
 
     public bool CanPlaceThread(Vector2Int pos) => pos.x >= 0 && pos.x < _gridWidth && pos.y >= 0 && pos.y < _gridHeight && !_threadObjects.ContainsKey(pos);
     public void SetTileOccupied(Vector2Int pos, bool occ) { if (_threadTiles.TryGetValue(pos, out ThreadTile t)) t.SetOccupied(occ); }
@@ -272,5 +229,4 @@ public class ThreadGridHandler
     }
     public Vector3 GridToWorldPosition(Vector2Int p) => _parentTransform.position + new Vector3((float)p.x, (float)-p.y, 9f);
     public ThreadObject GetThreadObjectAt(Vector2Int p) => _threadObjects.TryGetValue(p, out ThreadObject o) ? o : null;
-    #endregion
 }

@@ -136,4 +136,15 @@ public class TimeDataHandler
     {
         if (months > 0) _monthsPerYear = months;
     }
+
+    /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnHourChanged = null;
+        OnDayChanged = null;
+        OnMonthChanged = null;
+        OnYearChanged = null;
+    }
 }
