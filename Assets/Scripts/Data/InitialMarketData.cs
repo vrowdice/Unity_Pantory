@@ -138,6 +138,12 @@ public class InitialMarketData : ScriptableObject
     [Tooltip("시스템 인구의 긴급도 (0 = 긴급하지 않음, 1 = 매우 긴급)")]
     [Range(0f, 1f)]
     public float systemPopulaceUrgency = 0.0f;
+    [Tooltip("시스템 인구 액터의 기본 자산 (설정 파일 누락 시 사용)")]
+    public float defaultPopulaceWealth = 1000000f;
+    [Tooltip("대규모 액터의 최소 생존 자산 임계값")]
+    public float minSurvivalWealthLarge = 100000f;
+    [Tooltip("소규모 액터의 최소 생존 자산 임계값")]
+    public float minSurvivalWealthSmall = 10000f;
 
     [Header("Trade Port (Price Stabilization)")]
     [Tooltip("무역항 개입 가격 배수 임계값 (1.3 = 기본 가격의 130%)")]

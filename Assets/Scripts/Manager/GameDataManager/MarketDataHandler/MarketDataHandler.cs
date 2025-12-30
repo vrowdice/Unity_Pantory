@@ -12,18 +12,12 @@ public partial class MarketDataHandler
     private const string ID_SYSTEM_POPULACE = "sys_populace";
     private const string ID_PREFIX_SYSTEM = "sys_";
 
-    // 기본값 상수 (설정 파일 누락 시 사용)
-    private const float DEFAULT_POPULACE_WEALTH = 1_000_000f;
-    private const float MIN_SURVIVAL_WEALTH_LARGE = 100_000f;
-    private const float MIN_SURVIVAL_WEALTH_SMALL = 10_000f;
-
     private readonly Dictionary<string, MarketActorEntry> _actors = new();
     private readonly DataManager _dataManager;
 
     private InitialMarketData _marketSettings;
     private bool _isWarState = false;
 
-    // 캐싱된 리스트 (UpdateRevenueRankings에서 갱신된다고 가정)
     private List<MarketActorEntry> _cachedActorList = new();
 
     public event Action OnMarketUpdated;
@@ -139,7 +133,7 @@ public partial class MarketDataHandler
     {
         if (!_actors.TryGetValue(actorId, out var entry) || entry.state == null) return;
 
-        float wealth = _marketSettings?.systemPopulaceWealth ?? DEFAULT_POPULACE_WEALTH;
+        float wealth = _marketSettings?.systemPopulaceWealth ?? _marketSettings?.defaultPopulaceWealth ?? 1_000_000f;
         SetActorWealth(entry, wealth);
 
         // 예산은 Max치로 설정
@@ -243,7 +237,9 @@ public partial class MarketDataHandler
             if (entry?.state == null || IsSystemActor(entry.data)) continue;
 
             // 1. 절대 방어선 (Liquidity)
-            float survivalThreshold = (entry.data.scale == MarketActorScale.Large) ? MIN_SURVIVAL_WEALTH_LARGE : MIN_SURVIVAL_WEALTH_SMALL;
+            float survivalThreshold = (entry.data.scale == MarketActorScale.Large) 
+                ? (_marketSettings?.minSurvivalWealthLarge ?? 100_000f) 
+                : (_marketSettings?.minSurvivalWealthSmall ?? 10_000f);
             if (entry.state.wealth < survivalThreshold)
             {
                 RescueActor(entry, survivalThreshold * 5f, penalty: false);

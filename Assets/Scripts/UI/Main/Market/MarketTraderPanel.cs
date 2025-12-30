@@ -229,7 +229,6 @@ public class MarketTraderPanel : MonoBehaviour
                         var iconComponent = iconObj.GetComponent<ProductionInfoImage>();
                         if (iconComponent != null)
                         {
-                            // 수량 범위 표시 (desiredMin-desiredMax)
                             int avgAmount = (int)((resource.desiredMin + resource.desiredMax) / 2);
                             iconComponent.OnInitialize(resourceEntry, avgAmount);
                         }
