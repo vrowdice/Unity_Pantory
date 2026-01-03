@@ -66,7 +66,7 @@ public class MarketResurcePanel : MonoBehaviour
 
         _selectedResourceEntry = entry;
         _selectedResourceId = entry.data.id;
-        _resouceTradeInputField.text = entry.state.deltaCount.ToString();
+        _resouceTradeInputField.text = entry.state.threadDeltaCount.ToString();
 
         _windowGraph.ShowGraph(_selectedResourceEntry.state.PriceHistory);
         UpdateSelectionDetails();
@@ -86,7 +86,7 @@ public class MarketResurcePanel : MonoBehaviour
 
         if (int.TryParse(_resouceTradeInputField.text, out int tradeAmount))
         {
-            _selectedResourceEntry.state.deltaCount = tradeAmount;
+            _selectedResourceEntry.state.threadDeltaCount = tradeAmount;
             _marketPanel.RefreshResourceButtons();
         }
     }
@@ -104,7 +104,7 @@ public class MarketResurcePanel : MonoBehaviour
 
         _resouceImage.sprite = data.icon;
 
-        string priceText = $"{state.currentValue:N0}";
+        string priceText = $"{state.value:N0}";
         if (state != null && state.currentChangeValue != 0f)
         {
             priceText += $" ({state.currentChangeValue:+0.##;-0.##;0})";

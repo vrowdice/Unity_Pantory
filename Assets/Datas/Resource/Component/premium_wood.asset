@@ -15,13 +15,8 @@ MonoBehaviour:
   id: premium_wood
   displayName: Premium Wood
   baseValue: 500
-  marketSensitivity: 0.24
-  meanReversionStrength: 0.6
   volatilityMultiplier: 1
-  scarcityWeight: 1
-  priceResistanceThreshold: 3
   maxPriceMultiplier: 10
-  rarity: 0.3
   type: 5
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: e65a29079fd01d048942b1b9865eee4c, type: 3}

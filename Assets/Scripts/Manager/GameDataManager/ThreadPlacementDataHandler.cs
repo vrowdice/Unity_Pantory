@@ -151,26 +151,3 @@ public class ThreadPlacementDataHandler
         OnPlacementChanged = null;
     }
 }
-
-/// <summary>
-/// 배치된 스레드의 상태를 나타내는 클래스.
-/// 템플릿 ID와 독립적인 런타임 상태를 보유합니다.
-/// </summary>
-[Serializable]
-public class ThreadPlacementState
-{
-    public Vector2Int GridPosition;      // 위치 정보
-    public string TemplateId;            // 원본 템플릿 ID (예: "iron_mine")
-    public ThreadState RuntimeState;     // [핵심] 독립적인 런타임 상태 (직원수, 진행도 등)
-
-    public ThreadPlacementState(Vector2Int pos, string templateId, ThreadState initialState)
-    {
-        GridPosition = pos;
-        TemplateId = templateId;
-        RuntimeState = initialState; // 복사본을 받아야 함
-    }
-
-    // [레거시 호환] 기존 코드를 위한 속성
-    public string ThreadId => RuntimeState?.threadId ?? string.Empty;
-}
-

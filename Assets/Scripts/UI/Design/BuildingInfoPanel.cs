@@ -141,7 +141,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Input: {resourceEntry.data.displayName}\nConsumption: {kvp.Value}\nPrice: {resourceEntry.state.currentValue}";
+                 $"Input: {resourceEntry.data.displayName}\nConsumption: {kvp.Value}\nPrice: {resourceEntry.state.value}";
             }
         }
     }
@@ -181,7 +181,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
                     Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
                         .GetComponent<TextMeshProUGUI>().text =
-                        $"Handling: {resourceEntry.data.displayName}\nPrice: {resourceEntry.state.currentValue}";
+                        $"Handling: {resourceEntry.data.displayName}\nPrice: {resourceEntry.state.value}";
                 }
                 else
                 {
@@ -217,7 +217,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Output: {resourceEntry.data.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.state.currentValue}{requireText}";
+                 $"Output: {resourceEntry.data.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.state.value}{requireText}";
             }
         }
     }

@@ -30,7 +30,6 @@ public class MarketPanel : BasePanel
 
         SetupActionButtons();
         _dataManager.Time.OnDayChanged += HandleDayChanged;
-        _dataManager.Market.OnMarketUpdated += HandleMarketUpdated;
 
         if (!_isResourceView)
         {
@@ -51,12 +50,12 @@ public class MarketPanel : BasePanel
 
         GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
 
-        GameObject resBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        ActionBtn resBtn = resBtnObj.GetComponent<ActionBtn>();
+        var resBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+        var resBtn = resBtnObj.GetComponent<ActionBtn>();
         resBtn?.OnInitialize("Resources", ShowResourceView);
 
-        GameObject traderBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        ActionBtn traderBtn = traderBtnObj.GetComponent<ActionBtn>();
+        var traderBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+        var traderBtn = traderBtnObj.GetComponent<ActionBtn>();
         traderBtn?.OnInitialize("Traders", ShowTraderView);
     }
 
@@ -109,18 +108,8 @@ public class MarketPanel : BasePanel
         ResourceEntry firstEntry = null;
         ResourceEntry selectedEntry = null;
 
-        foreach (var entry in resources.Values)
+        foreach (ResourceEntry entry in resources.Values)
         {
-            if (entry == null)
-            {
-                continue;
-            }
-
-            if (firstEntry == null)
-            {
-                firstEntry = entry;
-            }
-
             if (!string.IsNullOrEmpty(currentSelectedId) && entry.data?.id == currentSelectedId)
             {
                 selectedEntry = entry;
@@ -158,14 +147,6 @@ public class MarketPanel : BasePanel
         }
     }
 
-    private void HandleMarketUpdated()
-    {
-        if (!_isResourceView)
-        {
-            RefreshTraderButtons();
-        }
-    }
-
     /// <summary>
     /// 기존 트레이더 버튼들의 정보를 업데이트합니다.
     /// </summary>
@@ -177,7 +158,6 @@ public class MarketPanel : BasePanel
         }
 
         int updatedCount = 0;
-        // 모든 자식 버튼의 정보 업데이트
         for (int i = 0; i < _marketScrollViewContent.childCount; i++)
         {
             Transform child = _marketScrollViewContent.GetChild(i);

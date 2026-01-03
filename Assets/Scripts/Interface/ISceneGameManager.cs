@@ -1,4 +1,4 @@
-public interface IGameSceneManager
+public interface ISceneGameManager
 {
     /// <summary>
     /// GameManager에서 호출되는 초기화 메서드.

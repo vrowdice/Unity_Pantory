@@ -217,7 +217,7 @@ public class DataManager : MonoBehaviour
         Employee.SyncAssignedCountsFromThreads(ThreadPlacement);
 
         UpdateResourceDeltasFromPlacedThreads();
-        Resource.ApplyResourceDeltas();
+        Resource.DayResourceChange();
         Research.OnDayChanged();
 
         Effect.ProcessDayPass(1);
@@ -230,7 +230,7 @@ public class DataManager : MonoBehaviour
     {
         foreach (var entry in Resource.GetAllResources().Values)
         {
-            if (entry?.state != null) entry.state.deltaCount = 0;
+            if (entry?.state != null) entry.state.threadDeltaCount = 0;
         }
 
         var placedThreads = ThreadPlacement.GetAllPlacedThreads();
@@ -330,7 +330,7 @@ public class DataManager : MonoBehaviour
         {
             string resourceId = kvp.Key;
             int requiredAmount = kvp.Value * multiplier;
-            long playerAmount = Resource.GetResourceQuantity(resourceId);
+            int playerAmount = Resource.GetResourceQuantity(resourceId);
             
             if (playerAmount >= requiredAmount)
             {
@@ -338,7 +338,7 @@ public class DataManager : MonoBehaviour
             }
             else
             {
-                long shortage = requiredAmount - playerAmount;
+                int shortage = requiredAmount - playerAmount;
                 if (playerAmount > 0)
                 {
                     Resource.ModifyStorage(resourceId, -playerAmount);

@@ -6,10 +6,12 @@ using UnityEngine;
 public class ResourceState
 {
     [Header("Inventory")]
-    public long count;
-    public long deltaCount;
+    public int count;
+    public int threadDeltaCount;
+    public int marketDeltaCount;
+    public int currnetChangeCount;
 
-    public float currentValue;
+    public float value;
     public float currentChangeValue;
 
     public const int PriceHistoryCapacity = 60;
@@ -31,14 +33,14 @@ public class ResourceState
         }
 
         count = data.initialAmount;
-        RecordPrice(currentValue);
+        RecordPrice(value);
     }
 
     private void InitializeDefaults()
     {
-        currentValue = 0f;
+        value = 0f;
         count = 0;
-        deltaCount = 0;
+        threadDeltaCount = 0;
 
         if (_priceHistory == null)
         {

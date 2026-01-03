@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private IUIManager _uiManager;
-    private IGameSceneManager _sceneManager;
+    private ISceneGameManager _sceneManager;
     private DataManager _dataManager;
     private VisualManager _visualManager;
     private MainCameraController _mainCameraController;
@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
 
         CreateWorldCanvas(_mainCameraController.Camera);
 
-        IGameSceneManager sceneManager = GameObject.Find("GameSceneManager").GetComponent<IGameSceneManager>();
+        ISceneGameManager sceneManager = GameObject.Find("SceneGameManager").GetComponent<ISceneGameManager>();
         _sceneManager = sceneManager;
         _sceneManager.OnInitialize(this, _dataManager);
 

@@ -11,12 +11,13 @@ public class MainScrollViewResouceBtn : MonoBehaviour
     private MainUiManager _mainUiManager = null;
     private ResourceEntry _resourceEntry = null;
 
-    public void OnInitialize(MainUiManager argMainUiManager, ResourceEntry resourceEntry)
+    public void OnInitialize(MainUiManager mainUiManager, ResourceEntry resourceEntry)
     {
-        _mainUiManager = argMainUiManager;
+        _mainUiManager = mainUiManager;
         _resourceEntry = resourceEntry;
         _image.sprite = resourceEntry.data.icon;
         _valueText.text = resourceEntry.state.count.ToString("N0");
+
         UpdateChangeValue();
     }
 
@@ -33,8 +34,7 @@ public class MainScrollViewResouceBtn : MonoBehaviour
             return;
         }
 
-        // 플레이어 재고 변화량 표시 (생산/소비/거래)
-        long delta = resourceState.count;
+        long delta = resourceState.threadDeltaCount;
         if (delta > 0)
         {
             _changeValueText.text = $"+{delta:N0}";

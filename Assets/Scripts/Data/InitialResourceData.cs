@@ -8,15 +8,15 @@ using UnityEngine;
 public class InitialResourceData : ScriptableObject
 {
     [Header("Initial Resource Settings")]
-    [Tooltip("게임 시작 시 부여되는 은화")]
     public long initialCredit = 1000;
+    [Range(0f, 0.1f)] public float volatilityMultiplier = 0.01f;
+    [Range(0f, 10f)] public float maxChangePriceMultiplier = 1.5f;
 
     /// <summary>
     /// Editor에서 값 검증 (음수 값 방지)
     /// </summary>
     private void OnValidate()
     {
-        // Prevent negative values
         if (initialCredit < 0) initialCredit = 0;
     }
 }

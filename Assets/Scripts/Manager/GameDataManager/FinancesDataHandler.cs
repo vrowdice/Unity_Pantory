@@ -10,17 +10,10 @@ public class FinancesDataHandler
     private readonly DataManager _dataManager;
 
     private long _credit;
+    private long _creditDelta;
     public event Action OnCreditChanged;
 
     public long Credit => _credit;
-
-    /// <summary>
-    /// 모든 이벤트 구독을 초기화합니다.
-    /// </summary>
-    public void ClearAllSubscriptions()
-    {
-        OnCreditChanged = null;
-    }
 
     /// <summary>
     /// FinancesService 생성자
@@ -33,20 +26,9 @@ public class FinancesDataHandler
 
     public bool ModifyCredit(long credit)
     {
-        if(_credit == 0)
-        {
-            return false;
-        }
-
-        if(credit < 0)
-        {
-            if (_credit < credit)
-            {
-                return false;
-            }
-        }
-
         _credit += credit;
+
+        OnCreditChanged?.Invoke();
         return true;
     }
 
@@ -55,6 +37,14 @@ public class FinancesDataHandler
         long credit = 0;
 
         return credit;
+    }
+
+    /// <summary>
+    /// 모든 이벤트 구독을 초기화합니다.
+    /// </summary>
+    public void ClearAllSubscriptions()
+    {
+        OnCreditChanged = null;
     }
 }
 

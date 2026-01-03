@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ThreadTileManager : MonoBehaviour, IGameSceneManager
+public class ThreadTileManager : MonoBehaviour, ISceneGameManager
 {
     [Header("UI Manager")]
     [SerializeField] private MainUiManager _mainUiManager;

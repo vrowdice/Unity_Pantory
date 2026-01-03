@@ -36,70 +36,39 @@ public class ResourceDataHandler
         }
     }
 
-    /// <summary>
-    /// 특정 자원의 플레이어 보유량을 반환합니다.
-    /// </summary>
-    /// <param name="resourceId">자원 ID</param>
-    /// <returns>해당 자원의 플레이어 보유량</returns>
-    public long GetResourceQuantity(string resourceId)
+    public int GetResourceQuantity(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
             return entry.state.count;
         }
-        
-        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
+
         return 0;
     }
 
-    /// <summary>
-    /// 특정 자원의 현재 가격을 반환합니다.
-    /// </summary>
-    /// <param name="resourceId">자원 ID</param>
-    /// <returns>해당 자원의 현재 가격</returns>
     public float GetResourcePrice(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
-            return entry.state.currentValue;
+            return entry.state.value;
         }
-        
-        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
+
         return 0f;
     }
 
-    /// <summary>
-    /// 특정 자원의 ResourceEntry를 반환합니다.
-    /// </summary>
-    /// <param name="resourceId">자원 ID</param>
-    /// <returns>ResourceEntry 또는 null</returns>
     public ResourceEntry GetResourceEntry(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
             return entry;
         }
-        
-        Debug.LogWarning($"[ResourceService] Unregistered resource: {resourceId}");
+
         return null;
     }
 
-    /// <summary>
-    /// 모든 자원 정보를 딕셔너리로 반환합니다 (읽기 전용).
-    /// </summary>
-    /// <returns>자원 딕셔너리의 복사본</returns>
     public Dictionary<string, ResourceEntry> GetAllResources()
     {
         return new Dictionary<string, ResourceEntry>(_resources);
-    }
-
-    /// <summary>
-    /// 등록된 모든 자원 ID 목록을 반환합니다.
-    /// </summary>
-    /// <returns>자원 ID 리스트</returns>
-    public List<string> GetAllResourceIds()
-    {
-        return new List<string>(_resources.Keys);
     }
 
     /// <summary>
@@ -107,7 +76,7 @@ public class ResourceDataHandler
     /// </summary>
     /// <param name="resourceId">자원 ID</param>
     /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
-    public void ModifyStorage(string resourceId, long amount)
+    public void ModifyStorage(string resourceId, int amount)
     {
         if (!_resources.TryGetValue(resourceId, out var entry)) return;
 
@@ -117,7 +86,7 @@ public class ResourceDataHandler
         }
 
         entry.state.count += amount;
-        entry.state.deltaCount += amount;
+        entry.state.threadDeltaCount += amount;
 
         if (entry.state.count < 0)
         {
@@ -127,17 +96,36 @@ public class ResourceDataHandler
         OnResourceChanged?.Invoke();
     }
 
+    public long CalculateResourceDeltaChange()
+    {
+        long credit = 0;
+
+        return credit;
+    }
+
     /// <summary>
     /// 누적된 deltaCount를 실제 자원 수량에 반영하고 초기화합니다.
     /// </summary>
-    public void ApplyResourceDeltas()
+    public void DayResourceChange()
+    {
+        ApplyDeltaChange();
+        ApplyValueChange();
+
+        OnResourceChanged?.Invoke();
+    }
+
+    private void ApplyDeltaChange()
     {
         foreach (ResourceEntry entry in _resources.Values)
         {
-            entry.state.count += entry.state.deltaCount;
+            entry.state.count += entry.state.threadDeltaCount;
+            entry.state.count += entry.state.marketDeltaCount;
         }
+    }
 
-        OnResourceChanged?.Invoke();
+    private void ApplyValueChange()
+    {
+
     }
 
     /// <summary>

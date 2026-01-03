@@ -41,7 +41,7 @@ public class MarketResourceBtn : MonoBehaviour
         }
 
         ResourceState resourceState = _resourceEntry.state;
-        string currentPriceText = ReplaceUtils.FormatNumber((long)resourceState.currentValue);
+        string currentPriceText = ReplaceUtils.FormatNumber((long)resourceState.value);
         string deltaText = resourceState.currentChangeValue.ToString("+0.##;-0.##;0");
 
         _changeValueText.text = $"{currentPriceText} ({deltaText})";
@@ -70,7 +70,7 @@ public class MarketResourceBtn : MonoBehaviour
         }
 
         var resourceState = _resourceEntry.state;
-        long tradeDelta = resourceState.deltaCount;
+        long tradeDelta = resourceState.threadDeltaCount;
 
         if (tradeDelta > 0)
         {

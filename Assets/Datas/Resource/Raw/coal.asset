@@ -15,17 +15,11 @@ MonoBehaviour:
   id: coal
   displayName: Coal
   baseValue: 12
-  marketSensitivity: 0.18
-  meanReversionStrength: 0.6
   volatilityMultiplier: 0.9
-  scarcityWeight: 0.4
-  priceResistanceThreshold: 3
   maxPriceMultiplier: 10
-  rarity: 0.85
   type: 0
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 23d075deef489014db11dc344c6a67e9, type: 3}
   description: Essential fuel for smelting iron into steel.
   requirements: []
-  initialAmount: 1500
-
+  initialAmount: 0

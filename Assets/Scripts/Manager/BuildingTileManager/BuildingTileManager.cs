@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 /// 건물 타일 시스템의 메인 조율자입니다.
 /// 그리드 생성, 배치/삭제 모드 전환, 임시 데이터 관리 및 최종 저장 로직을 담당합니다.
 /// </summary>
-public class BuildingTileManager : MonoBehaviour, IGameSceneManager
+public class BuildingTileManager : MonoBehaviour, ISceneGameManager
 {
     [Header("Managers & UI")]
     [SerializeField] private DesignUiManager _designUiManager;

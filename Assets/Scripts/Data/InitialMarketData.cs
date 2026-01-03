@@ -8,6 +8,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "InitialMarketData", menuName = "Game Data/Initial Market Data", order = 2)]
 public class InitialMarketData : ScriptableObject
 {
-
+    
 }
 

@@ -15,13 +15,8 @@ MonoBehaviour:
   id: basic_furniture
   displayName: Basic Furniture
   baseValue: 240
-  marketSensitivity: 0.2
-  meanReversionStrength: 0.58
   volatilityMultiplier: 1
-  scarcityWeight: 0.6
-  priceResistanceThreshold: 3
   maxPriceMultiplier: 10
-  rarity: 0.65
   type: 3
   nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 07c8862f23ae2ae48ac69ca34ebc00e1, type: 3}

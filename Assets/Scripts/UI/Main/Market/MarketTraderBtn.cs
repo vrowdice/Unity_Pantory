@@ -6,7 +6,6 @@ public class MarketTraderBtn : MonoBehaviour
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private TextMeshProUGUI _nameText = null;
-    [SerializeField] private TextMeshProUGUI _changeValueText = null;
 
     private MarketTraderPanel _traderPanel = null;
     private MarketActorEntry _actorEntry = null;
