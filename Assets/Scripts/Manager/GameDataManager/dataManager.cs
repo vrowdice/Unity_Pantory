@@ -208,7 +208,6 @@ public class DataManager : MonoBehaviour
 
     private void HandleThreadPlacementChanged()
     {
-        Finances.ReserveDailyExpenses();
         Employee.UpdateDailyEmployeeStatus();
     }
 
@@ -217,14 +216,10 @@ public class DataManager : MonoBehaviour
         Employee.UpdateDailyEmployeeStatus();
         Employee.SyncAssignedCountsFromThreads(ThreadPlacement);
 
-        Finances.ApplyReservedDailyExpenses();
-
         UpdateResourceDeltasFromPlacedThreads();
         Resource.ApplyResourceDeltas();
-
-        Finances.ReserveDailyExpenses();
         Research.OnDayChanged();
-        Market.TickDailyMarket();
+
         Effect.ProcessDayPass(1);
     }
 
@@ -235,7 +230,7 @@ public class DataManager : MonoBehaviour
     {
         foreach (var entry in Resource.GetAllResources().Values)
         {
-            if (entry?.resourceState != null) entry.resourceState.deltaCount = 0;
+            if (entry?.state != null) entry.state.deltaCount = 0;
         }
 
         var placedThreads = ThreadPlacement.GetAllPlacedThreads();
@@ -320,7 +315,7 @@ public class DataManager : MonoBehaviour
         foreach (KeyValuePair<string, int> item in production)
         {
             int actualProduction = item.Value * multiplier;
-            Resource.ModifyPlayerInventory(item.Key, actualProduction);
+            Resource.ModifyStorage(item.Key, actualProduction);
         }
     }
 
@@ -335,30 +330,22 @@ public class DataManager : MonoBehaviour
         {
             string resourceId = kvp.Key;
             int requiredAmount = kvp.Value * multiplier;
-            long playerAmount = Resource.GetPlayerResourceQuantity(resourceId);
+            long playerAmount = Resource.GetResourceQuantity(resourceId);
             
             if (playerAmount >= requiredAmount)
             {
-                Resource.ModifyPlayerInventory(resourceId, -requiredAmount);
+                Resource.ModifyStorage(resourceId, -requiredAmount);
             }
             else
             {
                 long shortage = requiredAmount - playerAmount;
                 if (playerAmount > 0)
                 {
-                    Resource.ModifyPlayerInventory(resourceId, -playerAmount);
+                    Resource.ModifyStorage(resourceId, -playerAmount);
                 }
 
-                if (Resource.HasEnoughMarketInventory(resourceId, shortage))
-                {
-                    Resource.ModifyMarketInventory(resourceId, -shortage);
-                    Resource.ModifyPlayerInventory(resourceId, shortage);
-                    Resource.ModifyPlayerInventory(resourceId, -shortage);
-                }
-                else
-                {
-                    Debug.LogWarning($"[GameDataManager] Insufficient resources for production: {resourceId} (required: {requiredAmount}, player: {playerAmount})");
-                }
+                Resource.ModifyStorage(resourceId, shortage);
+                Resource.ModifyStorage(resourceId, -shortage);
             }
         }
     }

@@ -29,13 +29,13 @@ public class ResearchDataHandler
         OnResearchUnlocked = null;
     }
 
-    public ResearchDataHandler(DataManager manager, List<ResearchData> researchDataList = null)
+    public ResearchDataHandler(DataManager dataManager, List<ResearchData> researchDataList = null)
     {
-        _dataManager = manager;
+        _dataManager = dataManager;
         
         if (researchDataList != null && researchDataList.Count > 0)
         {
-            foreach (var data in researchDataList)
+            foreach (ResearchData data in researchDataList)
             {
                 if (data == null || string.IsNullOrEmpty(data.id))
                     continue;
@@ -46,7 +46,7 @@ public class ResearchDataHandler
                     continue;
                 }
 
-                var entry = new ResearchEntry
+                ResearchEntry entry = new ResearchEntry
                 {
                     data = data,
                     state = new ResearchState { isCompleted = false }
@@ -72,7 +72,7 @@ public class ResearchDataHandler
 
         if (IsAutoPatentMode)
         {
-            _dataManager.Finances.AddCredit(generatedRP);
+            _dataManager.Finances.ModifyCredit(generatedRP);
         }
         else
         {

@@ -255,7 +255,7 @@ public class BuildingCalculateHandler
                 if (string.IsNullOrEmpty(outId)) continue;
 
                 var entry = DataManager.Resource.GetResourceEntry(outId);
-                var reqs = entry?.resourceData?.requirements;
+                var reqs = entry?.data?.requirements;
                 if (reqs == null) continue;
 
                 foreach (var req in reqs)

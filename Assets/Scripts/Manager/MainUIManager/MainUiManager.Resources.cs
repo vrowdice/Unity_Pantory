@@ -32,15 +32,9 @@ public partial class MainUiManager
             return;
         }
 
-        foreach (var entry in resources.Values)
+        foreach (ResourceEntry entry in resources.Values)
         {
-            if (entry == null)
-            {
-                continue;
-            }
-
-            // 플레이어 재고가 있는 자원만 표시
-            if(entry.resourceState.playerCount == 0)
+            if(entry.state.count == 0)
             {
                 continue;
             }

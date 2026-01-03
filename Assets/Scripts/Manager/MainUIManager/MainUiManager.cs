@@ -77,7 +77,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
     private void UpdateCreditText()
     {
-        long resourceAmount = _dataManager.Finances.GetCredit();
+        long resourceAmount = _dataManager.Finances.Credit;
         _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
         long deltaCredit = _dataManager.Finances.CalculateDailyCreditDelta();
         if (deltaCredit == 0)

@@ -94,7 +94,7 @@ public class StoragePanel : BasePanel
 
         foreach (var resourceEntry in _dataManager.Resource.GetAllResources())
         {
-            if (resourceEntry.Value.resourceData.type == _currentResourceType)
+            if (resourceEntry.Value.data.type == _currentResourceType)
             {
                 Instantiate(_storageResourceBtnPrefab, _resourceScrollViewContentTransform)
                     .GetComponent<StorageResourceBtn>()

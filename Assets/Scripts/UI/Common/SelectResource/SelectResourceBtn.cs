@@ -16,9 +16,9 @@ public class SelectResourceBtn : MonoBehaviour
         _selectResourcePanel = selectResourcePanel;
         _resourceEntry = resourceEntry;
 
-        _resourceIconImage.sprite = _resourceEntry.resourceData.icon;
-        _resourceNameText.text = _resourceEntry.resourceData.displayName;
-        _resourceCountText.text = _resourceEntry.resourceState.count.ToString();
+        _resourceIconImage.sprite = _resourceEntry.data.icon;
+        _resourceNameText.text = _resourceEntry.data.displayName;
+        _resourceCountText.text = _resourceEntry.state.count.ToString();
     }
 
     public void OnClick()

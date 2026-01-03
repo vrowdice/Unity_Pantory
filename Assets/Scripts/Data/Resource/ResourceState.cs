@@ -5,33 +5,12 @@ using UnityEngine;
 [Serializable]
 public class ResourceState
 {
-    [Header("Market Inventory")]
-    public long count;                 // 시장 전체 유통 재고 (Market Inventory)
-    
-    [Header("Player Inventory")]
-    public long playerCount;       // 플레이어 개인 창고 (Player Storage)
-    public long playerCountDelta;  // 플레이어 재고 변화량 (생산/소비/거래)
-    
-    public float currentValue;         // 현재 가격
-    public float priceChangeRate;      // 시장 압력에 따른 변동률
-    public bool isEnchanted;           // 마법 주문 적용 여부
-    public long deltaCount;            // 최근 변화 수량 (시장 재고용)
+    [Header("Inventory")]
+    public long count;
+    public long deltaCount;
 
-    [Header("Player Transactions")]
-    public long playerTransactionDelta; // 플레이어 거래 델타 (매수 +, 매도 -)
-    public float accumulatedPlayerDemand; // 하루 동안 누적된 플레이어 구매량 (시장 영향력 계산용)
-    public float accumulatedPlayerSupply; // 하루 동안 누적된 플레이어 판매량 (시장 영향력 계산용)
-
-    [Header("Market Modifiers")]
-    public float permanentModifier;    // 영구적인 가치 조정 (기술, 연구 등)
-    public float temporaryModifier;    // 일시적 가치 조정 (이벤트)
-    public float temporaryModifierDuration; // 남은 일 수
-
-    [Header("Diagnostics")]
-    public float lastSupply;
-    public float lastDemand;
-    public float lastImbalance;
-    public float lastNormalizedImbalance;
+    public float currentValue;
+    public float currentChangeValue;
 
     public const int PriceHistoryCapacity = 60;
     [SerializeField] private List<float> _priceHistory = new List<float>(PriceHistoryCapacity);
@@ -52,54 +31,15 @@ public class ResourceState
         }
 
         count = data.initialAmount;
-        float effectiveBaseline = GetEffectiveBaseline(data.baseValue);
-        currentValue = Mathf.Max(0.01f, effectiveBaseline);
         RecordPrice(currentValue);
-    }
-
-    public float GetEffectiveBaseline(float baseValue)
-    {
-        float modifier = permanentModifier;
-        if (temporaryModifierDuration > 0f)
-        {
-            modifier *= temporaryModifier;
-        }
-
-        return Mathf.Max(0.01f, baseValue * modifier);
-    }
-
-    public void AdvanceOneDay()
-    {
-        if (temporaryModifierDuration <= 0f)
-        {
-            return;
-        }
-
-        temporaryModifierDuration = Mathf.Max(0f, temporaryModifierDuration - 1f);
-        if (temporaryModifierDuration <= 0f)
-        {
-            temporaryModifier = 1f;
-        }
     }
 
     private void InitializeDefaults()
     {
         currentValue = 0f;
-        priceChangeRate = 0f;
         count = 0;
-        playerCount = 0;
-        playerCountDelta = 0;
         deltaCount = 0;
-        playerTransactionDelta = 0;
-        accumulatedPlayerDemand = 0f;
-        accumulatedPlayerSupply = 0f;
-        permanentModifier = 1f;
-        temporaryModifier = 1f;
-        temporaryModifierDuration = 0f;
-        lastSupply = 0f;
-        lastDemand = 0f;
-        lastImbalance = 0f;
-        lastNormalizedImbalance = 0f;
+
         if (_priceHistory == null)
         {
             _priceHistory = new List<float>(PriceHistoryCapacity);

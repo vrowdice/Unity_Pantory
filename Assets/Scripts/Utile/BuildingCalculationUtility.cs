@@ -120,12 +120,12 @@ public static class BuildingCalculationUtility
                 }
 
                 ResourceEntry entry = dataManager.Resource.GetResourceEntry(outputIdentifier);
-                if (entry?.resourceData?.requirements == null)
+                if (entry?.data?.requirements == null)
                 {
                     continue;
                 }
 
-                foreach (ResourceRequirement requirement in entry.resourceData.requirements)
+                foreach (ResourceRequirement requirement in entry.data.requirements)
                 {
                     if (requirement.resource != null && !string.IsNullOrEmpty(requirement.resource.id))
                     {

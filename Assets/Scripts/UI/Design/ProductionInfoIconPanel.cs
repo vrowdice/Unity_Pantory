@@ -10,8 +10,8 @@ public class ProductionInfoIconPanel : MonoBehaviour
 
     public void OnInitialize(ResourceEntry resourceEntry, int productionCount = -1)
     {
-        _image.sprite = resourceEntry.resourceData.icon;
-        _titleText.text = resourceEntry.resourceData.displayName;
+        _image.sprite = resourceEntry.data.icon;
+        _titleText.text = resourceEntry.data.displayName;
 
         if (productionCount >= 0)
         {

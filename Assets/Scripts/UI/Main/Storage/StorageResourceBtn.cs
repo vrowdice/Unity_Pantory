@@ -16,9 +16,9 @@ public class StorageResourceBtn : MonoBehaviour
         _storagePanel = storagePanel;
         _resourceEntry = resourceEntry;
 
-        _resourceIconImage.sprite = _resourceEntry.resourceData.icon;
-        _resourceNameText.text = _resourceEntry.resourceData.displayName;
-        _resourceCountText.text = _resourceEntry.resourceState.playerCount.ToString("N0");
+        _resourceIconImage.sprite = _resourceEntry.data.icon;
+        _resourceNameText.text = _resourceEntry.data.displayName;
+        _resourceCountText.text = _resourceEntry.state.count.ToString("N0");
     }
 
     public void OnClick()

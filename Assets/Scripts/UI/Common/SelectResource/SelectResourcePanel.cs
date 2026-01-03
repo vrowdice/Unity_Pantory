@@ -78,7 +78,7 @@ public class SelectResourcePanel : MonoBehaviour
             // 생산 가능한 자원 목록이 없으면 해당 타입의 모든 자원 표시
             foreach (var resourceEntry in _dataManager.Resource.GetAllResources())
             {
-                if (resourceEntry.Value.resourceData.type == resourceType)
+                if (resourceEntry.Value.data.type == resourceType)
                 {
                     Instantiate(_selectResourceBtnPrefab, _resourceScrollViewContentTransform).
                         GetComponent<SelectResourceBtn>().OnInitialize(this, resourceEntry.Value);
@@ -96,7 +96,7 @@ public class SelectResourcePanel : MonoBehaviour
         if (_onResourceSelected != null)
         {
             _onResourceSelected.Invoke(selectedResource);
-            Debug.Log($"[SelectResourcePanel] Resource selected: {selectedResource.resourceData.displayName}");
+            Debug.Log($"[SelectResourcePanel] Resource selected: {selectedResource.data.displayName}");
         }
         else
         {

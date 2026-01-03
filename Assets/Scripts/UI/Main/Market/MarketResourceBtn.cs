@@ -17,8 +17,8 @@ public class MarketResourceBtn : MonoBehaviour
         _marketPanel = argMarketPanel;
         _resourceEntry = resourceEntry;
 
-        _image.sprite = resourceEntry.resourceData.icon;
-        _nameText.text = resourceEntry.resourceData.displayName;
+        _image.sprite = resourceEntry.data.icon;
+        _nameText.text = resourceEntry.data.displayName;
         UpdateChangeValue();
         UpdateTradeValue();
     }
@@ -35,17 +35,17 @@ public class MarketResourceBtn : MonoBehaviour
 
     private void UpdateChangeValue()
     {
-        if (_changeValueText == null || _resourceEntry?.resourceState == null)
+        if (_changeValueText == null || _resourceEntry?.state == null)
         {
             return;
         }
 
-        var resourceState = _resourceEntry.resourceState;
+        ResourceState resourceState = _resourceEntry.state;
         string currentPriceText = ReplaceUtils.FormatNumber((long)resourceState.currentValue);
-        string deltaText = resourceState.priceChangeRate.ToString("+0.##;-0.##;0");
+        string deltaText = resourceState.currentChangeValue.ToString("+0.##;-0.##;0");
 
         _changeValueText.text = $"{currentPriceText} ({deltaText})";
-        _changeValueText.color = GetDeltaColor(resourceState.priceChangeRate);
+        _changeValueText.color = GetDeltaColor(resourceState.currentChangeValue);
     }
 
     private Color GetDeltaColor(float delta)
@@ -55,8 +55,7 @@ public class MarketResourceBtn : MonoBehaviour
         {
             return visualManager.GetDeltaColor(delta);
         }
-        
-        // VisualManager가 없을 경우 기본값 반환
+
         return Color.black;
     }
 
@@ -65,13 +64,13 @@ public class MarketResourceBtn : MonoBehaviour
     /// </summary>
     private void UpdateTradeValue()
     {
-        if (_tradeValueText == null || _resourceEntry?.resourceState == null)
+        if (_tradeValueText == null || _resourceEntry?.state == null)
         {
             return;
         }
 
-        var resourceState = _resourceEntry.resourceState;
-        long tradeDelta = resourceState.playerTransactionDelta;
+        var resourceState = _resourceEntry.state;
+        long tradeDelta = resourceState.deltaCount;
 
         if (tradeDelta > 0)
         {

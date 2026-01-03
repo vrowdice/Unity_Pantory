@@ -17,8 +17,6 @@ public class MarketPanel : BasePanel
     [SerializeField] private GameObject _marketTraderBtnPrefab;
     
     private bool _isResourceView = true;
-    private bool _isSubscribedToDayChange;
-    private bool _isSubscribedToMarketUpdate;
 
     /// <summary>
     /// initialize market panel
@@ -31,18 +29,15 @@ public class MarketPanel : BasePanel
         }
 
         SetupActionButtons();
-        SubscribeToDayChange();
-        SubscribeToMarketUpdate();
-        
-        // 기본 진입은 리소스 패널
+        _dataManager.Time.OnDayChanged += HandleDayChanged;
+        _dataManager.Market.OnMarketUpdated += HandleMarketUpdated;
+
         if (!_isResourceView)
         {
-            // 트레이더 뷰가 이미 설정되어 있으면 그대로 유지
             RefreshTraderList();
         }
         else
         {
-            // 리소스 뷰로 시작
             ShowResourceView();
         }
     }
@@ -56,14 +51,12 @@ public class MarketPanel : BasePanel
 
         GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
 
-        // Resource View Button
-        var resBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        var resBtn = resBtnObj.GetComponent<ActionBtn>();
+        GameObject resBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+        ActionBtn resBtn = resBtnObj.GetComponent<ActionBtn>();
         resBtn?.OnInitialize("Resources", ShowResourceView);
 
-        // Trader View Button
-        var traderBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        var traderBtn = traderBtnObj.GetComponent<ActionBtn>();
+        GameObject traderBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+        ActionBtn traderBtn = traderBtnObj.GetComponent<ActionBtn>();
         traderBtn?.OnInitialize("Traders", ShowTraderView);
     }
 
@@ -103,7 +96,6 @@ public class MarketPanel : BasePanel
             return;
         }
 
-        // 현재 선택된 리소스 ID 저장
         string currentSelectedId = _resourcePanel?.GetSelectedResourceId() ?? string.Empty;
 
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
@@ -129,8 +121,7 @@ public class MarketPanel : BasePanel
                 firstEntry = entry;
             }
 
-            // 현재 선택된 리소스 찾기
-            if (!string.IsNullOrEmpty(currentSelectedId) && entry.resourceData?.id == currentSelectedId)
+            if (!string.IsNullOrEmpty(currentSelectedId) && entry.data?.id == currentSelectedId)
             {
                 selectedEntry = entry;
             }
@@ -143,7 +134,6 @@ public class MarketPanel : BasePanel
             }
         }
 
-        // 현재 선택된 리소스가 있으면 유지, 없으면 첫 번째 선택
         ResourceEntry entryToSelect = selectedEntry ?? firstEntry;
         if (entryToSelect != null)
         {
@@ -153,189 +143,7 @@ public class MarketPanel : BasePanel
 
     private void RefreshTraderList()
     {
-        if (_dataManager == null || _marketScrollViewContent == null || _marketTraderBtnPrefab == null)
-        {
-            Debug.LogWarning("[MarketPanel] Cannot refresh trader list: missing required components.");
-            return;
-        }
 
-        // 현재 선택된 상인 ID 저장
-        string currentSelectedId = _traderPanel?.GetSelectedActorId() ?? string.Empty;
-
-        GameObjectUtils.ClearChildren(_marketScrollViewContent);
-
-        var market = _dataManager.Market;
-        if (market == null)
-        {
-            Debug.LogWarning("[MarketPanel] Market handler is null.");
-            return;
-        }
-
-        // 경제력 기준으로 정렬된 트레이더 목록 가져오기
-        List<MarketActorEntry> sortedActors = market.GetActorsSortedByWealth(false);
-        if (sortedActors == null)
-        {
-            sortedActors = new List<MarketActorEntry>();
-        }
-
-        // 플레이어 자산 계산 (FinancesDataHandler에서 가져오기)
-        long playerWealth = _dataManager.Finances.GetCredit();
-
-        // 플레이어를 포함한 정렬된 리스트 생성
-        // 각 항목은 (isPlayer, wealth, entry, rank) 튜플로 저장
-        var sortedItems = new List<(bool isPlayer, float wealth, MarketActorEntry entry, int rank)>();
-
-        // NPC 액터 추가 (MarketActorState.rank 사용 - 이미 자산 기준으로 계산됨)
-        MarketActorEntry selectedActor = null;
-        MarketActorEntry firstRankTrader = null;
-        
-        foreach (var actor in sortedActors)
-        {
-            if (actor?.data == null)
-            {
-                continue;
-            }
-
-            float wealth = actor.state?.GetWealth() ?? 0f;
-            int rank = actor.state?.GetRank() ?? 0;
-            sortedItems.Add((false, wealth, actor, rank));
-
-            // 현재 선택된 상인 찾기
-            if (!string.IsNullOrEmpty(currentSelectedId) && actor.data.id == currentSelectedId)
-            {
-                selectedActor = actor;
-            }
-
-            // 1순위 NPC 트레이더 저장 (플레이어가 아닌 첫 번째 트레이더)
-            if (firstRankTrader == null)
-            {
-                firstRankTrader = actor;
-            }
-        }
-
-        // 플레이어 추가 (플레이어 자산을 기준으로 순위 계산)
-        // 플레이어보다 자산이 많은 NPC 수를 세어서 순위 결정
-        int playerRank = 1;
-        foreach (var actor in sortedActors)
-        {
-            if (actor?.state != null && actor.state.GetWealth() > playerWealth)
-            {
-                playerRank++;
-            }
-        }
-        sortedItems.Add((true, playerWealth, null, playerRank));
-
-        // 자산 기준으로 내림차순 정렬 (표시 순서용, 순위는 이미 계산됨)
-        sortedItems.Sort((a, b) => b.wealth.CompareTo(a.wealth));
-
-        // 정렬된 순서대로 버튼 생성
-        int createdCount = 0;
-        
-        foreach (var item in sortedItems)
-        {
-            GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
-            if (btnObj == null)
-            {
-                Debug.LogError("[MarketPanel] Failed to instantiate trader button prefab.");
-                continue;
-            }
-
-            var traderBtn = btnObj.GetComponent<MarketTraderBtn>();
-            if (traderBtn == null)
-            {
-                Debug.LogError("[MarketPanel] MarketTraderBtn component not found on instantiated button.");
-                continue;
-            }
-
-            if (item.isPlayer)
-            {
-                // 플레이어 버튼 초기화 (계산된 순위 전달)
-                traderBtn.OnInitializePlayer(_traderPanel, _dataManager, item.rank);
-            }
-            else
-            {
-                // NPC 액터 버튼 초기화 (MarketActorState.rank 사용)
-                traderBtn.OnInitialize(_traderPanel, item.entry);
-            }
-            createdCount++;
-        }
-
-        // 현재 선택된 상인이 있으면 유지, 없으면 첫 번째 선택 (초기 진입 시에만)
-        MarketActorEntry entryToSelect = selectedActor ?? firstRankTrader;
-        if (entryToSelect != null && _traderPanel != null)
-        {
-            _traderPanel.HandleTraderButtonClicked(entryToSelect);
-        }
-    }
-
-    private void SubscribeToDayChange()
-    {
-        // 중복 구독 방지
-        if (_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged += HandleDayChanged;
-        _isSubscribedToDayChange = true;
-    }
-
-    private void UnsubscribeFromDayChange()
-    {
-        if (!_isSubscribedToDayChange)
-        {
-            return;
-        }
-
-        if (_dataManager?.Time == null)
-        {
-            _isSubscribedToDayChange = false;
-            return;
-        }
-
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        _isSubscribedToDayChange = false;
-    }
-
-    private void SubscribeToMarketUpdate()
-    {
-        // 중복 구독 방지
-        if (_isSubscribedToMarketUpdate)
-        {
-            return;
-        }
-
-        var market = _dataManager?.Market;
-        if (market == null)
-        {
-            return;
-        }
-
-        market.OnMarketUpdated += HandleMarketUpdated;
-        _isSubscribedToMarketUpdate = true;
-    }
-
-    private void UnsubscribeFromMarketUpdate()
-    {
-        if (!_isSubscribedToMarketUpdate)
-        {
-            return;
-        }
-
-        var market = _dataManager?.Market;
-        if (market == null)
-        {
-            _isSubscribedToMarketUpdate = false;
-            return;
-        }
-
-        market.OnMarketUpdated -= HandleMarketUpdated;
-        _isSubscribedToMarketUpdate = false;
     }
 
     private void HandleDayChanged()
@@ -352,10 +160,8 @@ public class MarketPanel : BasePanel
 
     private void HandleMarketUpdated()
     {
-        // 시장이 업데이트되면 트레이더 뷰일 경우 목록 새로고침
         if (!_isResourceView)
         {
-            // 기존 버튼들의 정보만 업데이트 (목록 재생성하지 않음)
             RefreshTraderButtons();
         }
     }
@@ -395,7 +201,6 @@ public class MarketPanel : BasePanel
         }
 
         int updatedCount = 0;
-        // 모든 자식 버튼의 거래 값 업데이트
         for (int i = 0; i < _marketScrollViewContent.childCount; i++)
         {
             Transform child = _marketScrollViewContent.GetChild(i);
@@ -406,20 +211,5 @@ public class MarketPanel : BasePanel
                 updatedCount++;
             }
         }
-    }
-
-    private void OnDisable()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            UnsubscribeFromDayChange();
-            UnsubscribeFromMarketUpdate();
-        }
-    }
-
-    private void OnDestroy()
-    {
-        UnsubscribeFromDayChange();
-        UnsubscribeFromMarketUpdate();
     }
 }

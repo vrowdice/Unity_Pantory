@@ -15,10 +15,8 @@ public class MainScrollViewResouceBtn : MonoBehaviour
     {
         _mainUiManager = argMainUiManager;
         _resourceEntry = resourceEntry;
-
-        _image.sprite = resourceEntry.resourceData.icon;
-        // 플레이어 개인 창고(playerInventory) 표시 (시장 재고가 아님)
-        _valueText.text = resourceEntry.resourceState.playerCount.ToString("N0");
+        _image.sprite = resourceEntry.data.icon;
+        _valueText.text = resourceEntry.state.count.ToString("N0");
         UpdateChangeValue();
     }
 
@@ -29,14 +27,14 @@ public class MainScrollViewResouceBtn : MonoBehaviour
 
     private void UpdateChangeValue()
     {
-        var resourceState = _resourceEntry?.resourceState;
+        var resourceState = _resourceEntry?.state;
         if (_changeValueText == null || resourceState == null)
         {
             return;
         }
 
         // 플레이어 재고 변화량 표시 (생산/소비/거래)
-        long delta = resourceState.playerCountDelta;
+        long delta = resourceState.count;
         if (delta > 0)
         {
             _changeValueText.text = $"+{delta:N0}";

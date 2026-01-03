@@ -15,8 +15,8 @@ public class ProductionInfoImage : MonoBehaviour
 
     public void OnInitialize(ResourceEntry resourceEntry, int amount)
     {
-        _productionImage.sprite = resourceEntry.resourceData.icon;
-        _productionText.text = resourceEntry.resourceData.displayName;
+        _productionImage.sprite = resourceEntry.data.icon;
+        _productionText.text = resourceEntry.data.displayName;
         SetRaycastTargets(false);
 
         if (amount >= 0)

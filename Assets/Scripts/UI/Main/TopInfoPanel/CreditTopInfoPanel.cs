@@ -112,7 +112,7 @@ public class CreditTopInfoPanel : MonoBehaviour
     /// </summary>
     private void UpdateCreditInfo()
     {
-        // 기존 패널들 제거
+/*        // 기존 패널들 제거
         ClearPanels();
 
         if (_dataManager?.Finances == null)
@@ -173,7 +173,7 @@ public class CreditTopInfoPanel : MonoBehaviour
 
         // 순 변화량
         long netDelta = reservation.NetDelta;
-        AddPanel("Daily Net Change", netDelta);
+        AddPanel("Daily Net Change", netDelta);*/
     }
 
     /// <summary>

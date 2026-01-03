@@ -141,7 +141,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Input: {resourceEntry.resourceData.displayName}\nConsumption: {kvp.Value}\nPrice: {resourceEntry.resourceState.currentValue}";
+                 $"Input: {resourceEntry.data.displayName}\nConsumption: {kvp.Value}\nPrice: {resourceEntry.state.currentValue}";
             }
         }
     }
@@ -181,7 +181,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
                     Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
                         .GetComponent<TextMeshProUGUI>().text =
-                        $"Handling: {resourceEntry.resourceData.displayName}\nPrice: {resourceEntry.resourceState.currentValue}";
+                        $"Handling: {resourceEntry.data.displayName}\nPrice: {resourceEntry.state.currentValue}";
                 }
                 else
                 {
@@ -213,11 +213,11 @@ public class BuildingInfoPanel : MonoBehaviour
                 Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
                 GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
 
-                string requireText = BuildRequirementText(resourceEntry.resourceData);
+                string requireText = BuildRequirementText(resourceEntry.data);
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
-                 $"Output: {resourceEntry.resourceData.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.resourceState.currentValue}{requireText}";
+                 $"Output: {resourceEntry.data.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.state.currentValue}{requireText}";
             }
         }
     }
@@ -275,11 +275,11 @@ public class BuildingInfoPanel : MonoBehaviour
         {
             _currentBuildingState.outputProductionIds.Clear();
 
-            _currentBuildingState.outputProductionIds.Add(selectedResource.resourceData.id);
-            Debug.Log($"[BuildingInfoPanel] Output resource added: {selectedResource.resourceData.displayName}");
+            _currentBuildingState.outputProductionIds.Add(selectedResource.data.id);
+            Debug.Log($"[BuildingInfoPanel] Output resource added: {selectedResource.data.displayName}");
 
             // 선택된 출력 자원의 제조 요구사항을 확인하고 필요한 입력 자원들을 자동으로 추가
-            AddRequiredInputResources(selectedResource.resourceData);
+            AddRequiredInputResources(selectedResource.data);
 
             // 생산 정보 텍스트 초기화
             GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
