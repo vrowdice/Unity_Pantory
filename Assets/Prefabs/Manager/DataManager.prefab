@@ -49,6 +49,7 @@ MonoBehaviour:
   _initialEmployeeData: {fileID: 11400000, guid: 52889a30f2392d844b470a134ffd664f, type: 2}
   _timeSettingsData: {fileID: 11400000, guid: 5fd3047d51914f34bae4791141b3a104, type: 2}
   _initialResearchData: {fileID: 11400000, guid: 3f53f5b792a4f744996e1ed7ba0f1fda, type: 2}
+  _initialFinancesData: {fileID: 11400000, guid: bef0cee7cf9cc494081a9c5ce79ebab5, type: 2}
   _buildingDataList:
   - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
   - {fileID: 11400000, guid: 960d5a7248b012544b3d054049188b94, type: 2}

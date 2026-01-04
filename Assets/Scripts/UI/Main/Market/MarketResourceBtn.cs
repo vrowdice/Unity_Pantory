@@ -2,52 +2,76 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// 시장 리스트 내 개별 리소스 항목을 관리하고 UI를 갱신하는 컴포넌트입니다.
+/// </summary>
 public class MarketResourceBtn : MonoBehaviour
 {
+    [Header("UI Components")]
     [SerializeField] private Image _image = null;
     [SerializeField] private TextMeshProUGUI _nameText = null;
-    [SerializeField] private TextMeshProUGUI _changeValueText = null;
+    [SerializeField] private TextMeshProUGUI _deltaText = null;
     [SerializeField] private TextMeshProUGUI _tradeValueText = null;
 
     private MarketPanel _marketPanel = null;
     private ResourceEntry _resourceEntry = null;
 
+    /// <summary>
+    /// 버튼을 초기화하고 데이터를 연결합니다.
+    /// </summary>
+    /// <param name="argMarketPanel">부모 마켓 패널 참조</param>
+    /// <param name="resourceEntry">표시할 리소스 엔트리 데이터</param>
     public void OnInitialize(MarketPanel argMarketPanel, ResourceEntry resourceEntry)
     {
         _marketPanel = argMarketPanel;
         _resourceEntry = resourceEntry;
 
-        _image.sprite = resourceEntry.data.icon;
-        _nameText.text = resourceEntry.data.displayName;
+        if (resourceEntry != null && resourceEntry.data != null)
+        {
+            _image.sprite = resourceEntry.data.icon;
+            _nameText.text = resourceEntry.data.displayName;
+        }
+
+        RefreshAllUI();
+    }
+
+    /// <summary>
+    /// 가격 정보와 거래 수량 정보를 포함한 모든 UI를 최신화합니다.
+    /// </summary>
+    public void RefreshAllUI()
+    {
         UpdateChangeValue();
         UpdateTradeValue();
     }
 
+    /// <summary>
+    /// 버튼 클릭 시 호출되어 상세 정보 패널을 갱신합니다.
+    /// </summary>
     public void OnClick()
     {
-        if (_marketPanel == null || _resourceEntry == null)
-        {
-            return;
-        }
-
         _marketPanel.HandleResourceButtonClicked(_resourceEntry);
     }
 
+    /// <summary>
+    /// 현재 가격 및 가격 변동치를 UI에 표시합니다.
+    /// </summary>
     private void UpdateChangeValue()
     {
-        if (_changeValueText == null || _resourceEntry?.state == null)
-        {
-            return;
-        }
-
         ResourceState resourceState = _resourceEntry.state;
-        string currentPriceText = ReplaceUtils.FormatNumber((long)resourceState.value);
-        string deltaText = resourceState.currentChangeValue.ToString("+0.##;-0.##;0");
 
-        _changeValueText.text = $"{currentPriceText} ({deltaText})";
-        _changeValueText.color = GetDeltaColor(resourceState.currentChangeValue);
+        float delta = resourceState.currentChangeValue;
+        string deltaSymbol = delta > 0 ? "+" : "";
+        string deltaText = $"{deltaSymbol}{delta:F2}";
+
+        _deltaText.text = $"{resourceState.currentValue.ToString()} ({deltaText})";
+        _deltaText.color = GetDeltaColor(delta);
     }
 
+    /// <summary>
+    /// 변동치에 따른 텍스트 색상을 VisualManager에서 가져옵니다.
+    /// </summary>
+    /// <param name="delta">가격 변동량</param>
+    /// <returns>표시할 Color 값</returns>
     private Color GetDeltaColor(float delta)
     {
         VisualManager visualManager = VisualManager.Instance;
@@ -60,40 +84,37 @@ public class MarketResourceBtn : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어의 매수/매도 개수를 표시합니다.
+    /// 플레이어가 입력한 매수/매도 수량을 UI에 표시합니다.
     /// </summary>
     private void UpdateTradeValue()
     {
-        if (_tradeValueText == null || _resourceEntry?.state == null)
+        if (_resourceEntry == null || _resourceEntry.state == null)
         {
             return;
         }
 
-        var resourceState = _resourceEntry.state;
+        ResourceState resourceState = _resourceEntry.state;
         long tradeDelta = resourceState.threadDeltaCount;
 
         if (tradeDelta > 0)
         {
-            // 매수: 양수 (녹색)
             _tradeValueText.text = $"+{tradeDelta:N0}";
             _tradeValueText.color = Color.green;
         }
         else if (tradeDelta < 0)
         {
-            // 매도: 음수 (빨간색)
             _tradeValueText.text = tradeDelta.ToString("N0");
             _tradeValueText.color = Color.red;
         }
         else
         {
-            // 거래 없음
             _tradeValueText.text = "0";
             _tradeValueText.color = Color.black;
         }
     }
 
     /// <summary>
-    /// 외부에서 거래 값 업데이트를 요청할 때 사용합니다.
+    /// 외부에서 거래 수량 UI만 업데이트가 필요할 때 호출합니다.
     /// </summary>
     public void RefreshTradeValue()
     {

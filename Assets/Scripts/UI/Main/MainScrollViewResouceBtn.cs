@@ -28,13 +28,9 @@ public class MainScrollViewResouceBtn : MonoBehaviour
 
     private void UpdateChangeValue()
     {
-        var resourceState = _resourceEntry?.state;
-        if (_changeValueText == null || resourceState == null)
-        {
-            return;
-        }
+        ResourceState resourceState = _resourceEntry.state;
+        long delta = resourceState.threadDeltaCount + resourceState.marketDeltaCount;
 
-        long delta = resourceState.threadDeltaCount;
         if (delta > 0)
         {
             _changeValueText.text = $"+{delta:N0}";

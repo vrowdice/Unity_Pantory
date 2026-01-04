@@ -64,7 +64,7 @@ public class ResearchDataHandler
     /// <summary>
     /// 하루가 지날 때 호출 (GameDataManager.HandleDayChanged에서 연결)
     /// </summary>
-    public void OnDayChanged()
+    public void HandleDayChanged()
     {
         long generatedRP = CalculateDailyRPProduction();
 

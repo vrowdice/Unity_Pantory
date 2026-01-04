@@ -1,46 +1,49 @@
+using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// 시장 시스템의 메인 컨트롤러로, 리소스와 거래자 뷰 사이의 전환 및 데이터 갱신을 관리합니다.
+/// </summary>
 public class MarketPanel : BasePanel
 {
     [Header("Action Buttons")]
-    [SerializeField] private Transform _marketActionBtnContentTransform = null;
+    [SerializeField] private Transform _marketActionBtnContentTransform;
 
-    [Header("Panels")]
+    [Header("Sub Panels")]
     [SerializeField] private MarketResurcePanel _resourcePanel;
     [SerializeField] private MarketTraderPanel _traderPanel;
-    
-    [Header("Scroll & Prefabs (Injected to Panels)")]
+
+    [Header("Scroll Content & Prefabs")]
     [SerializeField] private Transform _marketScrollViewContent;
     [SerializeField] private GameObject _marketResourceBtnPrefab;
     [SerializeField] private GameObject _marketTraderBtnPrefab;
-    
+
     private bool _isResourceView = true;
 
     /// <summary>
-    /// initialize market panel
+    /// 마켓 패널 초기화 및 이벤트 구독을 수행합니다.
     /// </summary>
     protected override void OnInitialize()
     {
-        if (_dataManager == null)
-        {
-            return;
-        }
-
         SetupActionButtons();
+
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
         _dataManager.Time.OnDayChanged += HandleDayChanged;
 
-        if (!_isResourceView)
-        {
-            RefreshTraderList();
-        }
-        else
+        if (_isResourceView)
         {
             ShowResourceView();
         }
+        else
+        {
+            ShowTraderView();
+        }
     }
 
+    /// <summary>
+    /// 상단 탭 버튼(Resources, Traders)을 생성하고 초기화합니다.
+    /// </summary>
     private void SetupActionButtons()
     {
         if (_gameManager.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
@@ -50,96 +53,94 @@ public class MarketPanel : BasePanel
 
         GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
 
-        var resBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        var resBtn = resBtnObj.GetComponent<ActionBtn>();
-        resBtn?.OnInitialize("Resources", ShowResourceView);
-
-        var traderBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        var traderBtn = traderBtnObj.GetComponent<ActionBtn>();
-        traderBtn?.OnInitialize("Traders", ShowTraderView);
+        CreateActionButton("Resources", ShowResourceView);
+        CreateActionButton("Traders", ShowTraderView);
     }
 
+    /// <summary>
+    /// 공통 액션 버튼 생성 로직입니다.
+    /// </summary>
+    private void CreateActionButton(string label, Action action)
+    {
+        GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+        ActionBtn btn = btnObj.GetComponent<ActionBtn>();
+
+        if (btn != null)
+        {
+            btn.OnInitialize(label, action);
+        }
+    }
+
+    /// <summary>
+    /// 리소스 목록 중 하나가 클릭되었을 때 상세 정보 패널에 전달합니다.
+    /// </summary>
+    /// <param name="entry">선택된 리소스 데이터</param>
     public void HandleResourceButtonClicked(ResourceEntry entry)
     {
-        _resourcePanel?.HandleResourceButtonClicked(entry);
+        _resourcePanel.HandleResourceButtonClicked(entry);
     }
 
+    /// <summary>
+    /// 화면을 리소스 목록 뷰로 전환합니다.
+    /// </summary>
     private void ShowResourceView()
     {
         _isResourceView = true;
-        if (_resourcePanel != null && _traderPanel != null)
-        {
-            _resourcePanel.gameObject.SetActive(true);
-            _traderPanel.gameObject.SetActive(false);
-        }
-        _resourcePanel?.OnInitialize(_dataManager, this);
+        TogglePanels(true);
+
+        _resourcePanel.OnInitialize(_dataManager, this);
         RefreshResourceList();
     }
 
+    /// <summary>
+    /// 화면을 거래자 목록 뷰로 전환합니다.
+    /// </summary>
     private void ShowTraderView()
     {
         _isResourceView = false;
-        if (_resourcePanel != null && _traderPanel != null)
-        {
-            _resourcePanel.gameObject.SetActive(false);
-            _traderPanel.gameObject.SetActive(true);
-        }
-        _traderPanel?.OnInitialize(_gameManager ,_dataManager);
+        TogglePanels(false);
+
+        _traderPanel.OnInitialize(_dataManager, this);
         RefreshTraderList();
     }
 
+    /// <summary>
+    /// 뷰 상태에 따라 서브 패널들의 활성화 상태를 제어합니다.
+    /// </summary>
+    private void TogglePanels(bool isResource)
+    {
+        _resourcePanel.gameObject.SetActive(isResource);
+        _traderPanel.gameObject.SetActive(!isResource);
+    }
+
+    /// <summary>
+    /// 리소스 데이터를 기반으로 스크롤 목록을 완전히 새로고침합니다.
+    /// </summary>
     private void RefreshResourceList()
     {
-        if (_dataManager == null || _marketScrollViewContent == null || _marketResourceBtnPrefab == null)
-        {
-            return;
-        }
-
-        string currentSelectedId = _resourcePanel?.GetSelectedResourceId() ?? string.Empty;
-
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
 
         Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
-        if (resources == null || resources.Count == 0)
-        {
-            return;
-        }
-
-        ResourceEntry firstEntry = null;
-        ResourceEntry selectedEntry = null;
-
         foreach (ResourceEntry entry in resources.Values)
         {
-            if (!string.IsNullOrEmpty(currentSelectedId) && entry.data?.id == currentSelectedId)
-            {
-                selectedEntry = entry;
-            }
-
             GameObject btnObj = Instantiate(_marketResourceBtnPrefab, _marketScrollViewContent);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
+
             if (resourceBtn != null)
             {
                 resourceBtn.OnInitialize(this, entry);
             }
         }
-
-        ResourceEntry entryToSelect = selectedEntry ?? firstEntry;
-        if (entryToSelect != null)
-        {
-            HandleResourceButtonClicked(entryToSelect);
-        }
     }
 
-    private void RefreshTraderList()
-    {
-
-    }
-
+    /// <summary>
+    /// 날짜가 변경되었을 때 현재 활성화된 뷰의 정보를 갱신합니다.
+    /// </summary>
     private void HandleDayChanged()
     {
         if (_isResourceView)
         {
-            RefreshResourceList();
+            RefreshResourceButtons();
         }
         else
         {
@@ -148,48 +149,21 @@ public class MarketPanel : BasePanel
     }
 
     /// <summary>
-    /// 기존 트레이더 버튼들의 정보를 업데이트합니다.
+    /// 현재 리스트에 생성되어 있는 모든 리소스 버튼의 UI(가격, 거래량 등)를 갱신합니다.
     /// </summary>
-    private void RefreshTraderButtons()
+    public void RefreshResourceButtons()
     {
-        if (_marketScrollViewContent == null)
+        foreach (Transform child in _marketScrollViewContent)
         {
-            return;
-        }
-
-        int updatedCount = 0;
-        for (int i = 0; i < _marketScrollViewContent.childCount; i++)
-        {
-            Transform child = _marketScrollViewContent.GetChild(i);
-            MarketTraderBtn traderBtn = child.GetComponent<MarketTraderBtn>();
-            if (traderBtn != null)
-            {
-                traderBtn.RefreshIndicator();
-                updatedCount++;
-            }
+            child.GetComponent<MarketResourceBtn>().RefreshAllUI();
         }
     }
 
     /// <summary>
-    /// 리소스 버튼들의 거래 값(매수/매도)을 업데이트합니다.
+    /// 거래자 데이터를 기반으로 스크롤 목록을 새로고침합니다.
     /// </summary>
-    public void RefreshResourceButtons()
+    private void RefreshTraderList()
     {
-        if (_marketScrollViewContent == null || !_isResourceView)
-        {
-            return;
-        }
-
-        int updatedCount = 0;
-        for (int i = 0; i < _marketScrollViewContent.childCount; i++)
-        {
-            Transform child = _marketScrollViewContent.GetChild(i);
-            MarketResourceBtn resourceBtn = child.GetComponent<MarketResourceBtn>();
-            if (resourceBtn != null)
-            {
-                resourceBtn.RefreshTradeValue();
-                updatedCount++;
-            }
-        }
+        GameObjectUtils.ClearChildren(_marketScrollViewContent);
     }
 }

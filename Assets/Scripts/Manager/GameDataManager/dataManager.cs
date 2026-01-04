@@ -13,6 +13,7 @@ public class DataManager : MonoBehaviour
     [SerializeField] private InitialEmployeeData _initialEmployeeData;
     [SerializeField] private InitialTimeData _timeSettingsData;
     [SerializeField] private InitialResearchData _initialResearchData;
+    [SerializeField] private InitialFinancesData _initialFinancesData;
 
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
@@ -64,9 +65,9 @@ public class DataManager : MonoBehaviour
         Thread = new ThreadDataHandler(this);
         ThreadPlacement = new ThreadPlacementDataHandler(this);
         Time = new TimeDataHandler(this, _timeSettingsData);
-        Resource = new ResourceDataHandler(this, _resourceDataList);
+        Resource = new ResourceDataHandler(this, _resourceDataList, _initialResourceData);
         Market = new MarketDataHandler(this, _marketActorDataList, _initialMarketData);
-        Finances = new FinancesDataHandler(this, _initialResourceData);
+        Finances = new FinancesDataHandler(this, _initialFinancesData);
         Employee = new EmployeeDataHandler(this, _employeeDataList, _initialEmployeeData);
         Building = new BuildingDataHandler(this, _buildingDataList);
         ThreadCalculate = new ThreadCalculateHandler(this);
@@ -208,19 +209,18 @@ public class DataManager : MonoBehaviour
 
     private void HandleThreadPlacementChanged()
     {
-        Employee.UpdateDailyEmployeeStatus();
+        Employee.HandleDayChanged();
     }
 
     private void HandleDayChanged()
     {
-        Employee.UpdateDailyEmployeeStatus();
+        Resource.HandleDayChanged();
+        Research.HandleDayChanged();
+        Employee.HandleDayChanged();
         Employee.SyncAssignedCountsFromThreads(ThreadPlacement);
+        Effect.ProcessDayPass(1);
 
         UpdateResourceDeltasFromPlacedThreads();
-        Resource.DayResourceChange();
-        Research.OnDayChanged();
-
-        Effect.ProcessDayPass(1);
     }
 
     /// <summary>
@@ -228,15 +228,10 @@ public class DataManager : MonoBehaviour
     /// </summary>
     private void UpdateResourceDeltasFromPlacedThreads()
     {
-        foreach (var entry in Resource.GetAllResources().Values)
-        {
-            if (entry?.state != null) entry.state.threadDeltaCount = 0;
-        }
-
-        var placedThreads = ThreadPlacement.GetAllPlacedThreads();
+        IReadOnlyDictionary<Vector2Int, ThreadPlacementState> placedThreads = ThreadPlacement.GetAllPlacedThreads();
         if (placedThreads == null) return;
 
-        foreach (var placement in placedThreads.Values)
+        foreach (ThreadPlacementState placement in placedThreads.Values)
         {
             if (placement == null || placement.RuntimeState == null) continue;
 
@@ -247,10 +242,10 @@ public class DataManager : MonoBehaviour
             {
                 int productionCount = Mathf.FloorToInt(threadState.currentProductionProgress);
 
-                if (threadState.TryGetAggregatedResourceCounts(out var cons, out var prod))
+                if (threadState.TryGetAggregatedResourceCounts(out Dictionary<string, int> cons, out Dictionary<string, int> prod))
                 {
-                    ApplyPlayerProduction(prod, productionCount);
-                    ApplyPlayerConsumption(cons, productionCount);
+                    ModifyPlayerProduction(prod, productionCount);
+                    ModifyPlayerProduction(cons, -productionCount);
                 }
 
                 threadState.currentProductionProgress -= productionCount;
@@ -268,26 +263,24 @@ public class DataManager : MonoBehaviour
         float quantityEfficiency = 0f;
         float qualityEfficiency = 1.0f;
 
-        // 1. 수량 효율 계산 (현재 직원 수 / 필요한 직원 수, 0~1 범위)
         if (threadState.requiredEmployees > 0)
         {
             int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
             quantityEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
-            
-            // 2. 품질 효율 계산 (직원들의 현재 효율성 반영)
+
             if (Employee != null && currentEmployees > 0)
             {
                 float totalEfficiencySum = 0f;
                 if (threadState.currentWorkers > 0)
                 {
-                    var workerEntry = Employee.GetEmployeeEntry(EmployeeType.Worker);
+                    EmployeeEntry workerEntry = Employee.GetEmployeeEntry(EmployeeType.Worker);
                     float workerEff = workerEntry?.state?.currentEfficiency ?? 1.0f;
                     totalEfficiencySum += threadState.currentWorkers * workerEff;
                 }
 
                 if (threadState.currentTechnicians > 0)
                 {
-                    var techEntry = Employee.GetEmployeeEntry(EmployeeType.Technician);
+                    EmployeeEntry techEntry = Employee.GetEmployeeEntry(EmployeeType.Technician);
                     float techEff = techEntry?.state?.currentEfficiency ?? 1.0f;
                     totalEfficiencySum += threadState.currentTechnicians * techEff;
                 }
@@ -300,53 +293,21 @@ public class DataManager : MonoBehaviour
             quantityEfficiency = 0f;
         }
 
-        // 3. 최종 효율 = 수량 효율 * 품질 효율
         threadState.currentProductionEfficiency = quantityEfficiency * qualityEfficiency;
         threadState.currentProductionProgress += threadState.currentProductionEfficiency;
     }
 
     /// <summary>
-    /// 생산품을 플레이어 창고에 추가합니다. (로직 단순화)
+    /// 스레드의 생산품 가감을 적용합니다
     /// </summary>
-    private void ApplyPlayerProduction(Dictionary<string, int> production, int multiplier)
+    private void ModifyPlayerProduction(Dictionary<string, int> resourceDic, int multiplier)
     {
-        if (production == null || multiplier <= 0) return;
-
-        foreach (KeyValuePair<string, int> item in production)
-        {
-            int actualProduction = item.Value * multiplier;
-            Resource.ModifyStorage(item.Key, actualProduction);
-        }
-    }
-
-    /// <summary>
-    /// 소비품을 플레이어 창고에서 차감합니다.
-    /// </summary>
-    private void ApplyPlayerConsumption(Dictionary<string, int> consumption, int multiplier)
-    {
-        if (consumption == null || multiplier <= 0) return;
-
-        foreach (KeyValuePair<string, int> kvp in consumption)
+        foreach (KeyValuePair<string, int> kvp in resourceDic)
         {
             string resourceId = kvp.Key;
             int requiredAmount = kvp.Value * multiplier;
-            int playerAmount = Resource.GetResourceQuantity(resourceId);
-            
-            if (playerAmount >= requiredAmount)
-            {
-                Resource.ModifyStorage(resourceId, -requiredAmount);
-            }
-            else
-            {
-                int shortage = requiredAmount - playerAmount;
-                if (playerAmount > 0)
-                {
-                    Resource.ModifyStorage(resourceId, -playerAmount);
-                }
 
-                Resource.ModifyStorage(resourceId, shortage);
-                Resource.ModifyStorage(resourceId, -shortage);
-            }
+            Resource.ModifyThreadDelta(resourceId, requiredAmount);
         }
     }
 }

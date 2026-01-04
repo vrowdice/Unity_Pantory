@@ -7,7 +7,6 @@ public partial class MainUiManager
     [SerializeField] private GameObject _mainScrollViewResouceBtn;
     [SerializeField] private Transform _resouceScrollViewContent;
 
-    // Resources
     private readonly List<MainScrollViewResouceBtn> _resourceBtns = new List<MainScrollViewResouceBtn>();
 
     private void RefreshResourceScrollView()
@@ -27,11 +26,6 @@ public partial class MainUiManager
         }
 
         Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
-        if (resources == null || resources.Count == 0)
-        {
-            return;
-        }
-
         foreach (ResourceEntry entry in resources.Values)
         {
             if(entry.state.count == 0)

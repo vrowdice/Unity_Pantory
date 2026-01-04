@@ -8,19 +8,22 @@ using UnityEngine;
 /// </summary>
 public class ResourceDataHandler
 {
-    // 자원을 저장하는 딕셔너리 (자원 ID -> ResourceEntry)
+    private DataManager _dataManager;
+
+    private InitialResourceData _initialResourceData = null;
     private Dictionary<string, ResourceEntry> _resources;
-    private readonly DataManager _dataManager;
+
     public event Action OnResourceChanged;
 
     /// <summary>
     /// ResourceService 생성자
     /// </summary>
-    public ResourceDataHandler(DataManager gameDataManager, List<ResourceData> resourceDataList = null)
+    public ResourceDataHandler(DataManager gameDataManager, List<ResourceData> resourceDataList, InitialResourceData initialResourceData)
     {
         _dataManager = gameDataManager;
         _resources = new Dictionary<string, ResourceEntry>();
-        
+        _initialResourceData = initialResourceData;
+
         if (resourceDataList != null && resourceDataList.Count > 0)
         {
             foreach (var data in resourceDataList)
@@ -50,7 +53,7 @@ public class ResourceDataHandler
     {
         if (_resources.TryGetValue(resourceId, out var entry))
         {
-            return entry.state.value;
+            return entry.state.currentValue;
         }
 
         return 0f;
@@ -71,42 +74,41 @@ public class ResourceDataHandler
         return new Dictionary<string, ResourceEntry>(_resources);
     }
 
-    /// <summary>
-    /// 플레이어 창고를 수정합니다 (생산, 구매, 판매 시 사용).
-    /// </summary>
-    /// <param name="resourceId">자원 ID</param>
-    /// <param name="amount">변경할 수량 (양수: 증가, 음수: 감소)</param>
-    public void ModifyStorage(string resourceId, int amount)
-    {
-        if (!_resources.TryGetValue(resourceId, out var entry)) return;
-
-        if (entry.state.count < amount)
-        {
-            return;
-        }
-
-        entry.state.count += amount;
-        entry.state.threadDeltaCount += amount;
-
-        if (entry.state.count < 0)
-        {
-            entry.state.count = 0;
-        }
-
-        OnResourceChanged?.Invoke();
-    }
-
-    public long CalculateResourceDeltaChange()
+    public long CalculateResourceDeltaChangeCredit()
     {
         long credit = 0;
 
+
+
         return credit;
+    }
+
+    public void ModifyThreadDelta(string resourceId, int count)
+    {
+        ResourceEntry resourceEntry = null;
+        _resources.TryGetValue(resourceId, out resourceEntry);
+
+        if (resourceEntry != null)
+        {
+            resourceEntry.state.threadDeltaCount += count;
+        }
+    }
+
+    public void ModifyMarketDelta(string resourceId, int count)
+    {
+        ResourceEntry resourceEntry = null;
+        _resources.TryGetValue(resourceId, out resourceEntry);
+
+        if (resourceEntry != null)
+        {
+            resourceEntry.state.marketDeltaCount += count;
+        }
     }
 
     /// <summary>
     /// 누적된 deltaCount를 실제 자원 수량에 반영하고 초기화합니다.
     /// </summary>
-    public void DayResourceChange()
+    public void HandleDayChanged()
     {
         ApplyDeltaChange();
         ApplyValueChange();
@@ -120,12 +122,46 @@ public class ResourceDataHandler
         {
             entry.state.count += entry.state.threadDeltaCount;
             entry.state.count += entry.state.marketDeltaCount;
+
+            entry.state.threadDeltaCount = 0;
         }
     }
 
     private void ApplyValueChange()
     {
+        foreach (ResourceEntry entry in _resources.Values)
+        {
+            ResourceData resourceData = entry.data;
+            ResourceState resourceState = entry.state;
 
+            float difference = Math.Abs(resourceData.baseValue - resourceState.currentValue);
+            float differenceMul = Math.Clamp(difference / resourceData.baseValue, 0f, 1f);
+
+            float changeAmount = resourceData.baseValue * _initialResourceData.volatilityMultiplier;
+
+            float maxLimit = resourceData.baseValue * _initialResourceData.maxChangePriceMultiplier;
+            float minLimit = resourceData.baseValue * (1f / _initialResourceData.maxChangePriceMultiplier);
+
+            if (UnityEngine.Random.value < differenceMul)
+            {
+                //현재가가 최대치보다 작을 때만 상승
+                if (resourceState.currentValue < maxLimit)
+                {
+                    resourceState.currentValue += (long)changeAmount;
+                }
+            }
+            else
+            {
+                //현재가가 최소치보다 클 때만 하락
+                if (resourceState.currentValue > minLimit)
+                {
+                    resourceState.currentValue -= (long)changeAmount;
+                }
+            }
+
+            resourceState.currentValue = Math.Clamp(resourceState.currentValue, (long)minLimit, (long)maxLimit);
+            resourceState.RecordPrice(resourceState.currentValue);
+        }
     }
 
     /// <summary>

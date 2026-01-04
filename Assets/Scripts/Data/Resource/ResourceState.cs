@@ -11,8 +11,8 @@ public class ResourceState
     public int marketDeltaCount;
     public int currnetChangeCount;
 
-    public float value;
-    public float currentChangeValue;
+    public long currentValue;
+    public long currentChangeValue;
 
     public const int PriceHistoryCapacity = 60;
     [SerializeField] private List<float> _priceHistory = new List<float>(PriceHistoryCapacity);
@@ -33,12 +33,12 @@ public class ResourceState
         }
 
         count = data.initialAmount;
-        RecordPrice(value);
+        RecordPrice(currentValue);
     }
 
     private void InitializeDefaults()
     {
-        value = 0f;
+        currentValue = 0;
         count = 0;
         threadDeltaCount = 0;
 

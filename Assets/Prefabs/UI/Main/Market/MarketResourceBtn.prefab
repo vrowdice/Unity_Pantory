@@ -363,7 +363,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 4450811254874285856}
   _nameText: {fileID: 7608728538810873118}
-  _changeValueText: {fileID: 6756957640941640565}
+  _deltaText: {fileID: 6756957640941640565}
   _tradeValueText: {fileID: 7426062599816495388}
 --- !u!1 &6215093875087776485
 GameObject:

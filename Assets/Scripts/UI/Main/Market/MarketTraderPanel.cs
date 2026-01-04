@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 public class MarketTraderPanel : MonoBehaviour
 {
     private DataManager _dataManager;
-    private GameManager _gameManager;
+    private MarketPanel _marketPanel;
     private MarketActorEntry _selectedActor;
 
     [Header("Details")]
@@ -23,10 +23,10 @@ public class MarketTraderPanel : MonoBehaviour
     [SerializeField] private Transform _providerResourceContentTransform;
     [SerializeField] private Transform _consumerResourceContentTransform;
 
-    public void OnInitialize(GameManager gameManager, DataManager dataManager)
+    public void OnInitialize(DataManager dataManager, MarketPanel marketPanel)
     {
-        _gameManager = gameManager;
         _dataManager = dataManager;
+        _marketPanel = marketPanel;
 
         _dataManager.Time.OnDayChanged -= HandleDayChanged;
         _dataManager.Time.OnDayChanged += HandleDayChanged;

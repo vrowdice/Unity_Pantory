@@ -7,10 +7,12 @@ using UnityEngine;
 /// </summary>
 public class FinancesDataHandler
 {
-    private readonly DataManager _dataManager;
+    private DataManager _dataManager;
+    private InitialFinancesData _initialFinancesData;
 
     private long _credit;
     private long _creditDelta;
+
     public event Action OnCreditChanged;
 
     public long Credit => _credit;
@@ -18,10 +20,12 @@ public class FinancesDataHandler
     /// <summary>
     /// FinancesService 생성자
     /// </summary>
-    public FinancesDataHandler(DataManager gameDataManager, InitialResourceData initData)
+    public FinancesDataHandler(DataManager gameDataManager, InitialFinancesData initData)
     {
         _dataManager = gameDataManager;
-        _credit = initData.initialCredit;
+        _initialFinancesData = initData;
+
+        _credit = _initialFinancesData.initialCredit;
     }
 
     public bool ModifyCredit(long credit)

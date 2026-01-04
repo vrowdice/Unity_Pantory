@@ -78,7 +78,7 @@ public partial class EmployeeDataHandler
     /// <summary>
     /// 일일 직원 상태 업데이트 (만족도 및 효율성)를 수행합니다.
     /// </summary>
-    public void UpdateDailyEmployeeStatus()
+    public void HandleDayChanged()
     {
         // 1. 행정력 비율 계산 및 관리 부족 비율(deficit) 확인
         float manageRatio = GetManagementRatio();
