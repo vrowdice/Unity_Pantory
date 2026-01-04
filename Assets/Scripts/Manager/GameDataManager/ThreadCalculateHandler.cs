@@ -22,11 +22,6 @@ public class ThreadCalculateHandler
     /// </summary>
     public int CalculateTotalMaintenanceCost(string threadIdentifier, List<BuildingState> buildingStates)
     {
-        if (string.IsNullOrEmpty(threadIdentifier) || _dataManager == null || _dataManager.Building == null)
-        {
-            return 0;
-        }
-
         if (buildingStates == null || buildingStates.Count == 0)
         {
             return 0;
@@ -44,11 +39,6 @@ public class ThreadCalculateHandler
     /// </summary>
     public int CalculateRequiredEmployees(string threadIdentifier, List<BuildingState> buildingStates)
     {
-        if (string.IsNullOrEmpty(threadIdentifier) || _dataManager == null || _dataManager.Building == null)
-        {
-            return 0;
-        }
-
         if (buildingStates == null || buildingStates.Count == 0)
         {
             return 0;
@@ -77,7 +67,6 @@ public class ThreadCalculateHandler
 
         foreach (BuildingState buildingState in buildingStates)
         {
-            // 연구되지 않은 건물 제외
             if (buildingState == null || buildingState.inputProductionIds == null || !buildingState.IsUnlocked(_dataManager))
             {
                 continue;
@@ -110,7 +99,6 @@ public class ThreadCalculateHandler
 
         foreach (BuildingState buildingState in buildingStates)
         {
-            // 연구되지 않은 건물 제외
             if (buildingState == null || buildingState.outputProductionIds == null || !buildingState.IsUnlocked(_dataManager))
             {
                 continue;
@@ -156,7 +144,6 @@ public class ThreadCalculateHandler
             return;
         }
 
-        // 공통 유틸리티 호출 (추가 조건 없음 - 도로 연결 확인 없이 전체 스레드 데이터 집계)
         BuildingCalculationUtility.ExecuteCoreCalculation(
             _dataManager, buildingStates,
             out int maintenance, out int employees, out inputResourceCounts, out outputResourceCounts
@@ -200,13 +187,9 @@ public class ThreadCalculateHandler
             return;
         }
 
-        // 1. 유지비 계산
         threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadState.threadId, buildingStates);
-
-        // 2. 직원 요구사항 계산
         threadState.requiredEmployees = CalculateRequiredEmployees(threadState.threadId, buildingStates);
 
-        // 3. 생산 체인 계산
         List<string> inputResourceIdentifiers;
         Dictionary<string, int> inputResourceCounts;
         List<string> outputResourceIdentifiers;
@@ -220,5 +203,34 @@ public class ThreadCalculateHandler
             out outputResourceIdentifiers,
             out outputResourceCounts
         );
+    }
+
+    /// <summary>
+    /// 배치된 모든 스레드의 총 유지비를 계산합니다.
+    /// </summary>
+    public int CalculateTotalMaintenanceCost(ThreadPlacementDataHandler threadPlacement)
+    {
+        if (threadPlacement == null)
+        {
+            return 0;
+        }
+
+        int totalCost = 0;
+        Dictionary<Vector2Int, ThreadPlacementState> allPlacedThreads = threadPlacement.GetAllPlacedThreads();
+        
+        if (allPlacedThreads == null)
+        {
+            return 0;
+        }
+
+        foreach (ThreadPlacementState placement in allPlacedThreads.Values)
+        {
+            if (placement?.RuntimeState != null)
+            {
+                totalCost += placement.RuntimeState.totalMaintenanceCost;
+            }
+        }
+
+        return totalCost;
     }
 }

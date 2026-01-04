@@ -220,11 +220,13 @@ public class DataManager : MonoBehaviour
         Employee.SyncAssignedCountsFromThreads(ThreadPlacement);
         Effect.ProcessDayPass(1);
 
+        Finances.HandleDayChanged();
+
         UpdateResourceDeltasFromPlacedThreads();
     }
 
     /// <summary>
-    /// 배치된 스레드의 생산/소비를 계산하여 플레이어 인벤토리에 적용합니다.
+    /// 배치된 스레드의 생산/소비를 계산합니다
     /// </summary>
     private void UpdateResourceDeltasFromPlacedThreads()
     {
@@ -254,7 +256,7 @@ public class DataManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 스레드의 생산 진행도와 효율을 업데이트합니다.
+    /// 스레드의 생산 진행도와 효율을 업데이트합니다
     /// </summary>
     private void UpdateThreadProductionProgress(ThreadState threadState)
     {
@@ -274,14 +276,14 @@ public class DataManager : MonoBehaviour
                 if (threadState.currentWorkers > 0)
                 {
                     EmployeeEntry workerEntry = Employee.GetEmployeeEntry(EmployeeType.Worker);
-                    float workerEff = workerEntry?.state?.currentEfficiency ?? 1.0f;
+                    float workerEff = workerEntry.state.currentEfficiency;
                     totalEfficiencySum += threadState.currentWorkers * workerEff;
                 }
 
                 if (threadState.currentTechnicians > 0)
                 {
                     EmployeeEntry techEntry = Employee.GetEmployeeEntry(EmployeeType.Technician);
-                    float techEff = techEntry?.state?.currentEfficiency ?? 1.0f;
+                    float techEff = techEntry.state.currentEfficiency;
                     totalEfficiencySum += threadState.currentTechnicians * techEff;
                 }
 

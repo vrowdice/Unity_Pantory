@@ -58,7 +58,7 @@ public class MarketResurcePanel : MonoBehaviour
         _selectedResourceEntry = entry;
         _selectedResourceId = entry.data.id;
 
-        _resouceTradeInputField.text = entry.state.threadDeltaCount.ToString();
+        _resouceTradeInputField.text = entry.state.marketDeltaCount.ToString();
 
         RefreshUI();
     }
@@ -74,9 +74,15 @@ public class MarketResurcePanel : MonoBehaviour
 
         if (int.TryParse(inputText, out int tradeAmount))
         {
-            _selectedResourceEntry.state.threadDeltaCount = tradeAmount;
+            _selectedResourceEntry.state.marketDeltaCount = tradeAmount;
             _marketPanel.RefreshResourceButtons();
         }
+    }
+
+    public void ChangeResourceTradeInputFieldValue(int value)
+    {
+        _resouceTradeInputField.text = (int.Parse(_resouceTradeInputField.text) + value).ToString();
+        ResouceTradeInputFieldChanged();
     }
 
     /// <summary>
@@ -94,15 +100,6 @@ public class MarketResurcePanel : MonoBehaviour
     {
         if (_selectedResourceEntry == null) return;
 
-        UpdateSelectionDetails();
-        _windowGraph.ShowGraph(_selectedResourceEntry.state.PriceHistory);
-    }
-
-    /// <summary>
-    /// 선택된 리소스의 이름, 가격, 재고 등의 텍스트 정보를 갱신합니다.
-    /// </summary>
-    private void UpdateSelectionDetails()
-    {
         ResourceData data = _selectedResourceEntry.data;
         ResourceState state = _selectedResourceEntry.state;
 
@@ -117,5 +114,8 @@ public class MarketResurcePanel : MonoBehaviour
             priceText += $" ({deltaSymbol}{state.currentChangeValue:F2})";
         }
         _resourcePriceText.text = priceText;
+
+        _windowGraph.ShowGraph(_selectedResourceEntry.state.PriceHistory);
+        _resouceTradeInputField.text = _selectedResourceEntry.state.marketDeltaCount.ToString();
     }
 }

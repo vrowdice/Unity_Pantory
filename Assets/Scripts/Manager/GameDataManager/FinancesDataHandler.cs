@@ -36,9 +36,17 @@ public class FinancesDataHandler
         return true;
     }
 
+    public void HandleDayChanged()
+    {
+        ModifyCredit(CalculateDailyCreditDelta());
+    }
+
     public long CalculateDailyCreditDelta()
     {
         long credit = 0;
+
+        credit -= _dataManager.Resource.CalculateResourceDeltaChangeCredit();
+        credit -= _dataManager.ThreadCalculate.CalculateTotalMaintenanceCost(_dataManager.ThreadPlacement);
 
         return credit;
     }

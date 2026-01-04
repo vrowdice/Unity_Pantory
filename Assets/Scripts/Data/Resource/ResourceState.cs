@@ -60,6 +60,12 @@ public class ResourceState
         }
 
         float clampedPrice = Mathf.Max(0.01f, price);
+
+        long previousValue = currentValue;
+        long newValue = (long)clampedPrice;
+        currentChangeValue = newValue - previousValue;
+        currentValue = newValue;
+        
         _priceHistory.Add(clampedPrice);
         if (_priceHistory.Count > PriceHistoryCapacity)
         {

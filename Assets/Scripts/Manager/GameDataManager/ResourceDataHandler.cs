@@ -39,26 +39,6 @@ public class ResourceDataHandler
         }
     }
 
-    public int GetResourceQuantity(string resourceId)
-    {
-        if (_resources.TryGetValue(resourceId, out var entry))
-        {
-            return entry.state.count;
-        }
-
-        return 0;
-    }
-
-    public float GetResourcePrice(string resourceId)
-    {
-        if (_resources.TryGetValue(resourceId, out var entry))
-        {
-            return entry.state.currentValue;
-        }
-
-        return 0f;
-    }
-
     public ResourceEntry GetResourceEntry(string resourceId)
     {
         if (_resources.TryGetValue(resourceId, out var entry))
@@ -78,7 +58,11 @@ public class ResourceDataHandler
     {
         long credit = 0;
 
-
+        foreach (ResourceEntry entry in _resources.Values)
+        {
+            credit += entry.state.threadDeltaCount * entry.state.currentValue;
+            credit += entry.state.marketDeltaCount * entry.state.currentValue;
+        }
 
         return credit;
     }

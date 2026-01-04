@@ -13,6 +13,8 @@ public class MarketResourceBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _deltaText = null;
     [SerializeField] private TextMeshProUGUI _tradeValueText = null;
 
+    private long _lastResourceValue = 0;
+
     private MarketPanel _marketPanel = null;
     private ResourceEntry _resourceEntry = null;
 
@@ -26,11 +28,8 @@ public class MarketResourceBtn : MonoBehaviour
         _marketPanel = argMarketPanel;
         _resourceEntry = resourceEntry;
 
-        if (resourceEntry != null && resourceEntry.data != null)
-        {
-            _image.sprite = resourceEntry.data.icon;
-            _nameText.text = resourceEntry.data.displayName;
-        }
+        _image.sprite = resourceEntry.data.icon;
+        _nameText.text = resourceEntry.data.displayName;
 
         RefreshAllUI();
     }
@@ -64,23 +63,7 @@ public class MarketResourceBtn : MonoBehaviour
         string deltaText = $"{deltaSymbol}{delta:F2}";
 
         _deltaText.text = $"{resourceState.currentValue.ToString()} ({deltaText})";
-        _deltaText.color = GetDeltaColor(delta);
-    }
-
-    /// <summary>
-    /// 변동치에 따른 텍스트 색상을 VisualManager에서 가져옵니다.
-    /// </summary>
-    /// <param name="delta">가격 변동량</param>
-    /// <returns>표시할 Color 값</returns>
-    private Color GetDeltaColor(float delta)
-    {
-        VisualManager visualManager = VisualManager.Instance;
-        if (visualManager != null)
-        {
-            return visualManager.GetDeltaColor(delta);
-        }
-
-        return Color.black;
+        _deltaText.color = VisualManager.Instance.GetDeltaColor(delta);
     }
 
     /// <summary>
@@ -88,11 +71,6 @@ public class MarketResourceBtn : MonoBehaviour
     /// </summary>
     private void UpdateTradeValue()
     {
-        if (_resourceEntry == null || _resourceEntry.state == null)
-        {
-            return;
-        }
-
         ResourceState resourceState = _resourceEntry.state;
         long tradeDelta = resourceState.threadDeltaCount;
 

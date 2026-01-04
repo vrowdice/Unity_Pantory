@@ -18,17 +18,7 @@ public class ThreadPlacementDataHandler
         _dataManager = gameDataManager;
     }
 
-    public bool HasPlacedThread(Vector2Int gridPosition)
-    {
-        return _placedThreads.ContainsKey(gridPosition);
-    }
-
-    public bool TryGetPlacedThread(Vector2Int gridPosition, out ThreadPlacementState placementState)
-    {
-        return _placedThreads.TryGetValue(gridPosition, out placementState);
-    }
-
-    public IReadOnlyDictionary<Vector2Int, ThreadPlacementState> GetAllPlacedThreads()
+    public Dictionary<Vector2Int, ThreadPlacementState> GetAllPlacedThreads()
     {
         return _placedThreads;
     }
@@ -39,43 +29,22 @@ public class ThreadPlacementDataHandler
     /// </summary>
     public ThreadState PlaceThread(Vector2Int gridPosition, string templateId)
     {
-        if (string.IsNullOrEmpty(templateId) || _dataManager?.Thread == null)
-        {
-            Debug.LogWarning($"[ThreadPlacementDataHandler] Invalid template ID or Thread handler is null: {templateId}");
-            return null;
-        }
+        ThreadState template = _dataManager.Thread.GetThread(templateId);
 
-        // 1. 원본 템플릿 가져오기
-        var template = _dataManager.Thread.GetThread(templateId);
-        if (template == null)
-        {
-            Debug.LogWarning($"[ThreadPlacementDataHandler] Template thread not found: {templateId}");
-            return null;
-        }
-
-        // 2. 상태 복제 (Deep Copy)
         string json = JsonUtility.ToJson(template);
         ThreadState newState = JsonUtility.FromJson<ThreadState>(json);
-        
-        // 3. 고유 인스턴스 ID 부여
+
         string uniqueInstanceId = $"{templateId}_{gridPosition.x}_{gridPosition.y}_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
         newState.threadId = uniqueInstanceId;
         newState.threadName = $"{template.threadName} ({gridPosition.x}, {gridPosition.y})";
-        
-        // 4. 런타임 상태 초기화 (각 인스턴스는 독립적으로 관리)
         newState.currentWorkers = 0;
         newState.currentTechnicians = 0;
         newState.currentProductionProgress = 0f;
         newState.currentProductionEfficiency = 0f;
 
-        // 5. 새로 생성된 인스턴스 초기화 (유지비, 직원 요구사항, 생산 체인 계산)
-        if (_dataManager.ThreadCalculate != null)
-        {
-            _dataManager.ThreadCalculate.InitializeThread(newState, _dataManager.Thread);
-        }
+        _dataManager.ThreadCalculate.InitializeThread(newState, _dataManager.Thread);
 
-        // 6. 배치 상태 생성 및 저장
-        var placement = new ThreadPlacementState(gridPosition, templateId, newState);
+        ThreadPlacementState placement = new ThreadPlacementState(gridPosition, templateId, newState);
         _placedThreads[gridPosition] = placement;
         RaisePlacementChanged();
         
@@ -95,25 +64,15 @@ public class ThreadPlacementDataHandler
     }
 
     /// <summary>
-    /// [레거시 호환] ThreadId로 배치를 설정합니다. (기존 코드 호환용)
+    /// ThreadId로 배치를 설정합니다
     /// </summary>
     public void SetPlacedThread(Vector2Int gridPosition, string threadId)
     {
-        // 레거시 호환: ThreadId가 이미 인스턴스 ID인 경우를 처리
-        if (string.IsNullOrEmpty(threadId))
-        {
-            return;
-        }
-
-        // 기존 배치가 있으면 그대로 사용, 없으면 새로 생성
         if (!_placedThreads.ContainsKey(gridPosition))
         {
-            // ThreadId가 템플릿 ID인지 인스턴스 ID인지 확인
-            // 인스턴스 ID는 보통 "{templateId}_{x}_{y}_{guid}" 형식
             var threadState = _dataManager?.Thread?.GetThread(threadId);
             if (threadState != null)
             {
-                // 이미 ThreadDataHandler에 있는 경우 (레거시 데이터)
                 var placement = new ThreadPlacementState(gridPosition, threadId, threadState);
                 _placedThreads[gridPosition] = placement;
                 RaisePlacementChanged();
