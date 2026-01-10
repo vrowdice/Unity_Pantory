@@ -6,10 +6,10 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// 그리드 시스템 내에서 스레드 타일의 생성, 배치, 삭제 및 상호작용을 관리하는 매니저 클래스입니다.
 /// </summary>
-public class ThreadTileManager : MonoBehaviour, ISceneGameManager
+public class MainRunner : RunnerBase
 {
     [Header("UI Manager")]
-    [SerializeField] private MainUiManager _mainUiManager;
+    [SerializeField] private MainCanvas _mainCanvas;
 
     [Header("Prefab")]
     [SerializeField] private GameObject _threadTilePrefab;
@@ -19,14 +19,11 @@ public class ThreadTileManager : MonoBehaviour, ISceneGameManager
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
 
-    private DataManager _dataManager;
-    private MainCameraController _mainCameraController;
     private Camera _mainCamera;
     private BoxCollider2D _cameraCollider;
-    private ThreadGridHandler _gridHandler;
+    private MainRunnerThreadGridHandler _gridHandler;
     private GameObject _sharedThreadLabelCanvas;
     private ThreadPlacementDataHandler _threadPlacementHandler;
-    private GameManager _gameManager;
 
     internal GameObject ThreadObjectPrefab => _threadObjectPrefab;
     public bool IsPlacementMode => _gridHandler != null && _gridHandler.IsPlacementActive;
@@ -37,9 +34,9 @@ public class ThreadTileManager : MonoBehaviour, ISceneGameManager
     {
         get
         {
-            if (_sharedThreadLabelCanvas == null && _gameManager != null)
+            if (_sharedThreadLabelCanvas == null && GameManager != null)
             {
-                RectTransform canvasRect = _gameManager.GetWorldCanvas();
+                RectTransform canvasRect = GameManager.GetWorldCanvas();
                 if (canvasRect != null)
                 {
                     _sharedThreadLabelCanvas = canvasRect.gameObject;
@@ -68,21 +65,22 @@ public class ThreadTileManager : MonoBehaviour, ISceneGameManager
     /// <summary>
     /// 매니저를 초기화하고 그리드 및 카메라 콜라이더를 설정합니다.
     /// </summary>
-    public void OnInitialize(GameManager gameManager, DataManager dataManager)
+    override public void Init()
     {
-        _gameManager = gameManager;
-        _dataManager = dataManager;
-        _threadPlacementHandler = dataManager.ThreadPlacement;
-        _mainCamera = Camera.main;
-        _mainCameraController = _mainCamera.GetComponent<MainCameraController>();
+        base.Init();
 
-        _gridHandler = new ThreadGridHandler(transform, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight);
+        _threadPlacementHandler = DataManager.ThreadPlacement;
+        _mainCamera = Camera.main;
+
+        _gridHandler = new MainRunnerThreadGridHandler(transform, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight);
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, 11f);
 
         CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
         CreateSharedThreadLabelCanvas();
         RefreshThreads();
+
+        _mainCanvas.Init(this);
     }
 
     /// <summary>
@@ -245,7 +243,7 @@ public class ThreadTileManager : MonoBehaviour, ISceneGameManager
 
     private void CreateSharedThreadLabelCanvas()
     {
-        RectTransform canvasRect = _gameManager.GetWorldCanvas();
+        RectTransform canvasRect = GameManager.GetWorldCanvas();
         if (canvasRect != null)
         {
             _sharedThreadLabelCanvas = canvasRect.gameObject;
@@ -274,9 +272,9 @@ public class ThreadTileManager : MonoBehaviour, ISceneGameManager
     {
         if (threadObject == null || threadObject.ThreadState == null) return;
 
-        if (_mainUiManager != null)
+        if (_mainCanvas != null)
         {
-            _mainUiManager.ShowThreadInfoPanel(threadObject.ThreadState);
+            _mainCanvas.ShowThreadInfoPanel(threadObject.ThreadState);
         }
     }
 }

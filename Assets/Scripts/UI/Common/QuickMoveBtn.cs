@@ -7,9 +7,9 @@ public class QuickMoveBtn : MonoBehaviour
     private TextMeshProUGUI _text = null;
     private MainPanelType _penalType;
 
-    MainUiManager _mainUiManager = null;
+    MainCanvas _mainUiManager = null;
 
-    public void Initialize(MainUiManager argUiManager, MainPanelType argPenalType)
+    public void Initialize(MainCanvas argUiManager, MainPanelType argPenalType)
     {
         _mainUiManager = argUiManager;
         _penalType = argPenalType;

@@ -19,7 +19,7 @@ public class DateTopInfoPanel : MonoBehaviour
     private DataManager _dataManager;
     private bool _isTimePaused = false;
 
-    public void OnInitialize(DataManager dataManager)
+    public void Init(DataManager dataManager)
     {
         _dataManager = dataManager;
 

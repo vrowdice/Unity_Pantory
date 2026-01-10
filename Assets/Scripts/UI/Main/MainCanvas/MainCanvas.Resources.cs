@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class MainUiManager
+public partial class MainCanvas
 {
     [Header("Resouce ScrollView")]
     [SerializeField] private GameObject _mainScrollViewResouceBtn;
@@ -11,11 +11,6 @@ public partial class MainUiManager
 
     private void RefreshResourceScrollView()
     {
-        if (_dataManager == null || _resouceScrollViewContent == null)
-        {
-            return;
-        }
-
         GameObjectUtils.ClearChildren(_resouceScrollViewContent);
         _resourceBtns.Clear();
 
@@ -25,7 +20,7 @@ public partial class MainUiManager
             return;
         }
 
-        Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
+        Dictionary<string, ResourceEntry> resources = DataManager.Resource.GetAllResources();
         foreach (ResourceEntry entry in resources.Values)
         {
             if(entry.state.count == 0)
@@ -37,7 +32,7 @@ public partial class MainUiManager
             MainScrollViewResouceBtn resourceBtn = btnObj.GetComponent<MainScrollViewResouceBtn>();
             if (resourceBtn != null)
             {
-                resourceBtn.OnInitialize(this, entry);
+                resourceBtn.Init(this, entry);
                 _resourceBtns.Add(resourceBtn);
             }
         }

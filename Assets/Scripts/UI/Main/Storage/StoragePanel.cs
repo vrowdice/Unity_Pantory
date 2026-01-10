@@ -17,13 +17,9 @@ public class StoragePanel : BasePanel
     /// <summary>
     /// 패널 초기화 (BasePanel에서 호출)
     /// </summary>
-    protected override void OnInitialize()
+    public override void Init(MainCanvas argUIManager)
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[StoragePanel] DataManager is null.");
-            return;
-        }
+        base.Init(argUIManager);
 
         InitializeResourceTypeButtons();
         RefreshCurrentResourceTypeList();
@@ -61,7 +57,7 @@ public class StoragePanel : BasePanel
             if (btn != null)
             {
                 var capturedType = resourceType;
-                btn.OnInitialize(capturedType.ToString(), () => OnResourceTypeClick(capturedType));
+                btn.Init(capturedType.ToString(), () => OnResourceTypeClick(capturedType));
             }
         }
     }
@@ -98,7 +94,7 @@ public class StoragePanel : BasePanel
             {
                 Instantiate(_storageResourceBtnPrefab, _resourceScrollViewContentTransform)
                     .GetComponent<StorageResourceBtn>()
-                    .OnInitialize(this, resourceEntry.Value);
+                    .Init(this, resourceEntry.Value);
             }
         }
     }

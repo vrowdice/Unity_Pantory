@@ -5,9 +5,9 @@ using System.Linq;
 /// <summary>
 /// 건물의 생산 체인, 유지비, 도로 연결성(Pathfinding) 검증을 담당하는 핸들러 클래스입니다.
 /// </summary>
-public class BuildingCalculateHandler
+public class DesignRunnerCalculateHandler
 {
-    private readonly BuildingTileManager _manager;
+    private readonly DesignRunner _manager;
     private readonly List<BuildingState> _states;
     private readonly Dictionary<Vector2Int, BuildingState> _gridMap;
 
@@ -22,7 +22,7 @@ public class BuildingCalculateHandler
     /// </summary>
     /// <param name="manager">빌딩 타일 매니저 참조</param>
     /// <param name="currentBuildingStates">현재 배치된 건물들의 상태 리스트</param>
-    public BuildingCalculateHandler(BuildingTileManager manager, List<BuildingState> currentBuildingStates)
+    public DesignRunnerCalculateHandler(DesignRunner manager, List<BuildingState> currentBuildingStates)
     {
         _manager = manager;
         _states = currentBuildingStates ?? new List<BuildingState>();

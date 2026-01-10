@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 설계 모드 UI를 관리하며, 스레드 저장/로드 및 관련 정보 표시를 담당합니다.
 /// </summary>
-public partial class DesignUiManager
+public partial class DesignCanvas
 {
     [Header("Thread References")]
     [SerializeField] private ThreadSaveInfoPanel _threadSaveInformationPanel;
@@ -17,14 +17,14 @@ public partial class DesignUiManager
     /// </summary>
     public void OnClickSaveButton()
     {
-        string threadIdentifier = _buildingTileManager.CurrentThreadId;
+        string threadIdentifier = _designRunner.CurrentThreadId;
         string threadTitle = DefaultThreadTitle;
 
         // 스레드 식별자가 없는 경우 제목으로부터 생성 시도
         if (string.IsNullOrEmpty(threadIdentifier))
         {
             threadIdentifier = GetThreadIdFromTitle(threadTitle);
-            _buildingTileManager.SetCurrentThread(threadIdentifier);
+            _designRunner.SetCurrentThread(threadIdentifier);
         }
 
         List<string> inputResourceIdentifiers;
@@ -33,7 +33,7 @@ public partial class DesignUiManager
         Dictionary<string, int> outputResourceCounts;
 
         // 생산 체인 및 유지비 계산 (BuildingTileManager에 위임)
-        _buildingTileManager.CalculateProductionChain(
+        _designRunner.CalculateProductionChain(
             threadIdentifier,
             out inputResourceIdentifiers,
             out inputResourceCounts,
@@ -41,14 +41,14 @@ public partial class DesignUiManager
             out outputResourceCounts
         );
 
-        int totalMaintenanceCost = _buildingTileManager.CalculateTotalMaintenanceCost(threadIdentifier);
+        int totalMaintenanceCost = _designRunner.CalculateTotalMaintenanceCost(threadIdentifier);
 
         // 직원 요구사항 계산
         int requiredEmployeeCount;
         CalculateThreadEmployeeRequirements(threadIdentifier, out requiredEmployeeCount);
 
         // 요약 패널 표시
-        _threadSaveInformationPanel.OnInitialize(
+        _threadSaveInformationPanel.Init(
             threadTitle,
             inputResourceIdentifiers,
             inputResourceCounts,
@@ -67,22 +67,22 @@ public partial class DesignUiManager
     /// </summary>
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
-        if (_buildingTileManager == null)
+        if (_designRunner == null)
         {
             Debug.LogError("[DesignUiManager] Cannot save changes: BuildingTileManager is null.");
             return;
         }
 
         // 캡처 및 데이터 저장을 포함한 통합 저장 로직 실행
-        _buildingTileManager.SaveThreadChanges(threadName, categoryIdentifier);
+        _designRunner.SaveThreadChanges(threadName, categoryIdentifier);
 
         _currentThreadTitle = threadName;
 
         DeselectBuilding();
 
-        if (_gameManager != null)
+        if (GameManager != null)
         {
-            _gameManager.ShowWarningPanel("Saved successfully.");
+            GameManager.ShowWarningPanel("Saved successfully.");
         }
     }
 
@@ -91,13 +91,7 @@ public partial class DesignUiManager
     /// </summary>
     public void OnClickLoadButton()
     {
-        if (_gameManager == null || _dataManager == null)
-        {
-            return;
-        }
-
-        // 스레드 관리 패널 오픈 및 선택 콜백 등록
-        _gameManager.ShowManageThreadPanel((string selectedThreadIdentifier) =>
+        GameManager.ShowManageThreadPanel((string selectedThreadIdentifier) =>
         {
             LoadThread(selectedThreadIdentifier);
         });
@@ -108,12 +102,12 @@ public partial class DesignUiManager
     /// </summary>
     private void LoadThread(string threadIdentifier)
     {
-        if (string.IsNullOrEmpty(threadIdentifier) || _dataManager == null)
+        if (string.IsNullOrEmpty(threadIdentifier))
         {
             return;
         }
 
-        ThreadState threadState = _dataManager.Thread.GetThread(threadIdentifier);
+        ThreadState threadState = DataManager.Thread.GetThread(threadIdentifier);
         if (threadState == null)
         {
             Debug.LogWarning("[DesignUiManager] Thread not found: " + threadIdentifier);
@@ -123,10 +117,9 @@ public partial class DesignUiManager
         string threadTitle = string.IsNullOrEmpty(threadState.threadName) ? DefaultThreadTitle : threadState.threadName;
         _currentThreadTitle = threadTitle;
 
-        // 타일 매니저에 현재 편집 스레드 설정 (화면 갱신 포함)
-        if (_buildingTileManager != null)
+        if (_designRunner != null)
         {
-            _buildingTileManager.SetCurrentThread(threadIdentifier);
+            _designRunner.SetCurrentThread(threadIdentifier);
         }
 
         Debug.Log("[DesignUiManager] Thread loaded: " + threadIdentifier + " (" + threadState.threadName + ")");
@@ -139,14 +132,7 @@ public partial class DesignUiManager
     {
         requiredEmployeeCount = 0;
 
-        if (_buildingTileManager == null || _dataManager == null || _dataManager.Building == null)
-        {
-            Debug.LogWarning("[DesignUiManager] Cannot calculate employee requirements: Required components are null.");
-            return;
-        }
-
-        // 임시 저장 데이터를 포함한 현재 배치 상태 가져오기
-        List<BuildingState> buildingStates = _buildingTileManager.GetCurrentBuildingStates();
+        List<BuildingState> buildingStates = _designRunner.GetCurrentBuildingStates();
 
         if (buildingStates != null)
         {
@@ -157,7 +143,7 @@ public partial class DesignUiManager
                     continue;
                 }
 
-                BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
+                BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
                 if (buildingData != null)
                 {
                     requiredEmployeeCount += buildingData.requiredEmployees;

@@ -4,19 +4,19 @@ using UnityEngine;
 /// <summary>
 /// 건물 제거 모드를 처리하는 핸들러
 /// </summary>
-public class BuildingRemovalHandler
+public class DesignRunnerRemovalHandler
 {
-    private readonly BuildingTileManager _buildingTileManager;
-    private readonly BuildingGridHandler _gridManager;
+    private readonly DesignRunner _buildingTileManager;
+    private readonly DesignRunnerGridHandler _gridManager;
     private readonly DataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
     private readonly Camera _camera;
-    private readonly DesignUiManager _designUiManager;
+    private readonly DesignCanvas _designUiManager;
 
     private bool _isActive = false;
     private GameObject _hoveredBuilding = null;
     public bool IsActive => _isActive;
-    public BuildingRemovalHandler(BuildingTileManager buildingTileManager)
+    public DesignRunnerRemovalHandler(DesignRunner buildingTileManager)
     {
         _buildingTileManager = buildingTileManager;
         _gridManager = buildingTileManager.GridGenHandler;

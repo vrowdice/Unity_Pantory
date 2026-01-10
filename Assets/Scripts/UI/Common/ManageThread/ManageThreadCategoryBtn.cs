@@ -10,7 +10,7 @@ public class ManageThreadCategoryBtn : MonoBehaviour
 
     public string CategoryId => _categoryId;
 
-    public void OnInitialize(string categoryId, string categoryName, System.Action<string> onClickCallback)
+    public void Init(string categoryId, string categoryName, System.Action<string> onClickCallback)
     {
         _categoryId = categoryId;
         _onClickCallback = onClickCallback;

@@ -32,7 +32,7 @@ public class VisualManager : MonoBehaviour
     [SerializeField]private Color _threadPreviewInvalidColor = Color.red;  // 스레드 프리뷰 불가 색상
     [SerializeField]private float _threadPreviewAlpha = 0.6f;  // 스레드 프리뷰 투명도
 
-    public void OnInitialize()
+    public void Init()
     {
         if (Instance != null && Instance != this)
         {

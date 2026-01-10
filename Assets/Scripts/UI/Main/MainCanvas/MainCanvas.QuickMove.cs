@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class MainUiManager
+public partial class MainCanvas
 {
     [Header("Quick Move")]
     [SerializeField] private GameObject _quickMoveBtnPrefeb;

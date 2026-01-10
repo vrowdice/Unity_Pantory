@@ -27,14 +27,14 @@ public class BuildingInfoPanel : MonoBehaviour
     private BuildingData _currentBuildingData;
     private BuildingState _currentBuildingState;
 
-    private DesignUiManager _designUiManager;
+    private DesignCanvas _designUiManager;
     private DataManager _dataManager;
     private System.Action<ResourceEntry> _onOutputResourceSelected;
 
     /// <summary>
     /// 건물 정보를 표시합니다.
     /// </summary>
-    public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState, DesignUiManager designUiManager)
+    public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState, DesignCanvas designUiManager)
     {
         if (buildingData == null)
         {
@@ -45,12 +45,9 @@ public class BuildingInfoPanel : MonoBehaviour
         _currentBuildingData = buildingData;
         _currentBuildingState = buildingState;
         _designUiManager = designUiManager;
-        _dataManager = designUiManager.GameDataManager;
 
-        // 자원 선택 콜백 설정
         _onOutputResourceSelected = OnOutputResourceSelected;
 
-        // UI 업데이트
         UpdateUI();
     }
 
@@ -137,7 +134,7 @@ public class BuildingInfoPanel : MonoBehaviour
             if (resourceEntry != null)
             {
                 Instantiate(_designUiManager.ProductionInfoImage, _inputGridContentTransform).
-                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
+                GetComponent<ProductionInfoImage>().Init(resourceEntry, kvp.Value);
 
                 Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
                 GetComponent<TextMeshProUGUI>().text =
@@ -177,7 +174,7 @@ public class BuildingInfoPanel : MonoBehaviour
                 {
                     Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform)
                         .GetComponent<ProductionInfoImage>()
-                        .OnInitialize(resourceEntry, 1);
+                        .Init(resourceEntry, 1);
 
                     Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
                         .GetComponent<TextMeshProUGUI>().text =
@@ -211,7 +208,7 @@ public class BuildingInfoPanel : MonoBehaviour
             if (resourceEntry != null)
             {
                 Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
-                GetComponent<ProductionInfoImage>().OnInitialize(resourceEntry, kvp.Value);
+                GetComponent<ProductionInfoImage>().Init(resourceEntry, kvp.Value);
 
                 string requireText = BuildRequirementText(resourceEntry.data);
 
@@ -334,7 +331,7 @@ public class BuildingInfoPanel : MonoBehaviour
             return;
         
         // BuildingTileManager 찾기
-        BuildingTileManager buildingTileManager = FindFirstObjectByType<BuildingTileManager>();
+        DesignRunner buildingTileManager = FindFirstObjectByType<DesignRunner>();
         if (buildingTileManager != null)
         {
             // 건물 새로고침 (모든 건물 오브젝트를 다시 생성)

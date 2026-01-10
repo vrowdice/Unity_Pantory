@@ -15,7 +15,7 @@ public class WarningPanel : MonoBehaviour
     /// </summary>
     [SerializeField] private TextMeshProUGUI _messageText;
 
-    public void OnInitialized(string message)
+    public void Init(string message)
     {
         _messageText.text = message;
         m_ani.SetTrigger("Open");

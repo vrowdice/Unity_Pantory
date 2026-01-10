@@ -8,7 +8,7 @@ public class ProductionInfoIconPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _countText;
 
-    public void OnInitialize(ResourceEntry resourceEntry, int productionCount = -1)
+    public void Init(ResourceEntry resourceEntry, int productionCount = -1)
     {
         _image.sprite = resourceEntry.data.icon;
         _titleText.text = resourceEntry.data.displayName;

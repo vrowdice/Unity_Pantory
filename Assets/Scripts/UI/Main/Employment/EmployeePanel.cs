@@ -50,13 +50,9 @@ public class EmployeePanel : BasePanel
     /// <summary>
     /// (BasePanel)
     /// </summary>
-    protected override void OnInitialize()
+    public override void Init(MainCanvas argUIManager)
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[EmployeePanel] DataManager is null.");
-            return;
-        }
+        base.Init(argUIManager);
 
         _dataManager.Time.OnDayChanged -= HandleDayChanged;
         _dataManager.Time.OnDayChanged += HandleDayChanged;
@@ -93,8 +89,6 @@ public class EmployeePanel : BasePanel
             int fireCount = Mathf.Abs(delta);
             _dataManager.Employee.TryFireEmployee(_selectedEmployeeType, fireCount);
         }
-
-        // UI는 HandleEmployeeChanged 이벤트를 통해 자동으로 갱신됨
     }
 
     /// <summary>
@@ -144,12 +138,6 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void SetupEmployeeRoleButtons()
     {
-        if (_gameManager?.ActionBtnPrefab == null || EmployeeActionBtnContent == null)
-        {
-            Debug.LogWarning("[EmployeePanel] ActionBtnPrefab or EmployeeActionBtnContent is null.");
-            return;
-        }
-
         GameObjectUtils.ClearChildren(EmployeeActionBtnContent);
 
         // EmployeeType enum의 모든 역할에 대해 버튼 생성
@@ -162,7 +150,7 @@ public class EmployeePanel : BasePanel
             if (btn != null)
             {
                 string roleName = role.ToString();
-                btn.OnInitialize(roleName, () => ShowEmployeeByRole(role));
+                btn.Init(roleName, () => ShowEmployeeByRole(role));
             }
         }
     }
@@ -172,11 +160,6 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void ShowEmployeeByRole(EmployeeType role)
     {
-        if (_dataManager?.Employee == null)
-        {
-            return;
-        }
-
         var allEmployees = _dataManager.Employee.GetAllEmployees();
         if (allEmployees == null || allEmployees.Count == 0)
         {
@@ -185,7 +168,7 @@ public class EmployeePanel : BasePanel
 
         // 해당 역할의 첫 번째 직원 찾기
         EmployeeEntry foundEntry = null;
-        foreach (var entry in allEmployees.Values)
+        foreach (EmployeeEntry entry in allEmployees.Values)
         {
             if (entry?.data != null && entry.data.type == role)
             {
@@ -224,7 +207,6 @@ public class EmployeePanel : BasePanel
             return;
         }
 
-        // 첫 번째 직원 선택
         foreach (var entry in allEmployees.Values)
         {
             if (entry != null && entry.data != null)
@@ -329,19 +311,15 @@ public class EmployeePanel : BasePanel
         {
             return;
         }
-
-        // 급여 레벨 범위 검증
         salaryLevel = Mathf.Clamp(salaryLevel, 0, 4);
         _isUpdatingToggles = true;
 
         try
         {
-            // 각 토글의 상태 업데이트 (순서대로 0~4에 매핑)
             for (int i = 0; i < _salaryLevelToggles.Count && i <= 4; i++)
             {
                 if (_salaryLevelToggles[i] != null)
                 {
-                    // 현재 상태와 다를 때만 업데이트 (불필요한 이벤트 발생 방지)
                     if (_salaryLevelToggles[i].isOn != (i == salaryLevel))
                     {
                         _salaryLevelToggles[i].isOn = (i == salaryLevel);
@@ -351,7 +329,6 @@ public class EmployeePanel : BasePanel
         }
         finally
         {
-            // 플래그 해제
             _isUpdatingToggles = false;
         }
     }
@@ -411,7 +388,7 @@ public class EmployeePanel : BasePanel
                 {
                     string effectDescription = effectState.displayName ?? effectState.id;
                     string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                    panel.OnInitialize(effectDescription, changeValue, effectState.value);
+                    panel.Init(effectDescription, changeValue, effectState.value);
                 }
             }
         }
@@ -439,7 +416,7 @@ public class EmployeePanel : BasePanel
             {
                 string effectDescription = effectState.displayName ?? effectState.id;
                 string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                panel.OnInitialize(effectDescription, changeValue, effectState.value);
+                panel.Init(effectDescription, changeValue, effectState.value);
             }
         }
     }

@@ -20,7 +20,7 @@ public class WindowGraph : MonoBehaviour
     private readonly List<GameObject> _spawnedElements = new List<GameObject>();
     private bool _isInitialized;
 
-    public void OnInitialize()
+    public void Init()
     {
         if (_isInitialized)
         {
@@ -59,7 +59,7 @@ public class WindowGraph : MonoBehaviour
     {
         if (!_isInitialized)
         {
-            OnInitialize();
+            Init();
         }
 
         ClearGraph();

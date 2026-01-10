@@ -8,7 +8,7 @@ public abstract class BasePanel : MonoBehaviour
 {
     protected GameManager _gameManager;
     protected DataManager _dataManager;
-    protected MainUiManager _uiManager;
+    protected MainCanvas _uiManager;
     
     [Header("Animation")]
     [SerializeField] private bool _usePanelAnimation = true;
@@ -20,10 +20,10 @@ public abstract class BasePanel : MonoBehaviour
     /// <summary>
     /// 패널이 열릴 때 호출됩니다.
     /// </summary>
-    public void OnOpen(GameManager argGameManager ,DataManager argDataManager, MainUiManager argUIManager)
+    public virtual void Init(MainCanvas argUIManager)
     {
-        _gameManager = argGameManager;
-        _dataManager = argDataManager;
+        _gameManager = GameManager.Instance;
+        _dataManager = DataManager.Instance;
         _uiManager = argUIManager;
 
         PanelDoAni animator = null;
@@ -33,19 +33,8 @@ public abstract class BasePanel : MonoBehaviour
             animator.SnapToClosedPosition();
         }
 
-        if (!gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-        }
-
-        if (animator != null)
-        {
-            animator.OpenPanel();
-        }
-
-        // 초기화 (자식 클래스에서 구현)
-        // DataManager가 null이어도 패널은 열리고, 나중에 사용 가능할 때 초기화
-        OnInitialize();
+        gameObject.SetActive(true);
+        animator.OpenPanel();
     }
 
     /// <summary>
@@ -74,16 +63,6 @@ public abstract class BasePanel : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
-    }
-
-    /// <summary>
-    /// 패널 초기화 (자식 클래스에서 구현)
-    /// </summary>
-    protected abstract void OnInitialize();
-
-    void Start()
-    {
-        // MainUiManager에서 초기화를 관리합니다
     }
 
     private bool TryGetPanelAnimator(out PanelDoAni animator)

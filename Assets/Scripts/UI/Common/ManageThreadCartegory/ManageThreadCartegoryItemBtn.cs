@@ -18,7 +18,7 @@ public class ManageThreadCartegoryItemBtn : MonoBehaviour
     /// <param name="categoryName">카테고리 이름</param>
     /// <param name="count">속한 스레드 개수</param>
     /// <param name="parentPanel">부모 패널 (ManageThreadCartegoryPanel)</param>
-    public void OnInitialize(string categoryId, string categoryName, int count, ManageThreadCartegoryPanel parentPanel)
+    public void Init(string categoryId, string categoryName, int count, ManageThreadCartegoryPanel parentPanel)
     {
         _categoryId = categoryId;
         _categoryName = categoryName;

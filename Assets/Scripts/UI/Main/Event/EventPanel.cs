@@ -2,12 +2,8 @@ using UnityEngine;
 
 public class EventPanel : BasePanel
 {
-    protected override void OnInitialize()
+    public override void Init(MainCanvas argUIManager)
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[ProductionPanel] DataManager is null.");
-            return;
-        }
+        base.Init(argUIManager);
     }
 }

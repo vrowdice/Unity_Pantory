@@ -37,7 +37,7 @@ public class ThreadObject : MonoBehaviour
     /// <summary>
     /// 실제 배치된 스레드 오브젝트를 초기화합니다.
     /// </summary>
-    public void OnInitialize(ThreadState threadState, GameManager gameManager)
+    public void Init(ThreadState threadState, GameManager gameManager)
     {
         _gameManager = gameManager;
         _spriteRenderer = GetComponent<SpriteRenderer>();

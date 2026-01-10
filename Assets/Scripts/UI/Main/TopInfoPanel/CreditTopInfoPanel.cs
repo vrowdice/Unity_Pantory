@@ -12,7 +12,7 @@ public class CreditTopInfoPanel : MonoBehaviour
     /// <summary>
     /// 크레딧 정보 패널을 초기화합니다.
     /// </summary>
-    public void OnInitialize(DataManager dataManager)
+    public void Init(DataManager dataManager)
     {
         _dataManager = dataManager;
         
@@ -192,7 +192,7 @@ public class CreditTopInfoPanel : MonoBehaviour
         
         if (panel != null)
         {
-            panel.OnInitialize(title, deltaValue);
+            panel.Init(title, deltaValue);
             _createdPanels.Add(panel);
         }
     }

@@ -40,14 +40,14 @@ public class ThreadInfoPanel : MonoBehaviour
 
     private ThreadState _currentThreadState;
     private DataManager _dataManager;
-    private MainUiManager _mainUiManager;
+    private MainCanvas _mainUiManager;
 
     private bool _isSubscribed = false;
 
     /// <summary>
     /// 패널을 초기화하고 데이터를 연결합니다.
     /// </summary>
-    public void OnInitialize(ThreadState threadState, MainUiManager mainUiManager, DataManager dataManager)
+    public void Init(ThreadState threadState, MainCanvas mainUiManager, DataManager dataManager)
     {
         _currentThreadState = threadState;
         _mainUiManager = mainUiManager;
@@ -138,7 +138,7 @@ public class ThreadInfoPanel : MonoBehaviour
             if (entry != null)
             {
                 var iconObj = Instantiate(_mainUiManager.ProductionInfoImage, parent);
-                iconObj.GetComponent<ProductionInfoImage>().OnInitialize(entry, kvp.Value);
+                iconObj.GetComponent<ProductionInfoImage>().Init(entry, kvp.Value);
             }
         }
     }

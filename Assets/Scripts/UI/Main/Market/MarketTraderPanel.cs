@@ -23,7 +23,7 @@ public class MarketTraderPanel : MonoBehaviour
     [SerializeField] private Transform _providerResourceContentTransform;
     [SerializeField] private Transform _consumerResourceContentTransform;
 
-    public void OnInitialize(DataManager dataManager, MarketPanel marketPanel)
+    public void Init(DataManager dataManager, MarketPanel marketPanel)
     {
         _dataManager = dataManager;
         _marketPanel = marketPanel;

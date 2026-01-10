@@ -27,7 +27,7 @@ public class SelectResourcePanel : MonoBehaviour
     /// <param name="resourceTypes">표시할 자원 타입 목록</param>
     /// <param name="onResourceSelected">자원 선택 시 실행될 콜백</param>
     /// <param name="producibleResources">생산 가능한 자원 목록 (null일 경우 모든 자원 표시)</param>
-    public void OnInitialize(DataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
+    public void Init(DataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
         _dataManager = gameDataManager;
         _resourceTypes = resourceTypes;
@@ -65,7 +65,7 @@ public class SelectResourcePanel : MonoBehaviour
 
             if (btnScript != null)
             {
-                btnScript.OnInitialize(this, resourceType);
+                btnScript.Init(this, resourceType);
             }
         }
     }
@@ -115,7 +115,7 @@ public class SelectResourcePanel : MonoBehaviour
 
         if (btnScript != null)
         {
-            btnScript.OnInitialize(this, resourceEntry);
+            btnScript.Init(this, resourceEntry);
         }
     }
 

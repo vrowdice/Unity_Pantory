@@ -6,10 +6,10 @@ public class TopInfoPanel : MonoBehaviour
     [SerializeField] private EmployeeTopInfoPanel _employeeTopInfoPanel;
     [SerializeField] private DateTopInfoPanel _dateTopInfoPanel;
 
-    public void OnInitialize(DataManager dataManager)
+    public void Init(DataManager dataManager)
     {
-        _creditTopInfoPanel.OnInitialize(dataManager);
-        _employeeTopInfoPanel.OnInitialize(dataManager);
-        _dateTopInfoPanel.OnInitialize(dataManager);
+        _creditTopInfoPanel.Init(dataManager);
+        _employeeTopInfoPanel.Init(dataManager);
+        _dateTopInfoPanel.Init(dataManager);
     }
 }

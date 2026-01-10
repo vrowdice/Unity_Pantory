@@ -13,7 +13,7 @@ public class ResearchTierPanel : MonoBehaviour
     [SerializeField] private Transform _researchButtonContentTransform;
     [SerializeField] private GameObject _researchBtnPrefab;
 
-    public void OnInitialize(int tier, List<ResearchEntry> researchEntry, MainUiManager mainUiManager)
+    public void Init(int tier, List<ResearchEntry> researchEntry, MainCanvas mainUiManager)
     {
         _tierText.text = $"Tier {tier}";
 
@@ -22,7 +22,7 @@ public class ResearchTierPanel : MonoBehaviour
             GameObject btnObj = Instantiate(_researchBtnPrefab, _researchButtonContentTransform);
             ResearchBtn researhBtn = btnObj.GetComponent<ResearchBtn>();
 
-            researhBtn.OnInitialize(item, mainUiManager);
+            researhBtn.Init(item, mainUiManager);
         }
     }
 }

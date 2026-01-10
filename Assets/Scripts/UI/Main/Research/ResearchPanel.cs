@@ -16,13 +16,9 @@ public class ResearchPanel : BasePanel
     [SerializeField] private GameObject _researchTierPanelPrefab;
     [SerializeField] private Transform _researchTirePanelContentTransform;
 
-    protected override void OnInitialize()
+    public override void Init(MainCanvas argUIManager)
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[ResearchPanel] DataManager is null.");
-            return;
-        }
+        base.Init(argUIManager);
 
         _dataManager.Research.OnResearchPointsChanged -= ResearchChanged;
         _dataManager.Research.OnResearchPointsChanged += ResearchChanged;
@@ -70,7 +66,7 @@ public class ResearchPanel : BasePanel
             List<ResearchEntry> entrys = _dataManager.Research.GetResearchEntriesByTier(i);
             GameObject researchPanelObj = Instantiate(_researchTierPanelPrefab, _researchTirePanelContentTransform);
             ResearchTierPanel _researchPanel = researchPanelObj.GetComponent<ResearchTierPanel>();
-            _researchPanel.OnInitialize(i, entrys, _uiManager);
+            _researchPanel.Init(i, entrys, _uiManager);
         }
     }
 }

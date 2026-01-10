@@ -24,8 +24,10 @@ public class MarketPanel : BasePanel
     /// <summary>
     /// 마켓 패널 초기화 및 이벤트 구독을 수행합니다.
     /// </summary>
-    protected override void OnInitialize()
+    public override void Init(MainCanvas argUIManager)
     {
+        base.Init(argUIManager);
+
         SetupActionButtons();
 
         _dataManager.Time.OnDayChanged -= HandleDayChanged;
@@ -67,7 +69,7 @@ public class MarketPanel : BasePanel
 
         if (btn != null)
         {
-            btn.OnInitialize(label, action);
+            btn.Init(label, action);
         }
     }
 
@@ -88,7 +90,7 @@ public class MarketPanel : BasePanel
         _isResourceView = true;
         TogglePanels(true);
 
-        _resourcePanel.OnInitialize(_dataManager, this);
+        _resourcePanel.Init(_dataManager, this);
         RefreshResourceList();
     }
 
@@ -100,7 +102,7 @@ public class MarketPanel : BasePanel
         _isResourceView = false;
         TogglePanels(false);
 
-        _traderPanel.OnInitialize(_dataManager, this);
+        _traderPanel.Init(_dataManager, this);
         RefreshTraderList();
     }
 
@@ -128,7 +130,7 @@ public class MarketPanel : BasePanel
 
             if (resourceBtn != null)
             {
-                resourceBtn.OnInitialize(this, entry);
+                resourceBtn.Init(this, entry);
             }
         }
     }

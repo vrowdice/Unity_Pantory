@@ -45,7 +45,7 @@ public class DataManager : MonoBehaviour
         Time?.Update(deltaTime);
     }
 
-    public void OnInitialize()
+    public void Init()
     {
         if (Instance != null && Instance != this)
         {

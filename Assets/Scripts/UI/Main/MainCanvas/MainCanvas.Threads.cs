@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public partial class MainUiManager
+public partial class MainCanvas
 {
     [Header("Managers")]
-    [SerializeField] private ThreadTileManager _threadTileManager;
+    [SerializeField] private MainRunner _threadTileManager;
 
     [Header("Thread")]
     [SerializeField] private Image _cancelPlacementBtnImage;
@@ -23,11 +23,6 @@ public partial class MainUiManager
 
     private void RefreshThreadCategories()
     {
-        if (_dataManager == null || _threadCategoryScrollViewContent == null)
-        {
-            return;
-        }
-
         GameObjectUtils.ClearChildren(_threadCategoryScrollViewContent);
         _threadCategoryBtns.Clear();
 
@@ -36,7 +31,7 @@ public partial class MainUiManager
             return;
         }
 
-        var categories = _dataManager.Thread.GetAllCategories();
+        Dictionary<string, ThreadCategory> categories = DataManager.Thread.GetAllCategories();
 
         if (!string.IsNullOrEmpty(_selectedThreadCategoryId) && (categories == null || !categories.ContainsKey(_selectedThreadCategoryId)))
         {
@@ -74,11 +69,6 @@ public partial class MainUiManager
 
     private void RefreshThreadButtons()
     {
-        if (_dataManager == null || _threadScrollViewContent == null)
-        {
-            return;
-        }
-
         GameObjectUtils.ClearChildren(_threadScrollViewContent);
         _threadBtns.Clear();
 
@@ -90,11 +80,11 @@ public partial class MainUiManager
         List<ThreadState> threadsToShow;
         if (string.IsNullOrEmpty(_selectedThreadCategoryId))
         {
-            threadsToShow = _dataManager.Thread.GetAllThreadList();
+            threadsToShow = DataManager.Thread.GetAllThreadList();
         }
         else
         {
-            threadsToShow = _dataManager.Thread.GetThreadsInCategory(_selectedThreadCategoryId);
+            threadsToShow = DataManager.Thread.GetThreadsInCategory(_selectedThreadCategoryId);
         }
 
         if (threadsToShow != null)
@@ -136,7 +126,7 @@ public partial class MainUiManager
         RefreshThreadButtons();
     }
 
-    public void RegisterThreadTileManager(ThreadTileManager threadTileManager)
+    public void RegisterThreadTileManager(MainRunner threadTileManager)
     {
         _threadTileManager = threadTileManager;
         UpdateThreadModeButtons(

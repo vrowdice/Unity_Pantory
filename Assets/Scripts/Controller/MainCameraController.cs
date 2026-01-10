@@ -27,7 +27,7 @@ public class MainCameraController : MonoBehaviour
     /// <summary>
     /// 외부 매니저 등을 통해 카메라 컴포넌트를 초기화합니다.
     /// </summary>
-    public void OnInitialize()
+    public void Init()
     {
         _camera = GetComponent<Camera>();
     }

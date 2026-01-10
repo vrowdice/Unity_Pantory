@@ -6,15 +6,10 @@ using UnityEngine.EventSystems;
 /// 건물 타일 시스템의 메인 조율자입니다.
 /// 그리드 생성, 배치/삭제 모드 전환, 임시 데이터 관리 및 최종 저장 로직을 담당합니다.
 /// </summary>
-public class BuildingTileManager : MonoBehaviour, ISceneGameManager
+public class DesignRunner : RunnerBase
 {
     [Header("Managers & UI")]
-    [SerializeField] private DesignUiManager _designUiManager;
-
-    private DataManager _dataManager;
-    private GameManager _gameManager;
-    private MainCameraController _mainCameraController;
-    private Camera _mainCamera;
+    [SerializeField] private DesignCanvas _designCanvas;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject _buildingTilePrefab;
@@ -28,35 +23,27 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
     [SerializeField] private int _gridHeight = 10;
     [SerializeField] private float _cameraZOffset = 11f;
 
-    // Handlers (Composition)
-    public BuildingGridHandler GridGenHandler { get; private set; }
-    public BuildingPlacementHandler PlacementHandler { get; private set; }
-    public BuildingRemovalHandler RemovalHandler { get; private set; }
-    public BuildingCalculateHandler CalculateHandler { get; private set; }
-    public BuildingCaptureHandler CaptureHandler { get; private set; }
+    public DesignRunnerGridHandler GridGenHandler { get; private set; }
+    public DesignRunnerPlacementHandler PlacementHandler { get; private set; }
+    public DesignRunnerRemovalHandler RemovalHandler { get; private set; }
+    public DesignRunnerCalculateHandler CalculateHandler { get; private set; }
+    public DesignRunnerCaptureHandler CaptureHandler { get; private set; }
 
-    public DataManager DataManager => _dataManager;
-    public GameManager GameManager => _gameManager;
     public MainCameraController MainCameraController => _mainCameraController;
-    public Camera MainCamera => _mainCamera;
-    public DesignUiManager DesignUiManager => _designUiManager;
+    public DesignCanvas DesignUiManager => _designCanvas;
 
     public GameObject InputMarkerPrefab => _inputMarkerPrefab;
     public GameObject OutputMarkerPrefab => _outputMarkerPrefab;
 
-    // State Variables
+    private MainCameraController _mainCameraController;
     private string _currentThreadId = string.Empty;
     private List<BuildingState> _temporaryBuildingStates = new List<BuildingState>();
     private bool _isTemporaryDataDirty = false;
-    private bool _isInitialized = false;
 
-    // Properties
     public string CurrentThreadId => _currentThreadId;
     public bool IsPlacementMode => PlacementHandler?.IsActive ?? false;
     public bool IsRemovalMode => RemovalHandler?.IsActive ?? false;
     private bool IsThreadActive => !string.IsNullOrEmpty(_currentThreadId);
-
-    #region Unity Lifecycle
 
     private void Update()
     {
@@ -89,27 +76,15 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
         }
     }
 
-    #endregion
-
-    #region Initialization
-
-    public void OnInitialize(GameManager gameManager, DataManager dataManager)
+    override public void Init()
     {
-        _gameManager = gameManager;
-        _dataManager = dataManager;
-        _mainCamera = Camera.main;
+        base.Init();
 
-        if (!_isInitialized)
-        {
-            InitializeHandlers();
-            SetupGridSystem();
-            LoadInitialThreadState();
-            _isInitialized = true;
-        }
-        else
-        {
-            RefreshBuildings();
-        }
+        InitializeHandlers();
+        SetupGridSystem();
+        LoadInitialThreadState();
+
+        _designCanvas.Init();
     }
 
     private void InitializeHandlers()
@@ -117,11 +92,11 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
         // 핸들러 생성 시 현재 상태 리스트를 참조할 수 있도록 전달
         List<BuildingState> currentStates = GetCurrentBuildingStates();
 
-        GridGenHandler = new BuildingGridHandler(this, _buildingTilePrefab, _buildingObjectPrefab, _inputMarkerPrefab, _outputMarkerPrefab, _gridWidth, _gridHeight);
-        PlacementHandler = new BuildingPlacementHandler(this, _buildingObjectPrefab);
-        RemovalHandler = new BuildingRemovalHandler(this);
-        CalculateHandler = new BuildingCalculateHandler(this, currentStates);
-        CaptureHandler = new BuildingCaptureHandler(this, currentStates);
+        GridGenHandler = new DesignRunnerGridHandler(this, _buildingTilePrefab, _buildingObjectPrefab, _inputMarkerPrefab, _outputMarkerPrefab, _gridWidth, _gridHeight);
+        PlacementHandler = new DesignRunnerPlacementHandler(this, _buildingObjectPrefab);
+        RemovalHandler = new DesignRunnerRemovalHandler(this);
+        CalculateHandler = new DesignRunnerCalculateHandler(this, currentStates);
+        CaptureHandler = new DesignRunnerCaptureHandler(this, currentStates);
     }
 
     private void SetupGridSystem()
@@ -136,7 +111,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
 
     private void LoadInitialThreadState()
     {
-        _currentThreadId = _gameManager.CurrentThreadId;
+        _currentThreadId = GameManager.CurrentThreadId;
 
         if (string.IsNullOrEmpty(_currentThreadId))
         {
@@ -144,7 +119,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
             return;
         }
 
-        List<BuildingState> buildingStates = _dataManager.Thread.GetBuildingStates(_currentThreadId);
+        List<BuildingState> buildingStates = DataManager.Thread.GetBuildingStates(_currentThreadId);
         if (buildingStates != null)
         {
             _temporaryBuildingStates = new List<BuildingState>(buildingStates);
@@ -171,7 +146,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
         outputResourceIdentifiers = new List<string>();
         outputResourceCounts = new Dictionary<string, int>();
 
-        CalculateHandler = new BuildingCalculateHandler(this, GetCurrentBuildingStates());
+        CalculateHandler = new DesignRunnerCalculateHandler(this, GetCurrentBuildingStates());
 
         // 실제 계산은 핸들러에게 위임
         CalculateHandler.CalculateProductionChain(
@@ -233,10 +208,6 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
         return false;
     }
 
-    #endregion
-
-    #region Data Access & Management
-
     /// <summary>
     /// 현재 편집 중인 세션의 모든 건물 상태 리스트를 반환합니다.
     /// </summary>
@@ -260,7 +231,7 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
         _currentThreadId = threadIdentifier;
         _isTemporaryDataDirty = false;
 
-        List<BuildingState> buildingStatesFromData = _dataManager.Thread.GetBuildingStates(threadIdentifier);
+        List<BuildingState> buildingStatesFromData = DataManager.Thread.GetBuildingStates(threadIdentifier);
         _temporaryBuildingStates = (buildingStatesFromData != null) ? new List<BuildingState>(buildingStatesFromData) : new List<BuildingState>();
 
         // 핸들러들에 갱신된 상태 리스트 반영 (필요 시 핸들러 내부 데이터 업데이트 메서드 호출)
@@ -275,17 +246,16 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
             return;
         }
 
-        string newThreadIdentifier = _designUiManager.GetThreadIdFromTitle(threadName);
-        _dataManager.Thread.CreateThread(newThreadIdentifier, threadName);
+        string newThreadIdentifier = _designCanvas.GetThreadIdFromTitle(threadName);
+        DataManager.Thread.CreateThread(newThreadIdentifier, threadName);
 
-        // 데이터 오버라이트 및 상태 리셋
-        _dataManager.Thread.OverwriteBuildings(newThreadIdentifier, _temporaryBuildingStates);
+        DataManager.Thread.OverwriteBuildings(newThreadIdentifier, _temporaryBuildingStates);
         _currentThreadId = newThreadIdentifier;
         _isTemporaryDataDirty = false;
 
         ProcessPostSaveLogic(newThreadIdentifier, categoryIdentifier);
 
-        _dataManager.Thread.Save();
+        DataManager.Thread.Save();
         SetCurrentThread(newThreadIdentifier);
     }
 
@@ -293,34 +263,25 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
     {
         if (!string.IsNullOrEmpty(categoryIdentifier))
         {
-            _dataManager.Thread.AddThreadToCategory(categoryIdentifier, threadIdentifier);
+            DataManager.Thread.AddThreadToCategory(categoryIdentifier, threadIdentifier);
         }
 
-        ThreadState threadState = _dataManager.Thread.GetThread(threadIdentifier);
+        ThreadState threadState = DataManager.Thread.GetThread(threadIdentifier);
         if (threadState != null)
         {
             threadState.previewImagePath = CaptureHandler?.CaptureThreadLayout(threadIdentifier);
             threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadIdentifier);
-            threadState.requiredEmployees = _dataManager.ThreadCalculate.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
+            threadState.requiredEmployees = DataManager.ThreadCalculate.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
         }
     }
 
-    #endregion
-
-    #region Helpers & Rendering
-
     public void RefreshBuildings()
     {
-        if (GridGenHandler == null || _dataManager?.Building == null)
-        {
-            return;
-        }
-
         GridGenHandler.ClearAllPlacedBuildings();
 
         foreach (BuildingState buildingState in _temporaryBuildingStates)
         {
-            BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
+            BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
             if (buildingData != null)
             {
                 GridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
@@ -338,12 +299,12 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
 
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorldPosition = MainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2Int gridPosition = GridGenHandler.WorldToGridPosition(mouseWorldPosition);
 
             BuildingState clickedBuildingState = _temporaryBuildingStates.Find((BuildingState state) =>
             {
-                BuildingData buildingData = _dataManager.Building.GetBuildingData(state.buildingId);
+                BuildingData buildingData = DataManager.Building.GetBuildingData(state.buildingId);
                 Vector2Int rotatedSize = GetRotatedSize(buildingData.size, state.rotation);
                 return gridPosition.x >= state.positionX && gridPosition.x < state.positionX + rotatedSize.x &&
                        gridPosition.y >= state.positionY && gridPosition.y < state.positionY + rotatedSize.y;
@@ -358,14 +319,14 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
 
     private void ShowBuildingInfo(BuildingState buildingState)
     {
-        BuildingData buildingData = _dataManager.Building.GetBuildingData(buildingState.buildingId);
-        if (buildingState.IsUnlocked(_dataManager))
+        BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
+        if (buildingState.IsUnlocked(DataManager))
         {
-            _designUiManager.ShowBuildingInfo(buildingData, buildingState);
+            _designCanvas.ShowBuildingInfo(buildingData, buildingState);
         }
         else
         {
-            _gameManager.ShowWarningPanel("Locked: " + buildingData.displayName);
+            GameManager.ShowWarningPanel("Locked: " + buildingData.displayName);
         }
     }
 
@@ -385,12 +346,8 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
 
     public int CalculateTotalMaintenanceCost(string threadIdentifier)
     {
-        return _dataManager.ThreadCalculate?.CalculateTotalMaintenanceCost(threadIdentifier, GetCurrentBuildingStates()) ?? 0;
+        return DataManager.ThreadCalculate?.CalculateTotalMaintenanceCost(threadIdentifier, GetCurrentBuildingStates()) ?? 0;
     }
-
-    #endregion
-
-    #region Grid Collider Setup
 
     public void SetPositionCenter()
     {
@@ -406,6 +363,4 @@ public class BuildingTileManager : MonoBehaviour, ISceneGameManager
             boxCollider.size = new Vector2(_gridWidth, _gridHeight);
         }
     }
-
-    #endregion
 }

@@ -34,7 +34,7 @@ namespace Evo.UI
         public ColorMapping selectedColor = new() { stylerID = "Primary" };
 
         // Interaction Cache
-        bool interactionInitialized;
+        bool interactiInitd;
         InteractionState currentState;
         Coroutine tweenCoroutine;
 
@@ -50,7 +50,7 @@ namespace Evo.UI
             {
                 interactableObject.OnStateChanged += OnInteractableStateChanged;
                 OnInteractableStateChanged(interactableObject.interactionState);
-                interactionInitialized = true;
+                interactiInitd = true;
             }
         }
 
@@ -74,7 +74,7 @@ namespace Evo.UI
 
         void OnDestroy()
         {
-            if (enableInteraction && interactableObject != null && interactionInitialized)
+            if (enableInteraction && interactableObject != null && interactiInitd)
             {
                 interactableObject.OnStateChanged -= OnInteractableStateChanged;
             }

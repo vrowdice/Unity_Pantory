@@ -8,10 +8,10 @@ public class ResearchBtn : MonoBehaviour
     [SerializeField] private GameObject _focusedImage;
     [SerializeField] private TextMeshProUGUI _text;
 
-    private MainUiManager _mainUiManager;
+    private MainCanvas _mainUiManager;
     private ResearchEntry _researchEntry;
 
-    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager)
+    public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager)
     {
         _researchEntry = researchEntry;
         _mainUiManager = mainUiManager;

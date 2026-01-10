@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
-public partial class DesignUiManager
+public partial class DesignCanvas
 {
     [Header("Mode References")]
     [SerializeField] private Image _deselectBuildingBtnImage;
@@ -31,16 +31,16 @@ public partial class DesignUiManager
     {
         if (!isUnlocked)
         {
-            _gameManager.ShowWarningPanel("This building is locked. Complete the required research to unlock it.");
+            GameManager.ShowWarningPanel("This building is locked. Complete the required research to unlock it.");
             return;
         }
 
         _selectedBuilding = buildingData;
         _isRemovalMode = false;
 
-        if (_buildingTileManager.IsRemovalMode)
+        if (_designRunner.IsRemovalMode)
         {
-            _buildingTileManager.RemovalHandler.CancelRemoval();
+            _designRunner.RemovalHandler.CancelRemoval();
         }
 
         if (isSelected)
@@ -49,7 +49,7 @@ public partial class DesignUiManager
         }
         else
         {
-            _buildingTileManager.PlacementHandler.StartPlacement(buildingData);
+            _designRunner.PlacementHandler.StartPlacement(buildingData);
         }
         
         UpdateBuildingButtonStates();
@@ -59,7 +59,7 @@ public partial class DesignUiManager
     {
         _selectedBuilding = null;
 
-        _buildingTileManager.PlacementHandler.CancelPlacement();
+        _designRunner.PlacementHandler.CancelPlacement();
 
         UpdateModeBtnImages(false, false);
         UpdateBuildingButtonStates();
@@ -70,8 +70,8 @@ public partial class DesignUiManager
         _isRemovalMode = true;
         _selectedBuilding = null;
 
-        _buildingTileManager.PlacementHandler.CancelPlacement();
-        _buildingTileManager.RemovalHandler.StartRemoval();
+        _designRunner.PlacementHandler.CancelPlacement();
+        _designRunner.RemovalHandler.StartRemoval();
 
         UpdateModeBtnImages(false, true);
         UpdateBuildingButtonStates();
@@ -80,7 +80,7 @@ public partial class DesignUiManager
     public void CancelRemovalMode()
     {
         _isRemovalMode = false;
-        _buildingTileManager.RemovalHandler.CancelRemoval();
+        _designRunner.RemovalHandler.CancelRemoval();
 
         UpdateModeBtnImages(false, false);
         UpdateBuildingButtonStates();
@@ -104,7 +104,7 @@ public partial class DesignUiManager
         _buildingBtns.Clear();
 
         _selectedBuildingType = buildingType;
-        _buildingDataList = _dataManager.Building.GetBuildingDataList(buildingType);
+        _buildingDataList = DataManager.Building.GetBuildingDataList(buildingType);
 
         foreach (BuildingData data in _buildingDataList)
         {
@@ -112,7 +112,7 @@ public partial class DesignUiManager
 
             if (data.requiredResearch != null)
             {
-                isUnlocked = _dataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault;
+                isUnlocked = DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault;
             }
             else
             {
@@ -168,11 +168,11 @@ public partial class DesignUiManager
 
     public void RotateBuildingLeft()
     {
-        _buildingTileManager.PlacementHandler.RotateLeft();
+        _designRunner.PlacementHandler.RotateLeft();
     }
 
     public void RotateBuildingRight()
     {
-        _buildingTileManager.PlacementHandler.RotateRight();
+        _designRunner.PlacementHandler.RotateRight();
     }
 }

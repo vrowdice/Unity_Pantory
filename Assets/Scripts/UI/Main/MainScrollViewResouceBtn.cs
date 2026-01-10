@@ -8,10 +8,10 @@ public class MainScrollViewResouceBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _valueText = null;
     [SerializeField] private TextMeshProUGUI _changeValueText = null;
 
-    private MainUiManager _mainUiManager = null;
+    private MainCanvas _mainUiManager = null;
     private ResourceEntry _resourceEntry = null;
 
-    public void OnInitialize(MainUiManager mainUiManager, ResourceEntry resourceEntry)
+    public void Init(MainCanvas mainUiManager, ResourceEntry resourceEntry)
     {
         _mainUiManager = mainUiManager;
         _resourceEntry = resourceEntry;

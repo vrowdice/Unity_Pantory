@@ -9,14 +9,14 @@ public class BuildingBtn : MonoBehaviour
     [SerializeField] private Image _deactivatedImage = null;
     [SerializeField] private TextMeshProUGUI _text = null;
 
-    private DesignUiManager _designUiManager = null;
+    private DesignCanvas _designUiManager = null;
     private BuildingData _buildingData;
     private bool _isSelected = false;
     private bool _isUnlocked = false;
 
     public BuildingData BuildingData => _buildingData;
 
-    public void Initialize(DesignUiManager argDesignUiManager, BuildingData buildingData, bool isUnlocked)
+    public void Initialize(DesignCanvas argDesignUiManager, BuildingData buildingData, bool isUnlocked)
     {
         _designUiManager = argDesignUiManager;
         _text.text = buildingData.displayName;

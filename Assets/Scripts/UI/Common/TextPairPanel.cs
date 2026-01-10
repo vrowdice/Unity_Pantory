@@ -6,13 +6,13 @@ public class TextPairPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _mainText;
     [SerializeField] private TextMeshProUGUI _secondText;
 
-    public void OnInitialize(string mainText, string secondText)
+    public void Init(string mainText, string secondText)
     {
         _mainText.text = mainText;
         _secondText.text = secondText;
     }
 
-    public void OnInitialize(string mainText, string secondText, float numericValue)
+    public void Init(string mainText, string secondText, float numericValue)
     {
         _mainText.text = mainText;
         _secondText.text = secondText;
@@ -24,7 +24,7 @@ public class TextPairPanel : MonoBehaviour
         }
     }
 
-    public void OnInitialize(string mainText, int secondTextValue)
+    public void Init(string mainText, int secondTextValue)
     {
         _mainText.text = mainText;
         _secondText.text = secondTextValue.ToString();
@@ -36,7 +36,7 @@ public class TextPairPanel : MonoBehaviour
         }
     }
 
-    public void OnInitialize(string mainText, float secondTextValue)
+    public void Init(string mainText, float secondTextValue)
     {
         _mainText.text = mainText;
         _secondText.text = secondTextValue.ToString("F1");
@@ -48,7 +48,7 @@ public class TextPairPanel : MonoBehaviour
         }
     }
 
-    public void OnInitialize(string mainText, int secondTextValue, Color color)
+    public void Init(string mainText, int secondTextValue, Color color)
     {
         _mainText.text = mainText;
         _secondText.text = secondTextValue.ToString();

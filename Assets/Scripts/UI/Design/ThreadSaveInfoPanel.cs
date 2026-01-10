@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // Image, Button, InputField 등을 위해 사용
-using TMPro; // TMP_InputField, TextMeshProUGUI를 위해 필요
+using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Thread 저장 정보를 표시하고 최종 저장(Save) 명령을 처리하는 UI 패널입니다.
@@ -18,13 +18,13 @@ public class ThreadSaveInfoPanel : MonoBehaviour
 
     private DataManager _dataManager = null;
     private GameManager _gameManager = null;
-    private DesignUiManager _designUiManager = null;
+    private DesignCanvas _designCanvas = null;
     private string _selectedCategoryId = string.Empty;
 
     /// <summary>
     /// SaveLoadHandler에서 사용할 DataManager를 초기 설정합니다. (Awake/Initialize 단계)
     /// </summary>
-    public void OnInitialize(DataManager dataManager)
+    public void Init(DataManager dataManager)
     {
         _dataManager = dataManager;
         _gameManager = GameManager.Instance;
@@ -34,18 +34,18 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// Thread 정보를 계산된 데이터로 초기화하고 패널을 표시합니다.
     /// 이 메서드는 DesignUiManager.OnClickSaveBtn()에서 호출됩니다.
     /// </summary>
-    public void OnInitialize(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignUiManager designUiManager)
+    public void Init(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignCanvas designUiManager)
     {
-        _designUiManager = designUiManager;
+        _designCanvas = designUiManager;
 
-        // 1. Thread 제목 설정
+        // Thread 제목 설정
         if (_threadTitleInputField != null)
         {
             _threadTitleInputField.text = threadTitle ?? string.Empty;
         }
 
-        // 2. 현재 편집 중인 Thread의 기존 카테고리 ID를 가져와 설정
-        string currentThreadId = _designUiManager.BuildingTileManager.CurrentThreadId;
+        // 현재 편집 중인 Thread의 기존 카테고리 ID를 가져와 설정
+        string currentThreadId = _designCanvas.DesignRunner.CurrentThreadId;
         _selectedCategoryId = string.Empty;
 
         if (!string.IsNullOrEmpty(currentThreadId) && _dataManager != null)
@@ -57,12 +57,12 @@ public class ThreadSaveInfoPanel : MonoBehaviour
             }
         }
 
-        // 3. UI 갱신
+        // UI 갱신
         UpdateCategoryText();
         GameObjectUtils.ClearChildren(_inputProductionScrollVIewContent);
         GameObjectUtils.ClearChildren(_outputProductionScrollVIewContent);
 
-        // 4. 입력/출력 자원 목록 표시
+        // 입력/출력 자원 목록 표시
         inputResourceIds ??= new List<string>();
         inputResourceCounts ??= new Dictionary<string, int>();
         outputResourceIds ??= new List<string>();
@@ -71,7 +71,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts, isOutput: false);
         DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts, isOutput: true);
 
-        // 5. 총 유지비 표시
+        // 총 유지비 표시
         _totalMaintenanceText.text = $"total maintenance: {totalMaintenance:N0}/month";
 
         gameObject.SetActive(true);
@@ -106,7 +106,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
                     amount = -1;
                 }
 
-                iconPanel.OnInitialize(resourceEntry, amount);
+                iconPanel.Init(resourceEntry, amount);
             }
         }
     }
@@ -123,7 +123,6 @@ public class ThreadSaveInfoPanel : MonoBehaviour
             return;
         }
 
-        // ManageThreadCartegoryPanel 생성
         _gameManager.ShowManageThreadCartegoryPanel(_dataManager, (selectedCategoryId) =>
         {
             _selectedCategoryId = selectedCategoryId;
@@ -161,13 +160,13 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// </summary>
     public void OnClickSave()
     {
-        if (_designUiManager == null || _gameManager == null)
+        if (_designCanvas == null || _gameManager == null)
         {
             Debug.LogError("[SaveInfoPanel] DesignUiManager or GameManager reference is missing.");
             return;
         }
 
-        // 1. 스레드 이름 유효성 검사
+        // 스레드 이름 유효성 검사
         string threadName = _threadTitleInputField != null ? _threadTitleInputField.text : string.Empty;
 
         if (string.IsNullOrEmpty(threadName))
@@ -176,13 +175,12 @@ public class ThreadSaveInfoPanel : MonoBehaviour
             return;
         }
 
-        // 2. 최종 저장 명령을 DesignUiManager에 위임
-        // DesignUiManager는 이 정보를 가지고 BuildingTileManager의 임시 데이터를 DataManager에 반영하고, 최종 파일 저장을 트리거합니다.
-        _designUiManager.SaveThreadChanges(threadName, _selectedCategoryId);
+        // 최종 저장 명령을 DesignUiManager에 위
+        _designCanvas.SaveThreadChanges(threadName, _selectedCategoryId);
 
         Debug.Log($"[ThreadSaveInfoPanel] Save request delegated for: {threadName} (Category: {_selectedCategoryId})");
 
-        // 3. 저장 완료 알림 및 패널 숨김
+        // 저장 완료 알림 및 패널 숨김
         gameObject.SetActive(false);
     }
 }

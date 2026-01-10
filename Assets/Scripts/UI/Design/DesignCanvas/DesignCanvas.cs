@@ -2,28 +2,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public partial class DesignUiManager : MonoBehaviour, IUIManager
+public partial class DesignCanvas : CanvasBase
 {
     [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel;
-    [SerializeField] private BuildingTileManager _buildingTileManager;
+    [SerializeField] private DesignRunner _designRunner;
 
-    private GameManager _gameManager;
-    private DataManager _dataManager;
-    private GameObject _productionInfoImage;
-
-    public Transform CanvasTrans => transform;
-    public BuildingTileManager BuildingTileManager => _buildingTileManager;
-    public GameManager GameManager => _gameManager;
-    public DataManager GameDataManager => _dataManager;
+    public DesignRunner DesignRunner => _designRunner;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public bool IsRemovalMode => _isRemovalMode;
-    public GameObject ProductionInfoImage => _productionInfoImage;
 
-    public void OnInitialize(GameManager argGameManager, DataManager argGameDataManager)
+    public void Init(DesignRunner designRunner)
     {
-        _gameManager = argGameManager;
-        _dataManager = argGameDataManager;
-        _productionInfoImage = argGameManager.ProductionInfoImage;
+        base.Init();
+        _designRunner = designRunner;
 
         foreach (var buildingType in EnumUtils.GetAllEnumValues<BuildingType>())
         {
@@ -36,15 +27,15 @@ public partial class DesignUiManager : MonoBehaviour, IUIManager
             }
         }
 
-        _saveInfoPanel.OnInitialize(_dataManager);
+        _saveInfoPanel.Init(DataManager);
         InitializeThreadTitle();
 
         SelectBuildingType(BuildingType.Distribution);
     }
 
-    public void UpdateAllMainText()
+    override public void UpdateAllMainText()
     {
-        Debug.Log("[DesignUiManager] UpdateAllMainText called (placeholder)");
+        
     }
 
     public void UpdateModeBtnImages(bool isPlacementMode, bool isRemovalMode)

@@ -5,9 +5,9 @@ using UnityEngine;
 /// 그리드 타일의 생성, 건물 오브젝트의 배치 및 좌표 변환을 관리하는 핸들러입니다.
 /// 모든 건물은 정사각형으로 처리되며, 스프라이트 회전 없이 내부 데이터(포트 위치)만 회전합니다.
 /// </summary>
-public class BuildingGridHandler
+public class DesignRunnerGridHandler
 {
-    private readonly BuildingTileManager _manager;
+    private readonly DesignRunner _manager;
     private readonly Transform _parentTransform;
 
     // Prefabs
@@ -29,8 +29,8 @@ public class BuildingGridHandler
     public int Width => _gridWidth;
     public int Height => _gridHeight;
 
-    public BuildingGridHandler(
-        BuildingTileManager manager,
+    public DesignRunnerGridHandler(
+        DesignRunner manager,
         GameObject tilePrefab,
         GameObject buildingPrefab,
         GameObject inputMarker,

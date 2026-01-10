@@ -8,12 +8,12 @@ public class ProductionInfoImage : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _productionText;
     [SerializeField] private TextMeshProUGUI _productionCountText;
 
-    public void OnInitialize(ResourceEntry resourceEntry)
+    public void Init(ResourceEntry resourceEntry)
     {
-        OnInitialize(resourceEntry, -1);
+        Init(resourceEntry, -1);
     }
 
-    public void OnInitialize(ResourceEntry resourceEntry, int amount)
+    public void Init(ResourceEntry resourceEntry, int amount)
     {
         _productionImage.sprite = resourceEntry.data.icon;
         _productionText.text = resourceEntry.data.displayName;

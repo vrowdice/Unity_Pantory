@@ -11,7 +11,7 @@ public class TitleDeltaTextPanel : MonoBehaviour
     /// </summary>
     /// <param name="titleText">제목 텍스트</param>
     /// <param name="deltaValue">델타 값 (양수: +, 음수: -, 0: 변화없음)</param>
-    public void OnInitialize(string titleText, float deltaValue)
+    public void Init(string titleText, float deltaValue)
     {
         if (_titleText != null)
         {
@@ -50,7 +50,7 @@ public class TitleDeltaTextPanel : MonoBehaviour
     /// </summary>
     /// <param name="titleText">제목 텍스트</param>
     /// <param name="deltaText">델타 텍스트</param>
-    public void OnInitialize(string titleText, string deltaText)
+    public void Init(string titleText, string deltaText)
     {
         if (_titleText != null)
         {

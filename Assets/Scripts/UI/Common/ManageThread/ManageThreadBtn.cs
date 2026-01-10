@@ -12,7 +12,7 @@ public class ManageThreadBtn : MonoBehaviour
     private System.Action<string> _onEditCallback = null;
     private System.Action<string> _onDeleteCallback = null;
 
-    public void OnInitialize(ThreadState thread, Sprite previewSprite, System.Action<string> onClick, System.Action<string> onEdit, System.Action<string> onDelete)
+    public void Init(ThreadState thread, Sprite previewSprite, System.Action<string> onClick, System.Action<string> onEdit, System.Action<string> onDelete)
     {
         if (thread == null)
             return;

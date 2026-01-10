@@ -11,7 +11,7 @@ public class SelectResourceBtn : MonoBehaviour
     private SelectResourcePanel _selectResourcePanel;
     private ResourceEntry _resourceEntry;
 
-    public void OnInitialize(SelectResourcePanel selectResourcePanel, ResourceEntry resourceEntry)
+    public void Init(SelectResourcePanel selectResourcePanel, ResourceEntry resourceEntry)
     {
         _selectResourcePanel = selectResourcePanel;
         _resourceEntry = resourceEntry;

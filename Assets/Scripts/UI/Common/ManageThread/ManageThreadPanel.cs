@@ -26,7 +26,7 @@ public class ManageThreadPanel : MonoBehaviour
     /// <summary>
     /// 패널을 초기화하고 필요한 데이터와 콜백을 설정합니다.
     /// </summary>
-    public void OnInitialize(DataManager dataManager, System.Action<string> onThreadSelected = null)
+    public void Init(DataManager dataManager, System.Action<string> onThreadSelected = null)
     {
         if (dataManager == null)
         {
@@ -79,7 +79,7 @@ public class ManageThreadPanel : MonoBehaviour
 
             if (allBtn != null)
             {
-                allBtn.OnInitialize(string.Empty, "All", OnCategorySelected);
+                allBtn.Init(string.Empty, "All", OnCategorySelected);
                 _categoryBtns.Add(allBtn);
             }
         }
@@ -99,7 +99,7 @@ public class ManageThreadPanel : MonoBehaviour
 
                 if (btn != null)
                 {
-                    btn.OnInitialize(category.categoryId, category.categoryName, OnCategorySelected);
+                    btn.Init(category.categoryId, category.categoryName, OnCategorySelected);
                     _categoryBtns.Add(btn);
                 }
             }
@@ -150,7 +150,7 @@ public class ManageThreadPanel : MonoBehaviour
                 {
                     // 미리보기 이미지 로드
                     Sprite previewSprite = SpriteUtils.LoadSpriteFromFile(thread.previewImagePath);
-                    btn.OnInitialize(thread, previewSprite, OnThreadClick, OnThreadEdit, OnThreadDelete);
+                    btn.Init(thread, previewSprite, OnThreadClick, OnThreadEdit, OnThreadDelete);
                     _threadBtns.Add(btn);
                 }
             }

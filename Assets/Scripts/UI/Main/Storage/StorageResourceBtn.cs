@@ -11,7 +11,7 @@ public class StorageResourceBtn : MonoBehaviour
     private StoragePanel _storagePanel;
     private ResourceEntry _resourceEntry;
 
-    public void OnInitialize(StoragePanel storagePanel, ResourceEntry resourceEntry)
+    public void Init(StoragePanel storagePanel, ResourceEntry resourceEntry)
     {
         _storagePanel = storagePanel;
         _resourceEntry = resourceEntry;

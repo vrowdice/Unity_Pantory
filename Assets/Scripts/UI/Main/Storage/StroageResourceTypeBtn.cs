@@ -7,7 +7,7 @@ public class StroageResourceTypeBtn : MonoBehaviour
     private ResourceType _resourceType;
     private StoragePanel _storagePanel;
 
-    public void OnInitialize(StoragePanel storagePanel, ResourceType resourceType)
+    public void Init(StoragePanel storagePanel, ResourceType resourceType)
     {
         _resourceTypeNameText.text = resourceType.ToString();
         _resourceType = resourceType;

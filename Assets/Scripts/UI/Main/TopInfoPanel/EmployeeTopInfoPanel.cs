@@ -27,7 +27,7 @@ public class EmployeeTopInfoPanel : MonoBehaviour
 
     private DataManager _dataManager;
 
-    public void OnInitialize(DataManager dataManager)
+    public void Init(DataManager dataManager)
     {
         _dataManager = dataManager;
 

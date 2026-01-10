@@ -13,7 +13,7 @@ public class EnterNamePanel : MonoBehaviour
     /// </summary>
     /// <param name="message">안내 메시지</param>
     /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
-    public void OnInitialize(Action<string> onConfirm)
+    public void Init(Action<string> onConfirm)
     {
         _onConfirm = onConfirm;
 

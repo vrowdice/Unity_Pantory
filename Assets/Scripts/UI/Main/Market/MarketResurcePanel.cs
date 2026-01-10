@@ -30,7 +30,7 @@ public class MarketResurcePanel : MonoBehaviour
     /// </summary>
     /// <param name="dataManager">데이터 관리자 참조</param>
     /// <param name="marketPanel">부모 마켓 패널 참조</param>
-    public void OnInitialize(DataManager dataManager, MarketPanel marketPanel)
+    public void Init(DataManager dataManager, MarketPanel marketPanel)
     {
         _dataManager = dataManager;
         _marketPanel = marketPanel;
@@ -43,7 +43,7 @@ public class MarketResurcePanel : MonoBehaviour
             _selectedResourceEntry = _dataManager.Resource.GetResourceEntry("iron_ore");
         }
 
-        _windowGraph.OnInitialize();
+        _windowGraph.Init();
         RefreshUI();
     }
 

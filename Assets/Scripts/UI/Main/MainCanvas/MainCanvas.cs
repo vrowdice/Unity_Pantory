@@ -4,12 +4,8 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEditor.Rendering;
 
-public partial class MainUiManager : MonoBehaviour, IUIManager
+public partial class MainCanvas : CanvasBase
 {
-    [Header("References")]
-    private GameManager _gameManager;
-    private DataManager _dataManager;
-
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private TextMeshProUGUI _deltaCreditText;
@@ -23,40 +19,33 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     [SerializeField] private ThreadInfoPanel _threadInfoPanel;
     [SerializeField] private ResearchInfoPanel _researchInfoPanel;
 
-    private GameObject _productionInfoImage;
-    public Transform CanvasTrans => transform;
-    public GameManager GameManager => _gameManager;
-    public DataManager DataManager => _dataManager;
-    public GameObject ProductionInfoImage => _productionInfoImage;
-    public ThreadTileManager ThreadTileManager => _threadTileManager;
+    public MainRunner ThreadTileManager => _threadTileManager;
 
-    public void OnInitialize(GameManager argGameManager, DataManager argGameDataManager)
+    public void Init(MainRunner mainRunner)
     {
-        _gameManager = argGameManager;
-        _dataManager = argGameDataManager;
-        _productionInfoImage = argGameManager.ProductionInfoImage;
+        base.Init();
 
-        _dataManager.Resource.OnResourceChanged -= UpdateAllMainText;
-        _dataManager.Finances.OnCreditChanged -= UpdateAllMainText;
-        _dataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
-        _dataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
+        DataManager.Resource.OnResourceChanged -= UpdateAllMainText;
+        DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
+        DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
+        DataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
 
-        _dataManager.Time.OnDayChanged -= OnDayChanged;
-        _dataManager.Time.OnMonthChanged -= OnMonthChanged;
-        _dataManager.Time.OnYearChanged -= OnYearChanged;
+        DataManager.Time.OnDayChanged -= OnDayChanged;
+        DataManager.Time.OnMonthChanged -= OnMonthChanged;
+        DataManager.Time.OnYearChanged -= OnYearChanged;
 
-        _dataManager.Resource.OnResourceChanged += UpdateAllMainText;
-        _dataManager.Finances.OnCreditChanged += UpdateAllMainText;
-        _dataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
-        _dataManager.Thread.OnThreadChanged += OnThreadPlacementChanged;
+        DataManager.Resource.OnResourceChanged += UpdateAllMainText;
+        DataManager.Finances.OnCreditChanged += UpdateAllMainText;
+        DataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
+        DataManager.Thread.OnThreadChanged += OnThreadPlacementChanged;
 
-        _dataManager.Time.OnDayChanged += OnDayChanged;
-        _dataManager.Time.OnMonthChanged += OnMonthChanged;
-        _dataManager.Time.OnYearChanged += OnYearChanged;
+        DataManager.Time.OnDayChanged += OnDayChanged;
+        DataManager.Time.OnMonthChanged += OnMonthChanged;
+        DataManager.Time.OnYearChanged += OnYearChanged;
 
-        _infoDatePanel.OnInitialize(_dataManager);
-        _creditInfoPanel.OnInitialize(_dataManager);
-        _topInfoPanel.OnInitialize(_dataManager);
+        _infoDatePanel.Init(DataManager);
+        _creditInfoPanel.Init(DataManager);
+        _topInfoPanel.Init(DataManager);
 
         InitializePanelDictionary();
         InitializePanels();
@@ -69,7 +58,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
         UpdateAllMainText();
     }
 
-    public void UpdateAllMainText()
+    override public void UpdateAllMainText()
     {
         UpdateCreditText();
         UpdateResearchText();
@@ -77,9 +66,9 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
     private void UpdateCreditText()
     {
-        long resourceAmount = _dataManager.Finances.Credit;
+        long resourceAmount = DataManager.Finances.Credit;
         _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
-        long deltaCredit = _dataManager.Finances.CalculateDailyCreditDelta();
+        long deltaCredit = DataManager.Finances.CalculateDailyCreditDelta();
         if (deltaCredit == 0)
         {
             _deltaCreditText.text = "";
@@ -94,9 +83,9 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
 
     private void UpdateResearchText()
     {
-        long researchPoints = _dataManager.Research.ResearchPoint;
+        long researchPoints = DataManager.Research.ResearchPoint;
         _researchText.text = ReplaceUtils.FormatNumberWithCommas(researchPoints);
-        long deltaResearch = _dataManager.Research.CalculateDailyRPProduction();
+        long deltaResearch = DataManager.Research.CalculateDailyRPProduction();
         if (deltaResearch == 0)
         {
             _deltaResearchText.text = "";
@@ -152,7 +141,7 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     /// <returns>크레딧 정보가 포함된 FinancesDataHandler, 없으면 null</returns>
     public FinancesDataHandler GetFinancesDataHandler()
     {
-        return _dataManager?.Finances;
+        return DataManager.Finances;
     }
 
     /// <summary>
@@ -160,11 +149,11 @@ public partial class MainUiManager : MonoBehaviour, IUIManager
     /// </summary>
     public void ShowThreadInfoPanel(ThreadState threadState)
     {
-        _threadInfoPanel.OnInitialize(threadState, this, _dataManager);
+        _threadInfoPanel.Init(threadState, this, DataManager);
     }
 
     public void ShowResearchInfoPanel(ResearchEntry researchEntry)
     {
-        _researchInfoPanel.OnInitialize(researchEntry, this, _dataManager);
+        _researchInfoPanel.Init(researchEntry, this, DataManager);
     }
 }

@@ -6,12 +6,12 @@ public class BuildingTypeBtn : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private Image _focusedImage = null;
-    private DesignUiManager _designUiManager = null;
+    private DesignCanvas _designUiManager = null;
     private BuildingType _buildingType = BuildingType.Distribution;
 
     public BuildingType BuildingType => _buildingType;
 
-    public void Initialize(DesignUiManager argDesignUiManager, BuildingType buildingType)
+    public void Initialize(DesignCanvas argDesignUiManager, BuildingType buildingType)
     {
         _designUiManager = argDesignUiManager;
         _buildingType = buildingType;

@@ -9,10 +9,10 @@ public class ThreadBtn : MonoBehaviour
     [SerializeField] private Image _focusedImage = null;
     [SerializeField] private TextMeshProUGUI _text = null;
 
-    private MainUiManager _mainUiManager = null;
+    private MainCanvas _mainUiManager = null;
     private ThreadState _threadState;
 
-    public void Initialize(MainUiManager argMainUiManager, ThreadState argThreadState)
+    public void Initialize(MainCanvas argMainUiManager, ThreadState argThreadState)
     {
         _mainUiManager = argMainUiManager;
         if (_text != null)

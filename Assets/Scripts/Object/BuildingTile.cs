@@ -9,7 +9,7 @@ public class BuildingTile : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private SpriteRenderer _outlineRenderer;  // 윤곽선용 렌더러
     private Vector2Int _gridPosition;
-    private BuildingTileManager _manager;
+    private DesignRunner _manager;
     private bool _isOccupied = false;  // 타일이 건물에 의해 차지되었는지
     private bool _showOutline = false;  // 윤곽선 표시 여부
 
@@ -34,7 +34,7 @@ public class BuildingTile : MonoBehaviour
     /// <summary>
     /// 타일을 초기화합니다.
     /// </summary>
-    public void Initialize(Vector2Int position, BuildingTileManager manager)
+    public void Initialize(Vector2Int position, DesignRunner manager)
     {
         _gridPosition = position;
         _manager = manager;

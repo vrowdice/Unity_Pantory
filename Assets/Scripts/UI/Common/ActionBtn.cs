@@ -7,7 +7,7 @@ public class ActionBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text;
     private Action _onClick;
 
-    public void OnInitialize(string label, Action onClick)
+    public void Init(string label, Action onClick)
     {
         if (_text != null && !string.IsNullOrEmpty(label))
         {

@@ -4,13 +4,13 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// 건물 배치 모드를 처리하는 핸들러
 /// </summary>
-public class BuildingPlacementHandler
+public class DesignRunnerPlacementHandler
 {
-    private readonly BuildingTileManager _buildingTileManager;
-    private readonly BuildingGridHandler _gridHandler;
+    private readonly DesignRunner _buildingTileManager;
+    private readonly DesignRunnerGridHandler _gridHandler;
     private readonly DataManager _dataManager;
     private readonly MainCameraController _mainCameraController;
-    private readonly DesignUiManager _designUiManager;
+    private readonly DesignCanvas _designUiManager;
 
     private bool _isActive = false;
     private bool _isDragging = false;
@@ -33,7 +33,7 @@ public class BuildingPlacementHandler
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int CurrentRotation => _currentRotation;
 
-    public BuildingPlacementHandler(BuildingTileManager buildingTileManager, GameObject buildingObjectPrefab)
+    public DesignRunnerPlacementHandler(DesignRunner buildingTileManager, GameObject buildingObjectPrefab)
     {
         _buildingTileManager = buildingTileManager;
         _gridHandler = buildingTileManager.GridGenHandler;

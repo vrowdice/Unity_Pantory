@@ -8,7 +8,7 @@ public class SelectResourceTypeBtn : MonoBehaviour
     private ResourceType _resourceType;
     private SelectResourcePanel _selectResourcePanel;
 
-    public void OnInitialize(SelectResourcePanel selectResourcePanel, ResourceType resourceType)
+    public void Init(SelectResourcePanel selectResourcePanel, ResourceType resourceType)
     {
         _resourceTypeNameText.text = resourceType.ToString();
         _resourceType = resourceType;

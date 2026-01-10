@@ -14,7 +14,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
     /// </summary>
     /// <param name="dataManager">GameDataManager</param>
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
-    public void OnInitialize(DataManager dataManager, Action<string> onCategorySelected = null)
+    public void Init(DataManager dataManager, Action<string> onCategorySelected = null)
     {
         _dataManager = dataManager;
         _onCategorySelected = onCategorySelected;
@@ -54,7 +54,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
                 int threadCount = category.ThreadCount;
                 
                 // 아이템 초기화
-                itemPanel.OnInitialize(category.categoryId, category.categoryName, threadCount, this);
+                itemPanel.Init(category.categoryId, category.categoryName, threadCount, this);
             }
         }
     }

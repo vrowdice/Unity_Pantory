@@ -5,13 +5,9 @@ using UnityEngine;
 /// </summary>
 public class OrderPanel : BasePanel
 {
-    protected override void OnInitialize()
+    public override void Init(MainCanvas argUIManager)
     {
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[OrderPanel] DataManager is null.");
-            return;
-        }
+        base.Init(argUIManager);
     }
 }
 

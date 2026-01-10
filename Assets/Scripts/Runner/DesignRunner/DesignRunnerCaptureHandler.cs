@@ -5,13 +5,13 @@ using System.IO;
 /// <summary>
 /// 건물 레이아웃을 이미지로 캡처하여 프리뷰를 생성하는 핸들러입니다.
 /// </summary>
-public class BuildingCaptureHandler
+public class DesignRunnerCaptureHandler
 {
-    private readonly BuildingTileManager _manager;
+    private readonly DesignRunner _manager;
     private readonly List<BuildingState> _states;
     private readonly Camera _mainCamera;
 
-    public BuildingCaptureHandler(BuildingTileManager buildingTileManager, List<BuildingState> currentBuildingStates)
+    public DesignRunnerCaptureHandler(DesignRunner buildingTileManager, List<BuildingState> currentBuildingStates)
     {
         _manager = buildingTileManager;
         _states = currentBuildingStates ?? new List<BuildingState>();

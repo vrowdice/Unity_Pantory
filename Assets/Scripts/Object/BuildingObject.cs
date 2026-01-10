@@ -26,7 +26,7 @@ public class BuildingObject : MonoBehaviour
     /// <summary>
     /// 건물 오브젝트를 초기화합니다.
     /// </summary>
-    public void Initialize(BuildingData buildingData, BuildingState buildingState, GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, BuildingGridHandler gridHandler)
+    public void Initialize(BuildingData buildingData, BuildingState buildingState, GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, DesignRunnerGridHandler gridHandler)
     {
         _gameManager = GameManager.Instance;
 
@@ -59,7 +59,7 @@ public class BuildingObject : MonoBehaviour
     /// <summary>
     /// Input/Output 마커를 생성합니다.
     /// </summary>
-    private void CreateMarkers(GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, BuildingGridHandler gridHandler)
+    private void CreateMarkers(GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, DesignRunnerGridHandler gridHandler)
     {
         if (_buildingData == null || _buildingState == null || gridHandler == null)
             return;
@@ -99,7 +99,7 @@ public class BuildingObject : MonoBehaviour
     /// <summary>
     /// 마커의 위치를 업데이트합니다.
     /// </summary>
-    private void UpdateMarkerPosition(GameObject marker, Vector2Int gridPos, BuildingGridHandler gridHandler)
+    private void UpdateMarkerPosition(GameObject marker, Vector2Int gridPos, DesignRunnerGridHandler gridHandler)
     {
         if (marker == null || gridHandler == null)
             return;
@@ -111,7 +111,7 @@ public class BuildingObject : MonoBehaviour
     /// <summary>
     /// 프리뷰 마커의 위치를 업데이트합니다 (그리드 핸들러 필요).
     /// </summary>
-    public void UpdatePreviewMarkers(Vector2Int buildingGridPos, BuildingGridHandler gridHandler, int rotation = 0)
+    public void UpdatePreviewMarkers(Vector2Int buildingGridPos, DesignRunnerGridHandler gridHandler, int rotation = 0)
     {
         if (_buildingData == null || gridHandler == null)
             return;

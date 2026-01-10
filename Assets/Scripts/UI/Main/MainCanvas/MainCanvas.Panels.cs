@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class MainUiManager
+public partial class MainCanvas
 {
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
@@ -12,7 +12,6 @@ public partial class MainUiManager
     [SerializeField] private OrderPanel _orderPanel;
     [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
-    // Panels
     private Dictionary<MainPanelType, BasePanel> _panelDict;
     private MainPanelType _currentOpenPanelType;
 
@@ -35,13 +34,11 @@ public partial class MainUiManager
         {
             if (kvp.Value != null)
             {
-                // 패널을 닫고 비활성화하여 시작 시 모든 패널이 닫힌 상태로 시작
                 kvp.Value.OnClose();
                 kvp.Value.gameObject.SetActive(false);
             }
         }
-        
-        // 현재 열린 패널 타입 초기화
+
         _currentOpenPanelType = default(MainPanelType);
     }
 
@@ -61,22 +58,19 @@ public partial class MainUiManager
             return;
         }
 
-        // 토글 기능: 이미 열려있는 패널을 다시 누르면 닫기
         if (_currentOpenPanelType == panelType && panel.gameObject.activeSelf)
         {
             ClosePanelInternal(panelType);
-            _currentOpenPanelType = default(MainPanelType); // 기본값으로 리셋
+            _currentOpenPanelType = default(MainPanelType);
             return;
         }
 
-        // 다른 패널이 열려있으면 닫기
         if (_panelDict.ContainsKey(_currentOpenPanelType) && _currentOpenPanelType != panelType)
         {
             ClosePanelInternal(_currentOpenPanelType);
         }
 
-        // 새 패널 열기
-        panel.OnOpen(_gameManager, _dataManager, this);
+        panel.Init(this);
         _currentOpenPanelType = panelType;
     }
 
@@ -99,7 +93,7 @@ public partial class MainUiManager
 
     public void CloseAllPanels()
     {
-        foreach (var kvp in _panelDict)
+        foreach (KeyValuePair<MainPanelType, BasePanel> kvp in _panelDict)
         {
             ClosePanelInternal(kvp.Key);
         }

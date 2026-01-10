@@ -9,23 +9,23 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    private IUIManager _uiManager;
-    private ISceneGameManager _sceneManager;
+    private CanvasBase _currentCanvasBase;
+    private RunnerBase _currentRunnerBase;
     private DataManager _dataManager;
     private VisualManager _visualManager;
     private MainCameraController _mainCameraController;
 
+    private Canvas _currnetWorldCanvas;
     private GameObject _sharedWorldCanvas;
     private RectTransform _canvasRect;
-    private Canvas _canvas;
     private CanvasScaler _scaler;
 
     private string _currentThreadId = string.Empty;
 
-    public IUIManager UiManager => _uiManager;
+    public CanvasBase CanvasBase => _currentCanvasBase;
     public float ProductionIconScale => _productionIconScale;
     public string CurrentThreadId => _currentThreadId;
-    private Transform CanvasTransform => _uiManager.CanvasTrans;
+    private Transform CanvasTransform => _currentCanvasBase.CanvasTrans;
     public GameObject ProductionInfoImage => _productionInfoImagePrefab;
     public GameObject TextPairPanelPrefab => _textPairPanelPrefab;
     public GameObject ActionBtnPrefab => _actionBtnPrefab;
@@ -79,16 +79,17 @@ public class GameManager : MonoBehaviour
         {
             GameObject dataManagerObj = Instantiate(_dataManagerPrefab);
             _dataManager = dataManagerObj.GetComponent<DataManager>();
-            _dataManager.OnInitialize();
+            _dataManager.Init();
         }
 
         if (_visualManager == null)
         {
             GameObject visualManagerObj = Instantiate(_visualManagerPrefab);
             _visualManager = visualManagerObj.GetComponent<VisualManager>();
-            _visualManager.OnInitialize();
+            _visualManager.Init();
         }
 
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -112,17 +113,17 @@ public class GameManager : MonoBehaviour
 
         MainCameraController mainCamera = GameObject.Find("MainCamera").GetComponent<MainCameraController>();
         _mainCameraController = mainCamera;
-        mainCamera.OnInitialize();
+        mainCamera.Init();
 
         CreateWorldCanvas(_mainCameraController.Camera);
 
-        ISceneGameManager sceneManager = GameObject.Find("SceneGameManager").GetComponent<ISceneGameManager>();
-        _sceneManager = sceneManager;
-        _sceneManager.OnInitialize(this, _dataManager);
+        RunnerBase runnerBase = FindAnyObjectByType<RunnerBase>();
+        _currentRunnerBase = runnerBase;
+        _currentRunnerBase.Init();
 
-        IUIManager uiManager = GameObject.Find("Canvas").GetComponent<IUIManager>();
-        _uiManager = uiManager;
-        uiManager.OnInitialize(this, _dataManager);
+        CanvasBase canvasBase = FindAnyObjectByType<CanvasBase>();
+        _currentCanvasBase = canvasBase;
+        _currentCanvasBase.Init();
     }
 
     /// <summary>
@@ -132,7 +133,7 @@ public class GameManager : MonoBehaviour
     public void ShowWarningPanel(string message)
     {
         GameObject warningPanelObj = Instantiate(_warningPanelPrefab, CanvasTransform);
-        warningPanelObj.GetComponent<WarningPanel>().OnInitialized(message);
+        warningPanelObj.GetComponent<WarningPanel>().Init(message);
     }
 
     /// <summary>
@@ -146,7 +147,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject selectResourcePanelObj = Instantiate(_selectResourcePanelPrefab, CanvasTransform);
         SelectResourcePanel selectResourcePanel = selectResourcePanelObj.GetComponent<SelectResourcePanel>();
-        selectResourcePanel.OnInitialize(_dataManager, resourceTypes, onResourceSelected, producibleResources);
+        selectResourcePanel.Init(_dataManager, resourceTypes, onResourceSelected, producibleResources);
         return selectResourcePanel.GetComponent<SelectResourcePanel>();
     }
 
@@ -160,7 +161,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject panageThreadCartegoryPanelObj = Instantiate(_manageThreadCartegoryPanelPrefab, CanvasTransform);
         ManageThreadCartegoryPanel panageThreadCartegoryPanel = panageThreadCartegoryPanelObj.GetComponent<ManageThreadCartegoryPanel>();
-        panageThreadCartegoryPanel.OnInitialize(dataManager, onCategorySelected);
+        panageThreadCartegoryPanel.Init(dataManager, onCategorySelected);
         return panageThreadCartegoryPanel;
     }
 
@@ -173,7 +174,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject manageThreadPanelObj = Instantiate(_manageThreadPanelPrefab, CanvasTransform);
         ManageThreadPanel manageThreadPanel = manageThreadPanelObj.GetComponent<ManageThreadPanel>();
-        manageThreadPanel.OnInitialize(_dataManager, onThreadSelected);
+        manageThreadPanel.Init(_dataManager, onThreadSelected);
         return manageThreadPanel;
     }
 
@@ -186,7 +187,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject enterNamePanelObj = Instantiate(_enterNamePanelPrefab, CanvasTransform);
         EnterNamePanel enterNamePanel = enterNamePanelObj.GetComponent<EnterNamePanel>();
-        enterNamePanel.OnInitialize(onConfirm);
+        enterNamePanel.Init(onConfirm);
         return enterNamePanel;
     }
 
@@ -206,10 +207,10 @@ public class GameManager : MonoBehaviour
         _sharedWorldCanvas = new GameObject(_worldCanvasName);
         _sharedWorldCanvas.transform.SetParent(this.transform, false);
 
-        _canvas = _sharedWorldCanvas.AddComponent<Canvas>();
-        _canvas.renderMode = RenderMode.WorldSpace;
-        _canvas.worldCamera = worldCamera != null ? worldCamera : Camera.main;
-        _canvas.sortingOrder = _worldCanvasSortingOrder;
+        _currnetWorldCanvas = _sharedWorldCanvas.AddComponent<Canvas>();
+        _currnetWorldCanvas.renderMode = RenderMode.WorldSpace;
+        _currnetWorldCanvas.worldCamera = worldCamera != null ? worldCamera : Camera.main;
+        _currnetWorldCanvas.sortingOrder = _worldCanvasSortingOrder;
 
         _scaler = _sharedWorldCanvas.AddComponent<CanvasScaler>();
         _scaler.dynamicPixelsPerUnit = _worldCanvasDynamicPixelsPerUnit;
@@ -249,7 +250,6 @@ public class GameManager : MonoBehaviour
         t.rotation = Quaternion.identity;
         t.localScale = Vector3.one * containerScale;
 
-        // 아이콘들 생성
         if (productionCounts != null && productionCounts.Count > 0)
         {
             CreateProductionIcons(container.transform, productionCounts);
@@ -272,7 +272,7 @@ public class GameManager : MonoBehaviour
 
         if (iconObj.TryGetComponent(out ProductionInfoImage iconComponent))
         {
-            iconComponent.OnInitialize(resourceEntry, amount);
+            iconComponent.Init(resourceEntry, amount);
         }
 
         return iconObj;

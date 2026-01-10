@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// 그리드 타일 생성, 스레드 객체 배치 및 제거 모드를 관리하는 핸들러 클래스입니다.
 /// </summary>
-public class ThreadGridHandler
+public class MainRunnerThreadGridHandler
 {
     private readonly Transform _parentTransform;
     private readonly GameObject _threadTilePrefab;
@@ -34,7 +34,7 @@ public class ThreadGridHandler
     // 마우스가 UI 위에 있는지 여부
     private bool IsPointerOverUI => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
-    public ThreadGridHandler(Transform parentTransform, GameObject tilePrefab, GameObject objPrefab, int width, int height)
+    public MainRunnerThreadGridHandler(Transform parentTransform, GameObject tilePrefab, GameObject objPrefab, int width, int height)
     {
         _parentTransform = parentTransform;
         _threadTilePrefab = tilePrefab;
@@ -184,7 +184,7 @@ public class ThreadGridHandler
         obj.transform.position = GridToWorldPosition(gridPos);
 
         if (!obj.TryGetComponent<ThreadObject>(out ThreadObject threadObj)) threadObj = obj.AddComponent<ThreadObject>();
-        threadObj.OnInitialize(threadState, GameManager.Instance);
+        threadObj.Init(threadState, GameManager.Instance);
         threadObj.SetGridPosition(gridPos);
 
         _threadObjects[gridPos] = threadObj;

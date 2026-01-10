@@ -11,7 +11,7 @@ public class MarketTraderBtn : MonoBehaviour
     private MarketActorEntry _actorEntry = null;
     private bool _isPlayer = false;
 
-    public void OnInitialize(MarketTraderPanel panel, MarketActorEntry actorEntry)
+    public void Init(MarketTraderPanel panel, MarketActorEntry actorEntry)
     {
         _traderPanel = panel;
         _actorEntry = actorEntry;
@@ -42,7 +42,7 @@ public class MarketTraderBtn : MonoBehaviour
         }
     }
 
-    public void OnInitializePlayer(MarketTraderPanel panel, DataManager dataManager, int rank = 0)
+    public void InitPlayer(MarketTraderPanel panel, DataManager dataManager, int rank = 0)
     {
         _traderPanel = panel;
         _actorEntry = null;

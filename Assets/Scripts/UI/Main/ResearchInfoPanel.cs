@@ -12,7 +12,7 @@ public class ResearchInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _costPanelText;
 
     private ResearchEntry _currentResearchEntry;
-    private MainUiManager _mainUiManager;
+    private MainCanvas _mainUiManager;
     private DataManager _dataManager;
 
     private GameManager _gameManager;
@@ -22,7 +22,7 @@ public class ResearchInfoPanel : MonoBehaviour
     /// <summary>
     /// �г��� �ʱ�ȭ�ϰ� �����͸� �����մϴ�.
     /// </summary>
-    public void OnInitialize(ResearchEntry researchEntry, MainUiManager mainUiManager, DataManager dataManager)
+    public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager, DataManager dataManager)
     {
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;
@@ -79,7 +79,7 @@ public class ResearchInfoPanel : MonoBehaviour
             {
                 string effectDescription = effectState.displayName ?? effectState.id;
                 string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                panel.OnInitialize(effectDescription, changeValue, effectState.value);
+                panel.Init(effectDescription, changeValue, effectState.value);
             }
         }
     }
