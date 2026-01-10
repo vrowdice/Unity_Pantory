@@ -5697,7 +5697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _saveInfoPanel: {fileID: 1682099514}
-  _buildingTileManager: {fileID: 1027707964}
+  _designRunner: {fileID: 1027707964}
   _deselectBuildingBtnImage: {fileID: 1423325038}
   _removalModeBtnImage: {fileID: 527040269}
   _buildingTypeBtnPrefab: {fileID: 5843711190326734755, guid: 1df3294a1ba7ef54eac87bc4a0d0da5a, type: 3}
@@ -6238,7 +6238,7 @@ GameObject:
   - component: {fileID: 1027707963}
   - component: {fileID: 1027707964}
   m_Layer: 0
-  m_Name: SceneGameManager
+  m_Name: Runner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6268,10 +6268,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1027707960}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb427f7302946e34e8f5662b13379504, type: 3}
+  m_Script: {fileID: 11500000, guid: f552c212c5ac52943b673aeedf224de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _designUiManager: {fileID: 887731462}
+  _designCanvas: {fileID: 887731462}
   _buildingTilePrefab: {fileID: 439694459351957875, guid: 2883a97c15064334e9930e3cf7771678, type: 3}
   _buildingObjectPrefab: {fileID: 4788968508785240937, guid: c11a7645413457d49842259c4ae0af64, type: 3}
   _inputMarkerPrefab: {fileID: 5812946505932702459, guid: d98818edac571cb4db322fed99d802e4, type: 3}

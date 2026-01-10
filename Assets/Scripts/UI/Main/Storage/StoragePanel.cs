@@ -21,18 +21,10 @@ public class StoragePanel : BasePanel
     {
         base.Init(argUIManager);
 
+        _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;
+
         InitializeResourceTypeButtons();
         RefreshCurrentResourceTypeList();
-    }
-
-    private void Start()
-    {
-        _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;
-    }
-
-    private void OnDestroy()
-    {
-        _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
     }
 
     /// <summary>
