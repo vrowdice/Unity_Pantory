@@ -47,11 +47,11 @@ public class ThreadInfoPanel : MonoBehaviour
     /// <summary>
     /// 패널을 초기화하고 데이터를 연결합니다.
     /// </summary>
-    public void Init(ThreadState threadState, MainCanvas mainUiManager, DataManager dataManager)
+    public void Init(ThreadState threadState, MainCanvas mainUiManager)
     {
         _currentThreadState = threadState;
         _mainUiManager = mainUiManager;
-        _dataManager = dataManager;
+        _dataManager = DataManager.Instance;
 
         SubscribeToDayChanged();
         RefreshAllUI();

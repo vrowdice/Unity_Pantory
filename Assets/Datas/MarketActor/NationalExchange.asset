@@ -17,6 +17,12 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: bd2571b0a3fc8d04d88079ceab4a6b87, type: 3}
   description: Government-sanctioned brokers who balance the capital's supply of
     lumber, ore, and luxury goods through tightly regulated auctions.
+  wealth: 3000000
+  baseProductionCount: 95
+  productionResources:
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   archetype: 2
   providerProfile:
     outputs: []

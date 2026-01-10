@@ -17,6 +17,11 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 0293ec71dfcbace46be78cc16f58f7d2, type: 3}
   description: The capital's military workshop, renowned for disciplined output of
     military-grade weapons and equipment for armed forces.
+  wealth: 2500000
+  baseProductionCount: 75
+  productionResources:
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
+  - {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

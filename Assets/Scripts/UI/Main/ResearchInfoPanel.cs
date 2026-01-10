@@ -22,11 +22,11 @@ public class ResearchInfoPanel : MonoBehaviour
     /// <summary>
     /// �г��� �ʱ�ȭ�ϰ� �����͸� �����մϴ�.
     /// </summary>
-    public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager, DataManager dataManager)
+    public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager)
     {
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;
-        _dataManager = dataManager;
+        _dataManager = DataManager.Instance;
 
         _gameManager = mainUiManager.GameManager;
 

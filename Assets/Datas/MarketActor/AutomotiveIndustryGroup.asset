@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 169c3b16cbce2784ba7206e391c168a3, type: 3}
   description: A major automotive manufacturer producing cars, trucks, and military
     vehicles for civilian and government markets.
+  wealth: 2000000
+  baseProductionCount: 80
+  productionResources:
+  - {fileID: 11400000, guid: fabba59ec3e95354394bd2fdcb52f3c4, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

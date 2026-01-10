@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e591b95c1ee68c348a4fcb487411dc5d, type: 3}
   description: A disciplined foundry house that converts premium ore into dependable steel
     for the nation's military and construction industries.
+  wealth: 1400000
+  baseProductionCount: 140
+  productionResources:
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

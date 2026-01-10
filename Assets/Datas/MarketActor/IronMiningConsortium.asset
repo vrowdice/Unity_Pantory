@@ -16,6 +16,10 @@ MonoBehaviour:
   displayName: Iron Mining Consortium
   icon: {fileID: 21300000, guid: c3336f6ddcb9c8a44b1e68f213f412ca, type: 3}
   description: A cartel of deep-shaft mines that floods the market with cheap ore and undercuts rivals with ruthless efficiency.
+  wealth: 500000
+  baseProductionCount: 250
+  productionResources:
+  - {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
   archetype: 1
   providerProfile:
     outputs: []

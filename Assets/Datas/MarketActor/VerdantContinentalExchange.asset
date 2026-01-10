@@ -16,6 +16,11 @@ MonoBehaviour:
   displayName: Verdant Continental Exchange
   icon: {fileID: 21300000, guid: ce6601d5ab80c364aa129eac85fcafd2, type: 3}
   description: Pan-regional wholesalers that keep carpenters supplied with every grade of wood and basic arms for militias.
+  wealth: 1100000
+  baseProductionCount: 120
+  productionResources:
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
   archetype: 3
   providerProfile:
     outputs: []

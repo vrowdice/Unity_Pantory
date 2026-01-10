@@ -5,12 +5,12 @@ using UnityEngine;
 [Serializable]
 public class ResourceState
 {
-    [Header("Inventory")]
     public int count;
     public int threadDeltaCount;
     public int marketDeltaCount;
     public int currnetChangeCount;
 
+    public long currentEventValue;
     public long currentValue;
     public long currentChangeValue;
 
@@ -61,12 +61,8 @@ public class ResourceState
 
         float clampedPrice = Mathf.Max(0.01f, price);
 
-        long previousValue = currentValue;
-        long newValue = (long)clampedPrice;
-        currentChangeValue = newValue - previousValue;
-        currentValue = newValue;
-        
         _priceHistory.Add(clampedPrice);
+
         if (_priceHistory.Count > PriceHistoryCapacity)
         {
             _priceHistory.RemoveAt(0);

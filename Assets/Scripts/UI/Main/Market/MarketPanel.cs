@@ -11,7 +11,7 @@ public class MarketPanel : BasePanel
     [SerializeField] private Transform _marketActionBtnContentTransform;
 
     [Header("Sub Panels")]
-    [SerializeField] private MarketResurcePanel _resourcePanel;
+    [SerializeField] private MarketResourcePanel _resourcePanel;
     [SerializeField] private MarketTraderPanel _traderPanel;
 
     [Header("Scroll Content & Prefabs")]
@@ -77,9 +77,14 @@ public class MarketPanel : BasePanel
     /// 리소스 목록 중 하나가 클릭되었을 때 상세 정보 패널에 전달합니다.
     /// </summary>
     /// <param name="entry">선택된 리소스 데이터</param>
-    public void HandleResourceButtonClicked(ResourceEntry entry)
+    public void OnResourceButtonClicked(ResourceEntry entry)
     {
-        _resourcePanel.HandleResourceButtonClicked(entry);
+        _resourcePanel.ChangeResource(entry);
+    }
+
+    public void OnTraderButtonClicked(MarketActorEntry entry)
+    {
+        _traderPanel.ChangeActor(entry);
     }
 
     /// <summary>
@@ -90,7 +95,7 @@ public class MarketPanel : BasePanel
         _isResourceView = true;
         TogglePanels(true);
 
-        _resourcePanel.Init(_dataManager, this);
+        _resourcePanel.Init(this);
         RefreshResourceList();
     }
 
@@ -102,7 +107,7 @@ public class MarketPanel : BasePanel
         _isResourceView = false;
         TogglePanels(false);
 
-        _traderPanel.Init(_dataManager, this);
+        _traderPanel.Init(this);
         RefreshTraderList();
     }
 
@@ -113,6 +118,37 @@ public class MarketPanel : BasePanel
     {
         _resourcePanel.gameObject.SetActive(isResource);
         _traderPanel.gameObject.SetActive(!isResource);
+    }
+
+    /// <summary>
+    /// 날짜가 변경되었을 때 현재 활성화된 뷰의 정보를 갱신합니다.
+    /// </summary>
+    private void HandleDayChanged()
+    {
+        RefreshButtons();
+        _resourcePanel.HandleDayChanged();
+        _traderPanel.HandleDayChanged();
+    }
+
+    /// <summary>
+    /// 현재 리스트에 생성되어 있는 모든 리소스 버튼의 UI(가격, 거래량 등)를 갱신합니다.
+    /// </summary>
+    public void RefreshButtons()
+    {
+        if (_isResourceView)
+        {
+            foreach (Transform child in _marketScrollViewContent)
+            {
+                child.GetComponent<MarketResourceBtn>().RefreshAllUI();
+            }
+        }
+        else
+        {
+            foreach (Transform child in _marketScrollViewContent)
+            {
+                child.GetComponent<MarketTraderBtn>().RefreshAllUI();
+            }
+        }
     }
 
     /// <summary>
@@ -127,45 +163,28 @@ public class MarketPanel : BasePanel
         {
             GameObject btnObj = Instantiate(_marketResourceBtnPrefab, _marketScrollViewContent);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
-
-            if (resourceBtn != null)
-            {
-                resourceBtn.Init(this, entry);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 날짜가 변경되었을 때 현재 활성화된 뷰의 정보를 갱신합니다.
-    /// </summary>
-    private void HandleDayChanged()
-    {
-        if (_isResourceView)
-        {
-            RefreshResourceButtons();
-        }
-        else
-        {
-            RefreshTraderList();
-        }
-    }
-
-    /// <summary>
-    /// 현재 리스트에 생성되어 있는 모든 리소스 버튼의 UI(가격, 거래량 등)를 갱신합니다.
-    /// </summary>
-    public void RefreshResourceButtons()
-    {
-        foreach (Transform child in _marketScrollViewContent)
-        {
-            child.GetComponent<MarketResourceBtn>().RefreshAllUI();
+            resourceBtn.Init(this, entry);
         }
     }
 
     /// <summary>
     /// 거래자 데이터를 기반으로 스크롤 목록을 새로고침합니다.
+    /// 자산(wealth)에 따라 내림차순으로 정렬됩니다.
     /// </summary>
     private void RefreshTraderList()
     {
         GameObjectUtils.ClearChildren(_marketScrollViewContent);
+
+        Dictionary<string, MarketActorEntry> traders = _dataManager.MarketActor.GetAllMarketActors();
+        
+        List<MarketActorEntry> sortedTraders = new List<MarketActorEntry>(traders.Values);
+        sortedTraders.Sort((a, b) => b.state.wealth.CompareTo(a.state.wealth));
+        
+        foreach (MarketActorEntry entry in sortedTraders)
+        {
+            GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
+            MarketTraderBtn traderBtn = btnObj.GetComponent<MarketTraderBtn>();
+            traderBtn.Init(this, entry);
+        }
     }
 }

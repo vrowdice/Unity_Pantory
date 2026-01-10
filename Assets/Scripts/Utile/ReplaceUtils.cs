@@ -1,18 +1,27 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System;
 
 public static class ReplaceUtils
 {
-    public static string FormatNumber(long argNumber)
+    public static string FormatNumber(long argNumber, bool showSign = false)
     {
-        if (argNumber >= 1_000_000_000)
-            return (argNumber / 1_000_000_000f).ToString("0.###") + "B";
-        else if (argNumber >= 1_000_000)
-            return (argNumber / 1_000_000f).ToString("0.###") + "M";
-        else if (argNumber >= 1_000)
-            return (argNumber / 1_000f).ToString("0.###") + "K";
+        long absValue = Math.Abs(argNumber);
+        string result = "";
+
+        if (absValue >= 1_000_000_000)
+            result = (argNumber / 1_000_000_000f).ToString("0.##") + "B";
+        else if (absValue >= 1_000_000)
+            result = (argNumber / 1_000_000f).ToString("0.##") + "M";
+        else if (absValue >= 1_000)
+            result = (argNumber / 1_000f).ToString("0.##") + "K";
         else
-            return argNumber.ToString();
+            result = argNumber.ToString();
+            
+        if (showSign && argNumber > 0)
+            return "+" + result;
+
+        return result;
     }
 
     /// <summary>

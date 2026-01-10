@@ -9,7 +9,7 @@ public class DataManager : MonoBehaviour
 
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;
-    [SerializeField] private InitialMarketData _initialMarketData;
+    [SerializeField] private InitialMarketActorData _initialMarketActorData;
     [SerializeField] private InitialEmployeeData _initialEmployeeData;
     [SerializeField] private InitialTimeData _timeSettingsData;
     [SerializeField] private InitialResearchData _initialResearchData;
@@ -30,7 +30,7 @@ public class DataManager : MonoBehaviour
     public ThreadDataHandler Thread { get; private set; }
     public ThreadPlacementDataHandler ThreadPlacement { get; private set; }
     public ResourceDataHandler Resource { get; private set; }
-    public MarketDataHandler Market { get; private set; }
+    public MarketActorDataHandler MarketActor { get; private set; }
     public FinancesDataHandler Finances { get; private set; }
     public EmployeeDataHandler Employee { get; private set; }
     public BuildingDataHandler Building { get; private set; }
@@ -66,7 +66,7 @@ public class DataManager : MonoBehaviour
         ThreadPlacement = new ThreadPlacementDataHandler(this);
         Time = new TimeDataHandler(this, _timeSettingsData);
         Resource = new ResourceDataHandler(this, _resourceDataList, _initialResourceData);
-        Market = new MarketDataHandler(this, _marketActorDataList, _initialMarketData);
+        MarketActor = new MarketActorDataHandler(this, _marketActorDataList, _initialMarketActorData);
         Finances = new FinancesDataHandler(this, _initialFinancesData);
         Employee = new EmployeeDataHandler(this, _employeeDataList, _initialEmployeeData);
         Building = new BuildingDataHandler(this, _buildingDataList);
@@ -197,7 +197,7 @@ public class DataManager : MonoBehaviour
         Finances.ClearAllSubscriptions();
         Employee.ClearAllSubscriptions();
         Research.ClearAllSubscriptions();
-        Market.ClearAllSubscriptions();
+        MarketActor.ClearAllSubscriptions();
 
         ThreadPlacement.OnPlacementChanged -= HandleThreadPlacementChanged;
         ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
@@ -215,6 +215,7 @@ public class DataManager : MonoBehaviour
     private void HandleDayChanged()
     {
         Resource.HandleDayChanged();
+        MarketActor.HandleDayChanged();
         Research.HandleDayChanged();
         Employee.HandleDayChanged();
         Employee.SyncAssignedCountsFromThreads(ThreadPlacement);

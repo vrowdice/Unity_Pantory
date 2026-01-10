@@ -16,6 +16,10 @@ MonoBehaviour:
   displayName: Lumber Consortium
   icon: {fileID: 21300000, guid: a5a7d19d45076f643b2b20dba6d81ecb, type: 3}
   description: A sprawling federation of logging houses that controls most timber exports along the northern frontier.
+  wealth: 500000
+  baseProductionCount: 250
+  productionResources:
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
   archetype: 3
   providerProfile:
     outputs: []

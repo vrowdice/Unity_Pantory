@@ -6,7 +6,8 @@ public class ResourceData : ScriptableObject
 {
     public string id;
     public string displayName;
-    public float baseValue = 10f;
+
+    public long baseValue = 10;
 
     public ResourceType type;
     public Sprite icon;

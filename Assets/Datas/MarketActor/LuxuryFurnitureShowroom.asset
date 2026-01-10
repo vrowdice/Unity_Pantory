@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: d402a55f448d3e244819731df0c3dbb9, type: 3}
   description: An upscale furniture retailer specializing in premium and custom-made
     furniture for affluent clients and luxury estates.
+  wealth: 1200000
+  baseProductionCount: 90
+  productionResources:
+  - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   archetype: 2
   providerProfile:
     outputs: []

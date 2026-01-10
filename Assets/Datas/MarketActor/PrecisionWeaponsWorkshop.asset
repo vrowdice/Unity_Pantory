@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 399b24c82876de8448eb70f127e56309, type: 3}
   description: Boutique workshop famed for precision-crafted weapons, sourcing only
     the purest metals and fine wood.
+  wealth: 900000
+  baseProductionCount: 85
+  productionResources:
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
   archetype: 2
   providerProfile:
     outputs: []

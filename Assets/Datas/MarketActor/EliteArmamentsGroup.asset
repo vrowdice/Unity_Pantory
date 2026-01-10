@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e5b516b2fcdddfe4d99da8a0464f70ab, type: 3}
   description: A prestige weapons conglomerate that outfits military units and security
     forces with premium steel, gold, and advanced weaponry.
+  wealth: 3000000
+  baseProductionCount: 70
+  productionResources:
+  - {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

@@ -18,6 +18,12 @@ MonoBehaviour:
   description: The empire's central distribution network, coordinating the flow of
     essential resources across provinces while maintaining strategic reserves for
     imperial operations.
+  wealth: 6000000
+  baseProductionCount: 80
+  productionResources:
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

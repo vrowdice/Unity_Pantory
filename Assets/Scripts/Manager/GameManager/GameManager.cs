@@ -55,10 +55,8 @@ public class GameManager : MonoBehaviour
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
 
-    [Header("GameDataManager Settings")]
+    [Header("Manager Settings")]
     [SerializeField] private GameObject _dataManagerPrefab;
-
-    [Header("VisualManager Settings")]
     [SerializeField] private GameObject _visualManagerPrefab;
 
     public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;

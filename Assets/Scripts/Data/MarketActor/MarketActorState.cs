@@ -5,6 +5,6 @@ using UnityEngine;
 [Serializable]
 public class MarketActorState
 {
-    public long welth;
+    public long currentChangeWealth;
+    public long wealth;
 }
-

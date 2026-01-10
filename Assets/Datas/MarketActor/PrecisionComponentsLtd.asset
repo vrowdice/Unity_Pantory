@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 2c21ade715dbd414abc57483682065dd, type: 3}
   description: A specialized manufacturer producing precision gears, bolts, and mechanical
     components for industrial machinery and vehicles.
+  wealth: 1000000
+  baseProductionCount: 110
+  productionResources:
+  - {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

@@ -17,6 +17,11 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e6954ecf71cf1d44fb99ff57e76890d6, type: 3}
   description: A nationwide clothing retailer offering both basic and premium fashion
     for everyday consumers and luxury markets.
+  wealth: 800000
+  baseProductionCount: 150
+  productionResources:
+  - {fileID: 11400000, guid: d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4, type: 2}
+  - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}
   archetype: 1
   providerProfile:
     outputs: []

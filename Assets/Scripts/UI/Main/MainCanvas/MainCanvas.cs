@@ -149,11 +149,11 @@ public partial class MainCanvas : CanvasBase
     /// </summary>
     public void ShowThreadInfoPanel(ThreadState threadState)
     {
-        _threadInfoPanel.Init(threadState, this, DataManager);
+        _threadInfoPanel.Init(threadState, this);
     }
 
     public void ShowResearchInfoPanel(ResearchEntry researchEntry)
     {
-        _researchInfoPanel.Init(researchEntry, this, DataManager);
+        _researchInfoPanel.Init(researchEntry, this);
     }
 }

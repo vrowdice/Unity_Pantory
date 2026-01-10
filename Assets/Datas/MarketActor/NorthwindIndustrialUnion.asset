@@ -16,6 +16,11 @@ MonoBehaviour:
   displayName: Northwind Industrial Union
   icon: {fileID: 21300000, guid: 392cf9cb0648ceb40b4e291b8aec57e9, type: 3}
   description: Heavy-industry magnates who churn out tools and alloys for inland factories while swallowing iron and timber supplies.
+  wealth: 1800000
+  baseProductionCount: 130
+  productionResources:
+  - {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
+  - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}
   archetype: 1
   providerProfile:
     outputs: []

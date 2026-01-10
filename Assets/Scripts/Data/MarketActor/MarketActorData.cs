@@ -8,6 +8,9 @@ public class MarketActorData : ScriptableObject
     public string displayName;
     public Sprite icon;
     [TextArea(3, 10)] public string description;
-    public List<ResourceData> ProductionResources = new List<ResourceData>();
+
+    public long wealth;
+    public long baseProductionCount;
+    public List<ResourceData> productionResources = new List<ResourceData>();
 }
 

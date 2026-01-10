@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 315b604d19942474eb27a2a4bcff519b, type: 3}
   description: A private military contractor with high standards, constantly requisitioning
     elite weaponry and vehicles for its security operations.
+  wealth: 1200000
+  baseProductionCount: 90
+  productionResources:
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
   archetype: 2
   providerProfile:
     outputs: []

@@ -14,6 +14,7 @@ public partial class DesignCanvas : CanvasBase
     public void Init(DesignRunner designRunner)
     {
         base.Init();
+
         _designRunner = designRunner;
 
         foreach (var buildingType in EnumUtils.GetAllEnumValues<BuildingType>())

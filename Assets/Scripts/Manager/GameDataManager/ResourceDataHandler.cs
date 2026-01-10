@@ -11,7 +11,7 @@ public class ResourceDataHandler
     private DataManager _dataManager;
 
     private InitialResourceData _initialResourceData = null;
-    private Dictionary<string, ResourceEntry> _resources;
+    private Dictionary<string, ResourceEntry> _resourceDic;
 
     public event Action OnResourceChanged;
 
@@ -21,7 +21,7 @@ public class ResourceDataHandler
     public ResourceDataHandler(DataManager gameDataManager, List<ResourceData> resourceDataList, InitialResourceData initialResourceData)
     {
         _dataManager = gameDataManager;
-        _resources = new Dictionary<string, ResourceEntry>();
+        _resourceDic = new Dictionary<string, ResourceEntry>();
         _initialResourceData = initialResourceData;
 
         if (resourceDataList != null && resourceDataList.Count > 0)
@@ -29,19 +29,19 @@ public class ResourceDataHandler
             foreach (var data in resourceDataList)
             {
                 if (data == null || string.IsNullOrEmpty(data.id)) continue;
-                if (_resources.ContainsKey(data.id))
+                if (_resourceDic.ContainsKey(data.id))
                 {
                     Debug.LogWarning($"[ResourceService] Resource already registered: {data.id}");
                     continue;
                 }
-                _resources[data.id] = new ResourceEntry(data);
+                _resourceDic[data.id] = new ResourceEntry(data);
             }
         }
     }
 
     public ResourceEntry GetResourceEntry(string resourceId)
     {
-        if (_resources.TryGetValue(resourceId, out var entry))
+        if (_resourceDic.TryGetValue(resourceId, out var entry))
         {
             return entry;
         }
@@ -51,14 +51,14 @@ public class ResourceDataHandler
 
     public Dictionary<string, ResourceEntry> GetAllResources()
     {
-        return new Dictionary<string, ResourceEntry>(_resources);
+        return new Dictionary<string, ResourceEntry>(_resourceDic);
     }
 
     public long CalculateResourceDeltaChangeCredit()
     {
         long credit = 0;
 
-        foreach (ResourceEntry entry in _resources.Values)
+        foreach (ResourceEntry entry in _resourceDic.Values)
         {
             credit += entry.state.threadDeltaCount * entry.state.currentValue;
             credit += entry.state.marketDeltaCount * entry.state.currentValue;
@@ -70,7 +70,7 @@ public class ResourceDataHandler
     public void ModifyThreadDelta(string resourceId, int count)
     {
         ResourceEntry resourceEntry = null;
-        _resources.TryGetValue(resourceId, out resourceEntry);
+        _resourceDic.TryGetValue(resourceId, out resourceEntry);
 
         if (resourceEntry != null)
         {
@@ -81,7 +81,7 @@ public class ResourceDataHandler
     public void ModifyMarketDelta(string resourceId, int count)
     {
         ResourceEntry resourceEntry = null;
-        _resources.TryGetValue(resourceId, out resourceEntry);
+        _resourceDic.TryGetValue(resourceId, out resourceEntry);
 
         if (resourceEntry != null)
         {
@@ -95,6 +95,8 @@ public class ResourceDataHandler
     public void HandleDayChanged()
     {
         ApplyDeltaChange();
+
+        ApplyCurrentEventValue();
         ApplyValueChange();
 
         OnResourceChanged?.Invoke();
@@ -102,48 +104,60 @@ public class ResourceDataHandler
 
     private void ApplyDeltaChange()
     {
-        foreach (ResourceEntry entry in _resources.Values)
+        foreach (ResourceEntry entry in _resourceDic.Values)
         {
-            entry.state.count += entry.state.threadDeltaCount;
-            entry.state.count += entry.state.marketDeltaCount;
+            int changeCount = 0;
+            changeCount += entry.state.threadDeltaCount;
+            changeCount += entry.state.marketDeltaCount;
+
+            entry.state.currnetChangeCount = changeCount;
+            entry.state.count += changeCount;
 
             entry.state.threadDeltaCount = 0;
         }
     }
 
+    private void ApplyCurrentEventValue()
+    {
+        foreach (ResourceEntry entry in _resourceDic.Values)
+        {
+            entry.state.currentEventValue = entry.data.baseValue;
+        }
+    }
+
     private void ApplyValueChange()
     {
-        foreach (ResourceEntry entry in _resources.Values)
+        foreach (ResourceEntry entry in _resourceDic.Values)
         {
-            ResourceData resourceData = entry.data;
             ResourceState resourceState = entry.state;
 
-            float difference = Math.Abs(resourceData.baseValue - resourceState.currentValue);
-            float differenceMul = Math.Clamp(difference / resourceData.baseValue, 0f, 1f);
+            long previousValue = resourceState.currentValue;
 
-            float changeAmount = resourceData.baseValue * _initialResourceData.volatilityMultiplier;
+            float increaseProbability = 0.5f;
+            float offset = (float)(resourceState.currentEventValue - resourceState.currentValue) / resourceState.currentEventValue;
+            increaseProbability += offset * 0.5f;
+            increaseProbability = Math.Clamp(increaseProbability, 0.1f, 0.9f);
 
-            float maxLimit = resourceData.baseValue * _initialResourceData.maxChangePriceMultiplier;
-            float minLimit = resourceData.baseValue * (1f / _initialResourceData.maxChangePriceMultiplier);
+            float volatility = _initialResourceData.volatilityMultiplier;
+            float changeAmount = resourceState.currentEventValue * volatility * UnityEngine.Random.Range(0.8f, 1.2f);
 
-            if (UnityEngine.Random.value < differenceMul)
+            long finalChangeAmount = Math.Max(1L, (long)Math.Round(changeAmount));
+
+            if (UnityEngine.Random.value < increaseProbability)
             {
-                //현재가가 최대치보다 작을 때만 상승
-                if (resourceState.currentValue < maxLimit)
-                {
-                    resourceState.currentValue += (long)changeAmount;
-                }
+                resourceState.currentValue += finalChangeAmount;
             }
             else
             {
-                //현재가가 최소치보다 클 때만 하락
-                if (resourceState.currentValue > minLimit)
-                {
-                    resourceState.currentValue -= (long)changeAmount;
-                }
+                resourceState.currentValue -= finalChangeAmount;
             }
 
+            float maxLimit = resourceState.currentEventValue * _initialResourceData.maxChangePriceMultiplier;
+            float minLimit = resourceState.currentEventValue * (1f / _initialResourceData.maxChangePriceMultiplier);
             resourceState.currentValue = Math.Clamp(resourceState.currentValue, (long)minLimit, (long)maxLimit);
+
+            resourceState.currentChangeValue = resourceState.currentValue - previousValue;
+
             resourceState.RecordPrice(resourceState.currentValue);
         }
     }

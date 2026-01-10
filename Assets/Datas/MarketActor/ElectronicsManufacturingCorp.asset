@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: b67ab34a9cb40a043ae0cb6cd90bb29f, type: 3}
   description: A major electronics manufacturer producing motors, light bulbs, and wiring
     for industrial and consumer markets.
+  wealth: 1500000
+  baseProductionCount: 120
+  productionResources:
+  - {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
   archetype: 1
   providerProfile:
     outputs: []

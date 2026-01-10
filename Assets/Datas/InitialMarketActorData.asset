@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d05b7e53b838fe644bcfb2e1b1044159, type: 3}
-  m_Name: InitialMarketData
+  m_Name: InitialMarketActorData
   m_EditorClassIdentifier: 
   marketFeeRate: 0.05
   initialActorWealth: 50000

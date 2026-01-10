@@ -6,84 +6,61 @@ public class MarketTraderBtn : MonoBehaviour
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private TextMeshProUGUI _nameText = null;
+    [SerializeField] private TextMeshProUGUI _wealthText = null;
+    [SerializeField] private TextMeshProUGUI _currentChangeWealthText = null;
 
-    private MarketTraderPanel _traderPanel = null;
+    private MarketPanel _marketPanel = null;
     private MarketActorEntry _actorEntry = null;
     private bool _isPlayer = false;
 
-    public void Init(MarketTraderPanel panel, MarketActorEntry actorEntry)
+    public void Init(MarketPanel panel, MarketActorEntry actorEntry)
     {
-        _traderPanel = panel;
+        _marketPanel = panel;
         _actorEntry = actorEntry;
         _isPlayer = false;
 
-        if (_actorEntry?.data != null)
-        {
-            if (_image != null)
-            {
-                _image.sprite = _actorEntry.data.icon;
-                _image.enabled = _actorEntry.data.icon != null;
-            }
+        _image.sprite = _actorEntry.data.icon;
+        _nameText.text = _actorEntry.data.displayName;
 
-            if (_nameText != null)
-            {
-                _nameText.text = string.IsNullOrEmpty(_actorEntry.data.displayName)
-                    ? _actorEntry.data.id
-                    : _actorEntry.data.displayName;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[MarketTraderBtn] ActorEntry or data is null.");
-            if (_nameText != null)
-            {
-                _nameText.text = "Unknown";
-            }
-        }
+        RefreshAllUI();
     }
 
-    public void InitPlayer(MarketTraderPanel panel, DataManager dataManager, int rank = 0)
+    public void InitPlayer(MarketPanel panel, int rank = 0)
     {
-        _traderPanel = panel;
+        _marketPanel = panel;
         _actorEntry = null;
         _isPlayer = true;
 
-        if (_nameText != null)
-        {
-            _nameText.text = "Player";
-        }
-
-        if (_image != null)
-        {
-            _image.sprite = null;
-            _image.enabled = false;
-        }
+        _nameText.text = "Player";
+        _image.sprite = null;
+        _image.enabled = false;
     }
 
     public void OnClick()
     {
-        if (_traderPanel == null)
-        {
-            return;
-        }
-
         if (_isPlayer)
         {
             return;
         }
 
-        if (_actorEntry != null)
-        {
-            _traderPanel.HandleTraderButtonClicked(_actorEntry);
-        }
+        _marketPanel.OnTraderButtonClicked(_actorEntry);
     }
 
     /// <summary>
-    /// 버튼 정보를 업데이트합니다 (외부에서 호출 가능).
+    /// 버튼 정보를 업데이트합니다
     /// </summary>
-    public void RefreshIndicator()
+    public void RefreshAllUI()
     {
+        MarketActorState state = _actorEntry.state;
+        long change = state.currentChangeWealth;
 
+        _wealthText.text = ReplaceUtils.FormatNumber(state.wealth);
+
+        string sign = (change > 0) ? "+" : "";
+        string changeText = change == 0 ? "0" : $"{sign}{ReplaceUtils.FormatNumberWithCommas(change)}";
+
+        _currentChangeWealthText.text = changeText;
+        _currentChangeWealthText.color = VisualManager.Instance.GetDeltaColor(change);
     }
 }
 

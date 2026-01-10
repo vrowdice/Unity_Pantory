@@ -17,6 +17,11 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 07327ecffcfe4824da1b90678d769742, type: 3}
   description: A sophisticated trading network specializing in metals, tools, and
     weapons for industrial and military clients.
+  wealth: 1500000
+  baseProductionCount: 110
+  productionResources:
+  - {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
+  - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}
   archetype: 2
   providerProfile:
     outputs: []

@@ -84,7 +84,7 @@ public class DesignRunner : RunnerBase
         SetupGridSystem();
         LoadInitialThreadState();
 
-        _designCanvas.Init();
+        _designCanvas.Init(this);
     }
 
     private void InitializeHandlers()

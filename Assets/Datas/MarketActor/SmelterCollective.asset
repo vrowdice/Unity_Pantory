@@ -16,6 +16,11 @@ MonoBehaviour:
   displayName: Smelter Collective
   icon: {fileID: 21300000, guid: a593ea308a96ed34db85313ec8a82e10, type: 3}
   description: Cooperative furnaces that refine mountains of ore into ingots, keeping city forges supplied year-round.
+  wealth: 700000
+  baseProductionCount: 160
+  productionResources:
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
   archetype: 3
   providerProfile:
     outputs: []

@@ -17,6 +17,11 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: d2a1a306cd9bf8247abc6a1bda118a59, type: 3}
   description: A unified military command coordinating defense procurement and logistics
     across continental borders, requiring steady supplies of weapons and equipment.
+  wealth: 5000000
+  baseProductionCount: 60
+  productionResources:
+  - {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
+  - {fileID: 11400000, guid: f12ac3915609f0b4da6bd8301f570947, type: 2}
   archetype: 0
   providerProfile:
     outputs: []

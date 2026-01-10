@@ -46,7 +46,7 @@ public class MarketResourceBtn : MonoBehaviour
     /// </summary>
     public void OnClick()
     {
-        _marketPanel.HandleResourceButtonClicked(_resourceEntry);
+        _marketPanel.OnResourceButtonClicked(_resourceEntry);
     }
 
     /// <summary>
@@ -55,12 +55,13 @@ public class MarketResourceBtn : MonoBehaviour
     private void UpdateChangeValue()
     {
         ResourceState resourceState = _resourceEntry.state;
+        long delta = resourceState.currentChangeValue;
 
-        float delta = resourceState.currentChangeValue;
+        string priceText = ReplaceUtils.FormatNumber(resourceState.currentValue);
         string deltaSymbol = delta > 0 ? "+" : "";
-        string deltaText = $"{deltaSymbol}{delta:F2}";
+        string deltaValueText = ReplaceUtils.FormatNumber(delta);
 
-        _deltaText.text = $"{resourceState.currentValue.ToString()} ({deltaText})";
+        _deltaText.text = $"{priceText} ({deltaSymbol}{deltaValueText})";
         _deltaText.color = VisualManager.Instance.GetDeltaColor(delta);
     }
 
@@ -70,23 +71,13 @@ public class MarketResourceBtn : MonoBehaviour
     private void UpdateTradeValue()
     {
         ResourceState resourceState = _resourceEntry.state;
-        long tradeDelta = resourceState.threadDeltaCount;
+        long tradeDelta = resourceState.marketDeltaCount;
 
-        if (tradeDelta > 0)
-        {
-            _tradeValueText.text = $"+{tradeDelta:N0}";
-            _tradeValueText.color = Color.green;
-        }
-        else if (tradeDelta < 0)
-        {
-            _tradeValueText.text = tradeDelta.ToString("N0");
-            _tradeValueText.color = Color.red;
-        }
-        else
-        {
-            _tradeValueText.text = "0";
-            _tradeValueText.color = Color.black;
-        }
+        string deltaSymbol = tradeDelta > 0 ? "+" : "";
+        string tradeText = tradeDelta == 0 ? "0" : $"{deltaSymbol}{ReplaceUtils.FormatNumberWithCommas(tradeDelta)}";
+
+        _tradeValueText.text = tradeText;
+        _tradeValueText.color = VisualManager.Instance.GetDeltaColor(tradeDelta);
     }
 
     /// <summary>
