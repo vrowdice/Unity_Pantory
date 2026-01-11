@@ -22,7 +22,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     private string _selectedCategoryId = string.Empty;
 
     /// <summary>
-    /// SaveLoadHandler에서 사용할 DataManager를 초기 설정합니다. (Awake/Initialize 단계)
+    /// DataManager를 초기 설정합니다. (Awake/Initialize 단계)
     /// </summary>
     public void Init(DataManager dataManager)
     {

@@ -25,7 +25,7 @@ public partial class MainCanvas
             return;
         }
 
-        foreach (var btn in _quickMoveBtns)
+        foreach (QuickMoveBtn btn in _quickMoveBtns)
         {
             if (btn != null)
             {

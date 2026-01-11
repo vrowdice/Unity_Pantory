@@ -15,7 +15,7 @@ public class RawMaterialFactoryData : ProductionBuildingData
     /// <summary>
     /// 인스펙터에서 설정한 생산 가능 원자재 목록을 반환합니다.
     /// </summary>
-    public IReadOnlyList<ResourceData> ProducibleRawResources => _producibleRawResources;
+    public List<ResourceData> ProducibleRawResources => _producibleRawResources;
 
     /// <summary>
     /// 기본 원자재(첫 번째 항목)를 반환합니다. 없으면 null.

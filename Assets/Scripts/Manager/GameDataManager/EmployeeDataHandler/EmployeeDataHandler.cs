@@ -72,10 +72,10 @@ public partial class EmployeeDataHandler
     /// 모든 직원의 총 급여를 반환합니다.
     /// </summary>
     /// <returns>총 급여</returns>
-    public long GetTotalSalary()
+    public long CalculateTotalSalary()
     {
         long total = 0;
-        foreach (var entry in _employees.Values)
+        foreach (EmployeeEntry entry in _employees.Values)
         {
             total += entry.state.totalSalary;
         }

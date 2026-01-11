@@ -1,17 +1,16 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
-/// <summary>
-/// 건물 정보를 표시하는 패널
-/// </summary>
 public class BuildingInfoPanel : MonoBehaviour
 {
     [SerializeField] private GameObject _productionExplainTextPrefab;
 
     [Header("UI References")]
-    [SerializeField] private GameObject _changeProductionBtn;
+    [SerializeField] private Button _changeProductionBtn;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _typeText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -20,348 +19,198 @@ public class BuildingInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _resourceTypesText;
     [SerializeField] private Image _buildingImage;
 
-    [SerializeField] private Transform _inputGridContentTransform;
-    [SerializeField] private Transform _outputGridContentTransform;
-    [SerializeField] private Transform _productionExplainTextContentTransform;
+    [Header("Containers")]
+    [SerializeField] private Transform _inputGridTransform;
+    [SerializeField] private Transform _outputGridTransform;
+    [SerializeField] private Transform _explainContentTransform;
 
-    private BuildingData _currentBuildingData;
-    private BuildingState _currentBuildingState;
-
-    private DesignCanvas _designUiManager;
+    private BuildingData _currentData;
+    private BuildingState _currentState;
+    private DesignCanvas _designCanvas;
     private DataManager _dataManager;
-    private System.Action<ResourceEntry> _onOutputResourceSelected;
 
-    /// <summary>
-    /// 건물 정보를 표시합니다.
-    /// </summary>
-    public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState, DesignCanvas designUiManager)
+    // 캐싱을 위한 컴포넌트 참조
+    private DesignRunner _designRunner;
+
+    public void ShowBuildingInfo(BuildingData data, BuildingState state, DesignCanvas canvas)
     {
-        if (buildingData == null)
-        {
-            Debug.LogWarning("[BuildingInfoPanel] BuildingData is null!");
-            return;
-        }
+        if (data == null) return;
 
-        _currentBuildingData = buildingData;
-        _currentBuildingState = buildingState;
-        _designUiManager = designUiManager;
-
-        _onOutputResourceSelected = OnOutputResourceSelected;
+        _currentData = data;
+        _currentState = state;
+        _designCanvas = canvas;
+        _dataManager = DataManager.Instance; // 또는 주입받은 참조 사용
 
         UpdateUI();
     }
 
-    /// <summary>
-    /// UI를 업데이트합니다.
-    /// </summary>
     private void UpdateUI()
     {
-        GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
+        _nameText.text = _currentData.displayName;
+        _typeText.text = $"Type: {_currentData.buildingType}";
+        _descriptionText.text = _currentData.description;
+        _costText.text = $"Cost: {ReplaceUtils.FormatNumberWithCommas(_currentData.baseCost)}";
+        _maintenanceText.text = $"Maint: {ReplaceUtils.FormatNumberWithCommas(_currentData.baseMaintenanceCost)}/mo";
 
-        _nameText.text = _currentBuildingData.displayName;
-        _typeText.text = $"Type: {_currentBuildingData.buildingType}";
-        _descriptionText.text = _currentBuildingData.description;
-        _costText.text = $"Cost: {_currentBuildingData.baseCost:N0}";
-        _maintenanceText.text = $"Maintenance: {_currentBuildingData.baseMaintenanceCost:N0}/month";
-
-        if (_resourceTypesText != null)
+        if (_buildingImage != null)
         {
-            var btn = _changeProductionBtn != null ? _changeProductionBtn.GetComponent<Button>() : null;
-
-            if (_currentBuildingData.IsProductionBuilding)
-            {
-                if (btn != null) btn.interactable = true;
-                _changeProductionBtn?.SetActive(true);
-
-                if (_currentBuildingData.AllowedResourceTypes != null && _currentBuildingData.AllowedResourceTypes.Count > 0)
-                {
-                    string resourceTypes = "Allowed Resources:";
-                    foreach (var resourceType in _currentBuildingData.AllowedResourceTypes)
-                    {
-                        resourceTypes += $" {resourceType}";
-                    }
-                    _resourceTypesText.text = resourceTypes;
-                }
-                else
-                {
-                    _resourceTypesText.text = "Allowed Resources: None";
-                }
-            }
-            else
-            {
-                _changeProductionBtn?.SetActive(true);
-                if (btn != null) btn.interactable = false;
-
-                if (_currentBuildingData.HandlingResource != null)
-                {
-                    _resourceTypesText.text = $"Handling: {_currentBuildingData.HandlingResource.displayName}";
-                }
-                else
-                {
-                    _resourceTypesText.text = "Handling: None";
-                }
-            }
+            _buildingImage.sprite = _currentData.buildingSprite;
+            _buildingImage.enabled = _currentData.buildingSprite != null;
         }
 
-        if (_buildingImage != null && _currentBuildingData.buildingSprite != null)
-        {
-            _buildingImage.sprite = _currentBuildingData.buildingSprite;
-            _buildingImage.enabled = true;
-        }
-        else if (_buildingImage != null)
-        {
-            _buildingImage.enabled = false;
-        }
-
-        UpdateInputProductionImages();
-        UpdateOutputProductionImages();
+        UpdateProductionContext();
+        RefreshResourceGrids();
     }
 
-    private void UpdateInputProductionImages()
+    private void UpdateProductionContext()
     {
-        GameObjectUtils.ClearChildren(_inputGridContentTransform);
-        
-        Dictionary<string, int> inputCounts = GameObjectUtils.AggregateResourceCounts(_currentBuildingState.inputProductionIds);
-        if (inputCounts.Count == 0)
+        bool isProd = _currentData.IsProductionBuilding;
+        _changeProductionBtn.gameObject.SetActive(true);
+        _changeProductionBtn.interactable = isProd;
+
+        if (isProd)
         {
-            return;
+            var allowed = _currentData.AllowedResourceTypes;
+            string types = (allowed != null && allowed.Count > 0)
+                ? string.Join(", ", allowed)
+                : "None";
+            _resourceTypesText.text = $"Allowed: {types}";
         }
-
-        foreach (var kvp in inputCounts)
+        else
         {
-            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
-
-            if (resourceEntry != null)
-            {
-                Instantiate(_designUiManager.ProductionInfoImage, _inputGridContentTransform).
-                GetComponent<ProductionInfoImage>().Init(resourceEntry, kvp.Value);
-
-                Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
-                GetComponent<TextMeshProUGUI>().text =
-                 $"Input: {resourceEntry.data.displayName}\nConsumption: {kvp.Value}\nPrice: {resourceEntry.state.currentValue}";
-            }
+            string handling = _currentData.HandlingResource?.displayName ?? "None";
+            _resourceTypesText.text = $"Handling: {handling}";
         }
     }
 
-    private void UpdateOutputProductionImages()
+    private void RefreshResourceGrids()
     {
-        GameObjectUtils.ClearChildren(_outputGridContentTransform);
+        GameObjectUtils.ClearChildren(_explainContentTransform);
 
-        // 비생산 건물(road/load/unload 등)은 handlingResource 또는 runtime 자원을 표시
-        if (!_currentBuildingData.IsProductionBuilding)
+        // Input 리스트 갱신
+        UpdateResourceGrid(_currentState.inputProductionIds, _inputGridTransform, "Input");
+
+        // Output 리스트 갱신 (생산 건물이 아닐 경우 별도 처리)
+        if (!_currentData.IsProductionBuilding)
+            UpdateNonProductionOutput();
+        else
+            UpdateResourceGrid(_currentState.outputProductionIds, _outputGridTransform, "Output");
+    }
+
+    private void UpdateResourceGrid(List<string> resourceIds, Transform container, string label)
+    {
+        GameObjectUtils.ClearChildren(container);
+        var counts = GameObjectUtils.AggregateResourceCounts(resourceIds);
+
+        foreach (var kvp in counts)
         {
-            GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
+            var entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
+            if (entry == null) continue;
 
-            string handlingId = null;
-            string handlingNameFallback = null;
+            // 아이콘 생성
+            Instantiate(_designCanvas.ProductionInfoImage, container)
+                .GetComponent<ProductionInfoImage>().Init(entry, kvp.Value);
 
-            if (_currentBuildingData.HandlingResource != null)
-            {
-                handlingId = _currentBuildingData.HandlingResource.id;
-                handlingNameFallback = _currentBuildingData.HandlingResource.displayName;
-            }
-            else if (_currentBuildingState != null && !string.IsNullOrEmpty(_currentBuildingState.currentResourceId))
-            {
-                // ResourceAnimHandler 등에서 runtime으로 채워주는 currentResourceId가 있으면 우선 사용
-                handlingId = _currentBuildingState.currentResourceId;
-            }
+            // 설명 텍스트 생성
+            string reqs = (label == "Output") ? BuildRequirementText(entry.data) : "";
+            string info = $"{label}: {entry.data.displayName}\nAmount: {kvp.Value}\nPrice: {ReplaceUtils.FormatNumber(entry.state.currentValue)}{reqs}";
 
-            if (!string.IsNullOrEmpty(handlingId))
-            {
-                ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(handlingId);
-
-                if (resourceEntry != null)
-                {
-                    Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform)
-                        .GetComponent<ProductionInfoImage>()
-                        .Init(resourceEntry, 1);
-
-                    Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
-                        .GetComponent<TextMeshProUGUI>().text =
-                        $"Handling: {resourceEntry.data.displayName}\nPrice: {resourceEntry.state.currentValue}";
-                }
-                else
-                {
-                    Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
-                        .GetComponent<TextMeshProUGUI>().text =
-                        $"Handling: {handlingNameFallback ?? handlingId}";
-                }
-            }
-            else
-            {
-                Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform)
-                    .GetComponent<TextMeshProUGUI>().text = "Handling: None";
-            }
-            return;
-        }
-        
-        Dictionary<string, int> outputCounts = GameObjectUtils.AggregateResourceCounts(_currentBuildingState.outputProductionIds);
-        if (outputCounts.Count == 0)
-        {
-            return;
-        }
-
-        foreach (var kvp in outputCounts)
-        {
-            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(kvp.Key);
-            
-            if (resourceEntry != null)
-            {
-                Instantiate(_designUiManager.ProductionInfoImage, _outputGridContentTransform).
-                GetComponent<ProductionInfoImage>().Init(resourceEntry, kvp.Value);
-
-                string requireText = BuildRequirementText(resourceEntry.data);
-
-                Instantiate(_productionExplainTextPrefab, _productionExplainTextContentTransform).
-                GetComponent<TextMeshProUGUI>().text =
-                 $"Output: {resourceEntry.data.displayName}\nProduction: {kvp.Value}\nPrice: {resourceEntry.state.currentValue}{requireText}";
-            }
+            CreateExplainText(info);
         }
     }
 
+    private void UpdateNonProductionOutput()
+    {
+        GameObjectUtils.ClearChildren(_outputGridTransform);
 
-    /// <summary>
-    /// 출력 자원 선택 패널을 표시합니다.
-    /// </summary>
+        string handlingId = _currentData.HandlingResource?.id ?? _currentState.currentResourceId;
+        if (string.IsNullOrEmpty(handlingId)) return;
+
+        var entry = _dataManager.Resource.GetResourceEntry(handlingId);
+        if (entry != null)
+        {
+            Instantiate(_designCanvas.ProductionInfoImage, _outputGridTransform)
+                .GetComponent<ProductionInfoImage>().Init(entry, 1);
+            CreateExplainText($"Handling: {entry.data.displayName}\nPrice: {ReplaceUtils.FormatNumber(entry.state.currentValue)}");
+        }
+    }
+
+    private void CreateExplainText(string content)
+    {
+        var textObj = Instantiate(_productionExplainTextPrefab, _explainContentTransform);
+        textObj.GetComponent<TextMeshProUGUI>().text = content;
+    }
+
     public void ShowOutputResourceSelection()
     {
-        if (_currentBuildingData?.AllowedResourceTypes == null || _currentBuildingData.AllowedResourceTypes.Count == 0)
-        {
-            Debug.LogWarning("[BuildingInfoPanel] No allowed resource types for output selection.");
-            return;
-        }
+        if (_currentData.AllowedResourceTypes == null || _currentData.AllowedResourceTypes.Count == 0) return;
 
-        if (_designUiManager.GameManager != null)
-        {
-            // 생산 가능한 자원 목록 가져오기
-            List<ResourceData> producibleResources = null;
-            
-            // ProductionBuildingData인 경우 생산 가능한 자원 목록 사용
-            if (_currentBuildingData is ProductionBuildingData productionData)
-            {
-                if (productionData.ProducibleResources != null && productionData.ProducibleResources.Count > 0)
-                {
-                    producibleResources = new List<ResourceData>(productionData.ProducibleResources);
-                }
-            }
-            // RawMaterialFactoryData인 경우 생산 가능한 원자재 목록 사용
-            else if (_currentBuildingData is RawMaterialFactoryData rawMaterialData)
-            {
-                if (rawMaterialData.ProducibleRawResources != null && rawMaterialData.ProducibleRawResources.Count > 0)
-                {
-                    producibleResources = new List<ResourceData>(rawMaterialData.ProducibleRawResources);
-                }
-            }
-            
-            _designUiManager.GameManager.ShowSelectResourcePanel(_currentBuildingData.AllowedResourceTypes, _onOutputResourceSelected, producibleResources);
-        }
-        else
-        {
-            Debug.LogError("[BuildingInfoPanel] GameManager.Instance is null.");
-        }
+        List<ResourceData> producible = GetProducibleList();
+        _designCanvas.GameManager.ShowSelectResourcePanel(
+            _currentData.AllowedResourceTypes,
+            OnOutputResourceSelected,
+            producible
+        );
     }
 
-
-    /// <summary>
-    /// 출력 자원이 선택되었을 때 호출되는 콜백
-    /// </summary>
-    /// <param name="selectedResource">선택된 자원</param>
-    private void OnOutputResourceSelected(ResourceEntry selectedResource)
+    private List<ResourceData> GetProducibleList()
     {
-        if (_currentBuildingState != null && selectedResource != null)
-        {
-            _currentBuildingState.outputProductionIds.Clear();
-
-            _currentBuildingState.outputProductionIds.Add(selectedResource.data.id);
-            Debug.Log($"[BuildingInfoPanel] Output resource added: {selectedResource.data.displayName}");
-
-            // 선택된 출력 자원의 제조 요구사항을 확인하고 필요한 입력 자원들을 자동으로 추가
-            AddRequiredInputResources(selectedResource.data);
-
-            // 생산 정보 텍스트 초기화
-            GameObjectUtils.ClearChildren(_productionExplainTextContentTransform);
-            
-            // UI 업데이트
-            UpdateOutputProductionImages();
-            UpdateInputProductionImages();
-            
-            // 실제 게임 화면의 건물 오브젝트도 업데이트
-            RefreshBuildingObjectIcons();
-
-            gameObject.SetActive(false);
-        }
+        if (_currentData is ProductionBuildingData p) return p.ProducibleResources;
+        if (_currentData is RawMaterialFactoryData r) return r.ProducibleRawResources;
+        return null;
     }
 
-    /// <summary>
-    /// 선택된 출력 자원의 제조 요구사항을 확인하고 필요한 입력 자원들을 자동으로 추가합니다.
-    /// </summary>
-    /// <param name="outputResourceData">출력 자원 데이터</param>
-    private void AddRequiredInputResources(ResourceData outputResourceData)
+    private void OnOutputResourceSelected(ResourceEntry selected)
     {
-        // 기존 입력 자원들을 모두 초기화
-        _currentBuildingState.inputProductionIds.Clear();
-        Debug.Log($"[BuildingInfoPanel] Input resources cleared for new output: {outputResourceData.displayName}");
+        if (_currentState == null || selected == null) return;
 
-        if (outputResourceData.requirements == null || outputResourceData.requirements.Count == 0)
-        {
-            Debug.Log($"[BuildingInfoPanel] No requirements found for {outputResourceData.displayName}");
-            return;
-        }
+        // 데이터 갱신
+        _currentState.outputProductionIds.Clear();
+        _currentState.outputProductionIds.Add(selected.data.id);
 
-        foreach (var requirement in outputResourceData.requirements)
-        {
-            if (requirement.resource != null)
-            {
-                int requiredCount = Mathf.Max(1, requirement.count);
-                for (int i = 0; i < requiredCount; i++)
-                {
-                    _currentBuildingState.inputProductionIds.Add(requirement.resource.id);
-                }
-                Debug.Log($"[BuildingInfoPanel] Required input resource added: {requirement.resource.displayName} (count: {requiredCount})");
-            }
-        }
+        // 요구사항 자동 추가
+        SyncInputToRequirements(selected.data);
+
+        // UI 및 월드 아이콘 갱신
+        UpdateUI();
+        RefreshWorldIcons();
+
+        gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// 실제 게임 화면의 건물 오브젝트 아이콘을 갱신합니다.
-    /// </summary>
-    private void RefreshBuildingObjectIcons()
+    private void SyncInputToRequirements(ResourceData outputData)
     {
-        if (_currentBuildingState == null)
-            return;
-        
-        // BuildingTileManager 찾기
-        DesignRunner buildingTileManager = FindFirstObjectByType<DesignRunner>();
-        if (buildingTileManager != null)
+        _currentState.inputProductionIds.Clear();
+        if (outputData.requirements == null) return;
+
+        foreach (var req in outputData.requirements)
         {
-            // 건물 새로고침 (모든 건물 오브젝트를 다시 생성)
-            buildingTileManager.RefreshBuildings();
-            Debug.Log("[BuildingInfoPanel] Building object icons refreshed.");
-        }
-        else
-        {
-            Debug.LogWarning("[BuildingInfoPanel] BuildingTileManager not found.");
+            if (req.resource == null) continue;
+            int count = Mathf.Max(1, req.count);
+            for (int i = 0; i < count; i++)
+                _currentState.inputProductionIds.Add(req.resource.id);
         }
     }
 
+    private void RefreshWorldIcons()
+    {
+        if (_designRunner == null) _designRunner = FindFirstObjectByType<DesignRunner>();
+        _designRunner?.RefreshBuildings();
+    }
 
     private string BuildRequirementText(ResourceData data)
     {
-        if (data == null || data.requirements == null || data.requirements.Count == 0)
-            return "";
+        if (data.requirements == null || data.requirements.Count == 0) return "";
 
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("\nRequires: ");
-
-        bool first = true;
-        foreach (var req in data.requirements)
+        for (int i = 0; i < data.requirements.Count; i++)
         {
-            if (req?.resource == null) continue;
-            if (!first) sb.Append(", ");
+            var req = data.requirements[i];
+            if (req.resource == null) continue;
             sb.Append($"{req.resource.displayName} x{Mathf.Max(1, req.count)}");
-            first = false;
+            if (i < data.requirements.Count - 1) sb.Append(", ");
         }
-
         return sb.ToString();
     }
 }

@@ -144,10 +144,7 @@ public class MarketPanel : BasePanel
         }
         else
         {
-            foreach (Transform child in _marketScrollViewContent)
-            {
-                child.GetComponent<MarketTraderBtn>().RefreshAllUI();
-            }
+            RefreshTraderList();
         }
     }
 

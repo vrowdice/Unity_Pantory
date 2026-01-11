@@ -36,10 +36,10 @@ public class ThreadDataHandler
     /// <summary> Thread 데이터를 저장합니다. </summary>
     private void SaveThreadData()
     {
-        if (_dataManager?.SaveLoad != null)
+        if (SaveLoadManager.Instance != null && SaveLoadManager.Instance.Thread != null)
         {
-            // SaveLoadHandler의 SaveThreadData(this) 호출
-            _dataManager.SaveLoad.SaveThreadData(this);
+            // SaveLoadManager의 Thread 핸들러를 통해 저장
+            SaveLoadManager.Instance.Thread.SaveThreadData(this);
         }
     }
 

@@ -1,16 +1,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-/// <summary>
-/// 2D 환경에서 메인 카메라의 드래그 이동, 줌(Zoom-to-Cursor), 이동 경계 제한 기능을 관리합니다.
-/// </summary>
+[RequireComponent(typeof(Camera))]
 public class MainCameraController : MonoBehaviour
 {
     [Header("Drag Settings")]
     [SerializeField] private float _dragSpeed = 1f;
+    [SerializeField] private bool _isDragEnabled = true;
 
     [Header("Zoom Settings")]
-    [SerializeField] private float _zoomSpeed = 1f;
+    [SerializeField] private float _zoomSpeed = 5f;
     [SerializeField] private float _minZoom = 2f;
     [SerializeField] private float _maxZoom = 20f;
 
@@ -22,167 +21,106 @@ public class MainCameraController : MonoBehaviour
     private Camera _camera;
     private Vector3 _dragOrigin;
     private bool _isDragging;
-    private bool _isDragEnabled = true;
 
-    /// <summary>
-    /// 외부 매니저 등을 통해 카메라 컴포넌트를 초기화합니다.
-    /// </summary>
-    public void Init()
+    private void Awake() => Init();
+
+    public void Init() => _camera = GetComponent<Camera>();
+
+    public void SetDragEnabled(bool isEnabled)
     {
-        _camera = GetComponent<Camera>();
+        _isDragEnabled = isEnabled;
+        if (!isEnabled) _isDragging = false;
     }
 
     /// <summary>
-    /// 카메라의 드래그 기능을 활성화하거나 비활성화합니다.
+    /// 카메라 경계를 설정합니다. 그리드 영역에 맞게 카메라 이동을 제한합니다.
     /// </summary>
-    /// <param name="enabled">활성화 여부</param>
-    public void SetDragEnabled(bool enabled)
+    /// <param name="center">경계의 중심 위치</param>
+    /// <param name="size">경계의 크기 (width, height)</param>
+    public void SetBoundary(Vector2 center, Vector2 size)
     {
-        _isDragEnabled = enabled;
-        if (!enabled) _isDragging = false;
+        if (_boundaryCollider == null)
+        {
+            GameObject boundaryObj = new GameObject("CameraBoundary");
+            boundaryObj.transform.SetParent(transform.parent);
+            _boundaryCollider = boundaryObj.AddComponent<BoxCollider2D>();
+            _boundaryCollider.isTrigger = true;
+        }
+
+        _boundaryCollider.transform.position = new Vector3(center.x, center.y, 0);
+        _boundaryCollider.size = size;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        HandleDrag();
+        HandleInput();
         HandleZoom();
     }
 
-    /// <summary>
-    /// 터치 또는 마우스 입력을 감지하여 카메라를 이동시킵니다.
-    /// </summary>
-    private void HandleDrag()
+    private void HandleInput()
     {
         if (!_isDragEnabled) return;
 
-        // 1. 입력 처리 (모바일/PC 공용 로직)
-        if (Input.touchCount > 0)
-        {
-            ProcessTouchInput();
-        }
-        else
-        {
-            ProcessMouseInput();
-        }
-    }
+        // PC/모바일 통합 입력 감지
+        bool inputBegin = Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
+        bool inputMove = Input.GetMouseButton(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved);
+        bool inputEnd = Input.GetMouseButtonUp(0) || (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled));
 
-    private void ProcessTouchInput()
-    {
-        Touch touch = Input.GetTouch(0);
+        Vector3 currentInputPos = Input.touchCount > 0 ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
 
-        if (touch.phase == TouchPhase.Began)
+        if (inputBegin)
         {
             if (IsPointerOverUI()) return;
-            _dragOrigin = _camera.ScreenToWorldPoint(touch.position);
-            _isDragging = true;
-        }
-        else if (touch.phase == TouchPhase.Moved && _isDragging)
-        {
-            MoveCamera(touch.position);
-        }
-        else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-        {
-            _isDragging = false;
-        }
-    }
-
-    private void ProcessMouseInput()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (IsPointerOverUI()) return;
-            _dragOrigin = _camera.ScreenToWorldPoint(Input.mousePosition);
+            _dragOrigin = _camera.ScreenToWorldPoint(currentInputPos);
             _isDragging = true;
         }
 
-        if (Input.GetMouseButton(0) && _isDragging)
+        if (_isDragging && inputMove)
         {
-            MoveCamera(Input.mousePosition);
+            Vector3 currentWorldPos = _camera.ScreenToWorldPoint(currentInputPos);
+            Vector3 direction = _dragOrigin - currentWorldPos;
+
+            transform.position = ClampToBoundary(transform.position + direction * _dragSpeed);
+            _dragOrigin = _camera.ScreenToWorldPoint(currentInputPos); // 드래그 원점 실시간 갱신으로 부드럽게 이동
         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            _isDragging = false;
-        }
+        if (inputEnd) _isDragging = false;
     }
 
-    /// <summary>
-    /// 특정 입력 좌표를 바탕으로 카메라 위치를 갱신합니다.
-    /// </summary>
-    private void MoveCamera(Vector3 screenPosition)
-    {
-        Vector3 currentWorldPos = _camera.ScreenToWorldPoint(screenPosition);
-        Vector3 difference = _dragOrigin - currentWorldPos;
-
-        Vector3 newPosition = transform.position + (difference * _dragSpeed);
-        newPosition.z = transform.position.z;
-
-        if (_boundaryCollider != null)
-        {
-            newPosition = ClampToBounds(newPosition);
-        }
-
-        transform.position = newPosition;
-        _dragOrigin = _camera.ScreenToWorldPoint(screenPosition);
-    }
-
-    /// <summary>
-    /// 마우스 휠 입력을 감지하여 커서 방향으로 줌 인/아웃을 수행합니다.
-    /// </summary>
     private void HandleZoom()
     {
-        float scrollInput = Input.mouseScrollDelta.y;
+        float scroll = Input.mouseScrollDelta.y;
+        if (Mathf.Abs(scroll) < 0.01f || IsPointerOverUI() || !IsMouseInViewport()) return;
 
-        if (scrollInput == 0 || IsPointerOverUI() || !IsMouseInViewport()) return;
+        Vector3 mouseBefore = _camera.ScreenToWorldPoint(Input.mousePosition);
 
-        Vector3 mouseWorldPosBefore = _camera.ScreenToWorldPoint(Input.mousePosition);
+        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - (scroll * _zoomSpeed), _minZoom, _maxZoom);
 
-        // Orthographic 줌 적용
-        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - (scrollInput * _zoomSpeed), _minZoom, _maxZoom);
+        Vector3 mouseAfter = _camera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 offset = mouseBefore - mouseAfter;
 
-        Vector3 mouseWorldPosAfter = _camera.ScreenToWorldPoint(Input.mousePosition);
-
-        // Zoom-to-Cursor: 줌 이후 마우스 월드 좌표 차이만큼 카메라 보정
-        Vector3 offset = mouseWorldPosBefore - mouseWorldPosAfter;
-        Vector3 newPosition = transform.position + offset;
-        newPosition.z = transform.position.z;
-
-        if (_boundaryCollider != null)
-        {
-            newPosition = ClampToBounds(newPosition);
-        }
-
-        transform.position = newPosition;
+        transform.position = ClampToBoundary(transform.position + offset);
     }
 
-    /// <summary>
-    /// 카메라의 중심 좌표가 설정된 BoxCollider2D 영역을 벗어나지 않도록 제한합니다.
-    /// </summary>
-    private Vector3 ClampToBounds(Vector3 position)
+    private Vector3 ClampToBoundary(Vector3 targetPos)
     {
+        if (_boundaryCollider == null) return targetPos;
+
         Bounds bounds = _boundaryCollider.bounds;
 
-        position.x = Mathf.Clamp(position.x, bounds.min.x, bounds.max.x);
-        position.y = Mathf.Clamp(position.y, bounds.min.y, bounds.max.y);
+        // 유저 의도: 카메라 중심점만 Collider 영역 내로 제한
+        targetPos.x = Mathf.Clamp(targetPos.x, bounds.min.x, bounds.max.x);
+        targetPos.y = Mathf.Clamp(targetPos.y, bounds.min.y, bounds.max.y);
+        targetPos.z = transform.position.z;
 
-        return position;
+        return targetPos;
     }
 
-    /// <summary>
-    /// 현재 포인터(마우스/터치)가 UI 요소 위에 있는지 확인합니다.
-    /// </summary>
-    private bool IsPointerOverUI()
-    {
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-    }
+    private bool IsPointerOverUI() => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
-    /// <summary>
-    /// 마우스 커서가 게임 화면(Viewport) 내부에 위치하는지 확인합니다.
-    /// </summary>
     private bool IsMouseInViewport()
     {
-        Vector3 mousePos = Input.mousePosition;
-        return mousePos.x >= 0 && mousePos.x <= Screen.width &&
-               mousePos.y >= 0 && mousePos.y <= Screen.height;
+        Vector3 viewPos = _camera.ScreenToViewportPoint(Input.mousePosition);
+        return viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1;
     }
 }

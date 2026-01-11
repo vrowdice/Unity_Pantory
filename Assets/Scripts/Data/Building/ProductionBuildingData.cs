@@ -31,7 +31,7 @@ public class ProductionBuildingData : BuildingData
     /// <summary>
     /// 인스펙터에서 설정한 생산 가능 자원 목록을 반환합니다.
     /// </summary>
-    public IReadOnlyList<ResourceData> ProducibleResources => _producibleResources;
+    public List<ResourceData> ProducibleResources => _producibleResources;
 
     /// <summary>
     /// 기본 생산 자원(첫 번째 항목)을 반환합니다. 없으면 null.

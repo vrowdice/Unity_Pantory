@@ -34,7 +34,6 @@ public class DataManager : MonoBehaviour
     public FinancesDataHandler Finances { get; private set; }
     public EmployeeDataHandler Employee { get; private set; }
     public BuildingDataHandler Building { get; private set; }
-    public SaveLoadHandler SaveLoad { get; private set; }
     public ThreadCalculateHandler ThreadCalculate { get; private set; }
     public EffectDataHandler Effect { get; private set; }
     public ResearchDataHandler Research { get; private set; }
@@ -61,7 +60,6 @@ public class DataManager : MonoBehaviour
 
     private void InitializeServices()
     {
-        SaveLoad = new SaveLoadHandler(this);
         Thread = new ThreadDataHandler(this);
         ThreadPlacement = new ThreadPlacementDataHandler(this);
         Time = new TimeDataHandler(this, _timeSettingsData);
@@ -173,9 +171,9 @@ public class DataManager : MonoBehaviour
 #endif
     private void LoadThreadData()
     {
-        if (SaveLoad != null && Thread != null)
+        if (SaveLoadManager.Instance != null && SaveLoadManager.Instance.Thread != null && Thread != null)
         {
-            if (!SaveLoad.LoadThreadData(Thread))
+            if (!SaveLoadManager.Instance.Thread.LoadThreadData(Thread))
             {
                 Debug.LogWarning("[GameDataManager] Failed to load Thread data. Resetting.");
                 Thread.ResetThreadData();

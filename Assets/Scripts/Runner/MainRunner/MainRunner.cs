@@ -20,10 +20,12 @@ public class MainRunner : RunnerBase
     [SerializeField] private int _gridHeight = 10;
 
     private Camera _mainCamera;
+    private MainCameraController _mainCameraController;
     private BoxCollider2D _cameraCollider;
     private MainRunnerThreadGridHandler _gridHandler;
     private GameObject _sharedThreadLabelCanvas;
     private ThreadPlacementDataHandler _threadPlacementHandler;
+    private SaveLoadManager _saveLoadManager;
 
     internal GameObject ThreadObjectPrefab => _threadObjectPrefab;
     public bool IsPlacementMode => _gridHandler != null && _gridHandler.IsPlacementActive;
@@ -71,6 +73,8 @@ public class MainRunner : RunnerBase
 
         _threadPlacementHandler = DataManager.ThreadPlacement;
         _mainCamera = Camera.main;
+        _mainCameraController = MainCamera?.GetComponent<MainCameraController>();
+        _saveLoadManager = SaveLoadManager.Instance;
 
         _gridHandler = new MainRunnerThreadGridHandler(transform, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight);
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, 11f);
@@ -96,6 +100,15 @@ public class MainRunner : RunnerBase
 
         _cameraCollider.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
         _cameraCollider.size = new Vector2(_gridWidth, _gridHeight);
+
+        // 카메라 경계 설정 (그리드 영역에 맞게)
+        if (_mainCameraController != null)
+        {
+            Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, -_gridHeight / 2f, 0);
+            Vector2 center = new Vector2(gridWorldCenter.x, gridWorldCenter.y);
+            Vector2 size = new Vector2(_gridWidth, _gridHeight);
+            _mainCameraController.SetBoundary(center, size);
+        }
     }
 
     /// <summary>
@@ -107,7 +120,7 @@ public class MainRunner : RunnerBase
             return;
 
         Vector3 mouseWorldPos = GetMouseWorldPosition();
-        var (gridPos, canPlace) = _gridHandler.UpdatePlacement(mouseWorldPos);
+        (Vector2Int gridPos, bool canPlace) = _gridHandler.UpdatePlacement(mouseWorldPos);
 
         if (Input.GetMouseButtonDown(0) && canPlace)
         {

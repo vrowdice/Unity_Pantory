@@ -74,7 +74,7 @@ public class ResourceDataHandler
 
         if (resourceEntry != null)
         {
-            resourceEntry.state.threadDeltaCount += count;
+            resourceEntry.ModifyThreadDelta(count);
         }
     }
 
@@ -85,7 +85,7 @@ public class ResourceDataHandler
 
         if (resourceEntry != null)
         {
-            resourceEntry.state.marketDeltaCount += count;
+            resourceEntry.ModifyMarketDelta(count);
         }
     }
 
@@ -111,7 +111,7 @@ public class ResourceDataHandler
             changeCount += entry.state.marketDeltaCount;
 
             entry.state.currnetChangeCount = changeCount;
-            entry.state.count += changeCount;
+            entry.ModifyCount(changeCount);
 
             entry.state.threadDeltaCount = 0;
         }
@@ -133,15 +133,15 @@ public class ResourceDataHandler
 
             long previousValue = resourceState.currentValue;
 
-            float increaseProbability = 0.5f;
+            float increaseProbability = _initialResourceData.baseIncreaseProbability;
             float offset = (float)(resourceState.currentEventValue - resourceState.currentValue) / resourceState.currentEventValue;
-            increaseProbability += offset * 0.5f;
-            increaseProbability = Math.Clamp(increaseProbability, 0.1f, 0.9f);
+            increaseProbability += offset * _initialResourceData.probabilityOffsetMultiplier;
+            increaseProbability = Math.Clamp(increaseProbability, _initialResourceData.minIncreaseProbability, _initialResourceData.maxIncreaseProbability);
 
             float volatility = _initialResourceData.volatilityMultiplier;
-            float changeAmount = resourceState.currentEventValue * volatility * UnityEngine.Random.Range(0.8f, 1.2f);
+            float changeAmount = resourceState.currentEventValue * volatility * UnityEngine.Random.Range(_initialResourceData.changeAmountRandomMin, _initialResourceData.changeAmountRandomMax);
 
-            long finalChangeAmount = Math.Max(1L, (long)Math.Round(changeAmount));
+            long finalChangeAmount = Math.Max(_initialResourceData.minChangeAmount, (long)Math.Round(changeAmount));
 
             if (UnityEngine.Random.value < increaseProbability)
             {
@@ -158,7 +158,7 @@ public class ResourceDataHandler
 
             resourceState.currentChangeValue = resourceState.currentValue - previousValue;
 
-            resourceState.RecordPrice(resourceState.currentValue);
+            entry.RecordPrice(resourceState.currentValue);
         }
     }
 

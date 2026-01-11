@@ -2,115 +2,143 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-/// <summary>
-/// 건물 레이아웃을 이미지로 캡처하여 프리뷰를 생성하는 핸들러입니다.
-/// </summary>
 public class DesignRunnerCaptureHandler
 {
     private readonly DesignRunner _manager;
-    private readonly List<BuildingState> _states;
     private readonly Camera _mainCamera;
+    private readonly DesignRunnerGridHandler _gridHandler;
 
-    public DesignRunnerCaptureHandler(DesignRunner buildingTileManager, List<BuildingState> currentBuildingStates)
+    public DesignRunnerCaptureHandler(DesignRunner manager)
     {
-        _manager = buildingTileManager;
-        _states = currentBuildingStates ?? new List<BuildingState>();
-        _mainCamera = buildingTileManager.MainCamera;
+        _manager = manager;
+        _mainCamera = manager.MainCamera;
+        _gridHandler = manager.GridGenHandler;
     }
 
     /// <summary>
-    /// 현재 레이아웃을 캡처합니다. UI 레이어를 제외하고 월드 객체만 렌더링합니다.
+    /// 특정 스레드(건물 배치 데이터)를 캡처하여 파일로 저장합니다.
     /// </summary>
-    public string CaptureThreadLayout(string threadId, List<BuildingState> customStates = null)
+    public string CaptureThreadLayout(string threadId, List<BuildingState> statesToCapture)
     {
-        if (string.IsNullOrEmpty(threadId) || _mainCamera == null) return null;
+        if (string.IsNullOrEmpty(threadId) || _mainCamera == null || statesToCapture == null || statesToCapture.Count == 0)
+        {
+            Debug.LogWarning("[Capture] 캡처할 데이터가 없거나 카메라가 없습니다.");
+            return null;
+        }
 
-        var statesToUse = customStates ?? _states;
-        if (statesToUse.Count == 0) return null;
+        Bounds worldBounds = CalculateWorldBounds(statesToCapture);
 
-        // 1. 영역 계산 (Bounds)
-        CalculateBounds(statesToUse, out Vector2 center, out Vector2 size, out int gridW, out int gridH);
+        int paddingPixels = 64;
+        int pixelsPerUnit = 64;
 
-        // 2. 렌더 텍스처 준비
-        int padding = 2;
-        int resWidth = Mathf.Max(512, (gridW + padding * 2) * 64);
-        int resHeight = Mathf.Max(512, (gridH + padding * 2) * 64);
+        int resWidth = Mathf.Max(512, (int)(worldBounds.size.x * pixelsPerUnit) + paddingPixels);
+        int resHeight = Mathf.Max(512, (int)(worldBounds.size.y * pixelsPerUnit) + paddingPixels);
+
         RenderTexture rt = new RenderTexture(resWidth, resHeight, 24, RenderTextureFormat.ARGB32);
 
-        // 3. 카메라 상태 백업
-        var backup = BackupCamera(_mainCamera);
+        CameraBackup backup = new CameraBackup(_mainCamera);
 
         try
         {
-            // 4. 카메라 설정 (UI 제외 설정 핵심)
-            _mainCamera.targetTexture = rt;
-            _mainCamera.clearFlags = CameraClearFlags.SolidColor;
-            _mainCamera.backgroundColor = new Color(0, 0, 0, 0); // 투명 배경
-
-            // UI 레이어(기본 5번)를 제외하고 모든 레이어 렌더링
-            _mainCamera.cullingMask &= ~(1 << LayerMask.NameToLayer("UI"));
-
-            _mainCamera.transform.position = new Vector3(center.x, -center.y, backup.pos.z);
-            _mainCamera.orthographicSize = Mathf.Max(gridW / _mainCamera.aspect, gridH) / 2f + padding;
+            SetupCameraForCapture(_mainCamera, rt, worldBounds);
 
             _mainCamera.Render();
-
-            // 5. 텍스처 추출 및 저장
-            return SaveTextureToFile(rt, threadId);
+            return SaveRenderTextureToPng(rt, threadId);
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[CaptureHandler] Capture Failed: {e.Message}");
+            Debug.LogError($"[Capture] 캡처 실패: {e.Message}");
             return null;
         }
         finally
         {
-            // 6. 상태 복구
             RestoreCamera(_mainCamera, backup);
-            rt.Release();
-            Object.Destroy(rt);
+
+            if (rt != null)
+            {
+                rt.Release();
+                Object.Destroy(rt);
+            }
         }
     }
 
-    private void CalculateBounds(List<BuildingState> states, out Vector2 center, out Vector2 size, out int gridW, out int gridH)
+    /// <summary>
+    /// 그리드 좌표 기반의 BuildingState들을 월드 좌표 Bounds로 변환합니다.
+    /// </summary>
+    private Bounds CalculateWorldBounds(List<BuildingState> states)
     {
-        int minX = int.MaxValue, minY = int.MaxValue, maxX = int.MinValue, maxY = int.MinValue;
+        if (states.Count == 0) return new Bounds(Vector3.zero, Vector3.one);
+
+        Vector3 min = new Vector3(float.MaxValue, float.MaxValue, 0);
+        Vector3 max = new Vector3(float.MinValue, float.MinValue, 0);
 
         foreach (var state in states)
         {
-            var data = _manager.DataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = _manager.DataManager.Building.GetBuildingData(state.buildingId);
             if (data == null) continue;
 
-            Vector2Int rSize = GetRotatedSize(data.size, state.rotation);
-            minX = Mathf.Min(minX, state.positionX);
-            minY = Mathf.Min(minY, state.positionY);
-            maxX = Mathf.Max(maxX, state.positionX + rSize.x);
-            maxY = Mathf.Max(maxY, state.positionY + rSize.y);
+            Vector2Int rotatedSize = GetRotatedGridSize(data.size, state.rotation);
+
+            Vector3 worldCenter = _gridHandler.GridToWorldPosition(new Vector2Int(state.positionX, state.positionY), rotatedSize);
+
+            Vector3 halfSize = new Vector3(rotatedSize.x * 0.5f, rotatedSize.y * 0.5f, 0);
+
+            Vector3 buildingMin = worldCenter - halfSize;
+            Vector3 buildingMax = worldCenter + halfSize;
+
+            min = Vector3.Min(min, buildingMin);
+            max = Vector3.Max(max, buildingMax);
         }
 
-        gridW = maxX - minX;
-        gridH = maxY - minY;
-        center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
-        size = new Vector2(gridW, gridH);
+        Bounds bounds = new Bounds();
+        bounds.SetMinMax(min, max);
+        return bounds;
     }
 
-    private string SaveTextureToFile(RenderTexture rt, string threadId)
+    /// <summary>
+    /// 캡처를 위해 카메라 위치와 옵션을 변경합니다.
+    /// </summary>
+    private void SetupCameraForCapture(Camera cam, RenderTexture rt, Bounds targetBounds)
+    {
+        cam.targetTexture = rt;
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0, 0, 0, 0);
+
+        cam.cullingMask &= ~(1 << LayerMask.NameToLayer("UI"));
+
+        cam.transform.position = new Vector3(targetBounds.center.x, targetBounds.center.y, -10f);
+
+        float padding = 1.0f;
+        float targetHeight = targetBounds.size.y / 2f;
+        float targetWidthInHeight = (targetBounds.size.x / cam.aspect) / 2f;
+
+        cam.orthographicSize = Mathf.Max(targetHeight, targetWidthInHeight) + padding;
+    }
+
+    private string SaveRenderTextureToPng(RenderTexture rt, string threadId)
     {
         RenderTexture.active = rt;
         Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
+
         tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
         tex.Apply();
 
         byte[] bytes = tex.EncodeToPNG();
-        string path = Path.Combine(Application.persistentDataPath, $"ThreadPreview_{threadId}.png");
+        string filename = $"Preview_{threadId}_{System.DateTime.Now:yyyyMMdd_HHmmss}.png";
+        string path = Path.Combine(Application.persistentDataPath, filename);
+
         File.WriteAllBytes(path, bytes);
+        Debug.Log($"[Capture] 저장 완료: {path}");
 
         RenderTexture.active = null;
         Object.Destroy(tex);
         return path;
     }
 
-    #region Camera State Management
+    private Vector2Int GetRotatedGridSize(Vector2Int size, int rotation)
+    {
+        return (rotation % 2 != 0) ? new Vector2Int(size.y, size.x) : size;
+    }
 
     private struct CameraBackup
     {
@@ -120,20 +148,21 @@ public class DesignRunnerCaptureHandler
         public float size;
         public Vector3 pos;
         public int mask;
-    }
 
-    private CameraBackup BackupCamera(Camera cam) => new CameraBackup
-    {
-        rt = cam.targetTexture,
-        flags = cam.clearFlags,
-        bg = cam.backgroundColor,
-        size = cam.orthographicSize,
-        pos = cam.transform.position,
-        mask = cam.cullingMask
-    };
+        public CameraBackup(Camera cam)
+        {
+            rt = cam.targetTexture;
+            flags = cam.clearFlags;
+            bg = cam.backgroundColor;
+            size = cam.orthographicSize;
+            pos = cam.transform.position;
+            mask = cam.cullingMask;
+        }
+    }
 
     private void RestoreCamera(Camera cam, CameraBackup backup)
     {
+        if (cam == null) return;
         cam.targetTexture = backup.rt;
         cam.clearFlags = backup.flags;
         cam.backgroundColor = backup.bg;
@@ -141,12 +170,5 @@ public class DesignRunnerCaptureHandler
         cam.transform.position = backup.pos;
         cam.cullingMask = backup.mask;
         RenderTexture.active = null;
-    }
-
-    #endregion
-
-    private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
-    {
-        return (rotation % 4 == 1 || rotation % 4 == 3) ? new Vector2Int(size.y, size.x) : size;
     }
 }

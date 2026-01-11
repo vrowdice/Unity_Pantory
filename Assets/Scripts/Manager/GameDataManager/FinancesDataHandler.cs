@@ -45,6 +45,7 @@ public class FinancesDataHandler
     {
         long credit = 0;
 
+        credit -= _dataManager.Employee.CalculateTotalSalary();
         credit -= _dataManager.Resource.CalculateResourceDeltaChangeCredit();
         credit -= _dataManager.ThreadCalculate.CalculateTotalMaintenanceCost(_dataManager.ThreadPlacement);
 

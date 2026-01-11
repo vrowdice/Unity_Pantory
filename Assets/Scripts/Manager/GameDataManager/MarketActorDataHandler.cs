@@ -58,9 +58,9 @@ public partial class MarketActorDataHandler
     {
         foreach (MarketActorEntry actorEntry in _actorDic.Values)
         {
-            float businessSuccess = UnityEngine.Random.Range(0.8f, 1.3f);
+            float businessSuccess = UnityEngine.Random.Range(_initialMarketActorData.businessSuccessMin, _initialMarketActorData.businessSuccessMax);
             long totalDailyEarnings = 0;
-            float totalBaseValue = 0;
+            long totalDailyCost = 0;
 
             foreach (ResourceData resourceData in actorEntry.data.productionResources)
             {
@@ -70,22 +70,25 @@ public partial class MarketActorDataHandler
                 long virtualProduction = (long)(actorEntry.data.baseProductionCount * businessSuccess);
                 totalDailyEarnings += virtualProduction * resourceEntry.state.currentValue;
 
-                totalBaseValue += resourceData.baseValue;
+                float costVariation = UnityEngine.Random.Range(_initialMarketActorData.costVariationMin, _initialMarketActorData.costVariationMax);
+                totalDailyCost += (long)(actorEntry.data.baseProductionCount * costVariation * resourceEntry.state.currentValue);
             }
 
-            if (actorEntry.data.productionResources.Count > 0)
+            long dailyNetProfit = totalDailyEarnings - totalDailyCost;
+
+            if (dailyNetProfit > _initialMarketActorData.maxDailyNetProfit)
             {
-                float averageBaseValue = totalBaseValue / actorEntry.data.productionResources.Count;
-
-                long baseCostCount = actorEntry.data.baseProductionCount;
-                long virtualCost = (long)(baseCostCount * UnityEngine.Random.Range(0.9f, 1.1f) * averageBaseValue);
-
-                long dailyNetProfit = totalDailyEarnings - virtualCost;
-                actorEntry.state.wealth += dailyNetProfit;
-                actorEntry.state.currentChangeWealth = dailyNetProfit;
+                dailyNetProfit = (long)(dailyNetProfit * _initialMarketActorData.profitLimitMultiplier);
             }
 
-            if (actorEntry.state.wealth < 0) actorEntry.state.wealth = 0;
+            actorEntry.state.wealth += dailyNetProfit;
+            actorEntry.state.currentChangeWealth = dailyNetProfit;
+
+            if (actorEntry.state.wealth < actorEntry.data.wealth)
+            {
+                actorEntry.state.wealth = actorEntry.data.wealth;
+                actorEntry.state.currentChangeWealth = 0;
+            }
         }
     }
 

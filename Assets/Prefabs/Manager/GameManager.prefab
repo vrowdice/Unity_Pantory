@@ -61,3 +61,4 @@ MonoBehaviour:
   _productionIconScale: 0.8
   _dataManagerPrefab: {fileID: 8528956353445437084, guid: 10c608d4ef825d14b8a641b7ad998c7f, type: 3}
   _visualManagerPrefab: {fileID: 3783952558090352044, guid: a9a6b4feda52725479ea0aa16606b313, type: 3}
+  _saveLoadManagerPrefab: {fileID: 8979309171805832512, guid: 74be5c094f98f1c479a5375745d16474, type: 3}

@@ -168,11 +168,11 @@ public partial class DesignCanvas
 
     public void RotateBuildingLeft()
     {
-        _designRunner.PlacementHandler.RotateLeft();
+        _designRunner.PlacementHandler.Rotate(false);
     }
 
     public void RotateBuildingRight()
     {
-        _designRunner.PlacementHandler.RotateRight();
+        _designRunner.PlacementHandler.Rotate(true);
     }
 }

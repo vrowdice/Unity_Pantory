@@ -42,7 +42,7 @@ public partial class MainCanvas
 
         if (categories != null)
         {
-            foreach (var category in categories.Values)
+            foreach (ThreadCategory category in categories.Values)
             {
                 if (category == null || string.IsNullOrEmpty(category.categoryId))
                 {
@@ -89,7 +89,7 @@ public partial class MainCanvas
 
         if (threadsToShow != null)
         {
-            foreach (var thread in threadsToShow)
+            foreach (ThreadState thread in threadsToShow)
             {
                 if (thread == null || string.IsNullOrEmpty(thread.threadId))
                 {
@@ -204,7 +204,7 @@ public partial class MainCanvas
 
     private void UpdateThreadCategoryButtonStates()
     {
-        foreach (var btn in _threadCategoryBtns)
+        foreach (ThreadCategoryBtn btn in _threadCategoryBtns)
         {
             bool isActive = btn.CategoryId == _selectedThreadCategoryId;
             btn.SetFocused(isActive);
@@ -219,7 +219,7 @@ public partial class MainCanvas
             currentPlacementThread = _threadTileManager.CurrentPlacementThread;
         }
 
-        foreach (var btn in _threadBtns)
+        foreach (ThreadBtn btn in _threadBtns)
         {
             if (btn == null)
                 continue;

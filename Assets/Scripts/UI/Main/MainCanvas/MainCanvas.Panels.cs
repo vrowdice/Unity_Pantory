@@ -30,7 +30,7 @@ public partial class MainCanvas
 
     private void InitializePanels()
     {
-        foreach (var kvp in _panelDict)
+        foreach (KeyValuePair<MainPanelType, BasePanel> kvp in _panelDict)
         {
             if (kvp.Value != null)
             {

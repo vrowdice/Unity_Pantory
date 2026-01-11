@@ -23,7 +23,7 @@ public partial class MainCanvas
         Dictionary<string, ResourceEntry> resources = DataManager.Resource.GetAllResources();
         foreach (ResourceEntry entry in resources.Values)
         {
-            if(entry.state.count == 0)
+            if(entry.state.count == 0 && entry.state.currnetChangeCount == 0)
             {
                 continue;
             }

@@ -20,7 +20,7 @@ public class ThreadPlacementDataHandler
 
     public Dictionary<Vector2Int, ThreadPlacementState> GetAllPlacedThreads()
     {
-        return _placedThreads;
+        return new Dictionary<Vector2Int, ThreadPlacementState>(_placedThreads);
     }
 
     /// <summary>

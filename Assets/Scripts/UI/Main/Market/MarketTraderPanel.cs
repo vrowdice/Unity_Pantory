@@ -44,7 +44,7 @@ public class MarketTraderPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// ±×·¡ÇÁ¿Í ÅØ½ºÆ® Á¤º¸¸¦ Æ÷ÇÔÇÑ ¸ğµç UI ¿ä¼Ò¸¦ ÃÖ½ÅÈ­ÇÕ´Ï´Ù.
+    /// ì„ íƒëœ í–‰ìœ„ìì˜ UIë¥¼ ìƒˆë¡œê³ ì¹¨í•©ë‹ˆë‹¤.
     /// </summary>
     private void RefreshUI()
     {
@@ -60,5 +60,26 @@ public class MarketTraderPanel : MonoBehaviour
         _wealthText.text = $"{state.wealth:N0}";
         string deltaSymbol = state.currentChangeWealth > 0 ? "+" : "";
         _changeWelthText.text = $" ({deltaSymbol}{state.currentChangeWealth:F2})";
+
+        RefreshProviderResources();
+    }
+
+    /// <summary>
+    /// ìƒì‚° ìì› ì•„ì´ì½˜ë“¤ì„ ìƒˆë¡œê³ ì¹¨í•©ë‹ˆë‹¤.
+    /// </summary>
+    private void RefreshProviderResources()
+    {
+        GameObjectUtils.ClearChildren(_providerResourceContentTransform);
+
+        if (_selectedActor == null || _selectedActor.data.productionResources == null) return;
+
+        GameManager gameManager = GameManager.Instance;
+
+        foreach (ResourceData resourceData in _selectedActor.data.productionResources)
+        {
+            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
+            int productionCount = (int)_selectedActor.data.baseProductionCount;
+            gameManager.CreateProductionIcon(_providerResourceContentTransform, resourceEntry, productionCount);
+        }
     }
 }

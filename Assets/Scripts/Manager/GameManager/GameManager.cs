@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     private RunnerBase _currentRunnerBase;
     private DataManager _dataManager;
     private VisualManager _visualManager;
+    private SaveLoadManager _saveLoadManager;
     private MainCameraController _mainCameraController;
 
     private Canvas _currnetWorldCanvas;
@@ -58,6 +59,7 @@ public class GameManager : MonoBehaviour
     [Header("Manager Settings")]
     [SerializeField] private GameObject _dataManagerPrefab;
     [SerializeField] private GameObject _visualManagerPrefab;
+    [SerializeField] private GameObject _saveLoadManagerPrefab;
 
     public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;
     public GameObject EffectTextPairPanelPrefab => _effectTextPairPanelPrefab;
@@ -72,6 +74,13 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        
+        if (_saveLoadManager == null)
+        {
+            GameObject saveLoadManagerObj = Instantiate(_saveLoadManagerPrefab);
+            _saveLoadManager = saveLoadManagerObj.GetComponent<SaveLoadManager>();
+            _saveLoadManager.Init();
+        }
 
         if (_dataManager == null)
         {

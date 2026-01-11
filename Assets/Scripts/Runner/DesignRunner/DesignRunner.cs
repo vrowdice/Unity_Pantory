@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -36,6 +37,7 @@ public class DesignRunner : RunnerBase
     public GameObject OutputMarkerPrefab => _outputMarkerPrefab;
 
     private MainCameraController _mainCameraController;
+    private SaveLoadManager _saveLoadManager;
     private string _currentThreadId = string.Empty;
     private List<BuildingState> _temporaryBuildingStates = new List<BuildingState>();
     private bool _isTemporaryDataDirty = false;
@@ -80,6 +82,9 @@ public class DesignRunner : RunnerBase
     {
         base.Init();
 
+        _mainCameraController = MainCamera?.GetComponent<MainCameraController>();
+        _saveLoadManager = SaveLoadManager.Instance;
+        
         InitializeHandlers();
         SetupGridSystem();
         LoadInitialThreadState();
@@ -96,7 +101,7 @@ public class DesignRunner : RunnerBase
         PlacementHandler = new DesignRunnerPlacementHandler(this, _buildingObjectPrefab);
         RemovalHandler = new DesignRunnerRemovalHandler(this);
         CalculateHandler = new DesignRunnerCalculateHandler(this, currentStates);
-        CaptureHandler = new DesignRunnerCaptureHandler(this, currentStates);
+        CaptureHandler = new DesignRunnerCaptureHandler(this);
     }
 
     private void SetupGridSystem()
@@ -240,12 +245,6 @@ public class DesignRunner : RunnerBase
 
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
-        if (_temporaryBuildingStates.Count == 0)
-        {
-            Debug.LogWarning("[BuildingTileManager] No buildings to save.");
-            return;
-        }
-
         string newThreadIdentifier = _designCanvas.GetThreadIdFromTitle(threadName);
         DataManager.Thread.CreateThread(newThreadIdentifier, threadName);
 
@@ -255,7 +254,7 @@ public class DesignRunner : RunnerBase
 
         ProcessPostSaveLogic(newThreadIdentifier, categoryIdentifier);
 
-        DataManager.Thread.Save();
+        _saveLoadManager.Thread.SaveThreadData(DataManager.Thread);
         SetCurrentThread(newThreadIdentifier);
     }
 
@@ -269,7 +268,11 @@ public class DesignRunner : RunnerBase
         ThreadState threadState = DataManager.Thread.GetThread(threadIdentifier);
         if (threadState != null)
         {
-            threadState.previewImagePath = CaptureHandler?.CaptureThreadLayout(threadIdentifier);
+            if (!string.IsNullOrEmpty(threadState.previewImagePath) && File.Exists(threadState.previewImagePath))
+            {
+                File.Delete(threadState.previewImagePath);
+            }
+            threadState.previewImagePath = CaptureHandler.CaptureThreadLayout(threadIdentifier, _temporaryBuildingStates);
             threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadIdentifier);
             threadState.requiredEmployees = DataManager.ThreadCalculate.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
         }
@@ -361,6 +364,14 @@ public class DesignRunner : RunnerBase
         {
             boxCollider.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
             boxCollider.size = new Vector2(_gridWidth, _gridHeight);
+        }
+
+        if (_mainCameraController != null)
+        {
+            Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, -_gridHeight / 2f, 0);
+            Vector2 center = new Vector2(gridWorldCenter.x, gridWorldCenter.y);
+            Vector2 size = new Vector2(_gridWidth, _gridHeight);
+            _mainCameraController.SetBoundary(center, size);
         }
     }
 }

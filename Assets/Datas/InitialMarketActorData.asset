@@ -12,38 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d05b7e53b838fe644bcfb2e1b1044159, type: 3}
   m_Name: InitialMarketActorData
   m_EditorClassIdentifier: 
-  marketFeeRate: 0.05
-  initialActorWealth: 50000
-  initialActorHealth: 1
-  productionFailureChance: 0.05
-  productionFailureLossRate: 0.1
-  defaultUpkeepRate: 0.2
-  productionCostScale: 100
-  satisfactionValueRate: 0.1
-  purchaseCostLossRate: 0.5
-  budgetShortageThreshold: 0.3
-  providerWealthGainHealthRecovery: 0.02
-  providerWealthLossHealthDamage: 0.05
-  providerRankPenalty: 0.005
-  providerNaturalDecay: 0.002
-  consumerBudgetShortageDamage: 0.03
-  consumerBudgetSufficientRecovery: 0.01
-  consumerSatisfactionLerp: 0.1
-  playerDemandImpact: 0.02
-  playerSupplyImpact: 0.02
-  minPriceSignal: 0.1
-  baseMaxDailySwing: 0.02
-  noBatchSellingModifier: 0.5
-  rawProductionRange: {x: 3000, y: 6000}
-  metalProductionRange: {x: 1500, y: 3000}
-  woodProductionRange: {x: 2000, y: 4000}
-  toolProductionRange: {x: 500, y: 1000}
-  weaponProductionRange: {x: 200, y: 500}
-  otherProductionRange: {x: 800, y: 1500}
-  smallScaleMultiplier: 1.2
-  mediumScaleMultiplier: 2
-  largeScaleMultiplier: 3
-  consumerConsumptionMultiplier: 1.2
-  smallConsumerBudget: {x: 5000, y: 10000}
-  mediumConsumerBudget: {x: 20000, y: 50000}
-  largeConsumerBudget: {x: 100000, y: 300000}
+  businessSuccessMin: 0.99
+  businessSuccessMax: 1.02
+  costVariationMin: 0.9
+  costVariationMax: 1.1
+  maxDailyNetProfit: 500000
+  profitLimitMultiplier: 0.5
