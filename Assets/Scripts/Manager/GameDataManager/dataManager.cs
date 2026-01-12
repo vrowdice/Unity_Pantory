@@ -34,7 +34,6 @@ public class DataManager : MonoBehaviour
     public FinancesDataHandler Finances { get; private set; }
     public EmployeeDataHandler Employee { get; private set; }
     public BuildingDataHandler Building { get; private set; }
-    public ThreadCalculateHandler ThreadCalculate { get; private set; }
     public EffectDataHandler Effect { get; private set; }
     public ResearchDataHandler Research { get; private set; }
 
@@ -68,7 +67,6 @@ public class DataManager : MonoBehaviour
         Finances = new FinancesDataHandler(this, _initialFinancesData);
         Employee = new EmployeeDataHandler(this, _employeeDataList, _initialEmployeeData);
         Building = new BuildingDataHandler(this, _buildingDataList);
-        ThreadCalculate = new ThreadCalculateHandler(this);
         Effect = new EffectDataHandler(this);
         Research = new ResearchDataHandler(this, _researchDataList);
 

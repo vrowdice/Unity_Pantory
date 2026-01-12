@@ -25,16 +25,17 @@ public class DesignRunner : RunnerBase
     [SerializeField] private float _cameraZOffset = 11f;
 
     public DesignRunnerGridHandler GridGenHandler { get; private set; }
-    public DesignRunnerPlacementHandler PlacementHandler { get; private set; }
-    public DesignRunnerRemovalHandler RemovalHandler { get; private set; }
-    public DesignRunnerCalculateHandler CalculateHandler { get; private set; }
     public DesignRunnerCaptureHandler CaptureHandler { get; private set; }
 
     public MainCameraController MainCameraController => _mainCameraController;
     public DesignCanvas DesignUiManager => _designCanvas;
 
+    public GameObject BuildingTilePrefab => _buildingTilePrefab;
+    public GameObject BuildingObjectPrefab => _buildingObjectPrefab;
     public GameObject InputMarkerPrefab => _inputMarkerPrefab;
     public GameObject OutputMarkerPrefab => _outputMarkerPrefab;
+    public int GridWidth => _gridWidth;
+    public int GridHeight => _gridHeight;
 
     private MainCameraController _mainCameraController;
     private SaveLoadManager _saveLoadManager;
@@ -43,41 +44,129 @@ public class DesignRunner : RunnerBase
     private bool _isTemporaryDataDirty = false;
 
     public string CurrentThreadId => _currentThreadId;
-    public bool IsPlacementMode => PlacementHandler?.IsActive ?? false;
-    public bool IsRemovalMode => RemovalHandler?.IsActive ?? false;
+    public bool IsPlacementMode => GridGenHandler?.IsPlacementActive ?? false;
+    public bool IsRemovalMode => GridGenHandler?.IsRemovalActive ?? false;
     private bool IsThreadActive => !string.IsNullOrEmpty(_currentThreadId);
 
     private void Update()
     {
-        if (!IsThreadActive && !IsPlacementMode && !IsRemovalMode)
+        if (IsPlacementMode)
         {
-            return;
+            UpdatePlacementMode();
         }
-
-        HandleInput();
-    }
-
-    private void HandleInput()
-    {
-        // 1. 배치 모드 업데이트
-        if (PlacementHandler != null)
+        else if (IsRemovalMode)
         {
-            PlacementHandler.Update();
+            UpdateRemovalMode();
         }
-
-        // 2. 삭제 모드 업데이트 (스레드가 활성화된 경우만)
-        if (IsThreadActive && RemovalHandler != null)
-        {
-            RemovalHandler.Update(_currentThreadId);
-        }
-
-        // 3. 일반 상태에서의 클릭 처리 (모드 중이 아닐 때)
-        if (!IsPlacementMode && !IsRemovalMode && IsThreadActive)
+        else if (IsThreadActive)
         {
             HandleBuildingClick();
         }
     }
 
+    /// <summary>
+    /// 배치 모드 상태에서 마우스 입력 및 미리보기를 처리합니다.
+    /// </summary>
+    private void UpdatePlacementMode()
+    {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        Vector3 mouseWorldPos = GetMouseWorldPosition();
+        (Vector2Int gridPos, bool canPlace) = GridGenHandler.UpdatePlacement(mouseWorldPos);
+
+        if (Input.GetMouseButtonDown(0) && canPlace)
+        {
+            PlaceBuilding(gridPos);
+        }
+        else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            CancelPlacementMode();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q)) GridGenHandler.Rotate(false);
+        if (Input.GetKeyDown(KeyCode.E)) GridGenHandler.Rotate(true);
+    }
+
+    /// <summary>
+    /// 삭제 모드 상태에서 마우스 입력을 처리합니다.
+    /// </summary>
+    private void UpdateRemovalMode()
+    {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        Vector3 mouseWorldPos = GetMouseWorldPosition();
+        GameObject hoveredBuilding = GridGenHandler.UpdateRemoval(mouseWorldPos);
+
+        if (Input.GetMouseButtonDown(0) && hoveredBuilding != null)
+        {
+            if (hoveredBuilding.TryGetComponent(out BuildingObject comp))
+            {
+                if (RemoveBuilding(new Vector2Int(comp.BuildingState.positionX, comp.BuildingState.positionY)))
+                {
+                    GridGenHandler.ResetBuildingHighlight();
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            CancelRemovalMode();
+        }
+    }
+
+    private Vector3 GetMouseWorldPosition()
+    {
+        Camera camera = MainCameraController?.Camera ?? MainCamera;
+        Vector3 mouseWorldPos = camera.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
+        return mouseWorldPos;
+    }
+
+    private void PlaceBuilding(Vector2Int gridPos)
+    {
+        BuildingData selectedBuilding = GridGenHandler.SelectedBuilding;
+        if (selectedBuilding == null) return;
+
+        int rotation = GridGenHandler.RotationIndex;
+        BuildingState state = new BuildingState(selectedBuilding.id, gridPos, selectedBuilding, rotation);
+        AddBuildingToTemp(state);
+        RefreshBuildings();
+    }
+
+    private bool RemoveBuilding(Vector2Int origin)
+    {
+        if (RemoveBuildingFromTemp(origin))
+        {
+            RefreshBuildings();
+            return true;
+        }
+        return false;
+    }
+
+    public bool StartPlacementMode(BuildingData buildingData)
+    {
+        if (buildingData == null) return false;
+
+        if (IsRemovalMode) GridGenHandler.CancelRemoval();
+
+        GridGenHandler.StartPlacement(buildingData);
+        return true;
+    }
+
+    public void CancelPlacementMode() => GridGenHandler?.CancelPlacement();
+
+    public void StartRemovalMode()
+    {
+        if (IsPlacementMode) GridGenHandler.CancelPlacement();
+        GridGenHandler?.StartRemoval();
+    }
+
+    public void CancelRemovalMode() => GridGenHandler?.CancelRemoval();
+
+    /// <summary>
+    /// DesignRunner를 초기화합니다.
+    /// </summary>
     override public void Init()
     {
         base.Init();
@@ -92,18 +181,21 @@ public class DesignRunner : RunnerBase
         _designCanvas.Init(this);
     }
 
+    /// <summary>
+    /// 모든 핸들러를 초기화합니다.
+    /// </summary>
     private void InitializeHandlers()
     {
-        // 핸들러 생성 시 현재 상태 리스트를 참조할 수 있도록 전달
         List<BuildingState> currentStates = GetCurrentBuildingStates();
 
-        GridGenHandler = new DesignRunnerGridHandler(this, _buildingTilePrefab, _buildingObjectPrefab, _inputMarkerPrefab, _outputMarkerPrefab, _gridWidth, _gridHeight);
-        PlacementHandler = new DesignRunnerPlacementHandler(this, _buildingObjectPrefab);
-        RemovalHandler = new DesignRunnerRemovalHandler(this);
-        CalculateHandler = new DesignRunnerCalculateHandler(this, currentStates);
+        GridGenHandler = new DesignRunnerGridHandler(this);
+        GridGenHandler.RefreshCalculationData(currentStates);
         CaptureHandler = new DesignRunnerCaptureHandler(this);
     }
 
+    /// <summary>
+    /// 그리드 시스템을 설정합니다.
+    /// </summary>
     private void SetupGridSystem()
     {
         if (GridGenHandler != null)
@@ -114,6 +206,9 @@ public class DesignRunner : RunnerBase
         }
     }
 
+    /// <summary>
+    /// 초기 스레드 상태를 로드합니다.
+    /// </summary>
     private void LoadInitialThreadState()
     {
         _currentThreadId = GameManager.CurrentThreadId;
@@ -128,12 +223,13 @@ public class DesignRunner : RunnerBase
         if (buildingStates != null)
         {
             _temporaryBuildingStates = new List<BuildingState>(buildingStates);
-            RefreshBuildings();
         }
         else
         {
             _temporaryBuildingStates = new List<BuildingState>();
         }
+
+        RefreshBuildings();
     }
 
     /// <summary>
@@ -146,15 +242,9 @@ public class DesignRunner : RunnerBase
         out List<string> outputResourceIdentifiers,
         out Dictionary<string, int> outputResourceCounts)
     {
-        inputResourceIdentifiers = new List<string>();
-        inputResourceCounts = new Dictionary<string, int>();
-        outputResourceIdentifiers = new List<string>();
-        outputResourceCounts = new Dictionary<string, int>();
+        GridGenHandler.RefreshCalculationData(GetCurrentBuildingStates());
 
-        CalculateHandler = new DesignRunnerCalculateHandler(this, GetCurrentBuildingStates());
-
-        // 실제 계산은 핸들러에게 위임
-        CalculateHandler.CalculateProductionChain(
+        GridGenHandler.CalculateProductionChain(
             threadIdentifier,
             GetCurrentBuildingStates(),
             out inputResourceIdentifiers,
@@ -165,9 +255,10 @@ public class DesignRunner : RunnerBase
     }
 
     /// <summary>
-    /// 새로운 건물을 임시 데이터 리스트에 추가합니다. 
+    /// 새로운 건물을 임시 데이터 리스트에 추가합니다.
     /// 동일한 위치에 건물이 이미 있다면 기존 데이터를 제거하고 새로 추가합니다.
     /// </summary>
+    /// <param name="newBuildingState">추가할 건물 상태</param>
     internal void AddBuildingToTemp(BuildingState newBuildingState)
     {
         if (newBuildingState == null)
@@ -175,16 +266,11 @@ public class DesignRunner : RunnerBase
             return;
         }
 
-        // 1. 중복 위치 확인: 새 건물이 들어올 자리에 이미 데이터가 있다면 삭제 (덮어쓰기 로직)
-        // 멀티 타일 건물일 경우 원점(PositionX, PositionY)을 기준으로 관리합니다.
         _temporaryBuildingStates.RemoveAll((BuildingState existingState) =>
             existingState.positionX == newBuildingState.positionX &&
             existingState.positionY == newBuildingState.positionY);
 
-        // 2. 리스트에 추가
         _temporaryBuildingStates.Add(newBuildingState);
-
-        // 3. 데이터가 변경되었음을 표시
         _isTemporaryDataDirty = true;
 
         Debug.Log("[BuildingTileManager] New building added to temporary state: " + newBuildingState.buildingId + " at " + newBuildingState.positionX + ", " + newBuildingState.positionY);
@@ -197,13 +283,11 @@ public class DesignRunner : RunnerBase
     /// <returns>삭제 성공 여부</returns>
     internal bool RemoveBuildingFromTemp(Vector2Int gridPosition)
     {
-        // 리스트에서 해당 좌표와 일치하는 BuildingState를 모두 삭제
         int removedCount = _temporaryBuildingStates.RemoveAll((BuildingState buildingState) =>
             buildingState.positionX == gridPosition.x && buildingState.positionY == gridPosition.y);
 
         if (removedCount > 0)
         {
-            // 데이터가 변경되었음을 표시 (저장 시 확인용)
             _isTemporaryDataDirty = true;
 
             Debug.Log("[BuildingTileManager] Building removed from temporary states at: " + gridPosition);
@@ -221,6 +305,10 @@ public class DesignRunner : RunnerBase
         return _temporaryBuildingStates;
     }
 
+    /// <summary>
+    /// 현재 편집 중인 스레드를 변경합니다.
+    /// </summary>
+    /// <param name="threadIdentifier">변경할 스레드 식별자</param>
     public void SetCurrentThread(string threadIdentifier)
     {
         if (string.IsNullOrEmpty(threadIdentifier) || _currentThreadId == threadIdentifier)
@@ -239,10 +327,14 @@ public class DesignRunner : RunnerBase
         List<BuildingState> buildingStatesFromData = DataManager.Thread.GetBuildingStates(threadIdentifier);
         _temporaryBuildingStates = (buildingStatesFromData != null) ? new List<BuildingState>(buildingStatesFromData) : new List<BuildingState>();
 
-        // 핸들러들에 갱신된 상태 리스트 반영 (필요 시 핸들러 내부 데이터 업데이트 메서드 호출)
         RefreshBuildings();
     }
 
+    /// <summary>
+    /// 스레드 변경사항을 저장합니다.
+    /// </summary>
+    /// <param name="threadName">스레드 이름</param>
+    /// <param name="categoryIdentifier">카테고리 식별자</param>
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
         string newThreadIdentifier = _designCanvas.GetThreadIdFromTitle(threadName);
@@ -258,6 +350,11 @@ public class DesignRunner : RunnerBase
         SetCurrentThread(newThreadIdentifier);
     }
 
+    /// <summary>
+    /// 저장 후 처리 로직을 수행합니다.
+    /// </summary>
+    /// <param name="threadIdentifier">스레드 식별자</param>
+    /// <param name="categoryIdentifier">카테고리 식별자</param>
     private void ProcessPostSaveLogic(string threadIdentifier, string categoryIdentifier)
     {
         if (!string.IsNullOrEmpty(categoryIdentifier))
@@ -274,13 +371,17 @@ public class DesignRunner : RunnerBase
             }
             threadState.previewImagePath = CaptureHandler.CaptureThreadLayout(threadIdentifier, _temporaryBuildingStates);
             threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadIdentifier);
-            threadState.requiredEmployees = DataManager.ThreadCalculate.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
+            threadState.requiredEmployees = DataManager.ThreadPlacement.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
         }
     }
 
+    /// <summary>
+    /// 배치된 모든 건물을 새로고침합니다.
+    /// </summary>
     public void RefreshBuildings()
     {
         GridGenHandler.ClearAllPlacedBuildings();
+        GridGenHandler.RefreshCalculationData(_temporaryBuildingStates);
 
         foreach (BuildingState buildingState in _temporaryBuildingStates)
         {
@@ -288,11 +389,14 @@ public class DesignRunner : RunnerBase
             if (buildingData != null)
             {
                 GridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
-                GridGenHandler.MarkTilesAsOccupied(new Vector2Int(buildingState.positionX, buildingState.positionY), GetRotatedSize(buildingData.size, buildingState.rotation));
+                GridGenHandler.MarkTilesAsOccupied(new Vector2Int(buildingState.positionX, buildingState.positionY), GridMathUtility.GetRotatedSize(buildingData.size, buildingState.rotation));
             }
         }
     }
 
+    /// <summary>
+    /// 건물 클릭을 처리합니다.
+    /// </summary>
     private void HandleBuildingClick()
     {
         if (EventSystem.current?.IsPointerOverGameObject() == true)
@@ -308,7 +412,7 @@ public class DesignRunner : RunnerBase
             BuildingState clickedBuildingState = _temporaryBuildingStates.Find((BuildingState state) =>
             {
                 BuildingData buildingData = DataManager.Building.GetBuildingData(state.buildingId);
-                Vector2Int rotatedSize = GetRotatedSize(buildingData.size, state.rotation);
+                Vector2Int rotatedSize = GridMathUtility.GetRotatedSize(buildingData.size, state.rotation);
                 return gridPosition.x >= state.positionX && gridPosition.x < state.positionX + rotatedSize.x &&
                        gridPosition.y >= state.positionY && gridPosition.y < state.positionY + rotatedSize.y;
             });
@@ -320,6 +424,10 @@ public class DesignRunner : RunnerBase
         }
     }
 
+    /// <summary>
+    /// 건물 정보를 표시합니다.
+    /// </summary>
+    /// <param name="buildingState">건물 상태</param>
     private void ShowBuildingInfo(BuildingState buildingState)
     {
         BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
@@ -333,7 +441,12 @@ public class DesignRunner : RunnerBase
         }
     }
 
-    // 약어 없이 전체 타입 명시
+    /// <summary>
+    /// 스프라이트 스케일을 계산합니다.
+    /// </summary>
+    /// <param name="buildingSprite">건물 스프라이트</param>
+    /// <param name="targetSize">목표 크기</param>
+    /// <returns>계산된 스케일</returns>
     public Vector3 CalculateSpriteScale(Sprite buildingSprite, Vector2Int targetSize)
     {
         if (buildingSprite == null) return Vector3.one;
@@ -342,21 +455,28 @@ public class DesignRunner : RunnerBase
         return new Vector3(scaleX, scaleY, 1f);
     }
 
-    private Vector2Int GetRotatedSize(Vector2Int size, int rotation)
-    {
-        return (rotation % 4 == 1 || rotation % 4 == 3) ? new Vector2Int(size.y, size.x) : size;
-    }
 
+    /// <summary>
+    /// 스레드의 총 유지비를 계산합니다.
+    /// </summary>
+    /// <param name="threadIdentifier">스레드 식별자</param>
+    /// <returns>총 유지비</returns>
     public int CalculateTotalMaintenanceCost(string threadIdentifier)
     {
-        return DataManager.ThreadCalculate?.CalculateTotalMaintenanceCost(threadIdentifier, GetCurrentBuildingStates()) ?? 0;
+        return DataManager.ThreadPlacement?.CalculateTotalMaintenanceCost(threadIdentifier, GetCurrentBuildingStates()) ?? 0;
     }
 
+    /// <summary>
+    /// 그리드 중심 위치로 설정합니다.
+    /// </summary>
     public void SetPositionCenter()
     {
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, _cameraZOffset);
     }
 
+    /// <summary>
+    /// 카메라 콜라이더를 업데이트합니다.
+    /// </summary>
     public void UpdateCameraCollider()
     {
         BoxCollider2D boxCollider;

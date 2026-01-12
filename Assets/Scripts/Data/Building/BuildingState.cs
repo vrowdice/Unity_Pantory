@@ -17,7 +17,13 @@ public class BuildingState
     public int rotation = 0;
     public Vector2Int inputPosition;
     public Vector2Int outputPosition;
-    public string currentResourceId; 
+    public string currentResourceId;
+
+    public BuildingState()
+    {
+        inputProductionIds = new List<string>();
+        outputProductionIds = new List<string>();
+    } 
     
     public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData, int rotation = 0)
     {

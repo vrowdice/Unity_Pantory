@@ -22,7 +22,7 @@ public class DesignRunnerCaptureHandler
     {
         if (string.IsNullOrEmpty(threadId) || _mainCamera == null || statesToCapture == null || statesToCapture.Count == 0)
         {
-            Debug.LogWarning("[Capture] 캡처할 데이터가 없거나 카메라가 없습니다.");
+            Debug.LogWarning("[Capture] No data to capture or camera not found.");
             return null;
         }
 
@@ -47,7 +47,7 @@ public class DesignRunnerCaptureHandler
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[Capture] 캡처 실패: {e.Message}");
+            Debug.LogError($"[Capture] Capture failed: {e.Message}");
             return null;
         }
         finally
@@ -128,7 +128,7 @@ public class DesignRunnerCaptureHandler
         string path = Path.Combine(Application.persistentDataPath, filename);
 
         File.WriteAllBytes(path, bytes);
-        Debug.Log($"[Capture] 저장 완료: {path}");
+        Debug.Log($"[Capture] Saved: {path}");
 
         RenderTexture.active = null;
         Object.Destroy(tex);

@@ -2,139 +2,145 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 건물 계산 로직을 공통으로 처리하는 유틸리티 클래스입니다.
-/// 연구 잠금 체크, 유지비 계산, 직원 수 계산, 자원 추론 로직을 통합 관리합니다.
+/// 건물 계산 결과를 담는 데이터 구조체입니다.
 /// </summary>
+public class CalculationResult
+{
+    public int TotalMaintenanceCost { get; set; }
+    public int TotalRequiredEmployees { get; set; }
+    public Dictionary<string, int> InputResourceCounts { get; } = new Dictionary<string, int>();
+    public Dictionary<string, int> OutputResourceCounts { get; } = new Dictionary<string, int>();
+
+    public void AddInput(string id, int amount)
+    {
+        AddToDict(InputResourceCounts, id, amount);
+    }
+
+    public void AddOutput(string id, int amount)
+    {
+        AddToDict(OutputResourceCounts, id, amount);
+    }
+
+    private void AddToDict(Dictionary<string, int> dict, string id, int amount)
+    {
+        if (string.IsNullOrEmpty(id)) return;
+        dict[id] = dict.GetValueOrDefault(id, 0) + amount;
+    }
+}
+
 public static class BuildingCalculationUtility
 {
     /// <summary>
-    /// 연구가 완료된 건물들을 필터링하여 유지비, 직원 수, 자원 소비/생산량을 계산하는 핵심 로직을 실행합니다.
+    /// 연구가 완료된 건물들을 필터링하여 경제/자원 수치를 계산합니다.
     /// </summary>
-    /// <param name="dataManager">데이터 매니저 참조</param>
-    /// <param name="buildingStates">계산 대상 건물 상태 리스트</param>
-    /// <param name="totalMaintenanceCost">계산된 총 유지비 (출력)</param>
-    /// <param name="totalRequiredEmployees">계산된 총 필요 직원 수 (출력)</param>
-    /// <param name="inputResourceCounts">계산된 입력 자원 ID별 수량 딕셔너리 (출력)</param>
-    /// <param name="outputResourceCounts">계산된 출력 자원 ID별 수량 딕셔너리 (출력)</param>
-    /// <param name="additionalValidation">도로 연결 등 추가 검증용 델리게이트 (선택 사항)</param>
-    public static void ExecuteCoreCalculation(
+    public static CalculationResult CalculateProductionStats(
         DataManager dataManager,
         List<BuildingState> buildingStates,
-        out int totalMaintenanceCost,
-        out int totalRequiredEmployees,
-        out Dictionary<string, int> inputResourceCounts,
-        out Dictionary<string, int> outputResourceCounts,
         System.Func<BuildingState, BuildingData, bool> additionalValidation = null)
     {
-        totalMaintenanceCost = 0;
-        totalRequiredEmployees = 0;
-        inputResourceCounts = new Dictionary<string, int>();
-        outputResourceCounts = new Dictionary<string, int>();
+        CalculationResult result = new CalculationResult();
 
-        if (buildingStates == null || dataManager == null || dataManager.Building == null)
-        {
-            return;
-        }
+        if (dataManager?.Building == null || buildingStates == null)
+            return result;
 
         foreach (BuildingState buildingState in buildingStates)
         {
-            if (buildingState == null || string.IsNullOrEmpty(buildingState.buildingId))
-            {
+            BuildingData buildingData;
+            if (!IsValidBuilding(buildingState, dataManager, out buildingData))
                 continue;
-            }
 
-            BuildingData buildingData = dataManager.Building.GetBuildingData(buildingState.buildingId);
-            if (buildingData == null)
-            {
-                continue;
-            }
-
-            // 1. 연구 잠금 상태 체크
-            if (!buildingState.IsUnlocked(dataManager))
-            {
-                continue;
-            }
-
-            // 2. 외부에서 주입된 추가 검증 로직 수행 (예: 도로 연결성 확인)
+            // 추가 검증 (외부 조건)
             if (additionalValidation != null && !additionalValidation(buildingState, buildingData))
-            {
                 continue;
-            }
 
-            // 3. 경제적 수치 합산
-            totalMaintenanceCost += buildingData.baseMaintenanceCost;
-            totalRequiredEmployees += buildingData.requiredEmployees;
+            // 경제 수치 합산
+            result.TotalMaintenanceCost += buildingData.baseMaintenanceCost;
+            result.TotalRequiredEmployees += buildingData.requiredEmployees;
 
-            // 4. 자원 생산 및 소비 집계
+            // 자원 생산/소비 집계
             if (buildingData.IsProductionBuilding)
             {
-                AggregateResources(dataManager, buildingState, buildingData, inputResourceCounts, outputResourceCounts);
+                ProcessBuildingResources(dataManager, buildingState, result);
             }
         }
+
+        return result;
     }
 
     /// <summary>
-    /// 특정 건물의 입/출력 자원을 집계합니다. 명시적 입력 정보가 없을 경우 출력물의 필요 요구사항에서 자원을 추론합니다.
+    /// 건물의 유효성 및 잠금 해제 여부를 확인합니다.
     /// </summary>
-    private static void AggregateResources(
+    private static bool IsValidBuilding(BuildingState state, DataManager data, out BuildingData dataEntry)
+    {
+        dataEntry = null;
+        if (state == null || string.IsNullOrEmpty(state.buildingId)) return false;
+
+        dataEntry = data.Building.GetBuildingData(state.buildingId);
+        if (dataEntry == null) return false;
+
+        return state.IsUnlocked(data);
+    }
+
+    private static void ProcessBuildingResources(
         DataManager dataManager,
-        BuildingState buildingState,
-        BuildingData buildingData,
-        Dictionary<string, int> inputCounts,
-        Dictionary<string, int> outputCounts)
+        BuildingState state,
+        CalculationResult result)
     {
         // 출력 자원 집계
-        if (buildingState.outputProductionIds != null)
+        if (state.outputProductionIds != null)
         {
-            foreach (string outputIdentifier in buildingState.outputProductionIds)
+            foreach (string id in state.outputProductionIds)
             {
-                if (string.IsNullOrEmpty(outputIdentifier))
-                {
-                    continue;
-                }
-                outputCounts[outputIdentifier] = outputCounts.GetValueOrDefault(outputIdentifier, 0) + 1;
+                result.AddOutput(id, 1);
             }
         }
 
-        // 입력 자원 집계 및 추론
-        if (buildingState.inputProductionIds != null && buildingState.inputProductionIds.Count > 0)
+        // 입력 자원 집계 (명시적 입력 vs 레시피 추론)
+        if (HasExplicitInputs(state))
         {
-            // 건물 상태에 명시적인 입력 자원 ID가 등록되어 있는 경우
-            foreach (string inputIdentifier in buildingState.inputProductionIds)
+            // 명시적 입력 자원이 설정된 경우
+            foreach (string id in state.inputProductionIds)
             {
-                if (string.IsNullOrEmpty(inputIdentifier))
-                {
-                    continue;
-                }
-                inputCounts[inputIdentifier] = inputCounts.GetValueOrDefault(inputIdentifier, 0) + 1;
+                result.AddInput(id, 1);
             }
         }
-        else if (buildingState.outputProductionIds != null && dataManager.Resource != null)
+        else
         {
-            // 명시적 입력 정보가 없을 때: 결과물(Output)의 제작 레시피(Requirements)를 기반으로 역산
-            foreach (string outputIdentifier in buildingState.outputProductionIds)
+            // 입력 정보가 없어 출력물의 레시피로 역산해야 하는 경우
+            InferInputsFromRecipe(dataManager, state.outputProductionIds, result);
+        }
+    }
+
+    private static bool HasExplicitInputs(BuildingState state)
+    {
+        return state.inputProductionIds != null && state.inputProductionIds.Count > 0;
+    }
+
+    /// <summary>
+    /// 출력물의 제작 레시피(Requirements)를 기반으로 필요한 입력 자원을 추론합니다.
+    /// </summary>
+    private static void InferInputsFromRecipe(
+        DataManager dataManager,
+        List<string> outputIds,
+        CalculationResult result)
+    {
+        if (outputIds == null || dataManager.Resource == null) return;
+
+        foreach (string outputId in outputIds)
+        {
+            if (string.IsNullOrEmpty(outputId)) continue;
+
+            ResourceEntry entry = dataManager.Resource.GetResourceEntry(outputId);
+            // entry 유효성 및 requirement 존재 여부 체크
+            if (entry?.data?.requirements == null) continue;
+
+            foreach (ResourceRequirement req in entry.data.requirements)
             {
-                if (string.IsNullOrEmpty(outputIdentifier))
-                {
-                    continue;
-                }
+                if (req.resource == null || string.IsNullOrEmpty(req.resource.id)) continue;
 
-                ResourceEntry entry = dataManager.Resource.GetResourceEntry(outputIdentifier);
-                if (entry == null || entry.data == null || entry.data.requirements == null)
-                {
-                    continue;
-                }
-
-                foreach (ResourceRequirement requirement in entry.data.requirements)
-                {
-                    if (requirement.resource != null && !string.IsNullOrEmpty(requirement.resource.id))
-                    {
-                        // 수량이 설정되지 않았더라도 최소 1개는 소비하는 것으로 처리
-                        int amount = Mathf.Max(1, requirement.count);
-                        string resourceId = requirement.resource.id;
-                        inputCounts[resourceId] = inputCounts.GetValueOrDefault(resourceId, 0) + amount;
-                    }
-                }
+                // 최소 1개 보장 로직 유지
+                int amount = Mathf.Max(1, req.count);
+                result.AddInput(req.resource.id, amount);
             }
         }
     }

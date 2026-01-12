@@ -24,13 +24,13 @@ public class MainRunner : RunnerBase
     private BoxCollider2D _cameraCollider;
     private MainRunnerThreadGridHandler _gridHandler;
     private GameObject _sharedThreadLabelCanvas;
+
     private ThreadPlacementDataHandler _threadPlacementHandler;
-    private SaveLoadManager _saveLoadManager;
 
     internal GameObject ThreadObjectPrefab => _threadObjectPrefab;
-    public bool IsPlacementMode => _gridHandler != null && _gridHandler.IsPlacementActive;
-    public bool IsRemovalMode => _gridHandler != null && _gridHandler.IsRemovalActive;
-    public ThreadState CurrentPlacementThread => _gridHandler?.SelectedThread;
+    public bool IsPlacementMode => _gridHandler.IsPlacementActive;
+    public bool IsRemovalMode => _gridHandler.IsRemovalActive;
+    public ThreadState CurrentPlacementThread => _gridHandler.SelectedThread;
 
     public Transform SharedThreadLabelCanvas
     {
@@ -71,10 +71,9 @@ public class MainRunner : RunnerBase
     {
         base.Init();
 
-        _threadPlacementHandler = DataManager.ThreadPlacement;
         _mainCamera = Camera.main;
-        _mainCameraController = MainCamera?.GetComponent<MainCameraController>();
-        _saveLoadManager = SaveLoadManager.Instance;
+        _mainCameraController = GameManager.MainCameraController;
+        _threadPlacementHandler = DataManager.ThreadPlacement;
 
         _gridHandler = new MainRunnerThreadGridHandler(transform, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight);
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, 11f);
@@ -178,7 +177,7 @@ public class MainRunner : RunnerBase
 
         if (IsRemovalMode) _gridHandler.CancelRemoval();
 
-        _gridHandler?.StartPlacement(threadState);
+        _gridHandler.StartPlacement(threadState);
         return true;
     }
 

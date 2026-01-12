@@ -40,7 +40,7 @@ public partial class DesignCanvas
 
         if (_designRunner.IsRemovalMode)
         {
-            _designRunner.RemovalHandler.CancelRemoval();
+            _designRunner.CancelRemovalMode();
         }
 
         if (isSelected)
@@ -49,7 +49,7 @@ public partial class DesignCanvas
         }
         else
         {
-            _designRunner.PlacementHandler.StartPlacement(buildingData);
+            _designRunner.StartPlacementMode(buildingData);
         }
         
         UpdateBuildingButtonStates();
@@ -59,7 +59,7 @@ public partial class DesignCanvas
     {
         _selectedBuilding = null;
 
-        _designRunner.PlacementHandler.CancelPlacement();
+        _designRunner.CancelPlacementMode();
 
         UpdateModeBtnImages(false, false);
         UpdateBuildingButtonStates();
@@ -70,8 +70,8 @@ public partial class DesignCanvas
         _isRemovalMode = true;
         _selectedBuilding = null;
 
-        _designRunner.PlacementHandler.CancelPlacement();
-        _designRunner.RemovalHandler.StartRemoval();
+        _designRunner.CancelPlacementMode();
+        _designRunner.StartRemovalMode();
 
         UpdateModeBtnImages(false, true);
         UpdateBuildingButtonStates();
@@ -80,7 +80,7 @@ public partial class DesignCanvas
     public void CancelRemovalMode()
     {
         _isRemovalMode = false;
-        _designRunner.RemovalHandler.CancelRemoval();
+        _designRunner.CancelRemovalMode();
 
         UpdateModeBtnImages(false, false);
         UpdateBuildingButtonStates();
@@ -168,11 +168,11 @@ public partial class DesignCanvas
 
     public void RotateBuildingLeft()
     {
-        _designRunner.PlacementHandler.Rotate(false);
+        _designRunner.GridGenHandler.Rotate(false);
     }
 
     public void RotateBuildingRight()
     {
-        _designRunner.PlacementHandler.Rotate(true);
+        _designRunner.GridGenHandler.Rotate(true);
     }
 }

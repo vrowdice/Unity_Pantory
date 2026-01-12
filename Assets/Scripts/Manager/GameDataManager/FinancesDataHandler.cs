@@ -47,7 +47,7 @@ public class FinancesDataHandler
 
         credit -= _dataManager.Employee.CalculateTotalSalary();
         credit -= _dataManager.Resource.CalculateResourceDeltaChangeCredit();
-        credit -= _dataManager.ThreadCalculate.CalculateTotalMaintenanceCost(_dataManager.ThreadPlacement);
+        credit -= _dataManager.ThreadPlacement.CalculateTotalMaintenanceCostOfAllPlaced();
 
         return credit;
     }

@@ -146,7 +146,6 @@ public class MainRunnerThreadGridHandler
         Vector2Int gridPos = WorldToGridPosition(mouseWorldPos);
         ThreadObject threadObject = GetThreadObjectAt(gridPos);
 
-        // 하이라이트 업데이트
         if (threadObject != _hoveredThread)
         {
             ResetHighlight();
