@@ -145,8 +145,8 @@ public class EmployeePanel : BasePanel
 
         foreach (EmployeeType role in employeeTypes)
         {
-            var btnObj = Instantiate(_gameManager.ActionBtnPrefab, EmployeeActionBtnContent);
-            var btn = btnObj.GetComponent<ActionBtn>();
+            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, EmployeeActionBtnContent);
+            ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {
                 string roleName = role.ToString();
@@ -160,7 +160,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void ShowEmployeeByRole(EmployeeType role)
     {
-        var allEmployees = _dataManager.Employee.GetAllEmployees();
+        Dictionary<EmployeeType, EmployeeEntry> allEmployees = _dataManager.Employee.GetAllEmployees();
         if (allEmployees == null || allEmployees.Count == 0)
         {
             return;
@@ -201,13 +201,13 @@ public class EmployeePanel : BasePanel
             return;
         }
 
-        var allEmployees = _dataManager.Employee.GetAllEmployees();
+        Dictionary<EmployeeType, EmployeeEntry> allEmployees = _dataManager.Employee.GetAllEmployees();
         if (allEmployees == null || allEmployees.Count == 0)
         {
             return;
         }
 
-        foreach (var entry in allEmployees.Values)
+        foreach (EmployeeEntry entry in allEmployees.Values)
         {
             if (entry != null && entry.data != null)
             {
@@ -226,8 +226,8 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEmployeeUI()
     {
-        var data = _selectedEmployeeEntry.data;
-        var state = _selectedEmployeeEntry.state;
+        EmployeeData data = _selectedEmployeeEntry.data;
+        EmployeeState state = _selectedEmployeeEntry.state;
 
         _employeeImage.sprite = data.Image;
         _employeeIconImage.sprite = data.icon;
@@ -266,7 +266,7 @@ public class EmployeePanel : BasePanel
             _managementSlider.value = managementRatio;
         }
 
-        // 텍스트 업데이트 (간단하고 직관적인 표시)
+        // 텍스트 업데이트
         if (_managementRatioText != null)
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
@@ -338,7 +338,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void RefreshEmployeeUI()
     {
-        var entry = _dataManager.Employee.GetEmployeeEntry(_selectedEmployeeType);
+        EmployeeEntry entry = _dataManager.Employee.GetEmployeeEntry(_selectedEmployeeType);
         if (entry != null)
         {
             _selectedEmployeeEntry = entry;

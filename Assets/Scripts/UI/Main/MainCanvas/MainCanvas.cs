@@ -66,6 +66,8 @@ public partial class MainCanvas : CanvasBase
 
     private void UpdateCreditText()
     {
+        VisualManager visualManager = VisualManager.Instance;
+
         long resourceAmount = DataManager.Finances.Credit;
         _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
         long deltaCredit = DataManager.Finances.CalculateDailyCreditDelta();
@@ -77,12 +79,13 @@ public partial class MainCanvas : CanvasBase
 
         string sign = deltaCredit > 0 ? " +" : " ";
         _deltaCreditText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaCredit)}";
-        VisualManager visualManager = VisualManager.Instance;
         _deltaCreditText.color = visualManager.GetDeltaColor(deltaCredit);
     }
 
     private void UpdateResearchText()
     {
+        VisualManager visualManager = VisualManager.Instance;
+
         long researchPoints = DataManager.Research.ResearchPoint;
         _researchText.text = ReplaceUtils.FormatNumberWithCommas(researchPoints);
         long deltaResearch = DataManager.Research.CalculateDailyRPProduction();
@@ -94,7 +97,6 @@ public partial class MainCanvas : CanvasBase
 
         string sign = deltaResearch > 0 ? " + " : " ";
         _deltaResearchText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
-        VisualManager visualManager = VisualManager.Instance;
         _deltaResearchText.color = visualManager.GetDeltaColor(deltaResearch);
     }
 

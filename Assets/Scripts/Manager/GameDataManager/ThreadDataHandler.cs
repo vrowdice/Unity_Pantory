@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Thread(생산 라인)를 관리하는 서비스 클래스.
-/// 데이터 변경 시 자동으로 저장(Save)을 트리거합니다.
+/// 데이터 변경 시 자동으로 SaveLoadManager를 통해 저장을 트리거합니다.
 /// </summary>
 public class ThreadDataHandler
 {
@@ -33,17 +33,16 @@ public class ThreadDataHandler
         _dataManager = gameDataManager;
     }
 
-    /// <summary> Thread 데이터를 저장합니다. </summary>
+    /// <summary> Thread 데이터를 저장합니다. SaveLoadManager로 위임합니다. </summary>
     private void SaveThreadData()
     {
         if (SaveLoadManager.Instance != null && SaveLoadManager.Instance.Thread != null)
         {
-            // SaveLoadManager의 Thread 핸들러를 통해 저장
             SaveLoadManager.Instance.Thread.SaveThreadData(this);
         }
     }
 
-    /// <summary> Thread 데이터를 명시적으로 저장합니다. (외부에서 호출 가능) </summary>
+    /// <summary> Thread 데이터를 명시적으로 저장합니다. SaveLoadManager로 위임합니다. </summary>
     public void Save()
     {
         SaveThreadData();

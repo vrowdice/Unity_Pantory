@@ -167,6 +167,7 @@ public class DataManager : MonoBehaviour
         Debug.Log($"[GameDataManager] Loaded {_marketActorDataList.Count} MarketActorData to list.");
     }
 #endif
+    /// <summary> Thread 데이터를 로드합니다. SaveLoadManager로 위임합니다. </summary>
     private void LoadThreadData()
     {
         if (SaveLoadManager.Instance != null && SaveLoadManager.Instance.Thread != null && Thread != null)
