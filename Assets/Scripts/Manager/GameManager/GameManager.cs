@@ -60,6 +60,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _dataManagerPrefab;
     [SerializeField] private GameObject _visualManagerPrefab;
     [SerializeField] private GameObject _saveLoadManagerPrefab;
+    [SerializeField] private GameObject _sceneLoadManagerPrefab;
+    [SerializeField] private GameObject _soundManagerPrefab;
+
+    private SceneLoadManager _sceneLoadManager;
 
     public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;
     public GameObject EffectTextPairPanelPrefab => _effectTextPairPanelPrefab;
@@ -94,6 +98,18 @@ public class GameManager : MonoBehaviour
             GameObject visualManagerObj = Instantiate(_visualManagerPrefab);
             _visualManager = visualManagerObj.GetComponent<VisualManager>();
             _visualManager.Init();
+        }
+
+        if (_sceneLoadManager == null)
+        {
+            GameObject sceneLoadManagerObj = Instantiate(_sceneLoadManagerPrefab);
+            _sceneLoadManager = sceneLoadManagerObj.GetComponent<SceneLoadManager>();
+            _sceneLoadManager.Init();
+        }
+
+        if (SoundManager.Instance == null && _soundManagerPrefab != null)
+        {
+            Instantiate(_soundManagerPrefab);
         }
 
         SceneManager.sceneLoaded -= OnSceneLoaded;

@@ -50,7 +50,7 @@ public class BuildingInfoPanel : MonoBehaviour
         _typeText.text = $"Type: {_currentData.buildingType}";
         _descriptionText.text = _currentData.description;
         _costText.text = $"Cost: {ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
-        _maintenanceText.text = $"Maint: {ReplaceUtils.FormatNumberWithCommas(_currentData.baseMaintenanceCost)}/mo";
+        _maintenanceText.text = $"Maint: {ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)}/mo";
 
         if (_buildingImage != null)
         {

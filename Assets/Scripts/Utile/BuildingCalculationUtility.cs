@@ -1,29 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 건물 계산 결과를 담는 데이터 구조체입니다.
-/// </summary>
-public class CalculationResult
-{
-    public int TotalMaintenanceCost { get; set; }
-    public int TotalRequiredEmployees { get; set; }
-    public int RequiredTechnicians { get; set; }
-    public Dictionary<string, int> InputResourceCounts { get; } = new Dictionary<string, int>();
-    public Dictionary<string, int> OutputResourceCounts { get; } = new Dictionary<string, int>();
-}
-
 public static class BuildingCalculationUtility
 {
     /// <summary>
     /// 연구가 완료된 건물들을 필터링하여 경제/자원 수치를 계산합니다.
     /// </summary>
-    public static CalculationResult CalculateProductionStats(
+    public static ThreadCalculationResult CalculateProductionStats(
         DataManager dataManager,
         List<BuildingState> buildingStates,
         System.Func<BuildingState, BuildingData, bool> additionalValidation = null)
     {
-        CalculationResult result = new CalculationResult();
+        ThreadCalculationResult result = new ThreadCalculationResult();
 
         foreach (BuildingState buildingState in buildingStates)
         {
@@ -36,7 +24,8 @@ public static class BuildingCalculationUtility
                 continue;
 
             // 경제 수치 합산
-            result.TotalMaintenanceCost += buildingData.baseMaintenanceCost;
+            result.TotalBuildCost += buildingData.buildCost;
+            result.TotalMaintenanceCost += buildingData.maintenanceCost;
             result.TotalRequiredEmployees += buildingData.requiredEmployees;
             result.RequiredTechnicians += buildingData.isProfessional ? 1 : 0;
 
@@ -67,7 +56,7 @@ public static class BuildingCalculationUtility
     private static void ProcessBuildingResources(
         DataManager dataManager,
         BuildingState state,
-        CalculationResult result)
+        ThreadCalculationResult result)
     {
         // 입력 자원 집계
         if (state.inputProductionIds != null)

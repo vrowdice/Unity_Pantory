@@ -127,14 +127,7 @@ public partial class MainCanvas : CanvasBase
     /// </summary>
     public void ToggleCreditInfo()
     {
-        if (_creditInfoPanel != null)
-        {
-            _creditInfoPanel.ToggleCreditInfo();
-        }
-        else
-        {
-            Debug.LogWarning("[MainUiManager] CreditInfoPanel is not assigned!");
-        }
+        _creditInfoPanel.ToggleCreditInfo();
     }
 
     /// <summary>

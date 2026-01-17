@@ -1,10 +1,15 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ThreadPlusBtn : MonoBehaviour
 {
     public void OnClick()
     {
-        SceneManager.LoadScene("Design");
+        if (SceneLoadManager.Instance == null)
+        {
+            Debug.LogError("[ThreadPlusBtn] SceneLoadManager.Instance is null. Cannot load scene.");
+            return;
+        }
+
+        SceneLoadManager.Instance.LoadScene("Design");
     }
 }

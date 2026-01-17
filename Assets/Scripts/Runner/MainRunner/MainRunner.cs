@@ -205,6 +205,7 @@ public class MainRunner : RunnerBase
         if (!_gridHandler.CanPlaceThread(gridPos)) return false;
 
         ThreadState newThreadInstance = _threadPlacementHandler.PlaceThread(gridPos, templateThread.threadId);
+        DataManager.Finances.ModifyCredit(-newThreadInstance.requiredBuildCost);
         if (newThreadInstance == null) return false;
 
         ThreadObject threadObject = _gridHandler.CreateThreadObject(gridPos, newThreadInstance);
@@ -212,6 +213,8 @@ public class MainRunner : RunnerBase
 
         threadObject.SetGridPosition(gridPos);
         _gridHandler.SetTileOccupied(gridPos, true);
+
+        _mainCameraController.ShakeCamera();
 
         return true;
     }

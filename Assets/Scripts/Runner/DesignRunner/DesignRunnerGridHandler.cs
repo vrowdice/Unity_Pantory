@@ -17,27 +17,22 @@ public class DesignRunnerGridHandler
     private readonly Dictionary<Vector2Int, GameObject> _buildingOriginMap = new Dictionary<Vector2Int, GameObject>();
     private readonly Dictionary<Vector2Int, GameObject> _occupancyMap = new Dictionary<Vector2Int, GameObject>();
 
-    // Calculation Cache
     private List<BuildingState> _currentStates = new List<BuildingState>();
     private Dictionary<Vector2Int, BuildingState> _stateGridMap = new Dictionary<Vector2Int, BuildingState>();
 
-    // Placement State
     private bool _isPlacementActive;
     private bool _canPlace;
     private BuildingData _selectedBuilding;
     private Vector2Int _currentGridPos;
     private int _rotationIndex = 0;
-    
-    // Preview Objects
+
     private GameObject _previewObj;
     private SpriteRenderer _previewRenderer;
     private BuildingObject _previewComponent;
 
-    // Removal State
     private bool _isRemovalActive;
     private GameObject _hoveredBuilding;
 
-    // Constants
     private const float TileZDepth = 10f;
     private const float BuildingZDepth = 9f;
 
@@ -455,7 +450,7 @@ public class DesignRunnerGridHandler
     public int CalculateTotalMaintenanceCost(string threadId, List<BuildingState> customStates = null)
     {
         List<BuildingState> statesToUse = customStates ?? _currentStates;
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(DataManager, statesToUse);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(DataManager, statesToUse);
         return stats.TotalMaintenanceCost;
     }
 

@@ -50,7 +50,7 @@ public class ThreadPlacementDataHandler
         ThreadState newState = CloneThreadState(template);
 
         newState.threadId = GenerateUniqueId(templateId, gridPosition);
-        newState.threadName = $"{template.threadName} ({gridPosition.x}, {gridPosition.y})";
+        newState.threadName = $"{template.threadName}";
 
         RecalculateThreadStats(newState);
 
@@ -84,6 +84,8 @@ public class ThreadPlacementDataHandler
         ThreadState threadState = _dataManager.Thread.GetThread(threadId);
         if (threadState != null)
         {
+            RecalculateThreadStats(threadState);
+            
             ThreadPlacementState placement = new ThreadPlacementState(gridPosition, threadId, threadState);
             _placedThreads[gridPosition] = placement;
             RaisePlacementChanged();
@@ -135,7 +137,7 @@ public class ThreadPlacementDataHandler
             return 0;
         }
 
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
         return stats.TotalMaintenanceCost;
     }
 
@@ -148,7 +150,7 @@ public class ThreadPlacementDataHandler
     {
         if (buildingStates == null || buildingStates.Count == 0) return 0;
 
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
         return stats.TotalMaintenanceCost;
     }
 
@@ -175,7 +177,7 @@ public class ThreadPlacementDataHandler
             return 0;
         }
 
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
         return stats.TotalRequiredEmployees;
     }
 
@@ -214,7 +216,7 @@ public class ThreadPlacementDataHandler
             return;
         }
 
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
         inputResourceCounts = stats.InputResourceCounts;
         outputResourceCounts = stats.OutputResourceCounts;
 
@@ -242,7 +244,7 @@ public class ThreadPlacementDataHandler
 
         if (buildingStates == null || buildingStates.Count == 0) return;
 
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
         inputCounts = stats.InputResourceCounts;
         outputCounts = stats.OutputResourceCounts;
 
@@ -255,10 +257,12 @@ public class ThreadPlacementDataHandler
     /// </summary>
     public void RefreshAllThreadCalculations()
     {
-        Dictionary<string, ThreadState> allThreads = _dataManager.Thread.GetAllThreads();
-        foreach (ThreadState thread in allThreads.Values)
+        foreach (ThreadPlacementState placement in _placedThreads.Values.ToList())
         {
-            RecalculateThreadStats(thread);
+            if (placement?.RuntimeState != null)
+            {
+                RecalculateThreadStats(placement.RuntimeState);
+            }
         }
     }
 
@@ -282,10 +286,14 @@ public class ThreadPlacementDataHandler
 
         List<BuildingState> buildings = state.buildingStateList;
 
-        CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildings);
+        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildings);
 
+        state.requiredBuildCost = stats.TotalBuildCost;
         state.totalMaintenanceCost = stats.TotalMaintenanceCost;
         state.requiredEmployees = stats.TotalRequiredEmployees;
+        
+        state.cachedInputCounts = new Dictionary<string, int>(stats.InputResourceCounts);
+        state.cachedOutputCounts = new Dictionary<string, int>(stats.OutputResourceCounts);
     }
 
     /// <summary>
@@ -296,9 +304,6 @@ public class ThreadPlacementDataHandler
         UpdateResourceDeltasFromPlacedThreads();
     }
 
-    /// <summary>
-    /// 배치된 스레드의 생산/소비를 계산합니다
-    /// </summary>
     private void UpdateResourceDeltasFromPlacedThreads()
     {
         if (_placedThreads == null) return;
@@ -314,14 +319,14 @@ public class ThreadPlacementDataHandler
             {
                 int productionCount = Mathf.FloorToInt(threadState.currentProductionProgress);
 
-                CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, threadState.buildingStateList);
-                Dictionary<string, int> cons = stats.InputResourceCounts;
-                Dictionary<string, int> prod = stats.OutputResourceCounts;
-
-                if (cons.Count > 0 || prod.Count > 0)
+                if (threadState.cachedOutputCounts != null && threadState.cachedOutputCounts.Count > 0)
                 {
-                    ModifyPlayerProduction(prod, productionCount);
-                    ModifyPlayerProduction(cons, -productionCount);
+                    ModifyPlayerProduction(threadState.cachedOutputCounts, productionCount);
+                }
+
+                if (threadState.cachedInputCounts != null && threadState.cachedInputCounts.Count > 0)
+                {
+                    ModifyPlayerProduction(threadState.cachedInputCounts, -productionCount);
                 }
 
                 threadState.currentProductionProgress -= productionCount;
@@ -339,7 +344,12 @@ public class ThreadPlacementDataHandler
         float quantityEfficiency = 0f;
         float qualityEfficiency = 1.0f;
 
-        if (threadState.requiredEmployees > 0)
+        if (threadState.requiredEmployees <= 0)
+        {
+            quantityEfficiency = 1.0f;
+            qualityEfficiency = 1.0f;
+        }
+        else
         {
             int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
             quantityEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
@@ -350,23 +360,25 @@ public class ThreadPlacementDataHandler
                 if (threadState.currentWorkers > 0)
                 {
                     EmployeeEntry workerEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
-                    float workerEff = workerEntry.state.currentEfficiency;
-                    totalEfficiencySum += threadState.currentWorkers * workerEff;
+                    if (workerEntry != null)
+                    {
+                        float workerEff = workerEntry.state.currentEfficiency;
+                        totalEfficiencySum += threadState.currentWorkers * workerEff;
+                    }
                 }
 
                 if (threadState.currentTechnicians > 0)
                 {
                     EmployeeEntry techEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
-                    float techEff = techEntry.state.currentEfficiency;
-                    totalEfficiencySum += threadState.currentTechnicians * techEff;
+                    if (techEntry != null)
+                    {
+                        float techEff = techEntry.state.currentEfficiency;
+                        totalEfficiencySum += threadState.currentTechnicians * techEff;
+                    }
                 }
 
                 qualityEfficiency = totalEfficiencySum / currentEmployees;
             }
-        }
-        else
-        {
-            quantityEfficiency = 0f;
         }
 
         threadState.currentProductionEfficiency = quantityEfficiency * qualityEfficiency;
@@ -378,6 +390,8 @@ public class ThreadPlacementDataHandler
     /// </summary>
     private void ModifyPlayerProduction(Dictionary<string, int> resourceDic, int multiplier)
     {
+        if (resourceDic == null || resourceDic.Count == 0) return;
+
         foreach (KeyValuePair<string, int> kvp in resourceDic)
         {
             string resourceId = kvp.Key;

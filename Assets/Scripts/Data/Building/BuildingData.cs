@@ -20,7 +20,7 @@ public abstract class BuildingData : ScriptableObject
     public bool isProfessional = false;
     public int requiredEmployees = 0;
     public int buildCost;
-    public int baseMaintenanceCost;
+    public int maintenanceCost;
     public Vector2Int size = new Vector2Int(1, 1);
     public ResearchData requiredResearch;
 

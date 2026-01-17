@@ -4,9 +4,11 @@ using UnityEngine;
 public class InitialFinancesData : ScriptableObject
 {
     public long initialCredit = 1000;
+    [Range(0f, 1f)]
+    public float negativeInterestRate = 0.05f;
 
     /// <summary>
-    /// Editor¿¡¼­ °ª °ËÁõ (À½¼ö °ª ¹æÁö)
+    /// Editorï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     /// </summary>
     private void OnValidate()
     {

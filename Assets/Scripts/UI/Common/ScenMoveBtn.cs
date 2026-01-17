@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ScenMoveBtn : MonoBehaviour
 {
@@ -7,6 +6,12 @@ public class ScenMoveBtn : MonoBehaviour
 
     public void OnClick()
     {
-        SceneManager.LoadScene(_scenName);
+        if (SceneLoadManager.Instance == null)
+        {
+            Debug.LogError("[ScenMoveBtn] SceneLoadManager.Instance is null. Cannot load scene.");
+            return;
+        }
+
+        SceneLoadManager.Instance.LoadScene(_scenName);
     }
 }

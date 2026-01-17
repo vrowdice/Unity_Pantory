@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 [RequireComponent(typeof(Camera))]
 public class MainCameraController : MonoBehaviour
@@ -49,6 +50,11 @@ public class MainCameraController : MonoBehaviour
 
         _boundaryCollider.transform.position = new Vector3(center.x, center.y, 0);
         _boundaryCollider.size = size;
+    }
+
+    public void ShakeCamera()
+    {
+        transform.DOShakePosition(0.1f, 0.1f, 10, 90, false, true);
     }
 
     private void LateUpdate()

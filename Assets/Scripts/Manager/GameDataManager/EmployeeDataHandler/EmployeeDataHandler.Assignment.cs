@@ -6,15 +6,14 @@ using System.Collections.Generic;
 /// </summary>
 public partial class EmployeeDataHandler
 {
+
+
     /// <summary>
     /// 특정 직원 유형의 할당된 인원 수를 증가시킵니다.
     /// </summary>
     /// <param name="type">직원 유형</param>
     /// <param name="count">증가시킬 인원 수</param>
     /// <returns>성공 시 true, 인원 부족 시 false</returns>
-    /// <summary>
-    /// EmployeeDataHandler 할당 파트 (Assignment)
-    /// </summary>
     public bool TryAssignEmployee(EmployeeType type, int count)
     {
         if (count <= 0)
