@@ -14,7 +14,7 @@ public class ThreadState
     public List<BuildingState> buildingStateList = new List<BuildingState>();
     public string previewImagePath = string.Empty; // 건물 레이아웃 미리보기 이미지 경로
     public int totalMaintenanceCost = 0;           // 스레드의 총 유지비 (월간)
-    public int requiredConstructionCost = 0;      // 스레드 건설 시 필요한 금액
+    public int requiredBuildCost = 0;      // 스레드 건설 시 필요한 금액
     
     [Header("Production Status")]
     public float currentProductionProgress = 0f;   // 현재 생산 진행도 (0.0 ~ 1.0)

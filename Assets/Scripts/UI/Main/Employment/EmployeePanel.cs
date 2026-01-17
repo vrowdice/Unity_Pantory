@@ -372,8 +372,8 @@ public class EmployeePanel : BasePanel
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency_Flat));
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency_Mult));
 
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Efficiency_Flat));
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Efficiency_Mult));
+        combinedEffects.AddRange(_selectedEmployeeEntry.GetEffectStatEffects(EffectStatType.Employee_Efficiency_Flat));
+        combinedEffects.AddRange(_selectedEmployeeEntry.GetEffectStatEffects(EffectStatType.Employee_Efficiency_Mult));
 
         if (combinedEffects.Count > 0)
         {
@@ -403,7 +403,7 @@ public class EmployeePanel : BasePanel
 
         List<EffectState> combinedEffects = new List<EffectState>();
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per));
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(_selectedEmployeeEntry.data.type, EffectStatType.Employee_Satisfaction_Per));
+        combinedEffects.AddRange(_selectedEmployeeEntry.GetEffectStatEffects(EffectStatType.Employee_Satisfaction_Per));
 
         foreach (EffectState effectState in combinedEffects)
         {

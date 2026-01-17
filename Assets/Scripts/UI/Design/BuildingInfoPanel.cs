@@ -49,7 +49,7 @@ public class BuildingInfoPanel : MonoBehaviour
         _nameText.text = _currentData.displayName;
         _typeText.text = $"Type: {_currentData.buildingType}";
         _descriptionText.text = _currentData.description;
-        _costText.text = $"Cost: {ReplaceUtils.FormatNumberWithCommas(_currentData.baseCost)}";
+        _costText.text = $"Cost: {ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
         _maintenanceText.text = $"Maint: {ReplaceUtils.FormatNumberWithCommas(_currentData.baseMaintenanceCost)}/mo";
 
         if (_buildingImage != null)
@@ -70,16 +70,11 @@ public class BuildingInfoPanel : MonoBehaviour
 
         if (isProd)
         {
-            var allowed = _currentData.AllowedResourceTypes;
+            List<ResourceType> allowed = _currentData.AllowedResourceTypes;
             string types = (allowed != null && allowed.Count > 0)
                 ? string.Join(", ", allowed)
                 : "None";
             _resourceTypesText.text = $"Allowed: {types}";
-        }
-        else
-        {
-            string handling = _currentData.HandlingResource?.displayName ?? "None";
-            _resourceTypesText.text = $"Handling: {handling}";
         }
     }
 
@@ -100,11 +95,11 @@ public class BuildingInfoPanel : MonoBehaviour
     private void UpdateResourceGrid(List<string> resourceIds, Transform container, string label)
     {
         GameObjectUtils.ClearChildren(container);
-        var counts = GameObjectUtils.AggregateResourceCounts(resourceIds);
+        Dictionary<string, int> counts = GameObjectUtils.AggregateResourceCounts(resourceIds);
 
-        foreach (var kvp in counts)
+        foreach (KeyValuePair<string, int> kvp in counts)
         {
-            var entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
+            ResourceEntry entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             if (entry == null) continue;
 
             // 아이콘 생성
@@ -123,10 +118,10 @@ public class BuildingInfoPanel : MonoBehaviour
     {
         GameObjectUtils.ClearChildren(_outputGridTransform);
 
-        string handlingId = _currentData.HandlingResource?.id ?? _currentState.currentResourceId;
+        string handlingId = _currentState.currentResourceId;
         if (string.IsNullOrEmpty(handlingId)) return;
 
-        var entry = _dataManager.Resource.GetResourceEntry(handlingId);
+        ResourceEntry entry = _dataManager.Resource.GetResourceEntry(handlingId);
         if (entry != null)
         {
             Instantiate(_designCanvas.ProductionInfoImage, _outputGridTransform)
@@ -137,7 +132,7 @@ public class BuildingInfoPanel : MonoBehaviour
 
     private void CreateExplainText(string content)
     {
-        var textObj = Instantiate(_productionExplainTextPrefab, _explainContentTransform);
+        GameObject textObj = Instantiate(_productionExplainTextPrefab, _explainContentTransform);
         textObj.GetComponent<TextMeshProUGUI>().text = content;
     }
 
@@ -183,7 +178,7 @@ public class BuildingInfoPanel : MonoBehaviour
         _currentState.inputProductionIds.Clear();
         if (outputData.requirements == null) return;
 
-        foreach (var req in outputData.requirements)
+        foreach (ResourceRequirement req in outputData.requirements)
         {
             if (req.resource == null) continue;
             int count = Mathf.Max(1, req.count);
@@ -202,11 +197,11 @@ public class BuildingInfoPanel : MonoBehaviour
     {
         if (data.requirements == null || data.requirements.Count == 0) return "";
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.Append("\nRequires: ");
         for (int i = 0; i < data.requirements.Count; i++)
         {
-            var req = data.requirements[i];
+            ResourceRequirement req = data.requirements[i];
             if (req.resource == null) continue;
             sb.Append($"{req.resource.displayName} x{Mathf.Max(1, req.count)}");
             if (i < data.requirements.Count - 1) sb.Append(", ");

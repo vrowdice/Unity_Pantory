@@ -17,14 +17,13 @@ public abstract class BuildingData : ScriptableObject
     [TextArea(3, 10)]
     public string description;
     public bool isUnlockedByDefault = false;
+    public bool isProfessional = false;
     public int requiredEmployees = 0;
-    public int baseCost;
+    public int buildCost;
     public int baseMaintenanceCost;
     public Vector2Int size = new Vector2Int(1, 1);
     public ResearchData requiredResearch;
-    public ResourceData handlingResource;
 
-    public virtual ResourceData HandlingResource => handlingResource;
     public virtual bool IsProductionBuilding => false;
     public virtual bool IsLoadStation => false;
     public virtual bool IsUnloadStation => false;

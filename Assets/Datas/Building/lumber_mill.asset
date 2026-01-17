@@ -22,7 +22,7 @@ MonoBehaviour:
     from wood pulp. Most efficient when placed near sawmills.
   isUnlockedByDefault: 1
   requiredEmployees: 4
-  baseCost: 180
+  buildCost: 180
   baseMaintenanceCost: 10
   size: {x: 2, y: 2}
   requiredResearchId: 

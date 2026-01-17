@@ -18,6 +18,8 @@ public class ResourceState
     [SerializeField] internal List<float> _priceHistory = new List<float>(PriceHistoryCapacity);
     public IReadOnlyList<float> PriceHistory => _priceHistory;
 
+    public Dictionary<EffectStatType, List<EffectState>> activeEffects; // 자원 개별 적용 효과 목록 (StatType별로 분류)
+
     public ResourceState()
     {
         InitializeDefaults();
@@ -36,6 +38,12 @@ public class ResourceState
         else
         {
             _priceHistory.Clear();
+        }
+
+        activeEffects = new Dictionary<EffectStatType, List<EffectState>>();
+        foreach (EffectStatType statType in Enum.GetValues(typeof(EffectStatType)))
+        {
+            activeEffects[statType] = new List<EffectState>();
         }
     }
 

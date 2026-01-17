@@ -31,7 +31,7 @@ public partial class EmployeeDataHandler
             foreach (EmployeeData data in employeeDataList)
             {
                 if (data == null) continue;
-                var entry = new EmployeeEntry(data);
+                EmployeeEntry entry = new EmployeeEntry(data);
                 _employees[data.type] = entry;
             }
         }
@@ -50,7 +50,7 @@ public partial class EmployeeDataHandler
     /// <returns>EmployeeEntry 또는 null</returns>
     public EmployeeEntry GetEmployeeEntry(EmployeeType type)
     {
-        if (_employees.TryGetValue(type, out var entry))
+        if (_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             return entry;
         }
@@ -95,7 +95,7 @@ public partial class EmployeeDataHandler
             return;
         }
 
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
@@ -120,7 +120,7 @@ public partial class EmployeeDataHandler
             return;
         }
 
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
@@ -140,7 +140,7 @@ public partial class EmployeeDataHandler
     /// <param name="skill">새로운 숙련도</param>
     public void SetEmployeeSkill(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
@@ -156,7 +156,7 @@ public partial class EmployeeDataHandler
     /// <param name="fatigue">새로운 피로도</param>
     public void SetEmployeeFatigue(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
@@ -172,7 +172,7 @@ public partial class EmployeeDataHandler
     /// <param name="satisfaction">새로운 만족도</param>
     public void SetEmployeeSatisfaction(EmployeeType type, float satisfaction)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return;
@@ -190,7 +190,7 @@ public partial class EmployeeDataHandler
     /// <param name="salaryLevel">급여 레벨 (0=매우 적음, 1=적음, 2=보통, 3=많음, 4=매우 많음)</param>
     public void SetEmployeeSalaryLevel(EmployeeType type, int salaryLevel)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return;
@@ -215,12 +215,10 @@ public partial class EmployeeDataHandler
     private void ApplySalaryLevelSatisfactionEffect(EmployeeType type, int newSalaryLevel, int previousSalaryLevel)
     {
         EmployeeEntry entry = GetEmployeeEntry(type);
+        if (entry == null) return;
 
         float satisfactionChange = _initialEmployeeData.GetSatisfactionChangePerDay(newSalaryLevel);
-
-        EffectState effectData = new EffectState(_initialEmployeeData.salarySatisfactionEffect);
-
-        _dataManager.Effect.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, entry.data.type, satisfactionChange);
+        entry.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, satisfactionChange);
     }
 
     /// <summary>
@@ -230,7 +228,7 @@ public partial class EmployeeDataHandler
     /// <returns>급여 레벨 (0~4), 직원이 없으면 -1</returns>
     public int GetEmployeeSalaryLevel(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return -1;

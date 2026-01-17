@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// 직원 할당 관리 (assignedCount)
@@ -22,7 +23,7 @@ public partial class EmployeeDataHandler
             return false;
         }
 
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return false;
@@ -59,7 +60,7 @@ public partial class EmployeeDataHandler
             return false;
         }
 
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return false;
@@ -91,7 +92,7 @@ public partial class EmployeeDataHandler
     /// <returns>할당 가능한 인원 수 (고용된 인원 - 이미 할당된 인원)</returns>
     public int GetAvailableEmployeeCount(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return 0;
@@ -108,7 +109,7 @@ public partial class EmployeeDataHandler
     /// <returns>할당된 인원 수</returns>
     public int GetAssignedEmployeeCount(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
             return 0;
@@ -128,20 +129,20 @@ public partial class EmployeeDataHandler
             return;
 
         // 모든 직원의 assignedCount를 0으로 초기화
-        foreach (var entry in _employees.Values)
+        foreach (EmployeeEntry entry in _employees.Values)
         {
             entry.state.assignedCount = 0;
         }
 
         // 실제 배치된 모든 스레드 인스턴스의 직원 할당을 집계
-        var allPlacements = threadPlacementHandler.GetAllPlacedThreads();
+        Dictionary<Vector2Int, ThreadPlacementState> allPlacements = threadPlacementHandler.GetAllPlacedThreads();
         if (allPlacements == null)
         {
             OnEmployeeChanged?.Invoke();
             return;
         }
 
-        foreach (var placement in allPlacements.Values)
+        foreach (ThreadPlacementState placement in allPlacements.Values)
         {
             if (placement == null || placement.RuntimeState == null)
                 continue;
@@ -151,7 +152,7 @@ public partial class EmployeeDataHandler
             // Worker 할당 집계
             if (threadState.currentWorkers > 0)
             {
-                var workerEntry = GetEmployeeEntry(EmployeeType.Worker);
+                EmployeeEntry workerEntry = GetEmployeeEntry(EmployeeType.Worker);
                 if (workerEntry != null)
                 {
                     workerEntry.state.assignedCount += threadState.currentWorkers;
@@ -161,7 +162,7 @@ public partial class EmployeeDataHandler
             // Technician 할당 집계
             if (threadState.currentTechnicians > 0)
             {
-                var technicianEntry = GetEmployeeEntry(EmployeeType.Technician);
+                EmployeeEntry technicianEntry = GetEmployeeEntry(EmployeeType.Technician);
                 if (technicianEntry != null)
                 {
                     technicianEntry.state.assignedCount += threadState.currentTechnicians;

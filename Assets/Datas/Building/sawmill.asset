@@ -21,7 +21,7 @@ MonoBehaviour:
     without consuming any auxiliary materials.
   isUnlockedByDefault: 1
   requiredEmployees: 5
-  baseCost: 140
+  buildCost: 140
   baseMaintenanceCost: 7
   size: {x: 2, y: 2}
   requiredResearchId: 

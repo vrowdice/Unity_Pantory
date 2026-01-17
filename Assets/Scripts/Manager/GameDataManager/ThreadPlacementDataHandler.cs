@@ -27,7 +27,7 @@ public class ThreadPlacementDataHandler
     /// 배치된 모든 스레드의 딕셔너리를 반환합니다.
     /// </summary>
     /// <returns>배치된 스레드의 읽기 전용 딕셔너리</returns>
-    public IReadOnlyDictionary<Vector2Int, ThreadPlacementState> GetAllPlacedThreads()
+    public Dictionary<Vector2Int, ThreadPlacementState> GetAllPlacedThreads()
     {
         return _placedThreads;
     }
@@ -262,44 +262,6 @@ public class ThreadPlacementDataHandler
         }
     }
 
-    /// <summary>
-    /// 스레드 상태를 초기화합니다.
-    /// </summary>
-    /// <param name="threadState">초기화할 스레드 상태</param>
-    /// <param name="threadDataHandler">ThreadDataHandler 인스턴스</param>
-    public void InitializeThread(ThreadState threadState, ThreadDataHandler threadDataHandler)
-    {
-        if (threadState == null || threadDataHandler == null)
-        {
-            return;
-        }
-
-        List<BuildingState> buildingStates = threadState.buildingStateList;
-        if (buildingStates == null || buildingStates.Count == 0)
-        {
-            threadState.requiredEmployees = 0;
-            threadState.totalMaintenanceCost = 0;
-            return;
-        }
-
-        threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadState.threadId, buildingStates);
-        threadState.requiredEmployees = CalculateRequiredEmployees(threadState.threadId, buildingStates);
-
-        List<string> inputResourceIdentifiers;
-        Dictionary<string, int> inputResourceCounts;
-        List<string> outputResourceIdentifiers;
-        Dictionary<string, int> outputResourceCounts;
-
-        CalculateProductionChain(
-            threadState.threadId,
-            buildingStates,
-            out inputResourceIdentifiers,
-            out inputResourceCounts,
-            out outputResourceIdentifiers,
-            out outputResourceCounts
-        );
-    }
-
     private void RaisePlacementChanged() => OnPlacementChanged?.Invoke();
 
     private ThreadState CloneThreadState(ThreadState source)
@@ -324,5 +286,104 @@ public class ThreadPlacementDataHandler
 
         state.totalMaintenanceCost = stats.TotalMaintenanceCost;
         state.requiredEmployees = stats.TotalRequiredEmployees;
+    }
+
+    /// <summary>
+    /// 일 경과 시 배치된 스레드의 생산 진행도를 업데이트하고 자원 델타를 적용합니다.
+    /// </summary>
+    public void HandleDayChanged()
+    {
+        UpdateResourceDeltasFromPlacedThreads();
+    }
+
+    /// <summary>
+    /// 배치된 스레드의 생산/소비를 계산합니다
+    /// </summary>
+    private void UpdateResourceDeltasFromPlacedThreads()
+    {
+        if (_placedThreads == null) return;
+
+        foreach (ThreadPlacementState placement in _placedThreads.Values)
+        {
+            if (placement == null || placement.RuntimeState == null) continue;
+
+            ThreadState threadState = placement.RuntimeState;
+            UpdateThreadProductionProgress(threadState);
+
+            if (threadState.currentProductionProgress >= 1.0f)
+            {
+                int productionCount = Mathf.FloorToInt(threadState.currentProductionProgress);
+
+                CalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, threadState.buildingStateList);
+                Dictionary<string, int> cons = stats.InputResourceCounts;
+                Dictionary<string, int> prod = stats.OutputResourceCounts;
+
+                if (cons.Count > 0 || prod.Count > 0)
+                {
+                    ModifyPlayerProduction(prod, productionCount);
+                    ModifyPlayerProduction(cons, -productionCount);
+                }
+
+                threadState.currentProductionProgress -= productionCount;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 스레드의 생산 진행도와 효율을 업데이트합니다
+    /// </summary>
+    private void UpdateThreadProductionProgress(ThreadState threadState)
+    {
+        if (threadState == null) return;
+
+        float quantityEfficiency = 0f;
+        float qualityEfficiency = 1.0f;
+
+        if (threadState.requiredEmployees > 0)
+        {
+            int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
+            quantityEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
+
+            if (_dataManager.Employee != null && currentEmployees > 0)
+            {
+                float totalEfficiencySum = 0f;
+                if (threadState.currentWorkers > 0)
+                {
+                    EmployeeEntry workerEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
+                    float workerEff = workerEntry.state.currentEfficiency;
+                    totalEfficiencySum += threadState.currentWorkers * workerEff;
+                }
+
+                if (threadState.currentTechnicians > 0)
+                {
+                    EmployeeEntry techEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
+                    float techEff = techEntry.state.currentEfficiency;
+                    totalEfficiencySum += threadState.currentTechnicians * techEff;
+                }
+
+                qualityEfficiency = totalEfficiencySum / currentEmployees;
+            }
+        }
+        else
+        {
+            quantityEfficiency = 0f;
+        }
+
+        threadState.currentProductionEfficiency = quantityEfficiency * qualityEfficiency;
+        threadState.currentProductionProgress += threadState.currentProductionEfficiency;
+    }
+
+    /// <summary>
+    /// 스레드의 생산품 가감을 적용합니다
+    /// </summary>
+    private void ModifyPlayerProduction(Dictionary<string, int> resourceDic, int multiplier)
+    {
+        foreach (KeyValuePair<string, int> kvp in resourceDic)
+        {
+            string resourceId = kvp.Key;
+            int requiredAmount = kvp.Value * multiplier;
+
+            _dataManager.Resource.ModifyThreadDelta(resourceId, requiredAmount);
+        }
     }
 }

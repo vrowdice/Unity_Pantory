@@ -20,7 +20,7 @@ MonoBehaviour:
   description: A chemical processing facility that transforms crude oil into fabric
     and other synthetic materials. Produces fabric from oil, enabling textile production
     without relying solely on wood.
-  baseCost: 250
+  buildCost: 250
   baseMaintenanceCost: 15
   size: {x: 2, y: 2}
   requiredEmployees: 4

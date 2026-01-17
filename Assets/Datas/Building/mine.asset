@@ -22,7 +22,7 @@ MonoBehaviour:
     but provides essential raw materials for industry.
   isUnlockedByDefault: 0
   requiredEmployees: 8
-  baseCost: 500
+  buildCost: 500
   baseMaintenanceCost: 25
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}

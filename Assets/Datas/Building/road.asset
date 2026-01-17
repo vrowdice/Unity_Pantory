@@ -22,7 +22,7 @@ MonoBehaviour:
     between facilities.
   isUnlockedByDefault: 1
   requiredEmployees: 0
-  baseCost: 10
+  buildCost: 10
   baseMaintenanceCost: 1
   size: {x: 1, y: 1}
   requiredResearchId: 

@@ -22,9 +22,8 @@ MonoBehaviour:
     manufacturing process.
   isUnlockedByDefault: 1
   requiredEmployees: 2
-  baseCost: 100
+  buildCost: 100
   baseMaintenanceCost: 10
   size: {x: 1, y: 1}
-  requiredResearchId: 
-  handlingResource: {fileID: 0}
+  requiredResearch: {fileID: 0}
   inputPosition: {x: -1, y: 0}

@@ -23,7 +23,7 @@ public partial class EmployeeDataHandler
             return true;
         }
 
-        if (!_employees.TryGetValue(type, out var entry))
+        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
         {
             Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
             return false;
@@ -56,12 +56,12 @@ public partial class EmployeeDataHandler
                 // 4. [선택적] 관리자에 의한 완화 (Management Mitigation)
                 if (_initialEmployeeData.enableManagerMitigation)
                 {
-                    var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
+                    EmployeeEntry managerEntry = GetEmployeeEntry(EmployeeType.Manager);
                     if (managerEntry != null && managerEntry.state != null && managerEntry.state.count > 0)
                     {
                         // 전체 직원 수 계산
                         int totalEmployees = 0;
-                        foreach (var emp in _employees.Values)
+                        foreach (EmployeeEntry emp in _employees.Values)
                         {
                             if (emp?.state != null)
                             {
@@ -110,7 +110,7 @@ public partial class EmployeeDataHandler
                 ? _initialEmployeeData.crossEmployeeTypeSatisfactionPenaltyRatio 
                 : 0.3f;
             
-            foreach (var otherEntry in _employees.Values)
+            foreach (EmployeeEntry otherEntry in _employees.Values)
             {
                 if (otherEntry != entry && otherEntry.state != null && otherEntry.state.count > 0)
                 {

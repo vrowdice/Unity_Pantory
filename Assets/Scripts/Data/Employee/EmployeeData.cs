@@ -25,7 +25,4 @@ public class EmployeeData : ScriptableObject
     
     [Header("Salary")]
     public long baseSalary;
-
-    public string efficiencyEffectId = "EfficiencyEffect";
-    public string satisfactionEffectId = "SatisfactionEffect";
 }

@@ -21,26 +21,12 @@ public class ProductionBuildingData : BuildingData
     
     [Tooltip("출력 위치 (건물 기준 상대 좌표)")]
     public Vector2Int outputPosition = new Vector2Int(2, 1);
-    
-    [Tooltip("기본 생산량")]
-    public float baseProductionRate = 1.0f;
-    
-    [Tooltip("처리 시간 (초)")]
-    public float processingTime = 1.0f;
 
     /// <summary>
     /// 인스펙터에서 설정한 생산 가능 자원 목록을 반환합니다.
     /// </summary>
     public List<ResourceData> ProducibleResources => _producibleResources;
 
-    /// <summary>
-    /// 기본 생산 자원(첫 번째 항목)을 반환합니다. 없으면 null.
-    /// </summary>
-    public ResourceData DefaultProducibleResource => _producibleResources != null && _producibleResources.Count > 0
-        ? _producibleResources[0]
-        : null;
-
-    // BuildingData 가상 속성 구현
     public override bool IsProductionBuilding => true;
     public override Vector2Int InputPosition => inputPosition;
     public override Vector2Int OutputPosition => outputPosition;

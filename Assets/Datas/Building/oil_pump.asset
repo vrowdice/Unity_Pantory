@@ -22,7 +22,7 @@ MonoBehaviour:
     maintenance costs.
   isUnlockedByDefault: 0
   requiredEmployees: 3
-  baseCost: 600
+  buildCost: 600
   baseMaintenanceCost: 35
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}

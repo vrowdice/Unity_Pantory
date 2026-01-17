@@ -33,45 +33,35 @@ public class EffectDataHandler
         }
     }
 
+    public void HandleDayChanged()
+    {
+        ReducedEffectDuration(1);
+    }
+
     /// <summary>
     /// 이펙트 지속시간 감소 
     /// </summary>
     /// <param name="date">감소할 일</param>
-    public void ProcessDayPass(int date)
+    public void ReducedEffectDuration(int date)
     {
-        // 전역 이펙트 처리
-        foreach(var targetTypePair in _effects)
+        foreach (KeyValuePair<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> targetTypePair in _effects)
         {
-            foreach(var statTypePair in targetTypePair.Value)
+            foreach (KeyValuePair<EffectStatType, List<EffectState>> statTypePair in targetTypePair.Value)
             {
-                for(int i = statTypePair.Value.Count - 1; i >= 0; i--)
+                for (int i = statTypePair.Value.Count - 1; i >= 0; i--)
                 {
                     EffectState effectState = statTypePair.Value[i];
-                    if(effectState.ProcessDayPass(date))
+                    if (effectState.ProcessDayPass(date))
                     {
                         statTypePair.Value.RemoveAt(i);
                     }
                 }
             }
         }
-        // 직원 이펙트 처리
-        foreach(var employeeEntry in _dataManager.Employee.GetAllEmployees().Values)
+
+        foreach (EmployeeEntry employeeEntry in _dataManager.Employee.GetAllEmployees().Values)
         {
-            if(employeeEntry?.state?.activeEffects == null) continue;
-            
-            foreach(var statTypePair in employeeEntry.state.activeEffects)
-            {
-                if(statTypePair.Value == null) continue;
-                
-                for(int i = statTypePair.Value.Count - 1; i >= 0; i--)
-                {
-                    EffectState effectState = statTypePair.Value[i];
-                    if(effectState?.ProcessDayPass(date) == true)
-                    {
-                        statTypePair.Value.RemoveAt(i);
-                    }
-                }
-            }
+            employeeEntry.ProcessDayPass(date);
         }
     }
 
@@ -114,48 +104,6 @@ public class EffectDataHandler
     }
 
     /// <summary>
-    /// 직원 이펙트 적용
-    /// </summary>
-    /// <param name="effectData">이펙트 데이터</param>
-    /// <param name="employeeType">직원 타입</param>
-    public void ApplyEffect(EffectData effectData, EmployeeType employeeType, float value = float.NaN)
-    {
-        if(effectData.isGlobalEffect)
-        {
-            ApplyEffect(effectData);
-            return;
-        }
-
-        EmployeeEntry employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
-        EffectState effectState = new EffectState(effectData);
-
-        if (!float.IsNaN(value))
-        {
-            effectState.value = value;
-        }
-
-        // 딕셔너리에 해당 StatType이 없으면 생성
-        if (!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
-        {
-            employeeEntry.state.activeEffects[effectData.statType] = new List<EffectState>();
-        }
-
-        // 같은 ID의 이펙트가 있으면 갱신
-        foreach (EffectState item in employeeEntry.state.activeEffects[effectData.statType])
-        {
-            if(item.id == effectState.id)
-            {
-                item.remainingDays = effectState.durationDays;
-                item.value = effectState.value;
-                return;
-            }
-        }
-
-        // 새 이펙트 추가
-        employeeEntry.state.activeEffects[effectData.statType].Add(effectState);
-    }
-
-    /// <summary>
     /// 이펙트 제거
     /// </summary>
     /// <param name="effectData">이펙트 데이터</param>
@@ -171,33 +119,7 @@ public class EffectDataHandler
             return;
         }
 
-        var effectList = _effects[effectData.targetType][effectData.statType];
-        for(int i = effectList.Count - 1; i >= 0; i--)
-        {
-            if(effectList[i].id == effectData.id)
-            {
-                effectList.RemoveAt(i);
-                return;
-            }
-        }
-    }
-
-    /// <summary>
-    /// 직원 이펙트 제거
-    /// </summary>
-    /// <param name="effectData">이펙트 데이터</param>
-    /// <param name="employeeType">직원 타입</param>
-    public void RemoveEffect(EffectData effectData, EmployeeType employeeType)
-    {
-        var employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
-        
-        // 해당 StatType의 리스트가 없으면 종료
-        if(!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
-        {
-            return;
-        }
-
-        var effectList = employeeEntry.state.activeEffects[effectData.statType];
+        List<EffectState> effectList = _effects[effectData.targetType][effectData.statType];
         for(int i = effectList.Count - 1; i >= 0; i--)
         {
             if(effectList[i].id == effectData.id)
@@ -231,27 +153,6 @@ public class EffectDataHandler
         return null;
     }
 
-    public EffectState GetEffect(EffectData effectData, EmployeeType employeeType)
-    {
-        var employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
-        
-        // 해당 StatType의 리스트가 없으면 null 반환
-        if(!employeeEntry.state.activeEffects.ContainsKey(effectData.statType))
-        {
-            return null;
-        }
-
-        foreach (EffectState item in employeeEntry.state.activeEffects[effectData.statType])
-        {
-            if (item.id == effectData.id)
-            {
-                return item;
-            }
-        }
-
-        return null;
-    }
-
     public List<EffectState> GetEffectStatEffects(EffectTargetType targetType, EffectStatType statType)
     {
         if(!_effects.ContainsKey(targetType))
@@ -266,22 +167,6 @@ public class EffectDataHandler
         return _effects[targetType][statType];
     }
 
-    public List<EffectState> GetEffectStatEffects(EmployeeType employeeType, EffectStatType statType)
-    {
-        EmployeeEntry employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
-
-        if(!employeeEntry.state.activeEffects.ContainsKey(statType))
-        {
-            return new List<EffectState>();
-        }
-        if(employeeEntry.state.activeEffects == null)
-        {
-            return new List<EffectState>();
-        }
-
-        return employeeEntry.state.activeEffects[statType];
-    }
-
     public List<EffectState> GetAllEffects(EffectTargetType effectTargetType)
     {
         if (!_effects.ContainsKey(effectTargetType))
@@ -290,16 +175,6 @@ public class EffectDataHandler
         }
 
         return _effects[effectTargetType].Values.SelectMany(list => list).ToList();
-    }
-
-    public List<EffectState> GetAllEffects(EmployeeType employeeType)
-    {
-        EmployeeEntry employeeEntry = _dataManager.Employee.GetEmployeeEntry(employeeType);
-        if (employeeEntry == null)
-        {
-            return new List<EffectState>();
-        }
-        return employeeEntry.state.activeEffects.Values.SelectMany(list => list).ToList(); ;
     }
 
     /// <summary>

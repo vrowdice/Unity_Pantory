@@ -22,7 +22,7 @@ MonoBehaviour:
     ingots. Essential for metalworking industries.
   isUnlockedByDefault: 0
   requiredEmployees: 4
-  baseCost: 200
+  buildCost: 200
   baseMaintenanceCost: 12
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}

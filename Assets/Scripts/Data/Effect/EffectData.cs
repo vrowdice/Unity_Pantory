@@ -7,6 +7,8 @@ public class EffectData : ScriptableObject
     public bool isGlobalEffect;
     public string id;              // 효과 ID (예: "Tech_Automation_1")
     public string displayName;     // 표시 이름
+    [TextArea(3, 10)]
+    public string description;     // 설명
     public EffectStatType statType;// 대상 스탯
     public ModifierType type;      // 연산 방식
     public float value;            // 적용 값

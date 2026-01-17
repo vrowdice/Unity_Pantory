@@ -15,11 +15,11 @@ public partial class EmployeeDataHandler
     {
         if (_initialEmployeeData == null) return 1f;
 
-        var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
+        EmployeeEntry managerEntry = GetEmployeeEntry(EmployeeType.Manager);
         int managerCount = managerEntry != null && managerEntry.state != null ? managerEntry.state.count : 0;
         int totalEmployees = 0;
 
-        foreach (var entry in _employees.Values)
+        foreach (EmployeeEntry entry in _employees.Values)
         {
             if (entry?.state != null)
             {
@@ -49,11 +49,11 @@ public partial class EmployeeDataHandler
             return;
         }
 
-        var managerEntry = GetEmployeeEntry(EmployeeType.Manager);
+        EmployeeEntry managerEntry = GetEmployeeEntry(EmployeeType.Manager);
         currentManagers = managerEntry != null && managerEntry.state != null ? managerEntry.state.count : 0;
 
         int totalEmployees = 0;
-        foreach (var entry in _employees.Values)
+        foreach (EmployeeEntry entry in _employees.Values)
         {
             if (entry?.state != null)
             {
@@ -102,7 +102,7 @@ public partial class EmployeeDataHandler
             List<EffectState> globalEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per);
             if (globalEffects != null)
             {
-                foreach (var effect in globalEffects)
+                foreach (EffectState effect in globalEffects)
                 {
                     if (effect != null)
                     {
@@ -111,10 +111,10 @@ public partial class EmployeeDataHandler
                 }
             }
 
-            List<EffectState> employeeSatisfactionEffects = _dataManager.Effect.GetEffectStatEffects(entry.data.type, EffectStatType.Employee_Satisfaction_Per);
+            List<EffectState> employeeSatisfactionEffects = entry.GetEffectStatEffects(EffectStatType.Employee_Satisfaction_Per);
             if (employeeSatisfactionEffects != null)
             {
-                foreach (var effect in employeeSatisfactionEffects)
+                foreach (EffectState effect in employeeSatisfactionEffects)
                 {
                     if (effect != null)
                     {
@@ -144,6 +144,7 @@ public partial class EmployeeDataHandler
         }
 
         RefreshAllSalaries();
+        SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
 
         OnEmployeeChanged?.Invoke();
     }
@@ -158,7 +159,7 @@ public partial class EmployeeDataHandler
         float currentSatisfaction = entry.state.currentSatisfaction;
         float satisfactionEfficiencyBonus = currentSatisfaction * _initialEmployeeData.satisfactionToEfficiencyRatio;
 
-        _dataManager.Effect.ApplyEffect(_initialEmployeeData.satisfactionEfficiencyEffect, entry.data.type, satisfactionEfficiencyBonus);
+        entry.ApplyEffect(_initialEmployeeData.satisfactionEfficiencyEffect, satisfactionEfficiencyBonus);
 
         // 3. 이펙트 시스템을 통한 효율성 계산 (기본 효율성에서 시작하여 이펙트 적용)
         float currentEfficiency = baseEfficiency + satisfactionEfficiencyBonus;
