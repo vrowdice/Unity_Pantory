@@ -151,4 +151,9 @@ public partial class MainCanvas : CanvasBase
     {
         _researchInfoPanel.Init(researchEntry, this);
     }
+
+    public void ShowOptionPanel()
+    {
+        GameManager.ShowOptionPanel();
+    }
 }

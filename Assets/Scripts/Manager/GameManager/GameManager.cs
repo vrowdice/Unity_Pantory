@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 _worldCanvasSize = new Vector2(1000f, 1000f);
 
     [Header("Common Panel")]
+    [SerializeField] private GameObject _optionPanelPrefab;
     [SerializeField] private GameObject _warningPanelPrefab;
     [SerializeField] private GameObject _enterNamePanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
@@ -212,6 +213,31 @@ public class GameManager : MonoBehaviour
         EnterNamePanel enterNamePanel = enterNamePanelObj.GetComponent<EnterNamePanel>();
         enterNamePanel.Init(onConfirm);
         return enterNamePanel;
+    }
+
+    /// <summary>
+    /// 옵션 패널을 표시합니다.
+    /// </summary>
+    /// <returns>생성된 OptionPanel 컴포넌트</returns>
+    public OptionPanel ShowOptionPanel()
+    {
+        if (_optionPanelPrefab == null)
+        {
+            Debug.LogError("[GameManager] OptionPanel prefab is not assigned.");
+            return null;
+        }
+
+        GameObject optionPanelObj = Instantiate(_optionPanelPrefab, CanvasTransform);
+        OptionPanel optionPanel = optionPanelObj.GetComponent<OptionPanel>();
+        
+        if (optionPanel == null)
+        {
+            Debug.LogError("[GameManager] OptionPanel component not found on prefab.");
+            return null;
+        }
+
+        optionPanel.Init();
+        return optionPanel;
     }
 
     /// <summary>

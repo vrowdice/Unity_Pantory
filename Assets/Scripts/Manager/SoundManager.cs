@@ -15,6 +15,12 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource _bgmSource;
 
     private List<AudioSource> _sfxSources;
+    
+    private float _bgmVolume = 0.5f;
+    private float _sfxVolume = 1.0f;
+    
+    private const string PREFS_BGM_VOLUME = "BGM_Volume";
+    private const string PREFS_SFX_VOLUME = "SFX_Volume";
 
     private void Awake()
     {
@@ -45,6 +51,43 @@ public class SoundManager : MonoBehaviour
         }
         _bgmSource.outputAudioMixerGroup = _bgmGroup;
         _bgmSource.loop = true;
+        
+        LoadVolumeSettings();
+    }
+    
+    private void LoadVolumeSettings()
+    {
+        _bgmVolume = PlayerPrefs.GetFloat(PREFS_BGM_VOLUME, 0.5f);
+        _sfxVolume = PlayerPrefs.GetFloat(PREFS_SFX_VOLUME, 1.0f);
+        
+        ApplyBGMVolume();
+        ApplySFXVolume();
+    }
+    
+    private void SaveVolumeSettings()
+    {
+        PlayerPrefs.SetFloat(PREFS_BGM_VOLUME, _bgmVolume);
+        PlayerPrefs.SetFloat(PREFS_SFX_VOLUME, _sfxVolume);
+        PlayerPrefs.Save();
+    }
+    
+    private void ApplyBGMVolume()
+    {
+        if (_bgmSource != null)
+        {
+            _bgmSource.volume = _bgmVolume;
+        }
+    }
+    
+    private void ApplySFXVolume()
+    {
+        foreach (AudioSource source in _sfxSources)
+        {
+            if (source != null)
+            {
+                source.volume = _sfxVolume;
+            }
+        }
     }
 
     private AudioSource CreateNewSource()
@@ -55,6 +98,7 @@ public class SoundManager : MonoBehaviour
         AudioSource source = obj.AddComponent<AudioSource>();
         source.outputAudioMixerGroup = _sfxGroup;
         source.playOnAwake = false;
+        source.volume = _sfxVolume;
         
         _sfxSources.Add(source);
         return source;
@@ -82,7 +126,7 @@ public class SoundManager : MonoBehaviour
         source.spatialBlend = 0f;
         source.transform.position = transform.position;
         source.clip = clip;
-        source.volume = volume;
+        source.volume = volume * _sfxVolume;
         source.pitch = 1.0f + Random.Range(-pitchRandomness, pitchRandomness);
         
         source.Play();
@@ -97,7 +141,7 @@ public class SoundManager : MonoBehaviour
         source.spatialBlend = 1.0f;
         source.transform.position = position;
         source.clip = clip;
-        source.volume = volume;
+        source.volume = volume * _sfxVolume;
         source.pitch = 1.0f + Random.Range(-pitchRandomness, pitchRandomness);
         
         source.minDistance = 5f;
@@ -113,7 +157,34 @@ public class SoundManager : MonoBehaviour
 
         _bgmSource.Stop();
         _bgmSource.clip = clip;
-        _bgmSource.volume = volume;
+        _bgmSource.volume = volume * _bgmVolume;
         _bgmSource.Play();
+    }
+    
+    public void SetBGMVolume(float volume)
+    {
+        _bgmVolume = Mathf.Clamp01(volume);
+        ApplyBGMVolume();
+    }
+    
+    public void SetSFXVolume(float volume)
+    {
+        _sfxVolume = Mathf.Clamp01(volume);
+        ApplySFXVolume();
+    }
+    
+    public float GetBGMVolume()
+    {
+        return _bgmVolume;
+    }
+    
+    public float GetSFXVolume()
+    {
+        return _sfxVolume;
+    }
+    
+    public void SaveSettings()
+    {
+        SaveVolumeSettings();
     }
 }
