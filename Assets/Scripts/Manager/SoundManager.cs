@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : Singleton<SoundManager>
 {
-    public static SoundManager Instance { get; private set; }
-
     [Header("Settings")]
     [SerializeField] private AudioMixerGroup _bgmGroup;
     [SerializeField] private AudioMixerGroup _sfxGroup;
@@ -22,18 +22,86 @@ public class SoundManager : MonoBehaviour
     private const string PREFS_BGM_VOLUME = "BGM_Volume";
     private const string PREFS_SFX_VOLUME = "SFX_Volume";
 
-    private void Awake()
+    private static System.Type _audioManagerType;
+    private static FieldInfo _onPlaySoundEventField;
+    private Action<AudioClip, float> _evoAudioEventHandler;
+
+    protected override void Awake()
     {
-        if (Instance == null)
+        base.Awake();
+        
+        if (Instance != this) return;
+        
+        InitPool();
+        SubscribeToEvoAudioManager();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromEvoAudioManager();
+    }
+
+    private void SubscribeToEvoAudioManager()
+    {
+        if (_audioManagerType == null)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            InitPool();
+            _audioManagerType = System.Type.GetType("Evo.UI.AudioManager, Evo.UI");
+            if (_audioManagerType == null)
+            {
+                _audioManagerType = System.Type.GetType("Evo.UI.AudioManager");
+            }
+            
+            if (_audioManagerType != null)
+            {
+                _onPlaySoundEventField = _audioManagerType.GetField("OnPlaySoundEvent", BindingFlags.Public | BindingFlags.Static);
+            }
         }
-        else
+
+        if (_onPlaySoundEventField != null && _evoAudioEventHandler == null)
         {
-            Destroy(gameObject);
+            _evoAudioEventHandler = OnEvoUiPlaySound;
+            object currentEvent = _onPlaySoundEventField.GetValue(null);
+            
+            if (currentEvent != null)
+            {
+                Action<AudioClip, float> currentAction = currentEvent as Action<AudioClip, float>;
+                if (currentAction != null)
+                {
+                    currentAction += _evoAudioEventHandler;
+                }
+                else
+                {
+                    _onPlaySoundEventField.SetValue(null, _evoAudioEventHandler);
+                }
+            }
+            else
+            {
+                _onPlaySoundEventField.SetValue(null, _evoAudioEventHandler);
+            }
         }
+    }
+
+    private void UnsubscribeFromEvoAudioManager()
+    {
+        if (_onPlaySoundEventField != null && _evoAudioEventHandler != null)
+        {
+            object currentEvent = _onPlaySoundEventField.GetValue(null);
+            
+            if (currentEvent != null)
+            {
+                Action<AudioClip, float> currentAction = currentEvent as Action<AudioClip, float>;
+                if (currentAction != null)
+                {
+                    currentAction -= _evoAudioEventHandler;
+                    _onPlaySoundEventField.SetValue(null, currentAction);
+                }
+            }
+        }
+    }
+
+    private void OnEvoUiPlaySound(AudioClip clip, float volume)
+    {
+        PlaySFX(clip, volume, 0f);
     }
 
     private void InitPool()
@@ -85,7 +153,14 @@ public class SoundManager : MonoBehaviour
         {
             if (source != null)
             {
-                source.volume = _sfxVolume;
+                if (!source.isPlaying)
+                {
+                    source.volume = _sfxVolume;
+                }
+                else
+                {
+                    source.volume = _sfxVolume;
+                }
             }
         }
     }
@@ -127,7 +202,7 @@ public class SoundManager : MonoBehaviour
         source.transform.position = transform.position;
         source.clip = clip;
         source.volume = volume * _sfxVolume;
-        source.pitch = 1.0f + Random.Range(-pitchRandomness, pitchRandomness);
+        source.pitch = 1.0f + UnityEngine.Random.Range(-pitchRandomness, pitchRandomness);
         
         source.Play();
     }
@@ -142,7 +217,7 @@ public class SoundManager : MonoBehaviour
         source.transform.position = position;
         source.clip = clip;
         source.volume = volume * _sfxVolume;
-        source.pitch = 1.0f + Random.Range(-pitchRandomness, pitchRandomness);
+        source.pitch = 1.0f + UnityEngine.Random.Range(-pitchRandomness, pitchRandomness);
         
         source.minDistance = 5f;
         source.maxDistance = 50f;

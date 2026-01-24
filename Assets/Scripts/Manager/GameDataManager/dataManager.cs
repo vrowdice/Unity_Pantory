@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DataManager : MonoBehaviour
+public class DataManager : Singleton<DataManager>
 {
-    public static DataManager Instance { get; private set; }
 
     [Header("Initial Data")]
     [SerializeField] private InitialResourceData _initialResourceData;
@@ -43,17 +42,19 @@ public class DataManager : MonoBehaviour
         Time?.Update(deltaTime);
     }
 
+    protected override void Awake()
+    {
+        base.Awake();
+        
+        if (Instance != this) return;
+        
+        InitializeServices();
+    }
+
     public void Init()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
+        if (Instance != this) return;
+        
         InitializeServices();
     }
 

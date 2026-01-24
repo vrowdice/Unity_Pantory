@@ -1,9 +1,7 @@
 using UnityEngine;
 
-public class VisualManager : MonoBehaviour
+public class VisualManager : Singleton<VisualManager>
 {
-    public static VisualManager Instance { get; private set; }
-
     public Color ValidColor => _validColor;
     public Color InvalidColor => _invalidColor;
     public Color ProfitColor => _profitColor;  // 흑자 색상 (양수, 증가)
@@ -34,13 +32,6 @@ public class VisualManager : MonoBehaviour
 
     public void Init()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     /// <summary>

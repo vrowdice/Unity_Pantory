@@ -5,7 +5,7 @@ using System;
 /// <summary>
 /// 자원 타입별로 자원 목록을 필터링하여 사용자에게 선택 인터페이스를 제공하는 패널 클래스입니다.
 /// </summary>
-public class SelectResourcePanel : MonoBehaviour
+public class SelectResourcePopup : BasePopup
 {
     [Header("Prefabs")]
     [SerializeField] private GameObject _selectResourceTypeBtnPrefab;
@@ -29,6 +29,8 @@ public class SelectResourcePanel : MonoBehaviour
     /// <param name="producibleResources">생산 가능한 자원 목록 (null일 경우 모든 자원 표시)</param>
     public void Init(DataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
+        base.Init();
+        
         _dataManager = gameDataManager;
         _resourceTypes = resourceTypes;
         _onResourceSelected = onResourceSelected;
@@ -47,6 +49,8 @@ public class SelectResourcePanel : MonoBehaviour
         {
             OnResourceTypeClick(resourceTypes[0]);
         }
+        
+        Show();
     }
 
     /// <summary>
@@ -134,7 +138,7 @@ public class SelectResourcePanel : MonoBehaviour
             Debug.LogWarning("[SelectResourcePanel] No callback registered for resource selection.");
         }
 
-        gameObject.SetActive(false);
+        Close();
     }
 
     /// <summary>
@@ -142,6 +146,7 @@ public class SelectResourcePanel : MonoBehaviour
     /// </summary>
     public void ClosePanel()
     {
+        Close();
         Destroy(gameObject);
     }
 }

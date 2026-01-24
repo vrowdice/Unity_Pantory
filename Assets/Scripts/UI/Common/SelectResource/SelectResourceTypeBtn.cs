@@ -6,9 +6,9 @@ public class SelectResourceTypeBtn : MonoBehaviour
 {
     [SerializeField] private TMP_Text _resourceTypeNameText;
     private ResourceType _resourceType;
-    private SelectResourcePanel _selectResourcePanel;
+    private SelectResourcePopup _selectResourcePanel;
 
-    public void Init(SelectResourcePanel selectResourcePanel, ResourceType resourceType)
+    public void Init(SelectResourcePopup selectResourcePanel, ResourceType resourceType)
     {
         _resourceTypeNameText.text = resourceType.ToString();
         _resourceType = resourceType;

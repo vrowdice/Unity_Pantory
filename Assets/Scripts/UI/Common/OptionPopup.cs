@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OptionPanel : MonoBehaviour
+public class OptionPopup : MonoBehaviour
 {
     [SerializeField] private Slider _BGMSlider;
     [SerializeField] private Slider _SFXSlider;

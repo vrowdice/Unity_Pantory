@@ -65,3 +65,4 @@ MonoBehaviour:
   _saveLoadManagerPrefab: {fileID: 8979309171805832512, guid: 74be5c094f98f1c479a5375745d16474, type: 3}
   _sceneLoadManagerPrefab: {fileID: 9005788335752144167, guid: b38980ce5d78c9f4a8386184e1f9c3b4, type: 3}
   _soundManagerPrefab: {fileID: 4907807080177921240, guid: 5a2939907e18a914486a45cc7d8e150e, type: 3}
+  _poolingManagerPrefab: {fileID: 2943756751407442316, guid: 345e8bd9ccc9eef49b8d1e29ed7838cf, type: 3}

@@ -7,7 +7,7 @@ using UnityEngine;
 public partial class DesignCanvas
 {
     [Header("Thread References")]
-    [SerializeField] private ThreadSaveInfoPanel _threadSaveInformationPanel;
+    [SerializeField] private ThreadSaveInfoPopup _threadSaveInformationPanel;
 
     private string _currentThreadTitle = DefaultThreadTitle;
     private const string DefaultThreadTitle = "Main Line";

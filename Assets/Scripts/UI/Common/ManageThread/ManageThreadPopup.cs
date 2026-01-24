@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 스레드 목록(Thread List)을 관리하고 로드 기능을 제공하는 패널입니다.
 /// 카테고리별 필터링, 스레드 선택, 생성 및 삭제 기능을 포함합니다.
 /// </summary>
-public class ManageThreadPanel : MonoBehaviour
+public class ManageThreadPopup : BasePopup
 {
     [SerializeField] private GameObject _threadCategoryBtnPrefab = null;
     [SerializeField] private GameObject _threadSelectBtnPrefab = null;
@@ -28,6 +28,8 @@ public class ManageThreadPanel : MonoBehaviour
     /// </summary>
     public void Init(DataManager dataManager, System.Action<string> onThreadSelected = null)
     {
+        base.Init();
+        
         if (dataManager == null)
         {
             Debug.LogError("[ManageThreadPanel] GameDataManager is null.");
@@ -47,6 +49,8 @@ public class ManageThreadPanel : MonoBehaviour
         // 초기 표시
         RefreshCategoryList();
         RefreshThreadList();
+        
+        Show();
     }
 
     void OnDestroy()
@@ -294,6 +298,7 @@ public class ManageThreadPanel : MonoBehaviour
     /// </summary>
     public void ClosePanel()
     {
+        Close();
         Destroy(gameObject);
     }
 }

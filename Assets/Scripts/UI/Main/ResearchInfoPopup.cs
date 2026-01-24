@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class ResearchInfoPanel : MonoBehaviour
+public class ResearchInfoPopup : BasePopup
 {
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _tireText;
@@ -19,11 +19,10 @@ public class ResearchInfoPanel : MonoBehaviour
 
     private bool _isSubscribed = false;
 
-    /// <summary>
-    /// �г��� �ʱ�ȭ�ϰ� �����͸� �����մϴ�.
-    /// </summary>
     public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager)
     {
+        base.Init();
+        
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;
         _dataManager = DataManager.Instance;
@@ -33,7 +32,7 @@ public class ResearchInfoPanel : MonoBehaviour
         SubscribeToDayChanged();
         RefreshAllUI();
 
-        gameObject.SetActive(true);
+        Show();
     }
 
     private void OnEnable() => SubscribeToDayChanged();
@@ -92,7 +91,7 @@ public class ResearchInfoPanel : MonoBehaviour
         }
         else
         {
-            gameObject.SetActive(false);
+            Close();
         }
     }
 }

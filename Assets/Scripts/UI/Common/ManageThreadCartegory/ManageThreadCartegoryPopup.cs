@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class ManageThreadCartegoryPanel : MonoBehaviour
+public class ManageThreadCartegoryPopup : BasePopup
 {
     [SerializeField] private Transform _contentTransform;
     [SerializeField] private ManageThreadCartegoryItemBtn _itemPanelPrefab;
@@ -16,6 +16,8 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
     public void Init(DataManager dataManager, Action<string> onCategorySelected = null)
     {
+        base.Init();
+        
         _dataManager = dataManager;
         _onCategorySelected = onCategorySelected;
 
@@ -27,6 +29,8 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
 
         // 카테고리 목록 표시
         RefreshCategoryList();
+        
+        Show();
     }
 
     /// <summary>
@@ -193,6 +197,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
         _onCategorySelected?.Invoke(categoryId);
         
         // 패널 닫기
+        Close();
         Destroy(gameObject);
     }
 
@@ -201,6 +206,7 @@ public class ManageThreadCartegoryPanel : MonoBehaviour
     /// </summary>
     public void OnClickClose()
     {
+        Close();
         Destroy(gameObject);
     }
 }

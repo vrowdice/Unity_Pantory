@@ -5,15 +5,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager Instance { get; private set; }
 
     private CanvasBase _currentCanvasBase;
     private RunnerBase _currentRunnerBase;
     private DataManager _dataManager;
     private VisualManager _visualManager;
     private SaveLoadManager _saveLoadManager;
+    private PoolingManager _poolingManager;
     private MainCameraController _mainCameraController;
 
     private Canvas _currnetWorldCanvas;
@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     private RectTransform _canvasRect;
     private CanvasScaler _scaler;
 
+    private Transform _managerCanvasTransform;
     private string _currentThreadId = string.Empty;
 
     public CanvasBase CanvasBase => _currentCanvasBase;
@@ -32,6 +33,8 @@ public class GameManager : MonoBehaviour
     public GameObject ActionBtnPrefab => _actionBtnPrefab;
     public GameObject GridSortContentPrefab => _gridSortContentPrefab;
     public MainCameraController MainCameraController => _mainCameraController;
+    public PoolingManager PoolingManager => _poolingManager;
+    public Transform ManagerCanvasTransform => _managerCanvasTransform;
 
     [Header("World Space Canvas Settings")]
     [SerializeField] private string _worldCanvasName = "SharedWorldCanvas";
@@ -63,22 +66,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _saveLoadManagerPrefab;
     [SerializeField] private GameObject _sceneLoadManagerPrefab;
     [SerializeField] private GameObject _soundManagerPrefab;
+    [SerializeField] private GameObject _poolingManagerPrefab;
 
     private SceneLoadManager _sceneLoadManager;
 
     public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;
     public GameObject EffectTextPairPanelPrefab => _effectTextPairPanelPrefab;
 
-    void Awake()
+    protected override void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        base.Awake();
+        
+        if (Instance != this) return;
+        
+        CreateManagerCanvas();
         
         if (_saveLoadManager == null)
         {
@@ -111,6 +112,13 @@ public class GameManager : MonoBehaviour
         if (SoundManager.Instance == null && _soundManagerPrefab != null)
         {
             Instantiate(_soundManagerPrefab);
+        }
+
+        if (_poolingManager == null && _poolingManagerPrefab != null)
+        {
+            GameObject poolingManagerObj = Instantiate(_poolingManagerPrefab);
+            _poolingManager = poolingManagerObj.GetComponent<PoolingManager>();
+            _poolingManager.Init(this);
         }
 
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -148,6 +156,45 @@ public class GameManager : MonoBehaviour
         CanvasBase canvasBase = FindAnyObjectByType<CanvasBase>();
         _currentCanvasBase = canvasBase;
         _currentCanvasBase.Init();
+
+        // PoolingManager에 Canvas Transform 설정
+        if (_poolingManager != null && _currentCanvasBase != null)
+        {
+            _poolingManager.SetCanvasTransform(_currentCanvasBase.CanvasTrans);
+        }
+
+        // ManagerCanvas의 카메라 업데이트
+        if (_managerCanvasTransform != null)
+        {
+            Canvas managerCanvas = _managerCanvasTransform.GetComponent<Canvas>();
+            if (managerCanvas != null)
+            {
+                managerCanvas.worldCamera = Camera.main;
+            }
+        }
+    }
+
+    /// <summary>
+    /// GameManager 전용 Canvas를 생성합니다.
+    /// </summary>
+    private void CreateManagerCanvas()
+    {
+        GameObject canvasObj = new GameObject("ManagerCanvas");
+        Canvas canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
+        canvas.sortingOrder = 100;
+
+        canvasObj.AddComponent<CanvasScaler>();
+        canvasObj.AddComponent<GraphicRaycaster>();
+        
+        CanvasScaler scaler = canvasObj.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(2560, 1200);
+
+        _managerCanvasTransform = canvasObj.transform;
+        DontDestroyOnLoad(canvasObj);
     }
 
     /// <summary>
@@ -156,8 +203,14 @@ public class GameManager : MonoBehaviour
     /// <param name="message">표시할 메시지</param>
     public void ShowWarningPanel(string message)
     {
-        GameObject warningPanelObj = Instantiate(_warningPanelPrefab, CanvasTransform);
-        warningPanelObj.GetComponent<WarningPanel>().Init(message);
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return;
+        }
+
+        GameObject warningPanelObj = Instantiate(_warningPanelPrefab, _managerCanvasTransform, false);
+        warningPanelObj.GetComponent<WarningPopup>().Init(message);
     }
 
     /// <summary>
@@ -167,12 +220,18 @@ public class GameManager : MonoBehaviour
     /// <param name="onResourceSelected">자원 선택 시 호출될 콜백</param>
     /// <param name="producibleResources">생산 가능한 자원 목록 (null이면 해당 타입의 모든 자원 표시)</param>
     /// <returns>생성된 SelectResourcePanel 컴포넌트</returns>
-    public SelectResourcePanel ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
+    public SelectResourcePopup ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
     {
-        GameObject selectResourcePanelObj = Instantiate(_selectResourcePanelPrefab, CanvasTransform);
-        SelectResourcePanel selectResourcePanel = selectResourcePanelObj.GetComponent<SelectResourcePanel>();
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        GameObject selectResourcePanelObj = Instantiate(_selectResourcePanelPrefab, _managerCanvasTransform, false);
+        SelectResourcePopup selectResourcePanel = selectResourcePanelObj.GetComponent<SelectResourcePopup>();
         selectResourcePanel.Init(_dataManager, resourceTypes, onResourceSelected, producibleResources);
-        return selectResourcePanel.GetComponent<SelectResourcePanel>();
+        return selectResourcePanel.GetComponent<SelectResourcePopup>();
     }
 
     /// <summary>
@@ -181,10 +240,16 @@ public class GameManager : MonoBehaviour
     /// <param name="dataManager">GameDataManager</param>
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
     /// <returns>생성된 ManageThreadCartegoryPanel 컴포넌트</returns>
-    public ManageThreadCartegoryPanel ShowManageThreadCartegoryPanel(DataManager dataManager, System.Action<string> onCategorySelected)
+    public ManageThreadCartegoryPopup ShowManageThreadCartegoryPanel(DataManager dataManager, System.Action<string> onCategorySelected)
     {
-        GameObject panageThreadCartegoryPanelObj = Instantiate(_manageThreadCartegoryPanelPrefab, CanvasTransform);
-        ManageThreadCartegoryPanel panageThreadCartegoryPanel = panageThreadCartegoryPanelObj.GetComponent<ManageThreadCartegoryPanel>();
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        GameObject panageThreadCartegoryPanelObj = Instantiate(_manageThreadCartegoryPanelPrefab, _managerCanvasTransform, false);
+        ManageThreadCartegoryPopup panageThreadCartegoryPanel = panageThreadCartegoryPanelObj.GetComponent<ManageThreadCartegoryPopup>();
         panageThreadCartegoryPanel.Init(dataManager, onCategorySelected);
         return panageThreadCartegoryPanel;
     }
@@ -194,10 +259,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="onThreadSelected">스레드 선택 시 호출될 콜백 (옵션)</param>
     /// <returns>생성된 ManageThreadPanel 컴포넌트</returns>
-    public ManageThreadPanel ShowManageThreadPanel(System.Action<string> onThreadSelected)
+    public ManageThreadPopup ShowManageThreadPanel(System.Action<string> onThreadSelected)
     {
-        GameObject manageThreadPanelObj = Instantiate(_manageThreadPanelPrefab, CanvasTransform);
-        ManageThreadPanel manageThreadPanel = manageThreadPanelObj.GetComponent<ManageThreadPanel>();
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        GameObject manageThreadPanelObj = Instantiate(_manageThreadPanelPrefab, _managerCanvasTransform, false);
+        ManageThreadPopup manageThreadPanel = manageThreadPanelObj.GetComponent<ManageThreadPopup>();
         manageThreadPanel.Init(_dataManager, onThreadSelected);
         return manageThreadPanel;
     }
@@ -207,10 +278,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
     /// <returns>생성된 EnterNamePanel 컴포넌트</returns>
-    public EnterNamePanel ShowEnterNamePanel(System.Action<string> onConfirm)
+    public EnterNamePopup ShowEnterNamePanel(System.Action<string> onConfirm)
     {
-        GameObject enterNamePanelObj = Instantiate(_enterNamePanelPrefab, CanvasTransform);
-        EnterNamePanel enterNamePanel = enterNamePanelObj.GetComponent<EnterNamePanel>();
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        GameObject enterNamePanelObj = Instantiate(_enterNamePanelPrefab, _managerCanvasTransform, false);
+        EnterNamePopup enterNamePanel = enterNamePanelObj.GetComponent<EnterNamePopup>();
         enterNamePanel.Init(onConfirm);
         return enterNamePanel;
     }
@@ -219,7 +296,7 @@ public class GameManager : MonoBehaviour
     /// 옵션 패널을 표시합니다.
     /// </summary>
     /// <returns>생성된 OptionPanel 컴포넌트</returns>
-    public OptionPanel ShowOptionPanel()
+    public OptionPopup ShowOptionPanel()
     {
         if (_optionPanelPrefab == null)
         {
@@ -227,8 +304,14 @@ public class GameManager : MonoBehaviour
             return null;
         }
 
-        GameObject optionPanelObj = Instantiate(_optionPanelPrefab, CanvasTransform);
-        OptionPanel optionPanel = optionPanelObj.GetComponent<OptionPanel>();
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        GameObject optionPanelObj = Instantiate(_optionPanelPrefab, _managerCanvasTransform, false);
+        OptionPopup optionPanel = optionPanelObj.GetComponent<OptionPopup>();
         
         if (optionPanel == null)
         {

@@ -16,7 +16,7 @@ public partial class DesignCanvas
     [SerializeField] private Transform _buildingBtnContent;
 
     [Header("Panel References")]
-    [SerializeField] private BuildingInfoPanel _buildingInfoPanel;
+    [SerializeField] private BuildingInfoPopup _buildingInfoPanel;
 
     private bool _isRemovalMode;
     private BuildingType _selectedBuildingType = BuildingType.Distribution;

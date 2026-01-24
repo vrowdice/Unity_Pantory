@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 3915974259390727112}
   - component: {fileID: 1067079835615054061}
   m_Layer: 5
-  m_Name: WarningPanel
+  m_Name: WarningPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class BuildingInfoPanel : MonoBehaviour
+public class BuildingInfoPopup : BasePopup
 {
     [SerializeField] private GameObject _productionExplainTextPrefab;
 
@@ -36,12 +36,15 @@ public class BuildingInfoPanel : MonoBehaviour
     {
         if (data == null) return;
 
+        base.Init();
+        
         _currentData = data;
         _currentState = state;
         _designCanvas = canvas;
         _dataManager = DataManager.Instance; // 또는 주입받은 참조 사용
 
         UpdateUI();
+        Show();
     }
 
     private void UpdateUI()
@@ -170,7 +173,7 @@ public class BuildingInfoPanel : MonoBehaviour
         UpdateUI();
         RefreshWorldIcons();
 
-        gameObject.SetActive(false);
+        Close();
     }
 
     private void SyncInputToRequirements(ResourceData outputData)

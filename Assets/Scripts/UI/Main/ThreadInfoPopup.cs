@@ -8,7 +8,7 @@ using Evo;
 /// 스레드(생산 시설)의 정보를 표시하고 직원을 할당/해제하는 UI 패널을 관리합니다.
 /// <para>슬라이더를 통해 직원 수를 제어하며, 생산 효율 및 리소스 소비/생산 현황을 시각화합니다.</para>
 /// </summary>
-public class ThreadInfoPanel : MonoBehaviour
+public class ThreadInfoPopup : BasePopup
 {
     [Header("Resource Visualization")]
     [SerializeField] private Transform _provideContentTransform;
@@ -49,6 +49,8 @@ public class ThreadInfoPanel : MonoBehaviour
     /// </summary>
     public void Init(ThreadState threadState, MainCanvas mainUiManager)
     {
+        base.Init();
+        
         _currentThreadState = threadState;
         _mainUiManager = mainUiManager;
         _dataManager = DataManager.Instance;
@@ -56,7 +58,7 @@ public class ThreadInfoPanel : MonoBehaviour
         SubscribeToDayChanged();
         RefreshAllUI();
 
-        gameObject.SetActive(true);
+        Show();
     }
 
     private void OnEnable() => SubscribeToDayChanged();

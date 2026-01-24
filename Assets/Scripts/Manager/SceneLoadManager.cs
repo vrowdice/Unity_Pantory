@@ -6,10 +6,8 @@ using UnityEngine.UI;
 /// <summary>
 /// 씬 이동 및 로딩 패널 관리를 담당하는 매니저
 /// </summary>
-public class SceneLoadManager : MonoBehaviour
+public class SceneLoadManager : Singleton<SceneLoadManager>
 {
-    public static SceneLoadManager Instance { get; private set; }
-
     [Header("UI References")]
     [SerializeField] private CanvasGroup _fadeCanvasGroup;
     [SerializeField] private Slider _progressBar;
@@ -19,17 +17,26 @@ public class SceneLoadManager : MonoBehaviour
 
     private bool _isLoading = false;
 
-    public void Init()
+    protected override void Awake()
     {
-        if (Instance != null && Instance != this)
+        base.Awake();
+        
+        if (Instance != this) return;
+
+        if (_fadeCanvasGroup != null)
         {
-            Destroy(gameObject);
-            return;
+            _fadeCanvasGroup.alpha = 0f;
+            _fadeCanvasGroup.blocksRaycasts = false;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (_progressBar != null)
+        {
+            _progressBar.value = 0f;
+        }
+    }
 
+    public void Init()
+    {
         if (_fadeCanvasGroup != null)
         {
             _fadeCanvasGroup.alpha = 0f;

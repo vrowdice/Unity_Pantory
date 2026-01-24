@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public partial class DesignCanvas : CanvasBase
 {
-    [SerializeField] private ThreadSaveInfoPanel _saveInfoPanel;
+    [SerializeField] private ThreadSaveInfoPopup _saveInfoPanel;
     [SerializeField] private DesignRunner _designRunner;
 
     public DesignRunner DesignRunner => _designRunner;

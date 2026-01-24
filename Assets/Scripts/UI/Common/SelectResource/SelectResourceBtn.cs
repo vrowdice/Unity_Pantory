@@ -8,10 +8,10 @@ public class SelectResourceBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _resourceNameText;
     [SerializeField] private TextMeshProUGUI _resourceCountText;
 
-    private SelectResourcePanel _selectResourcePanel;
+    private SelectResourcePopup _selectResourcePanel;
     private ResourceEntry _resourceEntry;
 
-    public void Init(SelectResourcePanel selectResourcePanel, ResourceEntry resourceEntry)
+    public void Init(SelectResourcePopup selectResourcePanel, ResourceEntry resourceEntry)
     {
         _selectResourcePanel = selectResourcePanel;
         _resourceEntry = resourceEntry;

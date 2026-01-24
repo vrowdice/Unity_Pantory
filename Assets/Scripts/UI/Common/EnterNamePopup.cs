@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 
-public class EnterNamePanel : MonoBehaviour
+public class EnterNamePopup : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _nameInputField = null;
 

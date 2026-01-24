@@ -1099,9 +1099,9 @@ GameObject:
   - component: {fileID: 6937005149484220385}
   - component: {fileID: 2912335934169648558}
   - component: {fileID: 6903481956403315884}
-  - component: {fileID: 2430421267154000423}
+  - component: {fileID: 7364405190737968462}
   m_Layer: 5
-  m_Name: ThreadInfoPanel
+  m_Name: ThreadInfoPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1165,7 +1165,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2430421267154000423
+--- !u!114 &7364405190737968462
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1174,9 +1174,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1831182850387429262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9699468f8c5b3f246a6123eb1972a25d, type: 3}
+  m_Script: {fileID: 11500000, guid: 01dbe50e086524b4b93442b426007749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _effectType: 0
+  _enabled: 1
   _provideContentTransform: {fileID: 5048334772927776956}
   _consumeContentTransform: {fileID: 4110084327608987254}
   _nameText: {fileID: 7639860601945169966}
@@ -1184,9 +1186,9 @@ MonoBehaviour:
   _categoryText: {fileID: 2379752241662833770}
   _previewImage: {fileID: 8030244262204720458}
   _productionEfficiencySlider: {fileID: 3401046637033156138}
-  _productionEfficiencyText: {fileID: 6319380818720241847}
+  _productionEfficiencyText: {fileID: 4997842772226082436}
   _productionProgressSlider: {fileID: 1666741506266183997}
-  _productionProgressText: {fileID: 4500951218016762749}
+  _productionProgressText: {fileID: 4555454546341303422}
   _currentWorkersText: {fileID: 1304192903680086422}
   _currentTechniciansText: {fileID: 2919965919853820621}
   _maxWorkersText: {fileID: 4796705527330062162}
@@ -1655,9 +1657,9 @@ RectTransform:
   - {fileID: 8458792848944455542}
   m_Father: {fileID: 1566879443186010623}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 500, y: 60}
   m_SizeDelta: {x: 900, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6568373891055986096
@@ -4013,10 +4015,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1073383506385125420, guid: 56f2cd82c0a34904a97fd25656c5c763, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2430421267154000423}
-    - target: {fileID: 1073383506385125420, guid: 56f2cd82c0a34904a97fd25656c5c763, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -4177,10 +4175,6 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1073383506385125420, guid: 56f2cd82c0a34904a97fd25656c5c763, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2430421267154000423}
     - target: {fileID: 1073383506385125420, guid: 56f2cd82c0a34904a97fd25656c5c763, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -4343,9 +4337,21 @@ PrefabInstance:
       value: CloseBtn
       objectReference: {fileID: 0}
     - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1831182850387429262}
+      objectReference: {fileID: 7364405190737968462}
+    - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Close
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ThreadInfoPopup, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 6250686149072857772, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

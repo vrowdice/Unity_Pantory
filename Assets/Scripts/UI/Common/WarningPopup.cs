@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class WarningPanel : MonoBehaviour
+public class WarningPopup : MonoBehaviour
 {
     /// <summary>
     /// 애니메이터

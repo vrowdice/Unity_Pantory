@@ -16,8 +16,8 @@ public partial class MainCanvas : CanvasBase
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
     [Header("Info Panel")]
-    [SerializeField] private ThreadInfoPanel _threadInfoPanel;
-    [SerializeField] private ResearchInfoPanel _researchInfoPanel;
+    [SerializeField] private ThreadInfoPopup _threadInfoPanel;
+    [SerializeField] private ResearchInfoPopup _researchInfoPanel;
 
     public MainRunner ThreadTileManager => _threadTileManager;
 

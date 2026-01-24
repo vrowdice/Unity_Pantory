@@ -6,7 +6,7 @@ using TMPro;
 /// <summary>
 /// Thread 저장 정보를 표시하고 최종 저장(Save) 명령을 처리하는 UI 패널입니다.
 /// </summary>
-public class ThreadSaveInfoPanel : MonoBehaviour
+public class ThreadSaveInfoPopup : BasePopup
 {
     [Header("UI Prefabs & Contents")]
     [SerializeField] private GameObject _productionInfoIconPanel = null;
@@ -26,6 +26,8 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// </summary>
     public void Init(DataManager dataManager)
     {
+        base.Init();
+        
         _dataManager = dataManager;
         _gameManager = GameManager.Instance;
     }
@@ -36,6 +38,8 @@ public class ThreadSaveInfoPanel : MonoBehaviour
     /// </summary>
     public void Init(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignCanvas designUiManager)
     {
+        base.Init();
+        
         _designCanvas = designUiManager;
 
         // Thread 제목 설정
@@ -74,7 +78,7 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         // 총 유지비 표시
         _totalMaintenanceText.text = $"total maintenance: {totalMaintenance:N0}/month";
 
-        gameObject.SetActive(true);
+        Show();
     }
 
     /// <summary>
@@ -181,6 +185,6 @@ public class ThreadSaveInfoPanel : MonoBehaviour
         Debug.Log($"[ThreadSaveInfoPanel] Save request delegated for: {threadName} (Category: {_selectedCategoryId})");
 
         // 저장 완료 알림 및 패널 숨김
-        gameObject.SetActive(false);
+        Close();
     }
 }

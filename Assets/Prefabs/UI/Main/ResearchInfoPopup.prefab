@@ -618,7 +618,7 @@ GameObject:
   - component: {fileID: 2766662987534751789}
   - component: {fileID: 4256470619350766199}
   m_Layer: 5
-  m_Name: ResearchInfoPanel
+  m_Name: ResearchInfoPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -691,9 +691,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1599749037855388602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28ec393b93b37854db3eead40236140b, type: 3}
+  m_Script: {fileID: 11500000, guid: 6323060f6fb0fa146914ba4f3d9ac6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _effectType: 0
+  _enabled: 1
   _nameText: {fileID: 5846032431192372748}
   _tireText: {fileID: 5896077532349153992}
   _descriptionText: {fileID: 4089734351389663748}
@@ -3245,9 +3247,21 @@ PrefabInstance:
       value: CloseBtn
       objectReference: {fileID: 0}
     - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1599749037855388602}
+      objectReference: {fileID: 4256470619350766199}
+    - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Close
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907065308345296465, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ResearchInfoPopup, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 6250686149072857772, guid: 7e8acbf1ee08d54428edc6707164ad67, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

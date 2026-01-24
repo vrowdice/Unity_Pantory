@@ -670,7 +670,7 @@ GameObject:
   - component: {fileID: 1450644301056776454}
   - component: {fileID: 236284615883606276}
   m_Layer: 5
-  m_Name: ManageThreadPanel
+  m_Name: ManageThreadPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -746,6 +746,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d00b126e39efea1498e814f96a2da1d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _effectType: 0
+  _enabled: 1
   _threadCategoryBtnPrefab: {fileID: 869856557980904923, guid: b71fc50d37c9c7a4b9594a2392aeb9d2, type: 3}
   _threadSelectBtnPrefab: {fileID: 7742759488779266836, guid: bdf4d3ea74d6d774d97acc81ad42513a, type: 3}
   _threadPlusBtnPrefab: {fileID: 4578795421820652337, guid: 5172d00f54754d7469aaee903815032b, type: 3}
