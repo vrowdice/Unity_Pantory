@@ -101,7 +101,7 @@ public class MarketResourcePanel : MonoBehaviour
         ResourceState state = _selectedResourceEntry.state;
 
         _resouceImage.sprite = data.icon;
-        _resourceNameText.text = data.displayName;
+        _resourceNameText.text = data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
         _resourceStorageText.text = state.count.ToString("N0");
 
         string priceText = $"{state.currentValue:N0}";
@@ -111,6 +111,7 @@ public class MarketResourcePanel : MonoBehaviour
             priceText += $" ({deltaSymbol}{state.currentChangeValue:F2})";
         }
         _resourcePriceText.text = priceText;
+        _resourcePriceText.color = VisualManager.Instance.GetDeltaColor(state.currentChangeValue);
 
         _windowGraph.ShowGraph(_selectedResourceEntry.state.PriceHistory);
         _resouceTradeInputField.text = _selectedResourceEntry.state.marketDeltaCount.ToString();

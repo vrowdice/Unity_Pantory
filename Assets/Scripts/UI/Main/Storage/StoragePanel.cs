@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -34,22 +35,17 @@ public class StoragePanel : BasePanel
     /// </summary>
     private void InitializeResourceTypeButtons()
     {
-        if (_gameManager?.ActionBtnPrefab == null || _resourceTypeScrollViewContentTransform == null)
-        {
-            Debug.LogWarning("[StoragePanel] ActionBtnPrefab or _resourceTypeScrollViewContentTransform is null.");
-            return;
-        }
-
         GameObjectUtils.ClearChildren(_resourceTypeScrollViewContentTransform);
 
-        foreach (var resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
+        foreach (ResourceType resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
         {
-            var btnObj = Instantiate(_gameManager.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
-            var btn = btnObj.GetComponent<ActionBtn>();
+            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
+            ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {
-                var capturedType = resourceType;
-                btn.Init(capturedType.ToString(), () => OnResourceTypeClick(capturedType));
+                ResourceType capturedType = resourceType;
+                string localizedName = capturedType.Localize();
+                btn.Init(localizedName, () => OnResourceTypeClick(capturedType));
             }
         }
     }
@@ -80,7 +76,7 @@ public class StoragePanel : BasePanel
             GameObjectUtils.ClearChildren(_resourceScrollViewContentTransform);
         }
 
-        foreach (var resourceEntry in _dataManager.Resource.GetAllResources())
+        foreach (KeyValuePair<string, ResourceEntry> resourceEntry in _dataManager.Resource.GetAllResources())
         {
             if (resourceEntry.Value.data.type == _currentResourceType)
             {

@@ -125,9 +125,9 @@ public class DesignRunnerGridHandler
         buildingObject.name = $"Building_{buildingData.id}_{gridPosition}";
         
         int rotation = buildingState?.rotation ?? 0;
-        Vector2Int rotatedSize = GridMathUtility.GetRotatedSize(buildingData.size, rotation);
+        Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(buildingData.size, rotation);
         
-        buildingObject.transform.position = GridMathUtility.GetGridToWorldPos(_parentTransform, gridPosition, rotatedSize, BuildingZDepth);
+        buildingObject.transform.position = GridMathUtils.GetGridToWorldPos(_parentTransform, gridPosition, rotatedSize, BuildingZDepth);
         buildingObject.transform.rotation = Quaternion.Euler(0, 0, -rotation * 90f);
 
         SpriteRenderer renderer = buildingObject.GetOrAddComponent<SpriteRenderer>();
@@ -170,7 +170,7 @@ public class DesignRunnerGridHandler
         {
             if (buildingObj.TryGetComponent(out BuildingObject comp) && comp.BuildingData != null)
             {
-                Vector2Int rotatedSize = GridMathUtility.GetRotatedSize(comp.BuildingData.size, comp.BuildingState.rotation);
+                Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(comp.BuildingData.size, comp.BuildingState.rotation);
                 
                 for (int x = 0; x < rotatedSize.x; x++)
                 {
@@ -232,8 +232,8 @@ public class DesignRunnerGridHandler
             return (Vector2Int.zero, false);
         }
 
-        _currentGridPos = GridMathUtility.GetWorldToGridPos(_parentTransform, mouseWorldPos);
-        Vector2Int rotatedSize = GridMathUtility.GetRotatedSize(_selectedBuilding.size, _rotationIndex);
+        _currentGridPos = GridMathUtils.GetWorldToGridPos(_parentTransform, mouseWorldPos);
+        Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(_selectedBuilding.size, _rotationIndex);
         _canPlace = CanPlaceBuilding(_currentGridPos, rotatedSize);
 
         UpdatePreviewVisuals(rotatedSize);
@@ -245,7 +245,7 @@ public class DesignRunnerGridHandler
     {
         if (_previewObj == null) return;
 
-        _previewObj.transform.position = GridMathUtility.GetGridToWorldPos(_parentTransform, _currentGridPos, rotatedSize, BuildingZDepth);
+        _previewObj.transform.position = GridMathUtils.GetGridToWorldPos(_parentTransform, _currentGridPos, rotatedSize, BuildingZDepth);
         
         Color stateColor = _canPlace 
             ? (VisualManager.Instance?.ValidColor ?? Color.green) 
@@ -313,7 +313,7 @@ public class DesignRunnerGridHandler
             return null;
         }
 
-        Vector2Int gridPos = GridMathUtility.GetWorldToGridPos(_parentTransform, mouseWorldPos);
+        Vector2Int gridPos = GridMathUtils.GetWorldToGridPos(_parentTransform, mouseWorldPos);
         GameObject buildingAtPos = GetBuildingAtPosition(gridPos);
 
         if (buildingAtPos != _hoveredBuilding)
@@ -410,7 +410,7 @@ public class DesignRunnerGridHandler
             BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
             if (data == null) continue;
 
-            Vector2Int size = GridMathUtility.GetRotatedSize(data.size, state.rotation);
+            Vector2Int size = GridMathUtils.GetRotatedSize(data.size, state.rotation);
             for (int x = 0; x < size.x; x++)
             {
                 for (int y = 0; y < size.y; y++)
@@ -435,8 +435,8 @@ public class DesignRunnerGridHandler
             if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
 
             Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
-            Vector2Int inPos = basePos + GridMathUtility.GetRotatedOffset(data.InputPosition, state.rotation);
-            Vector2Int outPos = basePos + GridMathUtility.GetRotatedOffset(data.OutputPosition, state.rotation);
+            Vector2Int inPos = basePos + GridMathUtils.GetRotatedOffset(data.InputPosition, state.rotation);
+            Vector2Int outPos = basePos + GridMathUtils.GetRotatedOffset(data.OutputPosition, state.rotation);
 
             if (RoadNetworkAnalyzer.IsConnected(inPos, true, false, map, DataManager) &&
                 RoadNetworkAnalyzer.IsConnected(outPos, false, true, map, DataManager))
@@ -450,7 +450,7 @@ public class DesignRunnerGridHandler
     public int CalculateTotalMaintenanceCost(string threadId, List<BuildingState> customStates = null)
     {
         List<BuildingState> statesToUse = customStates ?? _currentStates;
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(DataManager, statesToUse);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(DataManager, statesToUse);
         return stats.TotalMaintenanceCost;
     }
 
@@ -471,8 +471,8 @@ public class DesignRunnerGridHandler
             if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
 
             Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
-            Vector2Int outPos = basePos + GridMathUtility.GetRotatedOffset(data.OutputPosition, state.rotation);
-            Vector2Int inPos = basePos + GridMathUtility.GetRotatedOffset(data.InputPosition, state.rotation);
+            Vector2Int outPos = basePos + GridMathUtils.GetRotatedOffset(data.OutputPosition, state.rotation);
+            Vector2Int inPos = basePos + GridMathUtils.GetRotatedOffset(data.InputPosition, state.rotation);
 
             if (RoadNetworkAnalyzer.IsConnected(outPos, false, true, map, DataManager))
             {
@@ -504,7 +504,7 @@ public class DesignRunnerGridHandler
         {
             BuildingData d = DataManager.Building.GetBuildingData(s.buildingId);
             if (d == null) continue;
-            Vector2Int size = GridMathUtility.GetRotatedSize(d.size, s.rotation);
+            Vector2Int size = GridMathUtils.GetRotatedSize(d.size, s.rotation);
             for (int x = 0; x < size.x; x++)
             {
                 for (int y = 0; y < size.y; y++)
@@ -553,12 +553,12 @@ public class DesignRunnerGridHandler
 
     public Vector2Int WorldToGridPosition(Vector3 worldPosition)
     {
-        return GridMathUtility.GetWorldToGridPos(_parentTransform, worldPosition);
+        return GridMathUtils.GetWorldToGridPos(_parentTransform, worldPosition);
     }
 
     public Vector3 GridToWorldPosition(Vector2Int gridPosition, Vector2Int size)
     {
-        return GridMathUtility.GetGridToWorldPos(_parentTransform, gridPosition, size, BuildingZDepth);
+        return GridMathUtils.GetGridToWorldPos(_parentTransform, gridPosition, size, BuildingZDepth);
     }
 
     #endregion

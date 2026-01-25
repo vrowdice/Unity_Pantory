@@ -137,7 +137,7 @@ public class ThreadPlacementDataHandler
             return 0;
         }
 
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
         return stats.TotalMaintenanceCost;
     }
 
@@ -150,7 +150,7 @@ public class ThreadPlacementDataHandler
     {
         if (buildingStates == null || buildingStates.Count == 0) return 0;
 
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
         return stats.TotalMaintenanceCost;
     }
 
@@ -177,7 +177,7 @@ public class ThreadPlacementDataHandler
             return 0;
         }
 
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
         return stats.TotalRequiredEmployees;
     }
 
@@ -216,7 +216,7 @@ public class ThreadPlacementDataHandler
             return;
         }
 
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
         inputResourceCounts = stats.InputResourceCounts;
         outputResourceCounts = stats.OutputResourceCounts;
 
@@ -244,7 +244,7 @@ public class ThreadPlacementDataHandler
 
         if (buildingStates == null || buildingStates.Count == 0) return;
 
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildingStates);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
         inputCounts = stats.InputResourceCounts;
         outputCounts = stats.OutputResourceCounts;
 
@@ -286,7 +286,7 @@ public class ThreadPlacementDataHandler
 
         List<BuildingState> buildings = state.buildingStateList;
 
-        ThreadCalculationResult stats = BuildingCalculationUtility.CalculateProductionStats(_dataManager, buildings);
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildings);
 
         state.requiredBuildCost = stats.TotalBuildCost;
         state.totalMaintenanceCost = stats.TotalMaintenanceCost;

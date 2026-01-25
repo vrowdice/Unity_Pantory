@@ -298,12 +298,6 @@ public class GameManager : Singleton<GameManager>
     /// <returns>생성된 OptionPanel 컴포넌트</returns>
     public OptionPopup ShowOptionPanel()
     {
-        if (_optionPanelPrefab == null)
-        {
-            Debug.LogError("[GameManager] OptionPanel prefab is not assigned.");
-            return null;
-        }
-
         if (_managerCanvasTransform == null)
         {
             Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
@@ -312,12 +306,6 @@ public class GameManager : Singleton<GameManager>
 
         GameObject optionPanelObj = Instantiate(_optionPanelPrefab, _managerCanvasTransform, false);
         OptionPopup optionPanel = optionPanelObj.GetComponent<OptionPopup>();
-        
-        if (optionPanel == null)
-        {
-            Debug.LogError("[GameManager] OptionPanel component not found on prefab.");
-            return null;
-        }
 
         optionPanel.Init();
         return optionPanel;
@@ -427,5 +415,30 @@ public class GameManager : Singleton<GameManager>
                 CreateProductionIcon(parent, entry, amount);
             }
         }
+    }
+
+    /// <summary>
+    /// 단일 액션 버튼을 생성하고 반환합니다.
+    /// 각 패널에서 Enum 값들을 순회하며 이 메서드를 호출하여 버튼을 생성하세요.
+    /// </summary>
+    /// <param name="parent">버튼을 생성할 부모 Transform</param>
+    /// <param name="label">버튼에 표시할 텍스트</param>
+    /// <param name="onClick">버튼 클릭 시 호출될 콜백</param>
+    /// <returns>생성된 ActionBtn 컴포넌트</returns>
+    public ActionBtn CreateActionButton(Transform parent, string label, System.Action onClick)
+    {
+        if (_actionBtnPrefab == null || parent == null)
+        {
+            Debug.LogWarning("[GameManager] ActionBtnPrefab or parent Transform is null.");
+            return null;
+        }
+
+        GameObject btnObj = Instantiate(_actionBtnPrefab, parent);
+        ActionBtn btn = btnObj.GetComponent<ActionBtn>();
+        if (btn != null)
+        {
+            btn.Init(label, onClick);
+        }
+        return btn;
     }
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Localization;
 
 public class SelectResourceTypeBtn : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class SelectResourceTypeBtn : MonoBehaviour
 
     public void Init(SelectResourcePopup selectResourcePanel, ResourceType resourceType)
     {
-        _resourceTypeNameText.text = resourceType.ToString();
+        string key = resourceType.ToString();
+        LocalizedString localizedString = new LocalizedString("ResourceType", key);
+        _resourceTypeNameText.text = localizedString.GetLocalizedString();
         _resourceType = resourceType;
         _selectResourcePanel = selectResourcePanel;
     }

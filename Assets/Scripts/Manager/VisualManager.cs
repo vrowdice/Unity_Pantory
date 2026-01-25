@@ -51,7 +51,7 @@ public class VisualManager : Singleton<VisualManager>
             return LossColor;
         }
 
-        return Color.black;
+        return Color.white;
     }
 
     /// <summary>

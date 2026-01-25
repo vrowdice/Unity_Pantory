@@ -14,7 +14,7 @@ public class QuickMoveBtn : MonoBehaviour
         _mainUiManager = argUiManager;
         _penalType = argPenalType;
 
-        _text.text = argPenalType.ToString();
+        _text.text = argPenalType.Localize();
     }
 
     public void OnClick()

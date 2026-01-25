@@ -138,19 +138,22 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void SetupEmployeeRoleButtons()
     {
+        if (_gameManager?.ActionBtnPrefab == null || EmployeeActionBtnContent == null)
+        {
+            return;
+        }
+
         GameObjectUtils.ClearChildren(EmployeeActionBtnContent);
 
-        // EmployeeType enum의 모든 역할에 대해 버튼 생성
-        System.Array employeeTypes = System.Enum.GetValues(typeof(EmployeeType));
-
-        foreach (EmployeeType role in employeeTypes)
+        foreach (EmployeeType role in EnumUtils.GetAllEnumValues<EmployeeType>())
         {
             GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, EmployeeActionBtnContent);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {
-                string roleName = role.ToString();
-                btn.Init(roleName, () => ShowEmployeeByRole(role));
+                EmployeeType capturedRole = role;
+                string localizedName = capturedRole.Localize();
+                btn.Init(localizedName, () => ShowEmployeeByRole(capturedRole));
             }
         }
     }
@@ -166,7 +169,6 @@ public class EmployeePanel : BasePanel
             return;
         }
 
-        // 해당 역할의 첫 번째 직원 찾기
         EmployeeEntry foundEntry = null;
         foreach (EmployeeEntry entry in allEmployees.Values)
         {
@@ -231,7 +233,7 @@ public class EmployeePanel : BasePanel
 
         _employeeImage.sprite = data.Image;
         _employeeIconImage.sprite = data.icon;
-        _titleText.text = data.displayName ?? data.id;
+        _titleText.text = data.type.Localize();
         _descriptionText.text = data.description ?? string.Empty;
         _employeeCountText.text = $"Count: {state.count}";
         _totalSalatyText.text = $"Total Salary: {state.totalSalary:N0}";

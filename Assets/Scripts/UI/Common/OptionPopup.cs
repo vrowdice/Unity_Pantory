@@ -1,58 +1,110 @@
 using UnityEngine;
-using UnityEngine.UI;
+using Evo.UI;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using System.Collections;
+using System.Collections.Generic;
 
-public class OptionPopup : MonoBehaviour
+public class OptionPopup : BasePopup
 {
     [SerializeField] private Slider _BGMSlider;
     [SerializeField] private Slider _SFXSlider;
+    [SerializeField] private Dropdown _localizatioinDropdown;
 
-    private bool _isInitializing = false;
+    private const string PREFS_LOCALE = "SelectedLocale";
 
-    public void Init()
+    public override void Init()
     {
-        if (SoundManager.Instance == null)
+        base.Init();
+        InitSliders();
+        InitLocalizationDropdown();
+        Show();
+    }
+
+    private void InitSliders()
+    {
+        _BGMSlider.onValueChanged.RemoveAllListeners();
+        _BGMSlider.value = SoundManager.Instance.GetBGMVolume();
+        _BGMSlider.onValueChanged.AddListener(OnBGMVolumeChanged);
+
+        _SFXSlider.onValueChanged.RemoveAllListeners();
+        _SFXSlider.value = SoundManager.Instance.GetSFXVolume();
+        _SFXSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+    }
+
+    private void InitLocalizationDropdown()
+    {
+        _localizatioinDropdown.onItemSelected.RemoveAllListeners();
+        _localizatioinDropdown.items.Clear();
+
+        string currentLocaleCode = LocalizationSettings.SelectedLocale?.Identifier.Code ?? PlayerPrefs.GetString(PREFS_LOCALE, "en");
+        int selectedIndex = GetLocaleIndex(currentLocaleCode);
+
+        _localizatioinDropdown.AddItem("English", null, true);
+        _localizatioinDropdown.AddItem("日本語", null, true);
+        _localizatioinDropdown.AddItem("한국어", null, true);
+
+        _localizatioinDropdown.SelectItem(selectedIndex, false);
+        _localizatioinDropdown.onItemSelected.AddListener(OnLocaleChanged);
+    }
+
+    private int GetLocaleIndex(string localeCode)
+    {
+        switch (localeCode.ToLower())
         {
-            Debug.LogWarning("[OptionPanel] SoundManager.Instance is null. Volume controls will not work.");
-            return;
+            case "en":
+                return 0;
+            case "ja":
+                return 1;
+            case "ko":
+                return 2;
+            default:
+                return 0;
+        }
+    }
+
+    private void OnLocaleChanged(int index)
+    {
+        string localeCode = index switch
+        {
+            0 => "en",
+            1 => "ja",
+            2 => "ko",
+            _ => "en"
+        };
+
+        StartCoroutine(ChangeLocale(localeCode));
+    }
+
+    private IEnumerator ChangeLocale(string localeCode)
+    {
+        IList<Locale> availableLocales = LocalizationSettings.AvailableLocales.Locales;
+        Locale targetLocale = null;
+
+        foreach (Locale locale in availableLocales)
+        {
+            if (locale.Identifier.Code == localeCode)
+            {
+                targetLocale = locale;
+                break;
+            }
         }
 
-        _isInitializing = true;
+        LocalizationSettings.SelectedLocale = targetLocale;
+        PlayerPrefs.SetString(PREFS_LOCALE, localeCode);
+        PlayerPrefs.Save();
 
-        if (_BGMSlider != null)
-        {
-            _BGMSlider.value = SoundManager.Instance.GetBGMVolume();
-            _BGMSlider.onValueChanged.RemoveAllListeners();
-            _BGMSlider.onValueChanged.AddListener(OnBGMVolumeChanged);
-        }
-
-        if (_SFXSlider != null)
-        {
-            _SFXSlider.value = SoundManager.Instance.GetSFXVolume();
-            _SFXSlider.onValueChanged.RemoveAllListeners();
-            _SFXSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
-        }
-
-        _isInitializing = false;
+        yield return null;
     }
 
     private void OnBGMVolumeChanged(float value)
     {
-        if (_isInitializing) return;
-
-        if (SoundManager.Instance != null)
-        {
-            SoundManager.Instance.SetBGMVolume(value);
-        }
+        SoundManager.Instance.SetBGMVolume(value);
     }
 
     private void OnSFXVolumeChanged(float value)
     {
-        if (_isInitializing) return;
-
-        if (SoundManager.Instance != null)
-        {
-            SoundManager.Instance.SetSFXVolume(value);
-        }
+        SoundManager.Instance.SetSFXVolume(value);
     }
 
     public void OnClickExitGame()
@@ -66,11 +118,13 @@ public class OptionPopup : MonoBehaviour
     public void OnClickApply()
     {
         SoundManager.Instance.SaveSettings();
-        GameManager.Instance.ShowWarningPanel("Settings have been applied and saved.");
+        OnClickExit();
     }
 
     public void OnClickExit()
     {
+        SceneLoadManager.Instance.ReloadScene();
+        Close();
         Destroy(gameObject);
     }
 }

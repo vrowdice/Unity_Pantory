@@ -48,28 +48,39 @@ public class MarketPanel : BasePanel
     /// </summary>
     private void SetupActionButtons()
     {
-        if (_gameManager.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
+        if (_gameManager?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
         {
             return;
         }
 
         GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
 
-        CreateActionButton("Resources", ShowResourceView);
-        CreateActionButton("Traders", ShowTraderView);
+        foreach (MarketPanelType panelType in EnumUtils.GetAllEnumValues<MarketPanelType>())
+        {
+            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+            ActionBtn btn = btnObj.GetComponent<ActionBtn>();
+            if (btn != null)
+            {
+                MarketPanelType capturedType = panelType;
+                string localizedName = capturedType.Localize();
+                btn.Init(localizedName, () => OnMarketPanelTypeClick(capturedType));
+            }
+        }
     }
 
     /// <summary>
-    /// 공통 액션 버튼 생성 로직입니다.
+    /// 마켓 패널 타입 버튼 클릭 핸들러
     /// </summary>
-    private void CreateActionButton(string label, Action action)
+    private void OnMarketPanelTypeClick(MarketPanelType panelType)
     {
-        GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
-        ActionBtn btn = btnObj.GetComponent<ActionBtn>();
-
-        if (btn != null)
+        switch (panelType)
         {
-            btn.Init(label, action);
+            case MarketPanelType.Resources:
+                ShowResourceView();
+                break;
+            case MarketPanelType.Traders:
+                ShowTraderView();
+                break;
         }
     }
 

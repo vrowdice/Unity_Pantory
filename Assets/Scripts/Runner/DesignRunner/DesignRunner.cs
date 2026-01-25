@@ -389,7 +389,7 @@ public class DesignRunner : RunnerBase
             if (buildingData != null)
             {
                 GridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
-                GridGenHandler.MarkTilesAsOccupied(new Vector2Int(buildingState.positionX, buildingState.positionY), GridMathUtility.GetRotatedSize(buildingData.size, buildingState.rotation));
+                GridGenHandler.MarkTilesAsOccupied(new Vector2Int(buildingState.positionX, buildingState.positionY), GridMathUtils.GetRotatedSize(buildingData.size, buildingState.rotation));
             }
         }
     }
@@ -412,7 +412,7 @@ public class DesignRunner : RunnerBase
             BuildingState clickedBuildingState = _temporaryBuildingStates.Find((BuildingState state) =>
             {
                 BuildingData buildingData = DataManager.Building.GetBuildingData(state.buildingId);
-                Vector2Int rotatedSize = GridMathUtility.GetRotatedSize(buildingData.size, state.rotation);
+                Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(buildingData.size, state.rotation);
                 return gridPosition.x >= state.positionX && gridPosition.x < state.positionX + rotatedSize.x &&
                        gridPosition.y >= state.positionY && gridPosition.y < state.positionY + rotatedSize.y;
             });
