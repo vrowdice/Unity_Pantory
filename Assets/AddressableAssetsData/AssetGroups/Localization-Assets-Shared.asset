@@ -21,6 +21,12 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c0c64239e73f4648b0de1876e938649
+    m_Address: Assets/Language/Table/EmployeeDescription/EmployeeDescription Shared
+      Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99422b58f729b244581168e91eb4d050
     m_Address: Assets/Language/Table/MarketPanelType/MarketPanelType Shared Data.asset
     m_ReadOnly: 1

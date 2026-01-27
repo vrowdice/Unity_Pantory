@@ -235,8 +235,8 @@ public class EmployeePanel : BasePanel
         _employeeIconImage.sprite = data.icon;
         _titleText.text = data.type.Localize();
         _descriptionText.text = data.description ?? string.Empty;
-        _employeeCountText.text = $"Count: {state.count}";
-        _totalSalatyText.text = $"Total Salary: {state.totalSalary:N0}";
+        _employeeCountText.text = $"{state.count}";
+        _totalSalatyText.text = $"{state.totalSalary:N0}";
 
         float normalizedEfficiency = Mathf.Clamp(state.currentEfficiency, 0f, 2f) / 2f;
         _efficiencySlider.value = normalizedEfficiency;

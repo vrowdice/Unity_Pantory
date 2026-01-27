@@ -22,6 +22,74 @@ MonoBehaviour:
     m_Localized: Provide
     m_Metadata:
       m_Items: []
+  - m_Id: 139184558194688
+    m_Localized: Efficiency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821549664190464
+    m_Localized: Satisfaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821686377529344
+    m_Localized: Employment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821897967583232
+    m_Localized: Salary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 828943693660160
+    m_Localized: Total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829479545356288
+    m_Localized: Very Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829850258915328
+    m_Localized: Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829996099059712
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832125903716352
+    m_Localized: High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832342812147712
+    m_Localized: Very High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834105048973312
+    m_Localized: Efficiency Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834127593357312
+    m_Localized: Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 837713131880448
+    m_Localized: Satisfaction Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840083911884800
+    m_Localized: Research Point
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840589317128192
+    m_Localized: Change Effect Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840826593099776
+    m_Localized: News
+    m_Metadata:
+      m_Items: []
+  - m_Id: 841202692145152
+    m_Localized: Managment
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

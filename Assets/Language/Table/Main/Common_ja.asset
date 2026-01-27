@@ -19,7 +19,75 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 139039577882624
-    m_Localized: "\u4F9B\u7D66"
+    m_Localized: 供給
+    m_Metadata:
+      m_Items: []
+  - m_Id: 139184558194688
+    m_Localized: 効率
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821549664190464
+    m_Localized: 満足度
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821686377529344
+    m_Localized: 採用
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821897967583232
+    m_Localized: 日給
+    m_Metadata:
+      m_Items: []
+  - m_Id: 828943693660160
+    m_Localized: 合計日給
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829479545356288
+    m_Localized: 非常に低い
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829850258915328
+    m_Localized: 低い
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829996099059712
+    m_Localized: 普通
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832125903716352
+    m_Localized: 高い
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832342812147712
+    m_Localized: 非常に高い
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834105048973312
+    m_Localized: 効率状態
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834127593357312
+    m_Localized: 数
+    m_Metadata:
+      m_Items: []
+  - m_Id: 837713131880448
+    m_Localized: 満足状態
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840083911884800
+    m_Localized: 研究ポイント
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840589317128192
+    m_Localized: 効果状態
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840826593099776
+    m_Localized: ニュース
+    m_Metadata:
+      m_Items: []
+  - m_Id: 841202692145152
+    m_Localized: 管理度
     m_Metadata:
       m_Items: []
   references:

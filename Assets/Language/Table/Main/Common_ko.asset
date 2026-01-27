@@ -19,7 +19,75 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 139039577882624
-    m_Localized: "\uACF5\uAE09"
+    m_Localized: 공급
+    m_Metadata:
+      m_Items: []
+  - m_Id: 139184558194688
+    m_Localized: 효율
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821549664190464
+    m_Localized: 만족도
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821686377529344
+    m_Localized: 고용
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821897967583232
+    m_Localized: 일당
+    m_Metadata:
+      m_Items: []
+  - m_Id: 828943693660160
+    m_Localized: 총 일당
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829479545356288
+    m_Localized: 매우 낮음
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829850258915328
+    m_Localized: 낮음
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829996099059712
+    m_Localized: 보통
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832125903716352
+    m_Localized: 높음
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832342812147712
+    m_Localized: 매우 높음
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834105048973312
+    m_Localized: 효율 상태
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834127593357312
+    m_Localized: 수
+    m_Metadata:
+      m_Items: []
+  - m_Id: 837713131880448
+    m_Localized: 만족도 상태
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840083911884800
+    m_Localized: 연구 포인트
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840589317128192
+    m_Localized: 효과 상태
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840826593099776
+    m_Localized: 뉴스
+    m_Metadata:
+      m_Items: []
+  - m_Id: 841202692145152
+    m_Localized: 관리도
     m_Metadata:
       m_Items: []
   references:
