@@ -16,19 +16,19 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: 6c0c64239e73f4648b0de1876e938649
   m_Entries:
   - m_Id: 864226263054
-    m_Key: worker
+    m_Key: Worker
     m_Metadata:
       m_Items: []
   - m_Id: 864226263055
-    m_Key: technician
+    m_Key: Technician
     m_Metadata:
       m_Items: []
   - m_Id: 864226263056
-    m_Key: researcher
+    m_Key: Researcher
     m_Metadata:
       m_Items: []
   - m_Id: 864226263057
-    m_Key: manager
+    m_Key: Manager
     m_Metadata:
       m_Items: []
   m_Metadata:

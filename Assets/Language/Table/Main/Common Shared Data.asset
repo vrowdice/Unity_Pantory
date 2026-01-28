@@ -87,6 +87,78 @@ MonoBehaviour:
     m_Key: Managment
     m_Metadata:
       m_Items: []
+  - m_Id: 1201322299113472
+    m_Key: Left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201325092519936
+    m_Key: Right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201327516827648
+    m_Key: Building Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201328489906176
+    m_Key: Removal Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202133720776704
+    m_Key: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202160061005824
+    m_Key: Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202171805057024
+    m_Key: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202630846464000
+    m_Key: Save Thread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202736043802624
+    m_Key: Thread Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202752342867968
+    m_Key: Category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202914645655552
+    m_Key: Input
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1203055897231360
+    m_Key: Product
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205398315352064
+    m_Key: Enter Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205624384143360
+    m_Key: OK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206435495428096
+    m_Key: Manage Thread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208291269427200
+    m_Key: Rename
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208330368729088
+    m_Key: Delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208475260960768
+    m_Key: Thread Cartegory
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

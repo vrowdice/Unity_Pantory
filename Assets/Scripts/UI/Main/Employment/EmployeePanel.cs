@@ -234,7 +234,7 @@ public class EmployeePanel : BasePanel
         _employeeImage.sprite = data.Image;
         _employeeIconImage.sprite = data.icon;
         _titleText.text = data.type.Localize();
-        _descriptionText.text = data.description ?? string.Empty;
+        _descriptionText.text = data.type.ToString().Localize(LocalizationUtils.TABLE_EMPLOYEE_DESCRIPTION);
         _employeeCountText.text = $"{state.count}";
         _totalSalatyText.text = $"{state.totalSalary:N0}";
 

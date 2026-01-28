@@ -90,6 +90,78 @@ MonoBehaviour:
     m_Localized: 관리도
     m_Metadata:
       m_Items: []
+  - m_Id: 1201322299113472
+    m_Localized: 왼쪽
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201325092519936
+    m_Localized: 오른쪽
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201327516827648
+    m_Localized: 건설 모드
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201328489906176
+    m_Localized: 제거 모드
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202133720776704
+    m_Localized: 세이브
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202160061005824
+    m_Localized: 로드
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202171805057024
+    m_Localized: 나가기
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202630846464000
+    m_Localized: 스레드 저장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202736043802624
+    m_Localized: 스레드 이름
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202752342867968
+    m_Localized: 카테고리
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202914645655552
+    m_Localized: 입력
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1203055897231360
+    m_Localized: 제품
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205398315352064
+    m_Localized: 이름 입력
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205624384143360
+    m_Localized: 확인
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206435495428096
+    m_Localized: 스레드 관리
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208291269427200
+    m_Localized: 이름 변경
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208330368729088
+    m_Localized: 삭제
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208475260960768
+    m_Localized: 스레드 카테고리
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

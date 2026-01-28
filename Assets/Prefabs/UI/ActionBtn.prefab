@@ -127,7 +127,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4550414814943913778}
   - component: {fileID: 6944693274920379382}
-  - component: {fileID: 2348296714932658684}
   - component: {fileID: 4957954324328302988}
   m_Layer: 5
   m_Name: Text
@@ -163,47 +162,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2616783959315984168}
   m_CullTransparentMesh: 1
---- !u!114 &2348296714932658684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2616783959315984168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
-  targetImage: {fileID: 0}
-  targetText: {fileID: 4957954324328302988}
-  objectType: 1
-  colorID: Primary
-  fontID: Inter - Regular
-  useCustomColor: 0
-  overrideAlpha: 0
-  alphaOverride: 1
-  enableInteraction: 0
-  interactableObject: {fileID: 2910112592935676860}
-  disabledColor:
-    stylerID: Primary (Tint)
-    color: {r: 1, g: 1, b: 1, a: 0.19607843}
-  normalColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  pressedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  referencesFoldout: 1
-  settingsFoldout: 1
-  interactionFoldout: 1
 --- !u!114 &4957954324328302988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,8 +184,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 9218679208397806780, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

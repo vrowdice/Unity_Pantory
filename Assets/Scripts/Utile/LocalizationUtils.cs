@@ -6,6 +6,7 @@ using System;
 public static class LocalizationUtils
 {
     public const string TABLE_EMPLOYEE_TYPE = "EmployeeType";
+    public const string TABLE_EMPLOYEE_DESCRIPTION = "EmployeeDescription";
     public const string TABLE_COMMON = "Common";
     public const string TABLE_MAIN_PANEL_TYPE = "MainPanelType";
     public const string TABLE_MARKET_PANEL_TYPE = "MarketPanelType";

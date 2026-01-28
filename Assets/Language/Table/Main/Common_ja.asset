@@ -90,6 +90,78 @@ MonoBehaviour:
     m_Localized: 管理度
     m_Metadata:
       m_Items: []
+  - m_Id: 1201322299113472
+    m_Localized: 左
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201325092519936
+    m_Localized: 右
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201327516827648
+    m_Localized: 建築モード
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201328489906176
+    m_Localized: 削除モード
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202133720776704
+    m_Localized: 保存
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202160061005824
+    m_Localized: 読み込み
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202171805057024
+    m_Localized: 終了
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202630846464000
+    m_Localized: スレッド保存
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202736043802624
+    m_Localized: スレッド名
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202752342867968
+    m_Localized: カテゴリー
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202914645655552
+    m_Localized: 入力
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1203055897231360
+    m_Localized: 製品
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205398315352064
+    m_Localized: 名前を入力
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205624384143360
+    m_Localized: OK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206435495428096
+    m_Localized: スレッド管理
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208291269427200
+    m_Localized: 名前変更
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208330368729088
+    m_Localized: 削除
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208475260960768
+    m_Localized: スレッドカテゴリー
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

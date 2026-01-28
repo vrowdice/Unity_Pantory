@@ -4,7 +4,7 @@ using System;
 public class ManageThreadCartegoryPopup : BasePopup
 {
     [SerializeField] private Transform _contentTransform;
-    [SerializeField] private ManageThreadCartegoryItemBtn _itemPanelPrefab;
+    [SerializeField] private GameObject _cartegoryItemBtnPrefab;
 
     private DataManager _dataManager;
     private Action<string> _onCategorySelected;
@@ -21,13 +21,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         _dataManager = dataManager;
         _onCategorySelected = onCategorySelected;
 
-        // 기존 아이템 제거
-        if (_contentTransform != null)
-        {
-            GameObjectUtils.ClearChildren(_contentTransform);
-        }
-
-        // 카테고리 목록 표시
+        GameObjectUtils.ClearChildren(_contentTransform);
         RefreshCategoryList();
         
         Show();
@@ -38,27 +32,21 @@ public class ManageThreadCartegoryPopup : BasePopup
     /// </summary>
     private void RefreshCategoryList()
     {
-        if (_dataManager == null || _contentTransform == null || _itemPanelPrefab == null)
+        if (_dataManager == null || _contentTransform == null || _cartegoryItemBtnPrefab == null)
             return;
 
-        // 기존 아이템 제거
         GameObjectUtils.ClearChildren(_contentTransform);
-
-        // 모든 카테고리 가져오기
         var categories = _dataManager.Thread.GetAllCategories();
 
         foreach (var category in categories.Values)
         {
-            // 카테고리 아이템 생성
-            ManageThreadCartegoryItemBtn itemPanel = Instantiate(_itemPanelPrefab, _contentTransform);
-            
+            GameObject itemPanel = Instantiate(_cartegoryItemBtnPrefab, _contentTransform);
+            ManageThreadCartegoryItemBtn manageThreadCartegoryItemBtn = itemPanel.GetComponent<ManageThreadCartegoryItemBtn>();
+
             if (itemPanel != null)
             {
-                // 카테고리에 속한 스레드 개수
                 int threadCount = category.ThreadCount;
-                
-                // 아이템 초기화
-                itemPanel.Init(category.categoryId, category.categoryName, threadCount, this);
+                manageThreadCartegoryItemBtn.Init(category.categoryId, category.categoryName, threadCount, this);
             }
         }
     }
@@ -76,7 +64,6 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        // EnterNamePanel을 열어 카테고리 이름 입력받기
         gameManager.ShowEnterNamePanel((categoryName) =>
         {
             if (string.IsNullOrEmpty(categoryName))
@@ -85,20 +72,13 @@ public class ManageThreadCartegoryPopup : BasePopup
                 return;
             }
 
-            // 카테고리 ID 생성 (중복 방지)
             string categoryId = $"Category_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
-
-            // 카테고리 생성
             var newCategory = _dataManager.Thread.CreateCategory(categoryId, categoryName);
             
             if (newCategory != null)
             {
                 Debug.Log($"[ManageThreadCartegoryPanel] Category created: {categoryName} ({categoryId})");
-                
-                // 카테고리 목록 갱신
                 RefreshCategoryList();
-                
-                // 콜백 호출
                 _onCategorySelected?.Invoke(categoryId);
             }
             else
@@ -122,7 +102,6 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        // EnterNamePanel을 열어 새 이름 입력받기
         gameManager.ShowEnterNamePanel((newName) =>
         {
             if (string.IsNullOrEmpty(newName))
@@ -130,18 +109,12 @@ public class ManageThreadCartegoryPopup : BasePopup
                 gameManager.ShowWarningPanel("Please enter a category name.");
                 return;
             }
-
-            // 카테고리 이름 변경
             bool success = _dataManager.Thread.RenameCategory(categoryId, newName);
             
             if (success)
             {
                 Debug.Log($"[ManageThreadCartegoryPanel] Category renamed: {categoryId} -> {newName}");
-                
-                // 카테고리 목록 갱신
                 RefreshCategoryList();
-                
-                // 콜백 호출
                 _onCategorySelected?.Invoke(categoryId);
             }
             else
@@ -165,17 +138,12 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        // 확인 메시지 표시
         gameManager.ShowWarningPanel($"Delete category '{categoryName}'");
-        
-        // 카테고리 삭제
         bool success = _dataManager.Thread.RemoveCategory(categoryId);
         
         if (success)
         {
             Debug.Log($"[ManageThreadCartegoryPanel] Category deleted: {categoryName} ({categoryId})");
-            
-            // 카테고리 목록 갱신
             RefreshCategoryList();
         }
         else
@@ -192,11 +160,7 @@ public class ManageThreadCartegoryPopup : BasePopup
     public void OnCategorySelected(string categoryId, string categoryName)
     {
         Debug.Log($"[ManageThreadCartegoryPanel] Category selected: {categoryName} ({categoryId})");
-        
-        // 콜백 호출
         _onCategorySelected?.Invoke(categoryId);
-        
-        // 패널 닫기
         Close();
         Destroy(gameObject);
     }
