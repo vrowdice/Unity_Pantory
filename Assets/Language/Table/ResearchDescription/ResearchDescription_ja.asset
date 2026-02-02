@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: ResearchDescription_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: ffeffd319fd382447972467e83303c2a, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226267001
+    m_Localized: 部品工場の建設を解禁する。精製された金属インゴットを用いて機械部品、電子部品、精密工具などを生産可能にする。中盤の生産チェーンの起点となり、先進建築物や車両生産に不可欠な素材を供給する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267002
+    m_Localized: 鉱山の建設を解禁する。鉄鉱石、石炭、銅、金、アルミニウムなど必須鉱物の自給を可能にする。建設・維持コストは高いが、産業の基盤となる原料を供給する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267003
+    m_Localized: 化学プラントの建設を解禁する。原油を合成繊維や化学製品に加工する。製材所の代替・補完となり、石油由来の繊維生産で木材依存を減らす。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267004
+    m_Localized: 重工場の建設を解禁する。高度な鋼材と最先端部品を用いて精密工具や高級品を生産する。多額の投資が必要だが、高級市場を狙い利益率を最大化する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267005
+    m_Localized: 石油ポンプの建設を解禁する。地下の原油を採掘する。戦略的資源の自給の起点となる。維持コストは非常に高いが、化学産業と燃料生産の基盤を形成する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267006
+    m_Localized: 製錬所の建設を解禁する。鉱山で採掘した原鉱石を精製金属インゴットに加工する。鉄・銅・アルミニウムなどのインゴットを生産し、金属産業に不可欠な中間素材を供給する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267007
+    m_Localized: エンジン工場の建設を解禁する。機械部品、電子部品、鋼インゴットを組み合わせて高性能内燃機関を生産する。車両生産への前提投資であり、高付加価値中間素材の生産を開始する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267008
+    m_Localized: 軍事工場の建設を解禁する。鋼インゴットと機械部品を用いて小火器、重火器、弾薬などを生産する。国家の戦略資源として、戦争準備と兵器市場の支配に不可欠である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267009
+    m_Localized: 車両組立工場の建設を解禁する。エンジン、部品、電子部品などを組み合わせて自動車、戦闘機、戦車など最高付加価値の最終製品を生産する。最も複雑で遅い生産チェーンだが、最高の利益を生む。
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

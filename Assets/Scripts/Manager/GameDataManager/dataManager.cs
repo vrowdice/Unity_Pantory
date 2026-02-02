@@ -14,6 +14,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialResearchData _initialResearchData;
     [SerializeField] private InitialFinancesData _initialFinancesData;
 
+
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
     [SerializeField] private List<ResourceData> _resourceDataList = new List<ResourceData>();

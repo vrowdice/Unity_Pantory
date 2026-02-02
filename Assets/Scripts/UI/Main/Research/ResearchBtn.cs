@@ -17,7 +17,7 @@ public class ResearchBtn : MonoBehaviour
         _mainUiManager = mainUiManager;
 
         _image.sprite = researchEntry.data.icon;
-        _text.text = researchEntry.data.displayName;
+        _text.text = researchEntry.data.id.Localize(LocalizationUtils.TABLE_RESEARCH);
 
         if(researchEntry.state.isCompleted)
         {

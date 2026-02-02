@@ -15,12 +15,35 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Japanese (ja)
   m_GUID: 2141d0d36bea70c46a904723a0a91210
   m_SerializeEntries:
+  - m_GUID: 04fc91e8e7c0eef4a867a52aff834658
+    m_Address: WarningMessage_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 05d00eb91c2761640abe7c2257b87f40
     m_Address: Common_ja
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja
-    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d23e1679ccb9134dad2b34b8fe1e503
+    m_Address: MarketActor_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b9501d5e02724145ba06cd2e05eca95
+    m_Address: MarketActorDescription_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 335eceba3bd778f48b2b987bf71bc89c
+    m_Address: Research_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 519fd94a1faa4cb4a8449f0abd386dfb
     m_Address: MainPanelType_ja
@@ -54,6 +77,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f5d30fdaec9efff48924dccf414b8748
     m_Address: EmployeeType_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f84b7e766ea2589428c11ca9f89c6ef7
+    m_Address: ResearchDescription_ja
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja

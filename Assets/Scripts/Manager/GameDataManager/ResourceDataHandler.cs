@@ -34,7 +34,7 @@ public class ResourceDataHandler
                     Debug.LogWarning($"[ResourceService] Resource already registered: {data.id}");
                     continue;
                 }
-                _resourceDic[data.id] = new ResourceEntry(data);
+                _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData != null ? _initialResourceData.priceHistoryCapacity : 60);
             }
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 /// 상역소(Load) 건물 데이터
 /// 자원을 외부로 내보내는 건물입니다.
 /// </summary>
-[CreateAssetMenu(fileName = "NewLoadStation", menuName = "Game Data/Building Data/Load Station", order = 4)]
+[CreateAssetMenu(fileName = "NewLoadStation", menuName = "Game Data/Building Data/Load Station")]
 public class LoadStationData : BuildingData
 {
     [Header("Station Properties")]

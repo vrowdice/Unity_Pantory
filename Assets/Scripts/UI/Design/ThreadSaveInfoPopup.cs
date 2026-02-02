@@ -175,7 +175,7 @@ public class ThreadSaveInfoPopup : BasePopup
 
         if (string.IsNullOrEmpty(threadName))
         {
-            _gameManager.ShowWarningPanel("Please enter a thread name.");
+            _gameManager.ShowWarningPanel(WarningMessage.PleaseEnterThreadName.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
             return;
         }
 

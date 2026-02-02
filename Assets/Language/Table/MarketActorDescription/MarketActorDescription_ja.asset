@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MarketActorDescription_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: 740bc9ac83aa3db418c788204869ac98, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226269101
+    m_Localized: 上質な木材を高級邸宅向けの特注家具や建築部材に仕上げる職人集団。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269102
+    m_Localized: 民間・政府向けに自動車、トラック、軍用車両を生産する大手自動車メーカー。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269103
+    m_Localized: 大陸をまたぐ防衛調達と物流を統括する統一軍司令部。武器・装備の安定供給を必要とする。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269104
+    m_Localized: 産業・民生向けにモーター、電球、配線を生産する大手電子機器メーカー。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269105
+    m_Localized: 軍・警備部隊に高級鋼材、金、先進兵器を供給する一流兵器コングロマリット。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269106
+    m_Localized: 高水準を誇る民間軍事会社。警備任務のため精鋭兵器と車両を絶えず調達する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269107
+    m_Localized: 一般消費者から富裕層まで、ベーシックから高級まで幅広いファッションを提供する全国チェーン。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269108
+    m_Localized: 加工木材と家具を市場に大量供給し、仕入れ業者から原木を大口購入する開拓地の製材所。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269109
+    m_Localized: 帝国全域で貴金属、上質木材、精製インゴットを集約し政府・企業契約に供給する商社。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269110
+    m_Localized: 帝国の中央物流網。諸州間の重要資源の流れを調整し、帝国作戦用の戦略備蓄を維持する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269111
+    m_Localized: 金属、工具、兵器を産業・軍クライアントに供給する高度な取引網。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269112
+    m_Localized: 深層鉱山のカルテル。安価な鉱石で市場を氾濫させ、冷酷な効率で競合を駆逐する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269113
+    m_Localized: 北部辺境の木材輸出の大半を支配する伐採業者の広域連合。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269114
+    m_Localized: 富裕層・高級邸宅向けに高級・特注家具を扱うアップスケール家具小売店。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269115
+    m_Localized: 首都の軍用工房。軍用兵器・装備を規律ある生産で供給し、軍に名高い。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269116
+    m_Localized: 政府公認のブローカー。木材、鉱石、高級品の首都供給を厳格な競売で調整する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269117
+    m_Localized: 内陸の工場向けに工具と合金を量産し、鉄と木材を大量に吸収する重工業の大物たち。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269118
+    m_Localized: 産業機械・車両向けに精密歯車、ボルト、機械部品を生産する専門メーカー。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269119
+    m_Localized: 精密兵器で名高いブティック工房。最純度の金属と上質木材のみを調達する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269120
+    m_Localized: 産業施設・軍事請負業者向けに高級金属、工具、兵器の調達を手がける高級物流会社。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269121
+    m_Localized: 鉱石の山をインゴットに精製し、都市の鍛造所に通年供給する協同製錬所。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269122
+    m_Localized: 上質鉱石を国の軍需・建設産業向けの信頼できる鋼材に変える規律ある鋳造所。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269123
+    m_Localized: 地域の大工に各種木材と民兵向け基本兵器を供給する広域卸業者。
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

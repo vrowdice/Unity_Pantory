@@ -247,7 +247,7 @@ public class ManageThreadPopup : BasePopup
 
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.ShowWarningPanel($"Thread '{threadName}' has been deleted.");
+                GameManager.Instance.ShowWarningPanel(WarningMessage.ThreadDeleted.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
             }
         }
         else

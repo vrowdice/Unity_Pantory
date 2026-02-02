@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// 빌딩 언락을 위한 연구 데이터 클래스
 /// ResearchData를 상속받아 특정 건물을 언락하는 연구를 정의합니다.
 /// </summary>
-[CreateAssetMenu(fileName = "NewResearch", menuName = "Game Data/Research Data/Building Unlock", order = 2)]
+[CreateAssetMenu(fileName = "NewResearch", menuName = "Game Data/Research Data/Building Unlock")]
 public class BuildingUnlockResearchData : ResearchData
 {
     [Header("Building Unlock")]

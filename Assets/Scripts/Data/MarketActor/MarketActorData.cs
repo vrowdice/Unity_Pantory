@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "NewMarketActorData", menuName = "Game Data/Market Actor", order = 0)]
+[CreateAssetMenu(fileName = "NewMarketActorData", menuName = "Game Data/Market Actor")]
 public class MarketActorData : ScriptableObject
 {
     public string id;

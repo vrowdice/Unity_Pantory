@@ -82,7 +82,7 @@ public partial class DesignCanvas
 
         if (GameManager != null)
         {
-            GameManager.ShowWarningPanel("Saved successfully.");
+            GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
         }
     }
 

@@ -12,6 +12,11 @@ public static class LocalizationUtils
     public const string TABLE_MARKET_PANEL_TYPE = "MarketPanelType";
     public const string TABLE_RESOURCE_DISPLAY_NAME = "ResourceDisplayName";
     public const string TABLE_RESOURCE_TYPE = "ResourceType";
+    public const string TABLE_RESEARCH = "Research";
+    public const string TABLE_RESEARCH_DESCRIPTION = "ResearchDescription";
+    public const string TABLE_MARKET_ACTOR = "MarketActor";
+    public const string TABLE_MARKET_ACTOR_DESCRIPTION = "MarketActorDescription";
+    public const string TABLE_WARNING_MESSAGE = "WarningMessage";
 
     private const string DEFAULT_TABLE = TABLE_COMMON;
 

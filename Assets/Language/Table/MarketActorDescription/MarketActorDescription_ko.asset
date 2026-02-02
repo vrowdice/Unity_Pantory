@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MarketActorDescription_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: 740bc9ac83aa3db418c788204869ac98, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226269101
+    m_Localized: 고급 목재를 럭셔리 부동산용 맞춤 가구와 건축 요소로 만드는 장인들.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269102
+    m_Localized: 민간·정부 시장용 자동차, 트럭, 군용 차량을 생산하는 주요 자동차 제조사.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269103
+    m_Localized: 대륙 경계를 넘어 방어 조달과 물류를 조율하는 통합 군사 사령부. 무기와 장비의 꾸준한 공급이 필요하다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269104
+    m_Localized: 산업·소비자 시장용 모터, 전구, 배선을 생산하는 주요 전자 제조사.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269105
+    m_Localized: 군대와 경비 부대에 고급 강철, 금, 첨단 무기를 공급하는 일류 병기 콩글로머릿.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269106
+    m_Localized: 높은 기준의 민간 군사 회사. 경비 작전을 위해 정예 무기와 차량을 끊임없이 조달한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269107
+    m_Localized: 일반 소비자와 럭셔리 시장을 위해 기본부터 고급 패션까지 제공하는 전국 의류 소매 체인.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269108
+    m_Localized: 가공 목재와 가구를 시장에 쏟아 붓고, 공급처에서 원목을 대량 구매하는 개척지 제재소.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269109
+    m_Localized: 제국 전역에서 귀금속, 고급 목재, 정제 잉곳을 모아 정부·기업 계약에 공급하는 무역업체.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269110
+    m_Localized: 제국의 중앙 유통망. 각 지역 간 필수 자원의 흐름을 조율하고 제국 작전용 전략 비축을 유지한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269111
+    m_Localized: 산업·군사 고객을 위해 금속, 도구, 무기를 공급하는 정교한 거래 네트워크.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269112
+    m_Localized: 깊은 갱도의 카르텔. 저렴한 광석으로 시장을 채우고 무자비한 효율로 경쟁사를 밀어낸다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269113
+    m_Localized: 북부 변경의 목재 수출 대부분을 장악한 벌목업자들의 광범위한 연합.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269114
+    m_Localized: 부유한 고객과 럭셔리 부동산을 위한 고급·맞춤 가구를 전문으로 하는 고급 가구 소매점.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269115
+    m_Localized: 수도 군용 공장. 군용급 무기와 장비를 규율 있게 생산하여 군대에 공급하는 것으로 유명하다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269116
+    m_Localized: 정부 공인 브로커. 엄격히 규제된 경매를 통해 수도에 목재, 광석, 고급품 공급을 조절한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269117
+    m_Localized: 내륙 공장에 도구와 합금을 대량 생산하면서 철과 목재를 흡수하는 중공업 거물들.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269118
+    m_Localized: 산업 기계·차량용 정밀 기어, 볼트, 기계 부품을 생산하는 전문 제조사.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269119
+    m_Localized: 정밀 제작 무기로 유명한 부티크 공방. 가장 순수한 금속과 고급 목재만 조달한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269120
+    m_Localized: 산업 시설·군사 용역업체를 위해 고급 금속, 도구, 무기 조달을 전문으로 하는 고급 물류 회사.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269121
+    m_Localized: 광석 산을 잉곳으로 정제하여 도시 제련소에 연중 공급하는 협동 제련소.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269122
+    m_Localized: 고급 광석을 국가 군사·건설 산업용 믿음직한 강철로 바꾸는 규율 있는 제철소.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269123
+    m_Localized: 목수들에게 등급별 목재와 민병대용 기본 무기를 공급하는 지역 도매업자.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

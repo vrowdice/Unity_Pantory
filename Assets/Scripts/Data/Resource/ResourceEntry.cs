@@ -6,14 +6,14 @@ using UnityEngine;
 [Serializable]
 public class ResourceEntry
 {
-    public ResourceData data;   // 자원의 정적 데이터 (ScriptableObject)
-    public ResourceState state; // 자원의 동적 상태
+    public ResourceData data;
+    public ResourceState state;
     
-    public ResourceEntry(ResourceData data)
+    public ResourceEntry(ResourceData data, int priceHistoryCapacity = 60)
     {
         this.data = data;
 
-        state = new ResourceState();
+        state = new ResourceState(priceHistoryCapacity);
         state.currentEventValue = data.baseValue;
         state.count = data.initialAmount;
     }
@@ -25,14 +25,14 @@ public class ResourceEntry
     {
         if (state._priceHistory == null)
         {
-            state._priceHistory = new List<float>(ResourceState.PriceHistoryCapacity);
+            state._priceHistory = new List<float>(state.PriceHistoryCapacity);
         }
 
         float clampedPrice = Mathf.Max(0.01f, price);
 
         state._priceHistory.Add(clampedPrice);
 
-        if (state._priceHistory.Count > ResourceState.PriceHistoryCapacity)
+        if (state._priceHistory.Count > state.PriceHistoryCapacity)
         {
             state._priceHistory.RemoveAt(0);
         }

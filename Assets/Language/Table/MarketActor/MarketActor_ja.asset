@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MarketActor_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: aed7278ca072b414e8b2eb19921bbfa1, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226269001
+    m_Localized: 職人家具工房
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269002
+    m_Localized: 自動車産業グループ
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Localized: 大陸防衛軍
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Localized: 電子機器製造会社
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269005
+    m_Localized: 精鋭兵器グループ
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269006
+    m_Localized: 精鋭警備部隊
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269007
+    m_Localized: ファッション小売チェーン
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269008
+    m_Localized: 辺境製材所
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269009
+    m_Localized: 大陸資源シンジケート
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269010
+    m_Localized: 帝国物流局
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269011
+    m_Localized: 産業ブローカー網
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269012
+    m_Localized: 鉄鉱山コンソーシアム
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269013
+    m_Localized: 木材コンソーシアム
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269014
+    m_Localized: 高級家具ショールーム
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269015
+    m_Localized: 軍用兵器廠
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269016
+    m_Localized: 国家取引所
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269017
+    m_Localized: 北風産業連合
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269018
+    m_Localized: 精密部品株式会社
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269019
+    m_Localized: 精密兵器工房
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269020
+    m_Localized: プレミアム産業物流
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269021
+    m_Localized: 製錬共同体
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269022
+    m_Localized: ヴァンガード製鉄所
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269023
+    m_Localized: 緑豊かな大陸取引所
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -9,7 +9,7 @@ public class WindowGraph : MonoBehaviour
     [SerializeField] private Vector2 _labelOffsetX = new Vector2(0f, -15f);
     [SerializeField] private Vector2 _labelOffsetY = new Vector2(-5f, 0f);
     [SerializeField] private float _graphPadding = 10f;
-    [SerializeField, Range(10, 120)] private int _maxDataPoints = ResourceState.PriceHistoryCapacity;
+    [SerializeField, Range(10, 120)] private int _maxDataPoints = 60;
     [SerializeField] private Color _lineColor = new Color(1f, 1f, 1f, 0.5f);
 
     private RectTransform _graphContainer;

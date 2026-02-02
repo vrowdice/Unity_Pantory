@@ -20,7 +20,7 @@ public class MarketTraderBtn : MonoBehaviour
         _isPlayer = false;
 
         _image.sprite = _actorEntry.data.icon;
-        _nameText.text = _actorEntry.data.displayName;
+        _nameText.text = _actorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
 
         RefreshAllUI();
     }

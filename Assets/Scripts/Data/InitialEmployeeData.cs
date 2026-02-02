@@ -4,7 +4,7 @@ using UnityEngine;
 /// 직원 급여 비율 초기화 데이터를 저장하는 ScriptableObject
 /// Inspector를 통해 급여 비율을 조정할 수 있습니다.
 /// </summary>
-[CreateAssetMenu(fileName = "InitialEmployeeData", menuName = "Game Data/Initial Employee Data", order = 3)]
+[CreateAssetMenu(fileName = "InitialEmployeeData", menuName = "Game Data/Initial Employee Data")]
 public class InitialEmployeeData : ScriptableObject
 {
     [Header("Salary Level Multipliers")]

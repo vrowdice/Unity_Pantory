@@ -14,14 +14,19 @@ public class ResourceState
     public long currentValue;
     public long currentChangeValue;
 
-    public const int PriceHistoryCapacity = 60;
-    [SerializeField] internal List<float> _priceHistory = new List<float>(PriceHistoryCapacity);
-    public IReadOnlyList<float> PriceHistory => _priceHistory;
+    /// <summary>
+    /// 가격 히스토리 최대 개수. InitialResourceData.priceHistoryCapacity에서 설정.
+    /// </summary>
+    public int PriceHistoryCapacity { get; private set; }
 
-    public Dictionary<EffectStatType, List<EffectState>> activeEffects; // 자원 개별 적용 효과 목록 (StatType별로 분류)
+    public List<float> _priceHistory;
 
-    public ResourceState()
+    public Dictionary<EffectStatType, List<EffectState>> activeEffects;
+
+    public ResourceState(int priceHistoryCapacity = 60)
     {
+        PriceHistoryCapacity = priceHistoryCapacity;
+        _priceHistory = new List<float>(PriceHistoryCapacity);
         InitializeDefaults();
     }
 

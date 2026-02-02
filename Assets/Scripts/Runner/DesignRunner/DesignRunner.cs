@@ -437,7 +437,7 @@ public class DesignRunner : RunnerBase
         }
         else
         {
-            GameManager.ShowWarningPanel("Locked: " + buildingData.displayName);
+            GameManager.ShowWarningPanel(WarningMessage.BuildingLocked.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
         }
     }
 

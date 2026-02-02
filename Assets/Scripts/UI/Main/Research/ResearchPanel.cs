@@ -41,12 +41,6 @@ public class ResearchPanel : BasePanel
         long researchPoints = _dataManager.Research.ResearchPoint;
         _researchText.text = ReplaceUtils.FormatNumberWithCommas(researchPoints);
         long deltaResearch = _dataManager.Research.CalculateDailyRPProduction();
-        if (deltaResearch == 0)
-        {
-            _deltaResearchText.text = "";
-            return;
-        }
-
         string sign = deltaResearch > 0 ? " + " : " ";
         _deltaResearchText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
         VisualManager visualManager = VisualManager.Instance;

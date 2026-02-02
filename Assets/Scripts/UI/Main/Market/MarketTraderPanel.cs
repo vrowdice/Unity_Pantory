@@ -54,8 +54,8 @@ public class MarketTraderPanel : MonoBehaviour
         MarketActorState state = _selectedActor.state;
 
         _traderImage.sprite = data.icon;
-        _nameText.text = data.displayName;
-        _descriptionText.text = data.description;
+        _nameText.text = data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
+        _descriptionText.text = data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR_DESCRIPTION);
 
         _wealthText.text = $"{state.wealth:N0}";
         string deltaSymbol = state.currentChangeWealth > 0 ? "+" : "";

@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 직원의 초기 데이터를 정의하는 ScriptableObject
 /// </summary>
-[CreateAssetMenu(fileName = "NewEmployeeData", menuName = "Game Data/Employee Data", order = 2)]
+[CreateAssetMenu(fileName = "NewEmployeeData", menuName = "Game Data/Employee Data")]
 public class EmployeeData : ScriptableObject
 {
     [Header("Basic Info")]

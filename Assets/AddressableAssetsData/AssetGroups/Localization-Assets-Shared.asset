@@ -27,6 +27,17 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 740bc9ac83aa3db418c788204869ac98
+    m_Address: Assets/Language/Table/MarketActorDescription/MarketActorDescription
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8787241877551f54c958b660f510e5a2
+    m_Address: Assets/Language/Table/Research/Research Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99422b58f729b244581168e91eb4d050
     m_Address: Assets/Language/Table/MarketPanelType/MarketPanelType Shared Data.asset
     m_ReadOnly: 1
@@ -42,13 +53,29 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aed7278ca072b414e8b2eb19921bbfa1
+    m_Address: Assets/Language/Table/MarketActor/MarketActor Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c20e3c63f3981354cba66382471db2cd
     m_Address: Assets/Language/Table/ResourceType/ResourceType Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d435bb95bb65d204dbac50ae562f5f2e
+    m_Address: Assets/Language/Table/WarningMessage/WarningMessage Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eb20261a195c57c44943fe2956a7f729
     m_Address: Assets/Language/Table/Main Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ffeffd319fd382447972467e83303c2a
+    m_Address: Assets/Language/Table/ResearchDescription/ResearchDescription Shared
+      Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: WarningMessage_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: d435bb95bb65d204dbac50ae562f5f2e, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226268001
+    m_Localized: 연구를 해금할 수 없습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268002
+    m_Localized: 카테고리 이름을 입력해 주세요.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268003
+    m_Localized: 카테고리 생성에 실패했습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268004
+    m_Localized: 카테고리 이름 변경에 실패했습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268005
+    m_Localized: 선택한 카테고리를 삭제할까요?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268006
+    m_Localized: 카테고리 삭제에 실패했습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268007
+    m_Localized: 스레드 이름을 입력해 주세요.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268008
+    m_Localized: 저장했습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268009
+    m_Localized: 이 건물은 잠겨 있습니다. 필요한 연구를 완료하여 해금하세요.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268010
+    m_Localized: 스레드가 삭제되었습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268011
+    m_Localized: 잠겨 있습니다.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

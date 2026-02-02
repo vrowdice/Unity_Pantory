@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MarketActor_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: aed7278ca072b414e8b2eb19921bbfa1, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226269001
+    m_Localized: 장인 가구 공방
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269002
+    m_Localized: 자동차 산업 그룹
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Localized: 대륙 방위군
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Localized: 전자 제조 회사
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269005
+    m_Localized: 정예 병기 그룹
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269006
+    m_Localized: 정예 경비 부대
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269007
+    m_Localized: 패션 리테일 체인
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269008
+    m_Localized: 개척지 제재소
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269009
+    m_Localized: 대륙 자원 신디케이트
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269010
+    m_Localized: 제국 물류국
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269011
+    m_Localized: 산업 중개 네트워크
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269012
+    m_Localized: 철광산 컨소시엄
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269013
+    m_Localized: 목재 컨소시엄
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269014
+    m_Localized: 고급 가구 쇼룸
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269015
+    m_Localized: 군용 병기창
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269016
+    m_Localized: 국가 거래소
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269017
+    m_Localized: 북풍 산업 연합
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269018
+    m_Localized: 정밀 부품 주식회사
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269019
+    m_Localized: 정밀 병기 공방
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269020
+    m_Localized: 프리미엄 산업 물류
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269021
+    m_Localized: 제련 조합
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269022
+    m_Localized: 선봉 제철소
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269023
+    m_Localized: 푸른 대륙 거래소
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

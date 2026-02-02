@@ -68,7 +68,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         {
             if (string.IsNullOrEmpty(categoryName))
             {
-                gameManager.ShowWarningPanel("Please enter a category name.");
+                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
                 return;
             }
 
@@ -83,7 +83,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel("Failed to create category.");
+                gameManager.ShowWarningPanel(WarningMessage.FailedToCreateCategory.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
             }
         });
     }
@@ -106,7 +106,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         {
             if (string.IsNullOrEmpty(newName))
             {
-                gameManager.ShowWarningPanel("Please enter a category name.");
+                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
                 return;
             }
             bool success = _dataManager.Thread.RenameCategory(categoryId, newName);
@@ -119,7 +119,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel("Failed to rename category.");
+                gameManager.ShowWarningPanel(WarningMessage.FailedToRenameCategory.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
             }
         });
     }
@@ -138,7 +138,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowWarningPanel($"Delete category '{categoryName}'");
+        gameManager.ShowWarningPanel(WarningMessage.DeleteCategoryConfirm.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
         bool success = _dataManager.Thread.RemoveCategory(categoryId);
         
         if (success)
@@ -148,7 +148,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         }
         else
         {
-            gameManager.ShowWarningPanel("Failed to delete category.");
+            gameManager.ShowWarningPanel(WarningMessage.FailedToDeleteCategory.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
         }
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 /// 원자재(ResourceType.raw)만을 생산하는 공장 데이터 ScriptableObject입니다.
 /// 생산 가능한 원자재를 직접 참조로 지정할 수 있습니다.
 /// </summary>
-[CreateAssetMenu(fileName = "NewRawMaterialFactory", menuName = "Game Data/Building Data/Raw Material Factory", order = 7)]
+[CreateAssetMenu(fileName = "NewRawMaterialFactory", menuName = "Game Data/Building Data/Raw Material Factory")]
 public class RawMaterialFactoryData : ProductionBuildingData
 {
     [Header("Raw Material Factory Settings")]

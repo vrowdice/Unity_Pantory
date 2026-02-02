@@ -62,9 +62,10 @@ public class ResearchInfoPopup : BasePopup
 
     public void RefreshAllUI()
     {
-        _nameText.text = _currentResearchEntry.data.displayName;
+        string researchId = _currentResearchEntry.data.id;
+        _nameText.text = researchId.Localize(LocalizationUtils.TABLE_RESEARCH);
         _tireText.text = $"Tier {_currentResearchEntry.data.tier}";
-        _descriptionText.text = _currentResearchEntry.data.description;
+        _descriptionText.text = researchId.Localize(LocalizationUtils.TABLE_RESEARCH_DESCRIPTION);
         _iconImage.sprite = _currentResearchEntry.data.icon;
         _costPanelText.text = _currentResearchEntry.data.researchPointCost.ToString();
 
@@ -87,7 +88,7 @@ public class ResearchInfoPopup : BasePopup
     {
         if (!_dataManager.Research.TryUnlockResearch(_currentResearchEntry.data.id))
         {
-            _gameManager.ShowWarningPanel("Research cannot be unlocked");
+            _gameManager.ShowWarningPanel(WarningMessage.ResearchCannotUnlock.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
         }
         else
         {

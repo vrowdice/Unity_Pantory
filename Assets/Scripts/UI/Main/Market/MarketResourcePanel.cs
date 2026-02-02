@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Evo.UI;
 
 /// <summary>
 /// 시장의 리소스 상세 정보 및 거래 입력을 담당하는 패널 클래스입니다.
@@ -12,7 +13,7 @@ public class MarketResourcePanel : MonoBehaviour
     private MarketPanel _marketPanel;
 
     [Header("Components")]
-    [SerializeField] private WindowGraph _windowGraph;
+    [SerializeField] private LineChart _lineChart;
     [SerializeField] private TMP_InputField _resouceTradeInputField;
 
     [Header("Info Panel UI")]
@@ -40,7 +41,6 @@ public class MarketResourcePanel : MonoBehaviour
             _selectedResourceEntry = _dataManager.Resource.GetResourceEntry("iron_ore");
         }
 
-        _windowGraph.Init();
         RefreshUI();
     }
 
@@ -113,7 +113,33 @@ public class MarketResourcePanel : MonoBehaviour
         _resourcePriceText.text = priceText;
         _resourcePriceText.color = VisualManager.Instance.GetDeltaColor(state.currentChangeValue);
 
-        _windowGraph.ShowGraph(_selectedResourceEntry.state.PriceHistory);
+        RefreshLineChart(_selectedResourceEntry.state._priceHistory);
         _resouceTradeInputField.text = _selectedResourceEntry.state.marketDeltaCount.ToString();
+    }
+
+    /// <summary>
+    /// 가격 히스토리를 LineChart에 반영합니다.
+    /// X축 라벨: 포인트가 많을 때는 일정 간격으로만 표시해 겹침을 줄입니다.
+    /// </summary>
+    private void RefreshLineChart(List<float> priceHistory)
+    {
+        if (_lineChart == null || priceHistory == null) return;
+
+        _lineChart.dataPoints.Clear();
+        int count = priceHistory.Count;
+        int labelStep = count <= 12 ? 1 : Mathf.Max(1, count / 10);
+
+        for (int i = 0; i < count; i++)
+        {
+            bool showLabel = (i % labelStep == 0) || (i == count - 1);
+            string xLabel = showLabel ? (i + 1).ToString() : "";
+            _lineChart.dataPoints.Add(new LineChart.DataPoint(xLabel, priceHistory[i]));
+        }
+        if (_lineChart.dataPoints.Count == 1)
+        {
+            float v = _lineChart.dataPoints[0].value;
+            _lineChart.dataPoints.Add(new LineChart.DataPoint("2", v));
+        }
+        _lineChart.DrawChart();
     }
 }

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
+  m_Name: Research
+  m_EditorClassIdentifier: 
+  m_SharedTableData: {fileID: 11400000, guid: 8787241877551f54c958b660f510e5a2, type: 2}
+  m_Tables:
+  - {fileID: 11400000, guid: cfc650b436f027b49bd66fcb789badd8, type: 2}
+  - {fileID: 11400000, guid: 335eceba3bd778f48b2b987bf71bc89c, type: 2}
+  - {fileID: 11400000, guid: 48610320cd351ca448f98138d4a6ea24, type: 2}
+  m_Extensions: []
+  m_Group: String Table
+  references:
+    version: 2
+    RefIds: []

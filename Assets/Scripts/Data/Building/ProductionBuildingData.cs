@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// 생산 건물 데이터
 /// 자원을 생산하거나 가공하는 건물에 사용됩니다.
 /// </summary>
-[CreateAssetMenu(fileName = "NewProductionBuilding", menuName = "Game Data/Building Data/Production", order = 2)]
+[CreateAssetMenu(fileName = "NewProductionBuilding", menuName = "Game Data/Building Data/Production")]
 public class ProductionBuildingData : BuildingData
 {
     [Header("Production")]

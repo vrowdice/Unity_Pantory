@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MarketActor_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: aed7278ca072b414e8b2eb19921bbfa1, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226269001
+    m_Localized: Artisan Furniture Workshop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269002
+    m_Localized: Automotive Industry Group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Localized: Continental Defense Force
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Localized: Electronics Manufacturing Corp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269005
+    m_Localized: Elite Armaments Group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269006
+    m_Localized: Elite Security Forces
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269007
+    m_Localized: Fashion Retail Chain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269008
+    m_Localized: Frontier Sawmill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269009
+    m_Localized: Global Resource Syndicate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269010
+    m_Localized: Imperial Logistics Bureau
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269011
+    m_Localized: Industrial Brokerage Network
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269012
+    m_Localized: Iron Mining Consortium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269013
+    m_Localized: Lumber Consortium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269014
+    m_Localized: Luxury Furniture Showroom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269015
+    m_Localized: Military Armory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269016
+    m_Localized: National Exchange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269017
+    m_Localized: Northwind Industrial Union
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269018
+    m_Localized: Precision Components Ltd
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269019
+    m_Localized: Precision Weapons Workshop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269020
+    m_Localized: Premium Industrial Logistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269021
+    m_Localized: Smelter Collective
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269022
+    m_Localized: Vanguard Steelworks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269023
+    m_Localized: Verdant Continental Exchange
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

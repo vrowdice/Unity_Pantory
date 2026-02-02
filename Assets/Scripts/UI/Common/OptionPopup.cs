@@ -13,6 +13,10 @@ public class OptionPopup : BasePopup
 
     private const string PREFS_LOCALE = "SelectedLocale";
 
+    private string _pendingLocaleCode;
+    private float _pendingBGMVolume;
+    private float _pendingSFXVolume;
+
     public override void Init()
     {
         base.Init();
@@ -23,12 +27,15 @@ public class OptionPopup : BasePopup
 
     private void InitSliders()
     {
+        _pendingBGMVolume = SoundManager.Instance.GetBGMVolume();
+        _pendingSFXVolume = SoundManager.Instance.GetSFXVolume();
+
         _BGMSlider.onValueChanged.RemoveAllListeners();
-        _BGMSlider.value = SoundManager.Instance.GetBGMVolume();
+        _BGMSlider.value = _pendingBGMVolume;
         _BGMSlider.onValueChanged.AddListener(OnBGMVolumeChanged);
 
         _SFXSlider.onValueChanged.RemoveAllListeners();
-        _SFXSlider.value = SoundManager.Instance.GetSFXVolume();
+        _SFXSlider.value = _pendingSFXVolume;
         _SFXSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
     }
 
@@ -37,15 +44,15 @@ public class OptionPopup : BasePopup
         _localizatioinDropdown.onItemSelected.RemoveAllListeners();
         _localizatioinDropdown.items.Clear();
 
-        string currentLocaleCode = LocalizationSettings.SelectedLocale?.Identifier.Code ?? PlayerPrefs.GetString(PREFS_LOCALE, "en");
-        int selectedIndex = GetLocaleIndex(currentLocaleCode);
+        _pendingLocaleCode = LocalizationSettings.SelectedLocale?.Identifier.Code ?? PlayerPrefs.GetString(PREFS_LOCALE, "en");
+        int selectedIndex = GetLocaleIndex(_pendingLocaleCode);
 
         _localizatioinDropdown.AddItem("English", null, true);
         _localizatioinDropdown.AddItem("日本語", null, true);
         _localizatioinDropdown.AddItem("한국어", null, true);
 
         _localizatioinDropdown.SelectItem(selectedIndex, false);
-        _localizatioinDropdown.onItemSelected.AddListener(OnLocaleChanged);
+        _localizatioinDropdown.onItemSelected.AddListener(OnLocaleSelectionChanged);
     }
 
     private int GetLocaleIndex(string localeCode)
@@ -63,20 +70,18 @@ public class OptionPopup : BasePopup
         }
     }
 
-    private void OnLocaleChanged(int index)
+    private void OnLocaleSelectionChanged(int index)
     {
-        string localeCode = index switch
+        _pendingLocaleCode = index switch
         {
             0 => "en",
             1 => "ja",
             2 => "ko",
             _ => "en"
         };
-
-        StartCoroutine(ChangeLocale(localeCode));
     }
 
-    private IEnumerator ChangeLocale(string localeCode)
+    private void ApplyLocale(string localeCode)
     {
         IList<Locale> availableLocales = LocalizationSettings.AvailableLocales.Locales;
         Locale targetLocale = null;
@@ -90,21 +95,22 @@ public class OptionPopup : BasePopup
             }
         }
 
-        LocalizationSettings.SelectedLocale = targetLocale;
-        PlayerPrefs.SetString(PREFS_LOCALE, localeCode);
-        PlayerPrefs.Save();
-
-        yield return null;
+        if (targetLocale != null)
+        {
+            LocalizationSettings.SelectedLocale = targetLocale;
+            PlayerPrefs.SetString(PREFS_LOCALE, localeCode);
+            PlayerPrefs.Save();
+        }
     }
 
     private void OnBGMVolumeChanged(float value)
     {
-        SoundManager.Instance.SetBGMVolume(value);
+        _pendingBGMVolume = value;
     }
 
     private void OnSFXVolumeChanged(float value)
     {
-        SoundManager.Instance.SetSFXVolume(value);
+        _pendingSFXVolume = value;
     }
 
     public void OnClickExitGame()
@@ -117,6 +123,9 @@ public class OptionPopup : BasePopup
 
     public void OnClickApply()
     {
+        ApplyLocale(_pendingLocaleCode);
+        SoundManager.Instance.SetBGMVolume(_pendingBGMVolume);
+        SoundManager.Instance.SetSFXVolume(_pendingSFXVolume);
         SoundManager.Instance.SaveSettings();
         OnClickExit();
     }

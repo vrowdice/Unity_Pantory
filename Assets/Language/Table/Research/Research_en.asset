@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Research_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 8787241877551f54c958b660f510e5a2, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226266001
+    m_Localized: Component Manufacturing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266002
+    m_Localized: Mining
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266003
+    m_Localized: Chemical Processing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266004
+    m_Localized: Heavy Industry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266005
+    m_Localized: Oil Extraction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266006
+    m_Localized: Metal Smelting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266007
+    m_Localized: Engine Manufacturing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266008
+    m_Localized: Military Production
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266009
+    m_Localized: Vehicle Assembly
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

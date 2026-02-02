@@ -31,7 +31,7 @@ public partial class DesignCanvas
     {
         if (!isUnlocked)
         {
-            GameManager.ShowWarningPanel("This building is locked. Complete the required research to unlock it.");
+            GameManager.ShowWarningPanel(WarningMessage.BuildingLockedResearchRequired.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
             return;
         }
 
