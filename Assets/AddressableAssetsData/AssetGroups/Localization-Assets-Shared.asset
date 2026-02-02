@@ -21,6 +21,17 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 456e196011c2ed9419127689f8898172
+    m_Address: Assets/Language/Table/Building/Building Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56883579e18354a4c988dc94eb36f1e2
+    m_Address: Assets/Language/Table/BuildingDescription/BuildingDescription Shared
+      Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6c0c64239e73f4648b0de1876e938649
     m_Address: Assets/Language/Table/EmployeeDescription/EmployeeDescription Shared
       Data.asset
@@ -55,6 +66,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aed7278ca072b414e8b2eb19921bbfa1
     m_Address: Assets/Language/Table/MarketActor/MarketActor Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bdc46038ed61eaf4fad32491663ffca1
+    m_Address: Assets/Language/Table/BuildingType/BuildingType Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

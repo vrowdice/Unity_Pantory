@@ -158,10 +158,10 @@ MonoBehaviour:
   settingsFoldout: 0
   styleFoldout: 0
   navigationFoldout: 0
-  referencesFoldout: 0
+  referencesFoldout: 1
   eventsFoldout: 1
   enableIcon: 1
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 19bd15e80d79d0947b6c710f366aa2c3, type: 3}
   iconSize: 22
   enableText: 1
   text: Button
@@ -179,7 +179,7 @@ MonoBehaviour:
   doubleClickDuration: 0.25
   imageObject: {fileID: 2574311710831478979}
   iconElement: {fileID: 8007822060109055337}
-  textObject: {fileID: 2563413337619374305}
+  textObject: {fileID: 0}
   textContainer: {fileID: 0}
   contentFitter: {fileID: 0}
   contentLayout: {fileID: 5253592962410814175}
@@ -222,6 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6b3776173a1177408d57beee107daea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _icon: {fileID: 2574311710831478979}
   _text: {fileID: 2563413337619374305}
 --- !u!1 &4034514002214645924
 GameObject:
@@ -242,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8909285042711819715
 RectTransform:
   m_ObjectHideFlags: 0
@@ -331,7 +332,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 19bd15e80d79d0947b6c710f366aa2c3, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -909,7 +910,7 @@ MonoBehaviour:
   m_text: Button
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
-  m_sharedMaterial: {fileID: 9218679208397806780, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -933,7 +934,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 32
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1

@@ -732,7 +732,7 @@ MonoBehaviour:
   doubleClickDuration: 0.25
   imageObject: {fileID: 5430122966560071831}
   iconElement: {fileID: 0}
-  textObject: {fileID: 8003958231253129643}
+  textObject: {fileID: 0}
   textContainer: {fileID: 0}
   contentFitter: {fileID: 0}
   contentLayout: {fileID: 0}

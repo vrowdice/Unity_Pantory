@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Building_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: 456e196011c2ed9419127689f8898172, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226270001
+    m_Localized: 화학 공장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270002
+    m_Localized: 부품 공장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270003
+    m_Localized: 엔진 공장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270004
+    m_Localized: 중공장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270005
+    m_Localized: 경공장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270006
+    m_Localized: 적재장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270007
+    m_Localized: 제재소
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270008
+    m_Localized: 군수 공장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270009
+    m_Localized: 광산
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270010
+    m_Localized: 유정
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270011
+    m_Localized: 도로
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270012
+    m_Localized: 제재소
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270013
+    m_Localized: 제련소
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270014
+    m_Localized: 하역장
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270015
+    m_Localized: 차량 조립 공장
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

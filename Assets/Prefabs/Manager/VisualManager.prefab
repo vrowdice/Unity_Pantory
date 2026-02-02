@@ -46,3 +46,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _validColor: {r: 0, g: 1, b: 0, a: 0.2}
   _invalidColor: {r: 1, g: 0, b: 0, a: 0.2}
+  _profitColor: {r: 0, g: 0, b: 1, a: 1}
+  _lossColor: {r: 1, g: 0, b: 0, a: 1}
+  _managementSufficientColor: {r: 0, g: 1, b: 0, a: 1}
+  _managementInsufficientColor: {r: 1, g: 0, b: 0, a: 1}
+  _threadPlacementOutlineColor: {r: 0.2, g: 0.8, b: 1, a: 0.8}
+  _threadRemovalHighlightColor: {r: 1, g: 0.4, b: 0.4, a: 0.9}
+  _threadPreviewValidColor: {r: 0, g: 1, b: 0, a: 1}
+  _threadPreviewInvalidColor: {r: 1, g: 0, b: 0, a: 1}
+  _threadPreviewAlpha: 0.6
+  _panelIconList:
+  - String: Storage
+    Sprite: {fileID: 21300000, guid: ccd0735e6b0cadc41876c74ed997bbed, type: 3}
+  - String: Market
+    Sprite: {fileID: 21300000, guid: fe81cfff8bf5d174dacc45039e9b7266, type: 3}
+  - String: Employment
+    Sprite: {fileID: 21300000, guid: 077d119fb6559ac40871c5eeaa82fad7, type: 3}
+  - String: Research
+    Sprite: {fileID: 21300000, guid: 4dc52ecd8e171e34c98c6d78f175fcbf, type: 3}
+  - String: News
+    Sprite: {fileID: 21300000, guid: 76f6c2e3017651d4e82d6f4185ba8fc3, type: 3}
+  - String: Order
+    Sprite: {fileID: 21300000, guid: 4bc531f52d504e448b0719700a7b33b6, type: 3}

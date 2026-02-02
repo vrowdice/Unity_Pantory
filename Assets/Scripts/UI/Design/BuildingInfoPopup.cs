@@ -49,9 +49,9 @@ public class BuildingInfoPopup : BasePopup
 
     private void UpdateUI()
     {
-        _nameText.text = _currentData.displayName;
-        _typeText.text = $"Type: {_currentData.buildingType}";
-        _descriptionText.text = _currentData.description;
+        _nameText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING);
+        _typeText.text = $"Type: {_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING_TYPE)}";
+        _descriptionText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING_DESCRIPTION);
         _costText.text = $"Cost: {ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
         _maintenanceText.text = $"Maint: {ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)}/mo";
 

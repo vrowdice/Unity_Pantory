@@ -272,8 +272,6 @@ public class DesignRunner : RunnerBase
 
         _temporaryBuildingStates.Add(newBuildingState);
         _isTemporaryDataDirty = true;
-
-        Debug.Log("[BuildingTileManager] New building added to temporary state: " + newBuildingState.buildingId + " at " + newBuildingState.positionX + ", " + newBuildingState.positionY);
     }
 
     /// <summary>
@@ -289,8 +287,6 @@ public class DesignRunner : RunnerBase
         if (removedCount > 0)
         {
             _isTemporaryDataDirty = true;
-
-            Debug.Log("[BuildingTileManager] Building removed from temporary states at: " + gridPosition);
             return true;
         }
 

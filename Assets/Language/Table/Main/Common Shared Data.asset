@@ -159,6 +159,14 @@ MonoBehaviour:
     m_Key: Thread Cartegory
     m_Metadata:
       m_Items: []
+  - m_Id: 2975805825499136
+    m_Key: Research Effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2976802937389056
+    m_Key: Research
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

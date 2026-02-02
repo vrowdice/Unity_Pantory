@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: BuildingDescription_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: 56883579e18354a4c988dc94eb36f1e2, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226270101
+    m_Localized: 原油を繊維やその他の合成材料に変換する化学処理施設。石油から繊維を生産し、木材に頼らず繊維産業を可能にする。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270102
+    m_Localized: 機械部品、電子部品、精密工具を生産する精密製造施設。精製金属から機械部品・電子部品・精密工具を製造。高度な生産チェーンに不可欠。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270103
+    m_Localized: 高性能内燃機関を製造する専門施設。機械部品、電子部品、鋼インゴットからエンジンを生産。車両生産の前提となる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270104
+    m_Localized: 精密工具と高級品を専門とする重工業施設。高品位鋼材と先進部品から精密工具と高級品を生産。多額の投資が必要だが高付加価値製品を生み出す。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270105
+    m_Localized: 家具、衣類、簡易工具など消費財を生産する汎用軽工業施設。市場需要に応じて生産ラインを切り替え可能。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270106
+    m_Localized: 倉庫から資材を取り出し生産ラインに積み込む積込ステーション。作業員が効率的に資材を搬送し製造を開始する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270107
+    m_Localized: 原木を良質な木材と繊維に加工する木材処理施設。原木を建材に加工し、木 pulp から繊維も生産。製材所近くに配置すると最も効率的。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270108
+    m_Localized: 兵器・弾薬を生産する軍用製造施設。鋼インゴットと機械部品から小火器、重火器、弾薬を製造。戦時生産に不可欠で紛争時需要が高い。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270109
+    m_Localized: 地下から鉄鉱石、石炭、銅鉱石、金鉱石、アルミ鉱石を採掘する深層鉱山施設。多額の投資が必要だが産業の基盤原料を供給する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270110
+    m_Localized: 地下貯留層から原油を採取する石油掘削施設。燃料生産と化学処理に不可欠。維持コストが高い。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270111
+    m_Localized: 生産ラインの各エリアを結ぶ輸送路。資材と製品を施設間で効率的に運ぶための基盤インフラ。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270112
+    m_Localized: 近隣の森林から原木を直接伐採。補助資材を消費せずに原木を生産する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270113
+    m_Localized: 原鉱石を精製金属インゴットに変換する製錬施設。鉄・銅・アルミ・金鉱石をそれぞれのインゴットに加工。金属加工業に不可欠。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270114
+    m_Localized: 生産ラインから完成品を取り外し保管する荷降ろしステーション。作業員が完成品を丁寧に扱い在庫管理する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270115
+    m_Localized: 車両を組立する大規模工業施設。大量の部品・電子機器・資材を要し、自動車、航空機、戦車を生産する。
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

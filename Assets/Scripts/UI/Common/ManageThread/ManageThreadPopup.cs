@@ -39,14 +39,11 @@ public class ManageThreadPopup : BasePopup
         _dataManager = dataManager;
         _onThreadSelectedCallback = onThreadSelected;
 
-        // 초기 상태를 "All" 카테고리로 설정
         _selectedCategoryId = string.Empty;
 
-        // 이벤트 구독
         _dataManager.Thread.OnCategoryChanged += RefreshCategoryList;
         _dataManager.Thread.OnThreadChanged += RefreshThreadList;
 
-        // 초기 표시
         RefreshCategoryList();
         RefreshThreadList();
         
@@ -55,7 +52,6 @@ public class ManageThreadPopup : BasePopup
 
     void OnDestroy()
     {
-        // 이벤트 구독 해제
         if (_dataManager != null)
         {
             _dataManager.Thread.OnCategoryChanged -= RefreshCategoryList;
@@ -71,11 +67,9 @@ public class ManageThreadPopup : BasePopup
         if (_dataManager == null || _threadCategoryScrollViewContent == null)
             return;
 
-        // 기존 버튼 제거 및 리스트 클리어
         GameObjectUtils.ClearChildren(_threadCategoryScrollViewContent);
         _categoryBtns.Clear();
 
-        // 1. "All" 카테고리 버튼 추가 (categoryId = string.Empty)
         if (_threadCategoryBtnPrefab != null)
         {
             GameObject allBtnObj = Instantiate(_threadCategoryBtnPrefab, _threadCategoryScrollViewContent);
@@ -88,10 +82,9 @@ public class ManageThreadPopup : BasePopup
             }
         }
 
-        // 2. 등록된 모든 카테고리 버튼 추가
-        var categories = _dataManager.Thread.GetAllCategories();
+        Dictionary<string, ThreadCategory> categories = _dataManager.Thread.GetAllCategories();
 
-        foreach (var category in categories.Values)
+        foreach (ThreadCategory category in categories.Values)
         {
             if (category == null || string.IsNullOrEmpty(category.categoryId))
                 continue;
@@ -109,20 +102,17 @@ public class ManageThreadPopup : BasePopup
             }
         }
 
-        // 3. 현재 선택된 카테고리 버튼의 활성화 상태 업데이트
-        // RefreshCategoryList가 호출된 후에도 기존 선택이 유지되도록 처리
         UpdateCategoryButtonStates(_selectedCategoryId);
     }
 
     /// <summary>
-    /// 스레드 목록을 새로고침하고 UI를 업데이트합니다. (선택된 카테고리 기준으로 필터링)
+    /// 스레드 목록을 새로고침하고 UI를 업데이트합니다.
     /// </summary>
     private void RefreshThreadList()
     {
         if (_dataManager == null || _threadScrollViewContent == null)
             return;
 
-        // 기존 버튼 제거 및 리스트 클리어
         GameObjectUtils.ClearChildren(_threadScrollViewContent);
         _threadBtns.Clear();
 
@@ -130,17 +120,14 @@ public class ManageThreadPopup : BasePopup
 
         if (string.IsNullOrEmpty(_selectedCategoryId))
         {
-            // "All" 선택 시: 모든 스레드 표시
             threadsToShow = _dataManager.Thread.GetAllThreadList();
         }
         else
         {
-            // 특정 카테고리 선택 시: 해당 카테고리에 속한 스레드만 표시
             threadsToShow = _dataManager.Thread.GetThreadsInCategory(_selectedCategoryId);
         }
 
-        // 1. 스레드 버튼 생성
-        foreach (var thread in threadsToShow)
+        foreach (ThreadState thread in threadsToShow)
         {
             if (thread == null || string.IsNullOrEmpty(thread.threadId))
                 continue;
@@ -152,7 +139,6 @@ public class ManageThreadPopup : BasePopup
 
                 if (btn != null)
                 {
-                    // 미리보기 이미지 로드
                     Sprite previewSprite = SpriteUtils.LoadSpriteFromFile(thread.previewImagePath);
                     btn.Init(thread, previewSprite, OnThreadClick, OnThreadEdit, OnThreadDelete);
                     _threadBtns.Add(btn);
@@ -160,7 +146,6 @@ public class ManageThreadPopup : BasePopup
             }
         }
 
-        // 2. (+) Plus 버튼을 목록의 가장 마지막에 추가
         if (_threadPlusBtnPrefab != null)
         {
             GameObject plusBtnObj = Instantiate(_threadPlusBtnPrefab, _threadScrollViewContent);
@@ -173,19 +158,12 @@ public class ManageThreadPopup : BasePopup
     /// </summary>
     private void UpdateCategoryButtonStates(string activeCategoryId)
     {
-        foreach (var btn in _categoryBtns)
+        foreach (ManageThreadCategoryBtn btn in _categoryBtns)
         {
             bool isActive = btn.CategoryId == activeCategoryId;
-            
-            Image button = btn.GetComponent<Image>();
-            if (button != null)
-            {
-                button.color = isActive ? Color.yellow : Color.white;
-            }
+            btn.SetFocused(isActive);
         }
     }
-
-    // ================== 버튼 클릭 핸들러 ==================
 
     /// <summary>
     /// 카테고리 선택 시 호출됩니다. 선택된 카테고리로 스레드 목록을 필터링합니다.
@@ -206,10 +184,7 @@ public class ManageThreadPopup : BasePopup
 
         Debug.Log($"[ManageThreadPanel] Thread selected: {threadId}");
 
-        // 콜백 호출: 선택된 스레드 ID를 DesignUiManager에 전달
         _onThreadSelectedCallback?.Invoke(threadId);
-
-        // 패널 닫기 및 제거
         ClosePanel();
     }
 
@@ -219,7 +194,6 @@ public class ManageThreadPopup : BasePopup
     private void OnThreadEdit(string threadId)
     {
         Debug.Log($"[ManageThreadPanel] Thread edit requested: {threadId}");
-        // TODO: 편집 UI를 열거나 해당 스레드를 로드하여 Design Mode로 전환
     }
 
     /// <summary>
@@ -232,12 +206,10 @@ public class ManageThreadPopup : BasePopup
         ThreadState thread = _dataManager.Thread.GetThread(threadId);
         string threadName = thread != null ? thread.threadName : threadId;
 
-        // 스레드 삭제 (ThreadDataHandler 내부에서 저장 자동 트리거)
         bool removed = _dataManager.Thread.RemoveThread(threadId);
 
         if (removed)
         {
-            // 미리보기 이미지 파일도 삭제 (선택 사항)
             if (thread != null && File.Exists(thread.previewImagePath))
             {
                 SpriteUtils.UnloadSprite(thread.previewImagePath);
@@ -263,27 +235,22 @@ public class ManageThreadPopup : BasePopup
     {
         if (GameManager.Instance == null || _dataManager == null) return;
 
-        // 새 스레드 이름 입력 패널 표시
         GameManager.Instance.ShowEnterNamePanel((threadName) =>
         {
             if (string.IsNullOrEmpty(threadName)) return;
 
-            // 스레드 ID 생성 (이름 기반)
             string baseId = $"thread_{threadName.Replace(" ", "_").ToLower()}";
             string threadId = baseId;
             int suffix = 0;
 
-            // 중복 확인 및 처리
             while (_dataManager.Thread.HasThread(threadId))
             {
                 suffix++;
                 threadId = $"{baseId}_{suffix}";
             }
 
-            // 새 스레드 생성 (자동 저장/이벤트 트리거)
             _dataManager.Thread.CreateThread(threadId, threadName);
 
-            // 선택된 카테고리가 있으면 새 스레드를 카테고리에 추가
             if (!string.IsNullOrEmpty(_selectedCategoryId))
             {
                 _dataManager.Thread.AddThreadToCategory(_selectedCategoryId, threadId);

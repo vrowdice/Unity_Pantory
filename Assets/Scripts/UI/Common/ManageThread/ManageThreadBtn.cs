@@ -22,13 +22,11 @@ public class ManageThreadBtn : MonoBehaviour
         _onEditCallback = onEdit;
         _onDeleteCallback = onDelete;
 
-        // 제목 설정
         if (_titleText != null)
         {
             _titleText.text = string.IsNullOrEmpty(thread.threadName) ? thread.threadId : thread.threadName;
         }
 
-        // 미리보기 이미지 설정
         if (_threadImage != null)
         {
             if (previewSprite != null)

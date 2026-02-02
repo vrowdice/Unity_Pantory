@@ -19,27 +19,27 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 33351417856
-    m_Localized: 생산
+    m_Localized: "\uC0DD\uC0B0"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263040
-    m_Localized: 시장
+    m_Localized: "\uC2DC\uC7A5"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263041
-    m_Localized: 채용
+    m_Localized: "\uCC44\uC6A9"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263042
-    m_Localized: 연구
+    m_Localized: "\uC5F0\uAD6C"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263043
-    m_Localized: 이벤트
+    m_Localized: "\uB274\uC2A4"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263044
-    m_Localized: 주문
+    m_Localized: "\uC8FC\uBB38"
     m_Metadata:
       m_Items: []
   references:

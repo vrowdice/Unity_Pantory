@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38232fc5889a2d14592ddfd9a659acdf
+    m_Address: BuildingDescription_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 48610320cd351ca448f98138d4a6ea24
     m_Address: Research_ko
     m_ReadOnly: 1
@@ -57,6 +63,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91deca4e5a7cfab4bb1e347511650b4a
+    m_Address: Building_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 943f78ba49cb4a44799ad20ca128805a
     m_Address: MarketActorDescription_ko
     m_ReadOnly: 1
@@ -65,6 +77,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9aabd209fcac5964bad31fb1be1c7bdc
     m_Address: Common_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab45d1f8304320d48b83951cab1d03d2
+    m_Address: BuildingType_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko

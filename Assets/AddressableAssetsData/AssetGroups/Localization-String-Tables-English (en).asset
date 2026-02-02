@@ -57,8 +57,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a499d311c28dc2343b7f95a5dc5b8006
+    m_Address: BuildingDescription_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a4bdb186214a063459f7e4b4a3edadcc
     m_Address: MainPanelType_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1fe521881397874abc7b71dbad000a5
+    m_Address: BuildingType_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c670dbf8949b5be4ab50c9a84b2a7ec1
+    m_Address: Building_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en

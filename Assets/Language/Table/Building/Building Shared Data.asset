@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Building Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Building
+  m_TableCollectionNameGuidString: 456e196011c2ed9419127689f8898172
+  m_Entries:
+  - m_Id: 864226270001
+    m_Key: chemical_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270002
+    m_Key: component_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270003
+    m_Key: engine_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270004
+    m_Key: heavy_factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270005
+    m_Key: light_factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270006
+    m_Key: load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270007
+    m_Key: lumber_mill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270008
+    m_Key: military_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270009
+    m_Key: mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270010
+    m_Key: oil_pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270011
+    m_Key: road
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270012
+    m_Key: sawmill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270013
+    m_Key: smelter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270014
+    m_Key: unload
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270015
+    m_Key: vehicle_plant
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6834855703106551896
+  references:
+    version: 2
+    RefIds:
+    - rid: 6834855703106551896
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1770028433770

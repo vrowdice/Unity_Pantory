@@ -19,147 +19,155 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 139039577882624
-    m_Localized: 공급
+    m_Localized: "\uACF5\uAE09"
     m_Metadata:
       m_Items: []
   - m_Id: 139184558194688
-    m_Localized: 효율
+    m_Localized: "\uD6A8\uC728"
     m_Metadata:
       m_Items: []
   - m_Id: 821549664190464
-    m_Localized: 만족도
+    m_Localized: "\uB9CC\uC871\uB3C4"
     m_Metadata:
       m_Items: []
   - m_Id: 821686377529344
-    m_Localized: 고용
+    m_Localized: "\uACE0\uC6A9"
     m_Metadata:
       m_Items: []
   - m_Id: 821897967583232
-    m_Localized: 일당
+    m_Localized: "\uC77C\uB2F9"
     m_Metadata:
       m_Items: []
   - m_Id: 828943693660160
-    m_Localized: 총 일당
+    m_Localized: "\uCD1D \uC77C\uB2F9"
     m_Metadata:
       m_Items: []
   - m_Id: 829479545356288
-    m_Localized: 매우 낮음
+    m_Localized: "\uB9E4\uC6B0 \uB0AE\uC74C"
     m_Metadata:
       m_Items: []
   - m_Id: 829850258915328
-    m_Localized: 낮음
+    m_Localized: "\uB0AE\uC74C"
     m_Metadata:
       m_Items: []
   - m_Id: 829996099059712
-    m_Localized: 보통
+    m_Localized: "\uBCF4\uD1B5"
     m_Metadata:
       m_Items: []
   - m_Id: 832125903716352
-    m_Localized: 높음
+    m_Localized: "\uB192\uC74C"
     m_Metadata:
       m_Items: []
   - m_Id: 832342812147712
-    m_Localized: 매우 높음
+    m_Localized: "\uB9E4\uC6B0 \uB192\uC74C"
     m_Metadata:
       m_Items: []
   - m_Id: 834105048973312
-    m_Localized: 효율 상태
+    m_Localized: "\uD6A8\uC728 \uC0C1\uD0DC"
     m_Metadata:
       m_Items: []
   - m_Id: 834127593357312
-    m_Localized: 수
+    m_Localized: "\uC218"
     m_Metadata:
       m_Items: []
   - m_Id: 837713131880448
-    m_Localized: 만족도 상태
+    m_Localized: "\uB9CC\uC871\uB3C4 \uC0C1\uD0DC"
     m_Metadata:
       m_Items: []
   - m_Id: 840083911884800
-    m_Localized: 연구 포인트
+    m_Localized: "\uC5F0\uAD6C \uD3EC\uC778\uD2B8"
     m_Metadata:
       m_Items: []
   - m_Id: 840589317128192
-    m_Localized: 효과 상태
+    m_Localized: "\uD6A8\uACFC \uC0C1\uD0DC"
     m_Metadata:
       m_Items: []
   - m_Id: 840826593099776
-    m_Localized: 뉴스
+    m_Localized: "\uB274\uC2A4"
     m_Metadata:
       m_Items: []
   - m_Id: 841202692145152
-    m_Localized: 관리도
+    m_Localized: "\uAD00\uB9AC\uB3C4"
     m_Metadata:
       m_Items: []
   - m_Id: 1201322299113472
-    m_Localized: 왼쪽
+    m_Localized: "\uC67C\uCABD"
     m_Metadata:
       m_Items: []
   - m_Id: 1201325092519936
-    m_Localized: 오른쪽
+    m_Localized: "\uC624\uB978\uCABD"
     m_Metadata:
       m_Items: []
   - m_Id: 1201327516827648
-    m_Localized: 건설 모드
+    m_Localized: "\uAC74\uC124 \uBAA8\uB4DC"
     m_Metadata:
       m_Items: []
   - m_Id: 1201328489906176
-    m_Localized: 제거 모드
+    m_Localized: "\uC81C\uAC70 \uBAA8\uB4DC"
     m_Metadata:
       m_Items: []
   - m_Id: 1202133720776704
-    m_Localized: 세이브
+    m_Localized: "\uC138\uC774\uBE0C"
     m_Metadata:
       m_Items: []
   - m_Id: 1202160061005824
-    m_Localized: 로드
+    m_Localized: "\uB85C\uB4DC"
     m_Metadata:
       m_Items: []
   - m_Id: 1202171805057024
-    m_Localized: 나가기
+    m_Localized: "\uB098\uAC00\uAE30"
     m_Metadata:
       m_Items: []
   - m_Id: 1202630846464000
-    m_Localized: 스레드 저장
+    m_Localized: "\uC2A4\uB808\uB4DC \uC800\uC7A5"
     m_Metadata:
       m_Items: []
   - m_Id: 1202736043802624
-    m_Localized: 스레드 이름
+    m_Localized: "\uC2A4\uB808\uB4DC \uC774\uB984"
     m_Metadata:
       m_Items: []
   - m_Id: 1202752342867968
-    m_Localized: 카테고리
+    m_Localized: "\uCE74\uD14C\uACE0\uB9AC"
     m_Metadata:
       m_Items: []
   - m_Id: 1202914645655552
-    m_Localized: 입력
+    m_Localized: "\uC785\uB825"
     m_Metadata:
       m_Items: []
   - m_Id: 1203055897231360
-    m_Localized: 제품
+    m_Localized: "\uC81C\uD488"
     m_Metadata:
       m_Items: []
   - m_Id: 1205398315352064
-    m_Localized: 이름 입력
+    m_Localized: "\uC774\uB984 \uC785\uB825"
     m_Metadata:
       m_Items: []
   - m_Id: 1205624384143360
-    m_Localized: 확인
+    m_Localized: "\uD655\uC778"
     m_Metadata:
       m_Items: []
   - m_Id: 1206435495428096
-    m_Localized: 스레드 관리
+    m_Localized: "\uC2A4\uB808\uB4DC \uAD00\uB9AC"
     m_Metadata:
       m_Items: []
   - m_Id: 1208291269427200
-    m_Localized: 이름 변경
+    m_Localized: "\uC774\uB984 \uBCC0\uACBD"
     m_Metadata:
       m_Items: []
   - m_Id: 1208330368729088
-    m_Localized: 삭제
+    m_Localized: "\uC0AD\uC81C"
     m_Metadata:
       m_Items: []
   - m_Id: 1208475260960768
-    m_Localized: 스레드 카테고리
+    m_Localized: "\uC2A4\uB808\uB4DC \uCE74\uD14C\uACE0\uB9AC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2975805825499136
+    m_Localized: "\uC5F0\uAD6C \uD6A8\uACFC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2976802937389056
+    m_Localized: "\uC5F0\uAD6C"
     m_Metadata:
       m_Items: []
   references:

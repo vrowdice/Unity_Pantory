@@ -162,6 +162,14 @@ MonoBehaviour:
     m_Localized: Thread Category
     m_Metadata:
       m_Items: []
+  - m_Id: 2975805825499136
+    m_Localized: Research Effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2976802937389056
+    m_Localized: Research
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

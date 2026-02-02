@@ -1,44 +1,51 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class VisualManager : Singleton<VisualManager>
 {
     public Color ValidColor => _validColor;
     public Color InvalidColor => _invalidColor;
-    public Color ProfitColor => _profitColor;  // 흑자 색상 (양수, 증가)
-    public Color LossColor => _lossColor;     // 적자 색상 (음수, 감소)
-    public Color ManagementSufficientColor => _managementSufficientColor;  // 관리 충분 색상
-    public Color ManagementInsufficientColor => _managementInsufficientColor;  // 관리 부족 색상
+    public Color ProfitColor => _profitColor;
+    public Color LossColor => _lossColor;
+    public Color ManagementSufficientColor => _managementSufficientColor;
+    public Color ManagementInsufficientColor => _managementInsufficientColor;
     
-    // Thread 관련 색상
-    public Color ThreadPlacementOutlineColor => _threadPlacementOutlineColor;  // 스레드 배치 모드 outline 색상
-    public Color ThreadRemovalHighlightColor => _threadRemovalHighlightColor;  // 스레드 제거 모드 highlight 색상
-    public Color ThreadPreviewValidColor => _threadPreviewValidColor;  // 스레드 프리뷰 가능 색상
-    public Color ThreadPreviewInvalidColor => _threadPreviewInvalidColor;  // 스레드 프리뷰 불가 색상
-    public float ThreadPreviewAlpha => _threadPreviewAlpha;  // 스레드 프리뷰 투명도
+    public Color ThreadPlacementOutlineColor => _threadPlacementOutlineColor;
+    public Color ThreadRemovalHighlightColor => _threadRemovalHighlightColor;
+    public Color ThreadPreviewValidColor => _threadPreviewValidColor;
+    public Color ThreadPreviewInvalidColor => _threadPreviewInvalidColor;
+    public float ThreadPreviewAlpha => _threadPreviewAlpha;
 
     [SerializeField]private Color _validColor = new Color(0, 1, 0, 0.2f);
     [SerializeField]private Color _invalidColor = new Color(1, 0, 0, 0.2f);
-    [SerializeField]private Color _profitColor = Color.blue;   // 흑자: 파란색
-    [SerializeField]private Color _lossColor = Color.red;       // 적자: 빨간색
-    [SerializeField]private Color _managementSufficientColor = Color.green;  // 관리 충분: 초록색
-    [SerializeField]private Color _managementInsufficientColor = Color.red;  // 관리 부족: 빨간색
+    [SerializeField]private Color _profitColor = Color.blue;
+    [SerializeField]private Color _lossColor = Color.red;
+    [SerializeField]private Color _managementSufficientColor = Color.green;
+    [SerializeField]private Color _managementInsufficientColor = Color.red;
     
     [Header("Thread Colors")]
-    [SerializeField]private Color _threadPlacementOutlineColor = new Color(0.2f, 0.8f, 1f, 0.8f);  // 스레드 배치 모드 outline 색상
-    [SerializeField]private Color _threadRemovalHighlightColor = new Color(1f, 0.4f, 0.4f, 0.9f);  // 스레드 제거 모드 highlight 색상
-    [SerializeField]private Color _threadPreviewValidColor = Color.green;  // 스레드 프리뷰 가능 색상
-    [SerializeField]private Color _threadPreviewInvalidColor = Color.red;  // 스레드 프리뷰 불가 색상
-    [SerializeField]private float _threadPreviewAlpha = 0.6f;  // 스레드 프리뷰 투명도
+    [SerializeField]private Color _threadPlacementOutlineColor = new Color(0.2f, 0.8f, 1f, 0.8f);
+    [SerializeField]private Color _threadRemovalHighlightColor = new Color(1f, 0.4f, 0.4f, 0.9f);
+    [SerializeField]private Color _threadPreviewValidColor = Color.green;
+    [SerializeField]private Color _threadPreviewInvalidColor = Color.red;
+    [SerializeField]private float _threadPreviewAlpha = 0.6f;
+
+    [SerializeField] private List<StringSpritePair> _panelIconList = new List<StringSpritePair>();
+
+    private Dictionary<string, Sprite> _panelIconDict = new Dictionary<string, Sprite>();
 
     public void Init()
     {
+        _panelIconDict.Clear();
+        foreach (StringSpritePair pair in _panelIconList)
+        {
+            if (!_panelIconDict.ContainsKey(pair.String))
+            {
+                _panelIconDict.Add(pair.String, pair.Sprite);
+            }
+        }
     }
 
-    /// <summary>
-    /// 델타 값에 따른 색상을 반환합니다 (양수: 흑자, 음수: 적자, 0: 흰색)
-    /// </summary>
-    /// <param name="delta">변화량</param>
-    /// <returns>색상</returns>
     public Color GetDeltaColor(float delta)
     {
         if (delta > 0f)
@@ -54,15 +61,8 @@ public class VisualManager : Singleton<VisualManager>
         return Color.white;
     }
 
-    /// <summary>
-    /// 재산 변화에 따른 색상을 반환합니다 (증가: 흑자, 감소: 적자, 변화없음/데이터없음: 흰색)
-    /// </summary>
-    /// <param name="currentWealth">현재 재산</param>
-    /// <param name="previousWealth">이전 재산</param>
-    /// <returns>색상</returns>
     public Color GetWealthChangeColor(float currentWealth, float previousWealth)
     {
-        // 전일 데이터가 없으면 흰색
         if (previousWealth <= 0f)
         {
             return Color.black;
@@ -72,38 +72,34 @@ public class VisualManager : Singleton<VisualManager>
         
         if (change > 0f)
         {
-            // 증가 → 흑자 색상
             return ProfitColor;
         }
         else if (change < 0f)
         {
-            // 감소 → 적자 색상
             return LossColor;
         }
         else
         {
-            // 변화 없음 → 흰색
             return Color.black;
         }
     }
 
-    /// <summary>
-    /// 예산 값에 따른 색상을 반환합니다 (충분: 초록색, 부족: 빨간색, 보통: 흰색)
-    /// </summary>
-    /// <param name="budget">예산 값</param>
-    /// <returns>색상</returns>
     public Color GetBudgetColor(float budget)
     {
         if (budget >= 1000f)
         {
             return ManagementSufficientColor;
         }
-        
         if (budget <= 100f)
         {
             return ManagementInsufficientColor;
         }
-        
         return Color.white;
+    }
+
+    public Sprite GetMainPanelIcon(string panelTypeStr)
+    {
+        _panelIconDict.TryGetValue(panelTypeStr, out Sprite icon);
+        return icon;
     }
 }

@@ -15,7 +15,7 @@ public class BuildingTypeBtn : MonoBehaviour
     {
         _designUiManager = argDesignUiManager;
         _buildingType = buildingType;
-        _text.text = buildingType.ToString();
+        _text.text = buildingType.Localize(LocalizationUtils.TABLE_BUILDING_TYPE);
     }
 
     public void OnClick()

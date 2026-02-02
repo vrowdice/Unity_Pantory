@@ -19,7 +19,7 @@ public class BuildingBtn : MonoBehaviour
     public void Initialize(DesignCanvas argDesignUiManager, BuildingData buildingData, bool isUnlocked)
     {
         _designUiManager = argDesignUiManager;
-        _text.text = buildingData.displayName;
+        _text.text = buildingData.id.Localize(LocalizationUtils.TABLE_BUILDING);
         _image.sprite = buildingData.icon;
         _buildingData = buildingData;
         _isUnlocked = isUnlocked;

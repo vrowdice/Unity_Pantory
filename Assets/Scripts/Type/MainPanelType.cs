@@ -1,9 +1,9 @@
 public enum MainPanelType
 {
-    Storage,  // 생산
-    Market,      // 시장
-    Employment,   // 채용
-    Research,     // 연구
-    News,      // 이벤트
-    Order,        // 주문
+    Storage,
+    Market,
+    Employment,
+    Research,
+    News,
+    Order,
 }
