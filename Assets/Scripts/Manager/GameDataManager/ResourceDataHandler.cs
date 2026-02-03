@@ -6,11 +6,10 @@ using UnityEngine;
 /// 게임 자원을 관리하는 서비스 클래스
 /// ResourceData ScriptableObject를 기반으로 자원을 동적으로 관리합니다.
 /// </summary>
-public class ResourceDataHandler
+public class ResourceDataHandler : IDataHandlerEvents, IDayChangeHandler
 {
-    private DataManager _dataManager;
-
-    private InitialResourceData _initialResourceData = null;
+    private readonly DataManager _dataManager;
+    private readonly InitialResourceData _initialResourceData;
     private Dictionary<string, ResourceEntry> _resourceDic;
 
     public event Action OnResourceChanged;
@@ -18,20 +17,20 @@ public class ResourceDataHandler
     /// <summary>
     /// ResourceService 생성자
     /// </summary>
-    public ResourceDataHandler(DataManager gameDataManager, List<ResourceData> resourceDataList, InitialResourceData initialResourceData)
+    public ResourceDataHandler(DataManager dataManager, List<ResourceData> resourceDataList, InitialResourceData initialResourceData)
     {
-        _dataManager = gameDataManager;
-        _resourceDic = new Dictionary<string, ResourceEntry>();
+        _dataManager = dataManager;
         _initialResourceData = initialResourceData;
+        _resourceDic = new Dictionary<string, ResourceEntry>();
 
         if (resourceDataList != null && resourceDataList.Count > 0)
         {
-            foreach (var data in resourceDataList)
+            foreach (ResourceData data in resourceDataList)
             {
                 if (data == null || string.IsNullOrEmpty(data.id)) continue;
                 if (_resourceDic.ContainsKey(data.id))
                 {
-                    Debug.LogWarning($"[ResourceService] Resource already registered: {data.id}");
+                    Debug.LogWarning($"[ResourceDataHandler] Resource already registered: {data.id}");
                     continue;
                 }
                 _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData != null ? _initialResourceData.priceHistoryCapacity : 60);
@@ -74,7 +73,7 @@ public class ResourceDataHandler
 
         if (resourceEntry != null)
         {
-            resourceEntry.ModifyThreadDelta(count);
+            resourceEntry.state.threadDeltaCount += count;
         }
     }
 
@@ -85,7 +84,7 @@ public class ResourceDataHandler
 
         if (resourceEntry != null)
         {
-            resourceEntry.ModifyMarketDelta(count);
+            resourceEntry.state.marketDeltaCount += count;
         }
     }
 
@@ -117,11 +116,18 @@ public class ResourceDataHandler
         }
     }
 
+    /// <summary>
+    /// 기본 가격에 뉴스 이펙트를 적용하여 currentEventValue를 설정합니다.
+    /// </summary>
     private void ApplyCurrentEventValue()
     {
         foreach (ResourceEntry entry in _resourceDic.Values)
         {
-            entry.state.currentEventValue = entry.data.baseValue;
+            long baseValue = entry.data.baseValue;
+            string instanceId = entry.data.id;
+            List<EffectState> priceEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Resource, EffectStatType.Resource_Price, instanceId);
+            float adjustedValue = EffectUtils.ComputeStatFromEffects(baseValue, priceEffects);
+            entry.state.currentEventValue = (long)Mathf.Max(1, adjustedValue);
         }
     }
 

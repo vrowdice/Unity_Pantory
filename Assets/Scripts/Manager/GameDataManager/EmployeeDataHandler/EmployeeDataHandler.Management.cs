@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// 직원 관리 비율 및 일일 상태 업데이트
@@ -15,17 +14,10 @@ public partial class EmployeeDataHandler
     {
         if (_initialEmployeeData == null) return 1f;
 
-        EmployeeEntry managerEntry = GetEmployeeEntry(EmployeeType.Manager);
-        int managerCount = managerEntry != null && managerEntry.state != null ? managerEntry.state.count : 0;
+        int managerCount = TryGetEntry(EmployeeType.Manager, out EmployeeEntry managerEntry) ? managerEntry.state.count : 0;
         int totalEmployees = 0;
-
         foreach (EmployeeEntry entry in _employees.Values)
-        {
-            if (entry?.state != null)
-            {
-                totalEmployees += entry.state.count;
-            }
-        }
+            totalEmployees += entry.state.count;
 
         int employeesToManage = totalEmployees - managerCount;
         if (employeesToManage <= 0) return 1.0f;
@@ -45,33 +37,20 @@ public partial class EmployeeDataHandler
         requiredManagers = 0;
 
         if (_initialEmployeeData == null)
-        {
             return;
-        }
 
-        EmployeeEntry managerEntry = GetEmployeeEntry(EmployeeType.Manager);
-        currentManagers = managerEntry != null && managerEntry.state != null ? managerEntry.state.count : 0;
-
+        currentManagers = TryGetEntry(EmployeeType.Manager, out EmployeeEntry managerEntry) ? managerEntry.state.count : 0;
         int totalEmployees = 0;
         foreach (EmployeeEntry entry in _employees.Values)
-        {
-            if (entry?.state != null)
-            {
-                totalEmployees += entry.state.count;
-            }
-        }
+            totalEmployees += entry.state.count;
 
-        // 관리 대상 = 전체 직원 - 매니저 본인들
         int employeesToManage = totalEmployees - currentManagers;
-
-        // 관리 대상이 없거나 0 이하면 필요 없음
         if (employeesToManage <= 0)
         {
             requiredManagers = 0;
             return;
         }
 
-        // 필요한 매니저 수 계산 (올림 처리)
         requiredManagers = Mathf.CeilToInt((float)employeesToManage / _initialEmployeeData.managerCoverage);
     }
 
@@ -80,16 +59,12 @@ public partial class EmployeeDataHandler
     /// </summary>
     public void HandleDayChanged()
     {
-        // 1. 행정력 비율 계산 및 관리 부족 비율(deficit) 확인
         float manageRatio = GetManagementRatio();
         float deficit = 1.0f - manageRatio;
-
-        // 2. 매니저 부족 시 만족도 감소 이펙트 적용/제거
         UpdateManagementDeficitEffect(deficit);
 
         foreach (EmployeeEntry entry in _employees.Values)
         {
-            // 직원이 0명이면 만족도와 효율성을 기본값으로 리셋하고 스킵
             if (entry.state.count == 0)
             {
                 entry.state.currentSatisfaction = entry.data.baseSatisfaction;
@@ -97,42 +72,17 @@ public partial class EmployeeDataHandler
                 continue;
             }
 
-            // 3. 만족도 변화 계산 (모든 SatisfactionChangePerDay 이펙트 합산)
-            float totalSatisfactionChange = 0f;
-            List<EffectState> globalEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per);
-            if (globalEffects != null)
-            {
-                foreach (EffectState effect in globalEffects)
-                {
-                    if (effect != null)
-                    {
-                        totalSatisfactionChange += effect.value;
-                    }
-                }
-            }
+            string instanceId = GetInstanceIdForEmployee(entry);
+            List<EffectState> satisfactionEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction, instanceId);
+            float totalSatisfactionChange = EffectUtils.ComputeStatFromEffects(0f, satisfactionEffects);
 
-            List<EffectState> employeeSatisfactionEffects = entry.GetEffectStatEffects(EffectStatType.Employee_Satisfaction_Per);
-            if (employeeSatisfactionEffects != null)
-            {
-                foreach (EffectState effect in employeeSatisfactionEffects)
-                {
-                    if (effect != null)
-                    {
-                        totalSatisfactionChange += effect.value;
-                    }
-                }
-            }
-
-            // 4. 만족도 업데이트 (-100 ~ 100 범위로 클램프)
             entry.state.currentSatisfaction = Mathf.Clamp(
                 entry.state.currentSatisfaction + totalSatisfactionChange,
                 -100f, 100f
             );
 
-            // 5. 효율성 계산 (만족도 영향 및 기타 이펙트 통합)
             UpdateEfficiencyFromSatisfaction(entry);
 
-            // 6. 관리 부족 효율성 패널티 적용 (매니저 제외)
             if (deficit > 0.01f && entry.data.type != EmployeeType.Manager)
             {
                 float effDrop = _initialEmployeeData.maxEfficiencyPenalty * deficit;
@@ -159,18 +109,13 @@ public partial class EmployeeDataHandler
         float currentSatisfaction = entry.state.currentSatisfaction;
         float satisfactionEfficiencyBonus = currentSatisfaction * _initialEmployeeData.satisfactionToEfficiencyRatio;
 
-        entry.ApplyEffect(_initialEmployeeData.satisfactionEfficiencyEffect, satisfactionEfficiencyBonus);
+        EffectData efficiencyEffectData = _dataManager.InitialEffectData.satisfactionEfficiencyEffect;
+        string instanceId = GetInstanceIdForEffect(efficiencyEffectData, entry);
+        _dataManager.Effect.ApplyEffect(efficiencyEffectData, satisfactionEfficiencyBonus, instanceId);
 
-        // 3. 이펙트 시스템을 통한 효율성 계산 (기본 효율성에서 시작하여 이펙트 적용)
-        float currentEfficiency = baseEfficiency + satisfactionEfficiencyBonus;
-
-        // 4. 최종 효율성 클램프 (0f ~ 2f)
-        float finalEfficiency = Mathf.Clamp(
-            currentEfficiency,
-            0f, 2f
-        );
-
-        entry.state.currentEfficiency = finalEfficiency;
+        List<EffectState> efficiencyEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency, instanceId);
+        float finalEfficiency = EffectUtils.ComputeStatFromEffects(baseEfficiency, efficiencyEffects);
+        entry.state.currentEfficiency = Mathf.Clamp(finalEfficiency, 0f, 2f);
     }
 
     /// <summary>
@@ -183,12 +128,12 @@ public partial class EmployeeDataHandler
         float satisfactionPenalty = deficit > 0.01f ? _initialEmployeeData.maxSatisfactionPenalty * deficit : 0f;
         if (satisfactionPenalty <= 0f)
         {
-            _dataManager.Effect.RemoveEffect(_initialEmployeeData.managementDeficitEffect);
+            _dataManager.Effect.RemoveEffect(_dataManager.InitialEffectData.managementDeficitEffect);
             return;
         }
         else
         {
-            _dataManager.Effect.ApplyEffect(_initialEmployeeData.managementDeficitEffect, -satisfactionPenalty);
+            _dataManager.Effect.ApplyEffect(_dataManager.InitialEffectData.managementDeficitEffect, -satisfactionPenalty);
         }
     }
 }

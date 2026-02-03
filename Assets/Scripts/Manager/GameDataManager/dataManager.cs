@@ -13,6 +13,8 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialTimeData _timeSettingsData;
     [SerializeField] private InitialResearchData _initialResearchData;
     [SerializeField] private InitialFinancesData _initialFinancesData;
+    [SerializeField] private InitialNewsData _initialNewsData;
+    [SerializeField] private InitialEffectData _initialEffectData;
 
 
     [Header("Game Data Lists")]
@@ -21,10 +23,12 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private List<EmployeeData> _employeeDataList = new List<EmployeeData>();
     [SerializeField] private List<ResearchData> _researchDataList = new List<ResearchData>();
     [SerializeField] private List<MarketActorData> _marketActorDataList = new List<MarketActorData>();
+    [SerializeField] private List<NewsData> _newsDataList = new List<NewsData>();
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
     public InitialResearchData InitialResearchData => _initialResearchData;
+    public InitialEffectData InitialEffectData => _initialEffectData;
 
     public TimeDataHandler Time { get; private set; }
     public ThreadDataHandler Thread { get; private set; }
@@ -36,6 +40,10 @@ public class DataManager : Singleton<DataManager>
     public BuildingDataHandler Building { get; private set; }
     public EffectDataHandler Effect { get; private set; }
     public ResearchDataHandler Research { get; private set; }
+    public NewsDataHandler News { get; private set; }
+
+    private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
+    private readonly List<IDayChangeHandler> _dayHandlers = new List<IDayChangeHandler>();
 
     void Update()
     {
@@ -71,6 +79,28 @@ public class DataManager : Singleton<DataManager>
         Building = new BuildingDataHandler(this, _buildingDataList);
         Effect = new EffectDataHandler(this);
         Research = new ResearchDataHandler(this, _researchDataList);
+        News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
+
+        _eventHandlers.Clear();
+        _eventHandlers.Add(ThreadPlacement);
+        _eventHandlers.Add(Time);
+        _eventHandlers.Add(Resource);
+        _eventHandlers.Add(Thread);
+        _eventHandlers.Add(Finances);
+        _eventHandlers.Add(Employee);
+        _eventHandlers.Add(Research);
+        _eventHandlers.Add(MarketActor);
+        _eventHandlers.Add(News);
+
+        _dayHandlers.Clear();
+        _dayHandlers.Add(Resource);
+        _dayHandlers.Add(MarketActor);
+        _dayHandlers.Add(Research);
+        _dayHandlers.Add(Employee);
+        _dayHandlers.Add(Finances);
+        _dayHandlers.Add(Effect);
+        _dayHandlers.Add(ThreadPlacement);
+        _dayHandlers.Add(News);
 
         LoadThreadData();
     }
@@ -79,94 +109,30 @@ public class DataManager : Singleton<DataManager>
     [ContextMenu("Auto Load All Data to Lists")]
     private void AutoLoadAllDataToLists()
     {
-        AutoLoadBuildings();
-        AutoLoadResources();
-        AutoLoadEmployees();
-        AutoLoadResearch();
-        AutoLoadMarketActors();
-        
+        AutoLoadToList(_buildingDataList);
+        AutoLoadToList(_resourceDataList);
+        AutoLoadToList(_employeeDataList);
+        AutoLoadToList(_researchDataList);
+        AutoLoadToList(_marketActorDataList);
+        AutoLoadToList(_newsDataList);
+
         UnityEditor.EditorUtility.SetDirty(this);
-        Debug.Log("[GameDataManager] All data auto-loaded to lists.");
+        Debug.Log("[DataManager] All data auto-loaded to lists.");
     }
 
-    private void AutoLoadBuildings()
+    private void AutoLoadToList<T>(List<T> list) where T : UnityEngine.Object
     {
-        _buildingDataList.Clear();
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:BuildingData");
+        list.Clear();
+        string typeName = typeof(T).Name;
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:" + typeName);
         foreach (string guid in guids)
         {
             string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            BuildingData data = UnityEditor.AssetDatabase.LoadAssetAtPath<BuildingData>(assetPath);
-            if (data != null && !_buildingDataList.Contains(data))
-            {
-                _buildingDataList.Add(data);
-            }
+            T data = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(assetPath);
+            if (data != null && !list.Contains(data))
+                list.Add(data);
         }
-        Debug.Log($"[GameDataManager] Loaded {_buildingDataList.Count} BuildingData to list.");
-    }
-
-    private void AutoLoadResources()
-    {
-        _resourceDataList.Clear();
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResourceData");
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            ResourceData data = UnityEditor.AssetDatabase.LoadAssetAtPath<ResourceData>(assetPath);
-            if (data != null && !_resourceDataList.Contains(data))
-            {
-                _resourceDataList.Add(data);
-            }
-        }
-        Debug.Log($"[GameDataManager] Loaded {_resourceDataList.Count} ResourceData to list.");
-    }
-
-    private void AutoLoadEmployees()
-    {
-        _employeeDataList.Clear();
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:EmployeeData");
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            EmployeeData data = UnityEditor.AssetDatabase.LoadAssetAtPath<EmployeeData>(assetPath);
-            if (data != null && !_employeeDataList.Contains(data))
-            {
-                _employeeDataList.Add(data);
-            }
-        }
-        Debug.Log($"[GameDataManager] Loaded {_employeeDataList.Count} EmployeeData to list.");
-    }
-
-    private void AutoLoadResearch()
-    {
-        _researchDataList.Clear();
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ResearchData");
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            ResearchData data = UnityEditor.AssetDatabase.LoadAssetAtPath<ResearchData>(assetPath);
-            if (data != null && !_researchDataList.Contains(data))
-            {
-                _researchDataList.Add(data);
-            }
-        }
-        Debug.Log($"[GameDataManager] Loaded {_researchDataList.Count} ResearchData to list.");
-    }
-
-    private void AutoLoadMarketActors()
-    {
-        _marketActorDataList.Clear();
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:MarketActorData");
-        foreach (string guid in guids)
-        {
-            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-            MarketActorData data = UnityEditor.AssetDatabase.LoadAssetAtPath<MarketActorData>(assetPath);
-            if (data != null && !_marketActorDataList.Contains(data))
-            {
-                _marketActorDataList.Add(data);
-            }
-        }
-        Debug.Log($"[GameDataManager] Loaded {_marketActorDataList.Count} MarketActorData to list.");
+        Debug.Log($"[DataManager] Loaded {list.Count} {typeName} to list.");
     }
 #endif
     /// <summary> Thread 데이터를 로드합니다. SaveLoadManager로 위임합니다. </summary>
@@ -176,7 +142,7 @@ public class DataManager : Singleton<DataManager>
         {
             if (!SaveLoadManager.Instance.Thread.LoadThreadData(Thread))
             {
-                Debug.LogWarning("[GameDataManager] Failed to load Thread data. Resetting.");
+                Debug.LogWarning("[DataManager] Failed to load Thread data. Resetting.");
                 Thread.ResetThreadData();
                 ThreadPlacement?.ClearAll();
             }
@@ -189,14 +155,8 @@ public class DataManager : Singleton<DataManager>
     /// </summary>
     public void ClearAllEventSubscriptions()
     {
-        ThreadPlacement.ClearAllSubscriptions();
-        Time.ClearAllSubscriptions();
-        Resource.ClearAllSubscriptions();
-        Thread.ClearAllSubscriptions();
-        Finances.ClearAllSubscriptions();
-        Employee.ClearAllSubscriptions();
-        Research.ClearAllSubscriptions();
-        MarketActor.ClearAllSubscriptions();
+        foreach (IDataHandlerEvents handler in _eventHandlers)
+            handler.ClearAllSubscriptions();
 
         ThreadPlacement.OnPlacementChanged -= HandleThreadPlacementChanged;
         ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
@@ -213,12 +173,7 @@ public class DataManager : Singleton<DataManager>
 
     private void HandleDayChanged()
     {
-        Resource.HandleDayChanged();
-        MarketActor.HandleDayChanged();
-        Research.HandleDayChanged();
-        Employee.HandleDayChanged();
-        Finances.HandleDayChanged();
-        Effect.HandleDayChanged();
-        ThreadPlacement.HandleDayChanged();
+        foreach (IDayChangeHandler handler in _dayHandlers)
+            handler.HandleDayChanged();
     }
 }

@@ -371,11 +371,8 @@ public class EmployeePanel : BasePanel
 
         List<EffectState> combinedEffects = new List<EffectState>();
 
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency_Flat));
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency_Mult));
-
-        combinedEffects.AddRange(_selectedEmployeeEntry.GetEffectStatEffects(EffectStatType.Employee_Efficiency_Flat));
-        combinedEffects.AddRange(_selectedEmployeeEntry.GetEffectStatEffects(EffectStatType.Employee_Efficiency_Mult));
+        string instanceId = _selectedEmployeeEntry.data.type.ToString();
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency, instanceId));
 
         if (combinedEffects.Count > 0)
         {
@@ -404,8 +401,8 @@ public class EmployeePanel : BasePanel
         GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
-        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction_Per));
-        combinedEffects.AddRange(_selectedEmployeeEntry.GetEffectStatEffects(EffectStatType.Employee_Satisfaction_Per));
+        string instanceId = _selectedEmployeeEntry.data.type.ToString();
+        combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction, instanceId));
 
         foreach (EffectState effectState in combinedEffects)
         {

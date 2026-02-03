@@ -50,5 +50,8 @@ public class InitialResourceData : ScriptableObject
     [Tooltip("가격 히스토리 최대 개수 (그래프 등에 사용)")]
     [Range(10, 120)]
     public int priceHistoryCapacity = 60;
+
+    [Header("Usable Effects")]
+    public EffectData priceEventEffect;
 }
 

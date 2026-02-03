@@ -26,7 +26,7 @@ public class BuildingDataHandler
                 if (data == null || string.IsNullOrEmpty(data.id)) continue;
                 if (_buildings.ContainsKey(data.id))
                 {
-                    Debug.LogWarning($"[BuildingService] Building type already registered: {data.id}");
+                    Debug.LogWarning($"[BuildingDataHandler] Building type already registered: {data.id}");
                     continue;
                 }
                 _buildings[data.id] = data;
@@ -42,19 +42,19 @@ public class BuildingDataHandler
     {
         if (buildingData == null)
         {
-            Debug.LogWarning("[BuildingService] BuildingData is null.");
+            Debug.LogWarning("[BuildingDataHandler] BuildingData is null.");
             return;
         }
 
         if (string.IsNullOrEmpty(buildingData.id))
         {
-            Debug.LogWarning("[BuildingService] BuildingData ID is empty.");
+            Debug.LogWarning("[BuildingDataHandler] BuildingData ID is empty.");
             return;
         }
 
         if (_buildings.ContainsKey(buildingData.id))
         {
-            Debug.LogWarning($"[BuildingService] Building type already registered: {buildingData.id}");
+            Debug.LogWarning($"[BuildingDataHandler] Building type already registered: {buildingData.id}");
             return;
         }
 
@@ -85,7 +85,7 @@ public class BuildingDataHandler
             return data;
         }
         
-        Debug.LogWarning($"[BuildingService] Unregistered building: {buildingId}");
+        Debug.LogWarning($"[BuildingDataHandler] Unregistered building: {buildingId}");
         return null;
     }
 

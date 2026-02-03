@@ -1,7 +1,11 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
+/// <summary>
+/// 자원의 현재 상태 (데이터 저장용).
+/// 이펙트는 EffectDataHandler에서 인스턴스별로 관리합니다.
+/// </summary>
 [Serializable]
 public class ResourceState
 {
@@ -14,14 +18,9 @@ public class ResourceState
     public long currentValue;
     public long currentChangeValue;
 
-    /// <summary>
-    /// 가격 히스토리 최대 개수. InitialResourceData.priceHistoryCapacity에서 설정.
-    /// </summary>
-    public int PriceHistoryCapacity { get; private set; }
-
     public List<float> _priceHistory;
 
-    public Dictionary<EffectStatType, List<EffectState>> activeEffects;
+    public int PriceHistoryCapacity { get; private set; }
 
     public ResourceState(int priceHistoryCapacity = 60)
     {
@@ -37,19 +36,8 @@ public class ResourceState
         threadDeltaCount = 0;
 
         if (_priceHistory == null)
-        {
             _priceHistory = new List<float>(PriceHistoryCapacity);
-        }
         else
-        {
             _priceHistory.Clear();
-        }
-
-        activeEffects = new Dictionary<EffectStatType, List<EffectState>>();
-        foreach (EffectStatType statType in Enum.GetValues(typeof(EffectStatType)))
-        {
-            activeEffects[statType] = new List<EffectState>();
-        }
     }
-
 }

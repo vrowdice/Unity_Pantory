@@ -7,7 +7,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 /// <summary>
 /// 연구 데이터를 관리하고 연구력(RP) 생산, 연구 해금, 효과 적용을 담당하는 핸들러
 /// </summary>
-public class ResearchDataHandler
+public class ResearchDataHandler : IDataHandlerEvents, IDayChangeHandler
 {
     private readonly DataManager _dataManager;
     private Dictionary<string, ResearchEntry> _researchEntries = new();
@@ -42,7 +42,7 @@ public class ResearchDataHandler
 
                 if (_researchEntries.ContainsKey(data.id))
                 {
-                    Debug.LogWarning($"[Research] Duplicate research ID: {data.id}");
+                    Debug.LogWarning($"[ResearchDataHandler] Duplicate research ID: {data.id}");
                     continue;
                 }
 
@@ -97,28 +97,28 @@ public class ResearchDataHandler
     {
         if (!_researchEntries.TryGetValue(researchId, out var entry))
         {
-            Debug.LogWarning($"[Research] Invalid ID: {researchId}");
+            Debug.LogWarning($"[ResearchDataHandler] Invalid ID: {researchId}");
             return false;
         }
 
         // 1. 이미 완료된 연구인지 확인
         if (entry.state.isCompleted)
         {
-            Debug.Log($"[Research] Already completed: {entry.data.displayName}");
+            Debug.Log($"[ResearchDataHandler] Already completed: {entry.data.displayName}");
             return false;
         }
 
         // 2. 선행 연구(Prerequisites) 확인
         if (!CheckPrerequisites(entry.data))
         {
-            Debug.Log($"[Research] Prerequisites not met for: {entry.data.displayName}");
+            Debug.Log($"[ResearchDataHandler] Prerequisites not met for: {entry.data.displayName}");
             return false;
         }
 
         // 3. 비용(RP) 확인
         if (ResearchPoint < entry.data.researchPointCost)
         {
-            Debug.Log($"[Research] Not enough RP. Need: {entry.data.researchPointCost}, Have: {ResearchPoint}");
+            Debug.Log($"[ResearchDataHandler] Not enough RP. Need: {entry.data.researchPointCost}, Have: {ResearchPoint}");
             return false;
         }
 
@@ -127,7 +127,7 @@ public class ResearchDataHandler
         OnResearchPointsChanged?.Invoke();
         entry.state.isCompleted = true;
         ApplyResearchEffects(entry.data);
-        Debug.Log($"[Research] UNLOCKED: {entry.data.displayName}");
+        Debug.Log($"[ResearchDataHandler] UNLOCKED: {entry.data.displayName}");
         OnResearchUnlocked?.Invoke(researchId);
 
         return true;

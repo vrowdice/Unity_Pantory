@@ -6,7 +6,7 @@ using UnityEngine;
 /// Thread(생산 라인)를 관리하는 서비스 클래스.
 /// 데이터 변경 시 자동으로 SaveLoadManager를 통해 저장을 트리거합니다.
 /// </summary>
-public class ThreadDataHandler
+public class ThreadDataHandler : IDataHandlerEvents
 {
     private readonly DataManager _dataManager = null;
 
@@ -57,7 +57,7 @@ public class ThreadDataHandler
     {
         _threads.Clear();
         _categories.Clear();
-        Debug.Log("[ThreadService] All threads and categories reset to empty.");
+        Debug.Log("[ThreadDataHandler] All threads and categories reset to empty.");
 
         OnThreadChanged?.Invoke();
         OnCategoryChanged?.Invoke();
@@ -91,7 +91,7 @@ public class ThreadDataHandler
     public ThreadState GetThread(string threadId)
     {
         if (_threads.TryGetValue(threadId, out var thread)) return thread;
-        Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
+        Debug.LogWarning($"[ThreadDataHandler] Thread not found: {threadId}");
         return null;
     }
 
@@ -126,7 +126,7 @@ public class ThreadDataHandler
     {
         if (!_threads.TryGetValue(threadId, out var thread))
         {
-            Debug.LogWarning($"[ThreadService] Thread not found when aggregating resources: {threadId}");
+            Debug.LogWarning($"[ThreadDataHandler] Thread not found when aggregating resources: {threadId}");
             return null;
         }
 
@@ -168,12 +168,12 @@ public class ThreadDataHandler
     {
         if (threadState == null || string.IsNullOrEmpty(threadState.threadId) || _threads.ContainsKey(threadState.threadId))
         {
-            Debug.LogWarning($"[ThreadService] Cannot add thread. ID invalid or already exists: {threadState?.threadId}");
+            Debug.LogWarning($"[ThreadDataHandler] Cannot add thread. ID invalid or already exists: {threadState?.threadId}");
             return false;
         }
 
         _threads[threadState.threadId] = threadState;
-        Debug.Log($"[ThreadService] Thread added: {threadState.threadName} ({threadState.threadId})");
+        Debug.Log($"[ThreadDataHandler] Thread added: {threadState.threadName} ({threadState.threadId})");
 
         OnThreadChanged?.Invoke();
         SaveThreadData();
@@ -188,7 +188,7 @@ public class ThreadDataHandler
             if (existingThread.threadName != threadName)
             {
                 existingThread.threadName = threadName;
-                Debug.Log($"[ThreadService] Thread updated: {threadName} ({threadId})");
+                Debug.Log($"[ThreadDataHandler] Thread updated: {threadName} ({threadId})");
                 OnThreadChanged?.Invoke();
                 SaveThreadData();
             }
@@ -206,7 +206,7 @@ public class ThreadDataHandler
     {
         if (!_threads.ContainsKey(threadId))
         {
-            Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
+            Debug.LogWarning($"[ThreadDataHandler] Thread not found: {threadId}");
             return false;
         }
 
@@ -220,7 +220,7 @@ public class ThreadDataHandler
 
         // 2. 스레드 삭제
         _threads.Remove(threadId);
-        Debug.Log($"[ThreadService] Thread removed: {thread.threadName} ({threadId})");
+        Debug.Log($"[ThreadDataHandler] Thread removed: {thread.threadName} ({threadId})");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -236,7 +236,7 @@ public class ThreadDataHandler
     public List<BuildingState> GetBuildingStates(string threadId)
     {
         if (_threads.TryGetValue(threadId, out var thread)) return thread.buildingStateList;
-        Debug.LogWarning($"[ThreadService] Thread not found: {threadId}");
+        Debug.LogWarning($"[ThreadDataHandler] Thread not found: {threadId}");
         return null;
     }
 
@@ -251,13 +251,13 @@ public class ThreadDataHandler
     {
         if (!_threads.TryGetValue(threadId, out var thread))
         {
-            Debug.LogWarning($"[ThreadService] Cannot overwrite buildings: Thread not found: {threadId}");
+            Debug.LogWarning($"[ThreadDataHandler] Cannot overwrite buildings: Thread not found: {threadId}");
             return false;
         }
 
         thread.buildingStateList = newBuildingStates ?? new List<BuildingState>();
 
-        Debug.Log($"[ThreadService] Overwrote {thread.buildingStateList.Count} buildings in thread: {threadId}");
+        Debug.Log($"[ThreadDataHandler] Overwrote {thread.buildingStateList.Count} buildings in thread: {threadId}");
 
         OnThreadChanged?.Invoke();
         SaveThreadData();
@@ -272,7 +272,7 @@ public class ThreadDataHandler
         thread.buildingStateList.RemoveAll(b => b.positionX == buildingState.positionX && b.positionY == buildingState.positionY);
         thread.buildingStateList.Add(buildingState);
 
-        Debug.Log($"[ThreadService] Building added/replaced in thread {thread.threadName}: {buildingState.buildingId}");
+        Debug.Log($"[ThreadDataHandler] Building added/replaced in thread {thread.threadName}: {buildingState.buildingId}");
 
         OnThreadChanged?.Invoke();
         return true;
@@ -286,11 +286,11 @@ public class ThreadDataHandler
         int removedCount = thread.buildingStateList.RemoveAll(b => b.positionX == position.x && b.positionY == position.y);
         if (removedCount == 0)
         {
-            Debug.LogWarning($"[ThreadService] Building not found at position {position} in thread {threadId}");
+            Debug.LogWarning($"[ThreadDataHandler] Building not found at position {position} in thread {threadId}");
             return false;
         }
 
-        Debug.Log($"[ThreadService] Building removed from thread {thread.threadName} at {position}");
+        Debug.Log($"[ThreadDataHandler] Building removed from thread {thread.threadName} at {position}");
 
         OnThreadChanged?.Invoke();
         return true;
@@ -311,7 +311,7 @@ public class ThreadDataHandler
     public ThreadCategory GetCategory(string categoryId)
     {
         if (_categories.TryGetValue(categoryId, out var category)) return category;
-        Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
+        Debug.LogWarning($"[ThreadDataHandler] Category not found: {categoryId}");
         return null;
     }
 
@@ -337,7 +337,7 @@ public class ThreadDataHandler
     public List<string> GetThreadIdsInCategory(string categoryId)
     {
         if (_categories.TryGetValue(categoryId, out var category)) return new List<string>(category.threadIds);
-        Debug.LogWarning($"[ThreadService] Category not found: {categoryId}");
+        Debug.LogWarning($"[ThreadDataHandler] Category not found: {categoryId}");
         return new List<string>();
     }
 
@@ -361,12 +361,12 @@ public class ThreadDataHandler
     {
         if (category == null || string.IsNullOrEmpty(category.categoryId) || _categories.ContainsKey(category.categoryId))
         {
-            Debug.LogWarning($"[ThreadService] Invalid category or ID exists: {category?.categoryId}");
+            Debug.LogWarning($"[ThreadDataHandler] Invalid category or ID exists: {category?.categoryId}");
             return false;
         }
 
         _categories[category.categoryId] = category;
-        Debug.Log($"[ThreadService] Category added: {category.categoryName}");
+        Debug.Log($"[ThreadDataHandler] Category added: {category.categoryName}");
 
         OnCategoryChanged?.Invoke();
         SaveThreadData();
@@ -397,7 +397,7 @@ public class ThreadDataHandler
         }
 
         _categories.Remove(categoryId);
-        Debug.Log($"[ThreadService] Category removed: {category.categoryName}");
+        Debug.Log($"[ThreadDataHandler] Category removed: {category.categoryName}");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -411,7 +411,7 @@ public class ThreadDataHandler
         if (!_categories.TryGetValue(categoryId, out var category)) return false;
 
         category.categoryName = newName;
-        Debug.Log($"[ThreadService] Category renamed: {categoryId} -> {newName}");
+        Debug.Log($"[ThreadDataHandler] Category renamed: {categoryId} -> {newName}");
 
         OnCategoryChanged?.Invoke();
         SaveThreadData();
@@ -433,7 +433,7 @@ public class ThreadDataHandler
         if (!category.threadIds.Contains(threadId)) category.threadIds.Add(threadId);
 
         thread.categoryId = categoryId;
-        Debug.Log($"[ThreadService] Thread {thread.threadName} added to category {category.categoryName}");
+        Debug.Log($"[ThreadDataHandler] Thread {thread.threadName} added to category {category.categoryName}");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -448,7 +448,7 @@ public class ThreadDataHandler
 
         category.threadIds.Remove(threadId);
         thread.categoryId = string.Empty;
-        Debug.Log($"[ThreadService] Thread {thread.threadName} removed from category {category.categoryName}");
+        Debug.Log($"[ThreadDataHandler] Thread {thread.threadName} removed from category {category.categoryName}");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -487,7 +487,7 @@ public class ThreadDataHandler
             if (thread == null || string.IsNullOrEmpty(thread.threadId)) continue;
             if (_threads.ContainsKey(thread.threadId))
             {
-                Debug.LogWarning($"[ThreadService] Skipping duplicate thread during load: {thread.threadId}");
+                Debug.LogWarning($"[ThreadDataHandler] Skipping duplicate thread during load: {thread.threadId}");
                 skippedCount++;
                 continue;
             }

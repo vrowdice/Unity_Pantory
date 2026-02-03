@@ -5,10 +5,10 @@ using UnityEngine;
 /// <summary>
 /// 게임 내 재정(돈)을 관리하는 서비스 클래스
 /// </summary>
-public class FinancesDataHandler
+public class FinancesDataHandler : IDataHandlerEvents, IDayChangeHandler
 {
-    private DataManager _dataManager;
-    private InitialFinancesData _initialFinancesData;
+    private readonly DataManager _dataManager;
+    private readonly InitialFinancesData _initialFinancesData;
 
     private long _credit;
     private long _creditDelta;
@@ -20,9 +20,9 @@ public class FinancesDataHandler
     /// <summary>
     /// FinancesService 생성자
     /// </summary>
-    public FinancesDataHandler(DataManager gameDataManager, InitialFinancesData initData)
+    public FinancesDataHandler(DataManager dataManager, InitialFinancesData initData)
     {
-        _dataManager = gameDataManager;
+        _dataManager = dataManager;
         _initialFinancesData = initData;
 
         _credit = _initialFinancesData.initialCredit;

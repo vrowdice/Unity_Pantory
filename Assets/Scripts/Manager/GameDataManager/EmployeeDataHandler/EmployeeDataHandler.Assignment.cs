@@ -22,13 +22,9 @@ public partial class EmployeeDataHandler
             return false;
         }
 
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
+        if (!TryGetEntry(type, out EmployeeEntry entry))
             return false;
-        }
 
-        // 할당 가능한 인원 수 확인 (고용된 인원 - 이미 할당된 인원)
         int availableCount = entry.state.count - entry.state.assignedCount;
         
         if (availableCount >= count)
@@ -59,16 +55,12 @@ public partial class EmployeeDataHandler
             return false;
         }
 
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
+        if (!TryGetEntry(type, out EmployeeEntry entry))
             return false;
-        }
 
         if (entry.state.assignedCount >= count)
         {
             entry.state.assignedCount -= count;
-            // assignedCount는 음수가 될 수 없음
             if (entry.state.assignedCount < 0)
             {
                 entry.state.assignedCount = 0;
@@ -91,12 +83,7 @@ public partial class EmployeeDataHandler
     /// <returns>할당 가능한 인원 수 (고용된 인원 - 이미 할당된 인원)</returns>
     public int GetAvailableEmployeeCount(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
-            return 0;
-        }
-
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return 0;
         int available = entry.state.count - entry.state.assignedCount;
         return Mathf.Max(0, available);
     }
@@ -108,12 +95,7 @@ public partial class EmployeeDataHandler
     /// <returns>할당된 인원 수</returns>
     public int GetAssignedEmployeeCount(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
-            return 0;
-        }
-
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return 0;
         return entry.state.assignedCount;
     }
 
@@ -124,16 +106,13 @@ public partial class EmployeeDataHandler
     /// </summary>
     public void SyncAssignedCountsFromThreads(ThreadPlacementDataHandler threadPlacementHandler)
     {
-        if (threadPlacementHandler == null)
-            return;
+        if (threadPlacementHandler == null) return;
 
-        // 모든 직원의 assignedCount를 0으로 초기화
         foreach (EmployeeEntry entry in _employees.Values)
         {
             entry.state.assignedCount = 0;
         }
 
-        // 실제 배치된 모든 스레드 인스턴스의 직원 할당을 집계
         Dictionary<Vector2Int, ThreadPlacementState> allPlacements = threadPlacementHandler.GetAllPlacedThreads();
         if (allPlacements == null)
         {
@@ -143,30 +122,14 @@ public partial class EmployeeDataHandler
 
         foreach (ThreadPlacementState placement in allPlacements.Values)
         {
-            if (placement == null || placement.RuntimeState == null)
+            if (placement?.RuntimeState == null)
                 continue;
-
             ThreadState threadState = placement.RuntimeState;
 
-            // Worker 할당 집계
-            if (threadState.currentWorkers > 0)
-            {
-                EmployeeEntry workerEntry = GetEmployeeEntry(EmployeeType.Worker);
-                if (workerEntry != null)
-                {
-                    workerEntry.state.assignedCount += threadState.currentWorkers;
-                }
-            }
-
-            // Technician 할당 집계
-            if (threadState.currentTechnicians > 0)
-            {
-                EmployeeEntry technicianEntry = GetEmployeeEntry(EmployeeType.Technician);
-                if (technicianEntry != null)
-                {
-                    technicianEntry.state.assignedCount += threadState.currentTechnicians;
-                }
-            }
+            if (threadState.currentWorkers > 0 && TryGetEntry(EmployeeType.Worker, out EmployeeEntry workerEntry))
+                workerEntry.state.assignedCount += threadState.currentWorkers;
+            if (threadState.currentTechnicians > 0 && TryGetEntry(EmployeeType.Technician, out EmployeeEntry technicianEntry))
+                technicianEntry.state.assignedCount += threadState.currentTechnicians;
         }
 
         OnEmployeeChanged?.Invoke();

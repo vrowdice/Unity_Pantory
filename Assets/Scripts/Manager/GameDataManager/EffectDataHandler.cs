@@ -1,27 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
-/// 이펙트(버프/디버프)를 관리하는 관리자입니다.
-/// 1. 월드 전체 2. 직원 전체 공통 3. 직원 개인별 효과를 각각 관리합니다.
+/// 이펙트(버프/디버프)를 한 곳에서 관리합니다.
+/// 전역 이펙트(targetType별)와 인스턴스별 이펙트(직원/자원 등)를 모두 보관·조회합니다.
 /// </summary>
-public class EffectDataHandler
+public class EffectDataHandler : IDayChangeHandler
 {
     private readonly DataManager _dataManager;
-
-    /// <summary>
-    /// 전역 이펙트
-    /// </summary>
+    
     private readonly Dictionary<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> _effects = new();
+    private readonly Dictionary<string, Dictionary<EffectStatType, List<EffectState>>> _instanceEffects = new();
 
-    public Dictionary<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> Effects => _effects;
-
-    public EffectDataHandler(DataManager gameDataManager) 
+    public EffectDataHandler(DataManager dataManager)
     {
-        _dataManager = gameDataManager;
+        _dataManager = dataManager;
 
         foreach (EffectTargetType target in System.Enum.GetValues(typeof(EffectTargetType)))
         {
@@ -33,15 +27,19 @@ public class EffectDataHandler
         }
     }
 
+    private static string GetInstanceKey(EffectTargetType targetType, string instanceId)
+    {
+        return $"{targetType}:{instanceId}";
+    }
+
     public void HandleDayChanged()
     {
         ReducedEffectDuration(1);
     }
 
     /// <summary>
-    /// 이펙트 지속시간 감소 
+    /// 전역·인스턴스 모든 이펙트의 지속시간을 감소시키고 만료된 항목을 제거합니다.
     /// </summary>
-    /// <param name="date">감소할 일</param>
     public void ReducedEffectDuration(int date)
     {
         foreach (KeyValuePair<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> targetTypePair in _effects)
@@ -52,129 +50,182 @@ public class EffectDataHandler
                 {
                     EffectState effectState = statTypePair.Value[i];
                     if (effectState.ProcessDayPass(date))
-                    {
                         statTypePair.Value.RemoveAt(i);
-                    }
                 }
             }
         }
 
-        foreach (EmployeeEntry employeeEntry in _dataManager.Employee.GetAllEmployees().Values)
+        foreach (Dictionary<EffectStatType, List<EffectState>> statDict in _instanceEffects.Values)
         {
-            employeeEntry.ProcessDayPass(date);
-        }
-    }
-
-    /// <summary>
-    /// 이펙트 적용
-    /// </summary>
-    /// <param name="effectData">데이터</param>
-    public void ApplyEffect(EffectData effectData, float value = float.NaN)
-    {
-        EffectState effectState = new EffectState(effectData);
-
-        if (!float.IsNaN(value))
-        {
-            effectState.value = value;
-        }
-
-        // 딕셔너리 초기화 확인
-        if (!_effects.ContainsKey(effectData.targetType))
-        {
-            _effects[effectData.targetType] = new Dictionary<EffectStatType, List<EffectState>>();
-        }
-        if(!_effects[effectData.targetType].ContainsKey(effectData.statType))
-        {
-            _effects[effectData.targetType][effectData.statType] = new List<EffectState>();
-        }
-
-        // 같은 ID의 이펙트가 있으면 갱신
-        foreach (EffectState item in _effects[effectState.targetType][effectState.statType])
-        {
-            if(item.id == effectState.id)
+            foreach (KeyValuePair<EffectStatType, List<EffectState>> statTypePair in statDict)
             {
-                item.remainingDays = effectState.durationDays;
-                item.value = effectState.value;
-                return;
+                List<EffectState> list = statTypePair.Value;
+                for (int i = list.Count - 1; i >= 0; i--)
+                {
+                    if (list[i].ProcessDayPass(date))
+                        list.RemoveAt(i);
+                }
             }
         }
-
-        // 새 이펙트 추가
-        _effects[effectData.targetType][effectData.statType].Add(effectState);
     }
 
     /// <summary>
-    /// 이펙트 제거
+    /// 이펙트 적용. instanceId가 null이면 전역, 아니면 해당 인스턴스(예: 직원 유형)에 적용합니다.
     /// </summary>
     /// <param name="effectData">이펙트 데이터</param>
-    public void RemoveEffect(EffectData effectData)
+    /// <param name="value">값 (미지정 시 effectData.value 사용)</param>
+    /// <param name="instanceId">인스턴스 식별자 (예: EmployeeType.ToString()). null이면 전역</param>
+    public void ApplyEffect(EffectData effectData, float value = float.NaN, string instanceId = null)
     {
-        // 딕셔너리에 해당 키가 없으면 종료
-        if(!_effects.ContainsKey(effectData.targetType))
+        EffectState effectState = new EffectState(effectData);
+        if (!float.IsNaN(value))
+            effectState.value = value;
+
+        if (string.IsNullOrEmpty(instanceId))
         {
-            return;
-        }
-        if(!_effects[effectData.targetType].ContainsKey(effectData.statType))
-        {
+            ApplyToGlobal(effectData, effectState);
             return;
         }
 
-        List<EffectState> effectList = _effects[effectData.targetType][effectData.statType];
-        for(int i = effectList.Count - 1; i >= 0; i--)
+        string key = GetInstanceKey(effectData.targetType, instanceId);
+        if (!_instanceEffects.ContainsKey(key))
         {
-            if(effectList[i].id == effectData.id)
+            _instanceEffects[key] = new Dictionary<EffectStatType, List<EffectState>>();
+            foreach (EffectStatType stat in System.Enum.GetValues(typeof(EffectStatType)))
+                _instanceEffects[key][stat] = new List<EffectState>();
+        }
+        if (!_instanceEffects[key].ContainsKey(effectData.statType))
+            _instanceEffects[key][effectData.statType] = new List<EffectState>();
+
+        List<EffectState> list = _instanceEffects[key][effectData.statType];
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].id == effectState.id)
             {
-                effectList.RemoveAt(i);
+                list[i].remainingDays = effectState.durationDays;
+                list[i].value = effectState.value;
+                return;
+            }
+        }
+        list.Add(effectState);
+    }
+
+    private void ApplyToGlobal(EffectData effectData, EffectState effectState)
+    {
+        if (!_effects.ContainsKey(effectData.targetType))
+            _effects[effectData.targetType] = new Dictionary<EffectStatType, List<EffectState>>();
+        if (!_effects[effectData.targetType].ContainsKey(effectData.statType))
+            _effects[effectData.targetType][effectData.statType] = new List<EffectState>();
+
+        List<EffectState> list = _effects[effectData.targetType][effectData.statType];
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].id == effectState.id)
+            {
+                list[i].remainingDays = effectState.durationDays;
+                list[i].value = effectState.value;
+                return;
+            }
+        }
+        list.Add(effectState);
+    }
+
+    /// <summary>
+    /// 이펙트 제거. instanceId가 null이면 전역에서, 아니면 해당 인스턴스에서 제거합니다.
+    /// </summary>
+    public void RemoveEffect(EffectData effectData, string instanceId = null)
+    {
+        if (string.IsNullOrEmpty(instanceId))
+        {
+            RemoveFromGlobal(effectData);
+            return;
+        }
+        string key = GetInstanceKey(effectData.targetType, instanceId);
+        if (!_instanceEffects.ContainsKey(key) || !_instanceEffects[key].ContainsKey(effectData.statType))
+            return;
+        List<EffectState> list = _instanceEffects[key][effectData.statType];
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            if (list[i].id == effectData.id)
+            {
+                list.RemoveAt(i);
                 return;
             }
         }
     }
 
-    public EffectState GetEffect(EffectData effectData)
+    private void RemoveFromGlobal(EffectData effectData)
     {
-        // 딕셔너리에 해당 키가 없으면 null 반환
-        if(!_effects.ContainsKey(effectData.targetType))
+        if (!_effects.ContainsKey(effectData.targetType) || !_effects[effectData.targetType].ContainsKey(effectData.statType))
+            return;
+        List<EffectState> list = _effects[effectData.targetType][effectData.statType];
+        for (int i = list.Count - 1; i >= 0; i--)
         {
-            return null;
-        }
-        if(!_effects[effectData.targetType].ContainsKey(effectData.statType))
-        {
-            return null;
-        }
-
-        foreach (EffectState item in _effects[effectData.targetType][effectData.statType])
-        {
-            if (item.id == effectData.id)
+            if (list[i].id == effectData.id)
             {
-                return item;
+                list.RemoveAt(i);
+                return;
             }
         }
+    }
 
+    /// <summary>
+    /// 특정 이펙트 조회. instanceId가 null이면 전역에서만, 아니면 전역+인스턴스에서 먼저 인스턴스를 검사합니다.
+    /// </summary>
+    public EffectState GetEffect(EffectData effectData, string instanceId = null)
+    {
+        if (!string.IsNullOrEmpty(instanceId))
+        {
+            string key = GetInstanceKey(effectData.targetType, instanceId);
+            if (_instanceEffects.TryGetValue(key, out var statDict) && statDict.TryGetValue(effectData.statType, out var list))
+            {
+                foreach (EffectState item in list)
+                {
+                    if (item.id == effectData.id) return item;
+                }
+            }
+        }
+        if (!_effects.ContainsKey(effectData.targetType) || !_effects[effectData.targetType].ContainsKey(effectData.statType))
+            return null;
+        foreach (EffectState item in _effects[effectData.targetType][effectData.statType])
+        {
+            if (item.id == effectData.id) return item;
+        }
         return null;
     }
 
-    public List<EffectState> GetEffectStatEffects(EffectTargetType targetType, EffectStatType statType)
+    /// <summary>
+    /// 해당 스탯 타입의 이펙트 목록. instanceId가 null이면 전역만, 아니면 전역+해당 인스턴스 목록을 합쳐 반환합니다.
+    /// </summary>
+    public List<EffectState> GetEffectStatEffects(EffectTargetType targetType, EffectStatType statType, string instanceId = null)
     {
-        if(!_effects.ContainsKey(targetType))
+        List<EffectState> result = new List<EffectState>();
+        if (_effects.ContainsKey(targetType) && _effects[targetType].ContainsKey(statType))
+            result.AddRange(_effects[targetType][statType]);
+        if (!string.IsNullOrEmpty(instanceId))
         {
-            return new List<EffectState>();
+            string key = GetInstanceKey(targetType, instanceId);
+            if (_instanceEffects.TryGetValue(key, out var statDict) && statDict.TryGetValue(statType, out var list))
+                result.AddRange(list);
         }
-        if(!_effects[targetType].ContainsKey(statType))
-        {
-            return new List<EffectState>();
-        }
-
-        return _effects[targetType][statType];
+        return result;
     }
 
-    public List<EffectState> GetAllEffects(EffectTargetType effectTargetType)
+    /// <summary>
+    /// targetType에 해당하는 전체 이펙트. instanceId가 null이면 전역만, 아니면 전역+해당 인스턴스를 합쳐 반환합니다.
+    /// </summary>
+    public List<EffectState> GetAllEffects(EffectTargetType effectTargetType, string instanceId = null)
     {
-        if (!_effects.ContainsKey(effectTargetType))
+        List<EffectState> result = new List<EffectState>();
+        if (_effects.ContainsKey(effectTargetType))
+            result.AddRange(_effects[effectTargetType].Values.SelectMany(list => list));
+        if (!string.IsNullOrEmpty(instanceId))
         {
-            return new List<EffectState>();
+            string key = GetInstanceKey(effectTargetType, instanceId);
+            if (_instanceEffects.TryGetValue(key, out var statDict))
+                result.AddRange(statDict.Values.SelectMany(list => list));
         }
-
-        return _effects[effectTargetType].Values.SelectMany(list => list).ToList();
+        return result;
     }
 
     /// <summary>

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class EmployeeDataHandler
+public partial class EmployeeDataHandler : IDataHandlerEvents, IDayChangeHandler
 {
     protected Dictionary<EmployeeType, EmployeeEntry> _employees;
     public event Action OnEmployeeChanged;
@@ -37,7 +37,7 @@ public partial class EmployeeDataHandler
         }
         else
         {
-            Debug.LogWarning("[EmployeeService] EmployeeDataList is null or empty. No employees registered.");
+            Debug.LogWarning("[EmployeeDataHandler] EmployeeDataList is null or empty. No employees registered.");
         }
 
         RefreshAllSalaries();
@@ -46,21 +46,24 @@ public partial class EmployeeDataHandler
     /// <summary>
     /// 특정 직원 유형의 EmployeeEntry를 반환합니다.
     /// </summary>
-    /// <param name="employeeId">직원 유형 ID</param>
-    /// <returns>EmployeeEntry 또는 null</returns>
     public EmployeeEntry GetEmployeeEntry(EmployeeType type)
     {
-        if (_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            return entry;
-        }
-
-        Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
-        return null;
+        return _employees.TryGetValue(type, out EmployeeEntry entry) ? entry : null;
     }
 
     /// <summary>
-    /// 모든 직원 정보를 딕셔너리로 반환합니다 (읽기 전용).
+    /// 특정 직원 유형의 Entry를 가져옵니다. 없으면 로그 후 false 반환합니다.
+    /// </summary>
+    protected bool TryGetEntry(EmployeeType type, out EmployeeEntry entry)
+    {
+        if (_employees.TryGetValue(type, out entry))
+            return true;
+        Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
+        return false;
+    }
+
+    /// <summary>
+    /// 모든 직원 정보를 딕셔너리로 반환합니다
     /// </summary>
     /// <returns>직원 딕셔너리의 복사본</returns>
     public Dictionary<EmployeeType, EmployeeEntry> GetAllEmployees()
@@ -91,20 +94,16 @@ public partial class EmployeeDataHandler
     {
         if (count <= 0)
         {
-            Debug.LogWarning($"[EmployeeService] Hire count must be greater than 0. (input: {count})");
+            Debug.LogWarning($"[EmployeeDataHandler] Hire count must be greater than 0. (input: {count})");
             return;
         }
 
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
+        if (!TryGetEntry(type, out EmployeeEntry entry))
             return;
-        }
 
         entry.state.count += count;
         UpdateSalary(entry);
-
-        OnEmployeeChanged.Invoke();
+        OnEmployeeChanged?.Invoke();
     }
 
     /// <summary>
@@ -116,21 +115,16 @@ public partial class EmployeeDataHandler
     {
         if (count < 0)
         {
-            Debug.LogWarning($"[EmployeeService] Employee count cannot be negative. (input: {count})");
+            Debug.LogWarning($"[EmployeeDataHandler] Employee count cannot be negative. (input: {count})");
             return;
         }
 
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
-            return;
-        }
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return;
 
         entry.state.count = count;
         UpdateSalary(entry);
-        Debug.Log($"[EmployeeService] {entry.data.displayName} count = {count}");
-
-        OnEmployeeChanged.Invoke();
+        Debug.Log($"[EmployeeDataHandler] {entry.data.displayName} count = {count}");
+        OnEmployeeChanged?.Invoke();
     }
 
     /// <summary>
@@ -140,13 +134,8 @@ public partial class EmployeeDataHandler
     /// <param name="skill">새로운 숙련도</param>
     public void SetEmployeeSkill(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
-            return;
-        }
-
-        OnEmployeeChanged.Invoke();
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return;
+        OnEmployeeChanged?.Invoke();
     }
 
     /// <summary>
@@ -156,13 +145,8 @@ public partial class EmployeeDataHandler
     /// <param name="fatigue">새로운 피로도</param>
     public void SetEmployeeFatigue(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
-            return;
-        }
-
-        OnEmployeeChanged.Invoke();
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return;
+        OnEmployeeChanged?.Invoke();
     }
 
     /// <summary>
@@ -172,15 +156,9 @@ public partial class EmployeeDataHandler
     /// <param name="satisfaction">새로운 만족도</param>
     public void SetEmployeeSatisfaction(EmployeeType type, float satisfaction)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeService] Unregistered employee type: {type}");
-            return;
-        }
-
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return;
         entry.state.currentSatisfaction = Mathf.Clamp(satisfaction, 0f, 100f);
-
-        OnEmployeeChanged.Invoke();
+        OnEmployeeChanged?.Invoke();
     }
 
     /// <summary>
@@ -190,20 +168,15 @@ public partial class EmployeeDataHandler
     /// <param name="salaryLevel">급여 레벨 (0=매우 적음, 1=적음, 2=보통, 3=많음, 4=매우 많음)</param>
     public void SetEmployeeSalaryLevel(EmployeeType type, int salaryLevel)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
+        if (!TryGetEntry(type, out EmployeeEntry entry))
             return;
-        }
 
         salaryLevel = Mathf.Clamp(salaryLevel, 0, 4);
         int previousSalaryLevel = entry.state.salaryLevel;
         entry.state.salaryLevel = salaryLevel;
         UpdateSalary(entry);
         ApplySalaryLevelSatisfactionEffect(type, salaryLevel, previousSalaryLevel);
-        string levelName = _initialEmployeeData.GetSalaryLevelName(salaryLevel);
-
-        OnEmployeeChanged.Invoke();
+        OnEmployeeChanged?.Invoke();
     }
 
     /// <summary>
@@ -214,11 +187,29 @@ public partial class EmployeeDataHandler
     /// <param name="previousSalaryLevel">이전 급여 레벨</param>
     private void ApplySalaryLevelSatisfactionEffect(EmployeeType type, int newSalaryLevel, int previousSalaryLevel)
     {
-        EmployeeEntry entry = GetEmployeeEntry(type);
-        if (entry == null) return;
-
+        if (!TryGetEntry(type, out EmployeeEntry entry))
+            return;
         float satisfactionChange = _initialEmployeeData.GetSatisfactionChangePerDay(newSalaryLevel);
-        entry.ApplyEffect(_initialEmployeeData.salarySatisfactionEffect, satisfactionChange);
+        string instanceId = GetInstanceIdForEffect(_dataManager.InitialEffectData.salarySatisfactionEffect, entry);
+        _dataManager.Effect.ApplyEffect(_dataManager.InitialEffectData.salarySatisfactionEffect, satisfactionChange, instanceId);
+    }
+
+    /// <summary>
+    /// 이펙트에 대한 적절한 instanceId를 반환합니다. Employee 타겟은 entry의 type을, 그 외는 null(전역)을 반환합니다.
+    /// </summary>
+    protected string GetInstanceIdForEffect(EffectData effect, EmployeeEntry entry = null)
+    {
+        if (effect.targetType == EffectTargetType.Employee && entry != null)
+            return entry.data.type.ToString();
+        return null;
+    }
+
+    /// <summary>
+    /// Employee 타겟 이펙트에 대한 instanceId를 반환합니다. entry가 없으면 null(전역)을 반환합니다.
+    /// </summary>
+    protected string GetInstanceIdForEmployee(EmployeeEntry entry)
+    {
+        return entry != null ? entry.data.type.ToString() : null;
     }
 
     /// <summary>
@@ -228,12 +219,8 @@ public partial class EmployeeDataHandler
     /// <returns>급여 레벨 (0~4), 직원이 없으면 -1</returns>
     public int GetEmployeeSalaryLevel(EmployeeType type)
     {
-        if (!_employees.TryGetValue(type, out EmployeeEntry entry))
-        {
-            Debug.LogWarning($"[EmployeeDataHandler] Unregistered employee type: {type}");
+        if (!TryGetEntry(type, out EmployeeEntry entry))
             return -1;
-        }
-
         return entry.state.salaryLevel;
     }
 

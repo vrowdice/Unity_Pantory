@@ -42,4 +42,18 @@ public class ProbabilityUtils
         int index = Random.Range(0, dictionary.Count);
         return dictionary.ElementAt(index);
     }
+
+    /// <summary>
+    /// Returns a random key from a non-empty dictionary. If the dictionary is null or empty, returns default(TKey).
+    /// </summary>
+    public static TKey GetRandomKey<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
+    {
+        if (dictionary == null || dictionary.Count == 0)
+        {
+            return default;
+        }
+
+        int index = Random.Range(0, dictionary.Count);
+        return dictionary.Keys.ElementAt(index);
+    }
 }

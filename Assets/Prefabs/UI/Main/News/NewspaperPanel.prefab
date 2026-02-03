@@ -272,10 +272,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3083903537811330944}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -110, y: -110}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: 105, y: -110}
+  m_SizeDelta: {x: -230, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2566737059166082421
 CanvasRenderer:
@@ -307,8 +307,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: NEWS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -478,6 +478,7 @@ GameObject:
   - component: {fileID: 6311993766523316655}
   - component: {fileID: 7608023950098735186}
   - component: {fileID: 448755885966630736}
+  - component: {fileID: 3094625175512149799}
   m_Layer: 5
   m_Name: NewspaperPanel
   m_TagString: Untagged
@@ -557,6 +558,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41c6a15023f7d76408abdbc462336c82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3094625175512149799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4445140793435071234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
+  targetImage: {fileID: 7608023950098735186}
+  targetText: {fileID: 0}
+  objectType: 0
+  colorID: Primary
+  fontID: Inter - Thin
+  useCustomColor: 0
+  overrideAlpha: 0
+  alphaOverride: 1
+  enableInteraction: 0
+  interactableObject: {fileID: 0}
+  disabledColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  normalColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  pressedColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  referencesFoldout: 1
+  settingsFoldout: 1
+  interactionFoldout: 1
 --- !u!1 &4929716478365235273
 GameObject:
   m_ObjectHideFlags: 0
@@ -1084,8 +1126,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

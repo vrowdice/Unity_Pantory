@@ -7,17 +7,17 @@ using UnityEngine;
 /// <summary>
 /// 시장 행위자(Market Actor) 데이터를 관리하고, 일 단위로 공급과 수요를 시뮬레이션하여 자원 가격에 반영하는 핸들러입니다.
 /// </summary>
-public partial class MarketActorDataHandler
+public partial class MarketActorDataHandler : IDataHandlerEvents, IDayChangeHandler
 {
-    private DataManager _dataManager;
-    private InitialMarketActorData _initialMarketActorData;
+    private readonly DataManager _dataManager;
+    private readonly InitialMarketActorData _initialMarketActorData;
 
     private List<MarketActorData> _actors = new List<MarketActorData>();
     private Dictionary<string, MarketActorEntry> _actorDic = new();
 
-    public MarketActorDataHandler(DataManager manager, List<MarketActorData> marketActorDataList, InitialMarketActorData initData)
+    public MarketActorDataHandler(DataManager dataManager, List<MarketActorData> marketActorDataList, InitialMarketActorData initData)
     {
-        _dataManager = manager;
+        _dataManager = dataManager;
         _actors = marketActorDataList;
         _initialMarketActorData = initData;
 

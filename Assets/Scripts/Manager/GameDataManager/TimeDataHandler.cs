@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 게임 내 시간을 관리하는 서비스 클래스
 /// </summary>
-public class TimeDataHandler
+public class TimeDataHandler : IDataHandlerEvents
 {
     private readonly DataManager _dataManager;
     private InitialTimeData _initialTimeData;

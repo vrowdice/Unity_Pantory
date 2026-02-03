@@ -109,15 +109,6 @@ public class InitialEmployeeData : ScriptableObject
     [Tooltip("연구자명당 연구 포인트 증가 수치")]
     public int researchPointsPerResearcher = 5;
 
-    [Tooltip("관리력 상태 이펙트 아이디")]
-    public EffectData managementDeficitEffect;
-
-    [Tooltip("급여 만족도 샘플 이펙트")]
-    public EffectData salarySatisfactionEffect;
-
-    [Tooltip("만족도 효율성 이펙트")]
-    public EffectData satisfactionEfficiencyEffect;
-
     /// <summary>
     /// 급여 레벨에 따른 일일 만족도 변화량을 반환합니다.
     /// </summary>
@@ -151,24 +142,6 @@ public class InitialEmployeeData : ScriptableObject
             case 3: return highSalaryMultiplier;          // 많음
             case 4: return veryHighSalaryMultiplier;      // 매우 많음
             default: return normalSalaryMultiplier;       // 기본값: 보통
-        }
-    }
-
-    /// <summary>
-    /// 급여 레벨 이름을 반환합니다.
-    /// </summary>
-    /// <param name="salaryLevel">급여 레벨</param>
-    /// <returns>급여 레벨 이름</returns>
-    public string GetSalaryLevelName(int salaryLevel)
-    {
-        switch (salaryLevel)
-        {
-            case 0: return "Very Low";      // 매우 적음
-            case 1: return "Low";           // 적음
-            case 2: return "Normal";         // 보통
-            case 3: return "High";           // 많음
-            case 4: return "Very High";      // 매우 많음
-            default: return "Normal";
         }
     }
 
