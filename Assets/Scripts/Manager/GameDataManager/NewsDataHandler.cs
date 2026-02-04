@@ -53,7 +53,7 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
 
         float randomValue = UnityEngine.Random.Range(0f, 1f);
 
-        if (randomValue <= _currentNewsChance)
+        if (randomValue <= _currentNewsChance || _daysSinceLastNews >= _initialNewsData.guaranteedNewsDay)
         {
             GenerateNews();
             ResetNewsChance();
@@ -75,6 +75,7 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
         }
         else
         {
+            ResetNewsChance();
             return;
         }
 
@@ -91,8 +92,8 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
 
     private void ResetNewsChance()
     {
-        _daysSinceLastNews = 0;
         _currentNewsChance = _initialNewsData.baseNewsChance;
+        _daysSinceLastNews = 0;
     }
 
     public NewsData GetNewsData(string newsId)
@@ -123,7 +124,17 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
     public void HandleDayChanged()
     {
         _daysSinceLastNews++;
-        TryGenerateNews();
 
+        for(int i = _activeNewsList.Count - 1; i >= 0; i--)
+        {
+            NewsState news = _activeNewsList[i];
+            news.remainingDays--;
+            if (news.remainingDays <= 0)
+            {
+                _activeNewsList.RemoveAt(i);
+            }
+        }
+
+        TryGenerateNews();
     }
 }

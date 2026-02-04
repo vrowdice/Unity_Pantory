@@ -9,12 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca006f621cc08ec44babd927d75d3803, type: 3}
-  m_Name: NewNewsData
+  m_Script: {fileID: 11500000, guid: 6b7cb3d62c16d9445a06144f0660d9a7, type: 3}
+  m_Name: PriceEventEffect_Tank_Up_10
   m_EditorClassIdentifier: 
-  id: Test
-  displayName: New News!
-  description: New News!
-  icon: {fileID: 21300000, guid: 96180cc25fb95674e96587e5f8259c10, type: 3}
-  effects: []
-  durationDays: 5
+  targetType: 3
+  isGlobalEffect: 0
+  id: Effect_Tank_Price_Up_10
+  displayName: Tank Price Surge (+10%)
+  statType: 5
+  type: 1
+  value: 0.1
+  durationDays: 0
+  targetId: tank

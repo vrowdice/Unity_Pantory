@@ -15,15 +15,15 @@ public class NewsPanel : BasePanel
 
     private void OnEnable()
     {
-        DataManager.Instance.News.OnNewsChanged += RefreshNewsList;
+        _dataManager.Time.OnDayChanged += RefreshNewsList;
     }
 
     private void OnDisable()
     {
-        DataManager.Instance.News.OnNewsChanged -= RefreshNewsList;
+        _dataManager.Time.OnDayChanged += RefreshNewsList;
     }
 
-    private void RefreshNewsList(NewsState newsState = null)
+    private void RefreshNewsList()
     {
          GameObjectUtils.ClearChildren(_newspaperContentTransform);
          
@@ -40,6 +40,4 @@ public class NewsPanel : BasePanel
              }
          }
     }
-
-
 }

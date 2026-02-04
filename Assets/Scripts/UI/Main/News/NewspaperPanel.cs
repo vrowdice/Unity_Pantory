@@ -26,7 +26,7 @@ public class NewspaperPanel : MonoBehaviour
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
         foreach (EffectData effectState in newsData.effects)
         {
-            string effectDescription = effectState.displayName ?? effectState.id;
+            string effectDescription = effectState.displayName;
             string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
             GameManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, effectDescription, changeValue, effectState.value);
         }
