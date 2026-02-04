@@ -19,4 +19,7 @@ public class InitialNewsData : ScriptableObject
     public float maxResourcePricePer = 0.2f;
     [Tooltip("자원 가격 이펙트의 최소 증가율 (PercentAdd 값, 예: -0.2 = -20%)")]
     public float minResourcePricePer = -0.2f;
+
+    public int maxDurationDays = 30;
+    public int minDurationDays = 5;
 }

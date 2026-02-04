@@ -9,10 +9,17 @@ public class RunnerBase : MonoBehaviour
     public Transform CanvasTrans { get; private set; }
     public GameObject ProductionInfoImage { get; private set; }
 
+    CanvasBase _canvasBase;
+
     public virtual void Init()
     {
         GameManager = GameManager.Instance;
         DataManager = DataManager.Instance;
         MainCamera = Camera.main;
+
+        if(_canvasBase == null)
+        {
+            _canvasBase = FindAnyObjectByType<CanvasBase>();
+        }
     }
 }

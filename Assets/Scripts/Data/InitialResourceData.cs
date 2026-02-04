@@ -51,7 +51,8 @@ public class InitialResourceData : ScriptableObject
     [Range(10, 120)]
     public int priceHistoryCapacity = 60;
 
-    [Header("Usable Effects")]
-    public EffectData priceEventEffect;
+    [Header("Anti-Exploit Settings")]
+    [Range(0f, 0.5f)]
+    public float transactionFee = 0.05f;
 }
 

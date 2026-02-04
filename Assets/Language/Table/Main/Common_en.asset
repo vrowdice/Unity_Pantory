@@ -170,6 +170,42 @@ MonoBehaviour:
     m_Localized: Research
     m_Metadata:
       m_Items: []
+  - m_Id: 3623468774342656
+    m_Localized: "Name\t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624501495873536
+    m_Localized: Inventory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624718412693504
+    m_Localized: Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624781545357312
+    m_Localized: Buy Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3626057641377792
+    m_Localized: Sell Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629248013549568
+    m_Localized: Apply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629356734103552
+    m_Localized: Exit Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629698750234624
+    m_Localized: Background Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629811170164736
+    m_Localized: Effect Sound
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -11,4 +11,6 @@ public class EffectData : ScriptableObject
     public ModifierType type;
     public float value;
     public float durationDays;
+
+    public string targetId;
 }

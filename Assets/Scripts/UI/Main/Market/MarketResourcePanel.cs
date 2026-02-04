@@ -21,6 +21,8 @@ public class MarketResourcePanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _resourceNameText;
     [SerializeField] private TextMeshProUGUI _resourceStorageText;
     [SerializeField] private TextMeshProUGUI _resourcePriceText;
+    [SerializeField] private TextMeshProUGUI _resourceBuyPriceText;
+    [SerializeField] private TextMeshProUGUI _resourceSellPriceText;
 
     private ResourceEntry _selectedResourceEntry;
     private string _selectedResourceId = string.Empty;
@@ -39,6 +41,7 @@ public class MarketResourcePanel : MonoBehaviour
         if (_selectedResourceEntry == null)
         {
             _selectedResourceEntry = _dataManager.Resource.GetResourceEntry("iron_ore");
+            ChangeResource(_selectedResourceEntry);
         }
 
         RefreshUI();
@@ -90,9 +93,6 @@ public class MarketResourcePanel : MonoBehaviour
         RefreshUI();
     }
 
-    /// <summary>
-    /// 그래프와 텍스트 정보를 포함한 모든 UI 요소를 최신화합니다.
-    /// </summary>
     private void RefreshUI()
     {
         if (_selectedResourceEntry == null) return;
@@ -108,13 +108,19 @@ public class MarketResourcePanel : MonoBehaviour
         if (state.currentChangeValue != 0f)
         {
             string deltaSymbol = state.currentChangeValue > 0 ? "+" : "";
-            priceText += $" ({deltaSymbol}{state.currentChangeValue:F2})";
+            priceText += $" ({deltaSymbol}{state.currentChangeValue:N0})";
         }
         _resourcePriceText.text = priceText;
         _resourcePriceText.color = VisualManager.Instance.GetDeltaColor(state.currentChangeValue);
 
-        RefreshLineChart(_selectedResourceEntry.state._priceHistory);
-        _resouceTradeInputField.text = _selectedResourceEntry.state.marketDeltaCount.ToString();
+        long purchasePrice = _dataManager.Resource.GetPurchasePrice(_selectedResourceId);
+        long salePrice = _dataManager.Resource.GetSalePrice(_selectedResourceId);
+
+        _resourceBuyPriceText.text = $"{purchasePrice:N0}";
+        _resourceSellPriceText.text = $"{salePrice:N0}";
+
+        RefreshLineChart(state._priceHistory);
+        _resouceTradeInputField.text = state.marketDeltaCount.ToString();
     }
 
     /// <summary>

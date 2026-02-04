@@ -367,7 +367,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEfficiencyEffectStatus()
     {
-        GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
+        PoolingManager.Instance.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
 
@@ -380,15 +380,9 @@ public class EmployeePanel : BasePanel
             {
                 if (effectState == null) continue;
 
-                GameObject panelObj = Instantiate(_gameManager.EffectTextPairPanelPrefab, _efficiencyStatusScrollViewContentTransform);
-                TextPairPanel panel = panelObj.GetComponent<TextPairPanel>();
-
-                if (panel != null)
-                {
-                    string effectDescription = effectState.displayName ?? effectState.id;
-                    string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                    panel.Init(effectDescription, changeValue, effectState.value);
-                }
+                string effectDescription = effectState.displayName;
+                string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
+                _gameManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectDescription, changeValue, effectState.value);
             }
         }
     }
@@ -398,7 +392,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateSatisfactionEffectStatus()
     {
-        GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
+        PoolingManager.Instance.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
         string instanceId = _selectedEmployeeEntry.data.type.ToString();
@@ -408,15 +402,9 @@ public class EmployeePanel : BasePanel
         {
             if (effectState == null) continue;
 
-            GameObject panelObj = Instantiate(_gameManager.EffectTextPairPanelPrefab, _satisfactionStatusScrollViewContentTransform);
-            TextPairPanel panel = panelObj.GetComponent<TextPairPanel>();
-
-            if (panel != null)
-            {
-                string effectDescription = effectState.displayName ?? effectState.id;
-                string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                panel.Init(effectDescription, changeValue, effectState.value);
-            }
+            string effectDescription = effectState.displayName ?? effectState.id;
+            string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
+            _gameManager.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectDescription, changeValue, effectState.value);
         }
     }
 
@@ -427,12 +415,12 @@ public class EmployeePanel : BasePanel
     {
         if (_efficiencyStatusScrollViewContentTransform != null)
         {
-            GameObjectUtils.ClearChildren(_efficiencyStatusScrollViewContentTransform);
+            PoolingManager.Instance.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
         }
 
         if (_satisfactionStatusScrollViewContentTransform != null)
         {
-            GameObjectUtils.ClearChildren(_satisfactionStatusScrollViewContentTransform);
+            PoolingManager.Instance.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
         }
     }
 

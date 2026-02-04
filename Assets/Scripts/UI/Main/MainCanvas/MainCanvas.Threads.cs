@@ -4,9 +4,6 @@ using UnityEngine.UI;
 
 public partial class MainCanvas
 {
-    [Header("Managers")]
-    [SerializeField] private MainRunner _threadTileManager;
-
     [Header("Thread")]
     [SerializeField] private Image _cancelPlacementBtnImage;
     [SerializeField] private Image _removalModeBtnImage;
@@ -16,7 +13,6 @@ public partial class MainCanvas
     [SerializeField] private GameObject _threadPlusBtnPrefab;
     [SerializeField] private Transform _threadScrollViewContent;
 
-    // Threads
     private readonly List<ThreadCategoryBtn> _threadCategoryBtns = new List<ThreadCategoryBtn>();
     private readonly List<ThreadBtn> _threadBtns = new List<ThreadBtn>();
     private string _selectedThreadCategoryId = string.Empty;
@@ -128,10 +124,10 @@ public partial class MainCanvas
 
     public void RegisterThreadTileManager(MainRunner threadTileManager)
     {
-        _threadTileManager = threadTileManager;
+        _mainRunner = threadTileManager;
         UpdateThreadModeButtons(
-            _threadTileManager != null && _threadTileManager.IsPlacementMode,
-            _threadTileManager != null && _threadTileManager.IsRemovalMode);
+            _mainRunner != null && _mainRunner.IsPlacementMode,
+            _mainRunner != null && _mainRunner.IsRemovalMode);
     }
 
     public void StartThreadPlacement(ThreadState threadState)
@@ -141,28 +137,28 @@ public partial class MainCanvas
             return;
         }
 
-        if (_threadTileManager == null)
+        if (_mainRunner == null)
         {
             Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot start thread placement.");
             return;
         }
 
-        if (_threadTileManager.IsRemovalMode)
+        if (_mainRunner.IsRemovalMode)
         {
-            _threadTileManager.CancelRemovalMode();
+            _mainRunner.CancelRemovalMode();
             UpdateThreadModeButtons(false, false);
         }
 
-        if (_threadTileManager.IsPlacementMode && _threadTileManager.CurrentPlacementThread == threadState)
+        if (_mainRunner.IsPlacementMode && _mainRunner.CurrentPlacementThread == threadState)
         {
-            _threadTileManager.CancelPlacementMode();
+            _mainRunner.CancelPlacementMode();
             UpdateThreadModeButtons(false, false);
             UpdateThreadButtonStates();
             _quickMovePanelToggleBtn.SetOpened();
             return;
         }
 
-        _threadTileManager.StartPlacementMode(threadState);
+        _mainRunner.StartPlacementMode(threadState);
         UpdateThreadModeButtons(true, false);
         UpdateThreadButtonStates();
         _quickMovePanelToggleBtn.SetClosed();
@@ -170,29 +166,29 @@ public partial class MainCanvas
 
     public void CancelThreadPlacement()
     {
-        if (_threadTileManager == null)
+        if (_mainRunner == null)
         {
             return;
         }
 
-        _threadTileManager.CancelPlacementMode();
-        UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
+        _mainRunner.CancelPlacementMode();
+        UpdateThreadModeButtons(false, _mainRunner.IsRemovalMode);
         UpdateThreadButtonStates();
         _quickMovePanelToggleBtn.SetOpened();
     }
 
     public void ToggleThreadRemovalMode()
     {
-        if (_threadTileManager == null)
+        if (_mainRunner == null)
         {
             Debug.LogWarning("[MainUiManager] ThreadTileManager is not assigned. Cannot toggle removal mode.");
             return;
         }
 
-        _threadTileManager.ToggleRemovalMode();
-        UpdateThreadModeButtons(false, _threadTileManager.IsRemovalMode);
+        _mainRunner.ToggleRemovalMode();
+        UpdateThreadModeButtons(false, _mainRunner.IsRemovalMode);
         UpdateThreadButtonStates();
-        if (_threadTileManager.IsRemovalMode)
+        if (_mainRunner.IsRemovalMode)
         {
             _quickMovePanelToggleBtn.SetClosed();
         }
@@ -214,9 +210,9 @@ public partial class MainCanvas
     private void UpdateThreadButtonStates()
     {
         ThreadState currentPlacementThread = null;
-        if (_threadTileManager != null && _threadTileManager.IsPlacementMode)
+        if (_mainRunner != null && _mainRunner.IsPlacementMode)
         {
-            currentPlacementThread = _threadTileManager.CurrentPlacementThread;
+            currentPlacementThread = _mainRunner.CurrentPlacementThread;
         }
 
         foreach (ThreadBtn btn in _threadBtns)

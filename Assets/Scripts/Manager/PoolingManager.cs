@@ -22,23 +22,13 @@ public class PoolingManager : Singleton<PoolingManager>
     public void Init(GameManager gameManager)
     {
         ClearAllPools();
-        
-        // Pool Container가 없으면 생성
+
         if (poolContainer == null)
         {
             GameObject containerObj = new GameObject("PoolContainer");
             containerObj.transform.SetParent(transform);
             poolContainer = containerObj.transform;
         }
-    }
-
-    /// <summary>
-    /// Canvas Transform을 설정합니다.
-    /// </summary>
-    /// <param name="canvasTransform">설정할 Canvas Transform</param>
-    public void SetCanvasTransform(Transform canvasTransform)
-    {
-        _canvasTransform = canvasTransform;
     }
 
     /// <summary>
@@ -59,7 +49,20 @@ public class PoolingManager : Singleton<PoolingManager>
         for (int i = 0; i < _count; i++)
         {
             GameObject obj = InstantiatePoolObject(_prefab, poolContainer);
+
+            ReturnPoolOnDisable returnComp = obj.GetComponent<ReturnPoolOnDisable>();
+            if (returnComp != null)
+            {
+                returnComp.isManuallyReturning = true;
+            }
+
             obj.SetActive(false);
+
+            if (returnComp != null)
+            {
+                returnComp.isManuallyReturning = false;
+            }
+
             poolDictionary[prefabName].Enqueue(obj);
         }
     }
@@ -82,7 +85,7 @@ public class PoolingManager : Singleton<PoolingManager>
             ? Instantiate(_prefab, _parent)
             : Instantiate(_prefab, poolContainer);
 
-        if (obj.GetComponent<ReturnPoolOnDisable>() == null)
+        if (obj.GetComponent<ReturnPoolOnDisable>() == null && !(_prefab.transform is RectTransform))
         {
             obj.AddComponent<ReturnPoolOnDisable>();
         }
@@ -111,6 +114,7 @@ public class PoolingManager : Singleton<PoolingManager>
         }
 
         GameObject obj = pool.Dequeue();
+        obj.transform.localScale = Vector3.one;
         obj.SetActive(true);
         return obj;
     }
@@ -130,6 +134,7 @@ public class PoolingManager : Singleton<PoolingManager>
         obj.transform.position = _position;
         obj.transform.eulerAngles = new Vector3(0, 0, _zRotation);
         obj.transform.SetParent((_parent != null) ? _parent : poolContainer, true);
+        obj.transform.localScale = Vector3.one;
 
         return obj;
     }
@@ -139,6 +144,7 @@ public class PoolingManager : Singleton<PoolingManager>
         GameObject obj = GetPooledObject(_prefab);
         obj.transform.SetParent(_canvasTransform, true);
         obj.transform.GetComponent<RectTransform>().anchoredPosition = _position;
+        obj.transform.localScale = Vector3.one;
         return obj;
     }
 
@@ -156,8 +162,29 @@ public class PoolingManager : Singleton<PoolingManager>
             return;
         }
 
+        ReturnPoolOnDisable returnComp = _obj.GetComponent<ReturnPoolOnDisable>();
+        if (returnComp != null)
+        {
+            returnComp.isManuallyReturning = true;
+        }
+
         _obj.SetActive(false);
+
+        if (_obj.transform is RectTransform)
+        {
+            _obj.transform.SetParent(_canvasTransform);
+        }
+        else
+        {
+            _obj.transform.SetParent(poolContainer);
+        }
+
         poolDictionary[prefabName].Enqueue(_obj);
+
+        if (returnComp != null)
+        {
+            returnComp.isManuallyReturning = false;
+        }
     }
 
     /// <summary>
@@ -191,5 +218,18 @@ public class PoolingManager : Singleton<PoolingManager>
             }
         }
         poolDictionary.Clear();
+    }
+    
+    /// <summary>
+    /// 부모 Transform 하위의 모든 자식 오브젝트를 풀로 반환합니다.
+    /// 풀에 없는 오브젝트는 파괴됩니다.
+    /// </summary>
+    public void ClearChildrenToPool(Transform parent)
+    {
+        while (parent.childCount > 0)
+        {
+            GameObject obj = parent.GetChild(0).gameObject;
+            ReturnToPool(obj);
+        }
     }
 }

@@ -16,8 +16,7 @@ public class TextPairPanel : MonoBehaviour
     {
         _mainText.text = mainText;
         _secondText.text = secondText;
-        
-        // VisualManager를 사용하여 색상 설정 (숫자 값 기준)
+
         if (VisualManager.Instance != null)
         {
             _secondText.color = VisualManager.Instance.GetDeltaColor(numericValue);
@@ -28,8 +27,7 @@ public class TextPairPanel : MonoBehaviour
     {
         _mainText.text = mainText;
         _secondText.text = secondTextValue.ToString();
-        
-        // VisualManager를 사용하여 색상 설정
+
         if (VisualManager.Instance != null)
         {
             _secondText.color = VisualManager.Instance.GetDeltaColor(secondTextValue);
@@ -40,8 +38,7 @@ public class TextPairPanel : MonoBehaviour
     {
         _mainText.text = mainText;
         _secondText.text = secondTextValue.ToString("F1");
-        
-        // VisualManager를 사용하여 색상 설정
+
         if (VisualManager.Instance != null)
         {
             _secondText.color = VisualManager.Instance.GetDeltaColor(secondTextValue);

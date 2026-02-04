@@ -55,15 +55,27 @@ public class ResourceDataHandler : IDataHandlerEvents, IDayChangeHandler
 
     public long CalculateResourceDeltaChangeCredit()
     {
-        long credit = 0;
+        long totalCreditChange = 0;
 
         foreach (ResourceEntry entry in _resourceDic.Values)
         {
-            credit += entry.state.threadDeltaCount * entry.state.currentValue;
-            credit += entry.state.marketDeltaCount * entry.state.currentValue;
+            long basePrice = entry.state.currentValue;
+            int marketDelta = entry.state.marketDeltaCount;
+            int threadDelta = entry.state.threadDeltaCount;
+
+            totalCreditChange += (long)threadDelta * basePrice;
+
+            if (marketDelta > 0)
+            {
+                totalCreditChange += (long)marketDelta * GetSalePrice(entry.data.id);
+            }
+            else if (marketDelta < 0)
+            {
+                totalCreditChange += (long)marketDelta * GetPurchasePrice(entry.data.id);
+            }
         }
 
-        return credit;
+        return totalCreditChange;
     }
 
     public void ModifyThreadDelta(string resourceId, int count)
@@ -166,6 +178,30 @@ public class ResourceDataHandler : IDataHandlerEvents, IDayChangeHandler
 
             entry.RecordPrice(resourceState.currentValue);
         }
+    }
+
+    /// <summary>
+    /// 플레이어가 자원을 살 때의 최종 가격을 반환합니다. (기준가 + 수수료)
+    /// </summary>
+    public long GetPurchasePrice(string resourceId)
+    {
+        var entry = GetResourceEntry(resourceId);
+        if (entry == null) return 0;
+
+        float feeMultiplier = 1f + _initialResourceData.transactionFee;
+        return (long)Math.Ceiling(entry.state.currentValue * feeMultiplier);
+    }
+
+    /// <summary>
+    /// 플레이어가 자원을 팔 때의 최종 가격을 반환합니다. (기준가 - 수수료)
+    /// </summary>
+    public long GetSalePrice(string resourceId)
+    {
+        var entry = GetResourceEntry(resourceId);
+        if (entry == null) return 0;
+
+        float feeMultiplier = 1f - _initialResourceData.transactionFee;
+        return (long)Math.Floor(entry.state.currentValue * feeMultiplier);
     }
 
     /// <summary>

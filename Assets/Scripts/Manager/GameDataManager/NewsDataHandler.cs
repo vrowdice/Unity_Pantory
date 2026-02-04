@@ -18,7 +18,7 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
     private int _daysSinceLastNews = 0;
     private float _currentNewsChance = 0.0f;
 
-    public event Action OnNewsChanged;
+    public event Action<NewsState> OnNewsChanged;
 
     public NewsDataHandler(DataManager dataManager, List<NewsData> newsDataList, InitialNewsData initialNewsData)
     {
@@ -38,21 +38,6 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
         }
 
         ResetNewsChance();
-    }
-
-    /// <summary>
-    /// 모든 이벤트 구독을 초기화합니다.
-    /// </summary>
-    public void ClearAllSubscriptions()
-    {
-        OnNewsChanged = null;
-    }
-
-    public void HandleDayChanged()
-    {
-        _daysSinceLastNews++;
-        TryGenerateNews();
-
     }
 
     private void TryGenerateNews()
@@ -88,18 +73,20 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
         {
             selectedData = availableNews[UnityEngine.Random.Range(0, availableNews.Count)];
         }
+        else
+        {
+            return;
+        }
 
-        NewsState newState = new NewsState(selectedData);
+            NewsState newState = new NewsState(selectedData);
         _activeNewsList.Add(newState);
 
         foreach (EffectData effect in selectedData.effects)
         {
-            string instanceId = GetInstanceIdForEffect(effect);
-            float effectValue = GetRandomEffectValue(effect);
-            _dataManager.Effect.ApplyEffect(effect, effectValue, instanceId);
+            _dataManager.Effect.ApplyEffect(effect, effect.value, effect.targetId);
         }
 
-        OnNewsChanged?.Invoke();
+        OnNewsChanged?.Invoke(newState);
     }
 
     private void ResetNewsChance()
@@ -108,30 +95,35 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
         _currentNewsChance = _initialNewsData.baseNewsChance;
     }
 
-    private string GetInstanceIdForEffect(EffectData effect)
+    public NewsData GetNewsData(string newsId)
     {
-        if (effect.targetType == EffectTargetType.Resource)
+        if (_newsDataDict.TryGetValue(newsId, out var data))
         {
-            Dictionary<string, ResourceEntry> allResources = _dataManager.Resource.GetAllResources();
-            return ProbabilityUtils.GetRandomKey(allResources);
+            return data;
         }
 
         return null;
     }
 
-    /// <summary>
-    /// 이펙트 타입에 따른 랜덤 값을 생성합니다.
-    /// Resource_Price는 PercentAdd만 사용합니다 (Flat 없음).
-    /// </summary>
-    private float GetRandomEffectValue(EffectData effect)
+    public Dictionary<string, NewsData> GetAllNewsData()
     {
-        switch (effect.statType)
-        {
-            case EffectStatType.Resource_Price:
-                // PercentAdd 값 반환 (예: 0.2 = +20%, -0.2 = -20%)
-                return UnityEngine.Random.Range(_initialNewsData.minResourcePricePer, _initialNewsData.maxResourcePricePer);
-            default:
-                return 0;
-        }
+        return new Dictionary<string, NewsData>(_newsDataDict);
+    }
+
+    public List<NewsState> GetActiveNewsList()
+    {
+        return new List<NewsState>(_activeNewsList);
+    }
+
+    public void ClearAllSubscriptions()
+    {
+        OnNewsChanged = null;
+    }
+
+    public void HandleDayChanged()
+    {
+        _daysSinceLastNews++;
+        TryGenerateNews();
+
     }
 }

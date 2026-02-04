@@ -70,7 +70,6 @@ public class GameManager : Singleton<GameManager>
 
     private SceneLoadManager _sceneLoadManager;
 
-    public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;
     public GameObject EffectTextPairPanelPrefab => _effectTextPairPanelPrefab;
 
     protected override void Awake()
@@ -153,17 +152,6 @@ public class GameManager : Singleton<GameManager>
         _currentRunnerBase = runnerBase;
         _currentRunnerBase.Init();
 
-        CanvasBase canvasBase = FindAnyObjectByType<CanvasBase>();
-        _currentCanvasBase = canvasBase;
-        _currentCanvasBase.Init();
-
-        // PoolingManager에 Canvas Transform 설정
-        if (_poolingManager != null && _currentCanvasBase != null)
-        {
-            _poolingManager.SetCanvasTransform(_currentCanvasBase.CanvasTrans);
-        }
-
-        // ManagerCanvas의 카메라 업데이트
         if (_managerCanvasTransform != null)
         {
             Canvas managerCanvas = _managerCanvasTransform.GetComponent<Canvas>();
@@ -440,5 +428,27 @@ public class GameManager : Singleton<GameManager>
             btn.Init(label, onClick);
         }
         return btn;
+    }
+    
+    /// <summary>
+    /// Effect TextPairPanel을 생성하고 초기화합니다. (PoolingManager 사용)
+    /// </summary>
+    public TextPairPanel CreateEffectTextPairPanel(Transform parent, string mainText, string secondText, float numericValue)
+    {
+        if (_effectTextPairPanelPrefab == null || parent == null)
+        {
+            Debug.LogWarning("[GameManager] EffectTextPairPanelPrefab or parent is null.");
+            return null;
+        }
+
+        GameObject panelObj = _poolingManager.GetPooledObject(_effectTextPairPanelPrefab);
+        panelObj.transform.SetParent(parent, false);
+        
+        TextPairPanel panel = panelObj.GetComponent<TextPairPanel>();
+        if (panel != null)
+        {
+            panel.Init(mainText, secondText, numericValue);
+        }
+        return panel;
     }
 }

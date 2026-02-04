@@ -167,6 +167,42 @@ MonoBehaviour:
     m_Key: Research
     m_Metadata:
       m_Items: []
+  - m_Id: 3623468774342656
+    m_Key: "Name\t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624501495873536
+    m_Key: Inventory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624718412693504
+    m_Key: Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624781545357312
+    m_Key: Buy Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3626057641377792
+    m_Key: Sell Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629248013549568
+    m_Key: Apply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629356734103552
+    m_Key: Exit Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629698750234624
+    m_Key: Background Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629811170164736
+    m_Key: Effect Sound
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

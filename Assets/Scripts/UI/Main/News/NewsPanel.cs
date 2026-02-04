@@ -1,9 +1,45 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NewsPanel : BasePanel
 {
+    [SerializeField] Transform _newspaperContentTransform;
+    [SerializeField] GameObject _newspaperPanelPrefab;
+
     public override void Init(MainCanvas argUIManager)
     {
         base.Init(argUIManager);
+
+        RefreshNewsList();
     }
+
+    private void OnEnable()
+    {
+        DataManager.Instance.News.OnNewsChanged += RefreshNewsList;
+    }
+
+    private void OnDisable()
+    {
+        DataManager.Instance.News.OnNewsChanged -= RefreshNewsList;
+    }
+
+    private void RefreshNewsList(NewsState newsState = null)
+    {
+         GameObjectUtils.ClearChildren(_newspaperContentTransform);
+         
+         List<NewsState> activeNewsList = _dataManager.News.GetActiveNewsList();
+         foreach (NewsState item in activeNewsList)
+         {
+             if (item == null) continue;
+ 
+             GameObject newsObj = Instantiate(_newspaperPanelPrefab, _newspaperContentTransform);
+             NewspaperPanel newsPanel = newsObj.GetComponent<NewspaperPanel>();
+             if (newsPanel != null)
+             {
+                 newsPanel.Init(item, this);
+             }
+         }
+    }
+
+
 }

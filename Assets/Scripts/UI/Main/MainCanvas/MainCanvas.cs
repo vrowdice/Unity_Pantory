@@ -16,19 +16,23 @@ public partial class MainCanvas : CanvasBase
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
     [Header("Info Panel")]
-    [SerializeField] private ThreadInfoPopup _threadInfoPanel;
-    [SerializeField] private ResearchInfoPopup _researchInfoPanel;
+    [SerializeField] private ThreadInfoPopup _threadInfoPopup;
+    [SerializeField] private ResearchInfoPopup _researchInfoPopup;
+    [SerializeField] private NewsPopup _newsPopup;
 
-    public MainRunner ThreadTileManager => _threadTileManager;
+    private MainRunner _mainRunner;
 
     public void Init(MainRunner mainRunner)
     {
         base.Init();
 
+        _mainRunner = mainRunner;
+
         DataManager.Resource.OnResourceChanged -= UpdateAllMainText;
         DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
         DataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
+        DataManager.News.OnNewsChanged -= ShowNewsPopup;
 
         DataManager.Time.OnDayChanged -= OnDayChanged;
         DataManager.Time.OnMonthChanged -= OnMonthChanged;
@@ -42,6 +46,7 @@ public partial class MainCanvas : CanvasBase
         DataManager.Time.OnDayChanged += OnDayChanged;
         DataManager.Time.OnMonthChanged += OnMonthChanged;
         DataManager.Time.OnYearChanged += OnYearChanged;
+        DataManager.News.OnNewsChanged += ShowNewsPopup;
 
         _infoDatePanel.Init(DataManager);
         _creditInfoPanel.Init(DataManager);
@@ -139,17 +144,19 @@ public partial class MainCanvas : CanvasBase
         return DataManager.Finances;
     }
 
-    /// <summary>
-    /// 스레드 정보 패널을 표시합니다.
-    /// </summary>
+    public void ShowNewsPopup(NewsState newsState)
+    {
+        _newsPopup.Init(newsState, this);
+    }
+
     public void ShowThreadInfoPanel(ThreadState threadState)
     {
-        _threadInfoPanel.Init(threadState, this);
+        _threadInfoPopup.Init(threadState, this);
     }
 
     public void ShowResearchInfoPanel(ResearchEntry researchEntry)
     {
-        _researchInfoPanel.Init(researchEntry, this);
+        _researchInfoPopup.Init(researchEntry, this);
     }
 
     public void ShowOptionPanel()
