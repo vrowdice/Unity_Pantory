@@ -16,6 +16,7 @@ public class ThreadInfoPopup : BasePopup
 
     [Header("Basic Info")]
     [SerializeField] private TextMeshProUGUI _nameText;
+    [SerializeField] private TextMeshProUGUI _buildCostText;
     [SerializeField] private TextMeshProUGUI _maintenanceText;
     [SerializeField] private TextMeshProUGUI _categoryText;
     [SerializeField] private Image _previewImage;
@@ -42,8 +43,6 @@ public class ThreadInfoPopup : BasePopup
     private DataManager _dataManager;
     private MainCanvas _mainUiManager;
 
-    private bool _isSubscribed = false;
-
     /// <summary>
     /// 패널을 초기화하고 데이터를 연결합니다.
     /// </summary>
@@ -55,30 +54,17 @@ public class ThreadInfoPopup : BasePopup
         _mainUiManager = mainUiManager;
         _dataManager = DataManager.Instance;
 
-        SubscribeToDayChanged();
+        _dataManager.Time.OnDayChanged -= OnDayChanged;
+        _dataManager.Time.OnDayChanged += OnDayChanged;
+
         RefreshAllUI();
 
         Show();
     }
 
-    private void OnEnable() => SubscribeToDayChanged();
-    private void OnDisable() => UnsubscribeFromDayChanged();
-    private void OnDestroy() => UnsubscribeFromDayChanged();
-
-    private void SubscribeToDayChanged()
+    private void OnDisable()
     {
-        if (_isSubscribed || _dataManager?.Time == null) return;
-
-        _dataManager.Time.OnDayChanged += OnDayChanged;
-        _isSubscribed = true;
-    }
-
-    private void UnsubscribeFromDayChanged()
-    {
-        if (!_isSubscribed || _dataManager?.Time == null) return;
-
         _dataManager.Time.OnDayChanged -= OnDayChanged;
-        _isSubscribed = false;
     }
 
     private void OnDayChanged()
@@ -88,7 +74,6 @@ public class ThreadInfoPopup : BasePopup
 
     /// <summary>
     /// 모든 UI 요소를 현재 데이터 기반으로 갱신합니다.
-    /// <para>이벤트 루프를 방지하기 위해 <see cref="_isUpdatingUI"/> 플래그를 사용합니다.</para>
     /// </summary>
     private void RefreshAllUI()
     {
@@ -102,27 +87,19 @@ public class ThreadInfoPopup : BasePopup
 
     private void UpdateBasicInfo()
     {
-        if (_nameText != null)
-            _nameText.text = _currentThreadState.threadName;
-
-        if (_categoryText != null)
-            _categoryText.text = GetCategoryName(_currentThreadState.categoryId);
-
-        if (_maintenanceText != null)
-            _maintenanceText.text = $"Maintenance: {_currentThreadState.totalMaintenanceCost:N0}/month";
+        _nameText.text = _currentThreadState.threadName;
+        _categoryText.text = GetCategoryName(_currentThreadState.categoryId);
+        _buildCostText.text = $"{_currentThreadState.requiredBuildCost:N0}";
+        _maintenanceText.text = $"{_currentThreadState.totalMaintenanceCost:N0}/day";
 
         LoadPreviewImage();
     }
 
     private void UpdateResourceIcons()
     {
-        if (_dataManager == null || _mainUiManager == null) return;
+        GameObjectUtils.ClearChildren(_provideContentTransform);
+        GameObjectUtils.ClearChildren(_consumeContentTransform);
 
-        // 기존 아이콘 제거
-        if (_provideContentTransform != null) GameObjectUtils.ClearChildren(_provideContentTransform);
-        if (_consumeContentTransform != null) GameObjectUtils.ClearChildren(_consumeContentTransform);
-
-        // 소비 및 생산 리소스 가져오기
         if (_currentThreadState.TryGetAggregatedResourceCounts(out var consumption, out var production))
         {
             SpawnIcons(consumption, _provideContentTransform);
@@ -132,11 +109,9 @@ public class ThreadInfoPopup : BasePopup
 
     private void SpawnIcons(Dictionary<string, int> resources, Transform parent)
     {
-        if (resources == null || parent == null || _mainUiManager.ProductionInfoImage == null) return;
-
-        foreach (var kvp in resources)
+        foreach (KeyValuePair<string, int> kvp in resources)
         {
-            var entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
+            ResourceEntry entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             if (entry != null)
             {
                 var iconObj = Instantiate(_mainUiManager.ProductionInfoImage, parent);
@@ -147,22 +122,16 @@ public class ThreadInfoPopup : BasePopup
 
     private void UpdateEmployeeStatus()
     {
-        if (_dataManager?.Employee == null) return;
-
         int requiredTotal = _currentThreadState.requiredEmployees;
         int currentWorkers = _currentThreadState.currentWorkers;
         int currentTechs = _currentThreadState.currentTechnicians;
 
-        // 전역 데이터 조회
         int hiredWorkers = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker).state.count;
         int hiredTechs = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician).state.count;
         int availWorkers = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker));
         int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
 
-        // 1. 텍스트 업데이트
         UpdateEmployeeTexts(requiredTotal, currentWorkers, currentTechs, hiredWorkers, hiredTechs);
-
-        // 2. 슬라이더 업데이트 (Logic Max 계산 포함)
         UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal);
         UpdateSliderState(_technicianSlider, currentTechs, availTechs, requiredTotal);
     }
@@ -180,8 +149,7 @@ public class ThreadInfoPopup : BasePopup
     }
 
     /// <summary>
-    /// 슬라이더의 최대값과 현재값을 안전하게 설정합니다.
-    /// <para>슬라이더의 Max값은 (현재 할당된 인원 + 가용 인원)과 (시설 최대 인원) 중 작은 값입니다.</para>
+    /// 슬라이더의 최대값과 현재값을 설정합니다.
     /// </summary>
     private void UpdateSliderState(Slider slider, int currentAssigned, int availableGlobal, int maxRequired)
     {
@@ -221,7 +189,6 @@ public class ThreadInfoPopup : BasePopup
             }
         }
 
-        // 이미지 경로가 없거나 로드 실패 시 숨김
         _previewImage.enabled = false;
     }
 
@@ -261,7 +228,7 @@ public class ThreadInfoPopup : BasePopup
 
         bool isSuccess = false;
 
-        if (delta > 0) // 고용 (Assign)
+        if (delta > 0)
         {
             int remainingSlots = Mathf.Max(0, _currentThreadState.requiredEmployees - (currentCount + otherCount));
             int availableGlobal = _dataManager.Employee.GetAvailableEmployeeCount(type);
@@ -273,7 +240,7 @@ public class ThreadInfoPopup : BasePopup
                 isSuccess = true;
             }
         }
-        else // 해고 (Unassign)
+        else
         {
             int removeAmount = Mathf.Min(-delta, currentCount);
 
@@ -296,7 +263,6 @@ public class ThreadInfoPopup : BasePopup
 
     private void SyncAndRefresh()
     {
-        // 데이터 매니저와 동기화 후 UI 갱신
         _dataManager?.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
         RefreshAllUI();
     }

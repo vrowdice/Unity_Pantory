@@ -18,9 +18,12 @@ public class DesignRunnerCaptureHandler
     /// <summary>
     /// 특정 스레드(건물 배치 데이터)를 캡처하여 파일로 저장합니다.
     /// </summary>
-    public string CaptureThreadLayout(string threadId, List<BuildingState> statesToCapture)
+    /// <summary>
+    /// 특정 스레드(건물 배치 데이터)를 캡처하여 파일로 저장합니다.
+    /// </summary>
+    public string CaptureThreadLayout(string threadName, List<BuildingState> statesToCapture)
     {
-        if (string.IsNullOrEmpty(threadId) || _mainCamera == null || statesToCapture == null || statesToCapture.Count == 0)
+        if (string.IsNullOrEmpty(threadName) || _mainCamera == null || statesToCapture == null || statesToCapture.Count == 0)
         {
             Debug.LogWarning("[Capture] No data to capture or camera not found.");
             return null;
@@ -43,7 +46,7 @@ public class DesignRunnerCaptureHandler
             SetupCameraForCapture(_mainCamera, rt, worldBounds);
 
             _mainCamera.Render();
-            return SaveRenderTextureToPng(rt, threadId);
+            return SaveRenderTextureToPng(rt, threadName);
         }
         catch (System.Exception e)
         {
@@ -115,7 +118,7 @@ public class DesignRunnerCaptureHandler
         cam.orthographicSize = Mathf.Max(targetHeight, targetWidthInHeight) + padding;
     }
 
-    private string SaveRenderTextureToPng(RenderTexture rt, string threadId)
+    private string SaveRenderTextureToPng(RenderTexture rt, string threadName)
     {
         RenderTexture.active = rt;
         Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
@@ -124,7 +127,7 @@ public class DesignRunnerCaptureHandler
         tex.Apply();
 
         byte[] bytes = tex.EncodeToPNG();
-        string filename = $"Preview_{threadId}_{System.DateTime.Now:yyyyMMdd_HHmmss}.png";
+        string filename = $"Preview_{threadName}_{System.DateTime.Now:yyyyMMdd_HHmmss}.png";
         string path = Path.Combine(Application.persistentDataPath, filename);
 
         File.WriteAllBytes(path, bytes);

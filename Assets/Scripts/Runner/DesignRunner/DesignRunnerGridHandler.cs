@@ -134,6 +134,15 @@ public class DesignRunnerGridHandler
         renderer.sprite = buildingData.buildingSprite;
         buildingObject.transform.localScale = GameObjectUtils.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
 
+        if (buildingState != null && !buildingState.IsUnlocked(DataManager))
+        {
+            renderer.color = new Color(1f, 1f, 1f, 0.5f);
+        }
+        else
+        {
+            renderer.color = Color.white;
+        }
+
         BuildingObject buildingComponent = buildingObject.GetOrAddComponent<BuildingObject>();
         BoxCollider2D boxCollider = buildingObject.GetOrAddComponent<BoxCollider2D>();
         boxCollider.size = new Vector2(buildingData.size.x, buildingData.size.y);
@@ -224,16 +233,27 @@ public class DesignRunnerGridHandler
             return (Vector2Int.zero, false);
 
         bool isOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        SetPreviewVisible(!isOverUI);
-
+        
         if (isOverUI)
         {
+            SetPreviewVisible(false);
             _canPlace = false;
             return (Vector2Int.zero, false);
         }
 
         _currentGridPos = GridMathUtils.GetWorldToGridPos(_parentTransform, mouseWorldPos);
         Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(_selectedBuilding.size, _rotationIndex);
+        
+        bool isWithinBounds = IsWithinBounds(_currentGridPos, rotatedSize);
+
+        if (!isWithinBounds)
+        {
+            SetPreviewVisible(false);
+            _canPlace = false;
+            return (_currentGridPos, false);
+        }
+
+        SetPreviewVisible(true);
         _canPlace = CanPlaceBuilding(_currentGridPos, rotatedSize);
 
         UpdatePreviewVisuals(rotatedSize);
@@ -337,10 +357,16 @@ public class DesignRunnerGridHandler
 
     #region Helpers (Visual & Check)
 
+    private bool IsWithinBounds(Vector2Int gridPos, Vector2Int size)
+    {
+        return gridPos.x >= 0 && gridPos.y >= 0 &&
+               gridPos.x + size.x <= _manager.GridWidth && 
+               gridPos.y + size.y <= _manager.GridHeight;
+    }
+
     private bool CanPlaceBuilding(Vector2Int startGridPos, Vector2Int rotatedSize)
     {
-        if (startGridPos.x < 0 || startGridPos.y < 0 ||
-            startGridPos.x + rotatedSize.x > _manager.GridWidth || startGridPos.y + rotatedSize.y > _manager.GridHeight)
+        if (!IsWithinBounds(startGridPos, rotatedSize))
             return false;
 
         for (int y = 0; y < rotatedSize.y; y++)
@@ -371,6 +397,7 @@ public class DesignRunnerGridHandler
         _previewComponent.InitializePreview(_selectedBuilding, _manager.InputMarkerPrefab, _manager.OutputMarkerPrefab);
         
         Rotate(false);
+        SetPreviewVisible(false);
     }
 
     private void ClearPreview()
@@ -422,7 +449,7 @@ public class DesignRunnerGridHandler
         }
     }
 
-    public int CalculateThreadOutputs(string threadId, List<BuildingState> customStates = null)
+    public int CalculateThreadOutputs(string threadName, List<BuildingState> customStates = null)
     {
         if (DataManager == null) return 0;
         List<BuildingState> states = customStates ?? _currentStates;
@@ -447,14 +474,14 @@ public class DesignRunnerGridHandler
         return count;
     }
 
-    public int CalculateTotalMaintenanceCost(string threadId, List<BuildingState> customStates = null)
+    public int CalculateTotalMaintenanceCost(string threadName, List<BuildingState> customStates = null)
     {
         List<BuildingState> statesToUse = customStates ?? _currentStates;
         ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(DataManager, statesToUse);
         return stats.TotalMaintenanceCost;
     }
 
-    public void CalculateProductionChain(string threadId, List<BuildingState> states,
+    public void CalculateProductionChain(string threadName, List<BuildingState> states,
         out List<string> inputIds, out Dictionary<string, int> inputCounts,
         out List<string> outputIds, out Dictionary<string, int> outputCounts)
     {

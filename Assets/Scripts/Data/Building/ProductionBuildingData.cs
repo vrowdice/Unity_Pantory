@@ -34,10 +34,7 @@ public class ProductionBuildingData : BuildingData
 
     private void OnValidate()
     {
-        // 생산 가능 자원 목록이 null이면 새로 생성
         _producibleResources ??= new List<ResourceData>();
-
-        // allowedResourceTypes에 포함된 타입이 아닌 자원은 목록에서 제거
         if (allowedResourceTypes != null && allowedResourceTypes.Count > 0)
         {
             for (int i = _producibleResources.Count - 1; i >= 0; i--)

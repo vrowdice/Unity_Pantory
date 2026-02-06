@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: News_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: f1e74d72452eb1249a13ac4e02de7fcb, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7000000000001
+    m_Localized: "\u4E16\u754C\u7684\u306A\u8ECD\u62E1\u7AF6\u4E89"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000002
+    m_Localized: "\u81EA\u52D5\u8ECA\u30D6\u30FC\u30E0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000003
+    m_Localized: "\u822A\u7A7A\u6280\u8853\u306E\u7A81\u7834\u53E3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000004
+    m_Localized: "\u6DF1\u523B\u306A\u534A\u5C0E\u4F53\u4E0D\u8DB3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000005
+    m_Localized: "\u30B5\u30A4\u30D0\u30FC\u30DE\u30F3\u30C7\u30FC\u30BB\u30FC\u30EB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000006
+    m_Localized: "\u91D1\u4FA1\u683C\u9AD8\u9A30\uFF01"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000007
+    m_Localized: "\u4E16\u754C\u7684\u306A\u4F4F\u5B85\u30D6\u30FC\u30E0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000008
+    m_Localized: "\u8D05\u6CA2\u54C1\u7981\u6B62\u4EE4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000009
+    m_Localized: "\u9271\u5C71\u5D29\u843D\u4E8B\u6545"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000010
+    m_Localized: "\u30AA\u30A4\u30EB\u30B7\u30E7\u30C3\u30AF"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000011
+    m_Localized: "\u4E16\u754C\u5E73\u548C\u6761\u7D04\u7DE0\u7D50"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000012
+    m_Localized: "\u9244\u92FC\u95A2\u7A0E\u306E\u5C0E\u5165"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000013
+    m_Localized: "\u7E4A\u7DAD\u52B4\u50CD\u8005\u306E\u30B9\u30C8\u30E9\u30A4\u30AD"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

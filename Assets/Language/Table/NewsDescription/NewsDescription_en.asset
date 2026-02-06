@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: NewsDescription_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 50732f9fa28f1df438110b6c9d789e65, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7000000000001
+    m_Localized: Escalating international conflicts have led nations to increase defense
+      spending, boosting heavy arms demand.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000002
+    m_Localized: A sudden craze for the latest vehicle models has cleared out dealer
+      inventories worldwide.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000003
+    m_Localized: A revolutionary new engine design has revitalized the aerospace industry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000004
+    m_Localized: Supply chain disruptions halted semiconductor production, driving up
+      component prices.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000005
+    m_Localized: A worldwide shopping bonanza has spiked demand for gadgets and home
+      essentials.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000006
+    m_Localized: Global economic instability has driven a massive surge in demand for
+      gold as a safe-haven asset.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000007
+    m_Localized: Rapid urbanization is driving demand for construction materials and
+      tools to record highs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000008
+    m_Localized: A new sumptuary law prohibits the sale of luxury items in several major
+      markets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000009
+    m_Localized: A catastrophic failure in the world's largest copper mine has halted
+      operations indefinitely.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000010
+    m_Localized: Geopolitical tensions in major oil-producing regions have slashed output,
+      causing prices to spike.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000011
+    m_Localized: Historic peace accords have been signed, drastically reducing military
+      budgets worldwide.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000012
+    m_Localized: New import tariffs on heavy metals and trade restrictions have caused
+      domestic steel prices to surge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000013
+    m_Localized: Massive strikes in textile factories have paralyzed clothing production
+      globally.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

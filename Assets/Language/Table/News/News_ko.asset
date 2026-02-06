@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: News_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: f1e74d72452eb1249a13ac4e02de7fcb, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7000000000001
+    m_Localized: "\uC804 \uC138\uACC4\uC801 \uAD70\uBE44 \uACBD\uC740"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000002
+    m_Localized: "\uC790\uB3D9\uCC28 \uBD90"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000003
+    m_Localized: "\uD56D\uACF5 \uAE30\uC220\uC758 \uB3CC\uD30C\uAD6C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000004
+    m_Localized: "\uAE00\uB85C\uBC8C \uCE69 \uBD80\uC871 \uD604\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000005
+    m_Localized: "\uAE00\uB85C\uBC8C \uC0AC\uC774\uBC84 \uC138\uC77C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000006
+    m_Localized: "\uAE08\uAC12 \uD3ED\uB4F1!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000007
+    m_Localized: "\uAE00\uB85C\uBC8C \uC8FC\uD0DD \uBD90"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000008
+    m_Localized: "\uC0AC\uCE58\uD488 \uAE08\uC9C0\uB839"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000009
+    m_Localized: "\uAD11\uC0B0 \uBD95\uAD34 \uC0AC\uACE0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000010
+    m_Localized: "\uC624\uC77C \uC1FC\uD06C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000011
+    m_Localized: "\uC138\uACC4 \uD3C9\uD654 \uC870\uC57D \uCCB4\uACB0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000012
+    m_Localized: "\uCCA0\uAC15 \uAD00\uC138 \uBD80\uACFC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000013
+    m_Localized: "\uC12C\uC720 \uB178\uB3D9\uC790 \uD30C\uC5C5"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

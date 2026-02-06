@@ -12,43 +12,17 @@ public class TextPairPanel : MonoBehaviour
         _secondText.text = secondText;
     }
 
-    public void Init(string mainText, string secondText, float numericValue)
+    public void Init(string mainText, string secondText, float numericValue, Color mainTextColor = default)
     {
+        if (mainTextColor == default) mainTextColor = Color.white;
+
         _mainText.text = mainText;
+        _mainText.color = mainTextColor;
         _secondText.text = secondText;
 
         if (VisualManager.Instance != null)
         {
             _secondText.color = VisualManager.Instance.GetDeltaColor(numericValue);
         }
-    }
-
-    public void Init(string mainText, int secondTextValue)
-    {
-        _mainText.text = mainText;
-        _secondText.text = secondTextValue.ToString();
-
-        if (VisualManager.Instance != null)
-        {
-            _secondText.color = VisualManager.Instance.GetDeltaColor(secondTextValue);
-        }
-    }
-
-    public void Init(string mainText, float secondTextValue)
-    {
-        _mainText.text = mainText;
-        _secondText.text = secondTextValue.ToString("F1");
-
-        if (VisualManager.Instance != null)
-        {
-            _secondText.color = VisualManager.Instance.GetDeltaColor(secondTextValue);
-        }
-    }
-
-    public void Init(string mainText, int secondTextValue, Color color)
-    {
-        _mainText.text = mainText;
-        _secondText.text = secondTextValue.ToString();
-        _secondText.color = color;
     }
 }

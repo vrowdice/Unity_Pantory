@@ -43,8 +43,7 @@ public class BuildingObject : MonoBehaviour
     {
         _buildingData = buildingData;
         _buildingState = null;
-        
-        // 프리뷰용 마커 생성 (위치는 UpdatePreviewMarkers에서 설정)
+
         if (buildingData.InputPosition != Vector2Int.zero && inputMarkerPrefab != null)
         {
             _inputMarker = CreateMarkerAsChild("PreviewInput", inputMarkerPrefab);
@@ -63,15 +62,12 @@ public class BuildingObject : MonoBehaviour
     {
         if (_buildingData == null || _buildingState == null || gridHandler == null)
             return;
-        
-        // Input 마커 생성
+
         if (_buildingData.InputPosition != Vector2Int.zero && inputMarkerPrefab != null)
         {
             _inputMarker = CreateMarkerAsChild("Input", inputMarkerPrefab);
             UpdateMarkerPosition(_inputMarker, _buildingState.inputPosition, gridHandler);
         }
-        
-        // Output 마커 생성
         if (_buildingData.OutputPosition != Vector2Int.zero && outputMarkerPrefab != null)
         {
             _outputMarker = CreateMarkerAsChild("Output", outputMarkerPrefab);
@@ -89,8 +85,6 @@ public class BuildingObject : MonoBehaviour
         
         GameObject marker = Instantiate(prefab, transform);
         marker.name = $"IOMarker_{name}";
-        
-        // 부모의 스케일 영향을 제거하여 마커가 원래 크기로 보이도록 함
         GameObjectUtils.CompensateParentScale(marker.transform, transform);
         
         return marker;
@@ -115,23 +109,17 @@ public class BuildingObject : MonoBehaviour
     {
         if (_buildingData == null || gridHandler == null)
             return;
-        
-        // 회전된 Input/Output 상대 위치 계산 (건물 크기 고려)
+
         Vector2Int rotatedInputPos = RotatePositionAroundCenter(_buildingData.InputPosition, rotation, _buildingData.size);
         Vector2Int rotatedOutputPos = RotatePositionAroundCenter(_buildingData.OutputPosition, rotation, _buildingData.size);
-        
-        // Input/Output 절대 좌표 계산
         Vector2Int inputPos = buildingGridPos + rotatedInputPos;
         Vector2Int outputPos = buildingGridPos + rotatedOutputPos;
-        
-        // Input 마커 위치 업데이트
+
         if (_inputMarker != null && _buildingData.InputPosition != Vector2Int.zero)
         {
             Vector3 inputWorldPos = gridHandler.GridToWorldPosition(inputPos, Vector2Int.one);
             _inputMarker.transform.position = new Vector3(inputWorldPos.x, inputWorldPos.y, -0.5f);
         }
-        
-        // Output 마커 위치 업데이트
         if (_outputMarker != null && _buildingData.OutputPosition != Vector2Int.zero)
         {
             Vector3 outputWorldPos = gridHandler.GridToWorldPosition(outputPos, Vector2Int.one);
@@ -147,28 +135,23 @@ public class BuildingObject : MonoBehaviour
         rotation = rotation % 4;
         if (rotation == 0)
             return pos;
-        
-        // 건물 중심 계산
+
         float centerX = (buildingSize.x - 1) / 2f;
         float centerY = (buildingSize.y - 1) / 2f;
-        
-        // 중심 기준으로 변환
         float relX = pos.x - centerX;
         float relY = pos.y - centerY;
-        
-        // 회전 적용
         float rotatedX, rotatedY;
         switch (rotation)
         {
-            case 1: // 90도 시계방향: (x, y) -> (-y, x)
+            case 1:
                 rotatedX = -relY;
                 rotatedY = relX;
                 break;
-            case 2: // 180도: (x, y) -> (-x, -y)
+            case 2:
                 rotatedX = -relX;
                 rotatedY = -relY;
                 break;
-            case 3: // 270도 시계방향: (x, y) -> (y, -x)
+            case 3:
                 rotatedX = relY;
                 rotatedY = -relX;
                 break;
@@ -177,8 +160,7 @@ public class BuildingObject : MonoBehaviour
                 rotatedY = relY;
                 break;
         }
-        
-        // 다시 절대 좌표로 변환
+
         return new Vector2Int(
             Mathf.RoundToInt(rotatedX + centerX),
             Mathf.RoundToInt(rotatedY + centerY)
@@ -218,12 +200,10 @@ public class BuildingObject : MonoBehaviour
 
         Dictionary<string, int> inputCounts = GameObjectUtils.AggregateResourceCounts(_buildingState.inputProductionIds);
         Dictionary<string, int> outputCounts = GameObjectUtils.AggregateResourceCounts(_buildingState.outputProductionIds);
-        
-        // 건물 크기 계산 (회전 고려)
+
         Vector2Int rotatedSize = GetRotatedSize(_buildingData.size, _buildingState.rotation);
         float buildingHeight = rotatedSize.y;
-        
-        // Input 자원 표시 (건물 중간 위)
+
         if (inputCounts.Count > 0)
         {
             float yOffset = buildingHeight * _productionIconContentOffset;
@@ -237,8 +217,7 @@ public class BuildingObject : MonoBehaviour
                 inputCounts
             );
         }
-        
-        // Output 자원 표시 (건물 중간 아래)
+
         if (outputCounts.Count > 0)
         {
             float yOffset = -buildingHeight * _productionIconContentOffset;

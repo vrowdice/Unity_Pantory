@@ -41,7 +41,10 @@ public class DesignRunner : RunnerBase
     private SaveLoadManager _saveLoadManager;
     private string _currentThreadId = string.Empty;
     private List<BuildingState> _temporaryBuildingStates = new List<BuildingState>();
-    private bool _isTemporaryDataDirty = false;
+    private Vector3 _mouseDownPos;
+    private bool _isPotentialClick;
+    private const float DragThreshold = 10f;
+
 
     public string CurrentThreadId => _currentThreadId;
     public bool IsPlacementMode => GridGenHandler?.IsPlacementActive ?? false;
@@ -58,7 +61,7 @@ public class DesignRunner : RunnerBase
         {
             UpdateRemovalMode();
         }
-        else if (IsThreadActive)
+        else
         {
             HandleBuildingClick();
         }
@@ -176,7 +179,8 @@ public class DesignRunner : RunnerBase
         
         InitializeHandlers();
         SetupGridSystem();
-        LoadInitialThreadState();
+        
+        LoadThread(GameManager.CurrentThreadId);
 
         _designCanvas.Init(this);
     }
@@ -186,10 +190,7 @@ public class DesignRunner : RunnerBase
     /// </summary>
     private void InitializeHandlers()
     {
-        List<BuildingState> currentStates = GetCurrentBuildingStates();
-
         GridGenHandler = new DesignRunnerGridHandler(this);
-        GridGenHandler.RefreshCalculationData(currentStates);
         CaptureHandler = new DesignRunnerCaptureHandler(this);
     }
 
@@ -207,29 +208,90 @@ public class DesignRunner : RunnerBase
     }
 
     /// <summary>
-    /// 초기 스레드 상태를 로드합니다.
+    /// 지정된 스레드 ID의 데이터를 로드하여 편집 세션을 시작합니다.
+    /// 데이터는 복사되어 메모리상에서만 수정됩니다.
     /// </summary>
-    private void LoadInitialThreadState()
+    public void LoadThread(string threadId)
     {
-        _currentThreadId = GameManager.CurrentThreadId;
+        _currentThreadId = threadId;
+        _temporaryBuildingStates.Clear();
 
-        if (string.IsNullOrEmpty(_currentThreadId))
+        if (!string.IsNullOrEmpty(threadId))
         {
-            _temporaryBuildingStates = new List<BuildingState>();
-            return;
-        }
-
-        List<BuildingState> buildingStates = DataManager.Thread.GetBuildingStates(_currentThreadId);
-        if (buildingStates != null)
-        {
-            _temporaryBuildingStates = new List<BuildingState>(buildingStates);
-        }
-        else
-        {
-            _temporaryBuildingStates = new List<BuildingState>();
+            List<BuildingState> savedStates = DataManager.Thread.GetBuildingStates(threadId);
+            if (savedStates != null)
+            {
+                _temporaryBuildingStates = new List<BuildingState>(savedStates);
+            }
         }
 
         RefreshBuildings();
+    }
+
+    /// <summary>
+    /// 현재 편집 중인 데이터를 저장합니다.
+    /// </summary>
+    public void SaveThread(string threadName, string categoryIdentifier)
+    {
+        DataManager.Thread.CreateThread(threadName, threadName);
+
+        DataManager.Thread.OverwriteBuildings(threadName, _temporaryBuildingStates);
+
+        _currentThreadId = threadName;
+
+        ProcessPostSaveLogic(threadName, categoryIdentifier);
+
+        _saveLoadManager.Thread.SaveThreadData(DataManager.Thread);
+
+        Debug.Log($"[DesignRunner] Saved thread: {threadName}");
+    }
+
+    // 기존 UI 버튼 등과의 호환성을 위해 유지 (내부적으로 SaveThread 호출)
+    public void SaveThreadChanges(string threadName, string categoryIdentifier)
+    {
+        SaveThread(threadName, categoryIdentifier);
+    }
+
+    // 기존 코드와의 호환성을 위해 유지
+    public void SetCurrentThread(string threadIdentifier)
+    {
+        LoadThread(threadIdentifier);
+    }
+
+    /// <summary>
+    /// 저장 후 메타데이터(이미지, 유지비 등)를 갱신합니다.
+    /// </summary>
+    private void ProcessPostSaveLogic(string threadIdentifier, string categoryIdentifier)
+    {
+        if (!string.IsNullOrEmpty(categoryIdentifier))
+        {
+            DataManager.Thread.AddThreadToCategory(categoryIdentifier, threadIdentifier);
+        }
+
+        ThreadState threadState = DataManager.Thread.GetThread(threadIdentifier);
+        if (threadState != null)
+        {
+            if (!string.IsNullOrEmpty(threadState.previewImagePath) && File.Exists(threadState.previewImagePath))
+            {
+                TryDeleteFile(threadState.previewImagePath);
+            }
+            threadState.previewImagePath = CaptureHandler.CaptureThreadLayout(threadIdentifier, _temporaryBuildingStates);
+            
+            threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadIdentifier);
+            threadState.requiredEmployees = DataManager.ThreadPlacement.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
+        }
+    }
+
+    private void TryDeleteFile(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (IOException e)
+        {
+            Debug.LogWarning($"Could not delete file {path}: {e.Message}");
+        }
     }
 
     /// <summary>
@@ -258,39 +320,20 @@ public class DesignRunner : RunnerBase
     /// 새로운 건물을 임시 데이터 리스트에 추가합니다.
     /// 동일한 위치에 건물이 이미 있다면 기존 데이터를 제거하고 새로 추가합니다.
     /// </summary>
-    /// <param name="newBuildingState">추가할 건물 상태</param>
     internal void AddBuildingToTemp(BuildingState newBuildingState)
     {
-        if (newBuildingState == null)
-        {
-            return;
-        }
+        if (newBuildingState == null) return;
 
-        _temporaryBuildingStates.RemoveAll((BuildingState existingState) =>
-            existingState.positionX == newBuildingState.positionX &&
-            existingState.positionY == newBuildingState.positionY);
-
+        _temporaryBuildingStates.RemoveAll(s => s.positionX == newBuildingState.positionX && s.positionY == newBuildingState.positionY);
         _temporaryBuildingStates.Add(newBuildingState);
-        _isTemporaryDataDirty = true;
     }
 
     /// <summary>
     /// 임시 데이터 리스트에서 특정 좌표에 위치한 건물을 제거합니다.
     /// </summary>
-    /// <param name="gridPosition">제거할 건물의 원점(Origin) 좌표</param>
-    /// <returns>삭제 성공 여부</returns>
     internal bool RemoveBuildingFromTemp(Vector2Int gridPosition)
     {
-        int removedCount = _temporaryBuildingStates.RemoveAll((BuildingState buildingState) =>
-            buildingState.positionX == gridPosition.x && buildingState.positionY == gridPosition.y);
-
-        if (removedCount > 0)
-        {
-            _isTemporaryDataDirty = true;
-            return true;
-        }
-
-        return false;
+        return _temporaryBuildingStates.RemoveAll(s => s.positionX == gridPosition.x && s.positionY == gridPosition.y) > 0;
     }
 
     /// <summary>
@@ -299,76 +342,6 @@ public class DesignRunner : RunnerBase
     public List<BuildingState> GetCurrentBuildingStates()
     {
         return _temporaryBuildingStates;
-    }
-
-    /// <summary>
-    /// 현재 편집 중인 스레드를 변경합니다.
-    /// </summary>
-    /// <param name="threadIdentifier">변경할 스레드 식별자</param>
-    public void SetCurrentThread(string threadIdentifier)
-    {
-        if (string.IsNullOrEmpty(threadIdentifier) || _currentThreadId == threadIdentifier)
-        {
-            return;
-        }
-
-        if (_isTemporaryDataDirty)
-        {
-            Debug.Log("[BuildingTileManager] Discarding dirty data for: " + _currentThreadId);
-        }
-
-        _currentThreadId = threadIdentifier;
-        _isTemporaryDataDirty = false;
-
-        List<BuildingState> buildingStatesFromData = DataManager.Thread.GetBuildingStates(threadIdentifier);
-        _temporaryBuildingStates = (buildingStatesFromData != null) ? new List<BuildingState>(buildingStatesFromData) : new List<BuildingState>();
-
-        RefreshBuildings();
-    }
-
-    /// <summary>
-    /// 스레드 변경사항을 저장합니다.
-    /// </summary>
-    /// <param name="threadName">스레드 이름</param>
-    /// <param name="categoryIdentifier">카테고리 식별자</param>
-    public void SaveThreadChanges(string threadName, string categoryIdentifier)
-    {
-        string newThreadIdentifier = _designCanvas.GetThreadIdFromTitle(threadName);
-        DataManager.Thread.CreateThread(newThreadIdentifier, threadName);
-
-        DataManager.Thread.OverwriteBuildings(newThreadIdentifier, _temporaryBuildingStates);
-        _currentThreadId = newThreadIdentifier;
-        _isTemporaryDataDirty = false;
-
-        ProcessPostSaveLogic(newThreadIdentifier, categoryIdentifier);
-
-        _saveLoadManager.Thread.SaveThreadData(DataManager.Thread);
-        SetCurrentThread(newThreadIdentifier);
-    }
-
-    /// <summary>
-    /// 저장 후 처리 로직을 수행합니다.
-    /// </summary>
-    /// <param name="threadIdentifier">스레드 식별자</param>
-    /// <param name="categoryIdentifier">카테고리 식별자</param>
-    private void ProcessPostSaveLogic(string threadIdentifier, string categoryIdentifier)
-    {
-        if (!string.IsNullOrEmpty(categoryIdentifier))
-        {
-            DataManager.Thread.AddThreadToCategory(categoryIdentifier, threadIdentifier);
-        }
-
-        ThreadState threadState = DataManager.Thread.GetThread(threadIdentifier);
-        if (threadState != null)
-        {
-            if (!string.IsNullOrEmpty(threadState.previewImagePath) && File.Exists(threadState.previewImagePath))
-            {
-                File.Delete(threadState.previewImagePath);
-            }
-            threadState.previewImagePath = CaptureHandler.CaptureThreadLayout(threadIdentifier, _temporaryBuildingStates);
-            threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadIdentifier);
-            threadState.requiredEmployees = DataManager.ThreadPlacement.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
-        }
     }
 
     /// <summary>
@@ -402,6 +375,19 @@ public class DesignRunner : RunnerBase
 
         if (Input.GetMouseButtonDown(0))
         {
+            _mouseDownPos = Input.mousePosition;
+            _isPotentialClick = true;
+        }
+
+        if (Input.GetMouseButtonUp(0) && _isPotentialClick)
+        {
+            _isPotentialClick = false;
+
+            if (Vector3.Distance(_mouseDownPos, Input.mousePosition) > DragThreshold)
+            {
+                return;
+            }
+
             Vector3 mouseWorldPosition = MainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2Int gridPosition = GridGenHandler.WorldToGridPosition(mouseWorldPosition);
 
@@ -455,11 +441,19 @@ public class DesignRunner : RunnerBase
     /// <summary>
     /// 스레드의 총 유지비를 계산합니다.
     /// </summary>
-    /// <param name="threadIdentifier">스레드 식별자</param>
+    /// <param name="threadName">스레드 이름</param>
     /// <returns>총 유지비</returns>
-    public int CalculateTotalMaintenanceCost(string threadIdentifier)
+    public int CalculateTotalMaintenanceCost(string threadName)
     {
-        return DataManager.ThreadPlacement?.CalculateTotalMaintenanceCost(threadIdentifier, GetCurrentBuildingStates()) ?? 0;
+        return DataManager.ThreadPlacement?.CalculateTotalMaintenanceCost(threadName, GetCurrentBuildingStates()) ?? 0;
+    }
+
+    /// <summary>
+    /// 스레드의 총 필요 직원 수를 계산합니다.
+    /// </summary>
+    public int CalculateRequiredEmployees(string threadName)
+    {
+        return DataManager.ThreadPlacement?.CalculateRequiredEmployees(threadName, GetCurrentBuildingStates()) ?? 0;
     }
 
     /// <summary>

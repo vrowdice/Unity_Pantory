@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Coal_Price_Up_20
-  displayName: Coal Price Surge (+20%)
+  displayName: Coal Price Surge
   statType: 5
   type: 1
   value: 0.2

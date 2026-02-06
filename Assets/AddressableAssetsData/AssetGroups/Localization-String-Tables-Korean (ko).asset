@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14acd047478409e4789aaf3427dffb0b
+    m_Address: News_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1a9066b2b8e0a714b921dc4cc2dda413
     m_Address: ResourceDisplayName_ko
     m_ReadOnly: 1
@@ -69,6 +75,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91fd36d2fba513947a2117ccf5bfdc97
+    m_Address: Effect_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 943f78ba49cb4a44799ad20ca128805a
     m_Address: MarketActorDescription_ko
     m_ReadOnly: 1
@@ -80,9 +92,16 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ab45d1f8304320d48b83951cab1d03d2
     m_Address: BuildingType_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae115675c7f704b4388f02522fdedb61
+    m_Address: NewsDescription_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko

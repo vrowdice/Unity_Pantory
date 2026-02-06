@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Effect Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Effect
+  m_TableCollectionNameGuidString: dd95d24e58d70574b952610eb5d4f8a4
+  m_Entries:
+  - m_Id: 7000000000001
+    m_Key: managementDeficit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000002
+    m_Key: salarySatisfactionEffect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000003
+    m_Key: atisfactionEfficiency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000004
+    m_Key: Effect_Air_Price_Up_25
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000005
+    m_Key: Effect_Alum_Price_Up_15
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000006
+    m_Key: Effect_Arms_Price_Up_15
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000007
+    m_Key: Effect_BCloth_Price_Up_20
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000008
+    m_Key: Effect_Car_Price_Up_30
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000009
+    m_Key: Effect_Coal_Price_Up_20
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000010
+    m_Key: Effect_CopIng_Price_Up_30
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000011
+    m_Key: Effect_CopOre_Price_Up_50
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000012
+    m_Key: Effect_Elec_Price_Up_35
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000013
+    m_Key: Effect_Engine_Price_Up_15
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000014
+    m_Key: Effect_Fabric_Price_Up_40
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000015
+    m_Key: Effect_Gold_Price_Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000016
+    m_Key: Effect_HeArms_Price_Down_40
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000017
+    m_Key: Effect_Iron_Price_Up_15
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000018
+    m_Key: Effect_Mach_Price_Up_10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000019
+    m_Key: Effect_Muni_Price_Up_20
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000020
+    m_Key: Effect_Oil_Price_Up_40
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000021
+    m_Key: Effect_PCloth_Price_Down_20
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000022
+    m_Key: Effect_PFurn_Price_Down_20
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000023
+    m_Key: Effect_PGold_Price_Down_10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000024
+    m_Key: Effect_SimTool_Price_Up_10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000025
+    m_Key: Effect_SmArms_Price_Down_30
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000026
+    m_Key: Effect_Steel_Price_Up_25
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000027
+    m_Key: Effect_Tank_Price_Up_10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000028
+    m_Key: Effect_Wood_Price_Up_10
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6834855787052925020
+  references:
+    version: 2
+    RefIds:
+    - rid: 6834855787052925020
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1770347794315

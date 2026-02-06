@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Wood_Price_Up_10
-  displayName: Wood Log Price Surge (+10%)
+  displayName: Wood Log Price Surge
   statType: 5
   type: 1
   value: 0.1

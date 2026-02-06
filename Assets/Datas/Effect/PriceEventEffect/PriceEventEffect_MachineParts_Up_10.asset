@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Mach_Price_Up_10
-  displayName: Machine Parts Price Surge (+10%)
+  displayName: Machine Parts Price Surge
   statType: 5
   type: 1
   value: 0.1

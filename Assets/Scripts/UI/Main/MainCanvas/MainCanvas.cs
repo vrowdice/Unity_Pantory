@@ -32,7 +32,6 @@ public partial class MainCanvas : CanvasBase
         DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
         DataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
-        DataManager.News.OnNewsChanged -= ShowNewsPopup;
 
         DataManager.Time.OnDayChanged -= OnDayChanged;
         DataManager.Time.OnMonthChanged -= OnMonthChanged;
@@ -46,7 +45,6 @@ public partial class MainCanvas : CanvasBase
         DataManager.Time.OnDayChanged += OnDayChanged;
         DataManager.Time.OnMonthChanged += OnMonthChanged;
         DataManager.Time.OnYearChanged += OnYearChanged;
-        DataManager.News.OnNewsChanged += ShowNewsPopup;
 
         _infoDatePanel.Init(DataManager);
         _creditInfoPanel.Init(DataManager);

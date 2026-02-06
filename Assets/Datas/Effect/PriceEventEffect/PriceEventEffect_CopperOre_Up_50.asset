@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_CopOre_Price_Up_50
-  displayName: Copper Ore Price Surge (+50%)
+  displayName: Copper Ore Price Surge
   statType: 5
   type: 1
   value: 0.5

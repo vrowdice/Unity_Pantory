@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Elec_Price_Up_35
-  displayName: Electronics Price Surge (+35%)
+  displayName: Electronics Price Surge
   statType: 5
   type: 1
   value: 0.35

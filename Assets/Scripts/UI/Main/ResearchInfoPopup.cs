@@ -70,11 +70,10 @@ public class ResearchInfoPopup : BasePopup
         _costPanelText.text = _currentResearchEntry.data.researchPointCost.ToString();
 
         PoolingManager.Instance.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
-        foreach (EffectData effectState in _currentResearchEntry.data.effects)
+        PoolingManager.Instance.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
+        foreach (EffectData effectData in _currentResearchEntry.data.effects)
         {
-            string effectDescription = effectState.displayName ?? effectState.id;
-            string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-            _gameManager.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, effectDescription, changeValue, effectState.value);
+            _gameManager.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, new EffectState(effectData));
         }
     }
 

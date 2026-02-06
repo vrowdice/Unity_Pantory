@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_PCloth_Price_Down_20
-  displayName: Premium Clothing Price Drop (-20%)
+  displayName: Premium Clothing Price Drop
   statType: 5
   type: 1
   value: -0.2

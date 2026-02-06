@@ -7,29 +7,27 @@ using TMPro;
 
 public class BuildingInfoPopup : BasePopup
 {
-    [SerializeField] private GameObject _productionExplainTextPrefab;
-
     [Header("UI References")]
     [SerializeField] private Button _changeProductionBtn;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _typeText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
-    [SerializeField] private TextMeshProUGUI _costText;
+    [SerializeField] private TextMeshProUGUI _buildCostText;
     [SerializeField] private TextMeshProUGUI _maintenanceText;
-    [SerializeField] private TextMeshProUGUI _resourceTypesText;
     [SerializeField] private Image _buildingImage;
+
+    [SerializeField] private TextMeshProUGUI _materialPurchaseText;
+    [SerializeField] private TextMeshProUGUI _productPriceText;
+    [SerializeField] private TextMeshProUGUI _expectedCostText;
 
     [Header("Containers")]
     [SerializeField] private Transform _inputGridTransform;
     [SerializeField] private Transform _outputGridTransform;
-    [SerializeField] private Transform _explainContentTransform;
 
     private BuildingData _currentData;
     private BuildingState _currentState;
     private DesignCanvas _designCanvas;
     private DataManager _dataManager;
-
-    // 캐싱을 위한 컴포넌트 참조
     private DesignRunner _designRunner;
 
     public void ShowBuildingInfo(BuildingData data, BuildingState state, DesignCanvas canvas)
@@ -41,7 +39,7 @@ public class BuildingInfoPopup : BasePopup
         _currentData = data;
         _currentState = state;
         _designCanvas = canvas;
-        _dataManager = DataManager.Instance; // 또는 주입받은 참조 사용
+        _dataManager = DataManager.Instance;
 
         UpdateUI();
         Show();
@@ -50,10 +48,10 @@ public class BuildingInfoPopup : BasePopup
     private void UpdateUI()
     {
         _nameText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING);
-        _typeText.text = $"Type: {_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING_TYPE)}";
+        _typeText.text = $"{_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING_TYPE)}";
         _descriptionText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING_DESCRIPTION);
-        _costText.text = $"Cost: {ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
-        _maintenanceText.text = $"Maint: {ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)}/mo";
+        _buildCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
+        _maintenanceText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)}/day";
 
         if (_buildingImage != null)
         {
@@ -63,6 +61,41 @@ public class BuildingInfoPopup : BasePopup
 
         UpdateProductionContext();
         RefreshResourceGrids();
+        UpdateFinancialInfo();
+    }
+
+    private void UpdateFinancialInfo()
+    {
+        long inputCost = 0;
+        long outputPrice = 0;
+
+        if (_currentState.inputProductionIds != null)
+        {
+            foreach (string id in _currentState.inputProductionIds)
+            {
+                var entry = _dataManager.Resource.GetResourceEntry(id);
+                if (entry != null) inputCost += (long)entry.state.currentValue;
+            }
+        }
+
+        if (_currentState.outputProductionIds != null)
+        {
+            foreach (string id in _currentState.outputProductionIds)
+            {
+                var entry = _dataManager.Resource.GetResourceEntry(id);
+                if (entry != null) outputPrice += (long)entry.state.currentValue;
+            }
+        }
+
+        long profit = outputPrice - inputCost;
+
+        if (_materialPurchaseText) _materialPurchaseText.text = $"{ReplaceUtils.FormatNumberWithCommas(inputCost)}";
+        if (_productPriceText) _productPriceText.text = $"{ReplaceUtils.FormatNumberWithCommas(outputPrice)}";
+        if (_expectedCostText)
+        {
+            _expectedCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(profit)}";
+            _expectedCostText.color = VisualManager.Instance.GetDeltaColor(profit);
+        }
     }
 
     private void UpdateProductionContext()
@@ -70,25 +103,11 @@ public class BuildingInfoPopup : BasePopup
         bool isProd = _currentData.IsProductionBuilding;
         _changeProductionBtn.gameObject.SetActive(true);
         _changeProductionBtn.interactable = isProd;
-
-        if (isProd)
-        {
-            List<ResourceType> allowed = _currentData.AllowedResourceTypes;
-            string types = (allowed != null && allowed.Count > 0)
-                ? string.Join(", ", allowed)
-                : "None";
-            _resourceTypesText.text = $"Allowed: {types}";
-        }
     }
 
     private void RefreshResourceGrids()
     {
-        GameObjectUtils.ClearChildren(_explainContentTransform);
-
-        // Input 리스트 갱신
         UpdateResourceGrid(_currentState.inputProductionIds, _inputGridTransform, "Input");
-
-        // Output 리스트 갱신 (생산 건물이 아닐 경우 별도 처리)
         if (!_currentData.IsProductionBuilding)
             UpdateNonProductionOutput();
         else
@@ -105,15 +124,11 @@ public class BuildingInfoPopup : BasePopup
             ResourceEntry entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             if (entry == null) continue;
 
-            // 아이콘 생성
             Instantiate(_designCanvas.ProductionInfoImage, container)
                 .GetComponent<ProductionInfoImage>().Init(entry, kvp.Value);
 
-            // 설명 텍스트 생성
             string reqs = (label == "Output") ? BuildRequirementText(entry.data) : "";
             string info = $"{label}: {entry.data.displayName}\nAmount: {kvp.Value}\nPrice: {ReplaceUtils.FormatNumber(entry.state.currentValue)}{reqs}";
-
-            CreateExplainText(info);
         }
     }
 
@@ -129,14 +144,7 @@ public class BuildingInfoPopup : BasePopup
         {
             Instantiate(_designCanvas.ProductionInfoImage, _outputGridTransform)
                 .GetComponent<ProductionInfoImage>().Init(entry, 1);
-            CreateExplainText($"Handling: {entry.data.displayName}\nPrice: {ReplaceUtils.FormatNumber(entry.state.currentValue)}");
         }
-    }
-
-    private void CreateExplainText(string content)
-    {
-        GameObject textObj = Instantiate(_productionExplainTextPrefab, _explainContentTransform);
-        textObj.GetComponent<TextMeshProUGUI>().text = content;
     }
 
     public void ShowOutputResourceSelection()
@@ -162,14 +170,10 @@ public class BuildingInfoPopup : BasePopup
     {
         if (_currentState == null || selected == null) return;
 
-        // 데이터 갱신
         _currentState.outputProductionIds.Clear();
         _currentState.outputProductionIds.Add(selected.data.id);
 
-        // 요구사항 자동 추가
         SyncInputToRequirements(selected.data);
-
-        // UI 및 월드 아이콘 갱신
         UpdateUI();
         RefreshWorldIcons();
 

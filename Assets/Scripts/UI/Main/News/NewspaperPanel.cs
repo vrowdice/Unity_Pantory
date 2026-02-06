@@ -19,16 +19,15 @@ public class NewspaperPanel : MonoBehaviour
 
         NewsData newsData = _dataManager.News.GetNewsData(newsState.id);
 
-        _titleText.text = newsData.displayName;
+        _titleText.text = newsState.id.Localize(LocalizationUtils.TABLE_NEWS);
         _iconImage.sprite = newsData.icon;
-        _descriptionText.text = newsData.description;
+        _descriptionText.text = newsState.id.Localize(LocalizationUtils.TABLE_NEWS_DESCRIPTION);
 
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
-        foreach (EffectData effectState in newsData.effects)
+        PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
+        foreach (EffectData effectData in newsData.effects)
         {
-            string effectDescription = effectState.displayName;
-            string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-            GameManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, effectDescription, changeValue, effectState.value);
+            GameManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, new EffectState(effectData), Color.black);
         }
     }
 }

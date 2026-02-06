@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Car_Price_Up_30
-  displayName: Car Price Surge (+30%)
+  displayName: Car Price Surge
   statType: 5
   type: 1
   value: 0.3

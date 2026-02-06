@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_HeArms_Price_Down_40
-  displayName: Heavy Arms Price Drop (-40%)
+  displayName: Heavy Arms Price Drop
   statType: 5
   type: 1
   value: -0.4

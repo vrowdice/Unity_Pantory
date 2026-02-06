@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Engine_Price_Up_15
-  displayName: Engine Price Surge (+15%)
+  displayName: Engine Price Surge
   statType: 5
   type: 1
   value: 0.15

@@ -257,7 +257,7 @@ public class GameManager : Singleton<GameManager>
 
         GameObject manageThreadPanelObj = Instantiate(_manageThreadPanelPrefab, _managerCanvasTransform, false);
         ManageThreadPopup manageThreadPanel = manageThreadPanelObj.GetComponent<ManageThreadPopup>();
-        manageThreadPanel.Init(_dataManager, onThreadSelected);
+        manageThreadPanel.Init(onThreadSelected);
         return manageThreadPanel;
     }
 
@@ -433,7 +433,7 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Effect TextPairPanel을 생성하고 초기화합니다. (PoolingManager 사용)
     /// </summary>
-    public TextPairPanel CreateEffectTextPairPanel(Transform parent, string mainText, string secondText, float numericValue)
+    public TextPairPanel CreateEffectTextPairPanel(Transform parent, EffectState effectState, Color mainTextColor = default)
     {
         if (_effectTextPairPanelPrefab == null || parent == null)
         {
@@ -447,7 +447,10 @@ public class GameManager : Singleton<GameManager>
         TextPairPanel panel = panelObj.GetComponent<TextPairPanel>();
         if (panel != null)
         {
-            panel.Init(mainText, secondText, numericValue);
+            string mainText = effectState.id.Localize(LocalizationUtils.TABLE_EFFECT);
+            string secondText = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
+
+            panel.Init(mainText, secondText, effectState.value, mainTextColor);
         }
         return panel;
     }

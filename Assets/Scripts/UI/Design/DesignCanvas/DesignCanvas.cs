@@ -29,14 +29,8 @@ public partial class DesignCanvas : CanvasBase
         }
 
         _saveInfoPanel.Init(DataManager);
-        InitializeThreadTitle();
 
         SelectBuildingType(BuildingType.Distribution);
-    }
-
-    override public void UpdateAllMainText()
-    {
-        
     }
 
     public void UpdateModeBtnImages(bool isPlacementMode, bool isRemovalMode)

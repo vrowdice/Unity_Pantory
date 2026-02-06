@@ -9,47 +9,33 @@ public partial class DesignCanvas
     [Header("Thread References")]
     [SerializeField] private ThreadSaveInfoPopup _threadSaveInformationPanel;
 
-    private string _currentThreadTitle = DefaultThreadTitle;
-    private const string DefaultThreadTitle = "Main Line";
-
+    /// <summary>
+    /// 저장 버튼 클릭 시 호출됩니다. 현재 배치된 건물들의 생산 체인과 유지비 등을 계산하여 요약 패널을 띄웁니다.
+    /// </summary>
     /// <summary>
     /// 저장 버튼 클릭 시 호출됩니다. 현재 배치된 건물들의 생산 체인과 유지비 등을 계산하여 요약 패널을 띄웁니다.
     /// </summary>
     public void OnClickSaveButton()
     {
-        string threadIdentifier = _designRunner.CurrentThreadId;
-        string threadTitle = DefaultThreadTitle;
-
-        // 스레드 식별자가 없는 경우 제목으로부터 생성 시도
-        if (string.IsNullOrEmpty(threadIdentifier))
-        {
-            threadIdentifier = GetThreadIdFromTitle(threadTitle);
-            _designRunner.SetCurrentThread(threadIdentifier);
-        }
+        string threadName = _designRunner.CurrentThreadId;
 
         List<string> inputResourceIdentifiers;
         Dictionary<string, int> inputResourceCounts;
         List<string> outputResourceIdentifiers;
         Dictionary<string, int> outputResourceCounts;
 
-        // 생산 체인 및 유지비 계산 (BuildingTileManager에 위임)
         _designRunner.CalculateProductionChain(
-            threadIdentifier,
+            threadName,
             out inputResourceIdentifiers,
             out inputResourceCounts,
             out outputResourceIdentifiers,
             out outputResourceCounts
         );
 
-        int totalMaintenanceCost = _designRunner.CalculateTotalMaintenanceCost(threadIdentifier);
+        int totalMaintenanceCost = _designRunner.CalculateTotalMaintenanceCost(threadName);
+        int requiredEmployeeCount = _designRunner.CalculateRequiredEmployees(threadName);
 
-        // 직원 요구사항 계산
-        int requiredEmployeeCount;
-        CalculateThreadEmployeeRequirements(threadIdentifier, out requiredEmployeeCount);
-
-        // 요약 패널 표시
         _threadSaveInformationPanel.Init(
-            threadTitle,
             inputResourceIdentifiers,
             inputResourceCounts,
             outputResourceIdentifiers,
@@ -58,8 +44,8 @@ public partial class DesignCanvas
             this
         );
 
-        Debug.Log("[DesignUiManager] Save information panel shown for Thread: " + threadIdentifier);
-        Debug.Log("[DesignUiManager] Required Employees: " + requiredEmployeeCount);
+        Debug.Log($"[DesignUiManager] Save information panel shown for Thread: {threadName}");
+        Debug.Log($"[DesignUiManager] Required Employees: {requiredEmployeeCount}");
     }
 
     /// <summary>
@@ -67,23 +53,10 @@ public partial class DesignCanvas
     /// </summary>
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
-        if (_designRunner == null)
-        {
-            Debug.LogError("[DesignUiManager] Cannot save changes: BuildingTileManager is null.");
-            return;
-        }
-
-        // 캡처 및 데이터 저장을 포함한 통합 저장 로직 실행
         _designRunner.SaveThreadChanges(threadName, categoryIdentifier);
-
-        _currentThreadTitle = threadName;
+        GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
 
         DeselectBuilding();
-
-        if (GameManager != null)
-        {
-            GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
-        }
     }
 
     /// <summary>
@@ -91,64 +64,34 @@ public partial class DesignCanvas
     /// </summary>
     public void OnClickLoadButton()
     {
-        GameManager.ShowManageThreadPanel((string selectedThreadIdentifier) =>
+        GameManager.ShowManageThreadPanel((string selectedThreadName) =>
         {
-            LoadThread(selectedThreadIdentifier);
+            LoadThread(selectedThreadName);
         });
     }
 
     /// <summary>
     /// 선택된 스레드 식별자를 기반으로 데이터를 불러오고 화면을 갱신합니다.
     /// </summary>
-    private void LoadThread(string threadIdentifier)
+    private void LoadThread(string threadName)
     {
-        if (string.IsNullOrEmpty(threadIdentifier))
+        if (string.IsNullOrEmpty(threadName))
         {
             return;
         }
 
-        ThreadState threadState = DataManager.Thread.GetThread(threadIdentifier);
+        ThreadState threadState = DataManager.Thread.GetThread(threadName);
         if (threadState == null)
         {
-            Debug.LogWarning("[DesignUiManager] Thread not found: " + threadIdentifier);
+            Debug.LogWarning("[DesignUiManager] Thread not found: " + threadName);
             return;
         }
-
-        string threadTitle = string.IsNullOrEmpty(threadState.threadName) ? DefaultThreadTitle : threadState.threadName;
-        _currentThreadTitle = threadTitle;
 
         if (_designRunner != null)
         {
-            _designRunner.SetCurrentThread(threadIdentifier);
+            _designRunner.SetCurrentThread(threadName);
         }
 
-        Debug.Log("[DesignUiManager] Thread loaded: " + threadIdentifier + " (" + threadState.threadName + ")");
-    }
-
-    /// <summary>
-    /// 현재 화면에 배치된 건물들의 총 직원 요구사항을 계산합니다.
-    /// </summary>
-    private void CalculateThreadEmployeeRequirements(string threadIdentifier, out int requiredEmployeeCount)
-    {
-        requiredEmployeeCount = 0;
-
-        List<BuildingState> buildingStates = _designRunner.GetCurrentBuildingStates();
-
-        if (buildingStates != null)
-        {
-            foreach (BuildingState buildingState in buildingStates)
-            {
-                if (buildingState == null || string.IsNullOrEmpty(buildingState.buildingId))
-                {
-                    continue;
-                }
-
-                BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
-                if (buildingData != null)
-                {
-                    requiredEmployeeCount += buildingData.requiredEmployees;
-                }
-            }
-        }
+        Debug.Log($"[DesignUiManager] Thread loaded: {threadName}");
     }
 }

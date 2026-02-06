@@ -45,6 +45,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7731d1dd7bede9c4a96b31e411a4882f
+    m_Address: NewsDescription_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 79e06e4f679f93745a2c7493e8ca6502
     m_Address: WarningMessage_en
     m_ReadOnly: 1
@@ -65,6 +71,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a4bdb186214a063459f7e4b4a3edadcc
     m_Address: MainPanelType_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bad2fceeffb94514ca22c7e9bb38c366
+    m_Address: Effect_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
@@ -93,6 +105,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0dba1e936c8c37469e527168db0e32b
+    m_Address: News_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1069f2c97eab1e4da718e89dc80b408
     m_Address: EmployeeType_en
     m_ReadOnly: 1
@@ -104,6 +122,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ac2893260354dfb43afb99647de4ceab, type: 2}

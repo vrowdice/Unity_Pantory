@@ -203,6 +203,30 @@ MonoBehaviour:
     m_Key: Effect Sound
     m_Metadata:
       m_Items: []
+  - m_Id: 4430228779057152
+    m_Key: Build Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4430339647094784
+    m_Key: Maintenance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4435693617430528
+    m_Key: Maintenance Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4437906502860800
+    m_Key: Material Purchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4438087889731584
+    m_Key: Product Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4438241380286464
+    m_Key: Expected profit
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

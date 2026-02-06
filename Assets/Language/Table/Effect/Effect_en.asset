@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Effect_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: dd95d24e58d70574b952610eb5d4f8a4, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7000000000001
+    m_Localized: Management Deficit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000002
+    m_Localized: Salary Bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000003
+    m_Localized: Satisfaction Efficiency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000004
+    m_Localized: Airplane Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000005
+    m_Localized: Aluminum Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000006
+    m_Localized: Arms Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000007
+    m_Localized: Basic Clothing Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000008
+    m_Localized: Car Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000009
+    m_Localized: Coal Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000010
+    m_Localized: Copper Ingot Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000011
+    m_Localized: Copper Ore Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000012
+    m_Localized: Electronics Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000013
+    m_Localized: Engine Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000014
+    m_Localized: Fabric Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000015
+    m_Localized: Gold Price Surge Impact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000016
+    m_Localized: Heavy Arms Price Drop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000017
+    m_Localized: Iron Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000018
+    m_Localized: Machine Parts Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000019
+    m_Localized: Munitions Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000020
+    m_Localized: Oil Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000021
+    m_Localized: Premium Clothing Price Drop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000022
+    m_Localized: Premium Furniture Price Drop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000023
+    m_Localized: Pure Gold Price Drop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000024
+    m_Localized: Simple Tools Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000025
+    m_Localized: Small Arms Price Drop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000026
+    m_Localized: Steel Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000027
+    m_Localized: Tank Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000028
+    m_Localized: Wood Log Price Surge
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

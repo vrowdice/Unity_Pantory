@@ -26,6 +26,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50732f9fa28f1df438110b6c9d789e65
+    m_Address: Assets/Language/Table/NewsDescription/NewsDescription Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 56883579e18354a4c988dc94eb36f1e2
     m_Address: Assets/Language/Table/BuildingDescription/BuildingDescription Shared
       Data.asset
@@ -84,8 +89,18 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd95d24e58d70574b952610eb5d4f8a4
+    m_Address: Assets/Language/Table/Effect/Effect Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eb20261a195c57c44943fe2956a7f729
     m_Address: Assets/Language/Table/Main Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1e74d72452eb1249a13ac4e02de7fcb
+    m_Address: Assets/Language/Table/News/News Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

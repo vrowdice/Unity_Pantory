@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_SmArms_Price_Down_30
-  displayName: Small Arms Price Drop (-30%)
+  displayName: Small Arms Price Drop
   statType: 5
   type: 1
   value: -0.3

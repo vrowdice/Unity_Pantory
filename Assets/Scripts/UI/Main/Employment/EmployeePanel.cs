@@ -380,9 +380,7 @@ public class EmployeePanel : BasePanel
             {
                 if (effectState == null) continue;
 
-                string effectDescription = effectState.displayName;
-                string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-                _gameManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectDescription, changeValue, effectState.value);
+                _gameManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
             }
         }
     }
@@ -402,9 +400,7 @@ public class EmployeePanel : BasePanel
         {
             if (effectState == null) continue;
 
-            string effectDescription = effectState.displayName ?? effectState.id;
-            string changeValue = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
-            _gameManager.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectDescription, changeValue, effectState.value);
+            _gameManager.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectState);
         }
     }
 

@@ -15,7 +15,7 @@ MonoBehaviour:
   targetType: 3
   isGlobalEffect: 0
   id: Effect_Arms_Price_Up_15
-  displayName: Arms Price Surge (+15%)
+  displayName: Arms Price Surge
   statType: 5
   type: 1
   value: 0.15

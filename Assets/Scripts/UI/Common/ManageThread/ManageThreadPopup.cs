@@ -26,10 +26,12 @@ public class ManageThreadPopup : BasePopup
     /// <summary>
     /// 패널을 초기화하고 필요한 데이터와 콜백을 설정합니다.
     /// </summary>
-    public void Init(DataManager dataManager, System.Action<string> onThreadSelected = null)
+    public void Init(System.Action<string> onThreadSelected = null)
     {
         base.Init();
-        
+
+        DataManager dataManager = DataManager.Instance;
+
         if (dataManager == null)
         {
             Debug.LogError("[ManageThreadPanel] GameDataManager is null.");

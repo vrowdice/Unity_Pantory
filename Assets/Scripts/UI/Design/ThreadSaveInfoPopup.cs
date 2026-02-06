@@ -36,19 +36,12 @@ public class ThreadSaveInfoPopup : BasePopup
     /// Thread 정보를 계산된 데이터로 초기화하고 패널을 표시합니다.
     /// 이 메서드는 DesignUiManager.OnClickSaveBtn()에서 호출됩니다.
     /// </summary>
-    public void Init(string threadTitle, List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignCanvas designUiManager)
+    public void Init(List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignCanvas designUiManager)
     {
         base.Init();
         
         _designCanvas = designUiManager;
 
-        // Thread 제목 설정
-        if (_threadTitleInputField != null)
-        {
-            _threadTitleInputField.text = threadTitle ?? string.Empty;
-        }
-
-        // 현재 편집 중인 Thread의 기존 카테고리 ID를 가져와 설정
         string currentThreadId = _designCanvas.DesignRunner.CurrentThreadId;
         _selectedCategoryId = string.Empty;
 
@@ -61,12 +54,10 @@ public class ThreadSaveInfoPopup : BasePopup
             }
         }
 
-        // UI 갱신
         UpdateCategoryText();
         GameObjectUtils.ClearChildren(_inputProductionScrollVIewContent);
         GameObjectUtils.ClearChildren(_outputProductionScrollVIewContent);
 
-        // 입력/출력 자원 목록 표시
         inputResourceIds ??= new List<string>();
         inputResourceCounts ??= new Dictionary<string, int>();
         outputResourceIds ??= new List<string>();
@@ -74,8 +65,6 @@ public class ThreadSaveInfoPopup : BasePopup
 
         DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts, isOutput: false);
         DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts, isOutput: true);
-
-        // 총 유지비 표시
         _totalMaintenanceText.text = $"total maintenance: {totalMaintenance:N0}/month";
 
         Show();
@@ -160,7 +149,7 @@ public class ThreadSaveInfoPopup : BasePopup
     }
 
     /// <summary>
-    /// 저장 확인 버튼 클릭 시 호출됩니다. (최종 저장 명령)
+    /// 저장 확인 버튼 클릭 시 호출됩니다.
     /// </summary>
     public void OnClickSave()
     {
@@ -169,8 +158,6 @@ public class ThreadSaveInfoPopup : BasePopup
             Debug.LogError("[SaveInfoPanel] DesignUiManager or GameManager reference is missing.");
             return;
         }
-
-        // 스레드 이름 유효성 검사
         string threadName = _threadTitleInputField != null ? _threadTitleInputField.text : string.Empty;
 
         if (string.IsNullOrEmpty(threadName))
@@ -179,12 +166,10 @@ public class ThreadSaveInfoPopup : BasePopup
             return;
         }
 
-        // 최종 저장 명령을 DesignUiManager에 위
         _designCanvas.SaveThreadChanges(threadName, _selectedCategoryId);
 
         Debug.Log($"[ThreadSaveInfoPanel] Save request delegated for: {threadName} (Category: {_selectedCategoryId})");
 
-        // 저장 완료 알림 및 패널 숨김
         Close();
     }
 }

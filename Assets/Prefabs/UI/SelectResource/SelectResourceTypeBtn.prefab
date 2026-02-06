@@ -615,7 +615,7 @@ MonoBehaviour:
   doubleClickDuration: 0.25
   imageObject: {fileID: 6206058060870574597}
   iconElement: {fileID: 0}
-  textObject: {fileID: 8243893438295776057}
+  textObject: {fileID: 0}
   textContainer: {fileID: 0}
   contentFitter: {fileID: 0}
   contentLayout: {fileID: 0}
