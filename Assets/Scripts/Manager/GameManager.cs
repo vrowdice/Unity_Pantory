@@ -448,7 +448,7 @@ public class GameManager : Singleton<GameManager>
         if (panel != null)
         {
             string mainText = effectState.id.Localize(LocalizationUtils.TABLE_EFFECT);
-            string secondText = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.type);
+            string secondText = _dataManager.Effect.FormatEffectValue(effectState.value, effectState.modifierType);
 
             panel.Init(mainText, secondText, effectState.value, mainTextColor);
         }

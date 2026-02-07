@@ -20,6 +20,9 @@ public class InitialNewsData : ScriptableObject
     [Tooltip("자원 가격 이펙트의 최소 증가율 (PercentAdd 값, 예: -0.2 = -20%)")]
     public float minResourcePricePer = -0.2f;
 
-    public int maxDurationDays = 30;
-    public int minDurationDays = 5;
+    [Header("Resource Price Effect Settings")]
+    [Tooltip("상승/하강 시 보장되는 최소 변동 비율 (예: 0.05 = 5%)")]
+    public float minVariationRate = 0.05f;
+    [Tooltip("최소 변동폭 위로 추가될 수 있는 최대 랜덤 범위 (예: 0.05 = +0~5% 추가)")]
+    public float maxRandomRange = 0.05f;
 }

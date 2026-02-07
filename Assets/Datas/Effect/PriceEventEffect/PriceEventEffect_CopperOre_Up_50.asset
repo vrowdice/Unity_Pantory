@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_CopOre_Price_Up_50
   displayName: Copper Ore Price Surge
   statType: 5
-  type: 1
+  modifierType: 1
   value: 0.5
   durationDays: 0
   targetId: copper_ore

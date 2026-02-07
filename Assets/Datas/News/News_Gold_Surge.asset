@@ -18,4 +18,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: b3a91fcd7f9ab214e970420513c4b779, type: 3}
   effects:
   - {fileID: 11400000, guid: 9134c719d9ee1a74cb38784debfc24ac, type: 2}
+  - {fileID: 11400000, guid: 5613de20fd584ded8085666ebf180d7a, type: 2}
   durationDays: 14

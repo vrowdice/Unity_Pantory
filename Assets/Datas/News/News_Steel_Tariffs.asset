@@ -19,4 +19,5 @@ MonoBehaviour:
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000004, type: 2}
   - {fileID: 11400000, guid: e1000000000000000000000000000005, type: 2}
+  - {fileID: 11400000, guid: ecf45bdd89d24fecbeb0ba614691f0e0, type: 2}
   durationDays: 30

@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: News_Auto_Surge
   m_EditorClassIdentifier: 
   id: News_Auto_Surge
-  displayName: "Automotive Boom"
-  description: "A sudden craze for the latest vehicle models has cleared out dealer inventories worldwide."
-  icon: {fileID: 21300000, guid: b14c3f51cf7290a4c91149bf1a5491f6, type: 3}
+  displayName: Auto Industry Surge
+  description: Technological advances and subsidies have triggered a boom in car manufacturing.
+  icon: {fileID: 21300000, guid: 025d5754593e9e3428d05269527ec3c3, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000009, type: 2}
+  - {fileID: 11400000, guid: e1000000000000000000000000000005, type: 2}
+  - {fileID: 11400000, guid: e1000000000000000000000000000001, type: 2}
+  - {fileID: 11400000, guid: e1000000000000000000000000000004, type: 2}
+  - {fileID: 11400000, guid: e1000000000000000000000000000019, type: 2}
   - {fileID: 11400000, guid: e1000000000000000000000000000010, type: 2}
-  durationDays: 21
+  durationDays: 45

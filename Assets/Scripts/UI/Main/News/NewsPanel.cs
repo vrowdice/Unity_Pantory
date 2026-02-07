@@ -18,15 +18,15 @@ public class NewsPanel : BasePanel
 
     private void OnEnable()
     {
-        _dataManager.Time.OnDayChanged += RefreshNewsList;
+        _dataManager.News.OnNewsChanged += RefreshNewsList;
     }
 
     private void OnDisable()
     {
-        _dataManager.Time.OnDayChanged += RefreshNewsList;
+        _dataManager.News.OnNewsChanged += RefreshNewsList;
     }
 
-    private void RefreshNewsList()
+    private void RefreshNewsList(NewsState newsState = null)
     {
         List<NewsState> activeNewsList = _dataManager.News.GetActiveNewsList();
 

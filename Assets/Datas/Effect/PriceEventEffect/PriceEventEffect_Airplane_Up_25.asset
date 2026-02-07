@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_Air_Price_Up_25
   displayName: Airplane Price Surge
   statType: 5
-  type: 1
+  modifierType: 1
   value: 0.25
   durationDays: 0
   targetId: airplane

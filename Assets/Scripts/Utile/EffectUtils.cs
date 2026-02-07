@@ -29,7 +29,7 @@ public static class EffectUtils
             EffectState e = effects[i];
             if (e == null) continue;
 
-            switch (e.type)
+            switch (e.modifierType)
             {
                 case ModifierType.Flat:
                     sumFlat += e.value;

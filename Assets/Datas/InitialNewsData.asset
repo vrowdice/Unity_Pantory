@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: InitialNewsData
   m_EditorClassIdentifier: 
   maxNewsItems: 5
-  baseNewsChance: 0.05
-  newsChanceIncrement: 0.01
-  guaranteedNewsDay: 15
-  maxResourcePricePer: 0.2
-  minResourcePricePer: -0.2
-  maxDurationDays: 30
-  minDurationDays: 5
+  baseNewsChance: 0.01
+  newsChanceIncrement: 0.005
+  guaranteedNewsDay: 30
+  maxResourcePricePer: 0.4
+  minResourcePricePer: -0.4
+  minVariationRate: 0.1
+  maxRandomRange: 0.1

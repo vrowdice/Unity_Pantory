@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_PGold_Price_Down_10
   displayName: Pure Gold Price Drop
   statType: 5
-  type: 1
+  modifierType: 1
   value: -0.1
   durationDays: 0
   targetId: pure_gold

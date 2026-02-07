@@ -68,23 +68,32 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
             .Where(data => !_activeNewsList.Any(active => active.id == data.id))
             .ToList();
 
-        NewsData selectedData = null;
-        if (availableNews.Count > 0)
-        {
-            selectedData = availableNews[UnityEngine.Random.Range(0, availableNews.Count)];
-        }
-        else
+        if (availableNews.Count == 0)
         {
             ResetNewsChance();
             return;
         }
 
-            NewsState newState = new NewsState(selectedData);
+        NewsData selectedData = availableNews[UnityEngine.Random.Range(0, availableNews.Count)];
+        NewsState newState = new NewsState(selectedData);
         _activeNewsList.Add(newState);
 
         foreach (EffectData effect in selectedData.effects)
         {
-            _dataManager.Effect.ApplyEffect(effect, effect.value, effect.targetId);
+            float additionalRandom = UnityEngine.Random.Range(-_initialNewsData.maxRandomRange, _initialNewsData.maxRandomRange);
+            float finalValue = effect.value + additionalRandom;
+
+            if (effect.value > 0)
+            {
+                finalValue = Mathf.Max(finalValue, _initialNewsData.minVariationRate);
+            }
+            else if (effect.value < 0)
+            {
+                finalValue = Mathf.Min(finalValue, -_initialNewsData.minVariationRate);
+            }
+
+            finalValue = Mathf.Clamp(finalValue, _initialNewsData.minResourcePricePer, _initialNewsData.maxResourcePricePer);
+            _dataManager.Effect.ApplyEffect(effect, finalValue, effect.targetId);
         }
 
         OnNewsChanged?.Invoke(newState);
@@ -131,6 +140,14 @@ public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
             news.remainingDays--;
             if (news.remainingDays <= 0)
             {
+                NewsData data = GetNewsData(news.id);
+                if (data != null)
+                {
+                    foreach (EffectData effect in data.effects)
+                    {
+                        _dataManager.Effect.RemoveEffect(effect, effect.targetId);
+                    }
+                }
                 _activeNewsList.RemoveAt(i);
             }
         }

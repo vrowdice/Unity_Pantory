@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_Gold_Price_Up
   displayName: Gold Price Surge Impact
   statType: 5
-  type: 1
+  modifierType: 1
   value: 0.2
   durationDays: 0
   targetId: gold_ore

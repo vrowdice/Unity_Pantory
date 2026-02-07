@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_Arms_Price_Up_15
   displayName: Arms Price Surge
   statType: 5
-  type: 1
+  modifierType: 1
   value: 0.15
   durationDays: 0
   targetId: heavy_arms

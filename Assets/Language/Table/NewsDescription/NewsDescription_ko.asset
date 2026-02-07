@@ -19,55 +19,55 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7000000000001
-    m_Localized: "\uACE0\uC870\uB418\uB294 \uAD6D\uC81C \uAC08\uB4F1\uC73C\uB85C \uC778\uD574 \uAC01\uAD6D\uC774 \uAD6D\uBC29\uBE44\uB97C \uC99D\uC561\uD558\uBA70 \uC911\uD654\uAE30 \uC218\uC694\uAC00 \uAE09\uC99D\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 국제 갈등의 격화로 전 세계적인 군비 경쟁이 시작되었습니다. 소형 무기, 중화기, 탄약, 전차의 수요가 폭발적으로 증가하고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000002
-    m_Localized: "\uCD5C\uC2E0 \uCC28\uB7C9 \uBAA8\uB378\uC5D0 \uB300\uD55C \uAC11\uC791\uC2A4\uB7EC\uC6B4 \uC5F4\uD48D\uC73C\uB85C \uC804 \uC138\uACC4 \uB300\uB9AC\uC810\uC758 \uC7AC\uACE0\uAC00 \uB3D9\uB0AC\uC2B5\uB2C8\uB2E4."
+    m_Localized: 기술적 혁신과 정부 보조금으로 자동차 산업이 호황을 맞았습니다. 자동차, 엔진, 철강, 알루미늄, 석유의 가격 급등이 예상됩니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000003
-    m_Localized: "\uD601\uC2E0\uC801\uC778 \uC2E0\uD615 \uC5D4\uC9C4 \uC124\uACC4\uB85C \uC778\uD574 \uD56D\uACF5\uC6B0\uC8FC \uC0B0\uC5C5\uC5D0 \uD65C\uAE30\uAC00 \uB3CC\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: 혁신적인 항공 엔진 설계가 시장에 활력을 불어넣었습니다. 비행기, 알루미늄, 엔진, 전자 부품의 수요가 치솟고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000004
-    m_Localized: "\uACF5\uAE09\uB9DD \uCC28\uC9C8\uB85C \uC778\uD574 \uBC18\uB3C4\uCCB4 \uC0DD\uC0B0\uC774 \uC911\uB2E8\uB418\uC5B4 \uBD80\uD488 \uAC00\uACA9\uC774 \uC0C1\uC2B9\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 글로벌 공급망 차질로 반도체 생산이 중단되었습니다. 전자 부품, 정밀 도구, 기계 부품의 가격이 빠르게 상승하고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000005
-    m_Localized: "\uC804 \uC138\uACC4\uC801\uC778 \uC1FC\uD551 \uC5F4\uD48D\uC73C\uB85C \uAC00\uC804\uC81C\uD488\uACFC \uC0DD\uD65C \uD544\uC218\uD488\uC5D0 \uB300\uD55C \uC218\uC694\uAC00 \uAE09\uC99D\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 대규모 글로벌 쇼핑 이벤트로 창고가 비었습니다. 전자 부품, 기본 및 고급 의류, 가구에 대한 수요가 사상 최고치를 기록했습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000006
-    m_Localized: "\uC138\uACC4 \uACBD\uC81C \uBD88\uC548\uC815\uC73C\uB85C \uC548\uC804 \uC790\uC0B0\uC778 \uAE08\uC5D0 \uB300\uD55C \uC218\uC694\uAC00 \uD3ED\uBC1C\uC801\uC73C\uB85C \uC99D\uAC00\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 경제 불안정으로 인해 투자자들이 안전 자산으로 몰리고 있습니다. 금 광석과 순금의 가치가 가파르게 상승하고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000007
-    m_Localized: "\uAE09\uACA9\uD55C \uB3C4\uC2DC\uD654\uB85C \uC778\uD574 \uAC74\uC124 \uC790\uC7AC\uC640 \uB3C4\uAD6C \uC218\uC694\uAC00 \uC0AC\uC0C1 \uCD5C\uACE0\uCE58\uB97C \uAE30\uB85D\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 급격한 도시화로 건설 붐이 일었습니다. 철강, 기본 및 고급 가구, 고급 목재의 가격이 급등하고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000008
-    m_Localized: "\uC0C8\uB85C\uC6B4 \uC0AC\uCE58 \uAE08\uC9C0\uBC95\uC73C\uB85C \uC778\uD574 \uC5EC\uB7EC \uC8FC\uC694 \uC2DC\uC7A5\uC5D0\uC11C \uC0AC\uCE58\uD488 \uD310\uB9E4\uAC00 \uAE08\uC9C0\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+    m_Localized: 새로운 사치 금지법이 사치품 판매를 엄격히 금지합니다. 고급 의류, 고급 가구, 순금 시장이 폭락하고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000009
-    m_Localized: "\uC138\uACC4 \uCD5C\uB300 \uAD6C\uB9AC \uAD11\uC0B0\uC5D0\uC11C \uBC1C\uC0DD\uD55C \uCE58\uBA85\uC801\uC778 \uBD95\uAD34 \uC0AC\uACE0\uB85C \uC6B4\uC601\uC774 \uBB34\uAE30\uD55C \uC911\uB2E8\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+    m_Localized: 주요 광산의 붕괴 사고로 채굴이 중단되었습니다. 석탄, 철 광석, 알루미늄 광석, 금 광석의 부족이 예상됩니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000010
-    m_Localized: "\uC8FC\uC694 \uC6D0\uC720 \uC0DD\uC0B0 \uC9C0\uC5ED\uC758 \uC9C0\uC815\uD559\uC801 \uAE34\uC7A5\uC73C\uB85C \uC0DD\uC0B0\uB7C9\uC774 \uAE09\uAC10\uD558\uC5EC \uC720\uAC00\uAC00 \uAE09\uB4F1\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 산유국 지역의 지정학적 갈등으로 생산량이 급감했습니다. 석유 가격이 전례 없는 수준으로 치솟고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000011
-    m_Localized: "\uC5ED\uC0AC\uC801\uC778 \uD3C9\uD654 \uD611\uC815\uC774 \uCCB4\uACB0\uB418\uC5B4 \uC804 \uC138\uACC4\uC801\uC73C\uB85C \uAD70\uC0AC \uC608\uC0B0\uC774 \uB300\uD3ED \uC0AD\uAC10\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+    m_Localized: 역사적인 평화 협정으로 전 세계적인 비무장화가 진행되고 있습니다. 탄약, 전차, 비행기 가격의 하락을 유도합니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000012
-    m_Localized: "\uC911\uAE08\uC18D\uC5D0 \uB300\uD55C \uC0C8\uB85C\uC6B4 \uC218\uC785 \uAD00\uC138\uC640 \uBB34\uC5ED \uC81C\uD55C\uC73C\uB85C \uC778\uD574 \uAD6D\uB0B4 \uCCA0\uAC15 \uAC00\uACA9\uC774 \uAE09\uB4F1\uD588\uC2B5\uB2C8\uB2E4."
+    m_Localized: 수입 금속에 대한 중관세 부과로 무역이 차질을 빚고 있습니다. 국내 철강 및 철 광석 가격이 급등하고 있습니다.
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000013
-    m_Localized: "\uC12C\uC720 \uACF5\uC7A5\uC758 \uB300\uADDC\uBAA8 \uD30C\uC5C5\uC73C\uB85C \uC804 \uC138\uACC4 \uC758\uB958 \uC0DD\uC0B0\uC774 \uB9C8\uBE44\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+    m_Localized: 섬유 산업 전반에 걸친 대규모 파업으로 생산이 마비되었습니다. 직물, 기본 의류, 고급 의류가 품귀 현상을 빚고 있습니다.
     m_Metadata:
       m_Items: []
   references:

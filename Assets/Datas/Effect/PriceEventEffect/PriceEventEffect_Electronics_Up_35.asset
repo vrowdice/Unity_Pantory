@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_Elec_Price_Up_35
   displayName: Electronics Price Surge
   statType: 5
-  type: 1
+  modifierType: 1
   value: 0.35
   durationDays: 0
   targetId: electronic_components

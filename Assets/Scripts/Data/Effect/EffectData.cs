@@ -8,7 +8,7 @@ public class EffectData : ScriptableObject
     public string id;
     public string displayName;
     public EffectStatType statType;
-    public ModifierType type;
+    public ModifierType modifierType;
     public float value;
     public float durationDays;
 

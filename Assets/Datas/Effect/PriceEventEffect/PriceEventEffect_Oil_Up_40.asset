@@ -17,7 +17,7 @@ MonoBehaviour:
   id: Effect_Oil_Price_Up_40
   displayName: Oil Price Surge
   statType: 5
-  type: 1
+  modifierType: 1
   value: 0.4
   durationDays: 0
   targetId: oil

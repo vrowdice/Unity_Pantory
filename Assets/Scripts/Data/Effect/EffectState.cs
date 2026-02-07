@@ -13,7 +13,7 @@ public class EffectState
     public string id;
     public string displayName;
     public EffectStatType statType;
-    public ModifierType type;
+    public ModifierType modifierType;
     public float value;
     public float durationDays;
     public float remainingDays;
@@ -30,7 +30,7 @@ public class EffectState
         id = data.id;
         displayName = data.displayName;
         statType = data.statType;
-        type = data.type;
+        modifierType = data.modifierType;
         value = data.value;
         durationDays = data.durationDays;
         remainingDays = data.durationDays;

@@ -21,4 +21,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e1000000000000000000000000000006, type: 2}
   - {fileID: 11400000, guid: e1000000000000000000000000000007, type: 2}
   - {fileID: 11400000, guid: e1000000000000000000000000000008, type: 2}
+  - {fileID: 11400000, guid: 689c170b7b6d48fc8cb480a1a8fb2ade, type: 2}
   durationDays: 60
