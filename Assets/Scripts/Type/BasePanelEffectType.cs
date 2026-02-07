@@ -1,4 +1,4 @@
-public class EffectType
+public class BasePanelEffectType
 {
     public enum TYPE
     {

@@ -5,6 +5,8 @@ using UnityEngine;
 /// </summary>
 public class OrderPanel : BasePanel
 {
+
+
     public override void Init(MainCanvas argUIManager)
     {
         base.Init(argUIManager);

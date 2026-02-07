@@ -4,6 +4,6 @@ public enum MainPanelType
     Market,
     Employment,
     Research,
-    News,
     Order,
+    News,
 }

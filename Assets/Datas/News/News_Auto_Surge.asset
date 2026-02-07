@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Auto_Surge
   displayName: Auto Industry Surge
-  description: Technological advances and subsidies have triggered a boom in car manufacturing.
-  icon: {fileID: 21300000, guid: 025d5754593e9e3428d05269527ec3c3, type: 3}
+  isBreakingNews: 0
+  description: Technological advances and subsidies have triggered a boom in car
+    manufacturing.
+  icon: {fileID: 21300000, guid: 13d6382c7bcfac149a1a8870bf1b17d6, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000009, type: 2}
   - {fileID: 11400000, guid: e1000000000000000000000000000005, type: 2}

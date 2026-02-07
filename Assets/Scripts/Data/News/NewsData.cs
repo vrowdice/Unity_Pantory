@@ -10,6 +10,7 @@ public class NewsData : ScriptableObject
     [Header("Basic Info")]
     public string id;
     public string displayName;
+    public bool isBreakingNews;
     [TextArea(2, 6)]
     public string description;
     public Sprite icon;

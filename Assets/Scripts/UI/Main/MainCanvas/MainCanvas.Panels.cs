@@ -23,8 +23,8 @@ public partial class MainCanvas
             { MainPanelType.Market, _marketPanel },
             { MainPanelType.Employment, _employmentPanel },
             { MainPanelType.Research, _researchPanel },
+            { MainPanelType.Order, _orderPanel },
             { MainPanelType.News, _newsPanel },
-            { MainPanelType.Order, _orderPanel }
         };
     }
 

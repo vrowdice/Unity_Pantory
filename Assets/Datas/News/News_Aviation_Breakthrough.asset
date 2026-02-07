@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Aviation_Breakthrough
   displayName: Aviation Breakthrough
-  description: New aerospace technologies have increased the demand for advanced materials
-    and components.
-  icon: {fileID: 21300000, guid: e1e98d9c1229f3c478a05c5c0a3e83f0, type: 3}
+  isBreakingNews: 0
+  description: New aerospace technologies have increased the demand for advanced
+    materials and components.
+  icon: {fileID: 21300000, guid: e668180682ff5c54c88a6f708b89527d, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000018, type: 2}
   - {fileID: 11400000, guid: e1000000000000000000000000000019, type: 2}

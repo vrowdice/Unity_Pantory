@@ -127,12 +127,13 @@ public class OptionPopup : BasePopup
         SoundManager.Instance.SetBGMVolume(_pendingBGMVolume);
         SoundManager.Instance.SetSFXVolume(_pendingSFXVolume);
         SoundManager.Instance.SaveSettings();
+
+        SceneLoadManager.Instance.ReloadScene();
         OnClickExit();
     }
 
     public void OnClickExit()
     {
-        SceneLoadManager.Instance.ReloadScene();
         Close();
         Destroy(gameObject);
     }

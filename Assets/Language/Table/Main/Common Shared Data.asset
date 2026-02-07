@@ -227,6 +227,10 @@ MonoBehaviour:
     m_Key: Expected profit
     m_Metadata:
       m_Items: []
+  - m_Id: 4846360811945984
+    m_Key: Reset
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

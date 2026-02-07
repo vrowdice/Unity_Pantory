@@ -13,7 +13,7 @@ public class BasePopup : MonoBehaviour
     private RectTransform _rectTransform = null;
     private Canvas _canvas = null;
 
-    [SerializeField] private EffectType.TYPE _effectType = EffectType.TYPE.ZoomScale;
+    [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.ZoomScale;
     [SerializeField] private bool _enabled = true;
     protected Coroutine _showCoroutine = null;
 
@@ -36,7 +36,7 @@ public class BasePopup : MonoBehaviour
         _canvas = FindAnyObjectByType<Canvas>();
         gameObject.SetActive(false);
     }
-    public virtual void Init(Vector3 argPosition, EffectType.TYPE argType)
+    public virtual void Init(Vector3 argPosition, BasePanelEffectType.TYPE argType)
     {
         Init(argPosition);
         _effectType = argType;
@@ -70,11 +70,11 @@ public class BasePopup : MonoBehaviour
     {
         switch(_effectType)
         {
-            case EffectType.TYPE.ZoomScale:
+            case BasePanelEffectType.TYPE.ZoomScale:
                 transform.localScale = Vector3.zero;
                 yield return transform.DOScale(_originalScale.Value, 0.5f).SetEase(Ease.OutBack).SetUpdate(true).WaitForCompletion();
                 break;
-            case EffectType.TYPE.L2R:
+            case BasePanelEffectType.TYPE.L2R:
                 float canvasWidth = _canvas.GetComponent<RectTransform>().sizeDelta.x;
                 float halfUIWidth = _rectTransform.sizeDelta.x / 2;
 
@@ -99,7 +99,7 @@ public class BasePopup : MonoBehaviour
                 }));
                 yield return sequence.WaitForCompletion();
                 break;
-            case EffectType.TYPE.PunchScale:
+            case BasePanelEffectType.TYPE.PunchScale:
                 transform.localScale = new Vector3(0f,0f,1f);
                 Sequence seq = DOTween.Sequence();
                 seq.Append(transform.DOScale(_originalScale.Value, INOUT_DURATION).SetEase(Ease.OutCirc));
