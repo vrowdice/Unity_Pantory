@@ -41,9 +41,9 @@ public static class BuildingCalculationUtils
     private static bool IsValidBuilding(BuildingState state, DataManager data, out BuildingData dataEntry)
     {
         dataEntry = null;
-        if (state == null || string.IsNullOrEmpty(state.buildingId)) return false;
+        if (state == null || string.IsNullOrEmpty(state.Id)) return false;
 
-        dataEntry = data.Building.GetBuildingData(state.buildingId);
+        dataEntry = data.Building.GetBuildingData(state.Id);
         if (dataEntry == null) return false;
 
         return state.IsUnlocked(data);

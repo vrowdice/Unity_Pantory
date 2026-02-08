@@ -272,7 +272,7 @@ public class ThreadDataHandler : IDataHandlerEvents
         thread.buildingStateList.RemoveAll(b => b.positionX == buildingState.positionX && b.positionY == buildingState.positionY);
         thread.buildingStateList.Add(buildingState);
 
-        Debug.Log($"[ThreadDataHandler] Building added/replaced in thread {thread.threadName}: {buildingState.buildingId}");
+        Debug.Log($"[ThreadDataHandler] Building added/replaced in thread {thread.threadName}: {buildingState.Id}");
 
         OnThreadChanged?.Invoke();
         return true;

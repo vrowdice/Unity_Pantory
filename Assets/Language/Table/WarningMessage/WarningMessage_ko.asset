@@ -62,6 +62,10 @@ MonoBehaviour:
     m_Localized: 잠겨 있습니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268012
+    m_Localized: 스레드를 배치할 수 없습니다. 스레드 내 하나 이상의 건물이 아직 연구되지 않았습니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

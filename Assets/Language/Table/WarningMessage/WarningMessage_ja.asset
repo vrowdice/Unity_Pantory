@@ -62,6 +62,10 @@ MonoBehaviour:
     m_Localized: ロックされています。
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268012
+    m_Localized: スレッドを配置できません。このスレッド内の1つ以上の建物がまだ研究されていません。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

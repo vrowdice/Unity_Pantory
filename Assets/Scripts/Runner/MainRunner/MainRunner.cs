@@ -100,7 +100,6 @@ public class MainRunner : RunnerBase
         _cameraCollider.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
         _cameraCollider.size = new Vector2(_gridWidth, _gridHeight);
 
-        // 카메라 경계 설정 (그리드 영역에 맞게)
         if (_mainCameraController != null)
         {
             Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, -_gridHeight / 2f, 0);
@@ -203,6 +202,15 @@ public class MainRunner : RunnerBase
     public bool PlaceThread(Vector2Int gridPos, ThreadState templateThread)
     {
         if (!_gridHandler.CanPlaceThread(gridPos)) return false;
+        foreach(BuildingState item in templateThread.buildingStateList)
+        {
+            if (!DataManager.Building.IsBuildingResearchUnlocked(item.Id))
+            {
+                
+                GameManager.ShowWarningPanel(WarningMessage.ThreadContainsLockedBuildings);
+                return false;
+            }
+        }
 
         ThreadState newThreadInstance = _threadPlacementHandler.PlaceThread(gridPos, templateThread.threadId);
         DataManager.Finances.ModifyCredit(-newThreadInstance.requiredBuildCost);

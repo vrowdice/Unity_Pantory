@@ -11,16 +11,18 @@ public class BuildingDataHandler
 {
     private Dictionary<string, BuildingData> _buildings;
 
+    private DataManager _dataManager;
+
     /// <summary>
     /// BuildingService 생성자
     /// </summary>
     public BuildingDataHandler(DataManager gameDataManager, List<BuildingData> buildingDataList = null)
     {
+        _dataManager = gameDataManager;
         _buildings = new Dictionary<string, BuildingData>();
         
         if (buildingDataList != null && buildingDataList.Count > 0)
         {
-            // 리스트에서 딕셔너리로 등록
             foreach (var data in buildingDataList)
             {
                 if (data == null || string.IsNullOrEmpty(data.id)) continue;
@@ -144,5 +146,17 @@ public class BuildingDataHandler
     public int GetBuildingTypeCount()
     {
         return _buildings.Count;
+    }
+
+    public bool IsBuildingResearchUnlocked(string buildingId)
+    {
+        BuildingData buildingData = GetBuildingData(buildingId);
+        if (buildingData == null)
+            return false;
+        if(buildingData.requiredResearch == null)
+        {
+            return true;
+        }
+        return _dataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
     }
 }

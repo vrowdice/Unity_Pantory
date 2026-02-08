@@ -132,8 +132,8 @@ public class ThreadInfoPopup : BasePopup
         int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
 
         UpdateEmployeeTexts(requiredTotal, currentWorkers, currentTechs, hiredWorkers, hiredTechs);
-        UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal);
-        UpdateSliderState(_technicianSlider, currentTechs, availTechs, requiredTotal);
+        UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal - _currentThreadState.requiredTechnicians);
+        UpdateSliderState(_technicianSlider, currentTechs, availTechs, _currentThreadState.requiredTechnicians);
     }
 
     private void UpdateEmployeeTexts(int max, int currW, int currT, int hiredW, int hiredT)

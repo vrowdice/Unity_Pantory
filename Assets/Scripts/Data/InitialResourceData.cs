@@ -4,7 +4,7 @@ using UnityEngine;
 /// 초기 리소스 데이터를 저장하는 ScriptableObject
 /// Inspector를 통해 초기 리소스 밸런싱을 조정할 수 있습니다.
 /// </summary>
-[CreateAssetMenu(fileName = "InitialResourceData", menuName = "Game Data/Initial Resource Data")]
+[CreateAssetMenu(fileName = "InitialResourceData", menuName = "Init Game Data/Initial Resource Data")]
 public class InitialResourceData : ScriptableObject
 {
     [Header("Price Volatility")]

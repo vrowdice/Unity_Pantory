@@ -9,7 +9,7 @@ using UnityEngine;
 [Serializable]
 public class BuildingState
 {
-    public string buildingId;
+    public string Id;
     public List<string> inputProductionIds;
     public List<string> outputProductionIds;
     public int positionX;
@@ -27,7 +27,7 @@ public class BuildingState
     
     public BuildingState(string buildingId, Vector2Int position, BuildingData buildingData, int rotation = 0)
     {
-        this.buildingId = buildingId;
+        this.Id = buildingId;
         this.positionX = position.x;
         this.positionY = position.y;
         this.rotation = rotation;
@@ -63,7 +63,7 @@ public class BuildingState
     /// <returns>언락되었으면 true, 연구가 필요 없거나 완료되었으면 true</returns>
     public bool IsUnlocked(DataManager dataManager)
     {
-        BuildingData buildingData = dataManager.Building.GetBuildingData(buildingId);
+        BuildingData buildingData = dataManager.Building.GetBuildingData(Id);
         if (buildingData == null)
             return false;
 

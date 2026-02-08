@@ -77,7 +77,7 @@ public class DesignRunnerCaptureHandler
 
         foreach (var state in states)
         {
-            BuildingData data = _manager.DataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = _manager.DataManager.Building.GetBuildingData(state.Id);
             if (data == null) continue;
 
             Vector2Int rotatedSize = GetRotatedGridSize(data.size, state.rotation);

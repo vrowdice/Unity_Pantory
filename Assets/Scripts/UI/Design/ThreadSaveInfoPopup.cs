@@ -65,7 +65,7 @@ public class ThreadSaveInfoPopup : BasePopup
 
         DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts, isOutput: false);
         DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts, isOutput: true);
-        _totalMaintenanceText.text = $"total maintenance: {totalMaintenance:N0}/month";
+        _totalMaintenanceText.text = $"{totalMaintenance:N0} / day";
 
         Show();
     }

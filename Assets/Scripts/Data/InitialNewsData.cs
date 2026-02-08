@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "InitialNewsData", menuName = "Game Data/Initial News Data")]
+[CreateAssetMenu(fileName = "InitialNewsData", menuName = "Init Game Data/Initial News Data")]
 public class InitialNewsData : ScriptableObject
 {
     [Header("Basic Settings")]

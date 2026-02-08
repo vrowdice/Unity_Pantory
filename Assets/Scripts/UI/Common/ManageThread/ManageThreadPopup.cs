@@ -231,38 +231,6 @@ public class ManageThreadPopup : BasePopup
     }
 
     /// <summary>
-    /// Plus 버튼 클릭 시 호출됩니다. 새 스레드 생성 프로세스를 시작합니다.
-    /// </summary>
-    private void OnPlusBtnClick()
-    {
-        if (GameManager.Instance == null || _dataManager == null) return;
-
-        GameManager.Instance.ShowEnterNamePanel((threadName) =>
-        {
-            if (string.IsNullOrEmpty(threadName)) return;
-
-            string baseId = $"thread_{threadName.Replace(" ", "_").ToLower()}";
-            string threadId = baseId;
-            int suffix = 0;
-
-            while (_dataManager.Thread.HasThread(threadId))
-            {
-                suffix++;
-                threadId = $"{baseId}_{suffix}";
-            }
-
-            _dataManager.Thread.CreateThread(threadId, threadName);
-
-            if (!string.IsNullOrEmpty(_selectedCategoryId))
-            {
-                _dataManager.Thread.AddThreadToCategory(_selectedCategoryId, threadId);
-            }
-
-            Debug.Log($"[ManageThreadPanel] New thread created: {threadId} ({threadName})");
-        });
-    }
-
-    /// <summary>
     /// 패널을 닫고 GameObject를 파괴합니다.
     /// </summary>
     public void ClosePanel()

@@ -11,7 +11,7 @@ public class ProductionInfoIconPanel : MonoBehaviour
     public void Init(ResourceEntry resourceEntry, int productionCount = -1)
     {
         _image.sprite = resourceEntry.data.icon;
-        _titleText.text = resourceEntry.data.displayName;
+        _titleText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
 
         if (productionCount >= 0)
         {

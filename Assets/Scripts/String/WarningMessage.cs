@@ -15,4 +15,5 @@ public static class WarningMessage
     public const string BuildingLockedResearchRequired = "BuildingLockedResearchRequired";
     public const string ThreadDeleted = "ThreadDeleted";
     public const string BuildingLocked = "BuildingLocked";
+    public const string ThreadContainsLockedBuildings = "ThreadContainsLockedBuildings";
 }

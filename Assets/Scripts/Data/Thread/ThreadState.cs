@@ -8,32 +8,28 @@ using System.Collections.Generic;
 [Serializable]
 public class ThreadState
 {
-    public string threadId = string.Empty;         // 고유 식별자
-    public string threadName = string.Empty;       // 표시 이름
-    public string categoryId = string.Empty;       // 속한 카테고리 ID
+    public string threadId = string.Empty;
+    public string threadName = string.Empty;
+    public string categoryId = string.Empty;
     public List<BuildingState> buildingStateList = new List<BuildingState>();
-    public string previewImagePath = string.Empty; // 건물 레이아웃 미리보기 이미지 경로
-    public int totalMaintenanceCost = 0;           // 스레드의 총 유지비
-    public int requiredBuildCost = 0;      // 스레드 건설 시 필요한 금액
+    public string previewImagePath = string.Empty;
+    public int totalMaintenanceCost = 0;
+    public int requiredBuildCost = 0;
     
     [Header("Production Status")]
-    public float currentProductionProgress = 0f;   // 현재 생산 진행도 (0.0 ~ 1.0)
-    public float currentProductionEfficiency = 0f; // 현재 생산 효율 퍼센테이지 (0.0 ~ 1.0)
+    public float currentProductionProgress = 0f;
+    public float currentProductionEfficiency = 0f;
     
     [Header("Employee Requirements")]
-    public int requiredEmployees = 0;               // 필요한 Employee 직원 수
-    public int currentWorkers = 0;                // 현재 일하고 있는 Worker 직원 수
-    public int currentTechnicians = 0;            // 현재 일하고 있는 Technician 직원 수
+    public int requiredTechnicians = 0;
+    public int requiredEmployees = 0;
+    public int currentWorkers = 0;
+    public int currentTechnicians = 0;
     
     [System.NonSerialized]
-    public Dictionary<string, int> cachedInputCounts;  // 캐싱된 입력 자원 수량
+    public Dictionary<string, int> cachedInputCounts;
     [System.NonSerialized]
-    public Dictionary<string, int> cachedOutputCounts; // 캐싱된 출력 자원 수량
-    
-    public ThreadState()
-    {
-
-    }
+    public Dictionary<string, int> cachedOutputCounts;
     
     public ThreadState(string id, string name, string div = "", string catId = "")
     {

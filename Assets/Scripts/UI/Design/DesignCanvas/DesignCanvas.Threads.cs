@@ -33,7 +33,6 @@ public partial class DesignCanvas
         );
 
         int totalMaintenanceCost = _designRunner.CalculateTotalMaintenanceCost(threadName);
-        int requiredEmployeeCount = _designRunner.CalculateRequiredEmployees(threadName);
 
         _threadSaveInformationPanel.Init(
             inputResourceIdentifiers,
@@ -43,9 +42,6 @@ public partial class DesignCanvas
             totalMaintenanceCost,
             this
         );
-
-        Debug.Log($"[DesignUiManager] Save information panel shown for Thread: {threadName}");
-        Debug.Log($"[DesignUiManager] Required Employees: {requiredEmployeeCount}");
     }
 
     /// <summary>
@@ -53,7 +49,7 @@ public partial class DesignCanvas
     /// </summary>
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
-        _designRunner.SaveThreadChanges(threadName, categoryIdentifier);
+        _designRunner.SaveThread(threadName, categoryIdentifier);
         GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
 
         DeselectBuilding();
@@ -89,7 +85,7 @@ public partial class DesignCanvas
 
         if (_designRunner != null)
         {
-            _designRunner.SetCurrentThread(threadName);
+            _designRunner.LoadThread(threadName);
         }
 
         Debug.Log($"[DesignUiManager] Thread loaded: {threadName}");

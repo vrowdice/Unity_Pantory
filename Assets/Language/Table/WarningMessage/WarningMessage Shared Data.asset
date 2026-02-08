@@ -59,6 +59,10 @@ MonoBehaviour:
     m_Key: BuildingLocked
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268012
+    m_Key: ThreadContainsLockedBuildings
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

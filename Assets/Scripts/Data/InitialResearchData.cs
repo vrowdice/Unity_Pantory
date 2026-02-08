@@ -4,7 +4,7 @@ using UnityEngine;
 /// 초기 연구 데이터를 저장하는 ScriptableObject
 /// Inspector를 통해 연구 관련 초기 설정을 조정할 수 있습니다.
 /// </summary>
-[CreateAssetMenu(fileName = "InitialResearchData", menuName = "Game Data/Initial Research Data")]
+[CreateAssetMenu(fileName = "InitialResearchData", menuName = "Init Game Data/Initial Research Data")]
 public class InitialResearchData : ScriptableObject
 {
     [Header("Research Tier Settings")]

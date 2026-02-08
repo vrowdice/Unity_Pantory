@@ -434,7 +434,7 @@ public class DesignRunnerGridHandler
         
         foreach (BuildingState state in _currentStates)
         {
-            BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
             if (data == null) continue;
 
             Vector2Int size = GridMathUtils.GetRotatedSize(data.size, state.rotation);
@@ -458,7 +458,7 @@ public class DesignRunnerGridHandler
 
         foreach (BuildingState state in states)
         {
-            BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
             if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
 
             Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
@@ -494,7 +494,7 @@ public class DesignRunnerGridHandler
 
         foreach (BuildingState state in targetStates)
         {
-            BuildingData data = DataManager.Building.GetBuildingData(state.buildingId);
+            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
             if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
 
             Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
@@ -529,7 +529,7 @@ public class DesignRunnerGridHandler
         Dictionary<Vector2Int, BuildingState> map = new Dictionary<Vector2Int, BuildingState>();
         foreach (BuildingState s in states)
         {
-            BuildingData d = DataManager.Building.GetBuildingData(s.buildingId);
+            BuildingData d = DataManager.Building.GetBuildingData(s.Id);
             if (d == null) continue;
             Vector2Int size = GridMathUtils.GetRotatedSize(d.size, s.rotation);
             for (int x = 0; x < size.x; x++)

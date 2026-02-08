@@ -13,9 +13,9 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialTimeData _timeSettingsData;
     [SerializeField] private InitialResearchData _initialResearchData;
     [SerializeField] private InitialFinancesData _initialFinancesData;
-    [SerializeField] private InitialNewsData _initialNewsData;
     [SerializeField] private InitialEffectData _initialEffectData;
-
+    [SerializeField] private InitialOrderData _initialOrderData;
+    [SerializeField] private InitialNewsData _initialNewsData;
 
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
@@ -23,6 +23,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private List<EmployeeData> _employeeDataList = new List<EmployeeData>();
     [SerializeField] private List<ResearchData> _researchDataList = new List<ResearchData>();
     [SerializeField] private List<MarketActorData> _marketActorDataList = new List<MarketActorData>();
+    [SerializeField] private List<OrderData> _orderDataList = new List<OrderData>();
     [SerializeField] private List<NewsData> _newsDataList = new List<NewsData>();
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
@@ -40,6 +41,7 @@ public class DataManager : Singleton<DataManager>
     public BuildingDataHandler Building { get; private set; }
     public EffectDataHandler Effect { get; private set; }
     public ResearchDataHandler Research { get; private set; }
+    public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
 
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
@@ -79,6 +81,7 @@ public class DataManager : Singleton<DataManager>
         Building = new BuildingDataHandler(this, _buildingDataList);
         Effect = new EffectDataHandler(this);
         Research = new ResearchDataHandler(this, _researchDataList);
+        Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
 
         _eventHandlers.Clear();
@@ -91,6 +94,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(Research);
         _eventHandlers.Add(MarketActor);
         _eventHandlers.Add(News);
+        _eventHandlers.Add(Order);
 
         _dayHandlers.Clear();
         _dayHandlers.Add(Resource);
@@ -101,6 +105,7 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(Effect);
         _dayHandlers.Add(ThreadPlacement);
         _dayHandlers.Add(News);
+        _dayHandlers.Add(Order);
 
         LoadThreadData();
     }

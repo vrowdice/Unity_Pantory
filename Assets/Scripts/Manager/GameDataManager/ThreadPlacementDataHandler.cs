@@ -181,6 +181,17 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, IDayChangeHandler
         return stats.TotalRequiredEmployees;
     }
 
+    public int CalculateRequiredTechnicians(string threadIdentifier, List<BuildingState> buildingStates)
+    {
+        if (buildingStates == null || buildingStates.Count == 0)
+        {
+            return 0;
+        }
+
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
+        return stats.RequiredTechnicians;
+    }
+
     /// <summary>
     /// 스레드의 생산 체인을 계산하여 자원을 집계합니다.
     /// </summary>

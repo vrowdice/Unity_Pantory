@@ -133,7 +133,7 @@ public static class RoadNetworkAnalyzer
     {
         if (gridMap.TryGetValue(pos, out BuildingState state))
         {
-            return manager.Building.GetBuildingData(state.buildingId);
+            return manager.Building.GetBuildingData(state.Id);
         }
         return null;
     }

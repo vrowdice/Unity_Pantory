@@ -147,7 +147,6 @@ GameObject:
   - component: {fileID: 509094518299881473}
   - component: {fileID: 509094518299881475}
   - component: {fileID: 509094518299881472}
-  - component: {fileID: 509094518299881474}
   - component: {fileID: 3915974259390727112}
   - component: {fileID: 1067079835615054061}
   m_Layer: 5
@@ -215,28 +214,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!95 &509094518299881474
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509094518299881478}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: eb81b016d856d5a4b83c640c56d59957, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3915974259390727112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,8 +226,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5ddc2801eac5c489504ed00b134f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ani: {fileID: 509094518299881474}
   _messageText: {fileID: 4880212975976976674}
+  _canvasGroup: {fileID: 0}
+  _fadeInDuration: 0.2
+  _displayDuration: 1.5
+  _fadeOutDuration: 0.3
 --- !u!114 &1067079835615054061
 MonoBehaviour:
   m_ObjectHideFlags: 0

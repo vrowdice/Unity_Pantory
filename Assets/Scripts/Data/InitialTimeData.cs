@@ -4,7 +4,7 @@ using UnityEngine;
 /// 밸런싱을 위한 시간 설정을 저장하는 ScriptableObject
 /// Inspector를 통해 시간 흐름 구성을 조정할 수 있습니다.
 /// </summary>
-[CreateAssetMenu(fileName = "TimeSettingsData", menuName = "Game Data/Time Settings Data")]
+[CreateAssetMenu(fileName = "TimeSettingsData", menuName = "Init Game Data/Time Settings Data")]
 public class InitialTimeData : ScriptableObject
 {
     [Range(1, 48)]

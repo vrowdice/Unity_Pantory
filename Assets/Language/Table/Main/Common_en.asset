@@ -131,7 +131,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1202914645655552
-    m_Localized: Input
+    m_Localized: Material
     m_Metadata:
       m_Items: []
   - m_Id: 1203055897231360
@@ -232,6 +232,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 4846360811945984
     m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5085346176319488
+    m_Localized: Buildings requiring expertise
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5137769091710976
+    m_Localized: Production progress
     m_Metadata:
       m_Items: []
   references:

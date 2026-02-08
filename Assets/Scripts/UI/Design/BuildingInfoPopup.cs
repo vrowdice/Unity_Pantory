@@ -15,6 +15,7 @@ public class BuildingInfoPopup : BasePopup
     [SerializeField] private TextMeshProUGUI _buildCostText;
     [SerializeField] private TextMeshProUGUI _maintenanceText;
     [SerializeField] private Image _buildingImage;
+    [SerializeField] private Toggle _IsNeededExpertToggle;
 
     [SerializeField] private TextMeshProUGUI _materialPurchaseText;
     [SerializeField] private TextMeshProUGUI _productPriceText;
@@ -51,7 +52,8 @@ public class BuildingInfoPopup : BasePopup
         _typeText.text = $"{_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING_TYPE)}";
         _descriptionText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING_DESCRIPTION);
         _buildCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
-        _maintenanceText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)}/day";
+        _maintenanceText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)} / day";
+        _IsNeededExpertToggle.isOn = _currentData.isProfessional;
 
         if (_buildingImage != null)
         {

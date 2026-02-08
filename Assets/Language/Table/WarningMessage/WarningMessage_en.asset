@@ -62,6 +62,10 @@ MonoBehaviour:
     m_Localized: This is locked.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268012
+    m_Localized: Cannot place thread. One or more buildings in this thread are not researched yet.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

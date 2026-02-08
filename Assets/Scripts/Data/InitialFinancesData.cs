@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "InitialFinancesData", menuName = "Game Data/Initial Finances Data")]
+[CreateAssetMenu(fileName = "InitialFinancesData", menuName = "Init Game Data/Initial Finances Data")]
 public class InitialFinancesData : ScriptableObject
 {
     public long initialCredit = 1000;

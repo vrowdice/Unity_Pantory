@@ -234,28 +234,10 @@ public class DesignRunner : RunnerBase
     public void SaveThread(string threadName, string categoryIdentifier)
     {
         DataManager.Thread.CreateThread(threadName, threadName);
-
         DataManager.Thread.OverwriteBuildings(threadName, _temporaryBuildingStates);
-
         _currentThreadId = threadName;
-
         ProcessPostSaveLogic(threadName, categoryIdentifier);
-
         _saveLoadManager.Thread.SaveThreadData(DataManager.Thread);
-
-        Debug.Log($"[DesignRunner] Saved thread: {threadName}");
-    }
-
-    // 기존 UI 버튼 등과의 호환성을 위해 유지 (내부적으로 SaveThread 호출)
-    public void SaveThreadChanges(string threadName, string categoryIdentifier)
-    {
-        SaveThread(threadName, categoryIdentifier);
-    }
-
-    // 기존 코드와의 호환성을 위해 유지
-    public void SetCurrentThread(string threadIdentifier)
-    {
-        LoadThread(threadIdentifier);
     }
 
     /// <summary>
@@ -279,6 +261,7 @@ public class DesignRunner : RunnerBase
             
             threadState.totalMaintenanceCost = CalculateTotalMaintenanceCost(threadIdentifier);
             threadState.requiredEmployees = DataManager.ThreadPlacement.CalculateRequiredEmployees(threadIdentifier, _temporaryBuildingStates);
+            threadState.requiredTechnicians = DataManager.ThreadPlacement.CalculateRequiredTechnicians(threadIdentifier, _temporaryBuildingStates);
         }
     }
 
@@ -354,7 +337,7 @@ public class DesignRunner : RunnerBase
 
         foreach (BuildingState buildingState in _temporaryBuildingStates)
         {
-            BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
+            BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.Id);
             if (buildingData != null)
             {
                 GridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
@@ -393,7 +376,7 @@ public class DesignRunner : RunnerBase
 
             BuildingState clickedBuildingState = _temporaryBuildingStates.Find((BuildingState state) =>
             {
-                BuildingData buildingData = DataManager.Building.GetBuildingData(state.buildingId);
+                BuildingData buildingData = DataManager.Building.GetBuildingData(state.Id);
                 Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(buildingData.size, state.rotation);
                 return gridPosition.x >= state.positionX && gridPosition.x < state.positionX + rotatedSize.x &&
                        gridPosition.y >= state.positionY && gridPosition.y < state.positionY + rotatedSize.y;
@@ -412,7 +395,7 @@ public class DesignRunner : RunnerBase
     /// <param name="buildingState">건물 상태</param>
     private void ShowBuildingInfo(BuildingState buildingState)
     {
-        BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.buildingId);
+        BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.Id);
         if (buildingState.IsUnlocked(DataManager))
         {
             _designCanvas.ShowBuildingInfo(buildingData, buildingState);
@@ -446,14 +429,6 @@ public class DesignRunner : RunnerBase
     public int CalculateTotalMaintenanceCost(string threadName)
     {
         return DataManager.ThreadPlacement?.CalculateTotalMaintenanceCost(threadName, GetCurrentBuildingStates()) ?? 0;
-    }
-
-    /// <summary>
-    /// 스레드의 총 필요 직원 수를 계산합니다.
-    /// </summary>
-    public int CalculateRequiredEmployees(string threadName)
-    {
-        return DataManager.ThreadPlacement?.CalculateRequiredEmployees(threadName, GetCurrentBuildingStates()) ?? 0;
     }
 
     /// <summary>
