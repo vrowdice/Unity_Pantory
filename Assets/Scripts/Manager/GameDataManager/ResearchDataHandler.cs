@@ -7,7 +7,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 /// <summary>
 /// 연구 데이터를 관리하고 연구력(RP) 생산, 연구 해금, 효과 적용을 담당하는 핸들러
 /// </summary>
-public class ResearchDataHandler : IDataHandlerEvents, IDayChangeHandler
+public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     private Dictionary<string, ResearchEntry> _researchEntries = new();

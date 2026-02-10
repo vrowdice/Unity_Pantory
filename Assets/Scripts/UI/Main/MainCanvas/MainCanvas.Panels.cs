@@ -10,6 +10,8 @@ public partial class MainCanvas
     [SerializeField] private NewsPanel _newsPanel;
     [SerializeField] private ResearchPanel _researchPanel;
     [SerializeField] private OrderPanel _orderPanel;
+    [SerializeField] private FinancePanel _financePanel;
+
     [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
     private Dictionary<MainPanelType, BasePanel> _panelDict;
@@ -25,6 +27,7 @@ public partial class MainCanvas
             { MainPanelType.Research, _researchPanel },
             { MainPanelType.Order, _orderPanel },
             { MainPanelType.News, _newsPanel },
+            { MainPanelType.Finance, _financePanel }
         };
     }
 

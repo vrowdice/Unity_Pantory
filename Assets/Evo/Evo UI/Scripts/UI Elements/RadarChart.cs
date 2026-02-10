@@ -174,7 +174,7 @@ namespace Evo.UI
             radius = (minDimension / 2f) * scaleMultiplier;
 
             // Create containers with full anchors
-            GameObject gridContainer = new($"Grid {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject gridContainer = new($"Grid {GEN_SUFFIX}");
             gridContainer.transform.SetParent(transform, false);
       
             RectTransform gridRT = gridContainer.AddComponent<RectTransform>();
@@ -183,7 +183,7 @@ namespace Evo.UI
             gridRT.offsetMin = Vector2.zero;
             gridRT.offsetMax = Vector2.zero;
 
-            GameObject dataContainer = new($"Data {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject dataContainer = new($"Data {GEN_SUFFIX}");
             dataContainer.transform.SetParent(transform, false);
             RectTransform dataRT = dataContainer.AddComponent<RectTransform>();
             dataRT.anchorMin = Vector2.zero;
@@ -191,7 +191,7 @@ namespace Evo.UI
             dataRT.offsetMin = Vector2.zero;
             dataRT.offsetMax = Vector2.zero;
 
-            GameObject labelContainer = new($"Labels {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject labelContainer = new($"Labels {GEN_SUFFIX}");
             labelContainer.transform.SetParent(transform, false);
             RectTransform labelRT = labelContainer.AddComponent<RectTransform>();
             labelRT.anchorMin = Vector2.zero;
@@ -278,7 +278,7 @@ namespace Evo.UI
             // Draw filled area
             if (showFill && points.Count >= 3)
             {
-                GameObject fillObj = new("Fill") { hideFlags = HideFlags.DontSave };
+                GameObject fillObj = new("Fill");
                 fillObj.transform.SetParent(container.transform, false);
 
                 RectTransform rt = fillObj.AddComponent<RectTransform>();
@@ -353,7 +353,7 @@ namespace Evo.UI
 
         void DrawLine(GameObject container, Vector2 start, Vector2 end, Color color, float thickness, string name)
         {
-            GameObject lineObj = new(name) { hideFlags = HideFlags.DontSave };
+            GameObject lineObj = new(name);
             lineObj.transform.SetParent(container.transform, false);
 
             RectTransform rt = lineObj.AddComponent<RectTransform>();
@@ -375,7 +375,7 @@ namespace Evo.UI
 
         void DrawPoint(GameObject container, Vector2 position, Color color, float size, string name)
         {
-            GameObject pointObj = new(name) { hideFlags = HideFlags.DontSave };
+            GameObject pointObj = new(name);
             pointObj.transform.SetParent(container.transform, false);
 
             RectTransform rt = pointObj.AddComponent<RectTransform>();
@@ -394,7 +394,7 @@ namespace Evo.UI
 
         void CreateLabel(string text, Vector2 position, GameObject parent, string name, TMP_FontAsset font, Color textColor, Color backgroundColor)
         {
-            GameObject labelObj = new(name) { hideFlags = HideFlags.DontSave };
+            GameObject labelObj = new(name);
             labelObj.transform.SetParent(parent.transform, false);
 
             RectTransform rt = labelObj.AddComponent<RectTransform>();
@@ -406,7 +406,7 @@ namespace Evo.UI
             // Create background first if enabled
             if (drawLabelBackground)
             {
-                GameObject bgObj = new("Background") { hideFlags = HideFlags.DontSave };
+                GameObject bgObj = new("Background");
                 bgObj.transform.SetParent(labelObj.transform, false);
 
                 RectTransform bgRt = bgObj.AddComponent<RectTransform>();
@@ -423,7 +423,7 @@ namespace Evo.UI
             }
 
             // Create text after background
-            GameObject textObj = new("Text") { hideFlags = HideFlags.DontSave };
+            GameObject textObj = new("Text");
             textObj.transform.SetParent(labelObj.transform, false);
 
             RectTransform textRt = textObj.AddComponent<RectTransform>();

@@ -26,7 +26,6 @@ public class CreditTopInfoPanel : MonoBehaviour
 
     public void ToggleCreditInfo()
     {
-        // 애니메이션 컴포넌트 유무에 따라 현재 상태 판단
         bool isOpen = _panelDoAni != null ? _panelDoAni.IsOpen : gameObject.activeSelf;
 
         if (isOpen) HideCreditInfo();
@@ -35,9 +34,7 @@ public class CreditTopInfoPanel : MonoBehaviour
 
     public void ShowCreditInfo()
     {
-        if (_dataManager == null) return;
-
-        UpdateCreditInfo(); // 데이터 갱신
+        UpdateCreditInfo();
         gameObject.SetActive(true);
         _panelDoAni?.OpenPanel();
     }
@@ -58,18 +55,12 @@ public class CreditTopInfoPanel : MonoBehaviour
     {
         GameObjectUtils.ClearChildren(transform);
 
-        long salary = -_dataManager.Employee.CalculateTotalSalary();
-        long resDelta = -_dataManager.Resource.CalculateResourceDeltaChangeCredit();
-        long maint = -_dataManager.ThreadPlacement.CalculateTotalMaintenanceCostOfAllPlaced();
-        long interest = -_dataManager.Finances.CalculateNegativeInterest();
-        long dailyNet = _dataManager.Finances.CalculateDailyCreditDelta();
-
-        CreatePanelIfValid("Employee Salary", salary);
-        CreatePanelIfValid("Resource Delta", resDelta);
-        CreatePanelIfValid("Maintenance Cost", maint);
-        CreatePanelIfValid("Negative Interest", interest);
-
-        CreatePanelIfValid("Daily Net Change", dailyNet, true);
+        CreatePanelIfValid("Employee Salary", -_dataManager.Finances.DailySalary);
+        CreatePanelIfValid("Resource Delta", -_dataManager.Finances.DailyResource);
+        CreatePanelIfValid("Maintenance Cost", -_dataManager.Finances.DailyMaintenance);
+        CreatePanelIfValid("Negative Interest", -_dataManager.Finances.DailyInterest);
+        
+        CreatePanelIfValid("Daily Net Change", _dataManager.Finances.DailyTotal, true);
     }
 
     private void CreatePanelIfValid(string title, long value, bool forceShow = false)
@@ -77,16 +68,12 @@ public class CreditTopInfoPanel : MonoBehaviour
         if (value == 0 && !forceShow) return;
         if (_titleDeltaTextPanelPrefab == null) return;
 
-        var panelObj = Instantiate(_titleDeltaTextPanelPrefab, transform);
-        if (panelObj.TryGetComponent(out TitleDeltaTextPanel panel))
-        {
-            panel.Init(title, value);
-        }
+        GameObject panelObj = Instantiate(_titleDeltaTextPanelPrefab, transform);
+        panelObj.GetComponent<TitleDeltaTextPanel>().Init(title, value);
     }
 
     private void HandleDayChanged()
     {
-        // 패널이 활성화된 상태라면 정보 갱신
         if (gameObject.activeInHierarchy)
         {
             UpdateCreditInfo();

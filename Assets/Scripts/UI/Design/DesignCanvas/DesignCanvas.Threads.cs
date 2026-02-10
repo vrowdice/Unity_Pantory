@@ -50,7 +50,7 @@ public partial class DesignCanvas
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
         _designRunner.SaveThread(threadName, categoryIdentifier);
-        GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+        GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully);
 
         DeselectBuilding();
     }

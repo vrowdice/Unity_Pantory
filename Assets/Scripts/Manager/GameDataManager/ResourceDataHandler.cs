@@ -6,7 +6,7 @@ using UnityEngine;
 /// 게임 자원을 관리하는 서비스 클래스
 /// ResourceData ScriptableObject를 기반으로 자원을 동적으로 관리합니다.
 /// </summary>
-public class ResourceDataHandler : IDataHandlerEvents, IDayChangeHandler
+public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     private readonly InitialResourceData _initialResourceData;

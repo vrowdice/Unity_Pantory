@@ -6,7 +6,7 @@ using System.Linq;
 /// <summary>
 /// Thread 설치 위치 데이터를 관리하고 실제 배치된 스레드 인스턴스의 상태 및 계산을 담당합니다.
 /// </summary>
-public class ThreadPlacementDataHandler : IDataHandlerEvents, IDayChangeHandler
+public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     private readonly Dictionary<Vector2Int, ThreadPlacementState> _placedThreads = new Dictionary<Vector2Int, ThreadPlacementState>();
@@ -162,6 +162,15 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, IDayChangeHandler
     {
         return _placedThreads.Values
             .Sum(placement => placement.RuntimeState?.totalMaintenanceCost ?? 0);
+    }
+
+    /// <summary>
+    /// 현재 배치된 모든 스레드 내 건물들의 총 가치를 계산합니다.
+    /// </summary>
+    public long CalculateAllBuildingValue()
+    {
+        return _placedThreads.Values
+            .Sum(placement => (long)(placement.RuntimeState?.requiredBuildCost ?? 0));
     }
 
     /// <summary>

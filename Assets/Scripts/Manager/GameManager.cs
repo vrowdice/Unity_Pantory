@@ -197,8 +197,9 @@ public class GameManager : Singleton<GameManager>
             return;
         }
 
-        GameObject warningPanelObj = Instantiate(_warningPanelPrefab, _managerCanvasTransform, false);
-        warningPanelObj.GetComponent<WarningPopup>().Init(message);
+        GameObject warningPanelObj = _poolingManager.GetPooledObject(_warningPanelPrefab);
+        warningPanelObj.transform.SetParent(_managerCanvasTransform, false);
+        warningPanelObj.GetComponent<WarningPopup>().Init(LocalizationUtils.Localize(message, LocalizationUtils.TABLE_WARNING_MESSAGE));
     }
 
     /// <summary>

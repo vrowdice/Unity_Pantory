@@ -351,7 +351,7 @@ namespace Evo.UI
 
         float CreateSingleDigit(float startX, float width)
         {
-            GameObject containerObj = new($"Digit {allDigits.Count}") { hideFlags = HideFlags.DontSave };
+            GameObject containerObj = new($"Digit {allDigits.Count}");
             containerObj.transform.SetParent(transform, false);
             containerObj.transform.localScale = Vector3.one;
 
@@ -385,7 +385,7 @@ namespace Evo.UI
 
         float CreateSeparatorObject(float startX, float width)
         {
-            GameObject sepObj = new($"Separator {separators.Count}") { hideFlags = HideFlags.DontSave };
+            GameObject sepObj = new($"Separator {separators.Count}");
             sepObj.transform.SetParent(transform, false);
             sepObj.transform.localScale = Vector3.one;
 
@@ -404,7 +404,7 @@ namespace Evo.UI
 
         TextMeshProUGUI CreateTextMeshPro(GameObject parent, string name)
         {
-            GameObject textObj = new(name) { hideFlags = HideFlags.DontSave };
+            GameObject textObj = new(name);
             textObj.transform.SetParent(parent.transform, false);
             textObj.transform.localScale = Vector3.one;
 

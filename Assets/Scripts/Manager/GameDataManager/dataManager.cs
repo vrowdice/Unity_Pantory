@@ -45,7 +45,7 @@ public class DataManager : Singleton<DataManager>
     public NewsDataHandler News { get; private set; }
 
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
-    private readonly List<IDayChangeHandler> _dayHandlers = new List<IDayChangeHandler>();
+    private readonly List<ITimeChangeHandler> _dayHandlers = new List<ITimeChangeHandler>();
 
     void Update()
     {
@@ -56,16 +56,16 @@ public class DataManager : Singleton<DataManager>
     protected override void Awake()
     {
         base.Awake();
-        
+
         if (Instance != this) return;
-        
+
         InitializeServices();
     }
 
     public void Init()
     {
         if (Instance != this) return;
-        
+
         InitializeServices();
     }
 
@@ -167,6 +167,8 @@ public class DataManager : Singleton<DataManager>
         ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
         Time.OnDayChanged -= HandleDayChanged;
         Time.OnDayChanged += HandleDayChanged;
+        Time.OnMonthChanged -= HandleMonthChanged;
+        Time.OnMonthChanged += HandleMonthChanged;
 
         Debug.Log("[DataManager] All event subscriptions cleared.");
     }
@@ -178,7 +180,12 @@ public class DataManager : Singleton<DataManager>
 
     private void HandleDayChanged()
     {
-        foreach (IDayChangeHandler handler in _dayHandlers)
+        foreach (ITimeChangeHandler handler in _dayHandlers)
             handler.HandleDayChanged();
+    }
+
+    private void HandleMonthChanged()
+    {
+        Finances.HandleMonthChanged();
     }
 }

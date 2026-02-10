@@ -6,7 +6,7 @@ using UnityEngine;
 /// 이펙트(버프/디버프)를 한 곳에서 관리합니다.
 /// 전역 이펙트(targetType별)와 인스턴스별 이펙트(직원/자원 등)를 모두 보관·조회합니다.
 /// </summary>
-public class EffectDataHandler : IDayChangeHandler
+public class EffectDataHandler : ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     

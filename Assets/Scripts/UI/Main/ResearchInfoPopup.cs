@@ -81,7 +81,7 @@ public class ResearchInfoPopup : BasePopup
     {
         if (!_dataManager.Research.TryUnlockResearch(_currentResearchEntry.data.id))
         {
-            _gameManager.ShowWarningPanel(WarningMessage.ResearchCannotUnlock.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+            _gameManager.ShowWarningPanel(WarningMessage.ResearchCannotUnlock);
         }
         else
         {

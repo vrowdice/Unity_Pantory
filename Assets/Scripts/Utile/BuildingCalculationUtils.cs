@@ -8,24 +8,17 @@ public static class BuildingCalculationUtils
     /// </summary>
     public static ThreadCalculationResult CalculateProductionStats(
         DataManager dataManager,
-        List<BuildingState> buildingStates,
-        System.Func<BuildingState, BuildingData, bool> additionalValidation = null)
+        List<BuildingState> buildingStates)
     {
         ThreadCalculationResult result = new ThreadCalculationResult();
-
         foreach (BuildingState buildingState in buildingStates)
         {
-            BuildingData buildingData;
-            if (!IsValidBuilding(buildingState, dataManager, out buildingData))
-                continue;
-
-            if (additionalValidation != null && !additionalValidation(buildingState, buildingData))
-                continue;
+            BuildingData buildingData = dataManager.Building.GetBuildingData(buildingState.Id);
 
             result.TotalBuildCost += buildingData.buildCost;
             result.TotalMaintenanceCost += buildingData.maintenanceCost;
             result.TotalRequiredEmployees += buildingData.requiredEmployees;
-            result.RequiredTechnicians += buildingData.isProfessional ? 1 : 0;
+            result.RequiredTechnicians += buildingData.isProfessional ? buildingData.requiredEmployees : 0;
             if (buildingData.IsProductionBuilding)
             {
                 ProcessBuildingResources(dataManager, buildingState, result);
@@ -33,20 +26,6 @@ public static class BuildingCalculationUtils
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// 건물의 유효성 및 잠금 해제 여부를 확인합니다.
-    /// </summary>
-    private static bool IsValidBuilding(BuildingState state, DataManager data, out BuildingData dataEntry)
-    {
-        dataEntry = null;
-        if (state == null || string.IsNullOrEmpty(state.Id)) return false;
-
-        dataEntry = data.Building.GetBuildingData(state.Id);
-        if (dataEntry == null) return false;
-
-        return state.IsUnlocked(data);
     }
 
     private static void ProcessBuildingResources(

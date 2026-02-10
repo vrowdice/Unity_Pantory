@@ -221,7 +221,7 @@ public class ManageThreadPopup : BasePopup
 
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.ShowWarningPanel(WarningMessage.ThreadDeleted.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+                GameManager.Instance.ShowWarningPanel(WarningMessage.ThreadDeleted);
             }
         }
         else

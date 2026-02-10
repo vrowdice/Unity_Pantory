@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 뉴스 항목을 관리하는 핸들러.
 /// </summary>
-public class NewsDataHandler : IDataHandlerEvents, IDayChangeHandler
+public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     private readonly InitialNewsData _initialNewsData;

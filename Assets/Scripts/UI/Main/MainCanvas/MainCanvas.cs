@@ -73,7 +73,7 @@ public partial class MainCanvas : CanvasBase
 
         long resourceAmount = DataManager.Finances.Credit;
         _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
-        long deltaCredit = DataManager.Finances.CalculateDailyCreditDelta();
+        long deltaCredit = DataManager.Finances.DailyTotal;
         if (deltaCredit == 0)
         {
             _deltaCreditText.text = "";

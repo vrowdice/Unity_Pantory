@@ -68,7 +68,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         {
             if (string.IsNullOrEmpty(categoryName))
             {
-                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
 
@@ -83,7 +83,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel(WarningMessage.FailedToCreateCategory.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+                gameManager.ShowWarningPanel(WarningMessage.FailedToCreateCategory);
             }
         });
     }
@@ -106,7 +106,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         {
             if (string.IsNullOrEmpty(newName))
             {
-                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
             bool success = _dataManager.Thread.RenameCategory(categoryId, newName);
@@ -119,7 +119,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel(WarningMessage.FailedToRenameCategory.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+                gameManager.ShowWarningPanel(WarningMessage.FailedToRenameCategory);
             }
         });
     }
@@ -138,7 +138,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowWarningPanel(WarningMessage.DeleteCategoryConfirm.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+        gameManager.ShowWarningPanel(WarningMessage.DeleteCategoryConfirm);
         bool success = _dataManager.Thread.RemoveCategory(categoryId);
         
         if (success)
@@ -148,7 +148,7 @@ public class ManageThreadCartegoryPopup : BasePopup
         }
         else
         {
-            gameManager.ShowWarningPanel(WarningMessage.FailedToDeleteCategory.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+            gameManager.ShowWarningPanel(WarningMessage.FailedToDeleteCategory);
         }
     }
 

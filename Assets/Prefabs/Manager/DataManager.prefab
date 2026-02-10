@@ -50,8 +50,9 @@ MonoBehaviour:
   _timeSettingsData: {fileID: 11400000, guid: 5fd3047d51914f34bae4791141b3a104, type: 2}
   _initialResearchData: {fileID: 11400000, guid: 3f53f5b792a4f744996e1ed7ba0f1fda, type: 2}
   _initialFinancesData: {fileID: 11400000, guid: bef0cee7cf9cc494081a9c5ce79ebab5, type: 2}
-  _initialNewsData: {fileID: 11400000, guid: 33e35dd8173cb3d4392188c5063b9b15, type: 2}
   _initialEffectData: {fileID: 11400000, guid: e041f14cc0b1fbd47a1e74cee518e3a5, type: 2}
+  _initialOrderData: {fileID: 0}
+  _initialNewsData: {fileID: 11400000, guid: 33e35dd8173cb3d4392188c5063b9b15, type: 2}
   _buildingDataList:
   - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
   - {fileID: 11400000, guid: 960d5a7248b012544b3d054049188b94, type: 2}
@@ -138,6 +139,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9e0d7c5b3a214c2da8f4c6b8e1d235ab, type: 2}
   - {fileID: 11400000, guid: 3f8e1d2c4b7a4f6da3c9b0e1f2d4c5a6, type: 2}
   - {fileID: 11400000, guid: 73bba9a45f77316458d9641f6e1e8ea0, type: 2}
+  _orderDataList: []
   _newsDataList:
   - {fileID: 11400000, guid: 27bd120c0b7207c428c69e4d1a02a78c, type: 2}
   - {fileID: 11400000, guid: 33de78ddfb2ec7045a77363e3fd60c60, type: 2}

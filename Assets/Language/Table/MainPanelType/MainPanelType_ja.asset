@@ -19,27 +19,31 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 33351417856
-    m_Localized: ストレージ
+    m_Localized: "\u30B9\u30C8\u30EC\u30FC\u30B8"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263040
-    m_Localized: マーケット
+    m_Localized: "\u30DE\u30FC\u30B1\u30C3\u30C8"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263041
-    m_Localized: 雇用
+    m_Localized: "\u96C7\u7528"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263042
-    m_Localized: 研究
+    m_Localized: "\u7814\u7A76"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263043
-    m_Localized: ニュース
+    m_Localized: "\u30CB\u30E5\u30FC\u30B9"
     m_Metadata:
       m_Items: []
   - m_Id: 864226263044
-    m_Localized: 注文
+    m_Localized: "\u6CE8\u6587"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5842431105187840
+    m_Localized: "\u8CA1\u6E90"
     m_Metadata:
       m_Items: []
   references:

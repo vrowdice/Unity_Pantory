@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OrderDataHandler : IDataHandlerEvents, IDayChangeHandler
+public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     private readonly InitialOrderData _initialOrderData;

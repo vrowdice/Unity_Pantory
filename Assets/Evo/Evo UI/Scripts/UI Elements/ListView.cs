@@ -120,18 +120,18 @@ namespace Evo.UI
 
         void CreateContainerStructure()
         {
-            var contentObj = new GameObject("Content [Generated]") { hideFlags = HideFlags.DontSave };
+            var contentObj = new GameObject("Content [Generated]");
             contentObj.transform.SetParent(transform, false);
             contentContainer = contentObj.AddComponent<RectTransform>();
 
             SetupFullRectTransform(contentContainer);
 
-            var headerObj = new GameObject("Header") { hideFlags = HideFlags.DontSave };
+            var headerObj = new GameObject("Header");
             headerObj.transform.SetParent(contentContainer, false);
             headerContainer = headerObj.AddComponent<RectTransform>();
             SetupHeaderContainer();
 
-            var rowContainerObj = new GameObject("Rows") { hideFlags = HideFlags.DontSave };
+            var rowContainerObj = new GameObject("Rows");
             rowContainerObj.transform.SetParent(contentContainer, false);
             rowContainer = rowContainerObj.AddComponent<RectTransform>();
             SetupRowContainer();
@@ -438,7 +438,7 @@ namespace Evo.UI
             if (icon == null)
                 return;
 
-            var iconObj = new GameObject("Icon") { hideFlags = HideFlags.DontSave };
+            var iconObj = new GameObject("Icon");
             iconObj.transform.SetParent(content.transform, false);
 
             var iconImage = iconObj.AddComponent<Image>();
@@ -460,7 +460,7 @@ namespace Evo.UI
 
         void AddTextToContent(GameObject content, string text, Color color, int fontSize, FontStyles fontStyle, TMP_FontAsset font = null)
         {
-            var textObj = new GameObject("Text") { hideFlags = HideFlags.DontSave };
+            var textObj = new GameObject("Text");
             textObj.transform.SetParent(content.transform, false);
 
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
@@ -799,7 +799,7 @@ namespace Evo.UI
 
         GameObject CreateCellContent(GameObject parent, TextAnchor alignment)
         {
-            var contentObj = new GameObject("Content") { hideFlags = HideFlags.DontSave };
+            var contentObj = new GameObject("Content");
             contentObj.transform.SetParent(parent.transform, false);
 
             var contentRect = contentObj.AddComponent<RectTransform>();

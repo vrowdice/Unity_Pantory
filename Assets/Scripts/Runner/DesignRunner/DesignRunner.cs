@@ -402,7 +402,7 @@ public class DesignRunner : RunnerBase
         }
         else
         {
-            GameManager.ShowWarningPanel(WarningMessage.BuildingLocked.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+            GameManager.ShowWarningPanel(WarningMessage.BuildingLocked);
         }
     }
 

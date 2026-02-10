@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: InitialFinancesData
   m_EditorClassIdentifier: 
   initialCredit: 10000
-  negativeInterestRate: 0.05
+  negativeInterestRate: 0.02

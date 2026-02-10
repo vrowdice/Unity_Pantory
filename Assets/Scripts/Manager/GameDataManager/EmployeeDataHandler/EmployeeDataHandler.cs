@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class EmployeeDataHandler : IDataHandlerEvents, IDayChangeHandler
+public partial class EmployeeDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     protected Dictionary<EmployeeType, EmployeeEntry> _employees;
     public event Action OnEmployeeChanged;

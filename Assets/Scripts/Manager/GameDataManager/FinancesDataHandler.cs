@@ -1,21 +1,41 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
 /// 게임 내 재정(돈)을 관리하는 서비스 클래스
 /// </summary>
-public class FinancesDataHandler : IDataHandlerEvents, IDayChangeHandler
+public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
     private readonly InitialFinancesData _initialFinancesData;
 
     private long _credit;
-    private long _creditDelta;
+    private long _wealth;
+
+    private long _dailySalary;
+    private long _dailyResource;
+    private long _dailyMaintenance;
+    private long _dailyInterest;
+    private long _dailyTotal;
+
+    private List<long> _monthlyCreditHistory = new List<long>();
+    private List<long> _monthlyWealthHistory = new List<long>();
+
+    public IReadOnlyList<long> MonthlyCreditHistory => _monthlyCreditHistory;
+    public IReadOnlyList<long> MonthlyWealthHistory => _monthlyWealthHistory;
 
     public event Action OnCreditChanged;
 
     public long Credit => _credit;
+    public long Wealth => _wealth;
+
+    public long DailySalary => _dailySalary;
+    public long DailyResource => _dailyResource;
+    public long DailyMaintenance => _dailyMaintenance;
+    public long DailyInterest => _dailyInterest;
+    public long DailyTotal => _dailyTotal;
 
     /// <summary>
     /// FinancesService 생성자
@@ -24,7 +44,6 @@ public class FinancesDataHandler : IDataHandlerEvents, IDayChangeHandler
     {
         _dataManager = dataManager;
         _initialFinancesData = initData;
-
         _credit = _initialFinancesData.initialCredit;
     }
 
@@ -38,19 +57,26 @@ public class FinancesDataHandler : IDataHandlerEvents, IDayChangeHandler
 
     public void HandleDayChanged()
     {
-        ModifyCredit(CalculateDailyCreditDelta());
+        CalculateDailyCreditDelta();
+
+        ModifyCredit(_dailyTotal);
+        _wealth = CalculateCurrentTotalWealth();
     }
 
-    public long CalculateDailyCreditDelta()
+    public void HandleMonthChanged()
     {
-        long credit = 0;
+        _monthlyCreditHistory.Add(_credit);
+        _monthlyWealthHistory.Add(_wealth);
+    }
 
-        credit -= _dataManager.Employee.CalculateTotalSalary();
-        credit -= _dataManager.Resource.CalculateResourceDeltaChangeCredit();
-        credit -= _dataManager.ThreadPlacement.CalculateTotalMaintenanceCostOfAllPlaced();
-        credit -= CalculateNegativeInterest();
+    public void CalculateDailyCreditDelta()
+    {
+        _dailySalary = _dataManager.Employee.CalculateTotalSalary();
+        _dailyResource = _dataManager.Resource.CalculateResourceDeltaChangeCredit();
+        _dailyMaintenance = _dataManager.ThreadPlacement.CalculateTotalMaintenanceCostOfAllPlaced();
+        _dailyInterest = CalculateNegativeInterest();
 
-        return credit;
+        _dailyTotal = -(_dailySalary + _dailyResource + _dailyMaintenance + _dailyInterest);
     }
 
     public long CalculateNegativeInterest()
@@ -58,6 +84,16 @@ public class FinancesDataHandler : IDataHandlerEvents, IDayChangeHandler
         if (_credit >= 0 || _initialFinancesData == null) return 0;
         
         return (long)(Mathf.Abs(_credit) * _initialFinancesData.negativeInterestRate);
+    }
+
+    public long CalculateCurrentTotalWealth()
+    {
+        long currentCredit = _credit;
+        long inventoryValue = _dataManager.Resource.GetAllResources().Values
+            .Sum(entry => entry.state.count * entry.state.currentValue);
+        long assetValue = _dataManager.ThreadPlacement.CalculateAllBuildingValue();
+
+        return currentCredit + inventoryValue + assetValue;
     }
 
     /// <summary>
@@ -68,4 +104,3 @@ public class FinancesDataHandler : IDataHandlerEvents, IDayChangeHandler
         OnCreditChanged = null;
     }
 }
-

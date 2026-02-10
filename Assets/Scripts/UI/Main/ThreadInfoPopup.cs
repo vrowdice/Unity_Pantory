@@ -1,8 +1,9 @@
+using Evo;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using Evo;
+using static UnityEngine.ParticleSystem;
 
 /// <summary>
 /// 스레드(생산 시설)의 정보를 표시하고 직원을 할당/해제하는 UI 패널을 관리합니다.
@@ -126,26 +127,18 @@ public class ThreadInfoPopup : BasePopup
         int currentWorkers = _currentThreadState.currentWorkers;
         int currentTechs = _currentThreadState.currentTechnicians;
 
-        int hiredWorkers = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker).state.count;
-        int hiredTechs = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician).state.count;
         int availWorkers = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker));
         int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
 
-        UpdateEmployeeTexts(requiredTotal, currentWorkers, currentTechs, hiredWorkers, hiredTechs);
+        _maxWorkersText.text = $"Max: {_currentThreadState.requiredEmployees - _currentThreadState.requiredTechnicians}";
+        _maxTechniciansText.text = $"Max: {_currentThreadState.requiredTechnicians}";
+        _currentWorkersText.text = $"{_dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker).state.count:N0}";
+        _currentTechniciansText.text = $"{_dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician).state.count:N0}";
+        _assignedWorkersText.text = _currentThreadState.currentWorkers.ToString("N0");
+        _assignedTechniciansText.text = _currentThreadState.currentTechnicians.ToString("N0");
+
         UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal - _currentThreadState.requiredTechnicians);
         UpdateSliderState(_technicianSlider, currentTechs, availTechs, _currentThreadState.requiredTechnicians);
-    }
-
-    private void UpdateEmployeeTexts(int max, int currW, int currT, int hiredW, int hiredT)
-    {
-        if (_maxWorkersText) _maxWorkersText.text = $"Max: {max}";
-        if (_maxTechniciansText) _maxTechniciansText.text = $"Max: {max}";
-
-        if (_currentWorkersText) _currentWorkersText.text = hiredW.ToString("N0");
-        if (_currentTechniciansText) _currentTechniciansText.text = hiredT.ToString("N0");
-
-        if (_assignedWorkersText) _assignedWorkersText.text = currW.ToString("N0");
-        if (_assignedTechniciansText) _assignedTechniciansText.text = currT.ToString("N0");
     }
 
     /// <summary>

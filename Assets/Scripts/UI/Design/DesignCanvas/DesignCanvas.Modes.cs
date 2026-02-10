@@ -31,7 +31,7 @@ public partial class DesignCanvas
     {
         if (!isUnlocked)
         {
-            GameManager.ShowWarningPanel(WarningMessage.BuildingLockedResearchRequired.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE));
+            GameManager.ShowWarningPanel(WarningMessage.BuildingLockedResearchRequired);
             return;
         }
 

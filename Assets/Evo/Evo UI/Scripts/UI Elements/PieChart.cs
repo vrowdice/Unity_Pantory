@@ -222,7 +222,7 @@ namespace Evo.UI
         {
             float currentAngle = startAngle;
 
-            GameObject container = new($"Slices {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject container = new($"Slices {GEN_SUFFIX}");
             container.transform.SetParent(transform, false);
          
             RectTransform gridRT = container.AddComponent<RectTransform>();
@@ -249,7 +249,7 @@ namespace Evo.UI
 
         GameObject CreatePieSlice(float startAngle, float angleSpan, Color color, float outerRadius, float innerRadius)
         {
-            GameObject sliceObj = new("Slice") { hideFlags = HideFlags.DontSave };
+            GameObject sliceObj = new("Slice");
             RectTransform rt = sliceObj.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -293,7 +293,7 @@ namespace Evo.UI
 
         GameObject CreateBorderRing(float inner, float outer, string name, Color borderColor)
         {
-            GameObject borderObj = new(name) { hideFlags = HideFlags.DontSave };
+            GameObject borderObj = new(name);
             RectTransform rt = borderObj.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -318,7 +318,7 @@ namespace Evo.UI
         {
             float currentAngle = startAngle;
 
-            GameObject labelContainer = new($"Labels {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject labelContainer = new($"Labels {GEN_SUFFIX}");
             labelContainer.transform.SetParent(transform, false);
 
             RectTransform gridRT = labelContainer.AddComponent<RectTransform>();
@@ -346,7 +346,7 @@ namespace Evo.UI
 
         void CreateLabel(string text, Vector2 position, GameObject parent, string name)
         {
-            GameObject labelObj = new(name) { hideFlags = HideFlags.DontSave };
+            GameObject labelObj = new(name);
             labelObj.transform.SetParent(parent.transform, false);
 
             RectTransform rt = labelObj.AddComponent<RectTransform>();
@@ -356,7 +356,7 @@ namespace Evo.UI
             rt.anchoredPosition = position;
 
             // Create text
-            GameObject textObj = new("Text") { hideFlags = HideFlags.DontSave };
+            GameObject textObj = new("Text");
             textObj.transform.SetParent(labelObj.transform, false);
 
             RectTransform textRt = textObj.AddComponent<RectTransform>();
@@ -380,7 +380,7 @@ namespace Evo.UI
             // Create background
             if (drawLabelBackground)
             {
-                GameObject bgObj = new("Background") { hideFlags = HideFlags.DontSave };
+                GameObject bgObj = new("Background");
                 bgObj.transform.SetParent(labelObj.transform, false);
                 bgObj.transform.SetAsFirstSibling();
 
@@ -414,7 +414,7 @@ namespace Evo.UI
 
             for (int i = 0; i < dataPoints.Count; i++)
             {
-                GameObject legendItem = new($"{dataPoints[i].label} {LEGEND_SUFFIX}") { hideFlags = HideFlags.DontSave };
+                GameObject legendItem = new($"{dataPoints[i].label} {LEGEND_SUFFIX}");
                 legendItem.transform.SetParent(legendContainer, false);
                 newLegendItems.Add(legendItem);
 
@@ -426,7 +426,7 @@ namespace Evo.UI
                 itemRt.sizeDelta = new Vector2(0, legendItemHeight);
 
                 // Color box
-                GameObject colorBox = new("Color Box") { hideFlags = HideFlags.DontSave };
+                GameObject colorBox = new("Color Box");
                 colorBox.transform.SetParent(legendItem.transform, false);
 
                 RectTransform colorRt = colorBox.AddComponent<RectTransform>();
@@ -442,7 +442,7 @@ namespace Evo.UI
                 colorBoxImage.type = legendColorBoxSprite != null ? Image.Type.Sliced : Image.Type.Simple;
 
                 // Label
-                GameObject label = new("Label") { hideFlags = HideFlags.DontSave };
+                GameObject label = new("Label");
                 label.transform.SetParent(legendItem.transform, false);
 
                 RectTransform labelRt = label.AddComponent<RectTransform>();

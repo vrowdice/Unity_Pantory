@@ -227,7 +227,7 @@ namespace Evo.UI
                 return;
 
             // Create containers with full anchors
-            GameObject gridContainer = new($"Grid {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject gridContainer = new($"Grid {GEN_SUFFIX}");
             gridContainer.transform.SetParent(transform, false);
             RectTransform gridRT = gridContainer.AddComponent<RectTransform>();
             gridRT.anchorMin = Vector2.zero;
@@ -235,7 +235,7 @@ namespace Evo.UI
             gridRT.offsetMin = Vector2.zero;
             gridRT.offsetMax = Vector2.zero;
 
-            GameObject dataContainer = new($"Data {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject dataContainer = new($"Data {GEN_SUFFIX}");
             dataContainer.transform.SetParent(transform, false);
             RectTransform dataRT = dataContainer.AddComponent<RectTransform>();
             dataRT.anchorMin = Vector2.zero;
@@ -243,7 +243,7 @@ namespace Evo.UI
             dataRT.offsetMin = Vector2.zero;
             dataRT.offsetMax = Vector2.zero;
 
-            GameObject labelContainer = new($"Labels {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
+            GameObject labelContainer = new($"Labels {GEN_SUFFIX}");
             labelContainer.transform.SetParent(transform, false);
             RectTransform labelRT = labelContainer.AddComponent<RectTransform>();
             labelRT.anchorMin = Vector2.zero;
@@ -424,7 +424,7 @@ namespace Evo.UI
 
         void CreateBar(GameObject container, Vector2 position, Vector2 size, Color color, string name)
         {
-            GameObject barObj = new(name, typeof(RectTransform), typeof(Image)) { hideFlags = HideFlags.DontSave };
+            GameObject barObj = new(name, typeof(RectTransform), typeof(Image));
             barObj.transform.SetParent(container.transform, false);
 
             Image img = barObj.GetComponent<Image>();
@@ -443,7 +443,7 @@ namespace Evo.UI
 
         void CreateLine(GameObject container, Vector2 start, Vector2 end, Color color, float thickness, string name)
         {
-            GameObject lineObj = new(name, typeof(RectTransform), typeof(RawImage)) { hideFlags = HideFlags.DontSave };
+            GameObject lineObj = new(name, typeof(RectTransform), typeof(RawImage));
             lineObj.transform.SetParent(container.transform, false);
 
             RawImage img = lineObj.GetComponent<RawImage>();
@@ -466,7 +466,7 @@ namespace Evo.UI
 
         void CreateTMPLabel(GameObject container, string text, Vector2 position, TextAlignmentOptions alignment, string name, Vector2 size, TMP_FontAsset font = null, float fontSize = 0, Color? color = null)
         {
-            GameObject labelObj = new(name, typeof(RectTransform), typeof(TextMeshProUGUI)) { hideFlags = HideFlags.DontSave };
+            GameObject labelObj = new(name, typeof(RectTransform), typeof(TextMeshProUGUI));
             labelObj.transform.SetParent(container.transform, false);
 
             TextMeshProUGUI textComp = labelObj.GetComponent<TextMeshProUGUI>();

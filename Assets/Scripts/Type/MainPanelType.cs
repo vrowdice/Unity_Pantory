@@ -6,4 +6,5 @@ public enum MainPanelType
     Research,
     Order,
     News,
+    Finance
 }

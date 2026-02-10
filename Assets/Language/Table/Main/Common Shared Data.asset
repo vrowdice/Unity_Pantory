@@ -239,6 +239,30 @@ MonoBehaviour:
     m_Key: Production progress
     m_Metadata:
       m_Items: []
+  - m_Id: 5790638061010944
+    m_Key: Required Employee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5811090242289664
+    m_Key: Finance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5829164722962432
+    m_Key: Total Welth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5829236516864000
+    m_Key: Credit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5867400837087232
+    m_Key: Monthly growth rate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5867590201524224
+    m_Key: Monthly profit
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
