@@ -98,8 +98,16 @@ public class ThreadInfoPopup : BasePopup
 
     private void UpdateResourceIcons()
     {
-        GameObjectUtils.ClearChildren(_provideContentTransform);
-        GameObjectUtils.ClearChildren(_consumeContentTransform);
+        if (PoolingManager.Instance != null)
+        {
+            PoolingManager.Instance.ClearChildrenToPool(_provideContentTransform);
+            PoolingManager.Instance.ClearChildrenToPool(_consumeContentTransform);
+        }
+        else
+        {
+            GameObjectUtils.ClearChildren(_provideContentTransform);
+            GameObjectUtils.ClearChildren(_consumeContentTransform);
+        }
 
         if (_currentThreadState.TryGetAggregatedResourceCounts(out var consumption, out var production))
         {
@@ -110,13 +118,15 @@ public class ThreadInfoPopup : BasePopup
 
     private void SpawnIcons(Dictionary<string, int> resources, Transform parent)
     {
+        GameManager gameManager = GameManager.Instance;
+        if (gameManager == null) return;
+
         foreach (KeyValuePair<string, int> kvp in resources)
         {
             ResourceEntry entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             if (entry != null)
             {
-                var iconObj = Instantiate(_mainUiManager.ProductionInfoImage, parent);
-                iconObj.GetComponent<ProductionInfoImage>().Init(entry, kvp.Value);
+                gameManager.CreateProductionIcon(parent, entry, kvp.Value);
             }
         }
     }

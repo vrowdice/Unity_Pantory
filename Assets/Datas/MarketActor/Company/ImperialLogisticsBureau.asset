@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: ImperialLogisticsBureau
+  m_EditorClassIdentifier: 
+  id: imperial_logistics_bureau
+  displayName: Imperial Logistics Bureau
+  icon: {fileID: 21300000, guid: 6fab7435ed757c641ba656473f417089, type: 3}
+  description: The empire's central distribution network, coordinating the flow of
+    essential resources across provinces while maintaining strategic reserves for
+    imperial operations.
+  marketActorType: 1
+  baseWealth: 200000
+  baseProductionCount: 80
+  comsumeResourceList:
+  - {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+  - {fileID: 11400000, guid: b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6, type: 2}
+  - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
+  - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
+  - {fileID: 11400000, guid: d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4, type: 2}
+  productionResourceList:
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+  - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
+  - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}

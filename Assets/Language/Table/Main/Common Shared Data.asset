@@ -263,6 +263,18 @@ MonoBehaviour:
     m_Key: Monthly profit
     m_Metadata:
       m_Items: []
+  - m_Id: 6186306437005312
+    m_Key: Trust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6186432832356352
+    m_Key: Wealth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6192745884827648
+    m_Key: Consume
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

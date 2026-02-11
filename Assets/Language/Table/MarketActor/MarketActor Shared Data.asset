@@ -23,20 +23,12 @@ MonoBehaviour:
     m_Key: automotive_industry_group
     m_Metadata:
       m_Items: []
-  - m_Id: 864226269003
-    m_Key: continental_defense_force
-    m_Metadata:
-      m_Items: []
   - m_Id: 864226269004
     m_Key: electronics_manufacturing_corp
     m_Metadata:
       m_Items: []
   - m_Id: 864226269005
     m_Key: elite_armaments_group
-    m_Metadata:
-      m_Items: []
-  - m_Id: 864226269006
-    m_Key: elite_security_forces
     m_Metadata:
       m_Items: []
   - m_Id: 864226269007

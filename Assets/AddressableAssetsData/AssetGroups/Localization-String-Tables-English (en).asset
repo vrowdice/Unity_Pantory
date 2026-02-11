@@ -81,6 +81,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0fb213c8dc191f43965e5d358a1b4a5
+    m_Address: Expenses_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c1fe521881397874abc7b71dbad000a5
     m_Address: BuildingType_en
     m_ReadOnly: 1

@@ -266,6 +266,18 @@ MonoBehaviour:
     m_Localized: Monthly profit
     m_Metadata:
       m_Items: []
+  - m_Id: 6186306437005312
+    m_Localized: Trust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6186432832356352
+    m_Localized: Wealth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6192745884827648
+    m_Localized: Consume
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

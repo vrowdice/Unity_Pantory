@@ -368,11 +368,18 @@ public class GameManager : Singleton<GameManager>
     }
 
     /// <summary>
-    /// 단일 생산 아이콘을 생성하고 데이터를 초기화합니다.
+    /// 단일 생산 아이콘을 생성하고 데이터를 초기화합니다. (PoolingManager 사용)
     /// </summary>
     public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry, int amount)
     {
-        GameObject iconObj = Instantiate(_productionInfoImagePrefab, parent);
+        if (_poolingManager == null || _productionInfoImagePrefab == null)
+        {
+            Debug.LogWarning("[GameManager] PoolingManager or ProductionInfoImagePrefab is null.");
+            return null;
+        }
+
+        GameObject iconObj = _poolingManager.GetPooledObject(_productionInfoImagePrefab);
+        iconObj.transform.SetParent(parent, false);
 
         if (iconObj.TryGetComponent(out RectTransform rect))
         {

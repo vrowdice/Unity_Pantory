@@ -6,10 +6,10 @@ public partial class MainCanvas
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
     [SerializeField] private MarketPanel _marketPanel;
+    [SerializeField] private OrderPanel _orderPanel;
     [SerializeField] private EmployeePanel _employmentPanel;
     [SerializeField] private NewsPanel _newsPanel;
     [SerializeField] private ResearchPanel _researchPanel;
-    [SerializeField] private OrderPanel _orderPanel;
     [SerializeField] private FinancePanel _financePanel;
 
     [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
@@ -23,9 +23,9 @@ public partial class MainCanvas
         {
             { MainPanelType.Storage, _storagePanel },
             { MainPanelType.Market, _marketPanel },
+            { MainPanelType.Order, _orderPanel },
             { MainPanelType.Employment, _employmentPanel },
             { MainPanelType.Research, _researchPanel },
-            { MainPanelType.Order, _orderPanel },
             { MainPanelType.News, _newsPanel },
             { MainPanelType.Finance, _financePanel }
         };

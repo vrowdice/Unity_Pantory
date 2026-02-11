@@ -240,12 +240,22 @@ public class BuildingObject : MonoBehaviour
     {
         if (_inputProductionContainer != null)
         {
+            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
+            if (PoolingManager.Instance != null)
+            {
+                PoolingManager.Instance.ClearChildrenToPool(_inputProductionContainer.transform);
+            }
             Destroy(_inputProductionContainer);
             _inputProductionContainer = null;
         }
         
         if (_outputProductionContainer != null)
         {
+            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
+            if (PoolingManager.Instance != null)
+            {
+                PoolingManager.Instance.ClearChildrenToPool(_outputProductionContainer.transform);
+            }
             Destroy(_outputProductionContainer);
             _outputProductionContainer = null;
         }

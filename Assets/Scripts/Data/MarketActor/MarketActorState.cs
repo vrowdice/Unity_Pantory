@@ -7,4 +7,5 @@ public class MarketActorState
 {
     public long currentChangeWealth;
     public long wealth;
+    public int trust;
 }

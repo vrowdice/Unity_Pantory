@@ -55,12 +55,12 @@ public class CreditTopInfoPanel : MonoBehaviour
     {
         GameObjectUtils.ClearChildren(transform);
 
-        CreatePanelIfValid("Employee Salary", -_dataManager.Finances.DailySalary);
-        CreatePanelIfValid("Resource Delta", -_dataManager.Finances.DailyResource);
-        CreatePanelIfValid("Maintenance Cost", -_dataManager.Finances.DailyMaintenance);
-        CreatePanelIfValid("Negative Interest", -_dataManager.Finances.DailyInterest);
+        CreatePanelIfValid(LocalizationUtils.Localize("Employee Salary", "Expenses"), -_dataManager.Finances.DailySalary);
+        CreatePanelIfValid(LocalizationUtils.Localize("Resource Changes", "Expenses"), -_dataManager.Finances.DailyResource);
+        CreatePanelIfValid(LocalizationUtils.Localize("Thread Maintenance Cost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
+        CreatePanelIfValid(LocalizationUtils.Localize("Negative Interest", "Expenses"), -_dataManager.Finances.DailyInterest);
         
-        CreatePanelIfValid("Daily Net Change", _dataManager.Finances.DailyTotal, true);
+        CreatePanelIfValid(LocalizationUtils.Localize("Daily Change", "Expenses"), _dataManager.Finances.DailyTotal, true);
     }
 
     private void CreatePanelIfValid(string title, long value, bool forceShow = false)

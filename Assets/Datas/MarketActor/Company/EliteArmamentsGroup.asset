@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: EliteArmamentsGroup
+  m_EditorClassIdentifier: 
+  id: elite_armaments_group
+  displayName: Elite Armaments Group
+  icon: {fileID: 21300000, guid: e5b516b2fcdddfe4d99da8a0464f70ab, type: 3}
+  description: A prestige weapons conglomerate that outfits military units and security
+    forces with premium steel, gold, and advanced weaponry.
+  marketActorType: 1
+  baseWealth: 150000
+  baseProductionCount: 70
+  comsumeResourceList:
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+  - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  productionResourceList:
+  - {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
+  - {fileID: 11400000, guid: c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7, type: 2}

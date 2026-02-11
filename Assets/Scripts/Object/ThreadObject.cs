@@ -208,12 +208,22 @@ public class ThreadObject : MonoBehaviour
     {
         if (_consumptionIconContainer != null)
         {
+            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
+            if (PoolingManager.Instance != null)
+            {
+                PoolingManager.Instance.ClearChildrenToPool(_consumptionIconContainer.transform);
+            }
             Destroy(_consumptionIconContainer);
             _consumptionIconContainer = null;
         }
         
         if (_productionIconContainer != null)
         {
+            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
+            if (PoolingManager.Instance != null)
+            {
+                PoolingManager.Instance.ClearChildrenToPool(_productionIconContainer.transform);
+            }
             Destroy(_productionIconContainer);
             _productionIconContainer = null;
         }

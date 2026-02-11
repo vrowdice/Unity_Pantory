@@ -190,6 +190,8 @@ public class MarketPanel : BasePanel
         
         foreach (MarketActorEntry entry in sortedTraders)
         {
+            if (entry.data.marketActorType != MarketActorType.Company) continue;
+
             GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
             MarketTraderBtn traderBtn = btnObj.GetComponent<MarketTraderBtn>();
             traderBtn.Init(this, entry);

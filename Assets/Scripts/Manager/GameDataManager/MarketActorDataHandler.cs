@@ -62,7 +62,7 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
             long totalDailyEarnings = 0;
             long totalDailyCost = 0;
 
-            foreach (ResourceData resourceData in actorEntry.data.productionResources)
+            foreach (ResourceData resourceData in actorEntry.data.productionResourceList)
             {
                 ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
                 if (resourceEntry == null) continue;
@@ -84,9 +84,9 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
             actorEntry.state.wealth += dailyNetProfit;
             actorEntry.state.currentChangeWealth = dailyNetProfit;
 
-            if (actorEntry.state.wealth < actorEntry.data.wealth)
+            if (actorEntry.state.wealth < actorEntry.data.baseWealth)
             {
-                actorEntry.state.wealth = actorEntry.data.wealth;
+                actorEntry.state.wealth = actorEntry.data.baseWealth;
                 actorEntry.state.currentChangeWealth = 0;
             }
         }

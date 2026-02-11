@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: ImperialTreasury
+  m_EditorClassIdentifier: 
+  id: imperial_treasury
+  displayName: Imperial Treasury
+  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  description: The empire's central treasury managing state finances and procuring
+    resources for imperial operations across all provinces.
+  marketActorType: 0
+  baseWealth: 300000
+  baseProductionCount: 50
+  comsumeResourceList:
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+  - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
+  - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+  - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
+  - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
+  productionResourceList: []

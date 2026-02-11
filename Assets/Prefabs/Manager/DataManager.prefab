@@ -51,7 +51,7 @@ MonoBehaviour:
   _initialResearchData: {fileID: 11400000, guid: 3f53f5b792a4f744996e1ed7ba0f1fda, type: 2}
   _initialFinancesData: {fileID: 11400000, guid: bef0cee7cf9cc494081a9c5ce79ebab5, type: 2}
   _initialEffectData: {fileID: 11400000, guid: e041f14cc0b1fbd47a1e74cee518e3a5, type: 2}
-  _initialOrderData: {fileID: 0}
+  _initialOrderData: {fileID: 11400000, guid: ebc4c0f8ef9deb64caa72cc60c2e8149, type: 2}
   _initialNewsData: {fileID: 11400000, guid: 33e35dd8173cb3d4392188c5063b9b15, type: 2}
   _buildingDataList:
   - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
@@ -118,10 +118,8 @@ MonoBehaviour:
   _marketActorDataList:
   - {fileID: 11400000, guid: 5c8f2d1a0b3e49d5a7c8e1f2345678ab, type: 2}
   - {fileID: 11400000, guid: ec678049fb0fbc642a32b249db76ea3a, type: 2}
-  - {fileID: 11400000, guid: 9b1a7b5b7710b7c4894ee83ad6a987c0, type: 2}
   - {fileID: 11400000, guid: 2c0e34082e59e55439f3735cfcd55a38, type: 2}
   - {fileID: 11400000, guid: 9f1bd1ac5b7f92541b2ebee782d41f8f, type: 2}
-  - {fileID: 11400000, guid: 1c2d3e4f5a6b7980c1d2e3f4a5b6c7d8, type: 2}
   - {fileID: 11400000, guid: 2634560cc63a75e428b5c84ca611bd1a, type: 2}
   - {fileID: 11400000, guid: 7b3f2e1d0c9a8456b3d2c1e0f9a8b7c6, type: 2}
   - {fileID: 11400000, guid: 0e874a2a82fd64c46986f6db3a2fbcb2, type: 2}

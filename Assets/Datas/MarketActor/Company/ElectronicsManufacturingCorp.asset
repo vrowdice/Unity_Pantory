@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: ElectronicsManufacturingCorp
+  m_EditorClassIdentifier: 
+  id: electronics_manufacturing_corp
+  displayName: Electronics Manufacturing Corp
+  icon: {fileID: 21300000, guid: b67ab34a9cb40a043ae0cb6cd90bb29f, type: 3}
+  description: A major electronics manufacturer producing motors, light bulbs, and
+    wiring for industrial and consumer markets.
+  marketActorType: 1
+  baseWealth: 100000
+  baseProductionCount: 120
+  comsumeResourceList:
+  - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
+  - {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  productionResourceList:
+  - {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
+  - {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
