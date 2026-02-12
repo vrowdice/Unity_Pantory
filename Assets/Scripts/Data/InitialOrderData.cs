@@ -10,7 +10,12 @@ public class InitialOrderData : ScriptableObject
     [Header("Probability Correction (Pity System)")]
     [Tooltip("매일 증가할 추가 확률")]
     public float orderChanceIncrement = 0.05f;
-
     [Tooltip("의뢰 없이 이 기간이 지나면 100% 확률로 발생")]
     public int guaranteedOrderDay = 10;
+    [Tooltip("기업 의뢰가 열리는 기업가치")]
+    public long companyOrderAvailableWealth;
+    [Tooltip("정부 의뢰가 열리는 기업가치")]
+    public long governmentOrderAvailableWealth;
+    [Tooltip("의뢰 수락 대기 기간")]
+    public int orderAcceptanceDelayDays = 7;
 }

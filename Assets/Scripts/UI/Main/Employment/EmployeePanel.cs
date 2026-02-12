@@ -41,10 +41,8 @@ public class EmployeePanel : BasePanel
     [SerializeField] private Transform _efficiencyStatusScrollViewContentTransform;
     [SerializeField] private Transform _satisfactionStatusScrollViewContentTransform;
 
-    private EmployeeEntry _selectedEmployeeEntry;
-    private EmployeeType _selectedEmployeeType;
-    private bool _isSubscribedToDayChange;
-    private bool _isSubscribedToEmployeeChanged;
+    private List<ActionBtn> _roleButtons = new List<ActionBtn>();
+    private EmployeeType _selectedEmployeeType = EmployeeType.Worker;
     private bool _isUpdatingToggles;
 
     /// <summary>
@@ -61,7 +59,7 @@ public class EmployeePanel : BasePanel
         _dataManager.Employee.OnEmployeeChanged += HandleEmployeeChanged;
 
         SetupEmployeeRoleButtons();
-        SelectFirstEmployee();
+        OnEmployeeTypeClick(EmployeeType.Worker);
     }
 
     #region Public Methods
@@ -80,12 +78,10 @@ public class EmployeePanel : BasePanel
 
         if (delta > 0)
         {
-            // 직원 고용
             _dataManager.Employee.HireEmployee(_selectedEmployeeType, delta);
         }
         else
         {
-            // 직원 해고 (delta가 음수이므로 절댓값 사용)
             int fireCount = Mathf.Abs(delta);
             _dataManager.Employee.TryFireEmployee(_selectedEmployeeType, fireCount);
         }
@@ -115,18 +111,13 @@ public class EmployeePanel : BasePanel
     }
 
     /// <summary>
-    /// 직원 버튼 클릭 핸들러
+    /// 직원 타입 선택 핸들러
     /// </summary>
-    public void HandleEmployeeButtonClicked(EmployeeEntry entry)
+    public void OnEmployeeTypeClick(EmployeeType employeeType)
     {
-        if (entry == null || entry.data == null)
-        {
-            return;
-        }
-
-        _selectedEmployeeEntry = entry;
-        _selectedEmployeeType = entry.data.type;
+        _selectedEmployeeType = employeeType;
         UpdateEmployeeUI();
+        UpdateRoleButtonHighlight();
     }
 
     #endregion
@@ -143,9 +134,27 @@ public class EmployeePanel : BasePanel
             return;
         }
 
-        GameObjectUtils.ClearChildren(EmployeeActionBtnContent);
+        int targetCount = EnumUtils.GetAllEnumValues<EmployeeType>().Count;
+        if (EmployeeActionBtnContent.childCount == targetCount)
+        {
+            _roleButtons.Clear();
+            foreach (Transform child in EmployeeActionBtnContent)
+            {
+                ActionBtn btn = child.GetComponent<ActionBtn>();
+                if (btn != null)
+                {
+                    _roleButtons.Add(btn);
+                }
+            }
+            UpdateRoleButtonHighlight();
+            return;
+        }
 
-        foreach (EmployeeType role in EnumUtils.GetAllEnumValues<EmployeeType>())
+        GameObjectUtils.ClearChildren(EmployeeActionBtnContent);
+        _roleButtons.Clear();
+
+        List<EmployeeType> roles = EnumUtils.GetAllEnumValues<EmployeeType>();
+        foreach (EmployeeType role in roles)
         {
             GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, EmployeeActionBtnContent);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
@@ -153,70 +162,44 @@ public class EmployeePanel : BasePanel
             {
                 EmployeeType capturedRole = role;
                 string localizedName = capturedRole.Localize();
-                btn.Init(localizedName, () => ShowEmployeeByRole(capturedRole));
+                btn.Init(localizedName, () => {
+                    ShowEmployeeByRole(capturedRole);
+                    UpdateRoleButtonHighlight();
+                });
+                _roleButtons.Add(btn);
             }
+        }
+        
+        UpdateRoleButtonHighlight();
+    }
+
+    /// <summary>
+    /// 역할 버튼 하이라이트 업데이트
+    /// </summary>
+    private void UpdateRoleButtonHighlight()
+    {
+        if (_roleButtons.Count == 0) return;
+
+        List<EmployeeType> roles = EnumUtils.GetAllEnumValues<EmployeeType>();
+        for (int i = 0; i < roles.Count && i < _roleButtons.Count; i++)
+        {
+            _roleButtons[i].SetHighlight(_selectedEmployeeType == roles[i]);
         }
     }
 
     /// <summary>
-    /// 특정 역할의 첫 번째 직원 표시
+    /// 특정 역할의 직원 표시
     /// </summary>
     private void ShowEmployeeByRole(EmployeeType role)
     {
-        Dictionary<EmployeeType, EmployeeEntry> allEmployees = _dataManager.Employee.GetAllEmployees();
-        if (allEmployees == null || allEmployees.Count == 0)
-        {
-            return;
-        }
-
-        EmployeeEntry foundEntry = null;
-        foreach (EmployeeEntry entry in allEmployees.Values)
-        {
-            if (entry?.data != null && entry.data.type == role)
-            {
-                foundEntry = entry;
-                break;
-            }
-        }
-
-        if (foundEntry != null)
-        {
-            HandleEmployeeButtonClicked(foundEntry);
-        }
-        else
+        EmployeeEntry entry = _dataManager.Employee.GetEmployeeEntry(role);
+        if (entry == null)
         {
             Debug.LogWarning($"[EmployeePanel] No employee found for role: {role}");
-        }
-    }
-
-    #endregion
-
-    #region Employee Selection
-
-    /// <summary>
-    /// 첫 번째 직원 선택
-    /// </summary>
-    private void SelectFirstEmployee()
-    {
-        if (_dataManager?.Employee == null)
-        {
             return;
         }
 
-        Dictionary<EmployeeType, EmployeeEntry> allEmployees = _dataManager.Employee.GetAllEmployees();
-        if (allEmployees == null || allEmployees.Count == 0)
-        {
-            return;
-        }
-
-        foreach (EmployeeEntry entry in allEmployees.Values)
-        {
-            if (entry != null && entry.data != null)
-            {
-                HandleEmployeeButtonClicked(entry);
-                break;
-            }
-        }
+        OnEmployeeTypeClick(role);
     }
 
     #endregion
@@ -228,8 +211,11 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void UpdateEmployeeUI()
     {
-        EmployeeData data = _selectedEmployeeEntry.data;
-        EmployeeState state = _selectedEmployeeEntry.state;
+        EmployeeEntry entry = _dataManager.Employee.GetEmployeeEntry(_selectedEmployeeType);
+        if (entry == null) return;
+
+        EmployeeData data = entry.data;
+        EmployeeState state = entry.state;
 
         _employeeImage.sprite = data.Image;
         _employeeIconImage.sprite = data.icon;
@@ -340,12 +326,7 @@ public class EmployeePanel : BasePanel
     /// </summary>
     private void RefreshEmployeeUI()
     {
-        EmployeeEntry entry = _dataManager.Employee.GetEmployeeEntry(_selectedEmployeeType);
-        if (entry != null)
-        {
-            _selectedEmployeeEntry = entry;
-            UpdateEmployeeUI();
-        }
+        UpdateEmployeeUI();
     }
 
     #endregion
@@ -371,7 +352,7 @@ public class EmployeePanel : BasePanel
 
         List<EffectState> combinedEffects = new List<EffectState>();
 
-        string instanceId = _selectedEmployeeEntry.data.type.ToString();
+        string instanceId = _selectedEmployeeType.ToString();
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency, instanceId));
 
         if (combinedEffects.Count > 0)
@@ -393,7 +374,7 @@ public class EmployeePanel : BasePanel
         PoolingManager.Instance.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
-        string instanceId = _selectedEmployeeEntry.data.type.ToString();
+        string instanceId = _selectedEmployeeType.ToString();
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction, instanceId));
 
         foreach (EffectState effectState in combinedEffects)

@@ -20,6 +20,7 @@ public class MarketPanel : BasePanel
     [SerializeField] private GameObject _marketTraderBtnPrefab;
 
     private bool _isResourceView = true;
+    private List<ActionBtn> _actionButtons = new List<ActionBtn>();
 
     /// <summary>
     /// 마켓 패널 초기화 및 이벤트 구독을 수행합니다.
@@ -53,9 +54,27 @@ public class MarketPanel : BasePanel
             return;
         }
 
-        GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
+        int targetCount = EnumUtils.GetAllEnumValues<MarketPanelType>().Count;
+        if (_marketActionBtnContentTransform.childCount == targetCount)
+        {
+            _actionButtons.Clear();
+            foreach (Transform child in _marketActionBtnContentTransform)
+            {
+                ActionBtn btn = child.GetComponent<ActionBtn>();
+                if (btn != null)
+                {
+                    _actionButtons.Add(btn);
+                }
+            }
+            UpdateActionButtonHighlight();
+            return;
+        }
 
-        foreach (MarketPanelType panelType in EnumUtils.GetAllEnumValues<MarketPanelType>())
+        GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
+        _actionButtons.Clear();
+
+        List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
+        foreach (MarketPanelType panelType in panelTypes)
         {
             GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
@@ -63,8 +82,37 @@ public class MarketPanel : BasePanel
             {
                 MarketPanelType capturedType = panelType;
                 string localizedName = capturedType.Localize();
-                btn.Init(localizedName, () => OnMarketPanelTypeClick(capturedType));
+                btn.Init(localizedName, () => {
+                    OnMarketPanelTypeClick(capturedType);
+                    UpdateActionButtonHighlight();
+                });
+                _actionButtons.Add(btn);
             }
+        }
+        
+        UpdateActionButtonHighlight();
+    }
+
+    /// <summary>
+    /// 액션 버튼 하이라이트 업데이트
+    /// </summary>
+    private void UpdateActionButtonHighlight()
+    {
+        if (_actionButtons.Count == 0) return;
+
+        List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
+        for (int i = 0; i < panelTypes.Count && i < _actionButtons.Count; i++)
+        {
+            bool isHighlight = false;
+            if (panelTypes[i] == MarketPanelType.Resources)
+            {
+                isHighlight = _isResourceView;
+            }
+            else if (panelTypes[i] == MarketPanelType.Traders)
+            {
+                isHighlight = !_isResourceView;
+            }
+            _actionButtons[i].SetHighlight(isHighlight);
         }
     }
 
@@ -108,6 +156,7 @@ public class MarketPanel : BasePanel
 
         _resourcePanel.Init(this);
         RefreshResourceList();
+        UpdateActionButtonHighlight();
     }
 
     /// <summary>
@@ -120,6 +169,7 @@ public class MarketPanel : BasePanel
 
         _traderPanel.Init(this);
         RefreshTraderList();
+        UpdateActionButtonHighlight();
     }
 
     /// <summary>

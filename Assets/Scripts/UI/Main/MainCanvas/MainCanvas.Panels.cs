@@ -5,8 +5,8 @@ public partial class MainCanvas
 {
     [Header("Panels")]
     [SerializeField] private StoragePanel _storagePanel;
-    [SerializeField] private MarketPanel _marketPanel;
     [SerializeField] private OrderPanel _orderPanel;
+    [SerializeField] private MarketPanel _marketPanel;
     [SerializeField] private EmployeePanel _employmentPanel;
     [SerializeField] private NewsPanel _newsPanel;
     [SerializeField] private ResearchPanel _researchPanel;
@@ -22,8 +22,8 @@ public partial class MainCanvas
         _panelDict = new Dictionary<MainPanelType, BasePanel>
         {
             { MainPanelType.Storage, _storagePanel },
-            { MainPanelType.Market, _marketPanel },
             { MainPanelType.Order, _orderPanel },
+            { MainPanelType.Market, _marketPanel },
             { MainPanelType.Employment, _employmentPanel },
             { MainPanelType.Research, _researchPanel },
             { MainPanelType.News, _newsPanel },

@@ -34,7 +34,7 @@ public partial class MainCanvas
             _selectedThreadCategoryId = string.Empty;
         }
 
-        CreateThreadCategoryButton(string.Empty, "All");
+        CreateThreadCategoryButton(string.Empty, LocalizationUtils.Localize("All"));
 
         if (categories != null)
         {

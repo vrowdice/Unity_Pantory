@@ -19,7 +19,7 @@ public class ThreadCategoryBtn : MonoBehaviour
 
         if (_titleText != null)
         {
-            _titleText.text = string.IsNullOrEmpty(categoryName) ? "All" : categoryName;
+            _titleText.text = string.IsNullOrEmpty(categoryName) ? LocalizationUtils.Localize("All") : categoryName;
         }
     }
 

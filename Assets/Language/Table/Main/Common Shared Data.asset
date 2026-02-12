@@ -275,6 +275,10 @@ MonoBehaviour:
     m_Key: Consume
     m_Metadata:
       m_Items: []
+  - m_Id: 6618040123146240
+    m_Key: All
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

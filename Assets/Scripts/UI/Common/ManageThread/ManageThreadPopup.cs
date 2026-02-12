@@ -79,7 +79,7 @@ public class ManageThreadPopup : BasePopup
 
             if (allBtn != null)
             {
-                allBtn.Init(string.Empty, "All", OnCategorySelected);
+                allBtn.Init(string.Empty, LocalizationUtils.Localize("All"), OnCategorySelected);
                 _categoryBtns.Add(allBtn);
             }
         }

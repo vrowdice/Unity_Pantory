@@ -278,6 +278,10 @@ MonoBehaviour:
     m_Localized: Consume
     m_Metadata:
       m_Items: []
+  - m_Id: 6618040123146240
+    m_Localized: All
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

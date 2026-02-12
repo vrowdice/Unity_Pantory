@@ -1,8 +1,9 @@
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 /// <summary>
 /// 창고(플레이어 인벤토리) 관리 패널
@@ -13,7 +14,8 @@ public class StoragePanel : BasePanel
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
-    private ResourceType _currentResourceType = ResourceType.raw;
+    private ResourceType? _currentResourceType = null;
+    private List<ActionBtn> _categoryButtons = new List<ActionBtn>();
 
     /// <summary>
     /// 패널 초기화 (BasePanel에서 호출)
@@ -22,6 +24,7 @@ public class StoragePanel : BasePanel
     {
         base.Init(argUIManager);
 
+        _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
         _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;
 
         InitializeResourceTypeButtons();
@@ -30,23 +33,68 @@ public class StoragePanel : BasePanel
 
     /// <summary>
     /// 리소스 타입 버튼 초기화
-    /// GameManager의 공통 ActionBtn 프리팹을 사용하여 타입별 버튼을 생성합니다.
-    /// 패널이 다시 열릴 때 중복 생성을 막기 위해 먼저 자식들을 정리합니다.
     /// </summary>
     private void InitializeResourceTypeButtons()
     {
-        GameObjectUtils.ClearChildren(_resourceTypeScrollViewContentTransform);
+        int targetCount = EnumUtils.GetAllEnumValues<ResourceType>().Count + 1;
+        if (_resourceTypeScrollViewContentTransform.childCount == targetCount)
+        {
+            _categoryButtons.Clear();
+            foreach (Transform child in _resourceTypeScrollViewContentTransform)
+            {
+                ActionBtn btn = child.GetComponent<ActionBtn>();
+                if (btn != null)
+                {
+                    _categoryButtons.Add(btn);
+                }
+            }
+            UpdateCategoryHighlight();
+            return;
+        }
+
+        _gameManager.PoolingManager.ClearChildrenToPool(_resourceTypeScrollViewContentTransform);
+        _categoryButtons.Clear();
+
+        CreateCategoryButton(null, LocalizationUtils.Localize("All"));
 
         foreach (ResourceType resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
         {
-            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
-            ActionBtn btn = btnObj.GetComponent<ActionBtn>();
-            if (btn != null)
-            {
-                ResourceType capturedType = resourceType;
-                string localizedName = capturedType.Localize();
-                btn.Init(localizedName, () => OnResourceTypeClick(capturedType));
-            }
+            CreateCategoryButton(resourceType, resourceType.Localize());
+        }
+        
+        UpdateCategoryHighlight();
+    }
+
+    /// <summary>
+    /// 카테고리 버튼 생성
+    /// </summary>
+    private void CreateCategoryButton(ResourceType? type, string label)
+    {
+        GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
+        ActionBtn btn = btnObj.GetComponent<ActionBtn>();
+        
+        ResourceType? capturedType = type;
+        btn.Init(label, () => {
+            OnResourceTypeClick(capturedType);
+            UpdateCategoryHighlight();
+        });
+
+        _categoryButtons.Add(btn);
+    }
+
+    /// <summary>
+    /// 카테고리 버튼 하이라이트 업데이트
+    /// </summary>
+    private void UpdateCategoryHighlight()
+    {
+        if (_categoryButtons.Count == 0) return;
+
+        _categoryButtons[0].SetHighlight(_currentResourceType == null);
+
+        List<ResourceType> types = EnumUtils.GetAllEnumValues<ResourceType>();
+        for (int i = 0; i < types.Count && i + 1 < _categoryButtons.Count; i++)
+        {
+            _categoryButtons[i + 1].SetHighlight(_currentResourceType == types[i]);
         }
     }
 
@@ -54,35 +102,27 @@ public class StoragePanel : BasePanel
     /// 리소스 타입 버튼 클릭 시 호출
     /// </summary>
     /// <param name="resourceType">선택된 리소스 타입</param>
-    public void OnResourceTypeClick(ResourceType resourceType)
+    public void OnResourceTypeClick(ResourceType? resourceType)
     {
         _currentResourceType = resourceType;
         RefreshCurrentResourceTypeList();
+        UpdateCategoryHighlight();
     }
 
     /// <summary>
     /// 현재 선택된 타입 기준으로 리소스 리스트를 다시 그림
-    /// (타입 버튼 클릭 및 자원 변화 이벤트에서 공통 사용)
     /// </summary>
     private void RefreshCurrentResourceTypeList()
     {
-        if (_dataManager == null || _dataManager.Resource == null)
-        {
-            return;
-        }
-
-        if (_resourceScrollViewContentTransform != null)
-        {
-            GameObjectUtils.ClearChildren(_resourceScrollViewContentTransform);
-        }
+        _gameManager.PoolingManager.ClearChildrenToPool(_resourceScrollViewContentTransform);
 
         foreach (KeyValuePair<string, ResourceEntry> resourceEntry in _dataManager.Resource.GetAllResources())
         {
-            if (resourceEntry.Value.data.type == _currentResourceType)
+            if (_currentResourceType == null || resourceEntry.Value.data.type == _currentResourceType.Value)
             {
-                Instantiate(_storageResourceBtnPrefab, _resourceScrollViewContentTransform)
-                    .GetComponent<StorageResourceBtn>()
-                    .Init(this, resourceEntry.Value);
+                GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_storageResourceBtnPrefab);
+                btnObj.transform.SetParent(_resourceScrollViewContentTransform, false);
+                btnObj.GetComponent<StorageResourceBtn>().Init(this, resourceEntry.Value);
             }
         }
     }

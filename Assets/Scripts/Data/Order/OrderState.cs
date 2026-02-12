@@ -5,10 +5,10 @@ using System.Collections.Generic;
 public class OrderState
 {
     public string id;
-    public OrderClientType clientType;
+    public string senderActorId;
     public List<ResourceRequest> resourceRequestList;
     public long totalRewardCredit;
-    public int expireDay;
+    public int durationDays;
     public bool isAccepted;
     public bool isCompleted;
 
@@ -22,7 +22,7 @@ public class OrderState
     public OrderState(OrderData orderData)
     {
         id = orderData.id;
-        clientType = orderData.clientType;
+        senderActorId = orderData.senderActorId;
         isAccepted = false;
         isCompleted = false;
     }
