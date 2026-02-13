@@ -282,6 +282,18 @@ MonoBehaviour:
     m_Localized: All
     m_Metadata:
       m_Items: []
+  - m_Id: 6882479783165952
+    m_Localized: Accepted Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6888989527523328
+    m_Localized: Remaining period
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6900129099825152
+    m_Localized: Get trust
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

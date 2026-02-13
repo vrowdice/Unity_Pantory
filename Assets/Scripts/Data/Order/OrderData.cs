@@ -6,8 +6,6 @@ public class OrderData : ScriptableObject
 {
     public string id;
     public string displayName;
-    [TextArea(2, 6)]
-    public string description;
     public string senderActorId;
     public MarketActorType marketActorType;
     public int durationDays;
