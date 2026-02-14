@@ -19,7 +19,7 @@ public class MarketActorPopupBtn : MonoBehaviour
         UpdateUI();
     }
 
-    private void UpdateUI()
+    public void UpdateUI()
     {
         if (_marketActorEntry == null) return;
 

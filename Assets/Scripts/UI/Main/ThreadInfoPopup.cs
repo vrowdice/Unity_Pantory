@@ -28,6 +28,8 @@ public class ThreadInfoPopup : BasePopup
     [SerializeField] private TextMeshProUGUI _productionProgressText;
 
     [Header("Employee Assignment (Global Stats)")]
+    [SerializeField] private TextMeshProUGUI _maxEmployeeText;
+    [SerializeField] private TextMeshProUGUI _requiredTechnicianText;
     [SerializeField] private TextMeshProUGUI _currentWorkersText;
     [SerializeField] private TextMeshProUGUI _currentTechniciansText;
 
@@ -139,15 +141,19 @@ public class ThreadInfoPopup : BasePopup
         int availWorkers = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker));
         int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
 
-        _maxWorkersText.text = $"Max: {_currentThreadState.requiredEmployees - _currentThreadState.requiredTechnicians}";
-        _maxTechniciansText.text = $"Max: {_currentThreadState.requiredTechnicians}";
         _currentWorkersText.text = $"{_dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker).state.count:N0}";
         _currentTechniciansText.text = $"{_dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician).state.count:N0}";
+
+        _maxEmployeeText.text = $"{requiredTotal:N0}";
+        _requiredTechnicianText.text = $"{_currentThreadState.requiredTechnicians:N0}";
+        _maxWorkersText.text = $"MAX {requiredTotal - _currentThreadState.requiredTechnicians}";
+        _maxTechniciansText.text = $"MAX {requiredTotal}";
+
         _assignedWorkersText.text = _currentThreadState.currentWorkers.ToString("N0");
         _assignedTechniciansText.text = _currentThreadState.currentTechnicians.ToString("N0");
 
         UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal - _currentThreadState.requiredTechnicians);
-        UpdateSliderState(_technicianSlider, currentTechs, availTechs, _currentThreadState.requiredTechnicians);
+        UpdateSliderState(_technicianSlider, currentTechs, availTechs, requiredTotal);
     }
 
     /// <summary>

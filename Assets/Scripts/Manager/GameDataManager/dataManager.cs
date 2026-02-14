@@ -30,6 +30,7 @@ public class DataManager : Singleton<DataManager>
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
     public InitialResearchData InitialResearchData => _initialResearchData;
     public InitialEffectData InitialEffectData => _initialEffectData;
+    public InitialOrderData InitialOrderData => _initialOrderData;
 
     public TimeDataHandler Time { get; private set; }
     public ThreadDataHandler Thread { get; private set; }

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class MarketActorInfoPopup : BasePopup
 {
@@ -42,11 +43,33 @@ public class MarketActorInfoPopup : BasePopup
         _wealthText.text = _currentMarketActorEntry.state.wealth.ToString("F1");
 
         _marketActorImage.sprite = _currentMarketActorEntry.data.icon;
+
+        UpdateTypeOfOrder();
     }
 
-    public void UpdateTypeOfOrder()
+    private void UpdateTypeOfOrder()
     {
-        GameObject typeOfOrderItemPrefab = Instantiate(_typeOfOrderScrollViewItemTextPrefab, _typeOfOrderScrollViewContextTransform);
+        if (_typeOfOrderScrollViewContextTransform == null || _typeOfOrderScrollViewItemTextPrefab == null) return;
+
+        for (int i = _typeOfOrderScrollViewContextTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(_typeOfOrderScrollViewContextTransform.GetChild(i).gameObject);
+        }
+
+        MarketActorType actorType = _currentMarketActorEntry.data.marketActorType;
+        Dictionary<string, OrderData> allOrders = _dataManager.Order.GetAllOrderData();
+
+        foreach (OrderData orderData in allOrders.Values)
+        {
+            if (orderData == null || orderData.marketActorType != actorType) continue;
+
+            GameObject itemObj = Instantiate(_typeOfOrderScrollViewItemTextPrefab, _typeOfOrderScrollViewContextTransform);
+            TextMeshProUGUI textComp = itemObj.GetComponent<TextMeshProUGUI>();
+            if (textComp != null)
+            {
+                textComp.text = orderData.id.Localize(LocalizationUtils.TABLE_ORDER);
+            }
+        }
     }
 
     public void OnDayChanged()

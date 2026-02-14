@@ -38,6 +38,14 @@ public class QuickMoveBtn : MonoBehaviour
         }
     }
 
+    private void OnOrderChanged(OrderState orderState)
+    {
+        if (orderState != null)
+        {
+            SetAlertActive(true);
+        }
+    }
+
     private void SetAlertActive(bool isActive)
     {
         _alartImage.transform.DOKill();
@@ -66,6 +74,9 @@ public class QuickMoveBtn : MonoBehaviour
         {
             case MainPanelType.News:
                 DataManager.Instance.News.OnNewsChanged += OnNewsChanged;
+                break;
+            case MainPanelType.Order:
+                DataManager.Instance.Order.OnOrderChanged += OnOrderChanged;
                 break;
             default:
                 break;

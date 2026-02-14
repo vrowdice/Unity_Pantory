@@ -302,6 +302,14 @@ MonoBehaviour:
     m_Localized: Reward Cradit
     m_Metadata:
       m_Items: []
+  - m_Id: 7253072416227328
+    m_Localized: Max Employee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7254054646726656
+    m_Localized: Required Technician
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

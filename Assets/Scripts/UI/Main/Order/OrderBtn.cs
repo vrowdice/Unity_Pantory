@@ -35,8 +35,14 @@ public class OrderBtn : MonoBehaviour
         _marketActorEntry = _dataManager.MarketActor.GetMarketActorEntry(_orderData.senderActorData.id);
         _marketActorPopupBtn.Init(_marketActorEntry, mainCanvas);
 
-        _durationDaysSlider.minValue = 0;
-        _durationDaysSlider.maxValue = _orderState.durationDays;
+        if(_orderState.isAccepted)
+        {
+            _durationDaysSlider.maxValue = _orderData.durationDays;
+        }
+        else
+        {
+            _durationDaysSlider.maxValue = _dataManager.InitialOrderData.orderAcceptanceDelayDays;
+        }
 
         UpdateUI();
     }
@@ -48,10 +54,10 @@ public class OrderBtn : MonoBehaviour
 
         _marketActorNameText.text = _marketActorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
         _trustText.text = _marketActorEntry.state.trust.ToString();
-        _orderTitleText.text = _orderData.displayName;
+        _orderTitleText.text = _orderData.id.Localize(LocalizationUtils.TABLE_ORDER);
         _durationDaysText.text = _orderState.durationDays.ToString();
         _rewardTrustText.text = _orderData.rewardTrust.ToString();
-        _rewardCreditText.text = ReplaceUtils.FormatNumberWithCommas(_orderState.totalRewardCredit);
+        _rewardCreditText.text = ReplaceUtils.FormatNumberWithCommas(_orderState.rewardCredit);
 
         _durationDaysSlider.value = _orderState.durationDays;
 
@@ -94,9 +100,9 @@ public class OrderBtn : MonoBehaviour
 
     public void OnClick()
     {
-        if (_orderState == null || _orderState.isAccepted) return;
+        if (_orderState == null) return;
 
-        _dataManager.Order.AcceptOrder(_orderState);
+        _dataManager.Order.AcceptAndCompleteOrder(_orderState);
 
         UpdateUI();
     }

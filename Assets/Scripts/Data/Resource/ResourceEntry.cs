@@ -46,10 +46,14 @@ public class ResourceEntry
     /// </summary>
     /// <param name="amount">변경할 수량</param>
     /// <returns>실제로 변경된 수량</returns>
-    public int ModifyCount(int amount)
+    public bool ModifyCount(int amount)
     {
-        int oldCount = state.count;
-        state.count = Mathf.Max(0, state.count + amount);
-        return state.count - oldCount;
+        int newCount = state.count + amount;
+        if (newCount < 0)
+        {
+            return false;
+        }
+        state.count = newCount;
+        return true;
     }
 }

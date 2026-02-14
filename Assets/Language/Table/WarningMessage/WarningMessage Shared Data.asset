@@ -63,6 +63,14 @@ MonoBehaviour:
     m_Key: ThreadContainsLockedBuildings
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268013
+    m_Key: NotEnoughResources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268014
+    m_Key: NotEnoughCredits
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

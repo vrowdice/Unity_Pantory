@@ -28,11 +28,18 @@ MonoBehaviour:
     - Locale-ja
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0766755dc646c4e43b6f628834fb15cc
+    m_Address: Order_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0d23e1679ccb9134dad2b34b8fe1e503
     m_Address: MarketActor_ja
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1b9501d5e02724145ba06cd2e05eca95
     m_Address: MarketActorDescription_ja

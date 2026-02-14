@@ -19,8 +19,9 @@ public class OrderPanel : BasePanel
     private MarketActorType? _currentMarketActorType = null;
     private bool _showAcceptedOrders = false;
 
-    private List<ActionBtn> _filterButtons = new List<ActionBtn>();
-    private Dictionary<OrderState, OrderBtn> _orderButtonMap = new Dictionary<OrderState, OrderBtn>();
+    private List<ActionBtn> _filterButtonList = new();
+    private List<MarketActorPopupBtn> _marketActorPopupBtnList = new();
+    private Dictionary<OrderState, OrderBtn> _orderButtonMap = new();
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -42,18 +43,24 @@ public class OrderPanel : BasePanel
         _acceptedOrderSwitch.onValueChanged.AddListener(OnAcceptedOrderSwitchChanged);
     }
 
+    public void UpdataUI()
+    {
+        foreach (MarketActorPopupBtn btn in _marketActorPopupBtnList) btn.UpdateUI();
+        foreach (OrderBtn btn in _orderButtonMap.Values) btn.UpdateUI();
+    }
+
     private void InitializeFilterButtons()
     {
         int targetCount = EnumUtils.GetAllEnumValues<MarketActorType>().Count + 1;
         if (_orderActionBtnContentTransform.childCount == targetCount)
         {
-            _filterButtons.Clear();
+            _filterButtonList.Clear();
             foreach (Transform child in _orderActionBtnContentTransform)
             {
                 ActionBtn btn = child.GetComponent<ActionBtn>();
                 if (btn != null)
                 {
-                    _filterButtons.Add(btn);
+                    _filterButtonList.Add(btn);
                 }
             }
             UpdateFilterHighlight();
@@ -61,7 +68,7 @@ public class OrderPanel : BasePanel
         }
 
         _gameManager.PoolingManager.ClearChildrenToPool(_orderActionBtnContentTransform);
-        _filterButtons.Clear();
+        _filterButtonList.Clear();
 
         GameObject allBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _orderActionBtnContentTransform);
         ActionBtn allBtn = allBtnObj.GetComponent<ActionBtn>();
@@ -69,7 +76,7 @@ public class OrderPanel : BasePanel
             OnMarketActorTypeClick(null);
             UpdateFilterHighlight();
         });
-        _filterButtons.Add(allBtn);
+        _filterButtonList.Add(allBtn);
 
         foreach (MarketActorType actorType in EnumUtils.GetAllEnumValues<MarketActorType>())
         {
@@ -80,7 +87,7 @@ public class OrderPanel : BasePanel
                 OnMarketActorTypeClick(capturedType);
                 UpdateFilterHighlight();
             });
-            _filterButtons.Add(btn);
+            _filterButtonList.Add(btn);
         }
 
         UpdateFilterHighlight();
@@ -88,14 +95,14 @@ public class OrderPanel : BasePanel
 
     private void UpdateFilterHighlight()
     {
-        if (_filterButtons.Count == 0) return;
+        if (_filterButtonList.Count == 0) return;
 
-        _filterButtons[0].SetHighlight(_currentMarketActorType == null);
+        _filterButtonList[0].SetHighlight(_currentMarketActorType == null);
 
         List<MarketActorType> types = EnumUtils.GetAllEnumValues<MarketActorType>();
-        for (int i = 0; i < types.Count && i + 1 < _filterButtons.Count; i++)
+        for (int i = 0; i < types.Count && i + 1 < _filterButtonList.Count; i++)
         {
-            _filterButtons[i + 1].SetHighlight(_currentMarketActorType == types[i]);
+            _filterButtonList[i + 1].SetHighlight(_currentMarketActorType == types[i]);
         }
     }
 
@@ -128,13 +135,15 @@ public class OrderPanel : BasePanel
             {
                 btn.Init(actorEntry, _uiManager);
             }
+
+            _marketActorPopupBtnList.Add(btn);
         }
     }
 
-    private List<OrderState> GetFilteredOrders()
+    private void RefreshOrderButtons()
     {
         List<OrderState> activeOrders = _dataManager.Order.GetActiveOrderList();
-        return activeOrders.Where(order => {
+        List<OrderState> filteredOrders = activeOrders.Where(order => {
             if (order == null) return false;
             if (_showAcceptedOrders && !order.isAccepted) return false;
             if (!_showAcceptedOrders && order.isAccepted) return false;
@@ -147,11 +156,6 @@ public class OrderPanel : BasePanel
 
             return _currentMarketActorType == null || actorEntry.data.marketActorType == _currentMarketActorType.Value;
         }).ToList();
-    }
-
-    private void RefreshOrderButtons()
-    {
-        List<OrderState> filteredOrders = GetFilteredOrders();
 
         List<OrderState> toRemove = _orderButtonMap.Keys
             .Where(state => !filteredOrders.Contains(state))
@@ -168,8 +172,11 @@ public class OrderPanel : BasePanel
 
         foreach (OrderState order in filteredOrders)
         {
-            if (order == null) continue;
-            if (_orderButtonMap.ContainsKey(order)) continue;
+            if (_orderButtonMap.TryGetValue(order, out OrderBtn existingBtn))
+            {
+                existingBtn.Init(order, _uiManager);
+                continue;
+            }
 
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_orderBtnPrefab);
             btnObj.transform.SetParent(_orderBtnScrollViewContentTransform, false);
@@ -190,18 +197,13 @@ public class OrderPanel : BasePanel
 
     private void HandleDayChanged()
     {
-        foreach (OrderBtn btn in _orderButtonMap.Values)
-        {
-            btn.UpdateUI();
-        }
+        RefreshOrderButtons();
+        UpdataUI();
     }
 
     private void HandleResourceChanged()
     {
-        foreach (OrderBtn btn in _orderButtonMap.Values)
-        {
-            btn.UpdateUI();
-        }
+        UpdataUI();
     }
     
     private void OnDisable()

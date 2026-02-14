@@ -130,12 +130,10 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         float trustBonus = (marketActorEntry.state.trust - 50) * 0.001f;
         float finalMultiplier = orderData.priceMultiplier + trustBonus;
 
-        newState.totalRewardCredit = (long)(totalMarketValue * finalMultiplier);
+        newState.rewardCredit = (long)(totalMarketValue * finalMultiplier);
 
         _activeOrderList.Add(newState);
         OnOrderChanged?.Invoke(newState);
-
-        Debug.Log($"[Order] 새 주문 생성: {orderData.displayName} (거래처: {marketActorEntry.data.displayName})");
     }
 
     private MarketActorEntry GetWeightedRandomActor(Dictionary<MarketActorEntry, float> weights, float totalWeight)
@@ -158,12 +156,31 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         _daysSinceLastOrder = 0;
     }
 
-    public void AcceptOrder(OrderState order)
+    public void AcceptAndCompleteOrder(OrderState order)
     {
         if (order == null) return;
 
-        order.isAccepted = true;
-        order.durationDays = GetOrderData(order.id).durationDays;
+        if (order.isAccepted)
+        {
+            foreach (OrderState.ResourceRequest request in order.resourceRequestList)
+            {
+                if (!_dataManager.Resource.ModifyResourceCount(request.resourceId, -request.requiredCount))
+                {
+                    GameManager.Instance.ShowWarningPanel(WarningMessage.NotEnoughResources);
+                    return;
+                }
+            }
+
+            _dataManager.Finances.ModifyCredit(order.rewardCredit);
+            _dataManager.MarketActor.ModifyMarketActorTrust(order.senderActorId, order.rewardTrust);
+
+            _activeOrderList.Remove(order);
+        }
+        else
+        {
+            order.isAccepted = true;
+            order.durationDays = GetOrderData(order.id).durationDays;
+        }
 
         OnOrderChanged?.Invoke(order);
     }
@@ -203,11 +220,10 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
             {
                 if(order.isAccepted)
                 {
-                    Debug.Log($"[Order] 주문 실패: {GetOrderData(order.id)?.displayName ?? order.id}");
+                    _dataManager.MarketActor.ModifyMarketActorTrust(order.senderActorId, -order.rewardTrust / 2);
                 }
 
                 _activeOrderList.RemoveAt(i);
-                OnOrderChanged?.Invoke(order);
             }
         }
 

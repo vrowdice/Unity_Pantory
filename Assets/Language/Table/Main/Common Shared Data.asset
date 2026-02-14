@@ -299,6 +299,14 @@ MonoBehaviour:
     m_Key: Reward Cradit
     m_Metadata:
       m_Items: []
+  - m_Id: 7253072416227328
+    m_Key: Max Employee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7254054646726656
+    m_Key: Required Technician
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

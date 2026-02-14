@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Order_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: 53f8aa9b41065654f8a323cefbe21a73, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 864226270001
+    m_Localized: 고급 가구 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270002
+    m_Localized: 고급 가구 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270003
+    m_Localized: 고급 자원 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270004
+    m_Localized: 연구 재료 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270005
+    m_Localized: 경화기 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270006
+    m_Localized: 산업 자재 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270007
+    m_Localized: 제국 금속 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270008
+    m_Localized: 금속 및 도구 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270009
+    m_Localized: 알루미늄 괴 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270010
+    m_Localized: 고급 목재 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270011
+    m_Localized: 알루미늄 괴 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270012
+    m_Localized: 군장비 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270013
+    m_Localized: 혼합 자원 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270014
+    m_Localized: 고급 가구 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270015
+    m_Localized: 고급 금속 및 도구 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270016
+    m_Localized: 순금 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270017
+    m_Localized: 인프라 자재 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270018
+    m_Localized: 고급 가구 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270019
+    m_Localized: 전자 부품 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270020
+    m_Localized: 순금 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270021
+    m_Localized: 원목 및 경화기 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270022
+    m_Localized: 철 괴 공급 계약
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270023
+    m_Localized: 경화기 공급 계약
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

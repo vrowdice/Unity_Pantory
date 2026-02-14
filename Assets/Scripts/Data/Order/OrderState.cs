@@ -7,7 +7,8 @@ public class OrderState
     public string id;
     public string senderActorId;
     public List<ResourceRequest> resourceRequestList;
-    public long totalRewardCredit;
+    public long rewardCredit;
+    public int rewardTrust;
     public int durationDays;
     public bool isAccepted;
 
@@ -23,5 +24,7 @@ public class OrderState
         id = orderData.id;
         senderActorId = orderData.senderActorData != null ? orderData.senderActorData.id : string.Empty;
         isAccepted = false;
+
+        rewardTrust = orderData.rewardTrust;
     }
 }

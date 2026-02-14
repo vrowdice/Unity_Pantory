@@ -15,12 +15,9 @@ MonoBehaviour:
   id: wood_log
   displayName: Raw Wood
   baseValue: 10
-  volatilityMultiplier: 0.8
-  maxPriceMultiplier: 10
   type: 0
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 0b049916f73f4dc4d904d3f5f36d784a, type: 3}
   description: The most basic resource. Material for furniture, tools, and early
     textiles (pulp).
   requirements: []
-  initialAmount: 100
+  initialAmount: 5000

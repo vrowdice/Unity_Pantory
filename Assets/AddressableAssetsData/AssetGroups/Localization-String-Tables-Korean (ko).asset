@@ -50,6 +50,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7ded5095236ac5e40b52a66c0d1fa303
     m_Address: MainPanelType_ko
@@ -65,6 +66,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 872a68c7f63580b4e8c581979dfe647e
     m_Address: ResourceType_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89164e0a0690b934399c98e5e609b4f9
+    m_Address: Order_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko

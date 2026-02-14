@@ -16,4 +16,6 @@ public static class WarningMessage
     public const string ThreadDeleted = "ThreadDeleted";
     public const string BuildingLocked = "BuildingLocked";
     public const string ThreadContainsLockedBuildings = "ThreadContainsLockedBuildings";
+    public const string NotEnoughResources = "NotEnoughResources";
+    public const string NotEnoughCredits = "NotEnoughCredits";
 }

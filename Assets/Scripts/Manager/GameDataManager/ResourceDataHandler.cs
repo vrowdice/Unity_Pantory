@@ -100,6 +100,26 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
     }
 
+    public bool ModifyResourceCount(string resourceId, int count)
+    {
+        ResourceEntry resourceEntry = null;
+        _resourceDic.TryGetValue(resourceId, out resourceEntry);
+        if (resourceEntry != null)
+        {
+            bool result = resourceEntry.ModifyCount(count);
+            if(result)
+            {
+                OnResourceChanged?.Invoke();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
     /// <summary>
     /// 누적된 deltaCount를 실제 자원 수량에 반영하고 초기화합니다.
     /// </summary>
