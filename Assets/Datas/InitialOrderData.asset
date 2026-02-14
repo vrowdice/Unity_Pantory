@@ -12,3 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b57ca3d67aaa86847ab90bc41dc1f79f, type: 3}
   m_Name: InitialOrderData
   m_EditorClassIdentifier: 
+  maxOrderItems: 5
+  baseOrderChance: 0.1
+  orderChanceIncrement: 0.05
+  guaranteedOrderDay: 10
+  companyOrderAvailableWealth: 5000000
+  governmentOrderAvailableWealth: 10000000
+  orderAcceptanceDelayDays: 7

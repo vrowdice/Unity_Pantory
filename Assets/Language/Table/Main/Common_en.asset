@@ -310,6 +310,18 @@ MonoBehaviour:
     m_Localized: Required Technician
     m_Metadata:
       m_Items: []
+  - m_Id: 7366665979707392
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7378564653924352
+    m_Localized: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7378644786102272
+    m_Localized: Load Game
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

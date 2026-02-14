@@ -307,6 +307,18 @@ MonoBehaviour:
     m_Key: Required Technician
     m_Metadata:
       m_Items: []
+  - m_Id: 7366665979707392
+    m_Key: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7378564653924352
+    m_Key: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7378644786102272
+    m_Key: Load Game
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
