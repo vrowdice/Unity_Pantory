@@ -55,5 +55,7 @@
     },
     "dotnet.defaultSolution": "Project_Linked.slnx",
     "dotnet.preferCSharpExtension": true,
-    "csharp.suppressBuildAssetsNotification": false
+    "csharp.suppressBuildAssetsNotification": false,
+    "files.encoding": "utf8",
+    "files.autoGuessEncoding": false
 }

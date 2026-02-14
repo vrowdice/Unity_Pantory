@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_treasury_reserve_pure_gold
+  m_EditorClassIdentifier: 
+  id: order_treasury_reserve_pure_gold
+  displayName: Pure Gold Supply Contract
+  senderActorData: {fileID: 11400000, guid: 15250879daf84154092813a2f7e8b595, type: 2}
+  marketActorType: 0
+  durationDays: 15
+  rewardTrust: 35
+  scaleFactor: 0.22
+  potentialResources:
+  - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  priceMultiplier: 1.4

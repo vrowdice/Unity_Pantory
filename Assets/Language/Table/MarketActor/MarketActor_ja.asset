@@ -110,6 +110,74 @@ MonoBehaviour:
     m_Localized: 緑豊かな大陸取引所
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269024
+    m_Localized: 外交団
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269025
+    m_Localized: 帝国アカデミー
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269026
+    m_Localized: 帝国近衛隊
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269027
+    m_Localized: 帝国財務省
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269028
+    m_Localized: 軍需調達局
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269029
+    m_Localized: 公共事業省
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269030
+    m_Localized: 王室
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269031
+    m_Localized: 国庫準備金
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269032
+    m_Localized: 美術収集家
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269033
+    m_Localized: 産業投資家
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269034
+    m_Localized: 職人巨匠
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269035
+    m_Localized: 商人ギルド
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269036
+    m_Localized: 貴族領地
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269037
+    m_Localized: 個人収集家
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269038
+    m_Localized: 学者
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269039
+    m_Localized: 富裕な商人
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269040
+    m_Localized: 武器愛好家
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

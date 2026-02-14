@@ -6,9 +6,10 @@ public class OrderData : ScriptableObject
 {
     public string id;
     public string displayName;
-    public string senderActorId;
+    public MarketActorData senderActorData;
     public MarketActorType marketActorType;
     public int durationDays;
+    public int rewardTrust;
     public float scaleFactor;
     public List<ResourceData> potentialResources;
     public float priceMultiplier;

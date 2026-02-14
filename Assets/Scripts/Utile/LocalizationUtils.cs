@@ -16,6 +16,7 @@ public static class LocalizationUtils
     public const string TABLE_RESEARCH_DESCRIPTION = "ResearchDescription";
     public const string TABLE_MARKET_ACTOR = "MarketActor";
     public const string TABLE_MARKET_ACTOR_DESCRIPTION = "MarketActorDescription";
+    public const string TABLE_MARKET_ACTOR_TYPE = "MarketActorType";
     public const string TABLE_BUILDING = "Building";
     public const string TABLE_BUILDING_DESCRIPTION = "BuildingDescription";
     public const string TABLE_BUILDING_TYPE = "BuildingType";

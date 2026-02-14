@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3badb3644c7b6764ea28f9d77cc6bae0
+    m_Address: MarketActorType_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 45ddd1b92783a7a4a86f16df145e372f
     m_Address: MarketPanelType_en
     m_ReadOnly: 1

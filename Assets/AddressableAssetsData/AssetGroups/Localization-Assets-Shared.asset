@@ -48,6 +48,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 729c92bde3bf04e449ca8e7a4578d94c
+    m_Address: Assets/Language/Table/MarketActorType/MarketActorType Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 740bc9ac83aa3db418c788204869ac98
     m_Address: Assets/Language/Table/MarketActorDescription/MarketActorDescription
       Shared Data.asset

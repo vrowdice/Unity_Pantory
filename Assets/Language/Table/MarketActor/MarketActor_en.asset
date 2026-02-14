@@ -110,6 +110,74 @@ MonoBehaviour:
     m_Localized: Verdant Continental Exchange
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269024
+    m_Localized: Diplomatic Corps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269025
+    m_Localized: Imperial Academy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269026
+    m_Localized: Imperial Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269027
+    m_Localized: Imperial Treasury
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269028
+    m_Localized: Military Procurement Office
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269029
+    m_Localized: Public Works Department
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269030
+    m_Localized: Royal Court
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269031
+    m_Localized: Treasury Reserve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269032
+    m_Localized: Art Collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269033
+    m_Localized: Industrial Investor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269034
+    m_Localized: Master Craftsman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269035
+    m_Localized: Merchant Guild
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269036
+    m_Localized: Noble Estate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269037
+    m_Localized: Private Collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269038
+    m_Localized: Scholar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269039
+    m_Localized: Wealthy Merchant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269040
+    m_Localized: Weapon Enthusiast
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

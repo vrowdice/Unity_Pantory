@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.ParticleSystem;
 
 /// <summary>
 /// 스레드(생산 시설)의 정보를 표시하고 직원을 할당/해제하는 UI 패널을 관리합니다.

@@ -291,7 +291,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 6900129099825152
-    m_Localized: Get trust
+    m_Localized: Reward Trust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7046105819136000
+    m_Localized: Type of Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7051428965531648
+    m_Localized: Reward Cradit
     m_Metadata:
       m_Items: []
   references:

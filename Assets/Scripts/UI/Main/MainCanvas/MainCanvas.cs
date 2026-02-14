@@ -18,6 +18,7 @@ public partial class MainCanvas : CanvasBase
     [Header("Info Panel")]
     [SerializeField] private ThreadInfoPopup _threadInfoPopup;
     [SerializeField] private ResearchInfoPopup _researchInfoPopup;
+    [SerializeField] private MarketActorInfoPopup _marketActorInfoPopup;
     [SerializeField] private NewsPopup _newsPopup;
 
     private MainRunner _mainRunner;
@@ -155,6 +156,11 @@ public partial class MainCanvas : CanvasBase
     public void ShowResearchInfoPanel(ResearchEntry researchEntry)
     {
         _researchInfoPopup.Init(researchEntry, this);
+    }
+
+    public void ShowMarketActorInfoPopup(MarketActorEntry marketActorEntry)
+    {
+        _marketActorInfoPopup.Init(marketActorEntry, this);
     }
 
     public void ShowOptionPanel()

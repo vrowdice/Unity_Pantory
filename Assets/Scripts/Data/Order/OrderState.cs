@@ -10,7 +10,6 @@ public class OrderState
     public long totalRewardCredit;
     public int durationDays;
     public bool isAccepted;
-    public bool isCompleted;
 
     [Serializable]
     public class ResourceRequest
@@ -22,8 +21,7 @@ public class OrderState
     public OrderState(OrderData orderData)
     {
         id = orderData.id;
-        senderActorId = orderData.senderActorId;
+        senderActorId = orderData.senderActorData != null ? orderData.senderActorData.id : string.Empty;
         isAccepted = false;
-        isCompleted = false;
     }
 }

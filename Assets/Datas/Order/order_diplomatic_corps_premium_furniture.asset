@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_diplomatic_corps_premium_furniture
+  m_EditorClassIdentifier: 
+  id: order_diplomatic_corps_premium_furniture
+  displayName: Premium Furniture Supply Contract
+  senderActorData: {fileID: 11400000, guid: 87807b60ce906b147addc457863f9420, type: 2}
+  marketActorType: 0
+  durationDays: 14
+  rewardTrust: 30
+  scaleFactor: 0.18
+  potentialResources:
+  - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
+  priceMultiplier: 1.35

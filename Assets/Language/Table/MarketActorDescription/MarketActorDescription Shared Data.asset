@@ -99,6 +99,74 @@ MonoBehaviour:
     m_Key: verdant_continental_exchange
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269124
+    m_Key: diplomatic_corps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269125
+    m_Key: imperial_academy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269126
+    m_Key: imperial_guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269127
+    m_Key: imperial_treasury
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269128
+    m_Key: military_procurement_office
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269129
+    m_Key: public_works_department
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269130
+    m_Key: royal_court
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269131
+    m_Key: treasury_reserve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269132
+    m_Key: art_collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269133
+    m_Key: industrial_investor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269134
+    m_Key: master_craftsman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269135
+    m_Key: merchant_guild
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269136
+    m_Key: noble_estate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269137
+    m_Key: private_collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269138
+    m_Key: scholar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269139
+    m_Key: wealthy_merchant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269140
+    m_Key: weapon_enthusiast
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

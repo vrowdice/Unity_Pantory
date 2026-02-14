@@ -7,7 +7,7 @@ public class NewsPanel : BasePanel
     [SerializeField] Transform _newspaperContentTransform;
     [SerializeField] GameObject _newspaperPanelPrefab;
 
-    private Dictionary<string, GameObject> _newsObjectMap = new Dictionary<string, GameObject>();
+    private Dictionary<string, NewspaperPanel> _newsPanelMap = new Dictionary<string, NewspaperPanel>();
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -30,35 +30,31 @@ public class NewsPanel : BasePanel
     {
         List<NewsState> activeNewsList = _dataManager.News.GetActiveNewsList();
 
-        List<string> idsToRemove = _newsObjectMap.Keys
+        List<string> idsToRemove = _newsPanelMap.Keys
             .Where(id => !activeNewsList.Any(news => news.id == id))
             .ToList();
 
         foreach (string id in idsToRemove)
         {
-            if (_newsObjectMap.TryGetValue(id, out GameObject obj))
+            if (_newsPanelMap.TryGetValue(id, out NewspaperPanel panel))
             {
-                Destroy(obj);
-                _newsObjectMap.Remove(id);
+                Destroy(panel.gameObject);
+                _newsPanelMap.Remove(id);
             }
         }
 
         foreach (NewsState item in activeNewsList)
         {
             if (item == null) continue;
-            if (_newsObjectMap.ContainsKey(item.id))
-            {
-                continue;
-            }
+            if (_newsPanelMap.ContainsKey(item.id)) continue;
 
             GameObject newsObj = Instantiate(_newspaperPanelPrefab, _newspaperContentTransform);
             NewspaperPanel newsPanel = newsObj.GetComponent<NewspaperPanel>();
             if (newsPanel != null)
             {
                 newsPanel.Init(item, this);
+                _newsPanelMap.Add(item.id, newsPanel);
             }
-
-            _newsObjectMap.Add(item.id, newsObj);
         }
     }
 }

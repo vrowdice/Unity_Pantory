@@ -226,10 +226,17 @@ public class PoolingManager : Singleton<PoolingManager>
     /// </summary>
     public void ClearChildrenToPool(Transform parent)
     {
-        while (parent.childCount > 0)
+        if (parent == null) return;
+
+        List<GameObject> children = new List<GameObject>();
+        foreach (Transform child in parent)
         {
-            GameObject obj = parent.GetChild(0).gameObject;
-            ReturnToPool(obj);
+            children.Add(child.gameObject);
+        }
+
+        foreach (GameObject childObj in children)
+        {
+            ReturnToPool(childObj);
         }
     }
 }

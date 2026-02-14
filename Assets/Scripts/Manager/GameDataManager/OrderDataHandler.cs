@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
@@ -93,10 +94,10 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
     }
 
     /// <summary>
-    /// ÅÛÇÃ¸´ µ¥ÀÌÅÍ¿Í ¼±ÅÃµÈ ¾×ÅÍ¸¦ ¹ÙÅÁÀ¸·Î ½ÇÁ¦ ÀÇ·Ú ÀÎ½ºÅÏ½º¸¦ »ı¼ºÇÕ´Ï´Ù.
+    /// ìƒˆ ì£¼ë¬¸ ìƒì„±.
     /// </summary>
-    /// <param name="orderData">ÀÇ·ÚÀÇ ±âº» ¼³Á¤À» ´ãÀº ScriptableObject</param>
-    /// <param name="marketActorEntry">ÀÇ·Ú¸¦ º¸³½ ¸¶ÄÏ ¾×ÅÍ</param>
+    /// <param name="orderData">ì£¼ë¬¸ ë°ì´í„°</param>
+    /// <param name="marketActorEntry">ê±°ë˜ì²˜</param>
     private void CreateOrderInstance(OrderData orderData, MarketActorEntry marketActorEntry)
     {
         OrderState newState = new OrderState(orderData);
@@ -134,7 +135,7 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         _activeOrderList.Add(newState);
         OnOrderChanged?.Invoke(newState);
 
-        Debug.Log($"[Order] »õ ÀÇ·Ú »ı¼º: {orderData.displayName} (º¸³½ ÀÌ: {marketActorEntry.data.displayName})");
+        Debug.Log($"[Order] ìƒˆ ì£¼ë¬¸ ìƒì„±: {orderData.displayName} (ê±°ë˜ì²˜: {marketActorEntry.data.displayName})");
     }
 
     private MarketActorEntry GetWeightedRandomActor(Dictionary<MarketActorEntry, float> weights, float totalWeight)
@@ -155,6 +156,16 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         _currentOrderChance = _initialOrderData.baseOrderChance;
         _daysSinceLastOrder = 0;
+    }
+
+    public void AcceptOrder(OrderState order)
+    {
+        if (order == null) return;
+
+        order.isAccepted = true;
+        order.durationDays = GetOrderData(order.id).durationDays;
+
+        OnOrderChanged?.Invoke(order);
     }
 
     public OrderData GetOrderData(string id)
@@ -187,14 +198,16 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         for (int i = _activeOrderList.Count - 1; i >= 0; i--)
         {
             OrderState order = _activeOrderList[i];
-            if (!order.isAccepted)
+            order.durationDays--;
+            if (order.durationDays <= 0)
             {
-                order.durationDays--;
-                if (order.durationDays <= 0)
+                if(order.isAccepted)
                 {
-                    _activeOrderList.RemoveAt(i);
-                    OnOrderChanged?.Invoke(order);
+                    Debug.Log($"[Order] ì£¼ë¬¸ ì‹¤íŒ¨: {GetOrderData(order.id)?.displayName ?? order.id}");
                 }
+
+                _activeOrderList.RemoveAt(i);
+                OnOrderChanged?.Invoke(order);
             }
         }
 

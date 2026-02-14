@@ -119,6 +119,7 @@ public class DataManager : Singleton<DataManager>
         AutoLoadToList(_employeeDataList);
         AutoLoadToList(_researchDataList);
         AutoLoadToList(_marketActorDataList);
+        AutoLoadToList(_orderDataList);
         AutoLoadToList(_newsDataList);
 
         UnityEditor.EditorUtility.SetDirty(this);

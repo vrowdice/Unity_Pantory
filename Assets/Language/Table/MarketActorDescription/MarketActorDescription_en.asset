@@ -110,6 +110,74 @@ MonoBehaviour:
     m_Localized: Pan-regional wholesalers that keep carpenters supplied with every grade of wood and basic arms for militias.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269124
+    m_Localized: The diplomatic service requires luxury goods, fine furniture, and precious metals for official ceremonies, state visits, and diplomatic gifts to foreign dignitaries.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269125
+    m_Localized: The empire's premier institution for research and education, requiring electronic components, precision tools, and various materials for scientific experiments and studies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269126
+    m_Localized: Elite security force protecting the capital, requiring small arms, munitions, and vehicles for patrols and security operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269127
+    m_Localized: The empire's central treasury managing state finances and procuring resources for imperial operations across all provinces.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269128
+    m_Localized: Government agency responsible for acquiring weapons, vehicles, and military equipment to supply the empire's armed forces.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269129
+    m_Localized: Government agency responsible for infrastructure projects, constantly procuring metals, wood, and tools for roads, bridges, and public buildings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269130
+    m_Localized: The royal court maintains its opulent lifestyle, constantly acquiring luxury goods, fine furniture, and precious metals for ceremonies and displays of wealth.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269131
+    m_Localized: The empire's strategic reserve, accumulating precious metals and gold to maintain financial stability and back the imperial currency.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269132
+    m_Localized: An avid collector of fine art and craftsmanship, seeking premium furniture, luxury clothing, and fine wood for their extensive collection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269133
+    m_Localized: A wealthy investor funding industrial ventures, purchasing metals, components, and tools to support various manufacturing projects and factories.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269134
+    m_Localized: A renowned artisan specializing in fine craftsmanship, constantly sourcing premium wood, precision tools, and quality materials for custom creations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269135
+    m_Localized: A powerful trade association pooling resources to purchase various goods for distribution across trade routes and markets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269136
+    m_Localized: A prestigious noble family maintaining their ancestral estate, requiring fine furniture, luxury goods, and premium materials for their opulent lifestyle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269137
+    m_Localized: An eccentric collector with deep pockets, seeking rare and valuable resources including precious metals, fine wood, and unique components for their private collection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269138
+    m_Localized: A learned academic conducting research, requiring electronic components, precision tools, and basic materials for experiments and scholarly work.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269139
+    m_Localized: A prosperous merchant with extensive trade networks, purchasing various resources for personal ventures and investments across the empire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269140
+    m_Localized: A private collector and enthusiast of military weapons, constantly acquiring small arms, heavy arms, and munitions for their private arsenal.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -112,6 +112,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ja
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f121cb7b8275b9a4cb898100caa2e7eb
+    m_Address: MarketActorType_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f5d30fdaec9efff48924dccf414b8748
     m_Address: EmployeeType_ja
     m_ReadOnly: 1

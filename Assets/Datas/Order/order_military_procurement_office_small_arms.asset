@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_military_procurement_office_small_arms
+  m_EditorClassIdentifier: 
+  id: order_military_procurement_office_multi
+  displayName: Military Equipment Supply Contract
+  senderActorData: {fileID: 11400000, guid: 32aacd7ed4c416b47959b46f774b3d0c, type: 2}
+  marketActorType: 0
+  durationDays: 13
+  rewardTrust: 35
+  scaleFactor: 0.2
+  potentialResources:
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
+  - {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+  priceMultiplier: 1.4

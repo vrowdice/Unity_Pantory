@@ -110,6 +110,74 @@ MonoBehaviour:
     m_Localized: 푸른 대륙 거래소
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269024
+    m_Localized: 외교부
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269025
+    m_Localized: 제국 아카데미
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269026
+    m_Localized: 제국 근위대
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269027
+    m_Localized: 제국 재무부
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269028
+    m_Localized: 군수 조달청
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269029
+    m_Localized: 공공사업부
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269030
+    m_Localized: 왕실
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269031
+    m_Localized: 국고 준비금
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269032
+    m_Localized: 예술 수집가
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269033
+    m_Localized: 산업 투자자
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269034
+    m_Localized: 장인 대가
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269035
+    m_Localized: 상인 길드
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269036
+    m_Localized: 귀족 영지
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269037
+    m_Localized: 사적 수집가
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269038
+    m_Localized: 학자
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269039
+    m_Localized: 부유한 상인
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269040
+    m_Localized: 무기 애호가
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
