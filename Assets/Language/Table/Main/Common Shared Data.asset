@@ -319,6 +319,10 @@ MonoBehaviour:
     m_Key: Load Game
     m_Metadata:
       m_Items: []
+  - m_Id: 7613205935702016
+    m_Key: Setting
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
