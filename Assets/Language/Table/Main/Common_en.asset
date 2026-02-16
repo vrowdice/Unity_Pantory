@@ -326,6 +326,30 @@ MonoBehaviour:
     m_Localized: Setting
     m_Metadata:
       m_Items: []
+  - m_Id: 7771937462173696
+    m_Localized: Save Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7961787373076480
+    m_Localized: Save Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7969719171039232
+    m_Localized: Thread Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7984511986319360
+    m_Localized: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7984575139954688
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7990221100957696
+    m_Localized: New Savefile
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

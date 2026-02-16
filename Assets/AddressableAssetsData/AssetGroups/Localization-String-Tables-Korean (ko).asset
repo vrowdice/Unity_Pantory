@@ -125,6 +125,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de8bb1a644a206541806a183300328cb
+    m_Address: ConfirmMessage_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: deda4ba8a7a634e42aae5c9107ccd2fe
     m_Address: MarketPanelType_ko
     m_ReadOnly: 1

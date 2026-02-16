@@ -323,6 +323,30 @@ MonoBehaviour:
     m_Key: Setting
     m_Metadata:
       m_Items: []
+  - m_Id: 7771937462173696
+    m_Key: Save Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7961787373076480
+    m_Key: Save Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7969719171039232
+    m_Key: Thread Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7984511986319360
+    m_Key: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7984575139954688
+    m_Key: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7990221100957696
+    m_Key: New Savefile
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

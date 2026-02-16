@@ -21,6 +21,7 @@ public static class LocalizationUtils
     public const string TABLE_BUILDING_DESCRIPTION = "BuildingDescription";
     public const string TABLE_BUILDING_TYPE = "BuildingType";
     public const string TABLE_WARNING_MESSAGE = "WarningMessage";
+    public const string TABLE_CONFIRM_MESSAGE = "ConfirmMessage";
     public const string TABLE_EFFECT = "Effect";
     public const string TABLE_NEWS = "News";
     public const string TABLE_NEWS_DESCRIPTION = "NewsDescription";

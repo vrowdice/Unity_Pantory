@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2621296167047014707}
   - component: {fileID: 4957704072025579300}
-  - component: {fileID: 243531868567249951}
   - component: {fileID: 1981424245889023022}
   - component: {fileID: 3247875662420912942}
   m_Layer: 5
@@ -47,47 +46,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 54179554604785245}
   m_CullTransparentMesh: 1
---- !u!114 &243531868567249951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 54179554604785245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
-  targetImage: {fileID: 0}
-  targetText: {fileID: 1981424245889023022}
-  objectType: 1
-  colorID: Primary
-  fontID: Inter - Bold
-  useCustomColor: 0
-  overrideAlpha: 0
-  alphaOverride: 1
-  enableInteraction: 1
-  interactableObject: {fileID: 6086005293659592944}
-  disabledColor:
-    stylerID: Primary (Tint)
-    color: {r: 1, g: 1, b: 1, a: 0.19607843}
-  normalColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  pressedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  referencesFoldout: 1
-  settingsFoldout: 1
-  interactionFoldout: 1
 --- !u!114 &1981424245889023022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Apply
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8788bd9d9a3de504b832c80b8618fbff, type: 2}
-  m_sharedMaterial: {fileID: 6191684891059084830, guid: 8788bd9d9a3de504b832c80b8618fbff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -141,7 +99,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -555,7 +513,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5604549708068724958}
   - component: {fileID: 2639885956257596168}
-  - component: {fileID: 2960177528983555691}
   - component: {fileID: 6136893736646109048}
   - component: {fileID: 3587886267732471817}
   m_Layer: 5
@@ -592,47 +549,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 551979150903141341}
   m_CullTransparentMesh: 1
---- !u!114 &2960177528983555691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 551979150903141341}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
-  targetImage: {fileID: 0}
-  targetText: {fileID: 6136893736646109048}
-  objectType: 1
-  colorID: Primary
-  fontID: Inter - Regular
-  useCustomColor: 0
-  overrideAlpha: 0
-  alphaOverride: 1
-  enableInteraction: 1
-  interactableObject: {fileID: 2374061948639353067}
-  disabledColor:
-    stylerID: Primary (Tint)
-    color: {r: 1, g: 1, b: 1, a: 0.19607843}
-  normalColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  pressedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  referencesFoldout: 1
-  settingsFoldout: 1
-  interactionFoldout: 1
 --- !u!114 &6136893736646109048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,8 +571,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Load
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -740,7 +656,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:eb20261a195c57c44943fe2956a7f729
     m_TableEntryReference:
-      m_KeyId: 3629356734103552
+      m_KeyId: 7378644786102272
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -3890,7 +3806,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2573269874014656179}
   - component: {fileID: 4786037725313380650}
-  - component: {fileID: 3599403844495130682}
   - component: {fileID: 8890988901775521899}
   - component: {fileID: 1454530413991352859}
   m_Layer: 5
@@ -3927,47 +3842,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5382058553014912294}
   m_CullTransparentMesh: 1
---- !u!114 &3599403844495130682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5382058553014912294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
-  targetImage: {fileID: 0}
-  targetText: {fileID: 8890988901775521899}
-  objectType: 1
-  colorID: Primary
-  fontID: Inter - Bold
-  useCustomColor: 0
-  overrideAlpha: 0
-  alphaOverride: 1
-  enableInteraction: 1
-  interactableObject: {fileID: 1336381575501019698}
-  disabledColor:
-    stylerID: Primary (Tint)
-    color: {r: 1, g: 1, b: 1, a: 0.19607843}
-  normalColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  pressedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  referencesFoldout: 1
-  settingsFoldout: 1
-  interactionFoldout: 1
 --- !u!114 &8890988901775521899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3990,8 +3864,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Save
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8788bd9d9a3de504b832c80b8618fbff, type: 2}
-  m_sharedMaterial: {fileID: 6191684891059084830, guid: 8788bd9d9a3de504b832c80b8618fbff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4021,7 +3895,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -4075,7 +3949,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:eb20261a195c57c44943fe2956a7f729
     m_TableEntryReference:
-      m_KeyId: 3629248013549568
+      m_KeyId: 7771937462173696
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -5472,7 +5346,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7555255434343280620}
   - component: {fileID: 7227415897283340026}
-  - component: {fileID: 8372143196637393671}
   - component: {fileID: 4542711112525951197}
   - component: {fileID: 8367736865030969117}
   m_Layer: 5
@@ -5509,47 +5382,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6701577459375879714}
   m_CullTransparentMesh: 1
---- !u!114 &8372143196637393671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6701577459375879714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
-  targetImage: {fileID: 0}
-  targetText: {fileID: 4542711112525951197}
-  objectType: 1
-  colorID: Primary
-  fontID: Inter - Regular
-  useCustomColor: 0
-  overrideAlpha: 0
-  alphaOverride: 1
-  enableInteraction: 1
-  interactableObject: {fileID: 3678690597859036854}
-  disabledColor:
-    stylerID: Primary (Tint)
-    color: {r: 1, g: 1, b: 1, a: 0.19607843}
-  normalColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor:
-    stylerID: Primary
-    color: {r: 1, g: 1, b: 1, a: 1}
-  pressedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor:
-    stylerID: Secondary
-    color: {r: 0, g: 0, b: 0, a: 1}
-  referencesFoldout: 1
-  settingsFoldout: 1
-  interactionFoldout: 1
 --- !u!114 &4542711112525951197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5572,8 +5404,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Exit Game
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

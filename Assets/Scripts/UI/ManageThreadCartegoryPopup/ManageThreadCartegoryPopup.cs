@@ -126,6 +126,7 @@ public class ManageThreadCartegoryPopup : BasePopup
 
     /// <summary>
     /// 아이템 패널에서 카테고리 삭제 요청 시 호출됩니다.
+    /// 확인 팝업에서 확인 시에만 삭제합니다.
     /// </summary>
     /// <param name="categoryId">카테고리 ID</param>
     /// <param name="categoryName">카테고리 이름</param>
@@ -138,18 +139,20 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowWarningPanel(WarningMessage.DeleteCategoryConfirm);
-        bool success = _dataManager.Thread.RemoveCategory(categoryId);
-        
-        if (success)
+        gameManager.ShowConfirmPanel(ConfirmMessage.DeleteCategoryConfirm, () =>
         {
-            Debug.Log($"[ManageThreadCartegoryPanel] Category deleted: {categoryName} ({categoryId})");
-            RefreshCategoryList();
-        }
-        else
-        {
-            gameManager.ShowWarningPanel(WarningMessage.FailedToDeleteCategory);
-        }
+            bool success = _dataManager.Thread.RemoveCategory(categoryId);
+
+            if (success)
+            {
+                Debug.Log($"[ManageThreadCartegoryPanel] Category deleted: {categoryName} ({categoryId})");
+                RefreshCategoryList();
+            }
+            else
+            {
+                gameManager.ShowWarningPanel(WarningMessage.FailedToDeleteCategory);
+            }
+        });
     }
 
     /// <summary>

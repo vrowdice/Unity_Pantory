@@ -50,6 +50,7 @@ MonoBehaviour:
   _worldCanvasSize: {x: 1000, y: 1000}
   _optionPanelPrefab: {fileID: 1923056497988357278, guid: a625bcab1fd8fcd4f84d59e9b520a492, type: 3}
   _warningPanelPrefab: {fileID: 509094518299881478, guid: 90a762a4eed595d4fabadaa9e40a721d, type: 3}
+  _confirmPanelPrefab: {fileID: 7264973369040463461, guid: 1ed700c27c6a05c4bb39d595a119aca8, type: 3}
   _enterNamePanelPrefab: {fileID: 915623633410631137, guid: bc5f5e5569d10e94ba5162370d635536, type: 3}
   _selectResourcePanelPrefab: {fileID: 3902504510895382675, guid: 8e5e94113a3155c4baa0c42d053bcaed, type: 3}
   _manageThreadPanelPrefab: {fileID: 3974597957071869347, guid: 734f746900304da4798ab8efff7ebddf, type: 3}

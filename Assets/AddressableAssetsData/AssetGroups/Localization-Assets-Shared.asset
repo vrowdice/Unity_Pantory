@@ -69,6 +69,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88662297e7cf2be4bba6f0c4869c37f4
+    m_Address: Assets/Language/Table/ConfirmMessage/ConfirmMessage Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99422b58f729b244581168e91eb4d050
     m_Address: Assets/Language/Table/MarketPanelType/MarketPanelType Shared Data.asset
     m_ReadOnly: 1

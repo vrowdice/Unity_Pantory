@@ -45,6 +45,7 @@ public class GameManager : Singleton<GameManager>
     [Header("Common Panel")]
     [SerializeField] private GameObject _optionPanelPrefab;
     [SerializeField] private GameObject _warningPanelPrefab;
+    [SerializeField] private GameObject _confirmPanelPrefab;
     [SerializeField] private GameObject _enterNamePanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
     [SerializeField] private GameObject _manageThreadPanelPrefab;
@@ -186,10 +187,10 @@ public class GameManager : Singleton<GameManager>
     }
 
     /// <summary>
-    /// 메시지와 함께 경고 패널을 표시합니다.
+    /// 경고 패널을 표시합니다. 메시지는 WarningMessage 테이블의 키로 전달합니다.
     /// </summary>
-    /// <param name="message">표시할 메시지</param>
-    public void ShowWarningPanel(string message)
+    /// <param name="messageKey">WarningMessage 테이블의 로컬라이즈 키</param>
+    public void ShowWarningPanel(string messageKey)
     {
         if (_managerCanvasTransform == null)
         {
@@ -197,10 +198,9 @@ public class GameManager : Singleton<GameManager>
             return;
         }
 
-        Debug.Log($"[GameManager] Showing warning panel with message: {message}");
         GameObject warningPanelObj = _poolingManager.GetPooledObject(_warningPanelPrefab);
         warningPanelObj.transform.SetParent(_managerCanvasTransform, false);
-        warningPanelObj.GetComponent<WarningPopup>().Init(LocalizationUtils.Localize(message, LocalizationUtils.TABLE_WARNING_MESSAGE));
+        warningPanelObj.GetComponent<WarningPopup>().Init(messageKey);
     }
 
     /// <summary>
@@ -261,6 +261,26 @@ public class GameManager : Singleton<GameManager>
         ManageThreadPopup manageThreadPanel = manageThreadPanelObj.GetComponent<ManageThreadPopup>();
         manageThreadPanel.Init(onThreadSelected);
         return manageThreadPanel;
+    }
+
+    /// <summary>
+    /// 확인 팝업을 표시합니다. 메시지는 ConfirmMessage 테이블의 키로 전달합니다.
+    /// </summary>
+    /// <param name="messageKey">ConfirmMessage 테이블의 로컬라이즈 키</param>
+    /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
+    /// <returns>생성된 ConfirmPopup 컴포넌트</returns>
+    public ConfirmPopup ShowConfirmPanel(string messageKey, System.Action onConfirm)
+    {
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        GameObject confirmPanelObj = Instantiate(_confirmPanelPrefab, _managerCanvasTransform, false);
+        ConfirmPopup confirmPanel = confirmPanelObj.GetComponent<ConfirmPopup>();
+        confirmPanel.Init(messageKey, onConfirm);
+        return confirmPanel;
     }
 
     /// <summary>

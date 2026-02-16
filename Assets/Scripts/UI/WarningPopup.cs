@@ -33,13 +33,14 @@ public class WarningPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// 경고 메시지를 표시하고 페이드인 → 표시 → 페이드아웃 후 파괴
+    /// 경고 메시지 키로 로컬라이즈 후 표시하고 페이드인 → 표시 → 페이드아웃 후 파괴
     /// </summary>
-    public void Init(string message)
+    /// <param name="messageKey">WarningMessage 테이블의 로컬라이즈 키</param>
+    public void Init(string messageKey)
     {
         if (_messageText != null)
         {
-            _messageText.text = message;
+            _messageText.text = messageKey.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE);
         }
 
         _sequence?.Kill();

@@ -54,7 +54,6 @@ public partial class MainCanvas : CanvasBase
         InitializePanelDictionary();
         InitializePanels();
         CreateQuickMoveBtns();
-        UpdateAllMainText();
 
         RefreshThreadCategories();
         RefreshThreadButtons();
