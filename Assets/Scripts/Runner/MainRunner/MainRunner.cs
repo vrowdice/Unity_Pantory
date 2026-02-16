@@ -206,7 +206,7 @@ public class MainRunner : RunnerBase
         {
             if (!DataManager.Building.IsBuildingResearchUnlocked(item.Id))
             {
-                GameManager.ShowWarningPanel(WarningMessage.ThreadContainsLockedBuildings);
+                GameManager.ShowWarningPopup(WarningMessage.ThreadContainsLockedBuildings);
                 return false;
             }
         }

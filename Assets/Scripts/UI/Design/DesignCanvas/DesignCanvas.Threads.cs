@@ -50,7 +50,7 @@ public partial class DesignCanvas
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
         _designRunner.SaveThread(threadName, categoryIdentifier);
-        GameManager.ShowWarningPanel(WarningMessage.SavedSuccessfully);
+        GameManager.ShowWarningPopup(WarningMessage.SavedSuccessfully);
 
         DeselectBuilding();
     }
@@ -60,7 +60,7 @@ public partial class DesignCanvas
     /// </summary>
     public void OnClickLoadButton()
     {
-        GameManager.ShowManageThreadPanel((string selectedThreadName) =>
+        GameManager.ShowManageThreadPopup((string selectedThreadName) =>
         {
             LoadThread(selectedThreadName);
         });

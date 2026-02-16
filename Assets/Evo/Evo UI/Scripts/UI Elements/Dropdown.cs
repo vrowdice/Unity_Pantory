@@ -405,6 +405,7 @@ namespace Evo.UI
             scrollRect.gameObject.AddComponent<GraphicRaycaster>();
             scrollRectCanvas.vertexColorAlwaysGammaSpace = true;
             scrollRectCanvas.overrideSorting = true;
+            scrollRectCanvas.sortingLayerName = "InfoUI";
             scrollRectCanvas.sortingOrder = SORTING_ORDER;
         }
 
@@ -417,6 +418,7 @@ namespace Evo.UI
             GameObject blockerGO = new("Dropdown Blocker");
             blocker = blockerGO.AddComponent<Canvas>();
             blocker.overrideSorting = true;
+            blocker.sortingLayerName = "InfoUI";
             blocker.sortingOrder = SORTING_ORDER - 1;
             blockerGO.AddComponent<GraphicRaycaster>();
 

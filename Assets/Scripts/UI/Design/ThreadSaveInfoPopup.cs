@@ -116,7 +116,7 @@ public class ThreadSaveInfoPopup : BasePopup
             return;
         }
 
-        _gameManager.ShowManageThreadCartegoryPanel(_dataManager, (selectedCategoryId) =>
+        _gameManager.ShowManageThreadCartegoryPopup(_dataManager, (selectedCategoryId) =>
         {
             _selectedCategoryId = selectedCategoryId;
             UpdateCategoryText();
@@ -162,7 +162,7 @@ public class ThreadSaveInfoPopup : BasePopup
 
         if (string.IsNullOrEmpty(threadName))
         {
-            _gameManager.ShowWarningPanel(WarningMessage.PleaseEnterThreadName);
+            _gameManager.ShowWarningPopup(WarningMessage.PleaseEnterThreadName);
             return;
         }
 

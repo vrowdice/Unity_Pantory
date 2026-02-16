@@ -2272,7 +2272,19 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 557273578}
+        m_TargetAssemblyTypeName: TitleCanvas, Assembly-CSharp
+        m_MethodName: GoToMainScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -2301,7 +2313,7 @@ MonoBehaviour:
   styleFoldout: 0
   navigationFoldout: 0
   referencesFoldout: 0
-  eventsFoldout: 0
+  eventsFoldout: 1
   enableIcon: 0
   icon: {fileID: 21300000, guid: bd4197e75ec71d24e95e8ed88e58762c, type: 3}
   iconSize: 22
@@ -2403,7 +2415,19 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 557273578}
+        m_TargetAssemblyTypeName: TitleCanvas, Assembly-CSharp
+        m_MethodName: ShowSaveLoadPopup
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -2432,7 +2456,7 @@ MonoBehaviour:
   styleFoldout: 0
   navigationFoldout: 0
   referencesFoldout: 0
-  eventsFoldout: 0
+  eventsFoldout: 1
   enableIcon: 0
   icon: {fileID: 21300000, guid: a3871bb9da6c4ae408b03b7244bd80db, type: 3}
   iconSize: 22
@@ -2534,7 +2558,19 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 557273578}
+        m_TargetAssemblyTypeName: TitleCanvas, Assembly-CSharp
+        m_MethodName: ExitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -2563,7 +2599,7 @@ MonoBehaviour:
   styleFoldout: 0
   navigationFoldout: 0
   referencesFoldout: 0
-  eventsFoldout: 0
+  eventsFoldout: 1
   enableIcon: 0
   icon: {fileID: 21300000, guid: d6175a21c35fc2847b6862477c12d68a, type: 3}
   iconSize: 22
@@ -2668,7 +2704,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 557273578}
         m_TargetAssemblyTypeName: TitleCanvas, Assembly-CSharp
-        m_MethodName: ShowOptionPanel
+        m_MethodName: ShowOptionPopup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4277,6 +4313,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4368,6 +4405,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4459,6 +4497,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4550,6 +4589,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

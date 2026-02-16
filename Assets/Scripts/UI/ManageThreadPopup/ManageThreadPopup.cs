@@ -221,7 +221,7 @@ public class ManageThreadPopup : BasePopup
 
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.ShowWarningPanel(WarningMessage.ThreadDeleted);
+                GameManager.Instance.ShowWarningPopup(WarningMessage.ThreadDeleted);
             }
         }
         else

@@ -156,7 +156,7 @@ public class BuildingInfoPopup : BasePopup
         if (_currentData.AllowedResourceTypes == null || _currentData.AllowedResourceTypes.Count == 0) return;
 
         List<ResourceData> producible = GetProducibleList();
-        _designCanvas.GameManager.ShowSelectResourcePanel(
+        _designCanvas.GameManager.ShowSelectResourcePopup(
             _currentData.AllowedResourceTypes,
             OnOutputResourceSelected,
             producible

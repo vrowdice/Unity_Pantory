@@ -55,6 +55,7 @@ MonoBehaviour:
   _selectResourcePanelPrefab: {fileID: 3902504510895382675, guid: 8e5e94113a3155c4baa0c42d053bcaed, type: 3}
   _manageThreadPanelPrefab: {fileID: 3974597957071869347, guid: 734f746900304da4798ab8efff7ebddf, type: 3}
   _manageThreadCartegoryPanelPrefab: {fileID: 2639419400245874255, guid: f65e8985534c69643be32468ceb4c333, type: 3}
+  _saveLoadPopupPrefab: {fileID: 5511691627187789550, guid: 6124701b6567c7a4eaf09a7ad327b4ca, type: 3}
   _productionInfoImagePrefab: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
   _gridSortContentPrefab: {fileID: 9210800356017659960, guid: 4f082e6a291457548b44223e7a304a2c, type: 3}
   _textPairPanelPrefab: {fileID: 5195975711048486128, guid: 2af1b22cca5536341a68e8ab542df466, type: 3}

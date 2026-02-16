@@ -41,26 +41,10 @@ MonoBehaviour:
   - itemID: Background (Tint)
     colorValue: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 0.60784316}
   fontItems:
-  - itemID: Inter - Thin
-    fontAsset: {fileID: 11400000, guid: 81facff2346e3014a96115fb92776dc2, type: 2}
-  - itemID: Inter - Extra Light
-    fontAsset: {fileID: 11400000, guid: 90090ec4440362042a5368c61913bd2f, type: 2}
-  - itemID: Inter - Light
-    fontAsset: {fileID: 11400000, guid: b9eaf5570922ec845b483eb8974e9cef, type: 2}
-  - itemID: Inter - Regular
-    fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  - itemID: Inter - Medium
-    fontAsset: {fileID: 11400000, guid: ca41716b31c560c4ab5667448aaae70c, type: 2}
-  - itemID: Inter - Semi Bold
-    fontAsset: {fileID: 11400000, guid: 7b816c6270cdaaf4ca2d5919e6dbca0d, type: 2}
-  - itemID: Inter - Bold
-    fontAsset: {fileID: 11400000, guid: 8788bd9d9a3de504b832c80b8618fbff, type: 2}
-  - itemID: Inter - Extra Bold
-    fontAsset: {fileID: 11400000, guid: 961c0212f9d0c3d4da8c1a034e9a13bf, type: 2}
-  - itemID: Inter - Black
-    fontAsset: {fileID: 11400000, guid: 4be21f40c8e9ed149abd8691e94e799d, type: 2}
+  - itemID: Noto
+    fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   updateMode: 0
   audioFoldout: 0
   colorFoldout: 0
-  fontFoldout: 0
+  fontFoldout: 1
   settingsFoldout: 0

@@ -50,6 +50,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject _selectResourcePanelPrefab;
     [SerializeField] private GameObject _manageThreadPanelPrefab;
     [SerializeField] private GameObject _manageThreadCartegoryPanelPrefab;
+    [SerializeField] private GameObject _saveLoadPopupPrefab;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
@@ -190,7 +191,7 @@ public class GameManager : Singleton<GameManager>
     /// 경고 패널을 표시합니다. 메시지는 WarningMessage 테이블의 키로 전달합니다.
     /// </summary>
     /// <param name="messageKey">WarningMessage 테이블의 로컬라이즈 키</param>
-    public void ShowWarningPanel(string messageKey)
+    public void ShowWarningPopup(string messageKey)
     {
         if (_managerCanvasTransform == null)
         {
@@ -210,7 +211,7 @@ public class GameManager : Singleton<GameManager>
     /// <param name="onResourceSelected">자원 선택 시 호출될 콜백</param>
     /// <param name="producibleResources">생산 가능한 자원 목록 (null이면 해당 타입의 모든 자원 표시)</param>
     /// <returns>생성된 SelectResourcePanel 컴포넌트</returns>
-    public SelectResourcePopup ShowSelectResourcePanel(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
+    public SelectResourcePopup ShowSelectResourcePopup(List<ResourceType> resourceTypes, System.Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
     {
         if (_managerCanvasTransform == null)
         {
@@ -230,7 +231,7 @@ public class GameManager : Singleton<GameManager>
     /// <param name="dataManager">GameDataManager</param>
     /// <param name="onCategorySelected">카테고리 선택 시 호출될 콜백 (옵션)</param>
     /// <returns>생성된 ManageThreadCartegoryPanel 컴포넌트</returns>
-    public ManageThreadCartegoryPopup ShowManageThreadCartegoryPanel(DataManager dataManager, System.Action<string> onCategorySelected)
+    public ManageThreadCartegoryPopup ShowManageThreadCartegoryPopup(DataManager dataManager, System.Action<string> onCategorySelected)
     {
         if (_managerCanvasTransform == null)
         {
@@ -249,7 +250,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     /// <param name="onThreadSelected">스레드 선택 시 호출될 콜백 (옵션)</param>
     /// <returns>생성된 ManageThreadPanel 컴포넌트</returns>
-    public ManageThreadPopup ShowManageThreadPanel(System.Action<string> onThreadSelected)
+    public ManageThreadPopup ShowManageThreadPopup(System.Action<string> onThreadSelected)
     {
         if (_managerCanvasTransform == null)
         {
@@ -269,7 +270,7 @@ public class GameManager : Singleton<GameManager>
     /// <param name="messageKey">ConfirmMessage 테이블의 로컬라이즈 키</param>
     /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
     /// <returns>생성된 ConfirmPopup 컴포넌트</returns>
-    public ConfirmPopup ShowConfirmPanel(string messageKey, System.Action onConfirm)
+    public ConfirmPopup ShowConfirmPopup(string messageKey, System.Action onConfirm)
     {
         if (_managerCanvasTransform == null)
         {
@@ -288,7 +289,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
     /// <returns>생성된 EnterNamePanel 컴포넌트</returns>
-    public EnterNamePopup ShowEnterNamePanel(System.Action<string> onConfirm)
+    public EnterNamePopup ShowEnterNamePopup(System.Action<string> onConfirm)
     {
         if (_managerCanvasTransform == null)
         {
@@ -306,7 +307,7 @@ public class GameManager : Singleton<GameManager>
     /// 옵션 패널을 표시합니다.
     /// </summary>
     /// <returns>생성된 OptionPanel 컴포넌트</returns>
-    public OptionPopup ShowOptionPanel()
+    public OptionPopup ShowOptionPopup()
     {
         if (_managerCanvasTransform == null)
         {
@@ -319,6 +320,31 @@ public class GameManager : Singleton<GameManager>
 
         optionPanel.Init();
         return optionPanel;
+    }
+
+    /// <summary>
+    /// 세이브/로드 팝업을 표시합니다.
+    /// </summary>
+    /// <param name="isSaveMode">true면 세이브 모드, false면 로드 모드</param>
+    /// <returns>생성된 SaveLoadPopup 컴포넌트</returns>
+    public SaveLoadPopup ShowSaveLoadPopup(bool isSaveMode)
+    {
+        if (_managerCanvasTransform == null)
+        {
+            Debug.LogError("[GameManager] ManagerCanvas is not initialized.");
+            return null;
+        }
+
+        if (_saveLoadPopupPrefab == null)
+        {
+            Debug.LogError("[GameManager] SaveLoadPopupPrefab is not assigned.");
+            return null;
+        }
+
+        GameObject saveLoadPopupObj = Instantiate(_saveLoadPopupPrefab, _managerCanvasTransform, false);
+        SaveLoadPopup saveLoadPopup = saveLoadPopupObj.GetComponent<SaveLoadPopup>();
+        saveLoadPopup.Init(isSaveMode);
+        return saveLoadPopup;
     }
 
     /// <summary>

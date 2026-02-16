@@ -164,6 +164,6 @@ public partial class MainCanvas : CanvasBase
 
     public void ShowOptionPanel()
     {
-        GameManager.ShowOptionPanel();
+        GameManager.ShowOptionPopup();
     }
 }

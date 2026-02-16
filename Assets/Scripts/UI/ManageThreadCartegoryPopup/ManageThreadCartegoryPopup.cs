@@ -64,11 +64,11 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowEnterNamePanel((categoryName) =>
+        gameManager.ShowEnterNamePopup((categoryName) =>
         {
             if (string.IsNullOrEmpty(categoryName))
             {
-                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName);
+                gameManager.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
 
@@ -83,7 +83,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel(WarningMessage.FailedToCreateCategory);
+                gameManager.ShowWarningPopup(WarningMessage.FailedToCreateCategory);
             }
         });
     }
@@ -102,11 +102,11 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowEnterNamePanel((newName) =>
+        gameManager.ShowEnterNamePopup((newName) =>
         {
             if (string.IsNullOrEmpty(newName))
             {
-                gameManager.ShowWarningPanel(WarningMessage.PleaseEnterCategoryName);
+                gameManager.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
             bool success = _dataManager.Thread.RenameCategory(categoryId, newName);
@@ -119,7 +119,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel(WarningMessage.FailedToRenameCategory);
+                gameManager.ShowWarningPopup(WarningMessage.FailedToRenameCategory);
             }
         });
     }
@@ -139,7 +139,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowConfirmPanel(ConfirmMessage.DeleteCategoryConfirm, () =>
+        gameManager.ShowConfirmPopup(ConfirmMessage.DeleteCategoryConfirm, () =>
         {
             bool success = _dataManager.Thread.RemoveCategory(categoryId);
 
@@ -150,7 +150,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPanel(WarningMessage.FailedToDeleteCategory);
+                gameManager.ShowWarningPopup(WarningMessage.FailedToDeleteCategory);
             }
         });
     }

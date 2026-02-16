@@ -1236,9 +1236,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb731376d67af641a7c09c17cf33b5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _effectType: 0
+  _enabled: 1
   _titleText: {fileID: 5999274195744433965}
-  _newSavefileBtn: {fileID: 0}
-  _saveLoadBtnPrefab: {fileID: 0}
+  _newSavefileBtn: {fileID: 6116504971705430581}
+  _saveLoadBtnContentTransform: {fileID: 4053175188877034534}
+  _saveLoadBtnPrefab: {fileID: 6252934493421265427, guid: 5c2f1628bf61b4f42aade1554e0805e1, type: 3}
 --- !u!1 &5947731030488351523
 GameObject:
   m_ObjectHideFlags: 0
@@ -1685,9 +1688,9 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: OptionPanel, Assembly-CSharp
-        m_MethodName: OnClickExit
+      - m_Target: {fileID: 7292523744168499599}
+        m_TargetAssemblyTypeName: SaveLoadPopup, Assembly-CSharp
+        m_MethodName: OnClickClose
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1997,7 +2000,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0000076294, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -244.99998, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &342607919633186879
@@ -2066,6 +2069,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2473,6 +2477,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

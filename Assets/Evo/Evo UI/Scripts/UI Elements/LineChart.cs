@@ -234,6 +234,23 @@ namespace Evo.UI
             if (graphWidth <= 0 || graphHeight <= 0)
                 return;
 
+            // Y-axis integer scale (shared by grid, data, labels)
+            float minValue = float.MaxValue;
+            float maxValue = float.MinValue;
+            foreach (var point in dataPoints)
+            {
+                if (point.value < minValue) minValue = point.value;
+                if (point.value > maxValue) maxValue = point.value;
+            }
+            int minInt = Mathf.FloorToInt(minValue);
+            int maxInt = Mathf.CeilToInt(maxValue);
+            if (maxInt <= minInt) maxInt = minInt + 1;
+            int range = maxInt - minInt;
+            int step = Mathf.Max(1, Mathf.CeilToInt(range / (float)horizontalGridLines));
+            int displayMax = minInt + horizontalGridLines * step;
+            float displayRange = (displayMax - minInt);
+            if (displayRange <= 0) displayRange = 1f;
+
             // Create containers
             GameObject gridContainer = new($"Grid {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             gridContainer.transform.SetParent(transform, false);
@@ -259,11 +276,11 @@ namespace Evo.UI
             labelRT.offsetMin = Vector2.zero;
             labelRT.offsetMax = Vector2.zero;
 
-            // Draw components in order
-            DrawGrid(gridContainer, graphLeft, graphBottom, graphWidth, graphHeight);
+            // Draw components in order (same scale for alignment)
+            DrawGrid(gridContainer, graphLeft, graphBottom, graphWidth, graphHeight, dataPoints.Count);
             DrawAxes(gridContainer, graphLeft, graphBottom, graphWidth, graphHeight);
-            DrawData(dataContainer, graphLeft, graphBottom, graphWidth, graphHeight);
-            DrawLabels(labelContainer, graphLeft, graphBottom, graphWidth, graphHeight);
+            DrawData(dataContainer, graphLeft, graphBottom, graphWidth, graphHeight, minInt, displayRange);
+            DrawLabels(labelContainer, graphLeft, graphBottom, graphWidth, graphHeight, minInt, step, displayRange);
         }
 
         public void ClearChart()
@@ -279,11 +296,11 @@ namespace Evo.UI
             }
         }
 
-        void DrawGrid(GameObject container, float left, float bottom, float width, float height)
+        void DrawGrid(GameObject container, float left, float bottom, float width, float height, int dataPointCount)
         {
             Color styledGridColor = Styler.GetColor(stylingSource, gridColor, stylerPreset);
 
-            // Horizontal grid lines
+            // Horizontal grid lines (same positions as Y labels)
             for (int i = 0; i <= horizontalGridLines; i++)
             {
                 float y = bottom + (i * height / horizontalGridLines);
@@ -297,10 +314,12 @@ namespace Evo.UI
                 );
             }
 
-            // Vertical grid lines
-            for (int i = 0; i <= verticalGridLines; i++)
+            // Vertical grid lines (align with data points and X labels)
+            int vCount = (dataPointCount >= 2) ? dataPointCount : (verticalGridLines + 1);
+            float vSpacing = (dataPointCount >= 2) ? (width / (dataPointCount - 1)) : (width / verticalGridLines);
+            for (int i = 0; i < vCount; i++)
             {
-                float x = left + (i * width / verticalGridLines);
+                float x = left + (i * vSpacing);
                 CreateLine(
                     container,
                     new Vector2(x, bottom),
@@ -320,34 +339,19 @@ namespace Evo.UI
             CreateLine(container, new Vector2(left, bottom), new Vector2(left, bottom + height), styledAxisColor, 2f, "Y-Axis");
         }
 
-        void DrawData(GameObject container, float left, float bottom, float width, float height)
+        void DrawData(GameObject container, float left, float bottom, float width, float height, int minInt, float displayRange)
         {
             if (dataPoints.Count == 0)
                 return;
 
-            // Calculate min/max values
-            float minValue = float.MaxValue;
-            float maxValue = float.MinValue;
-
-            foreach (var point in dataPoints)
-            {
-                if (point.value < minValue) minValue = point.value;
-                if (point.value > maxValue) maxValue = point.value;
-            }
-
-            float valueRange = maxValue - minValue;
-            if (valueRange == 0) valueRange = 1;
-
-            // Calculate positions
+            // X: same spacing as X labels. Y: same integer scale as grid and Y labels
             List<Vector2> positions = new();
-            float xSpacing = width / (dataPoints.Count - 1);
-
+            float xSpacing = (dataPoints.Count >= 2) ? (width / (dataPoints.Count - 1)) : 0f;
             for (int i = 0; i < dataPoints.Count; i++)
             {
                 float x = left + (i * xSpacing);
-                float normalizedValue = (dataPoints[i].value - minValue) / valueRange;
-                float y = bottom + (normalizedValue * height);
-
+                float normalizedY = Mathf.Clamp01((dataPoints[i].value - minInt) / displayRange);
+                float y = bottom + (normalizedY * height);
                 positions.Add(new Vector2(x, y));
             }
 
@@ -368,7 +372,7 @@ namespace Evo.UI
             }
         }
 
-        void DrawLabels(GameObject container, float left, float bottom, float width, float height)
+        void DrawLabels(GameObject container, float left, float bottom, float width, float height, int minInt, int step, float displayRange)
         {
             if (dataPoints.Count == 0)
                 return;
@@ -377,8 +381,8 @@ namespace Evo.UI
             TMP_FontAsset styledFont = Styler.GetFont(stylingSource, labelFont, stylerPreset);
             Color styledLabelColor = Styler.GetColor(stylingSource, labelColor, stylerPreset);
 
-            // X-axis labels
-            float xSpacing = width / (dataPoints.Count - 1);
+            // X-axis labels (same x positions as data points)
+            float xSpacing = (dataPoints.Count >= 2) ? (width / (dataPoints.Count - 1)) : 0f;
             for (int i = 0; i < dataPoints.Count; i++)
             {
                 float x = left + (i * xSpacing);
@@ -394,25 +398,15 @@ namespace Evo.UI
                 );
             }
 
-            // Y-axis labels
-            float minValue = float.MaxValue;
-            float maxValue = float.MinValue;
-
-            foreach (var point in dataPoints)
-            {
-                if (point.value < minValue) minValue = point.value;
-                if (point.value > maxValue) maxValue = point.value;
-            }
-
+            // Y-axis labels (same y positions as horizontal grid lines)
             for (int i = 0; i <= horizontalGridLines; i++)
             {
-                float normalizedValue = (float)i / horizontalGridLines;
-                float value = minValue + normalizedValue * (maxValue - minValue);
+                int value = minInt + i * step;
+                float normalizedValue = (float)(value - minInt) / displayRange;
                 float y = bottom + (normalizedValue * height);
-
                 CreateTMPLabel(
                     container,
-                    value.ToString("F1"),
+                    value.ToString(),
                     new Vector2(left - valuePadding, y),
                     TextAlignmentOptions.MidlineRight,
                     "Y-Label " + i,

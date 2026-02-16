@@ -15,6 +15,8 @@ public class SceneLoadManager : Singleton<SceneLoadManager>
     [Header("Settings")]
     [SerializeField] private float _fadeDuration = 0.5f;
 
+    public string CurrentSceneName => 
+        SceneManager.GetActiveScene().name;
     private bool _isLoading = false;
 
     protected override void Awake()

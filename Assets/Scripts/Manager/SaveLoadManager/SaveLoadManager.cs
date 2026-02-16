@@ -7,6 +7,7 @@ using UnityEngine;
 public class SaveLoadManager : Singleton<SaveLoadManager>
 {
     public ThreadSaveLoadHandler Thread { get; private set; }
+    public SaveFileSaveLoadHandler SaveFile { get; private set; }
 
     protected override void Awake()
     {
@@ -27,5 +28,6 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
     private void InitializeHandlers()
     {
         Thread = new ThreadSaveLoadHandler(this);
+        SaveFile = new SaveFileSaveLoadHandler(this);
     }
 }

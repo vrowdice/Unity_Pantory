@@ -10,6 +10,7 @@ public class OptionPopup : BasePopup
     [SerializeField] private Slider _BGMSlider;
     [SerializeField] private Slider _SFXSlider;
     [SerializeField] private Dropdown _localizatioinDropdown;
+    [SerializeField] private GameObject _saveBtn;
 
     private const string PREFS_LOCALE = "SelectedLocale";
 
@@ -22,6 +23,16 @@ public class OptionPopup : BasePopup
         base.Init();
         InitSliders();
         InitLocalizationDropdown();
+
+        if(SceneLoadManager.Instance.CurrentSceneName == "Main")
+        {
+            _saveBtn.SetActive(true);
+        }
+        else
+        {
+            _saveBtn.SetActive(false);
+        }
+
         Show();
     }
 
@@ -119,6 +130,11 @@ public class OptionPopup : BasePopup
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    public void OnClickSave()
+    {
+        GameManager.Instance.ShowSaveLoadPopup(true);
     }
 
     public void OnClickApply()
