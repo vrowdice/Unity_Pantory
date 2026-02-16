@@ -33,13 +33,13 @@ namespace Evo.UI
             return true;
         }
 
-        [MenuItem("Tools/Evo UI/Online Docs", false, 44)]
+        [MenuItem("Tools/Evo UI/Online Documentation", false, 44)]
         static void OpenDocs()
         {
             UnityEngine.Application.OpenURL(Constants.HELP_URL);
         }
 
-        [MenuItem("Tools/Evo UI/Join our Discord", false, 45)]
+        [MenuItem("Tools/Evo UI/Discord Server", false, 45)]
         static void JoinDiscord()
         {
             UnityEngine.Application.OpenURL("https://discord.gg/VXpHyUt");

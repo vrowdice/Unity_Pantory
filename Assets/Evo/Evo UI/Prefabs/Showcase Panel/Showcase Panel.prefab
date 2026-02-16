@@ -267,15 +267,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -624,11 +626,13 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 827846bd8ff06a84bb96564c24e1c2b6, type: 3}
     background: {fileID: 0}
     shadowColor: {r: 0.13725491, g: 0.5294118, b: 0.78113204, a: 0.29411766}
-    description: Wishlisht on Steam
+    description: Wishlist on Steam
     onClick:
       m_PersistentCalls:
         m_Calls: []
     button: {fileID: 0}
+    titleKey: 
+    descriptionKey: 
   - title: YouTube
     url: 
     icon: {fileID: 21300000, guid: 2c9ce72ef4d51a54b90160bfdc8abbb3, type: 3}
@@ -639,6 +643,8 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     button: {fileID: 0}
+    titleKey: 
+    descriptionKey: 
   - title: Twitch
     url: 
     icon: {fileID: 21300000, guid: e1c3494e1cd760b4cae2b6d74577479e, type: 3}
@@ -649,6 +655,8 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     button: {fileID: 0}
+    titleKey: 
+    descriptionKey: 
   - title: Discord
     url: 
     icon: {fileID: 21300000, guid: 97fb5871c0a89504e9fc579ab786ff05, type: 3}
@@ -659,6 +667,8 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     button: {fileID: 0}
+    titleKey: 3 tu
+    descriptionKey: 3 tu
   - title: Twitter
     url: 
     icon: {fileID: 21300000, guid: 7e005dc1001ce9f4d853f7fc602d5eb9, type: 3}
@@ -669,11 +679,15 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     button: {fileID: 0}
+    titleKey: 
+    descriptionKey: 
   useUnscaledTime: 0
   setWithTimer: 1
   timer: 3
   animationDuration: 0.25
   slideOffset: {x: 0, y: 20}
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   buttonParent: {fileID: 1353628075436628233}
   buttonPreset: {fileID: 4359789277864959470, guid: 8319c0d90df1b094e8e9b7e06fafd21e, type: 3}
   textDisplay: {fileID: 3890445288247637335}

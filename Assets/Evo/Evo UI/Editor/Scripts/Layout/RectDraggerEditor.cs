@@ -6,6 +6,8 @@ namespace Evo.UI
     [CustomEditor(typeof(RectDragger))]
     public class RectDraggerEditor : Editor
     {
+        RectDragger rTarget;
+
         // Properties
         SerializedProperty isDraggable;
         SerializedProperty boundaryType;
@@ -13,18 +15,19 @@ namespace Evo.UI
         SerializedProperty allowOutOfBounds;
         SerializedProperty returnDuration;
         SerializedProperty returnCurve;
-
-        // Foldout states
-        bool settingsFoldout = true;
+        SerializedProperty dragSources;
 
         void OnEnable()
         {
+            rTarget = (RectDragger)target;
+
             isDraggable = serializedObject.FindProperty("isDraggable");
             boundaryType = serializedObject.FindProperty("boundaryType");
             boundaryRect = serializedObject.FindProperty("boundaryRect");
             allowOutOfBounds = serializedObject.FindProperty("allowOutOfBounds");
             returnDuration = serializedObject.FindProperty("returnDuration");
             returnCurve = serializedObject.FindProperty("returnCurve");
+            dragSources = serializedObject.FindProperty("dragSources");
 
             EvoEditorGUI.RegisterEditor(this);
         }
@@ -50,6 +53,7 @@ namespace Evo.UI
             EvoEditorGUI.BeginCenteredInspector();
 
             DrawSettings();
+            DrawReferences();
 
             EvoEditorGUI.EndCenteredInspector();
             serializedObject.ApplyModifiedProperties();
@@ -58,7 +62,7 @@ namespace Evo.UI
         void DrawSettings()
         {
             EvoEditorGUI.BeginVerticalBackground();
-            if (EvoEditorGUI.DrawFoldout(ref settingsFoldout, "Settings", EvoEditorGUI.GetIcon("UI_Settings")))
+            if (EvoEditorGUI.DrawFoldout(ref rTarget.settingsFoldout, "Settings", EvoEditorGUI.GetIcon("UI_Settings")))
             {
                 EvoEditorGUI.BeginContainer();
                 {
@@ -84,6 +88,21 @@ namespace Evo.UI
                         }
                     }
                     EvoEditorGUI.EndVerticalBackground();
+                }
+                EvoEditorGUI.EndContainer();
+            }
+            EvoEditorGUI.EndVerticalBackground();
+            EvoEditorGUI.AddFoldoutSpace();
+        }
+
+        void DrawReferences()
+        {
+            EvoEditorGUI.BeginVerticalBackground();
+            if (EvoEditorGUI.DrawFoldout(ref rTarget.referencesFoldout, "References", EvoEditorGUI.GetIcon("UI_References")))
+            {
+                EvoEditorGUI.BeginContainer();
+                {
+                    EvoEditorGUI.DrawArrayProperty(dragSources, "Drag Sources", "Add RectTransforms here (e.g., TitleBar, Handle) to trigger the drag. If empty, the whole object is draggable.", false, true);
                 }
                 EvoEditorGUI.EndContainer();
             }

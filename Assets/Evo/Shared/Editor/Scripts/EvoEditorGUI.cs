@@ -6,12 +6,17 @@ using UnityEngine;
 namespace Evo.EditorTools
 {
     /// <summary>
+    /// Interface for working with an EditorWindow that requires EvoEditorGUI repaints.
+    /// </summary>
+    public interface IEvoEditorGUIHandler { }
+
+    /// <summary>
     /// Methods for rendering custom stuff for EditorGUI.
     /// </summary>
     public class EvoEditorGUI : Editor
     {
-        // Component version
-        public const string VERSION = "1.0.0";
+        // 1.0.1: Added IEvoEditorGUIHandler interface
+        public const string VERSION = "1.0.1";
 
         // Styles
         static GUIStyle backgroundStyle;
@@ -139,8 +144,8 @@ namespace Evo.EditorTools
         // Window state
         static EditorWindow cachedMouseOverWindow;
         static EditorWindow cachedFocusedWindow;
-        static bool cachedMouseOverInspector;
-        static bool cachedFocusedIsInspector;
+        static bool cachedMouseOverValidWindow;
+        static bool cachedFocusedIsValidWindow;
         static double lastWindowCheckTime;
         const double WINDOW_CHECK_INTERVAL = 0.1; // ~10fps for window checks
 
@@ -1189,7 +1194,7 @@ namespace Evo.EditorTools
                     GUI.changed = true;
                 }
             }
-       
+
             return foldout;
         }
 
@@ -1304,23 +1309,24 @@ namespace Evo.EditorTools
         /// </summary>
         public static void HandleInspectorGUI()
         {
-            // Rect lastRect = GUILayoutUtility.GetLastRect();
-            // if (lastRect.Contains(Event.current.mousePosition)) { RequestRepaint(); }
-
-            if (CanHoverInspector()) { RequestRepaint(); }
-            // if (Event.current.type == EventType.Repaint) { RequestRepaint(); }
-
+            if (CanHoverInspector()) 
+            { 
+                RequestRepaint(); 
+            }
         }
         #endregion
 
         #region Window Detection
-        static bool IsWindowInspector(EditorWindow window)
+        static bool IsValidWindow(EditorWindow window)
         {
             if (window == null) { return false; }
             if (!inspectorTypeCache.TryGetValue(window, out bool isInspector))
             {
                 string typeName = window.GetType().Name;
-                isInspector = typeName == "InspectorWindow" || window.titleContent.text.Contains("Inspector");
+                isInspector = typeName == "InspectorWindow" ||
+                              window.titleContent.text.Contains("Inspector") ||
+                              window is IEvoEditorGUIHandler;
+
                 inspectorTypeCache[window] = isInspector;
 
                 if (LIMIT_CACHE_SIZE && inspectorTypeCache.Count > MAX_INSPECTOR_CACHE_SIZE)
@@ -1358,8 +1364,8 @@ namespace Evo.EditorTools
 
             cachedMouseOverWindow = EditorWindow.mouseOverWindow;
             cachedFocusedWindow = EditorWindow.focusedWindow;
-            cachedMouseOverInspector = IsWindowInspector(cachedMouseOverWindow);
-            cachedFocusedIsInspector = IsWindowInspector(cachedFocusedWindow);
+            cachedMouseOverValidWindow = IsValidWindow(cachedMouseOverWindow);
+            cachedFocusedIsValidWindow = IsValidWindow(cachedFocusedWindow);
         }
 
         static bool CanHoverInspector()
@@ -1367,8 +1373,8 @@ namespace Evo.EditorTools
             UpdateWindowCache();
 
             // Use cached values
-            return cachedMouseOverInspector ||
-                   (cachedFocusedIsInspector && (cachedMouseOverWindow == null || cachedMouseOverWindow == cachedFocusedWindow));
+            return cachedMouseOverValidWindow ||
+                   (cachedFocusedIsValidWindow && (cachedMouseOverWindow == null || cachedMouseOverWindow == cachedFocusedWindow));
         }
         #endregion
     }

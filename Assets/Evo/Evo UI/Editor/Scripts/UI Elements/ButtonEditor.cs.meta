@@ -1,18 +1,9 @@
 fileFormatVersion: 2
 guid: 8ca05a2e38bb8b14696119c271a7bf55
-MonoImporter:
-  externalObjects: {}
-  serializedVersion: 2
-  defaultReferences: []
-  executionOrder: 0
-  icon: {instanceID: 0}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
   productId: 310303
   packageName: Evo UI - Modern UI Framework
-  packageVersion: 1.1.1
+  packageVersion: 1.7.0
   assetPath: Assets/Evo/Evo UI/Editor/Scripts/UI Elements/ButtonEditor.cs
-  uploadId: 827088
+  uploadId: 856698

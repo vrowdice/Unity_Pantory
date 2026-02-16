@@ -13,6 +13,7 @@ namespace Evo.UI
         // Timer
         SerializedProperty duration;
         SerializedProperty currentTime;
+        SerializedProperty timeMultiplier;
         SerializedProperty textFormat;
         SerializedProperty displayFormat;
 
@@ -42,6 +43,7 @@ namespace Evo.UI
 
             duration = serializedObject.FindProperty("duration");
             currentTime = serializedObject.FindProperty("currentTime");
+            timeMultiplier = serializedObject.FindProperty("timeMultiplier");
             textFormat = serializedObject.FindProperty("textFormat");
             displayFormat = serializedObject.FindProperty("displayFormat");
 
@@ -106,6 +108,7 @@ namespace Evo.UI
                 {
                     EvoEditorGUI.DrawSlider(currentTime, 0, duration.floatValue, "Current Time", true, true, true);
                     EvoEditorGUI.DrawProperty(duration, "Duration", null, true, true, true);
+                    EvoEditorGUI.DrawProperty(timeMultiplier, "Time Multiplier", "Controls the speed of time flow.", true, true, true);
                     EvoEditorGUI.DrawProperty(textFormat, "Text Format", null, true, true, true);
                     EvoEditorGUI.DrawProperty(displayFormat, "Display Format", null, false, true, true);
                 }

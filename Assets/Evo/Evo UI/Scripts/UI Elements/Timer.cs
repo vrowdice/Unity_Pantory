@@ -11,8 +11,9 @@ namespace Evo.UI
     public class Timer : MonoBehaviour
     {
         [EvoHeader("Timer", Constants.CUSTOM_EDITOR_ID)]
-        public float duration = 60;
         public float currentTime = 30;
+        public float duration = 60;
+        public float timeMultiplier = 1;
         public string textFormat = "{0}";
         public DisplayFormat displayFormat = DisplayFormat.Time_MM_SS;
 
@@ -107,8 +108,9 @@ namespace Evo.UI
             float previousTime = currentTime;
 
             // Update timer
-            if (countDown) { currentTime -= Time.unscaledDeltaTime; }
-            else { currentTime += Time.unscaledDeltaTime; }
+            float deltaTime = Time.unscaledDeltaTime * timeMultiplier;
+            if (countDown) { currentTime -= deltaTime; }
+            else { currentTime += deltaTime; }
 
             // Clamp to valid range
             currentTime = Mathf.Clamp(currentTime, 0f, duration);
@@ -413,6 +415,7 @@ namespace Evo.UI
 
             duration = Mathf.Max(0f, duration);
             currentTime = Mathf.Clamp(currentTime, 0f, duration);
+            timeMultiplier = Mathf.Max(0f, timeMultiplier);
 
             UnityEditor.EditorApplication.delayCall += () =>
             {

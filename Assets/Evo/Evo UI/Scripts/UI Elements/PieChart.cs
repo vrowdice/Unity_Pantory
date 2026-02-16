@@ -11,7 +11,7 @@ namespace Evo.UI
     [RequireComponent(typeof(RectTransform))]
     [HelpURL(Constants.HELP_URL + "ui-elements/pie-chart")]
     [AddComponentMenu("Evo/UI/UI Elements/Pie Chart")]
-    public class PieChart : MonoBehaviour
+    public class PieChart : MonoBehaviour, IStylerHandler
     {
         [EvoHeader("Chart Data", Constants.CUSTOM_EDITOR_ID)]
         public List<DataPoint> dataPoints = new()
@@ -23,32 +23,32 @@ namespace Evo.UI
         };
 
         [EvoHeader("Chart Settings", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private float innerRadius = 0;
-        [SerializeField, Range(0, 360)] private float startAngle = 90;
-        [SerializeField, Range(1, 100)] private int segments = 100;
-        [SerializeField] private bool enableAntiAliasing = true;
-        [SerializeField, Range(0.1f, 4)] private float antiAliasingWidth = 0.5f;
+        [Min(0)] public float innerRadius = 0;
+        [Range(0, 360)] public float startAngle = 90;
+        [Range(1, 100)] public int segments = 100;
+        public bool enableAntiAliasing = true;
+        [Range(0.1f, 4)] public float antiAliasingWidth = 0.5f;
 
         [EvoHeader("Border Settings", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private bool drawBorder = false;
-        [SerializeField, Range(1, 100)] private float borderWidth = 2;
+        public bool drawBorder = false;
+        public float borderWidth = 2;
 
         [EvoHeader("Label Settings", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private bool showLabels = true;
-        [SerializeField] private bool showPercentages = true;
-        [SerializeField] private float labelFontSize = 24;
-        [SerializeField] private bool drawLabelBackground = true;
-        [SerializeField] private Sprite labelBackgroundSprite;
-        [SerializeField] private float labelBackgroundPPU = 6;
-        [SerializeField] private Vector2 labelPadding = new(8, 4);
+        public bool showLabels = true;
+        public bool showPercentages = true;
+        public float labelFontSize = 24;
+        public bool drawLabelBackground = true;
+        public Sprite labelBackgroundSprite;
+        public float labelBackgroundPPU = 6;
+        public Vector2 labelPadding = new(8, 4);
 
         [EvoHeader("Legend Settings", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private bool showLegend = true;
-        [SerializeField] private RectTransform legendContainer;
-        [SerializeField] private float legendItemHeight = 40;
-        [SerializeField] private float legendColorBoxSize = 24;
-        [SerializeField] private Sprite legendColorBoxSprite;
-        [SerializeField] private float legendFontSize = 24;
+        public bool showLegend = true;
+        public RectTransform legendContainer;
+        public float legendItemHeight = 40;
+        public float legendColorBoxSize = 24;
+        public Sprite legendColorBoxSprite;
+        public float legendFontSize = 24;
 
         [EvoHeader("Styling", Constants.CUSTOM_EDITOR_ID)]
         public StylingSource stylingSource = StylingSource.Custom;
@@ -85,7 +85,7 @@ namespace Evo.UI
         public class DataPoint
         {
             public string label;
-            public float value;
+            [Min(0)] public float value;
             public Color color;
 
 #if EVO_LOCALIZATION
@@ -101,6 +101,19 @@ namespace Evo.UI
             }
         }
 
+        // Styler Interface
+        public StylerPreset Preset 
+        { 
+            get => stylerPreset; 
+            set
+            {
+                if (stylerPreset == value) { return; }
+                stylerPreset = value;
+                UpdateStyler();
+            }
+        }
+        public void UpdateStyler() => DrawChartSafe();
+
         void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
@@ -114,7 +127,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -136,12 +149,20 @@ namespace Evo.UI
 #if EVO_LOCALIZATION
             if (Application.isPlaying && showLegend && enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
 #endif
         }
 
         void OnRectTransformDimensionsChange()
+        {
+            DrawChartSafe();
+        }
+
+        /// <summary>
+        /// Used to create chart so that Unity catches up. Triggeredw via rect change and editor calls.
+        /// </summary>
+        void DrawChartSafe()
         {
             if (gameObject.activeInHierarchy && rectTransform != null && !pendingRedraw)
             {
@@ -172,8 +193,12 @@ namespace Evo.UI
 
         public void DrawChart()
         {
-            if (rectTransform == null)
+            if (rectTransform == null) { return; }
+            if (!gameObject.activeInHierarchy)
+            {
+                pendingRedraw = true;
                 return;
+            }
 
             ClearChart();
 
@@ -222,7 +247,7 @@ namespace Evo.UI
         {
             float currentAngle = startAngle;
 
-            GameObject container = new($"Slices {GEN_SUFFIX}");
+            GameObject container = new($"Slices {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             container.transform.SetParent(transform, false);
          
             RectTransform gridRT = container.AddComponent<RectTransform>();
@@ -249,7 +274,7 @@ namespace Evo.UI
 
         GameObject CreatePieSlice(float startAngle, float angleSpan, Color color, float outerRadius, float innerRadius)
         {
-            GameObject sliceObj = new("Slice");
+            GameObject sliceObj = new("Slice") { hideFlags = HideFlags.DontSave };
             RectTransform rt = sliceObj.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -293,7 +318,7 @@ namespace Evo.UI
 
         GameObject CreateBorderRing(float inner, float outer, string name, Color borderColor)
         {
-            GameObject borderObj = new(name);
+            GameObject borderObj = new(name) { hideFlags = HideFlags.DontSave };
             RectTransform rt = borderObj.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -318,7 +343,17 @@ namespace Evo.UI
         {
             float currentAngle = startAngle;
 
-            GameObject labelContainer = new($"Labels {GEN_SUFFIX}");
+            // Count how many items are actually visible
+            int visibleCount = 0;
+            foreach (var point in dataPoints)
+            {
+                if (point.value > 0)
+                {
+                    visibleCount++;
+                }
+            }
+
+            GameObject labelContainer = new($"Labels {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             labelContainer.transform.SetParent(transform, false);
 
             RectTransform gridRT = labelContainer.AddComponent<RectTransform>();
@@ -329,13 +364,24 @@ namespace Evo.UI
 
             for (int i = 0; i < dataPoints.Count; i++)
             {
+                if (dataPoints[i].value <= 0)
+                    continue;
+
                 float percentage = dataPoints[i].value / totalValue;
                 float angleSpan = percentage * 360f;
                 float midAngle = currentAngle + angleSpan / 2;
 
-                float labelRadius = innerRadius > 0 ? (innerRadius + actualRadius) / 2 : actualRadius * 0.7f;
-                float angleRad = midAngle * Mathf.Deg2Rad;
-                Vector2 labelPos = new(Mathf.Cos(angleRad) * labelRadius, Mathf.Sin(angleRad) * labelRadius);
+                Vector2 labelPos;
+
+                // Check if this is the ONLY visible label
+                if (visibleCount == 1) { labelPos = Vector2.zero; }
+                else
+                {
+                    // Normal calculation for multiple slices
+                    float labelRadius = innerRadius > 0 ? (innerRadius + actualRadius) / 2 : actualRadius * 0.7f;
+                    float angleRad = midAngle * Mathf.Deg2Rad;
+                    labelPos = new(Mathf.Cos(angleRad) * labelRadius, Mathf.Sin(angleRad) * labelRadius);
+                }
 
                 string labelText = showPercentages ? (percentage * 100f).ToString("F0") + "%" : dataPoints[i].value.ToString("F0");
                 if (!string.IsNullOrEmpty(labelText)) { CreateLabel(labelText, labelPos, labelContainer, "Label " + i); }
@@ -346,7 +392,7 @@ namespace Evo.UI
 
         void CreateLabel(string text, Vector2 position, GameObject parent, string name)
         {
-            GameObject labelObj = new(name);
+            GameObject labelObj = new(name) { hideFlags = HideFlags.DontSave };
             labelObj.transform.SetParent(parent.transform, false);
 
             RectTransform rt = labelObj.AddComponent<RectTransform>();
@@ -356,7 +402,7 @@ namespace Evo.UI
             rt.anchoredPosition = position;
 
             // Create text
-            GameObject textObj = new("Text");
+            GameObject textObj = new("Text") { hideFlags = HideFlags.DontSave };
             textObj.transform.SetParent(labelObj.transform, false);
 
             RectTransform textRt = textObj.AddComponent<RectTransform>();
@@ -380,7 +426,7 @@ namespace Evo.UI
             // Create background
             if (drawLabelBackground)
             {
-                GameObject bgObj = new("Background");
+                GameObject bgObj = new("Background") { hideFlags = HideFlags.DontSave };
                 bgObj.transform.SetParent(labelObj.transform, false);
                 bgObj.transform.SetAsFirstSibling();
 
@@ -414,7 +460,7 @@ namespace Evo.UI
 
             for (int i = 0; i < dataPoints.Count; i++)
             {
-                GameObject legendItem = new($"{dataPoints[i].label} {LEGEND_SUFFIX}");
+                GameObject legendItem = new($"{dataPoints[i].label} {LEGEND_SUFFIX}") { hideFlags = HideFlags.DontSave };
                 legendItem.transform.SetParent(legendContainer, false);
                 newLegendItems.Add(legendItem);
 
@@ -426,7 +472,7 @@ namespace Evo.UI
                 itemRt.sizeDelta = new Vector2(0, legendItemHeight);
 
                 // Color box
-                GameObject colorBox = new("Color Box");
+                GameObject colorBox = new("Color Box") { hideFlags = HideFlags.DontSave };
                 colorBox.transform.SetParent(legendItem.transform, false);
 
                 RectTransform colorRt = colorBox.AddComponent<RectTransform>();
@@ -442,7 +488,7 @@ namespace Evo.UI
                 colorBoxImage.type = legendColorBoxSprite != null ? Image.Type.Sliced : Image.Type.Simple;
 
                 // Label
-                GameObject label = new("Label");
+                GameObject label = new("Label") { hideFlags = HideFlags.DontSave };
                 label.transform.SetParent(legendItem.transform, false);
 
                 RectTransform labelRt = label.AddComponent<RectTransform>();
@@ -576,7 +622,7 @@ namespace Evo.UI
         }
 
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (DataPoint item in dataPoints)
             {

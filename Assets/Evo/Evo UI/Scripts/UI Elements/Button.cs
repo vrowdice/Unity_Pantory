@@ -65,7 +65,7 @@ namespace Evo.UI
         public override void OnPointerClick(PointerEventData eventData)
         {
             base.OnPointerClick(eventData);
-            if (interactable && allowDoubleClick)
+            if (IsInteractable() && allowDoubleClick)
             {
                 if (waitingForDoubleClickInput)
                 {

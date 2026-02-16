@@ -17,6 +17,8 @@ namespace Evo.UI
 
         [EvoHeader("Settings", Constants.CUSTOM_EDITOR_ID)]
         public bool is3DObject = false;
+        public bool usePointerPosition = true;
+        public bool blockUIWhileOpen = false;
         public bool closeOnItemClick = true;
         public bool closeOnOutsideClick = true;
         public MouseButton triggerButton = MouseButton.Right;
@@ -60,8 +62,12 @@ namespace Evo.UI
         {
             Left = 0,
             Right = 1,
-            Middle = 2
+            Middle = 2,
+            None = 9
         }
+
+        // Constants
+        const int SORTING_ORDER = 30000;
 
         // Instance variables
         ContextMenuPreset menuInstance;
@@ -69,6 +75,9 @@ namespace Evo.UI
         Coroutine outsideCoroutine;
         Vector3 lastClickPosition;
         Vector3 targetPosition;
+        Canvas rootCanvas;
+        Canvas blocker;
+        Canvas menuCanvas;
         readonly static List<ContextMenu> activeMenus = new();
 
         [System.Serializable]
@@ -101,6 +110,19 @@ namespace Evo.UI
                 Section = 2,
                 CustomObject = 3
             }
+
+            /// <summary>
+            /// Sets the active state of the item.
+            /// </summary>
+            public bool IsActive { get; set; } = true;
+
+            /// <summary>
+            /// Finds a sub-item by its entry name.
+            /// </summary>
+            public SectionItem GetSectionItem(string name)
+            {
+                return sectionItems.Find(x => x.itemName == name);
+            }
         }
 
         [System.Serializable]
@@ -110,7 +132,6 @@ namespace Evo.UI
             public string itemName = "Menu Item";
             public ItemType itemType = ItemType.Button;
             public Sprite icon;
-            public bool enabled = true;
 
 #if EVO_LOCALIZATION
             [Header("Localization")]
@@ -129,6 +150,11 @@ namespace Evo.UI
                 Separator = 1,
                 CustomObject = 2
             }
+
+            /// <summary>
+            /// Sets the active state of the item.
+            /// </summary>
+            public bool IsActive { get; set; } = true;
         }
 
         void Start()
@@ -145,7 +171,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -160,10 +186,11 @@ namespace Evo.UI
         void OnDestroy()
         {
             activeMenus.Remove(this);
+            DestroyBlocker();
 #if EVO_LOCALIZATION
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
 #endif
         }
@@ -199,70 +226,196 @@ namespace Evo.UI
             if (menuInstance == null) { return; }
             if (!menuInstance.TryGetComponent<RectTransform>(out var menuRect)) { return; }
 
-            // Set pivot based on offset position for proper positioning
-            SetMenuPivot(menuRect);
+            // Setup initial pivot and layout using the configured settings
+            SetMenuPivot(menuRect, offsetPosition);
 
-            // Force layout update to get accurate size
+            // Force layout update to get accurate size for calculations
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(menuRect);
 
-            // Calculate position
-            targetPosition = lastClickPosition + GetOffsetVector();
+            // Calculate base position (Screen Space) without offsets
+            Vector3 basePosition = GetBasePosition();
+
+            // Determine final offset and handle flipping
+            // Check if the default configuration would push the menu off-screen
+            Vector3 finalOffset = GetOffsetVector(offsetPosition);
+            Vector3 projectedPos = basePosition + finalOffset;
+
+            if (ShouldFlipVertical(projectedPos, menuRect))
+            {
+                if (offsetPosition == OffsetPosition.Custom)
+                {
+                    // Handle Custom Flip: Invert pivot Y and Y offset
+                    menuRect.pivot = new Vector2(menuRect.pivot.x, 1f - menuRect.pivot.y);
+                    finalOffset.y = -finalOffset.y;
+                }
+                else
+                {
+                    // Handle Standard Flip: Switch to opposite type (e.g., Bottom -> Top)
+                    OffsetPosition flippedType = GetOppositeOffset(offsetPosition);
+                    SetMenuPivot(menuRect, flippedType);
+                    finalOffset = GetOffsetVector(flippedType);
+                }
+            }
+
+            // Calculate final target position
+            targetPosition = basePosition + finalOffset;
 
             // Clamp to screen
+            // This ensures it never goes off-screen even after flipping
             targetPosition = ClampToScreen(targetPosition, menuRect);
 
-            // Set position directly for non-slide animations
+            // Apply Position
             if (animationType != AnimationType.Slide)
             {
-                menuRect.position = targetPosition;
+                menuRect.position = GetWorldPositionFromScreen(menuRect, targetPosition);
             }
         }
 
-        void SetMenuPivot(RectTransform menuRect)
+        Vector3 GetBasePosition()
+        {
+            if (menuInstance == null)
+                return Vector3.zero;
+
+            Vector3 basePosition;
+
+            if (usePointerPosition) { basePosition = (Vector3)Utilities.GetPointerPosition(); }
+            else
+            {
+                // Calculate position based on the UI element's RectTransform
+                Canvas canvas = ActiveCanvas;
+
+                if (TryGetComponent<RectTransform>(out var rectTransform))
+                {
+                    // For UI elements
+                    if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                    {
+                        basePosition = rectTransform.position;
+                    }
+                    else
+                    {
+                        Camera cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+                        if (cam != null) { basePosition = RectTransformUtility.WorldToScreenPoint(cam, rectTransform.position); }
+                        else { basePosition = rectTransform.position; }
+                    }
+
+                    // Adjust for non-centered pivot to ensure targeting the center/corner accurately
+                    Vector2 pivot = rectTransform.pivot;
+                    Vector2 pivotOffset = new(
+                        (pivot.x - 0.5f) * rectTransform.rect.width * rectTransform.lossyScale.x,
+                        (pivot.y - 0.5f) * rectTransform.rect.height * rectTransform.lossyScale.y
+                    );
+
+                    basePosition.x -= pivotOffset.x;
+                    basePosition.y -= pivotOffset.y;
+                }
+                else if (is3DObject)
+                {
+                    Camera targetCamera = Camera.main;
+                    basePosition = targetCamera != null ? targetCamera.WorldToScreenPoint(transform.position) : Vector3.zero;
+                }
+                else
+                {
+                    basePosition = lastClickPosition;
+                }
+            }
+
+            return basePosition;
+        }
+
+        Vector3 GetWorldPositionFromScreen(RectTransform target, Vector3 screenPos)
+        {
+            Canvas canvas = ActiveCanvas;
+
+            // If overlay, World Space == Screen Space
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay) { return screenPos; }
+
+            // For Camera/World modes, we must convert
+            Camera cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+            if (cam == null) { return screenPos; } // Fallback
+
+            // Convert screen point to world point on the plane of the RectTransform
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                target.parent as RectTransform,
+                screenPos,
+                cam,
+                out Vector3 worldPos
+            );
+
+            return worldPos;
+        }
+
+        void SetMenuPivot(RectTransform menuRect, OffsetPosition type)
         {
             Vector2 pivot = Vector2.zero;
 
-            switch (offsetPosition)
+            switch (type)
             {
                 case OffsetPosition.TopLeft:
                     pivot = new Vector2(1, 0); // Menu grows from bottom-right corner
                     break;
-
                 case OffsetPosition.TopRight:
                     pivot = new Vector2(0, 0); // Menu grows from bottom-left corner
                     break;
-
                 case OffsetPosition.BottomLeft:
                     pivot = new Vector2(1, 1); // Menu grows from top-right corner
                     break;
-
                 case OffsetPosition.BottomRight:
                     pivot = new Vector2(0, 1); // Menu grows from top-left corner
                     break;
-
                 case OffsetPosition.Top:
                     pivot = new Vector2(0.5f, 0); // Menu grows from bottom-center
                     break;
-
                 case OffsetPosition.Bottom:
                     pivot = new Vector2(0.5f, 1); // Menu grows from top-center
                     break;
-
                 case OffsetPosition.Left:
                     pivot = new Vector2(1, 0.5f); // Menu grows from right-center
                     break;
-
                 case OffsetPosition.Right:
                     pivot = new Vector2(0, 0.5f); // Menu grows from left-center
                     break;
-
                 case OffsetPosition.Custom:
                     pivot = new Vector2(0, 1); // Default to top-left for custom
                     break;
             }
 
             menuRect.pivot = pivot;
+        }
+
+        bool ShouldFlipVertical(Vector3 targetScreenPos, RectTransform menuRect)
+        {
+            Vector2 size = GetScreenSize(menuRect);
+
+            // Pivot Y: 1 = Top (Grows Down), 0 = Bottom (Grows Up)
+            if (menuRect.pivot.y > 0.5f) // Currently growing down (e.g. BottomRight)
+            {
+                // Check if the bottom edge is off-screen
+                float bottomY = targetScreenPos.y - (size.y * menuRect.pivot.y);
+                if (bottomY < screenEdgePadding) { return true; }
+            }
+            else if (menuRect.pivot.y < 0.5f) // Currently Growing Up (e.g. TopRight)
+            {
+                // Check if the top edge is off-screen
+                float topY = targetScreenPos.y + (size.y * (1f - menuRect.pivot.y));
+                if (topY > Screen.height - screenEdgePadding) { return true; }
+            }
+
+            return false;
+        }
+
+        OffsetPosition GetOppositeOffset(OffsetPosition current)
+        {
+            return current switch
+            {
+                OffsetPosition.TopLeft => OffsetPosition.BottomLeft,
+                OffsetPosition.TopRight => OffsetPosition.BottomRight,
+                OffsetPosition.BottomLeft => OffsetPosition.TopLeft,
+                OffsetPosition.BottomRight => OffsetPosition.TopRight,
+                OffsetPosition.Top => OffsetPosition.Bottom,
+                OffsetPosition.Bottom => OffsetPosition.Top,
+                _ => current,
+            };
         }
 
         void SetInitialAnimationState()
@@ -278,6 +431,7 @@ namespace Evo.UI
                     menuInstance.canvasGroup.alpha = 0f;
                     menuInstance.canvasGroup.blocksRaycasts = true;
                     menuInstance.canvasGroup.interactable = true;
+                    menuRect.position = GetWorldPositionFromScreen(menuRect, targetPosition);
                     break;
 
                 case AnimationType.Scale:
@@ -285,14 +439,15 @@ namespace Evo.UI
                     menuInstance.canvasGroup.blocksRaycasts = true;
                     menuInstance.canvasGroup.interactable = true;
                     menuInstance.transform.localScale = Vector3.one * scaleFrom;
+                    menuRect.position = GetWorldPositionFromScreen(menuRect, targetPosition);
                     break;
 
                 case AnimationType.Slide:
                     menuInstance.canvasGroup.alpha = 0f;
                     menuInstance.canvasGroup.blocksRaycasts = true;
                     menuInstance.canvasGroup.interactable = true;
-                    Vector3 startPos = targetPosition + (Vector3)slideOffset;
-                    menuRect.position = startPos;
+                    Vector3 startPosScreen = targetPosition + (Vector3)slideOffset;
+                    menuRect.position = GetWorldPositionFromScreen(menuRect, startPosScreen);
                     break;
             }
         }
@@ -320,15 +475,68 @@ namespace Evo.UI
                     if (isIn)
                     {
                         Vector3 startPos = targetPosition + (Vector3)slideOffset;
-                        menuRect.position = Vector3.Lerp(startPos, targetPosition, progress);
+                        Vector3 currentScreenPos = Vector3.Lerp(startPos, targetPosition, progress);
+                        menuRect.position = GetWorldPositionFromScreen(menuRect, currentScreenPos);
                     }
                     else
                     {
                         Vector3 endPos = targetPosition + (Vector3)slideOffset;
-                        menuRect.position = Vector3.Lerp(targetPosition, endPos, 1f - progress);
+                        Vector3 currentScreenPos = Vector3.Lerp(targetPosition, endPos, 1f - progress);
+                        menuRect.position = GetWorldPositionFromScreen(menuRect, currentScreenPos);
                     }
                     break;
             }
+        }
+
+        void CreateMenuCanvas()
+        {
+            if (menuInstance == null || menuCanvas != null)
+                return;
+
+            menuCanvas = menuInstance.gameObject.AddComponent<Canvas>();
+            menuInstance.gameObject.AddComponent<GraphicRaycaster>();
+            menuCanvas.vertexColorAlwaysGammaSpace = true;
+            menuCanvas.overrideSorting = true;
+            menuCanvas.sortingOrder = SORTING_ORDER;
+        }
+
+        void CreateBlocker()
+        {
+            if (blocker != null) { return; }
+            if (rootCanvas == null) { rootCanvas = GetComponentInParent<Canvas>().rootCanvas; }
+            if (rootCanvas == null) { return; }
+
+            GameObject blockerGO = new("Context Menu Blocker");
+            blocker = blockerGO.AddComponent<Canvas>();
+            blocker.overrideSorting = true;
+            blocker.sortingOrder = SORTING_ORDER - 1;
+            blockerGO.AddComponent<GraphicRaycaster>();
+
+            RectTransform blockerRT = blockerGO.GetComponent<RectTransform>();
+            blockerRT.SetParent(rootCanvas.transform, false);
+            blockerRT.anchorMin = Vector2.zero;
+            blockerRT.anchorMax = Vector2.one;
+            blockerRT.sizeDelta = Vector2.zero;
+            blockerRT.anchoredPosition = Vector2.zero;
+
+            Image blockerImage = blockerGO.AddComponent<Image>();
+            blockerImage.color = Color.clear;
+
+            UnityEngine.UI.Button button = blockerGO.AddComponent<UnityEngine.UI.Button>();
+            button.onClick.AddListener(() => { if (closeOnOutsideClick) { Hide(); } });
+
+            Navigation nav = button.navigation;
+            nav.mode = Navigation.Mode.None;
+            button.navigation = nav;
+        }
+
+        void DestroyBlocker()
+        {
+            if (blocker == null)
+                return;
+
+            Destroy(blocker.gameObject);
+            blocker = null;
         }
 
         public void Show()
@@ -352,11 +560,24 @@ namespace Evo.UI
                 return;
             }
 
+            // Invoke events
+            onShow?.Invoke();
+
             // Setup menu
             SetupMenu();
 
             // Position menu
             PositionMenu();
+
+            // Check if blocking is requested
+            if (blockUIWhileOpen)
+            {
+                // Create canvas for proper layering
+                CreateMenuCanvas();
+
+                // Create blocker if needed
+                CreateBlocker();
+            }
 
             // Add to active menus
             activeMenus.Add(this);
@@ -369,14 +590,11 @@ namespace Evo.UI
             }
 
             // Start animation
-            if (animationType != AnimationType.None) 
+            if (animationType != AnimationType.None)
             {
                 if (animationCoroutine != null) { StopCoroutine(animationCoroutine); }
-                animationCoroutine = StartCoroutine(AnimateMenuIn()); 
+                animationCoroutine = StartCoroutine(AnimateMenuIn());
             }
-
-            // Invoke events
-            onShow?.Invoke();
         }
 
         public void Hide()
@@ -394,11 +612,16 @@ namespace Evo.UI
                 outsideCoroutine = null;
             }
 
+            // Destroy blocker
+            DestroyBlocker();
+
             // Start animation
-            if (menuInstance != null && animationType != AnimationType.None && gameObject.activeInHierarchy) 
+            if (menuInstance != null && animationType != AnimationType.None && gameObject.activeInHierarchy)
             {
                 if (animationCoroutine != null) { StopCoroutine(animationCoroutine); }
                 animationCoroutine = StartCoroutine(AnimateMenuOut());
+
+                menuInstance.CollapseAllSections();
             }
             else { HideImmediate(); }
 
@@ -420,6 +643,8 @@ namespace Evo.UI
                 Destroy(menuInstance.gameObject);
                 menuInstance = null;
             }
+
+            menuCanvas = null;
         }
 
         public void OnItemClicked(Item item)
@@ -483,12 +708,12 @@ namespace Evo.UI
             return false;
         }
 
-        Vector3 GetOffsetVector()
+        Vector3 GetOffsetVector(OffsetPosition type)
         {
-            if (offsetPosition == OffsetPosition.Custom) { return (Vector3)customOffset; }
+            if (type == OffsetPosition.Custom) { return (Vector3)customOffset; }
             Vector3 offset = Vector3.zero;
 
-            switch (offsetPosition)
+            switch (type)
             {
                 case OffsetPosition.TopLeft:
                     offset = new Vector3(-offsetDistance, offsetDistance, 0);
@@ -521,15 +746,16 @@ namespace Evo.UI
 
         Vector3 ClampToScreen(Vector3 position, RectTransform menuRect)
         {
-            // Get menu size
-            float width = menuRect.rect.width * menuRect.lossyScale.x;
-            float height = menuRect.rect.height * menuRect.lossyScale.y;
+            // Get menu size in pixels
+            Vector2 size = GetScreenSize(menuRect);
+            float width = size.x;
+            float height = size.y;
 
             // Get pivot offsets
             float pivotOffsetX = width * menuRect.pivot.x;
             float pivotOffsetY = height * menuRect.pivot.y;
 
-            // Calculate actual bounds of the menu
+            // Calculate actual bounds of the menu in Screen Space
             float minX = position.x - pivotOffsetX;
             float maxX = position.x + (width - pivotOffsetX);
             float minY = position.y - pivotOffsetY;
@@ -542,6 +768,40 @@ namespace Evo.UI
             if (maxY > Screen.height - screenEdgePadding) { position.y -= (maxY - (Screen.height - screenEdgePadding)); }
 
             return position;
+        }
+
+        Vector2 GetScreenSize(RectTransform rect)
+        {
+            Canvas canvas = ActiveCanvas;
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                // In Overlay, lossyScale handles the CanvasScaler scaling
+                return Vector2.Scale(rect.rect.size, rect.lossyScale);
+            }
+
+            // For Camera/World modes, calculate screen projection
+            Camera cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+            if (cam == null) { return Vector2.Scale(rect.rect.size, rect.lossyScale); } // Fallback
+
+            Vector3[] corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+
+            // Calculate screen bounds from world corners
+            float minX = float.MaxValue;
+            float maxX = float.MinValue;
+            float minY = float.MaxValue;
+            float maxY = float.MinValue;
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(cam, corners[i]);
+                if (screenPos.x < minX) { minX = screenPos.x; }
+                if (screenPos.x > maxX) { maxX = screenPos.x; }
+                if (screenPos.y < minY) { minY = screenPos.y; }
+                if (screenPos.y > maxY) { maxY = screenPos.y; }
+            }
+
+            return new Vector2(maxX - minX, maxY - minY);
         }
 
         IEnumerator DetectOutsideClick()
@@ -647,8 +907,16 @@ namespace Evo.UI
             }
         }
 
+        /// <summary>
+        /// Finds a top-level menu item by its entry name.
+        /// </summary>
+        public Item GetItem(string name)
+        {
+            return menuItems.Find(x => x.itemName == name);
+        }
+
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (Item item in menuItems)
             {

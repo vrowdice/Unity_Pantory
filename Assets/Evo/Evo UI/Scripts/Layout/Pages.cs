@@ -10,28 +10,29 @@ namespace Evo.UI
     [AddComponentMenu("Evo/UI/Layout/Pages")]
     public class Pages : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        [EvoHeader("References")]
-        [Tooltip("Parent container that holds all pages.")]
-        public RectTransform container;
-
-        [EvoHeader("Pages")]
+        [EvoHeader("Pages", Constants.CUSTOM_EDITOR_ID)]
         [SerializeField] private int defaultPageIndex = 0;
         public List<Page> pages = new();
 
-        [EvoHeader("Settings")]
+        [EvoHeader("References", Constants.CUSTOM_EDITOR_ID)]
+        public RectTransform container;
+        public RectTransform indicator;
+
+        [EvoHeader("Settings", Constants.CUSTOM_EDITOR_ID)]
         public bool disableInvisiblePages = true;
         public bool useUnscaledTime = false;
         public bool interruptTransitions = true;
+        [SerializeField] private bool autoHandleNestedScrolling = false;
 
-        [EvoHeader("Swipe Settings")]
+        [EvoHeader("Swipe Settings", Constants.CUSTOM_EDITOR_ID)]
         [Range(0.1f, 0.9f)] public float swipeThreshold = 0.3f;
         [Range(0.1f, 1f)] public float elasticResistance = 0.3f;
         public float velocityThreshold = 500;
         public SwipeDirection swipeDirection = SwipeDirection.Horizontal;
 
-        [EvoHeader("Animation Settings")]
+        [EvoHeader("Animation Settings", Constants.CUSTOM_EDITOR_ID)]
         public AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        [Range(0, 2)] public float transitionDuration = 0.25f;
+        [Range(0, 2)] public float transitionDuration = 0.3f;
         public float pageSpacing = 20;
 
         [EvoHeader("Events")]
@@ -55,6 +56,10 @@ namespace Evo.UI
         public int CurrentPageIndex { get; private set; } = -1;
         public bool IsTransitioning { get; private set; } = false;
 
+        // Cache
+        Canvas canvas;
+        Coroutine transitionCoroutine;
+
         // Helpers
         bool isDragging;
         float currentOffset;
@@ -62,22 +67,47 @@ namespace Evo.UI
         float dragVelocity;
         float dragStartTime;
         Vector2 dragStartPos;
-        Canvas canvas;
-        Coroutine transitionCoroutine;
+        Vector2 indicatorTargetPos;
+        Vector2 indicatorTargetSize;
 
-        void Start()
+        IEnumerator Start()
         {
-            if (container == null)
+            canvas = GetComponentInParent<Canvas>();
+            if (container == null) { container = transform as RectTransform; }
+
+            // Setup indicator anchor to middle center
+            if (indicator != null)
             {
-                Debug.LogError("<b>[Pages]</b> Pages Container is not assigned!");
-                return;
+                indicator.anchorMin = new Vector2(0.5f, 0.5f);
+                indicator.anchorMax = new Vector2(0.5f, 0.5f);
+                indicator.pivot = new Vector2(0.5f, 0.5f);
+
+                // Set initial visibility
+                bool shouldShow = pages.Count > 0 && defaultPageIndex >= 0 
+                    && defaultPageIndex < pages.Count
+                    && pages[defaultPageIndex].pageButton != null;
+                indicator.gameObject.SetActive(shouldShow);
             }
 
-            canvas = GetComponentInParent<Canvas>();
             PositionPages();
+            CheckAndSetupNestedScrolling();
 
             // Set initial page
             if (pages.Count > 0) { OpenPage(defaultPageIndex, false); }
+
+            // Wait for pages to be initialized
+            yield return new WaitForEndOfFrame();
+            if (ShouldShowIndicator(defaultPageIndex))
+            {
+                UpdateIndicator(defaultPageIndex, false);
+                indicator.anchoredPosition = indicatorTargetPos;
+                indicator.sizeDelta = indicatorTargetSize;
+                indicator.gameObject.SetActive(true);
+            }
+            else if (indicator != null)
+            {
+                indicator.gameObject.SetActive(false);
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -153,6 +183,9 @@ namespace Evo.UI
 
             currentOffset = targetOffset + delta;
             ApplyOffset(currentOffset);
+
+            // Update indicator during drag
+            if (ShouldShowIndicator(CurrentPageIndex)) { UpdateIndicatorDuringDrag(currentOffset); }
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -169,10 +202,7 @@ namespace Evo.UI
             float dragDelta = (currentPos - startPos) / scaleFactor;
 
             // Invert delta for vertical scrolling to match expected behavior
-            if (swipeDirection == SwipeDirection.Vertical)
-            {
-                dragDelta = -dragDelta;
-            }
+            if (swipeDirection == SwipeDirection.Vertical) { dragDelta = -dragDelta; }
 
             float dragDistance = Mathf.Abs(dragDelta);
             float dragPercent = dragDistance / containerSize;
@@ -197,16 +227,51 @@ namespace Evo.UI
             OpenPage(targetPage, true);
         }
 
+        void CheckAndSetupNestedScrolling()
+        {
+            if (!autoHandleNestedScrolling)
+                return;
+
+            // Iterate through all defined pages
+            foreach (var page in pages)
+            {
+                if (page.pageObject == null)
+                    continue;
+
+                // Find ALL ScrollRects in the children of this page (including inactive ones)
+                var scrollRects = page.pageObject.GetComponentsInChildren<ScrollRect>(true);
+
+                foreach (var scrollRect in scrollRects)
+                {
+                    // Check if the manager is already there
+                    if (!scrollRect.TryGetComponent<NestedScrollManager>(out var manager))
+                    {
+                        // If not, add it
+                        manager = scrollRect.gameObject.AddComponent<NestedScrollManager>();
+
+                        // Configure it immediately
+                        manager.findParentAutomatically = false;
+                        manager.parentPages = this;
+                    }
+                    else if (manager.parentPages == null)
+                    {
+                        // If it exists but has no parent assigned, assign this component
+                        manager.parentPages = this;
+                    }
+                }
+            }
+        }
+
         void UpdateButtonStates(int selectedTabIndex)
         {
             for (int i = 0; i < pages.Count; i++)
             {
                 var tab = pages[i];
-                if (tab.pageButton != null) 
+                if (tab.pageButton != null)
                 {
-                    tab.pageButton.SetState(i == selectedTabIndex 
-                        ? InteractionState.Selected 
-                        : InteractionState.Normal); 
+                    tab.pageButton.SetState(i == selectedTabIndex
+                        ? InteractionState.Selected
+                        : InteractionState.Normal);
                 }
             }
         }
@@ -252,6 +317,117 @@ namespace Evo.UI
             }
         }
 
+        void UpdateIndicatorDuringDrag(float offset)
+        {
+            if (indicator == null || pages.Count == 0)
+                return;
+
+            // Calculate which pages we're between
+            float containerSize = swipeDirection == SwipeDirection.Horizontal ? container.rect.width : container.rect.height;
+            float pageSize = containerSize + pageSpacing;
+            float normalizedOffset = -offset / pageSize;
+
+            int fromPage = Mathf.FloorToInt(normalizedOffset);
+            int toPage = Mathf.CeilToInt(normalizedOffset);
+
+            fromPage = Mathf.Clamp(fromPage, 0, pages.Count - 1);
+            toPage = Mathf.Clamp(toPage, 0, pages.Count - 1);
+
+            // Check if both pages have buttons
+            bool fromHasButton = pages[fromPage].pageButton != null;
+            bool toHasButton = pages[toPage].pageButton != null;
+
+            // Hide indicator if either page is missing a button
+            if (!fromHasButton || !toHasButton)
+            {
+                indicator.gameObject.SetActive(false);
+                return;
+            }
+
+            indicator.gameObject.SetActive(true);
+            float t = normalizedOffset - fromPage;
+
+            // Get positions and sizes for interpolation
+            Vector2 fromPos = GetIndicatorPositionForPage(fromPage);
+            Vector2 toPos = GetIndicatorPositionForPage(toPage);
+            Vector2 fromSize = GetIndicatorSizeForPage(fromPage);
+            Vector2 toSize = GetIndicatorSizeForPage(toPage);
+
+            // Interpolate
+            Vector2 currentPos = Vector2.Lerp(fromPos, toPos, t);
+            Vector2 currentSize = Vector2.Lerp(fromSize, toSize, t);
+
+            // Apply to indicator
+            indicator.anchoredPosition = currentPos;
+            indicator.sizeDelta = currentSize;
+        }
+
+        void UpdateIndicator(int pageIndex, bool animate = true)
+        {
+            if (indicator == null || pages.Count == 0) { return; }
+            if (!ShouldShowIndicator(pageIndex))
+            {
+                indicator.gameObject.SetActive(false);
+                return;
+            }
+
+            indicator.gameObject.SetActive(true);
+            indicatorTargetPos = GetIndicatorPositionForPage(pageIndex);
+            indicatorTargetSize = GetIndicatorSizeForPage(pageIndex);
+
+            if (!animate || !Application.isPlaying)
+            {
+                indicator.anchoredPosition = indicatorTargetPos;
+                indicator.sizeDelta = indicatorTargetSize;
+            }
+        }
+
+        bool ShouldShowIndicator(int pageIndex)
+        {
+            if (indicator == null || pages.Count == 0) { return false; }
+            if (pageIndex < 0 || pageIndex >= pages.Count) { return false; }
+            return pages[pageIndex].pageButton != null;
+        }
+
+        Vector2 GetIndicatorPositionForPage(int pageIndex)
+        {
+            if (pageIndex < 0 || pageIndex >= pages.Count)
+                return Vector2.zero;
+
+            var page = pages[pageIndex];
+
+            // Button must be present (checked by ShouldShowIndicator)
+            if (page.pageButton == null) { return Vector2.zero; }
+            if (!page.pageButton.TryGetComponent<RectTransform>(out var buttonRect)) { return Vector2.zero; }
+
+            // Get button's center position in world space
+            Vector3 buttonWorldCenter = buttonRect.TransformPoint(buttonRect.rect.center);
+
+            // Convert to indicator parent's local space
+            RectTransform indicatorParent = indicator.parent as RectTransform;
+            if (indicatorParent == null) { return Vector2.zero; }
+
+            // Convert world position to local position in indicator's parent space
+            Vector2 localPos = indicatorParent.InverseTransformPoint(buttonWorldCenter);
+            return localPos;
+        }
+
+        Vector2 GetIndicatorSizeForPage(int pageIndex)
+        {
+            if (pageIndex < 0 || pageIndex >= pages.Count)
+                return indicator.sizeDelta;
+
+            var page = pages[pageIndex];
+
+            // Button must be present (checked by ShouldShowIndicator)
+            if (page.pageButton == null) { return indicator.sizeDelta; }
+            if (!page.pageButton.TryGetComponent<RectTransform>(out var buttonRect)) { return indicator.sizeDelta; }
+
+            // Get the button's actual rect size
+            Rect buttonWorldRect = buttonRect.rect;
+            return new Vector2(buttonWorldRect.width, buttonWorldRect.height);
+        }
+
         IEnumerator AnimateToPage(float targetPos)
         {
             IsTransitioning = true;
@@ -259,15 +435,25 @@ namespace Evo.UI
             float distance = Mathf.Abs(targetPos - startOffset);
             float containerSize = swipeDirection == SwipeDirection.Horizontal ? container.rect.width : container.rect.height;
 
-            // Adjust duration based on distance (shorter transitions for nearby pages)
+            // Adjust duration based on distance
             float dynamicDuration = transitionDuration * Mathf.Clamp01(distance / containerSize);
             dynamicDuration = Mathf.Max(dynamicDuration, 0.1f); // Minimum duration
+
+            // Store indicator start values
+            Vector2 indicatorStartPos = Vector2.zero;
+            Vector2 indicatorStartSize = Vector2.zero;
+            bool animateIndicator = ShouldShowIndicator(CurrentPageIndex);
+            if (animateIndicator)
+            {
+                indicatorStartPos = indicator.anchoredPosition;
+                indicatorStartSize = indicator.sizeDelta;
+            }
 
             float elapsed = 0f;
 
             while (elapsed < dynamicDuration)
             {
-                // Check if dragging started (interruption)
+                // Check if dragging started
                 if (isDragging && interruptTransitions)
                 {
                     IsTransitioning = false;
@@ -281,11 +467,26 @@ namespace Evo.UI
                 currentOffset = Mathf.Lerp(startOffset, targetPos, curvedT);
                 ApplyOffset(currentOffset);
 
+                // Animate indicator
+                if (animateIndicator)
+                {
+                    indicator.anchoredPosition = Vector2.Lerp(indicatorStartPos, indicatorTargetPos, curvedT);
+                    indicator.sizeDelta = Vector2.Lerp(indicatorStartSize, indicatorTargetSize, curvedT);
+                }
+
                 yield return null;
             }
 
             currentOffset = targetPos;
             ApplyOffset(currentOffset);
+
+            // Ensure indicator is at final position
+            if (animateIndicator)
+            {
+                indicator.anchoredPosition = indicatorTargetPos;
+                indicator.sizeDelta = indicatorTargetSize;
+            }
+
             UpdatePageVisibility();
             IsTransitioning = false;
         }
@@ -326,6 +527,13 @@ namespace Evo.UI
                     pages[index].pageButton.onClick.AddListener(() => OpenPage(index));
                 }
             }
+
+            // Update indicator visibility
+            if (indicator != null)
+            {
+                bool shouldShow = ShouldShowIndicator(CurrentPageIndex >= 0 ? CurrentPageIndex : defaultPageIndex);
+                indicator.gameObject.SetActive(shouldShow);
+            }
         }
 
         public void OpenPage(int index, bool animate = true)
@@ -344,6 +552,9 @@ namespace Evo.UI
             if (pages[index].pageObject != null) { pages[index].pageObject.gameObject.SetActive(true); }
             if (index > 0 && pages[index - 1].pageObject != null) { pages[index - 1].pageObject.gameObject.SetActive(true); }
             if (index < pages.Count - 1 && pages[index + 1].pageObject != null) { pages[index + 1].pageObject.gameObject.SetActive(true); }
+
+            // Update indicator target
+            UpdateIndicator(index, animate);
 
             if (animate && Application.isPlaying)
             {
@@ -364,6 +575,11 @@ namespace Evo.UI
             UpdateButtonStates(CurrentPageIndex);
         }
 
+        public void OpenPage(int index)
+        {
+            OpenPage(index, true);
+        }
+
         public void OpenNextPage()
         {
             if (CurrentPageIndex < pages.Count - 1)
@@ -382,6 +598,7 @@ namespace Evo.UI
 
 #if UNITY_EDITOR
         [HideInInspector] public bool objectFoldout = true;
+        [HideInInspector] public bool referencesFoldout = true;
         [HideInInspector] public bool settingsFoldout = false;
         [HideInInspector] public bool eventsFoldout = false;
         int lastDefaultTabIndex = -1;
@@ -395,7 +612,7 @@ namespace Evo.UI
             // Clamp default tab index
             if (pages.Count > 0) { defaultPageIndex = Mathf.Clamp(defaultPageIndex, 0, pages.Count - 1); }
 
-            // Update editor preview if index changed - defer to avoid SendMessage warnings
+            // Update editor preview if index changed
             if (lastDefaultTabIndex != defaultPageIndex)
             {
                 if (!pendingEditorUpdate)
@@ -416,20 +633,39 @@ namespace Evo.UI
 
         void UpdateEditorPreview()
         {
-            if (pages == null || pages.Count == 0) { return; }
+            if (pages == null || pages.Count == 0)
+                return;
+
+            // Setup indicator anchor
+            if (indicator != null)
+            {
+                indicator.anchorMin = new Vector2(0.5f, 0.5f);
+                indicator.anchorMax = new Vector2(0.5f, 0.5f);
+                indicator.pivot = new Vector2(0.5f, 0.5f);
+
+                // Set visibility based on default page
+                bool shouldShow = pages.Count > 0 && defaultPageIndex >= 0 && defaultPageIndex < pages.Count
+                    && pages[defaultPageIndex].pageButton != null;
+                indicator.gameObject.SetActive(shouldShow);
+            }
+
             for (int i = 0; i < pages.Count; i++)
             {
-                // Check tab object
+                // Check page object
                 var tab = pages[i];
                 if (tab.pageObject == null) { continue; }
 
-                // Tab visibility
+                // Page visibility
                 if (i == defaultPageIndex) { tab.pageObject.gameObject.SetActive(true); }
                 else if (tab.pageObject.gameObject.activeInHierarchy) { tab.pageObject.gameObject.SetActive(false); }
 
                 // Button state 
                 if (tab.pageButton != null) { tab.pageButton.SetState(i == defaultPageIndex ? InteractionState.Selected : InteractionState.Normal); }
             }
+
+            // Update indicator in editor
+            if (ShouldShowIndicator(defaultPageIndex)) { UpdateIndicator(defaultPageIndex, false); }
+            else if (indicator != null) { indicator.gameObject.SetActive(false); }
         }
 #endif
     }

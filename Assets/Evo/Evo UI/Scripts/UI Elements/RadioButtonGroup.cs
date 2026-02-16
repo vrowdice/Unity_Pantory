@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,17 +13,48 @@ namespace Evo.UI
         [EvoHeader("Settings", Constants.CUSTOM_EDITOR_ID)]
         public int selectedIndex = -1;
         [SerializeField] private bool allowDeselection = false;
+        [SerializeField] private bool useUnscaledTime = true;
+
+        [EvoHeader("Indicator", Constants.CUSTOM_EDITOR_ID)]
+        [SerializeField] private RectTransform indicatorObject;
+        [SerializeField] private IndicatorDirection indicatorDirection = IndicatorDirection.Horizontal;
+        [SerializeField] private bool indicatorAutoSize = true;
+        [SerializeField, Min(0)] private float indicatorStretch = 0;
+        [SerializeField] private AnimationCurve indicatorCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        [SerializeField, Range(0.01f, 1)] private float indicatorDuration = 0.3f;
+        [SerializeField, Range(0, 1)] private float stateChangeDelay = 0f;
+
+        [EvoHeader("References", Constants.CUSTOM_EDITOR_ID)]
+        public Transform targetParent;
 
         [EvoHeader("Events", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private UnityEvent<int> onSelectionChanged = new(); 
+        public UnityEvent<int> onSelectionChanged = new();
 
-        // Helpers
+        // Cache
         Button selectedButton;
+        Coroutine indicatorCoroutine;
+        Coroutine stateDelayCoroutine;
         readonly List<Button> availableButtons = new();
+
+        public enum IndicatorDirection
+        {
+            Horizontal,
+            Vertical
+        }
 
         void Awake()
         {
             Initialize();
+        }
+
+        void OnEnable()
+        {
+            // If there's a selection, force the indicator to snap to it again
+            // Just in case the layout changed while this object was disabled
+            if (selectedIndex >= 0 && availableButtons.Count > selectedIndex)
+            {
+                UpdateIndicator(availableButtons[selectedIndex], false);
+            }
         }
 
         public void Initialize()
@@ -30,17 +62,19 @@ namespace Evo.UI
             selectedButton = null;
             availableButtons.Clear();
 
+            // Get button parent
+            if (targetParent == null) { targetParent = transform; }
+
             // Get all Button components from direct children only
-            for (int i = 0; i < transform.childCount; i++)
+            for (int i = 0; i < targetParent.childCount; i++)
             {
-                Transform child = transform.GetChild(i);
+                Transform child = targetParent.GetChild(i);
                 if (child.TryGetComponent<Button>(out Button btn))
                 {
                     availableButtons.Add(btn);
                     int btnIndex = availableButtons.Count - 1;
                     btn.onClick.AddListener(() => SetButton(btnIndex));
                 }
-
                 else
                 {
                     // Add null to maintain index consistency
@@ -49,13 +83,106 @@ namespace Evo.UI
             }
 
             // Set default selection if specified
-            if (selectedIndex >= 0 && selectedIndex < availableButtons.Count)
-            {
-                SetButton(selectedIndex);
-            }
+            if (selectedIndex >= 0 && selectedIndex < availableButtons.Count) { SetButton(selectedIndex, false); }
+            else { UpdateIndicator(null, false); } // Initialize indicator state (hidden) if nothing is selected
         }
 
-        public void SetButton(int index)
+        void UpdateIndicator(Button targetButton, bool animate)
+        {
+            if (indicatorObject == null || !gameObject.activeInHierarchy)
+                return;
+
+            if (indicatorCoroutine != null) { StopCoroutine(indicatorCoroutine); }
+            indicatorCoroutine = StartCoroutine(AnimateIndicatorRoutine(targetButton, animate));
+        }
+
+        IEnumerator AnimateIndicatorRoutine(Button targetButton, bool animate)
+        {
+            // Wait for end of frame to ensure layout rebuilds if this was called during initialization
+            if (!animate) { yield return new WaitForEndOfFrame(); }
+
+            RectTransform targetRect = (targetButton != null) ? targetButton.GetComponent<RectTransform>() : null;
+
+            // Capture current visual state (world space)
+            Vector3 worldPos = indicatorObject.position;
+            Vector2 startSize = indicatorObject.sizeDelta;
+            Vector2 startAnchoredPos;
+
+            // Determine Target Values
+            Vector2 targetAnchoredPos;
+            Vector2 targetSize = startSize;
+
+            if (targetRect != null)
+            {
+                // Match anchors and pivot to the target completely
+                indicatorObject.anchorMin = targetRect.anchorMin;
+                indicatorObject.anchorMax = targetRect.anchorMax;
+                indicatorObject.pivot = targetRect.pivot;
+
+                // Restore visual position after anchor change
+                indicatorObject.position = worldPos;
+                startAnchoredPos = indicatorObject.anchoredPosition;
+
+                // Target is simply the target's anchored position (relative to its own anchors)
+                // Since we copied anchors, we want to match the target's offset
+                // If target and indicator are siblings, this works perfectly.
+                // If they are not siblings, this assumes they share the same coordinate space logic.
+                targetAnchoredPos = targetRect.anchoredPosition;
+
+                // Calculate target size
+                if (indicatorAutoSize) { targetSize = targetRect.sizeDelta; }
+            }
+            else
+            {
+                // Keep existing anchors/pivots to shrink in place.
+                startAnchoredPos = indicatorObject.anchoredPosition;
+                targetAnchoredPos = startAnchoredPos;
+
+                // Shrink size to 0 on relevant axis
+                if (indicatorDirection == IndicatorDirection.Horizontal) { targetSize.x = 0; }
+                else { targetSize.y = 0; }
+            }
+
+            // Animate or Snap
+            if (animate && Application.isPlaying)
+            {
+                float elapsed = 0f;
+                while (elapsed < indicatorDuration)
+                {
+                    elapsed += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsed / indicatorDuration);
+                    float curveValue = indicatorCurve.Evaluate(t);
+
+                    // Calculate stretch based on progression
+                    // Only stretch if there's a target, otherwise just shrink (disappear)
+                    float stretchValue = (targetRect != null) ? Mathf.Sin(Mathf.Clamp01(curveValue) * Mathf.PI) * indicatorStretch : 0f;
+
+                    // Lerp Position (Both axes to handle grid/multiline movement)
+                    Vector2 currentPos = Vector2.Lerp(startAnchoredPos, targetAnchoredPos, curveValue);
+
+                    // Lerp Size (Both axes)
+                    Vector2 currentSize = Vector2.Lerp(startSize, targetSize, curveValue);
+
+                    // Apply stretch to main axis
+                    if (indicatorDirection == IndicatorDirection.Horizontal) { currentSize.x += stretchValue; }
+                    else { currentSize.y += stretchValue; }
+
+                    // Apply pos
+                    indicatorObject.anchoredPosition = currentPos;
+                    indicatorObject.sizeDelta = currentSize;
+
+                    yield return null;
+                }
+            }
+
+            // Ensure exact snap at end
+            indicatorObject.anchoredPosition = targetAnchoredPos;
+            indicatorObject.sizeDelta = targetSize;
+        }
+
+        public void SetButton(int index) => SetButton(index, true);
+
+        public void SetButton(int index, bool animate)
         {
             if (index < 0 || index >= availableButtons.Count)
             {
@@ -80,37 +207,73 @@ namespace Evo.UI
             // Don't do anything if this button is already selected
             if (selectedButton == targetButton) { return; }
 
-            // Deselect current button
-            if (selectedButton != null) 
+            // Stop any pending state change
+            if (stateDelayCoroutine != null) { StopCoroutine(stateDelayCoroutine); }
+
+            // Update Indicator immediately so it starts moving
+            UpdateIndicator(targetButton, animate);
+
+            // Determine if we should use delay (only if indicator is active and valid)
+            bool useDelay = animate && stateChangeDelay > 0 && indicatorObject != null && indicatorObject.gameObject.activeInHierarchy;
+            if (!useDelay) { ApplyStateChange(targetButton, index, false); }
+            else
             {
-                selectedButton.SetState(InteractionState.Normal);
+                onSelectionChanged?.Invoke(index); // Fire events to ensure no delay for callbacks
+                stateDelayCoroutine = StartCoroutine(ApplyStateChangeDelayed(targetButton, index));
             }
+        }
+
+        IEnumerator ApplyStateChangeDelayed(Button targetButton, int index)
+        {
+            // Set button non-interactable to avoid spamming
+            targetButton.interactable = false;
+
+            // Wait for delay
+            yield return useUnscaledTime ? new WaitForSecondsRealtime(stateChangeDelay) : new WaitForSeconds(stateChangeDelay);
+
+            // Set button interactable and apply the state
+            targetButton.interactable = true;
+            ApplyStateChange(targetButton, index, true);
+        }
+
+        void ApplyStateChange(Button targetButton, int index, bool isDelayed)
+        {
+            // Deselect current button
+            if (selectedButton != null) { selectedButton.SetState(InteractionState.Normal); }
 
             // Select new button
             targetButton.SetState(InteractionState.Selected);
             selectedButton = targetButton;
             selectedIndex = index;
 
-            // Notify listeners
-            onSelectionChanged?.Invoke(index);
+            // Check for delay and notify listeners
+            // We already notify listeners in coroutine, so bypassing for duplicate
+            if (!isDelayed) { onSelectionChanged?.Invoke(index); }
         }
 
         public void DeselectAll()
         {
+            // Stop any pending state change
+            if (stateDelayCoroutine != null) { StopCoroutine(stateDelayCoroutine); }
+
+            // Check for selected button
             if (selectedButton != null)
             {
                 selectedButton.SetState(InteractionState.Normal);
                 selectedButton = null;
                 selectedIndex = -1;
+
+                // Update Indicator
+                UpdateIndicator(null, true);
+
+                // Fire events
                 onSelectionChanged?.Invoke(-1);
             }
         }
 
-        public bool IsButtonSelected(int index)
-        {
-            return selectedIndex == index;
-        }
-
+        /// <summary>
+        /// Sets interactable state for all buttons.
+        /// </summary>
         public void SetInteractable(bool interactable)
         {
             foreach (Button btn in availableButtons)
@@ -121,5 +284,95 @@ namespace Evo.UI
                 }
             }
         }
+
+        /// <summary>
+        /// Returns the currently selected button.
+        /// </summary>
+        public Button GetButton()
+        {
+            if (availableButtons[selectedIndex] == null) { return null; }
+            return availableButtons[selectedIndex];
+        }
+
+        /// <summary>
+        /// Returns the specified button at index.
+        /// </summary>
+        public Button GetButton(int index)
+        {
+            if (availableButtons[index] == null) { return null; }
+            return availableButtons[index];
+        }
+
+        /// <summary>
+        /// Returns true if specified button index is selected.
+        /// </summary>
+        public bool IsButtonSelected(int index)
+        {
+            return selectedIndex == index;
+        }
+
+#if UNITY_EDITOR
+        bool pendingEditorUpdate = false;
+        int lastSelectedIndex = -1;
+
+        void OnValidate()
+        {
+            if (Application.isPlaying)
+                return;
+
+            // Get target parent
+            if (targetParent == null) { targetParent = transform; }
+
+            // Clamp selected index
+            if (targetParent.childCount > 0) { selectedIndex = Mathf.Clamp(selectedIndex, -1, targetParent.childCount - 1); }
+            else { selectedIndex = -1; }
+
+            // Update editor preview if index changed - defer to avoid SendMessage warnings
+            if (lastSelectedIndex != selectedIndex)
+            {
+                if (!pendingEditorUpdate)
+                {
+                    pendingEditorUpdate = true;
+                    UnityEditor.EditorApplication.delayCall += () =>
+                    {
+                        if (this != null)
+                        {
+                            UpdateEditorPreview(targetParent);
+                            pendingEditorUpdate = false;
+                        }
+                    };
+                }
+                lastSelectedIndex = selectedIndex;
+            }
+        }
+
+        void UpdateEditorPreview(Transform targetParent)
+        {
+            // Gather buttons directly from children
+            List<Button> currentButtons = new();
+            for (int i = 0; i < targetParent.childCount; i++)
+            {
+                if (targetParent.GetChild(i).TryGetComponent<Button>(out Button btn)) { currentButtons.Add(btn); }
+                else { currentButtons.Add(null); }
+            }
+
+            // Update States
+            for (int i = 0; i < currentButtons.Count; i++)
+            {
+                var btn = currentButtons[i];
+                if (btn == null) { continue; }
+
+                if (i != selectedIndex) { btn.SetState(InteractionState.Normal); }
+                else
+                {
+                    btn.SetState(InteractionState.Selected);
+                    UpdateIndicator(btn, false);
+                }
+            }
+
+            // Handle deselect case
+            if (selectedIndex == -1) { UpdateIndicator(null, false); }
+        }
+#endif
     }
 }

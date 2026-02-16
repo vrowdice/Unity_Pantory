@@ -12,6 +12,7 @@ namespace Evo.UI
 
         // References
         SerializedProperty container;
+        SerializedProperty indicator;
 
         // Pages
         SerializedProperty defaultPageIndex;
@@ -21,6 +22,7 @@ namespace Evo.UI
         SerializedProperty disableInvisiblePages;
         SerializedProperty useUnscaledTime;
         SerializedProperty interruptTransitions;
+        SerializedProperty autoHandleNestedScrolling;
 
         // Swipe Settings
         SerializedProperty swipeThreshold;
@@ -41,6 +43,7 @@ namespace Evo.UI
             tTarget = (Pages)target;
 
             container = serializedObject.FindProperty("container");
+            indicator = serializedObject.FindProperty("indicator");
 
             defaultPageIndex = serializedObject.FindProperty("defaultPageIndex");
             pages = serializedObject.FindProperty("pages");
@@ -48,6 +51,7 @@ namespace Evo.UI
             disableInvisiblePages = serializedObject.FindProperty("disableInvisiblePages");
             useUnscaledTime = serializedObject.FindProperty("useUnscaledTime");
             interruptTransitions = serializedObject.FindProperty("interruptTransitions");
+            autoHandleNestedScrolling = serializedObject.FindProperty("autoHandleNestedScrolling");
 
             swipeThreshold = serializedObject.FindProperty("swipeThreshold");
             velocityThreshold = serializedObject.FindProperty("velocityThreshold");
@@ -87,6 +91,7 @@ namespace Evo.UI
             EvoEditorGUI.BeginCenteredInspector();
 
             DrawPagesSection();
+            DrawReferencesSection();
             DrawSettingsSection();
             DrawEventsSection();
 
@@ -102,8 +107,6 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 {
-                    EvoEditorGUI.DrawProperty(container, "Container", "Parent RectTransform that holds all pages.", true, true, true);
-
                     EvoEditorGUI.BeginVerticalBackground(true);
                     {
                         if (Application.isPlaying)
@@ -153,6 +156,24 @@ namespace Evo.UI
             EvoEditorGUI.AddFoldoutSpace();
         }
 
+        void DrawReferencesSection()
+        {
+            EvoEditorGUI.BeginVerticalBackground();
+
+            if (EvoEditorGUI.DrawFoldout(ref tTarget.referencesFoldout, "References", EvoEditorGUI.GetIcon("UI_References")))
+            {
+                EvoEditorGUI.BeginContainer();
+                {
+                    EvoEditorGUI.DrawProperty(container, "Container", "Parent RectTransform that holds all pages.", true, true, true);
+                    EvoEditorGUI.DrawProperty(indicator, "Indicator", "Optional indicator that follows page transitions.", false, true, true);  
+                }
+                EvoEditorGUI.EndContainer();
+            }
+
+            EvoEditorGUI.EndVerticalBackground();
+            EvoEditorGUI.AddFoldoutSpace();
+        }
+
         void DrawSettingsSection()
         {
             EvoEditorGUI.BeginVerticalBackground();
@@ -164,6 +185,7 @@ namespace Evo.UI
                     EvoEditorGUI.DrawToggle(useUnscaledTime, "Use Unscaled Time", null, true, true, true);
                     EvoEditorGUI.DrawToggle(disableInvisiblePages, "Disable Invisible Pages", null, true, true, true);
                     EvoEditorGUI.DrawToggle(interruptTransitions, "Interrupt Transitions", "Allow dragging during transitions (interrupt animations).", true, true, true);
+                    EvoEditorGUI.DrawToggle(autoHandleNestedScrolling, "Auto Handle Nested Scrolling", "Fixes scrolling issues when page content contains a ScrollRect.", true, true, true);
                     EvoEditorGUI.DrawProperty(pageSpacing, "Page Spacing", "Extra spacing between pages", true, true, true);
 
                     EvoEditorGUI.BeginVerticalBackground(true);

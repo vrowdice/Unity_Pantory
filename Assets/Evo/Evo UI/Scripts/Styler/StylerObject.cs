@@ -9,7 +9,7 @@ namespace Evo.UI
     [DisallowMultipleComponent]
     [HelpURL(Constants.HELP_URL + "styler")]
     [AddComponentMenu("Evo/UI/Styler/Styler Object")]
-    public class StylerObject : MonoBehaviour
+    public class StylerObject : MonoBehaviour, IStylerHandler
     {
         [EvoHeader("References", Constants.CUSTOM_EDITOR_ID)]
         public StylerPreset preset;
@@ -33,8 +33,19 @@ namespace Evo.UI
         public ColorMapping pressedColor = new() { stylerID = "Primary" };
         public ColorMapping selectedColor = new() { stylerID = "Primary" };
 
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => preset;
+            set
+            {
+                if (preset == value) { return; }
+                preset = value;
+                UpdateStyler();
+            }
+        }
+
         // Interaction Cache
-        bool interactiInitd;
         InteractionState currentState;
         Coroutine tweenCoroutine;
 
@@ -44,23 +55,33 @@ namespace Evo.UI
             TMPText = 1,
         }
 
-        void Start()
+        void Awake()
         {
-            if (enableInteraction && interactableObject != null)
-            {
-                interactableObject.OnStateChanged += OnInteractableStateChanged;
-                OnInteractableStateChanged(interactableObject.interactionState);
-                interactiInitd = true;
-            }
+            Styler.RegisteredObjects.Add(this);
         }
 
         void OnEnable()
         {
-            UpdateStyle();
+            // Subscribe to catch future states
+            if (enableInteraction && interactableObject != null)
+            {
+                interactableObject.OnStateChanged += OnInteractableStateChanged;
+                currentState = interactableObject.interactionState;
+            }
+
+            // Apply the visuals
+            UpdateStyler();
         }
 
         void OnDisable()
         {
+            // Unsubscribe to bypass animating hidden objects
+            if (enableInteraction && interactableObject != null)
+            {
+                interactableObject.OnStateChanged -= OnInteractableStateChanged;
+            }
+
+            // Cleanup tweens
             if (tweenCoroutine != null)
             {
                 StopCoroutine(tweenCoroutine);
@@ -74,10 +95,7 @@ namespace Evo.UI
 
         void OnDestroy()
         {
-            if (enableInteraction && interactableObject != null && interactiInitd)
-            {
-                interactableObject.OnStateChanged -= OnInteractableStateChanged;
-            }
+            Styler.RegisteredObjects.Remove(this);
         }
 
         void CheckComponents()
@@ -159,7 +177,10 @@ namespace Evo.UI
             };
         }
 
-        public void UpdateStyle()
+        [System.Obsolete("Use UpdateStyler() instead. This method will be removed in future versions.")]
+        public void UpdateStyle() => UpdateStyler();
+
+        public void UpdateStyler()
         {
             CheckComponents();
 
@@ -175,6 +196,13 @@ namespace Evo.UI
             }
 
             Color targetColor = GetTargetColor();
+
+            // Check for active transition
+            if (tweenCoroutine != null)
+            {
+                StopCoroutine(tweenCoroutine);
+                tweenCoroutine = null;
+            }
 
             if (objectType == ObjectType.Image && targetImage.color != targetColor) { targetImage.color = targetColor; }
             else if (objectType == ObjectType.TMPText)
@@ -223,7 +251,7 @@ namespace Evo.UI
                 if (!string.IsNullOrEmpty(fontID) && !availableFonts.Contains(fontID) && availableFonts.Count > 0) { fontID = availableFonts[0]; }
             }
 
-            UpdateStyle();
+            UpdateStyler();
         }
 #endif
     }

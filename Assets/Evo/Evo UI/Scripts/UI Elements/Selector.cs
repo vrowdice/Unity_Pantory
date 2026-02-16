@@ -49,7 +49,7 @@ namespace Evo.UI
         [SerializeField] private Button nextButton;
 
         [EvoHeader("Events", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private UnityEvent<int> onSelectionChanged = new();
+        public UnityEvent<int> onSelectionChanged = new();
 
         // Cache
         Vector2 originalContentPosition;
@@ -89,7 +89,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -330,7 +330,7 @@ namespace Evo.UI
 
         public void SetSelection(int index)
         {
-            SetSelection(index);
+            SetSelection(index, true);
         }
 
         public void SelectNext()
@@ -381,6 +381,20 @@ namespace Evo.UI
             AddItem(new Item(text, icon));
         }
 
+        public void AddItems(params Item[] newItems)
+        {
+            items.AddRange(newItems);
+            GenerateIndicators();
+            UpdateDisplay();
+        }
+
+        public void AddItems(params string[] labels)
+        {
+            foreach (var label in labels) { items.Add(new Item(label)); }
+            GenerateIndicators();
+            UpdateDisplay();
+        }
+
         public void RemoveItem(int index)
         {
             if (index < 0 || index >= items.Count)
@@ -416,11 +430,11 @@ namespace Evo.UI
         {
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
         }
 
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (Item item in items)
             {

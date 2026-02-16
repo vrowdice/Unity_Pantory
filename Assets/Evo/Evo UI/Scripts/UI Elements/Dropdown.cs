@@ -56,6 +56,9 @@ namespace Evo.UI
         public UnityEvent onOpen = new();
         public UnityEvent onClose = new();
 
+        // Constants
+        const int SORTING_ORDER = 30000;
+
         // Public variables
         public bool IsOpen => dropdownState == DropdownState.Open;
         public Item SelectedItem => selectedItem;
@@ -134,7 +137,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -181,7 +184,7 @@ namespace Evo.UI
 #if EVO_LOCALIZATION
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
 #endif
         }
@@ -290,7 +293,8 @@ namespace Evo.UI
             rt.sizeDelta = new Vector2(rt.sizeDelta.x, itemHeight);
 
             // Update visual content
-            UpdateItemVisuals(button, item);        
+            button.SetText(item.label);
+            button.SetIcon(item.icon);
         }
 
         void RestrictNavigation()
@@ -343,12 +347,6 @@ namespace Evo.UI
                 }
             }
             previousItemNavigations.Clear();
-        }
-
-        void UpdateItemVisuals(Button button, Item item)
-        {
-            button.SetText(item.label);
-            button.SetIcon(item.icon);
         }
 
         void UpdateLayout()
@@ -407,8 +405,7 @@ namespace Evo.UI
             scrollRect.gameObject.AddComponent<GraphicRaycaster>();
             scrollRectCanvas.vertexColorAlwaysGammaSpace = true;
             scrollRectCanvas.overrideSorting = true;
-            scrollRectCanvas.sortingLayerName = "InfoUI";
-            scrollRectCanvas.sortingOrder = 2;
+            scrollRectCanvas.sortingOrder = SORTING_ORDER;
         }
 
         void CreateBlocker()
@@ -420,8 +417,7 @@ namespace Evo.UI
             GameObject blockerGO = new("Dropdown Blocker");
             blocker = blockerGO.AddComponent<Canvas>();
             blocker.overrideSorting = true;
-            blocker.sortingLayerName = "InfoUI";
-            blocker.sortingOrder = 1;
+            blocker.sortingOrder = SORTING_ORDER - 1;
             blockerGO.AddComponent<GraphicRaycaster>();
 
             RectTransform blockerRT = blockerGO.GetComponent<RectTransform>();
@@ -709,9 +705,23 @@ namespace Evo.UI
             if (index < 0 || index >= items.Count)
                 return;
 
-            selectedItem?.generatedButton.SetState(InteractionState.Normal);
+            // Check for currently selected item
+            if (selectedItem != null && selectedItem.generatedButton != null) 
+            {
+                selectedItem.generatedButton.SetState(InteractionState.Normal);
+            }
+
+            // Set indexes
             selectedIndex = index;
             selectedItem = items[index];
+
+            // Check for newly selected item
+            if (selectedItem == null || selectedItem.generatedButton == null)
+            {
+                if (triggerEvents) { onItemSelected?.Invoke(index); }
+                return;
+            }
+
             selectedItem.generatedButton.SetState(InteractionState.Selected);
             UpdateHeader(selectedItem);
 
@@ -737,6 +747,16 @@ namespace Evo.UI
             }
 
             return false;
+        }
+
+        public void SelectItem(int index)
+        {
+            SelectItem(index, true);
+        }
+
+        public bool SelectItem(string label)
+        {
+            return SelectItem(label, true);
         }
 
         public void AddItem(Item item, bool generate = true)
@@ -831,7 +851,7 @@ namespace Evo.UI
         }
 
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (Item item in items)
             {

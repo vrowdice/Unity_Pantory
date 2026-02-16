@@ -9,8 +9,11 @@ namespace Evo.UI
     [RequireComponent(typeof(RectTransform))]
     public class TooltipPreset : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private RectTransform tooltipRect;
+        [Header("Required References")]
+        public RectTransform tooltipRect;
+        public CanvasGroup canvasGroup;
+
+        [Header("Content References")]
         [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI titleText;
         [SerializeField] private TextMeshProUGUI descriptionText;
@@ -18,13 +21,15 @@ namespace Evo.UI
         [SerializeField] private GameObject contentContainer;
         [SerializeField] private LayoutGroup layoutGroup;
         public LayoutElement layoutElement;
-        public CanvasGroup canvasGroup;
 
-        public void SetupTooltip(string title, string description, Sprite icon, float maxWidth)
+        public void Setup(string title, string description, Sprite icon, float maxWidth, bool isCustom = false)
         {
             CheckForReferences();
 
-            if (string.IsNullOrEmpty(title) && icon == null) { titleText.transform.parent.gameObject.SetActive(false); }
+            if (isCustom)
+                return;
+
+            if (string.IsNullOrEmpty(title) && icon == null && titleText != null) { titleText.transform.parent.gameObject.SetActive(false); }
             else
             {
                 SetIcon(icon);
@@ -35,37 +40,38 @@ namespace Evo.UI
             ForceLayoutUpdate(maxWidth);
         }
 
-        public void SetupCustomContent(GameObject customContentPrefab, float maxWidth)
-        {
-            CheckForReferences();
-
-            // Hide content container, show custom container
-            if (contentContainer != null) { contentContainer.SetActive(false); }
-            if (customContentPrefab != null) { Instantiate(customContentPrefab, transform); }
-
-            ForceLayoutUpdate(maxWidth);
-        }
-
         void CheckForReferences()
         {
             if (canvasGroup == null) { canvasGroup = GetComponent<CanvasGroup>(); }
             if (tooltipRect == null) { tooltipRect = GetComponent<RectTransform>(); }
+
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
         }
 
         void SetTitle(string title)
         {
+            if (titleText == null)
+                return;
+
             titleText.text = title;
             titleText.gameObject.SetActive(!string.IsNullOrEmpty(title));
         }
 
         void SetDescription(string description)
         {
+            if (descriptionText == null)
+                return;
+
             descriptionText.text = description;
             descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(description));
         }
 
         void SetIcon(Sprite icon)
         {
+            if (iconImage == null)
+                return;
+
             bool hasIcon = icon != null;
             iconImage.sprite = icon;
             iconImage.gameObject.SetActive(hasIcon);

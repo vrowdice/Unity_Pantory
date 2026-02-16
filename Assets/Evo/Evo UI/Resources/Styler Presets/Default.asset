@@ -62,5 +62,5 @@ MonoBehaviour:
   updateMode: 0
   audioFoldout: 0
   colorFoldout: 0
-  fontFoldout: 1
+  fontFoldout: 0
   settingsFoldout: 0

@@ -355,6 +355,7 @@ namespace Evo.UI
         {
             items.Clear();
 
+            if (content == null) { return; }
             for (int i = 0; i < content.childCount; i++)
             {
                 var child = content.GetChild(i);
@@ -369,7 +370,7 @@ namespace Evo.UI
                         };
 
                         // Pre-cache or create CanvasGroup if visual effects are enabled
-                        if (enableFading || disableUnfocused)
+                        if (enableFading || (enableScaling && disableUnfocused))
                         {
                             itemData.canvasGroup = rectTransform.GetComponent<CanvasGroup>();
                             if (itemData.canvasGroup == null)

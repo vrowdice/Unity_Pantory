@@ -25,10 +25,13 @@ namespace Evo.UI
 #endif
 
         [EvoHeader("Settings", Constants.CUSTOM_EDITOR_ID)]
+        public bool enableStacking = true;
         public bool useUnscaledTime = false;
         public bool playOnEnable = true;
+        public bool destroyAfter = false;
         public bool autoClose = true;
         [Range(0, 60)] public float autoCloseDelay = 3f;
+        [Tooltip("If true, notifications will queue up and show one by one. If false, they will all show simultaneously (overlapping).")]
 
         [EvoHeader("Animation", Constants.CUSTOM_EDITOR_ID)]
         public AnimationType animationType = AnimationType.Fade;
@@ -54,12 +57,16 @@ namespace Evo.UI
 
         // Helpers
         bool isOpen;
+        bool isQueued;
         bool isInitialized;
         Vector2 originalPosition;
         Vector3 originalScale;
         RectTransform rectTransform;
         Coroutine currentAnimation;
         Coroutine autoCloseCoroutine;
+
+        // Public properties
+        public bool IsOpen => isOpen;
 
         public enum AnimationType
         {
@@ -90,6 +97,7 @@ namespace Evo.UI
                 StopCurrentAnimations();
             }
 
+            isQueued = false;
             gameObject.SetActive(false);
         }
 
@@ -101,7 +109,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -111,7 +119,7 @@ namespace Evo.UI
         {
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
         }
 #endif
@@ -196,6 +204,25 @@ namespace Evo.UI
         {
             currentAnimation = null;
             gameObject.SetActive(false);
+
+            if (enableStacking && transform.parent != null)
+            {
+                foreach (Transform child in transform.parent)
+                {
+                    if (child == transform) { continue; }
+                    if (child.gameObject.activeInHierarchy)
+                    {
+                        var sibling = child.GetComponent<Notification>();
+                        // Find the first sibling that is waiting in the queue
+                        if (sibling != null && sibling.enableStacking && sibling.isQueued)
+                        {
+                            sibling.Open(); // Trigger the next one
+                            break; // Open only one at a time
+                        }
+                    }
+                }
+            }
+            if (destroyAfter) { Destroy(gameObject); }
         }
 
         IEnumerator AutoCloseCoroutine()
@@ -203,7 +230,7 @@ namespace Evo.UI
             if (useUnscaledTime) { yield return new WaitForSecondsRealtime(autoCloseDelay); }
             else { yield return new WaitForSeconds(autoCloseDelay); }
 
-            autoCloseCoroutine = null;  
+            autoCloseCoroutine = null;
             Close();
         }
 
@@ -296,12 +323,40 @@ namespace Evo.UI
         {
             if (isOpen) { return; }
             if (!isInitialized) { Initialize(); }
+            if (enableStacking && transform.parent != null)
+            {
+                foreach (Transform child in transform.parent)
+                {
+                    if (child == transform) { continue; }
+                    if (child.gameObject.activeInHierarchy)
+                    {
+                        var sibling = child.GetComponent<Notification>();
+                        // If any sibling with stacking enabled is currently Open
+                        if (sibling != null && sibling.enableStacking && sibling.IsOpen)
+                        {
+                            // Queue this notification
+                            isQueued = true;
+
+                            // Keep GameObject active so logic runs, but hide visuals and input
+                            gameObject.SetActive(true);
+                            if (canvasGroup != null)
+                            {
+                                canvasGroup.alpha = 0f;
+                                canvasGroup.blocksRaycasts = false;
+                            }
+
+                            return; // Wait for our turn
+                        }
+                    }
+                }
+            }
 
             gameObject.SetActive(true);
             if (!gameObject.activeInHierarchy) { return; }
-        
+
+            isQueued = false;
             isOpen = true;
-          
+
             StopCurrentAnimations();
             UpdateUI();
             AudioManager.PlayClip(Styler.GetAudio(sfxSource, openSFX, stylerPreset));
@@ -347,6 +402,7 @@ namespace Evo.UI
             rectTransform.localScale = originalScale;
             rectTransform.anchoredPosition = originalPosition;
 
+            isQueued = false;
             isOpen = false;
             gameObject.SetActive(false);
         }
@@ -389,10 +445,39 @@ namespace Evo.UI
             }
         }
 
-        public bool IsOpen => isOpen;
+        public static Notification Create(GameObject preset, Sprite icon, string title, string description, Transform parent, bool openAfter = true)
+        {
+            if (preset == null)
+            {
+                Debug.LogError("[Notification] A notification preset object is required.");
+                return null;
+            }
+
+            if (parent == null)
+            {
+                Debug.LogError("[Notification] A parent transform must be specified.");
+                return null;
+            }
+
+            GameObject ntfGo = Instantiate(preset, parent);       
+            if (!ntfGo.TryGetComponent<Notification>(out var ntf))
+            {
+                Debug.LogError("[Notification] Assigned preset does not contain the 'Notification' component.");
+                Destroy(ntfGo);
+                return null;
+            }
+
+            ntf.icon = icon;
+            ntf.title = title;
+            ntf.description = description;
+            ntf.destroyAfter = true;
+
+            if (openAfter) { ntf.Open(); }
+            return ntf;
+        }
 
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             if (!string.IsNullOrEmpty(titleKey)) { title = localizedObject.GetString(titleKey); }
             if (!string.IsNullOrEmpty(descriptionKey)) { description = localizedObject.GetString(descriptionKey); }

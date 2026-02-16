@@ -59,12 +59,13 @@ namespace Evo.UI
         public UnityEvent<DateTime> onDateSelected = new();
 
         // Helpers
-        DateTime minDate = new(1900, 1, 1);
-        DateTime maxDate = new(2100, 12, 31);
-        DateTime currentDisplayMonth;
-        DateTime? selectedDate;
+        bool isInitialized;
         int startYear;
         int yearCount;
+        DateTime minDate = new(1900, 1, 1);
+        DateTime maxDate = new(2100, 12, 31);
+        DateTime currentDisplayMonth = DateTime.Now;
+        DateTime? selectedDate;
         readonly List<CalendarDay> dayButtons = new();
 
         public enum InitialDateMode
@@ -97,7 +98,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -106,6 +107,9 @@ namespace Evo.UI
 
         void Initialize()
         {
+            if (isInitialized)
+                return;
+
             switch (initialDateMode)
             {
                 case InitialDateMode.Today:
@@ -152,10 +156,16 @@ namespace Evo.UI
 
             // Fire initial selection event if date is pre-selected
             if (selectedDate.HasValue) { onDateSelected?.Invoke(selectedDate.Value); }
+
+            // Set as init'd
+            isInitialized = true;
         }
 
         void SetupMonthDropdown()
         {
+            if (monthDropdown == null)
+                return;
+
             monthDropdown.ClearAllItems();
 
             List<string> monthNames = new();
@@ -171,6 +181,9 @@ namespace Evo.UI
 
         void SetupYearDropdown()
         {
+            if (yearDropdown == null)
+                return;
+
             yearDropdown.ClearAllItems();
 
             // Calculate year range
@@ -298,18 +311,6 @@ namespace Evo.UI
             if (DateTime.TryParse(dButton.button.gameObject.name, out DateTime clickedDate)) { SelectDate(clickedDate); }
         }
 
-        public void SelectDate(DateTime date)
-        {
-            selectedDate = date;
-
-            // Update display to show the selected date's month
-            currentDisplayMonth = new DateTime(date.Year, date.Month, 1);
-            UpdateDisplay();
-
-            // Invoke event
-            onDateSelected?.Invoke(date);
-        }
-
         void PreviousMonth()
         {
             DateTime newMonth = currentDisplayMonth.AddMonths(-1);
@@ -359,10 +360,9 @@ namespace Evo.UI
 
                 // Check both year dropdown range and absolute date limits
                 bool canGoPrevious = prevMonth.Year >= startYear &&
-                                    new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month)) >= minDate;
-
+                        new DateTime(prevMonth.Year, prevMonth.Month, DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month)) >= minDate;
                 bool canGoNext = nextMonth.Year <= endYear &&
-                                new DateTime(nextMonth.Year, nextMonth.Month, 1) <= maxDate;
+                        new DateTime(nextMonth.Year, nextMonth.Month, 1) <= maxDate;
 
                 previousMonthButton.interactable = canGoPrevious;
                 nextMonthButton.interactable = canGoNext;
@@ -374,16 +374,33 @@ namespace Evo.UI
             return selectedDate;
         }
 
+        public void SelectDate(DateTime date, bool invokeEvents = true)
+        {
+            if (!isInitialized) { Initialize(); }
+            selectedDate = date;
+
+            // Update display to show the selected date's month
+            currentDisplayMonth = new DateTime(date.Year, date.Month, 1);
+            UpdateDisplay();
+
+            // Invoke event
+            if (invokeEvents) { onDateSelected?.Invoke(date); }
+        }
+
         public void SetMinDate(DateTime date)
         {
+            if (!isInitialized) { Initialize(); }
             minDate = date;
+
             SetupYearDropdown(); // Refresh year dropdown
             UpdateDisplay();
         }
 
         public void SetMaxDate(DateTime date)
         {
+            if (!isInitialized) { Initialize(); }
             maxDate = date;
+
             SetupYearDropdown(); // Refresh year dropdown
             UpdateDisplay();
         }
@@ -417,11 +434,11 @@ namespace Evo.UI
         {
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
         }
 
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (MonthData item in Months)
             {

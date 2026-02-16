@@ -27,7 +27,7 @@ namespace Evo.UI
 
             [Header("Animation")]
             [Range(0.05f, 5)] public float duration = 0.5f;
-            [Range(0.1f, 25)] public float size = 6;
+            [Range(0.1f, 50)] public float size = 6;
         }
 
         void Awake()
@@ -92,9 +92,29 @@ namespace Evo.UI
             currentColor.a = 0f;
             rippleImg.color = currentColor;
 
-            // Check for rendering values
-            if (forceCentered || preset.centered) { gameObject.transform.localPosition = new Vector2(0f, 0f); }
-            else { gameObject.transform.position = Utilities.GetPointerPosition(); }
+            // Position the ripple
+            if (forceCentered || preset.centered) { gameObject.transform.localPosition = Vector2.zero; }
+            else
+            {
+                // Get pointer position and convert to local coordinates
+                Vector2 screenPosition = Utilities.GetPointerPosition();
+                RectTransform parentRect = transform.parent as RectTransform;
+
+                if (parentRect != null)
+                {
+                    Canvas canvas = parentRect.GetComponentInParent<Canvas>();
+                    if (canvas != null)
+                    {
+                        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                            parentRect,
+                            screenPosition,
+                            canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                            out Vector2 localPos
+                        );
+                        gameObject.transform.localPosition = localPos;
+                    }
+                }
+            }
 
             // Store values
             Vector3 startScale = Vector3.zero;

@@ -21,11 +21,11 @@ namespace Evo.UI
                 return;
 
             // Try primary method first
-            var stylerAsset = Resources.Load(Constants.DEFAULT_STYLER_PRESET);
+            var stylerAsset = Resources.Load(Constants.STYLER_FALLBACK_PATH);
             if (stylerAsset != null)
             {
                 objectPath = AssetDatabase.GetAssetPath(stylerAsset);
-                objectPath = objectPath.Replace($"Resources/{Constants.DEFAULT_STYLER_PRESET}.asset", "").TrimEnd('/') + "/Prefabs/";
+                objectPath = objectPath.Replace($"Resources/{Constants.STYLER_FALLBACK_PATH}.asset", "").TrimEnd('/') + "/Prefabs/";
                 isPathCached = true;
                 return;
             }
@@ -152,6 +152,21 @@ namespace Evo.UI
         [MenuItem(MENU_PREFIX + "Button/Radio Button", false, MENU_ORDER)]
         static void CreateRadioButton() { CreateObject("Button/Radio Button"); }
 
+        [MenuItem(MENU_PREFIX + "Button/Radio Button (Alt)", false, MENU_ORDER)]
+        static void CreateRadioButtonAlt() { CreateObject("Button/Radio Button (Alt)"); }
+
+        [MenuItem(MENU_PREFIX + "Button/Radio Button Group", false, MENU_ORDER)]
+        static void CreateRadioButtonGroup() { CreateObject("Button/Radio Button Group"); }
+
+        [MenuItem(MENU_PREFIX + "Button/Radio Button Group (Alt)", false, MENU_ORDER)]
+        static void CreateRadioButtonGroupAlt() { CreateObject("Button/Radio Button Group (Alt)"); }
+
+        [MenuItem(MENU_PREFIX + "Button/Progress Button", false, MENU_ORDER)]
+        static void CreateProgressButton() { CreateObject("Button/Progress Button"); }
+
+        [MenuItem(MENU_PREFIX + "Button/Progress Button (Alt)", false, MENU_ORDER)]
+        static void CreateProgressButtonAlt() { CreateObject("Button/Progress Button (Alt)"); }
+
         [MenuItem(MENU_PREFIX + "Carousel/Default", false, MENU_ORDER)]
         static void CreateCarousel() { CreateObject("Carousel/Carousel"); }
 
@@ -188,6 +203,15 @@ namespace Evo.UI
         [MenuItem(MENU_PREFIX + "Date and Time/Countdown", false, MENU_ORDER)]
         static void CreateCountdown() { CreateObject("Date & Time/Countdown"); }
 
+        [MenuItem(MENU_PREFIX + "Date and Time/Timer (Horizontal)", false, MENU_ORDER)]
+        static void CreateTimerH() { CreateObject("Timer/Timer (Horizontal)"); }
+
+        [MenuItem(MENU_PREFIX + "Date and Time/Timer (Vertical)", false, MENU_ORDER)]
+        static void CreateTimerV() { CreateObject("Timer/Timer (Vertical)"); }
+
+        [MenuItem(MENU_PREFIX + "Date and Time/Timer (Radial)", false, MENU_ORDER)]
+        static void CreateTimerR() { CreateObject("Timer/Timer (Radial)"); }
+
         [MenuItem(MENU_PREFIX + "Dropdown/Dropdown", false, MENU_ORDER)]
         static void CreateDropdown() { CreateObject("Dropdown/Dropdown"); }
 
@@ -215,6 +239,9 @@ namespace Evo.UI
         [MenuItem(MENU_PREFIX + "List View/Masked", false, MENU_ORDER)]
         static void CreateListViewMasked() { CreateObject("List View/List View (Masked)"); }
 
+        [MenuItem(MENU_PREFIX + "Menu Bar/Menu Bar Preset", false, MENU_ORDER)]
+        static void CreateMenuBar() { CreateObject("Menu Bar/Menu Bar Preset"); }
+
         [MenuItem(MENU_PREFIX + "Modal Window/Default", false, MENU_ORDER)]
         static void CreateModalWindow() { CreateObject("Modal Window/Modal Window"); }
 
@@ -224,8 +251,17 @@ namespace Evo.UI
         [MenuItem(MENU_PREFIX + "Notification/Default", false, MENU_ORDER)]
         static void CreateNotification() { CreateObject("Notification/Notification"); }
 
-        [MenuItem(MENU_PREFIX + "Pages/Pages Preset", false, MENU_ORDER)]
+        [MenuItem(MENU_PREFIX + "Pages/Horizontal", false, MENU_ORDER)]
         static void CreatePages() { CreateObject("Pages/Pages Preset"); }
+
+        [MenuItem(MENU_PREFIX + "Pages/Horizontal (Alt)", false, MENU_ORDER)]
+        static void CreatePagesAlt() { CreateObject("Pages/Pages Preset (Alt)"); }
+
+        [MenuItem(MENU_PREFIX + "Pages/Vertical", false, MENU_ORDER)]
+        static void CreatePagesVertical() { CreateObject("Pages/Pages Preset (Vertical)"); }
+
+        [MenuItem(MENU_PREFIX + "Pages/Vertical (Alt)", false, MENU_ORDER)]
+        static void CreatePagesVerticalAlt() { CreateObject("Pages/Pages Preset (Vertical Alt)"); }
 
         [MenuItem(MENU_PREFIX + "Progress Bar/Horizontal", false, MENU_ORDER)]
         static void CreateProgressBarH() { CreateObject("Progress Bar/Progress Bar (Horizontal)"); }
@@ -247,6 +283,9 @@ namespace Evo.UI
 
         [MenuItem(MENU_PREFIX + "Selector/Vertical", false, MENU_ORDER)]
         static void CreateSelectorV() { CreateObject("Selector/Selector (Vertical)"); }
+
+        [MenuItem(MENU_PREFIX + "Selector/Quantity", false, MENU_ORDER)]
+        static void CreateSelectorQuantity() { CreateObject("Selector/Selector (Quantity)"); }
 
         [MenuItem(MENU_PREFIX + "Showcase Panel/Default", false, MENU_ORDER)]
         static void CreateShowcasePanel() { CreateObject("Showcase Panel/Showcase Panel"); }
@@ -299,16 +338,16 @@ namespace Evo.UI
         [MenuItem(MENU_PREFIX + "Tabs/Tabs Preset", false, MENU_ORDER)]
         static void CreateTabs() { CreateObject("Tabs/Tabs Preset"); }
 
+        [MenuItem(MENU_PREFIX + "Tabs/Tabs Preset (Down)", false, MENU_ORDER)]
+        static void CreateTabsDown() { CreateObject("Tabs/Tabs Preset (Down)"); }
+
+        [MenuItem(MENU_PREFIX + "Tabs/Tabs Preset (Left)", false, MENU_ORDER)]
+        static void CreateTabsLeft() { CreateObject("Tabs/Tabs Preset (Left)"); }
+
+        [MenuItem(MENU_PREFIX + "Tabs/Tabs Preset (Right)", false, MENU_ORDER)]
+        static void CreateTabsRight() { CreateObject("Tabs/Tabs Preset (Right)"); }
+
         [MenuItem(MENU_PREFIX + "Tabs/Tab Button", false, MENU_ORDER)]
         static void CreateTabButton() { CreateObject("Tabs/Tab Button"); }
-
-        [MenuItem(MENU_PREFIX + "Timer/Horizontal", false, MENU_ORDER)]
-        static void CreateTimerH() { CreateObject("Timer/Timer (Horizontal)"); }
-
-        [MenuItem(MENU_PREFIX + "Timer/Vertical", false, MENU_ORDER)]
-        static void CreateTimerV() { CreateObject("Timer/Timer (Vertical)"); }
-
-        [MenuItem(MENU_PREFIX + "Timer/Radial", false, MENU_ORDER)]
-        static void CreateTimerR() { CreateObject("Timer/Timer (Radial)"); }
     }
 }

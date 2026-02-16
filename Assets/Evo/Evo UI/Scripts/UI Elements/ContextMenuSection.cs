@@ -8,6 +8,7 @@ namespace Evo.UI
 {
     [DisallowMultipleComponent]
     [HelpURL(Constants.HELP_URL + "ui-elements/context-menu")]
+    [RequireComponent(typeof(RectTransform))]
     public class ContextMenuSection : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         [Header("References")]
@@ -24,7 +25,11 @@ namespace Evo.UI
         public float animationDuration = 0.2f;
         public AnimationCurve animationCurve = new(new Keyframe(0, 0, 0, 2), new Keyframe(1, 1, 0, 0));
 
+        // Constants
+        const int SORTING_ORDER = 30001;
+
         // Instance variables
+        bool isAnimating = false;
         bool isExpanded = false;
         bool submenuOnLeft = false;
         ContextMenu sourceMenu;
@@ -36,6 +41,9 @@ namespace Evo.UI
 
         // Static tracking for hover sections
         static ContextMenuSection currentHoveredSection;
+
+        // Public properties
+        public bool IsExpanded => isExpanded;
 
         void OnDestroy()
         {
@@ -103,6 +111,9 @@ namespace Evo.UI
 
         void OnSectionClicked()
         {
+            if (isAnimating)
+                return;
+
             // Close other section submenus (but not child sections)
             if (currentHoveredSection != null && currentHoveredSection != this && !IsChildOfSection(currentHoveredSection)) { currentHoveredSection.CollapseSubmenu(); }
             currentHoveredSection = this;
@@ -140,9 +151,9 @@ namespace Evo.UI
 
             isExpanded = false;
 
-            if (currentHoveredSection == this) 
-            { 
-                currentHoveredSection = null; 
+            if (currentHoveredSection == this)
+            {
+                currentHoveredSection = null;
             }
 
             sectionButton.SetState(InteractionState.Normal);
@@ -153,9 +164,10 @@ namespace Evo.UI
             if (submenuPrefab == null)
                 return;
 
-            // Create as child of main menu for proper fade inheritance
-            ContextMenuPreset mainMenu = GetComponentInParent<ContextMenuPreset>();
-            Transform parentTransform = mainMenu != null ? mainMenu.transform : sourceMenu.ActiveCanvas.transform;
+            // Parent to the root canvas, not the main menu
+            // This ensures position calculations work in absolute screen space
+            Canvas rootCanvas = sourceMenu != null ? sourceMenu.ActiveCanvas.rootCanvas : GetComponentInParent<Canvas>().rootCanvas;
+            Transform parentTransform = rootCanvas != null ? rootCanvas.transform : sourceMenu.ActiveCanvas.transform;
 
             GameObject submenuGO = Instantiate(submenuPrefab, parentTransform);
             submenuInstance = submenuGO.GetComponent<ContextMenuPreset>();
@@ -171,6 +183,9 @@ namespace Evo.UI
 
             if (submenuInstance.canvasGroup == null) { submenuInstance.canvasGroup = submenuInstance.gameObject.AddComponent<CanvasGroup>(); }
             if (sectionItem.expandOnHover) { SetupSubmenuHoverHandlers(); }
+
+            // If block UI is enabled, create a canvas for proper layering
+            if (sourceMenu != null && sourceMenu.blockUIWhileOpen) { CreateSubmenuCanvas(); }
 
             PositionSubmenu();
 
@@ -204,6 +219,21 @@ namespace Evo.UI
                 hoverCheckCoroutine = StartCoroutine(CheckAndCloseSubmenu());
             });
             trigger.triggers.Add(exitEntry);
+        }
+
+        void CreateSubmenuCanvas()
+        {
+            if (submenuInstance == null)
+                return;
+
+            // Add canvas to submenu for proper sorting
+            Canvas submenuCanvas = submenuInstance.gameObject.AddComponent<Canvas>();
+            submenuInstance.gameObject.AddComponent<GraphicRaycaster>();
+            submenuCanvas.overrideSorting = true;
+
+            // Get the depth level to calculate proper sorting order
+            int depth = GetSubmenuDepth();
+            submenuCanvas.sortingOrder = SORTING_ORDER + depth; // Higher than main menu and increases with nesting
         }
 
         // Check if this section is a child of another section
@@ -292,34 +322,60 @@ namespace Evo.UI
 
             RectTransform submenuRect = submenuInstance.GetComponent<RectTransform>();
             RectTransform sectionRect = GetComponent<RectTransform>();
+            Canvas rootCanvas = sourceMenu != null ? sourceMenu.ActiveCanvas : GetComponentInParent<Canvas>().rootCanvas;
 
+            // Determine render mode and camera
+            bool isOverlay = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay;
+            Camera cam = (!isOverlay && rootCanvas.worldCamera != null) ? rootCanvas.worldCamera : Camera.main;
+            if (isOverlay) { cam = null; }
+
+            // Set anchors to bottom-left for absolute positioning
+            submenuRect.anchorMin = Vector2.zero;
+            submenuRect.anchorMax = Vector2.zero;
+            submenuRect.pivot = new Vector2(0, 1); // Top-left pivot for easier positioning
+
+            // Force rebuild to get accurate dimensions
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(submenuRect);
 
-            // Get the canvas for scale calculations
-            Canvas canvas = sourceMenu != null ? sourceMenu.ActiveCanvas : GetComponentInParent<Canvas>();
-            float canvasScaleFactor = canvas != null ? canvas.scaleFactor : 1f;
-
-            Vector3 sectionWorldPos = sectionRect.position;
-            Vector3 submenuPos = sectionWorldPos;
-
-            // Calculate scaled dimensions
-            float sectionWidth = sectionRect.rect.width * sectionRect.lossyScale.x;
-            float submenuWidth = submenuRect.rect.width * submenuRect.lossyScale.x;
-            float scaledOffsetX = submenuOffset.x * canvasScaleFactor;
-            float scaledOffsetY = submenuOffset.y * canvasScaleFactor;
             float screenPadding = 10f;
 
-            // Try right side first
-            submenuPos.x += sectionWidth + scaledOffsetX;
-            submenuPos.y += scaledOffsetY;
+            // Get section's world corners and convert to Screen Space for calculations
+            Vector3[] worldCorners = new Vector3[4];
+            sectionRect.GetWorldCorners(worldCorners);
 
-            // Check if submenu goes off right edge of screen
-            float submenuRightEdge = submenuPos.x + submenuWidth;
-            if (submenuRightEdge > Screen.width - screenPadding)
+            // 0 = bottom-left, 1 = top-left, 2 = top-right, 3 = bottom-right
+            // Need Screen Space points for clamping logic
+            Vector3 topRightScreen, topLeftScreen;
+
+            if (isOverlay)
             {
-                // Position on left side
-                submenuPos.x = sectionWorldPos.x - submenuWidth - scaledOffsetX;
+                topRightScreen = worldCorners[2];
+                topLeftScreen = worldCorners[1];
+            }
+            else
+            {
+                topRightScreen = RectTransformUtility.WorldToScreenPoint(cam, worldCorners[2]);
+                topLeftScreen = RectTransformUtility.WorldToScreenPoint(cam, worldCorners[1]);
+            }
+
+            // Get actual screen pixel size of the submenu
+            Vector2 submenuSize = GetScreenSize(submenuRect);
+            float submenuWidth = submenuSize.x;
+
+            // Calculate position starting from top-right corner of section (Screen Space)
+            Vector3 targetPos = topRightScreen;
+            targetPos.x += submenuOffset.x;
+            targetPos.y += submenuOffset.y;
+
+            // Check if it fits on the right
+            if (targetPos.x + submenuWidth > Screen.width - screenPadding)
+            {
+                // Position on left side instead
+                submenuRect.pivot = new Vector2(1, 1); // Top-right pivot
+                targetPos = topLeftScreen;
+                targetPos.x -= submenuOffset.x;
+                targetPos.y += submenuOffset.y;
                 submenuOnLeft = true;
             }
             else
@@ -327,8 +383,23 @@ namespace Evo.UI
                 submenuOnLeft = false;
             }
 
-            submenuPos = ClampSubmenuToScreen(submenuPos, submenuRect);
-            submenuRect.position = submenuPos;
+            // Clamp to screen (Calculations in Screen Space)
+            targetPos = ClampSubmenuToScreen(targetPos, submenuRect);
+            // targetPos Z should be reset or kept? Let's go with 0 for screen space.
+            targetPos.z = 0;
+
+            // Convert Screen Space targetPos back to World Space if needed
+            if (isOverlay) { submenuRect.position = targetPos; }
+            else
+            {
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                    submenuRect.parent as RectTransform,
+                    targetPos,
+                    cam,
+                    out Vector3 worldPos
+                );
+                submenuRect.position = worldPos;
+            }
         }
 
         void DestroySubmenu()
@@ -338,6 +409,7 @@ namespace Evo.UI
                 Destroy(submenuInstance.gameObject);
                 submenuInstance = null;
             }
+            isAnimating = false;
         }
 
         public void DestroySubmenuImmediate()
@@ -352,15 +424,63 @@ namespace Evo.UI
 
         Vector3 ClampSubmenuToScreen(Vector3 position, RectTransform submenuRect)
         {
-            // Use scaled dimensions
-            float width = submenuRect.rect.width * submenuRect.lossyScale.x;
-            float height = submenuRect.rect.height * submenuRect.lossyScale.y;
+            Vector2 size = GetScreenSize(submenuRect);
+            float width = size.x;
+            float height = size.y;
             float padding = 10f;
 
-            position.x = Mathf.Clamp(position.x, padding, Screen.width - width - padding);
-            position.y = Mathf.Clamp(position.y, padding, Screen.height - height - padding);
+            // Get pivot offsets
+            float pivotOffsetX = width * submenuRect.pivot.x;
+            float pivotOffsetY = height * submenuRect.pivot.y;
+
+            // Calculate bounds
+            float minX = position.x - pivotOffsetX;
+            float maxX = position.x + (width - pivotOffsetX);
+            float minY = position.y - pivotOffsetY;
+            float maxY = position.y + (height - pivotOffsetY);
+
+            // Adjust if out of bounds
+            if (minX < padding) { position.x += (padding - minX); }
+            if (maxX > Screen.width - padding) { position.x -= (maxX - (Screen.width - padding)); }
+            if (minY < padding) { position.y += (padding - minY); }
+            if (maxY > Screen.height - padding) { position.y -= (maxY - (Screen.height - padding)); }
 
             return position;
+        }
+
+        Vector2 GetScreenSize(RectTransform rect)
+        {
+            // Get Active Canvas (find root)
+            Canvas canvas = sourceMenu != null ? sourceMenu.ActiveCanvas : GetComponentInParent<Canvas>().rootCanvas;
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                // In Overlay, lossyScale handles the CanvasScaler scaling
+                return Vector2.Scale(rect.rect.size, rect.lossyScale);
+            }
+
+            // For Camera/World modes, calculate screen projection
+            Camera cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+            if (cam == null) { return Vector2.Scale(rect.rect.size, rect.lossyScale); } // Fallback
+
+            Vector3[] corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+
+            // Calculate screen bounds from world corners
+            float minX = float.MaxValue;
+            float maxX = float.MinValue;
+            float minY = float.MaxValue;
+            float maxY = float.MinValue;
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(cam, corners[i]);
+                if (screenPos.x < minX) { minX = screenPos.x; }
+                if (screenPos.x > maxX) { maxX = screenPos.x; }
+                if (screenPos.y < minY) { minY = screenPos.y; }
+                if (screenPos.y > maxY) { maxY = screenPos.y; }
+            }
+
+            return new Vector2(maxX - minX, maxY - minY);
         }
 
         IEnumerator ExpandAfterDelay()
@@ -410,20 +530,47 @@ namespace Evo.UI
             if (submenuInstance == null)
                 yield break;
 
+            isAnimating = true;
+
             CanvasGroup canvasGroup = submenuInstance.canvasGroup;
             RectTransform submenuRect = submenuInstance.GetComponent<RectTransform>();
 
             if (canvasGroup == null || submenuRect == null)
                 yield break;
 
-            Vector3 finalPosition = submenuRect.position;
-            Vector3 startPosition = finalPosition;
-            startPosition.x += submenuOnLeft ? 20f : -20f;
+            // Get current validated World Position (set in PositionSubmenu)
+            Vector3 finalWorldPos = submenuRect.position;
+
+            // Calculate Start Position (Screen Space Offset)
+            Canvas rootCanvas = sourceMenu != null ? sourceMenu.ActiveCanvas : GetComponentInParent<Canvas>().rootCanvas;
+            bool isOverlay = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay;
+            Camera cam = (!isOverlay && rootCanvas.worldCamera != null) ? rootCanvas.worldCamera : Camera.main;
+
+            Vector3 finalScreenPos;
+            if (isOverlay) { finalScreenPos = finalWorldPos; }
+            else { finalScreenPos = RectTransformUtility.WorldToScreenPoint(cam, finalWorldPos); }
+
+            // Apply 20px offset in screen space
+            Vector3 startScreenPos = finalScreenPos;
+            startScreenPos.x += submenuOnLeft ? 20f : -20f;
+
+            // Convert back to World Space
+            Vector3 startWorldPos;
+            if (isOverlay) { startWorldPos = startScreenPos; }
+            else
+            {
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                    submenuRect.parent as RectTransform,
+                    startScreenPos,
+                    cam,
+                    out startWorldPos
+                );
+            }
 
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = true;
             canvasGroup.interactable = true;
-            submenuRect.position = startPosition;
+            submenuRect.position = startWorldPos;
 
             float elapsedTime = 0f;
             while (elapsedTime < animationDuration)
@@ -433,13 +580,15 @@ namespace Evo.UI
                 float curveValue = animationCurve.Evaluate(progress);
 
                 canvasGroup.alpha = curveValue;
-                submenuRect.position = Vector3.Lerp(startPosition, finalPosition, curveValue);
+                submenuRect.position = Vector3.Lerp(startWorldPos, finalWorldPos, curveValue);
 
                 yield return null;
             }
 
             canvasGroup.alpha = 1f;
-            submenuRect.position = finalPosition;
+            submenuRect.position = finalWorldPos;
+
+            isAnimating = false;
             animationCoroutine = null;
         }
 
@@ -447,6 +596,8 @@ namespace Evo.UI
         {
             if (submenuInstance == null)
                 yield break;
+
+            isAnimating = true;
 
             CanvasGroup canvasGroup = submenuInstance.canvasGroup;
             RectTransform submenuRect = submenuInstance.GetComponent<RectTransform>();
@@ -460,9 +611,34 @@ namespace Evo.UI
             canvasGroup.blocksRaycasts = false;
             canvasGroup.interactable = false;
 
-            Vector3 startPosition = submenuRect.position;
-            Vector3 endPosition = startPosition;
-            endPosition.x += submenuOnLeft ? 20f : -20f;
+            // Get current world position
+            Vector3 startWorldPos = submenuRect.position;
+
+            // Calculate end position (Screen Space Offset)
+            Canvas rootCanvas = sourceMenu != null ? sourceMenu.ActiveCanvas : GetComponentInParent<Canvas>().rootCanvas;
+            bool isOverlay = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay;
+            Camera cam = (!isOverlay && rootCanvas.worldCamera != null) ? rootCanvas.worldCamera : Camera.main;
+
+            Vector3 startScreenPos;
+            if (isOverlay) { startScreenPos = startWorldPos; }
+            else { startScreenPos = RectTransformUtility.WorldToScreenPoint(cam, startWorldPos); }
+
+            // Apply 20px offset
+            Vector3 endScreenPos = startScreenPos;
+            endScreenPos.x += submenuOnLeft ? 20f : -20f;
+
+            // Convert back to World
+            Vector3 endWorldPos;
+            if (isOverlay) { endWorldPos = endScreenPos; }
+            else
+            {
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                    submenuRect.parent as RectTransform,
+                    endScreenPos,
+                    cam,
+                    out endWorldPos
+                );
+            }
 
             float startAlpha = canvasGroup.alpha;
             float elapsedTime = 0f;
@@ -473,12 +649,13 @@ namespace Evo.UI
                 float progress = elapsedTime / animationDuration;
 
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, progress);
-                submenuRect.position = Vector3.Lerp(startPosition, endPosition, progress);
+                submenuRect.position = Vector3.Lerp(startWorldPos, endWorldPos, progress);
 
                 yield return null;
             }
 
             DestroySubmenu();
+            isAnimating = false;
             animationCoroutine = null;
         }
     }

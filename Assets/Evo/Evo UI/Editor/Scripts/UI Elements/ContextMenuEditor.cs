@@ -14,12 +14,15 @@ namespace Evo.UI
 
         // Settings
         SerializedProperty is3DObject;
+        SerializedProperty usePointerPosition;
+        SerializedProperty blockUIWhileOpen;
         SerializedProperty closeOnItemClick;
         SerializedProperty closeOnOutsideClick;
         SerializedProperty animationType;
         SerializedProperty animationDuration;
         SerializedProperty animationCurve;
         SerializedProperty slideOffset;
+        SerializedProperty scaleFrom;
         SerializedProperty triggerButton;
 
         // Position & Offset
@@ -43,12 +46,15 @@ namespace Evo.UI
             menuItems = serializedObject.FindProperty("menuItems");
 
             is3DObject = serializedObject.FindProperty("is3DObject");
+            usePointerPosition = serializedObject.FindProperty("usePointerPosition");
+            blockUIWhileOpen = serializedObject.FindProperty("blockUIWhileOpen");
             closeOnItemClick = serializedObject.FindProperty("closeOnItemClick");
             closeOnOutsideClick = serializedObject.FindProperty("closeOnOutsideClick");
             animationType = serializedObject.FindProperty("animationType");
             animationDuration = serializedObject.FindProperty("animationDuration");
             animationCurve = serializedObject.FindProperty("animationCurve");
             slideOffset = serializedObject.FindProperty("slideOffset");
+            scaleFrom = serializedObject.FindProperty("scaleFrom");
             triggerButton = serializedObject.FindProperty("triggerButton");
 
             offsetPosition = serializedObject.FindProperty("offsetPosition");
@@ -120,6 +126,8 @@ namespace Evo.UI
                 EvoEditorGUI.BeginContainer();
                 {
                     EvoEditorGUI.DrawToggle(is3DObject, "Is 3D Object", null, true, true, true);
+                    EvoEditorGUI.DrawToggle(usePointerPosition, "Use Pointer Position", null, true, true, true);
+                    EvoEditorGUI.DrawToggle(blockUIWhileOpen, "Block UI While Open", null, true, true, true);
                     EvoEditorGUI.DrawToggle(closeOnItemClick, "Close On Item Click", null, true, true, true);
                     EvoEditorGUI.DrawToggle(closeOnOutsideClick, "Close On Outside Click", null, true, true, true);
                     EvoEditorGUI.DrawProperty(screenEdgePadding, "Screen Edge Padding", "Add extra padding when the tooltip is near the edge of the screen.", true, true, true);
@@ -142,6 +150,11 @@ namespace Evo.UI
                         EvoEditorGUI.BeginContainer(3);
                         EvoEditorGUI.DrawProperty(animationDuration, "Duration", null, true, true);
                         EvoEditorGUI.DrawProperty(animationCurve, "Curve", null, false, true);
+                        if (animationType.enumValueIndex == 2)
+                        {
+                            EvoEditorGUI.AddLayoutSpace();
+                            EvoEditorGUI.DrawProperty(scaleFrom, "Scale From", null, false, true);
+                        }
                         if (animationType.enumValueIndex == 3)
                         {
                             EvoEditorGUI.AddLayoutSpace();

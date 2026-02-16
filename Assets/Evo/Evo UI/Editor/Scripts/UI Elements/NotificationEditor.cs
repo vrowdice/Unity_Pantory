@@ -15,10 +15,12 @@ namespace Evo.UI
         SerializedProperty description;
 
         // Settings
+        SerializedProperty enableStacking;
         SerializedProperty useUnscaledTime;
         SerializedProperty playOnEnable;
         SerializedProperty autoClose;
         SerializedProperty autoCloseDelay;
+        SerializedProperty destroyAfter;
 
         // Animation
         SerializedProperty animationType;
@@ -41,10 +43,12 @@ namespace Evo.UI
             title = serializedObject.FindProperty("title");
             description = serializedObject.FindProperty("description");
 
+            enableStacking = serializedObject.FindProperty("enableStacking");
             useUnscaledTime = serializedObject.FindProperty("useUnscaledTime");
             playOnEnable = serializedObject.FindProperty("playOnEnable");
             autoClose = serializedObject.FindProperty("autoClose");
             autoCloseDelay = serializedObject.FindProperty("autoCloseDelay");
+            destroyAfter = serializedObject.FindProperty("destroyAfter");
 
             animationType = serializedObject.FindProperty("animationType");
             animationCurve = serializedObject.FindProperty("animationCurve");
@@ -119,8 +123,10 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 {
+                    EvoEditorGUI.DrawToggle(enableStacking, "Enable Stacking", "Check for other notifications under the same parent.", true, true, true);
                     EvoEditorGUI.DrawToggle(useUnscaledTime, "Use Unscaled Time", null, true, true, true);
                     EvoEditorGUI.DrawToggle(playOnEnable, "Play On Enable", null, true, true, true);
+                    EvoEditorGUI.DrawToggle(destroyAfter, "Destroy After", "Destroy object after closing.", true, true, true);
 
                     EvoEditorGUI.BeginVerticalBackground(true);
                     EvoEditorGUI.DrawToggle(autoClose, "Auto Close", null, false, true, true, bypassNormalBackground: true);

@@ -11,7 +11,7 @@ namespace Evo.UI
     /// Base class for all interactive UI elements with state management.
     /// Based on Unity's Selectable class, with extended features.
     /// </summary>
-    public class Interactive : Selectable, IPointerDownHandler, IPointerClickHandler, IPointerUpHandler,
+    public class Interactive : Selectable, IStylerHandler, IPointerDownHandler, IPointerClickHandler, IPointerUpHandler,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
     {
         [EvoHeader("Ripple Effect", Constants.CUSTOM_EDITOR_ID)]
@@ -66,6 +66,18 @@ namespace Evo.UI
         protected bool waitingForDoubleClickInput;
         protected Coroutine currentAnimation;
 
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => stylerPreset;
+            set
+            {
+                if (stylerPreset == value) { return; }
+                stylerPreset = value;
+                UpdateStyler();
+            }
+        }
+
         protected override void Awake()
         {
             if (Application.isPlaying) 
@@ -83,12 +95,29 @@ namespace Evo.UI
         protected override void OnDisable()
         {
             base.OnDisable();
-            if (interactable && interactionState != InteractionState.Selected) { interactionState = InteractionState.Normal; }
+            if (IsInteractable() && interactionState != InteractionState.Selected) { interactionState = InteractionState.Normal; }
+        }
+
+        protected override void OnCanvasGroupChanged()
+        {
+            base.OnCanvasGroupChanged();
+
+            if (Time.frameCount == 0 || interactionState == InteractionState.Selected)
+                return;
+
+            if (!IsInteractable() && interactionState != InteractionState.Disabled) { SetState(InteractionState.Disabled); }
+            else if (IsInteractable() && interactionState == InteractionState.Disabled && (isPointerOn || Utilities.GetSelectedObject() == gameObject)) { SetState(InteractionState.Highlighted); }
+            else if (IsInteractable() && interactionState == InteractionState.Disabled) { SetState(InteractionState.Normal); }
+
+#if UNITY_EDITOR
+            // Update visuals for editor, pre-runtime
+            if (!Application.isPlaying) { UpdateStyler(); }
+#endif
         }
 
         public virtual void OnPointerClick(PointerEventData eventData)
         {
-            if (!interactable || eventData.button != PointerEventData.InputButton.Left)
+            if (!IsInteractable() || eventData.button != PointerEventData.InputButton.Left)
                 return;
 
             onClick?.Invoke();
@@ -96,14 +125,14 @@ namespace Evo.UI
 
         public override void OnPointerDown(PointerEventData eventData)
         {
-            if (!interactable || eventData.button != PointerEventData.InputButton.Left)
+            if (!IsInteractable() || eventData.button != PointerEventData.InputButton.Left)
                 return;
 
             isPressedDown = true;
 
             if (enableRipple) { Ripple.Create(ripplePreset, rippleParent, true); }
             if (interactionState != InteractionState.Selected) { SetState(InteractionState.Pressed); }
-            if (EventSystem.current != null) { EventSystem.current.SetSelectedGameObject(gameObject); }
+            if (navigation.mode != Navigation.Mode.None) { Utilities.SetSelectedObject(gameObject); }
 
             AudioManager.PlayClip(Styler.GetAudio(sfxSource, pressedSFX, stylerPreset));
             onPointerDown?.Invoke();
@@ -111,7 +140,7 @@ namespace Evo.UI
 
         public override void OnPointerUp(PointerEventData eventData)
         {
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             if (interactionState != InteractionState.Selected) { SetState(isPointerOn ? InteractionState.Highlighted : InteractionState.Normal); }
 
             isPressedDown = false;
@@ -120,28 +149,30 @@ namespace Evo.UI
 
         public override void OnPointerEnter(PointerEventData eventData)
         {
-            if (!interactable) { return; }
+            isPointerOn = true;
+
+            if (!IsInteractable()) { return; }
             if (interactionState != InteractionState.Selected && !isPressedDown) { SetState(InteractionState.Highlighted); }
             if (enableTrail) { PointerTrail.Create(trailPreset, trailParent, true); }
 
             AudioManager.PlayClip(Styler.GetAudio(sfxSource, highlightedSFX, stylerPreset));
-            isPointerOn = true;
             onPointerEnter?.Invoke();
         }
 
         public override void OnPointerExit(PointerEventData eventData)
         {
-            if (!interactable) { return; }
+            isPointerOn = false;
+
+            if (!IsInteractable()) { return; }
             if (interactionState != InteractionState.Selected && !isPressedDown) { SetState(InteractionState.Normal); }
             if (enableTrail) { PointerTrail.Hide(trailParent); }
 
-            isPointerOn = false;
             onPointerExit?.Invoke();
         }
 
         public override void OnSelect(BaseEventData eventData)
         {
-            if (!interactable || isPressedDown) { return; }
+            if (!IsInteractable() || isPressedDown) { return; }
             if (interactionState != InteractionState.Selected) { SetState(InteractionState.Highlighted); }
 
             AudioManager.PlayClip(Styler.GetAudio(sfxSource, highlightedSFX, stylerPreset));
@@ -150,7 +181,7 @@ namespace Evo.UI
 
         public override void OnDeselect(BaseEventData eventData)
         {
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             if (interactionState != InteractionState.Selected) { SetState(InteractionState.Normal); }
 
             onDeselect?.Invoke();
@@ -158,9 +189,9 @@ namespace Evo.UI
 
         public virtual void OnSubmit(BaseEventData eventData)
         {
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             if (enableRipple) { Ripple.Create(ripplePreset, rippleParent, true, true); }
-            if (interactionState != InteractionState.Selected && EventSystem.current.currentSelectedGameObject != gameObject) { SetState(InteractionState.Normal); }
+            if (interactionState != InteractionState.Selected && Utilities.GetSelectedObject() != gameObject) { SetState(InteractionState.Normal); }
 
             AudioManager.PlayClip(Styler.GetAudio(sfxSource, pressedSFX, stylerPreset));
             onClick?.Invoke();
@@ -246,6 +277,21 @@ namespace Evo.UI
             return dict;
         }
 
+        public void UpdateStyler()
+        {
+            if (!gameObject.activeInHierarchy)
+                return;
+
+            StylerObject[] stylers = GetComponentsInChildren<StylerObject>(true);
+            foreach (var styler in stylers)
+            {
+                if (styler != null && styler.enableInteraction && styler.interactableObject == this)
+                {
+                    styler.UpdateStyler();
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         [HideInInspector] public bool settingsFoldout = true;
         [HideInInspector] public bool styleFoldout = false;
@@ -256,34 +302,22 @@ namespace Evo.UI
         protected override void OnValidate()
         {
             base.OnValidate();
-            UpdateState();
+            UpdateEditorState();
         }
 
-        protected void UpdateState()
+        protected void UpdateEditorState()
         {
             UnityEditor.EditorApplication.delayCall += () =>
             {
                 if (this != null)
                 {
-                    if (!interactable) { interactionState = InteractionState.Disabled; }
+                    if (!IsInteractable()) { interactionState = InteractionState.Disabled; }
                     else if (interactionState == InteractionState.Disabled) { interactionState = InteractionState.Normal; }
 
                     SetState(interactionState, true);
-                    NotifyStylerObjects();
+                    UpdateStyler();
                 }
             };
-        }
-
-        protected void NotifyStylerObjects()
-        {
-            StylerObject[] stylers = GetComponentsInChildren<StylerObject>(true);
-            foreach (var styler in stylers)
-            {
-                if (styler != null && styler.enableInteraction && styler.interactableObject == this)
-                {
-                    styler.UpdateStyle();
-                }
-            }
         }
 #endif
     }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -23,6 +24,9 @@ namespace Evo.UI
         [SerializeField] private bool useUnscaledTime = true;
         [SerializeField] private AnimationCurve returnCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+        [EvoHeader("Multiple Sources", Constants.CUSTOM_EDITOR_ID)]
+        public List<RectTransform> dragSources = new();
+
         public enum BoundaryType
         {
             NoBounds,
@@ -41,13 +45,52 @@ namespace Evo.UI
         {
             if (rectTransform == null) { rectTransform = GetComponent<RectTransform>(); }
             if (canvas == null) { canvas = GetComponentInParent<Canvas>(); }
-            if (boundaryType == BoundaryType.RectBounds && boundaryRect == null && transform.parent != null) { boundaryRect = transform.parent.GetComponent<RectTransform>(); }
+            if (boundaryType == BoundaryType.RectBounds && boundaryRect == null && transform.parent != null) 
+            {
+                boundaryRect = transform.parent.GetComponent<RectTransform>(); 
+            }
+            if (dragSources != null && dragSources.Count > 0)
+            {
+                foreach (var target in dragSources)
+                {
+                    if (target != null && target != rectTransform)
+                    {
+                        var listener = target.gameObject.AddComponent<DragListener>();
+                        listener.Initialize(this);
+                    }
+                }
+            }
 
-            // Store original position
             originalPosition = rectTransform.anchoredPosition;
         }
 
         public void OnPointerDown(PointerEventData eventData)
+        {
+            // If targets are assigned, disable direct dragging of this object
+            // (Unless this object is explicitly in the list)
+            if (dragSources != null && dragSources.Count > 0 && !dragSources.Contains(rectTransform))
+                return;
+
+            HandlePointerDown(eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (dragSources != null && dragSources.Count > 0 && !dragSources.Contains(rectTransform))
+                return;
+
+            HandleDrag(eventData);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (dragSources != null && dragSources.Count > 0 && !dragSources.Contains(rectTransform))
+                return;
+
+            HandlePointerUp(eventData);
+        }
+
+        public void HandlePointerDown(PointerEventData eventData)
         {
             if (!isDraggable)
                 return;
@@ -64,7 +107,7 @@ namespace Evo.UI
             );
         }
 
-        public void OnDrag(PointerEventData eventData)
+        public void HandleDrag(PointerEventData eventData)
         {
             if (!isDraggable || !isDragging)
                 return;
@@ -107,15 +150,21 @@ namespace Evo.UI
             }
         }
 
-        public void OnPointerUp(PointerEventData eventData)
+        public void HandlePointerUp(PointerEventData eventData)
         {
             isDragging = false;
 
-            if (boundaryType != BoundaryType.NoBounds && !allowOutOfBounds) { rectTransform.anchoredPosition = ConstrainToBounds(rectTransform.anchoredPosition); }
+            if (boundaryType != BoundaryType.NoBounds && !allowOutOfBounds)
+            {
+                rectTransform.anchoredPosition = ConstrainToBounds(rectTransform.anchoredPosition);
+            }
             else if (boundaryType != BoundaryType.NoBounds && allowOutOfBounds)
             {
                 Vector2 constrainedPosition = ConstrainToBounds(rectTransform.anchoredPosition);
-                if (Vector2.Distance(rectTransform.anchoredPosition, constrainedPosition) > 0.1f) { StartCoroutine(SmoothReturnToBounds(constrainedPosition)); }
+                if (Vector2.Distance(rectTransform.anchoredPosition, constrainedPosition) > 0.1f)
+                {
+                    StartCoroutine(SmoothReturnToBounds(constrainedPosition));
+                }
             }
         }
 
@@ -155,7 +204,7 @@ namespace Evo.UI
                 // Canvas is higher in hierarchy
                 Vector3[] canvasCorners = new Vector3[4];
                 canvasRect.GetWorldCorners(canvasCorners);
-
+               
                 Vector2 min = parentRect.InverseTransformPoint(canvasCorners[0]);
                 Vector2 max = parentRect.InverseTransformPoint(canvasCorners[2]);
 
@@ -186,7 +235,7 @@ namespace Evo.UI
 
         Vector2 ConstrainToRectBounds(Vector2 anchoredPos)
         {
-            if (boundaryRect == null)
+            if (boundaryRect == null) 
                 return anchoredPos;
 
             RectTransform parentRect = rectTransform.parent as RectTransform;
@@ -202,18 +251,18 @@ namespace Evo.UI
             // Determine the boundary rect in parent's local space
             Rect boundaryRectLocal;
 
-            // Simple case: parent is the boundary
+            // Parent is the boundary
             if (boundaryRect == parentRect) { boundaryRectLocal = boundaryRect.rect; }
             else
             {
-                // Complex case: boundary is somewhere else in hierarchy
+                // Boundary is somewhere else in hierarchy
                 // Transform boundary corners to parent's local space
                 Vector3[] boundaryCorners = new Vector3[4];
                 boundaryRect.GetWorldCorners(boundaryCorners);
-
+               
                 Vector2 min = parentRect.InverseTransformPoint(boundaryCorners[0]);
                 Vector2 max = parentRect.InverseTransformPoint(boundaryCorners[2]);
-
+                
                 boundaryRectLocal = new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
             }
 
@@ -229,10 +278,10 @@ namespace Evo.UI
 
             // Apply the clamped local position
             rectTransform.localPosition = localPos;
-
+           
             // Read back the resulting anchored position
             Vector2 clampedAnchoredPos = rectTransform.anchoredPosition;
-
+            
             // Restore original position before returning
             rectTransform.anchoredPosition = originalPos;
 
@@ -262,5 +311,21 @@ namespace Evo.UI
             if (allowOutOfBounds && boundaryType != BoundaryType.NoBounds) { StartCoroutine(SmoothReturnToBounds(originalPosition)); }
             else { rectTransform.anchoredPosition = originalPosition; }
         }
+
+        // Helper class to forward events
+        class DragListener : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+        {
+            RectDragger _dragger;
+
+            public void Initialize(RectDragger dragger) { _dragger = dragger; }
+            public void OnPointerDown(PointerEventData eventData) => _dragger.HandlePointerDown(eventData);
+            public void OnDrag(PointerEventData eventData) => _dragger.HandleDrag(eventData);
+            public void OnPointerUp(PointerEventData eventData) => _dragger.HandlePointerUp(eventData);
+        }
+
+#if UNITY_EDITOR
+        [HideInInspector] public bool settingsFoldout = true;
+        [HideInInspector] public bool referencesFoldout = false;
+#endif
     }
 }
