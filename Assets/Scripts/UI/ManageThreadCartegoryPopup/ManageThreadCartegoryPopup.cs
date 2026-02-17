@@ -139,7 +139,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowConfirmPopup(ConfirmMessage.DeleteCategoryConfirm, () =>
+        gameManager.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
         {
             bool success = _dataManager.Thread.RemoveCategory(categoryId);
 

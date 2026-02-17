@@ -124,12 +124,25 @@ public class OptionPopup : BasePopup
         _pendingSFXVolume = value;
     }
 
+    public void OnClickGoTitle()
+    {
+        GameManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
+        {
+            SceneLoadManager.Instance.LoadScene("Title");
+            OnClickExit();
+        });
+    }
+
     public void OnClickExitGame()
     {
-        Application.Quit();
+        GameManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
+        {
+            Application.Quit();
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            OnClickExit();
+        });
     }
 
     public void OnClickSave()

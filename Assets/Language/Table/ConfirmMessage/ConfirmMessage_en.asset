@@ -18,8 +18,16 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 864226269001
-    m_Localized: Delete the selected category?
+  - m_Id: 864226269002
+    m_Localized: Load this save file?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Localized: Are you sure you want to delete this?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Localized: Unsaved progress will be lost. Continue?
     m_Metadata:
       m_Items: []
   references:

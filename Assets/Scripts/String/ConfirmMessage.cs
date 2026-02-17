@@ -4,7 +4,7 @@
 /// </summary>
 public static class ConfirmMessage
 {
-    public const string DeleteCategoryConfirm = "DeleteCategoryConfirm";
     public const string LoadConfirm = "LoadConfirm";
     public const string DeleteConfirm = "DeleteConfirm";
+    public const string UnsavedProgressConfirm = "UnsavedProgressConfirm";
 }

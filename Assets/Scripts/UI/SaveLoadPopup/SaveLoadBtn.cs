@@ -23,17 +23,11 @@ public class SaveLoadBtn : MonoBehaviour
 
         if (_isSaveMode)
         {
-            if (_loadBtn != null)
-            {
-                _loadBtn.SetActive(false);
-            }
+            _loadBtn.SetActive(true);
         }
         else
         {
-            if (_loadBtn != null)
-            {
-                _loadBtn.SetActive(true);
-            }
+            _loadBtn.SetActive(false);
         }
     }
 

@@ -18,8 +18,16 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 864226269001
-    m_Localized: 選択したカテゴリーを削除しますか？
+  - m_Id: 864226269002
+    m_Localized: このセーブファイルを読み込みますか？
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Localized: 本当に削除しますか？
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Localized: 保存されていない進行状況は失われます。続行しますか？
     m_Metadata:
       m_Items: []
   references:

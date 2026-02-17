@@ -43,9 +43,12 @@ public class MarketResourcePanel : MonoBehaviour
             _selectedResourceEntry = _dataManager.Resource.GetResourceEntry("iron_ore");
             ChangeResource(_selectedResourceEntry);
         }
-
-        RefreshUI();
+        else
+        {
+            RefreshUI();
+        }
     }
+
 
     /// <summary>
     /// 리소스 목록에서 버튼 클릭 시 호출되어 상세 정보를 갱신합니다.
@@ -131,7 +134,7 @@ public class MarketResourcePanel : MonoBehaviour
     {
         if (_lineChart == null || priceHistory == null) return;
 
-        _lineChart.dataPoints.Clear();
+        _lineChart.ClearData();
         int count = priceHistory.Count;
         int labelStep = count <= 12 ? 1 : Mathf.Max(1, count / 10);
 
@@ -139,13 +142,12 @@ public class MarketResourcePanel : MonoBehaviour
         {
             bool showLabel = (i % labelStep == 0) || (i == count - 1);
             string xLabel = showLabel ? (i + 1).ToString() : "";
-            _lineChart.dataPoints.Add(new LineChart.DataPoint(xLabel, priceHistory[i]));
+            _lineChart.AddDataPoint(xLabel, priceHistory[i]);
         }
         if (_lineChart.dataPoints.Count == 1)
         {
             float v = _lineChart.dataPoints[0].value;
-            _lineChart.dataPoints.Add(new LineChart.DataPoint("2", v));
+            _lineChart.AddDataPoint("2", v);
         }
-        _lineChart.DrawChart();
     }
 }

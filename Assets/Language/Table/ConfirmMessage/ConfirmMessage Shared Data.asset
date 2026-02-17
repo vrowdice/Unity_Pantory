@@ -15,8 +15,16 @@ MonoBehaviour:
   m_TableCollectionName: ConfirmMessage
   m_TableCollectionNameGuidString: 88662297e7cf2be4bba6f0c4869c37f4
   m_Entries:
-  - m_Id: 864226269001
-    m_Key: DeleteCategoryConfirm
+  - m_Id: 864226269002
+    m_Key: LoadConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Key: DeleteConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Key: UnsavedProgressConfirm
     m_Metadata:
       m_Items: []
   m_Metadata:
