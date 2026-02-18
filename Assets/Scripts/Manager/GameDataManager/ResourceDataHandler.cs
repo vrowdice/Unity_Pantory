@@ -33,7 +33,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
                     Debug.LogWarning($"[ResourceDataHandler] Resource already registered: {data.id}");
                     continue;
                 }
-                _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData != null ? _initialResourceData.priceHistoryCapacity : 60);
+                _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData.priceHistoryCapacity);
             }
         }
     }
@@ -196,7 +196,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
             resourceState.currentChangeValue = resourceState.currentValue - previousValue;
 
-            entry.RecordPrice(resourceState.currentValue);
+            entry.RecordPrice(resourceState.currentValue, _initialResourceData.priceHistoryCapacity);
         }
     }
 

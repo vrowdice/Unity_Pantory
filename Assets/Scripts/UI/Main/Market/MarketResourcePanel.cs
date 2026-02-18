@@ -128,7 +128,6 @@ public class MarketResourcePanel : MonoBehaviour
 
     /// <summary>
     /// 가격 히스토리를 LineChart에 반영합니다.
-    /// X축 라벨: 포인트가 많을 때는 일정 간격으로만 표시해 겹침을 줄입니다.
     /// </summary>
     private void RefreshLineChart(List<float> priceHistory)
     {
