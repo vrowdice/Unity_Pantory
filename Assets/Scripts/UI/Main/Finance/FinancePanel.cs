@@ -82,14 +82,20 @@ public class FinancePanel : BasePanel
     private void UpdateSingleChart(LineChart chart, IReadOnlyList<long> history, long currentValue)
     {
         if (chart == null) return;
-        chart.ClearData();
+        chart.dataPoints.Clear();
 
         int startIndex = Mathf.Max(0, history.Count - _maxDataPoints);
+        int totalPoints = (history.Count - startIndex) + 1;
 
+        int labelStep = totalPoints <= 12 ? 1 : Mathf.Max(1, totalPoints / 10);
         for (int i = startIndex; i < history.Count; i++)
         {
-            chart.AddDataPoint($"M{i + 1}", history[i]);
+            bool showLabel = (i % labelStep == 0);
+            string label = showLabel ? $"M{i + 1}" : "";
+            chart.dataPoints.Add(new LineChart.DataPoint(label, history[i]));
         }
-        chart.AddDataPoint("Now", currentValue);
+
+        chart.dataPoints.Add(new LineChart.DataPoint("Now", currentValue));
+        chart.DrawChart();
     }
 }

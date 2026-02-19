@@ -74,6 +74,46 @@ MonoBehaviour:
     m_Localized: Not enough credits.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268015
+    m_Localized: Please enter a save file name.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268016
+    m_Localized: Please enter a load file name.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268017
+    m_Localized: Please enter a file name to delete.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268018
+    m_Localized: Save file not found.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268019
+    m_Localized: Game saved successfully.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268020
+    m_Localized: Failed to save game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268021
+    m_Localized: Game loaded successfully.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268022
+    m_Localized: Failed to load game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268023
+    m_Localized: Save file deleted successfully.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268024
+    m_Localized: Failed to delete save file.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

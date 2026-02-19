@@ -71,6 +71,46 @@ MonoBehaviour:
     m_Key: NotEnoughCredits
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268015
+    m_Key: SaveFileNameEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268016
+    m_Key: LoadFileNameEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268017
+    m_Key: DeleteFileNameEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268018
+    m_Key: SaveFileNotFound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268019
+    m_Key: SaveSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268020
+    m_Key: SaveFailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268021
+    m_Key: LoadSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268022
+    m_Key: LoadFailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268023
+    m_Key: DeleteSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268024
+    m_Key: DeleteFailed
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

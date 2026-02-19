@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b7cb3d62c16d9445a06144f0660d9a7, type: 3}
-  m_Name: ManagementDeficitEffect
+  m_Name: lackofManagers
   m_EditorClassIdentifier: 
   targetType: 1
   isGlobalEffect: 1
-  id: managementDeficit
-  displayName: Management Deficit
+  id: lackofManagers
+  displayName: Lack Of Managers
   statType: 3
-  type: 0
+  modifierType: 0
   value: 0
   durationDays: 0
+  targetId: 

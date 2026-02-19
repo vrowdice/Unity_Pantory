@@ -541,6 +541,18 @@ namespace Evo.UI
             DrawChart();
         }
 
+        public void SetDataPoints(List<float> values)
+        {
+            dataPoints.Clear();
+            for (int i = 0; i < values.Count; i++)
+            {
+                string xLabel = (i % 10 == 0 || i == values.Count - 1) ? (i + 1).ToString() : "";
+                dataPoints.Add(new DataPoint(xLabel, values[i]));
+            }
+
+            DrawChart();
+        }
+
 #if EVO_LOCALIZATION
         void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {

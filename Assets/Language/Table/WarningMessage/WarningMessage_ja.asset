@@ -74,6 +74,46 @@ MonoBehaviour:
     m_Localized: クレジットが足りません。
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268015
+    m_Localized: セーブファイル名を入力してください。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268016
+    m_Localized: ロードするファイル名を入力してください。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268017
+    m_Localized: 削除するファイル名を入力してください。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268018
+    m_Localized: セーブファイルが見つかりません。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268019
+    m_Localized: ゲームを保存しました。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268020
+    m_Localized: ゲームの保存に失敗しました。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268021
+    m_Localized: ゲームを読み込みました。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268022
+    m_Localized: ゲームの読み込みに失敗しました。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268023
+    m_Localized: セーブファイルを削除しました。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268024
+    m_Localized: セーブファイルの削除に失敗しました。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

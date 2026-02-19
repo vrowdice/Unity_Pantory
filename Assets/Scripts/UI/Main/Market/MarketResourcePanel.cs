@@ -133,20 +133,22 @@ public class MarketResourcePanel : MonoBehaviour
     {
         if (_lineChart == null || priceHistory == null) return;
 
-        _lineChart.ClearData();
         int count = priceHistory.Count;
         int labelStep = count <= 12 ? 1 : Mathf.Max(1, count / 10);
+        _lineChart.dataPoints.Clear();
 
         for (int i = 0; i < count; i++)
         {
             bool showLabel = (i % labelStep == 0) || (i == count - 1);
             string xLabel = showLabel ? (i + 1).ToString() : "";
-            _lineChart.AddDataPoint(xLabel, priceHistory[i]);
+            _lineChart.dataPoints.Add(new LineChart.DataPoint(xLabel, priceHistory[i]));
         }
         if (_lineChart.dataPoints.Count == 1)
         {
             float v = _lineChart.dataPoints[0].value;
-            _lineChart.AddDataPoint("2", v);
+            _lineChart.dataPoints.Add(new LineChart.DataPoint("2", v));
         }
+
+        _lineChart.DrawChart();
     }
 }
