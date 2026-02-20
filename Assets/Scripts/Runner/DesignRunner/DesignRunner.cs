@@ -26,6 +26,9 @@ public class DesignRunner : RunnerBase
 
     public DesignRunnerGridHandler GridGenHandler { get; private set; }
     public DesignRunnerCaptureHandler CaptureHandler { get; private set; }
+    public DesignRunnerRoadHandler RoadHandler { get; private set; }
+    public DesignRunnerPlacementHandler PlacementHandler { get; private set; }
+    public DesignRunnerCalculationHandler CalculationHandler { get; private set; }
 
     public MainCameraController MainCameraController => _mainCameraController;
     public DesignCanvas DesignUiManager => _designCanvas;
@@ -47,8 +50,8 @@ public class DesignRunner : RunnerBase
 
 
     public string CurrentThreadId => _currentThreadId;
-    public bool IsPlacementMode => GridGenHandler?.IsPlacementActive ?? false;
-    public bool IsRemovalMode => GridGenHandler?.IsRemovalActive ?? false;
+    public bool IsPlacementMode => PlacementHandler.IsPlacementActive;
+    public bool IsRemovalMode => PlacementHandler.IsRemovalActive;
     private bool IsThreadActive => !string.IsNullOrEmpty(_currentThreadId);
 
     private void Update()
@@ -72,11 +75,10 @@ public class DesignRunner : RunnerBase
     /// </summary>
     private void UpdatePlacementMode()
     {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
+        if (IsPointerOverUI()) return;
 
         Vector3 mouseWorldPos = GetMouseWorldPosition();
-        (Vector2Int gridPos, bool canPlace) = GridGenHandler.UpdatePlacement(mouseWorldPos);
+        (Vector2Int gridPos, bool canPlace) = PlacementHandler.UpdatePlacement(mouseWorldPos);
 
         if (Input.GetMouseButtonDown(0) && canPlace)
         {
@@ -87,8 +89,8 @@ public class DesignRunner : RunnerBase
             CancelPlacementMode();
         }
 
-        if (Input.GetKeyDown(KeyCode.Q)) GridGenHandler.Rotate(false);
-        if (Input.GetKeyDown(KeyCode.E)) GridGenHandler.Rotate(true);
+        if (Input.GetKeyDown(KeyCode.Q)) PlacementHandler.Rotate(false);
+        if (Input.GetKeyDown(KeyCode.E)) PlacementHandler.Rotate(true);
     }
 
     /// <summary>
@@ -96,11 +98,10 @@ public class DesignRunner : RunnerBase
     /// </summary>
     private void UpdateRemovalMode()
     {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
+        if (IsPointerOverUI()) return;
 
         Vector3 mouseWorldPos = GetMouseWorldPosition();
-        GameObject hoveredBuilding = GridGenHandler.UpdateRemoval(mouseWorldPos);
+        GameObject hoveredBuilding = PlacementHandler.UpdateRemoval(mouseWorldPos);
 
         if (Input.GetMouseButtonDown(0) && hoveredBuilding != null)
         {
@@ -108,7 +109,7 @@ public class DesignRunner : RunnerBase
             {
                 if (RemoveBuilding(new Vector2Int(comp.BuildingState.positionX, comp.BuildingState.positionY)))
                 {
-                    GridGenHandler.ResetBuildingHighlight();
+                    PlacementHandler.ResetBuildingHighlight();
                 }
             }
         }
@@ -120,7 +121,7 @@ public class DesignRunner : RunnerBase
 
     private Vector3 GetMouseWorldPosition()
     {
-        Camera camera = MainCameraController?.Camera ?? MainCamera;
+        Camera camera = MainCameraController.Camera ?? MainCamera;
         Vector3 mouseWorldPos = camera.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = 0f;
         return mouseWorldPos;
@@ -128,10 +129,10 @@ public class DesignRunner : RunnerBase
 
     private void PlaceBuilding(Vector2Int gridPos)
     {
-        BuildingData selectedBuilding = GridGenHandler.SelectedBuilding;
+        BuildingData selectedBuilding = PlacementHandler.SelectedBuilding;
         if (selectedBuilding == null) return;
 
-        int rotation = GridGenHandler.RotationIndex;
+        int rotation = PlacementHandler.RotationIndex;
         BuildingState state = new BuildingState(selectedBuilding.id, gridPos, selectedBuilding, rotation);
         AddBuildingToTemp(state);
         RefreshBuildings();
@@ -150,22 +151,20 @@ public class DesignRunner : RunnerBase
     public bool StartPlacementMode(BuildingData buildingData)
     {
         if (buildingData == null) return false;
-
-        if (IsRemovalMode) GridGenHandler.CancelRemoval();
-
-        GridGenHandler.StartPlacement(buildingData);
+        if (IsRemovalMode) PlacementHandler.CancelRemoval();
+        PlacementHandler.StartPlacement(buildingData);
         return true;
     }
 
-    public void CancelPlacementMode() => GridGenHandler?.CancelPlacement();
+    public void CancelPlacementMode() => PlacementHandler.CancelPlacement();
 
     public void StartRemovalMode()
     {
-        if (IsPlacementMode) GridGenHandler.CancelPlacement();
-        GridGenHandler?.StartRemoval();
+        if (IsPlacementMode) PlacementHandler.CancelPlacement();
+        PlacementHandler.StartRemoval();
     }
 
-    public void CancelRemovalMode() => GridGenHandler?.CancelRemoval();
+    public void CancelRemovalMode() => PlacementHandler.CancelRemoval();
 
     /// <summary>
     /// DesignRunner를 초기화합니다.
@@ -192,6 +191,9 @@ public class DesignRunner : RunnerBase
     {
         GridGenHandler = new DesignRunnerGridHandler(this);
         CaptureHandler = new DesignRunnerCaptureHandler(this);
+        RoadHandler = new DesignRunnerRoadHandler(this);
+        PlacementHandler = new DesignRunnerPlacementHandler(this, GridGenHandler);
+        CalculationHandler = new DesignRunnerCalculationHandler(this);
     }
 
     /// <summary>
@@ -199,12 +201,9 @@ public class DesignRunner : RunnerBase
     /// </summary>
     private void SetupGridSystem()
     {
-        if (GridGenHandler != null)
-        {
-            GridGenHandler.CreateGrid(_gridWidth, _gridHeight);
-            SetPositionCenter();
-            UpdateCameraCollider();
-        }
+        GridGenHandler.CreateGrid(_gridWidth, _gridHeight);
+        SetPositionCenter();
+        UpdateCameraCollider();
     }
 
     /// <summary>
@@ -216,28 +215,64 @@ public class DesignRunner : RunnerBase
         _currentThreadId = threadId;
         _temporaryBuildingStates.Clear();
 
-        if (!string.IsNullOrEmpty(threadId))
+        if (string.IsNullOrEmpty(threadId))
         {
-            List<BuildingState> savedStates = DataManager.Thread.GetBuildingStates(threadId);
-            if (savedStates != null)
-            {
-                _temporaryBuildingStates = new List<BuildingState>(savedStates);
-            }
+            Debug.LogWarning("[DesignRunner] Thread ID is empty");
+            RefreshBuildings();
+            return;
         }
 
+        ThreadState thread = DataManager.Thread.GetThread(threadId);
+        if (thread == null)
+        {
+            Debug.LogError($"[DesignRunner] Thread not found: {threadId}");
+            RefreshBuildings();
+            return;
+        }
+
+        if (thread.buildingStateList == null)
+        {
+            Debug.LogWarning($"[DesignRunner] buildingStateList is null for thread: {threadId}. Initializing empty list.");
+            thread.buildingStateList = new List<BuildingState>();
+        }
+
+        _temporaryBuildingStates = new List<BuildingState>(thread.buildingStateList);
+        Debug.Log($"[DesignRunner] Loaded {_temporaryBuildingStates.Count} buildings for thread: {threadId}");
         RefreshBuildings();
     }
 
     /// <summary>
     /// 현재 편집 중인 데이터를 저장합니다.
+    /// 저장 이력을 전부 제거하고 새로운 데이터로 완벽히 덮어씁니다.
     /// </summary>
-    public void SaveThread(string threadName, string categoryIdentifier)
+    public bool SaveThread(string threadName, string categoryIdentifier)
     {
-        DataManager.Thread.CreateThread(threadName, threadName);
-        DataManager.Thread.OverwriteBuildings(threadName, _temporaryBuildingStates);
+        ThreadState thread = DataManager.Thread.CreateThread(threadName, threadName);
+        if (thread == null)
+        {
+            Debug.LogError($"[DesignRunner] Failed to create thread: {threadName}");
+            return false;
+        }
+
+        bool success = DataManager.Thread.OverwriteBuildings(threadName, _temporaryBuildingStates);
+        if (!success)
+        {
+            Debug.LogError($"[DesignRunner] Failed to overwrite buildings for thread: {threadName}");
+            return false;
+        }
+
         _currentThreadId = threadName;
         ProcessPostSaveLogic(threadName, categoryIdentifier);
-        _saveLoadManager.Thread.SaveThreadData(DataManager.Thread);
+        
+        bool saveSuccess = _saveLoadManager.Thread.SaveThreadData(DataManager.Thread);
+        if (!saveSuccess)
+        {
+            Debug.LogError($"[DesignRunner] Failed to save thread data to file: {threadName}");
+            return false;
+        }
+
+        Debug.Log($"[DesignRunner] Successfully saved {_temporaryBuildingStates.Count} buildings for thread: {threadName}");
+        return true;
     }
 
     /// <summary>
@@ -287,11 +322,13 @@ public class DesignRunner : RunnerBase
         out List<string> outputResourceIdentifiers,
         out Dictionary<string, int> outputResourceCounts)
     {
-        GridGenHandler.RefreshCalculationData(GetCurrentBuildingStates());
-
-        GridGenHandler.CalculateProductionChain(
+        List<BuildingState> states = GetCurrentBuildingStates();
+        Dictionary<Vector2Int, BuildingState> gridMap = GridGenHandler.BuildGridMap(states);
+        
+        CalculationHandler.CalculateProductionChain(
             threadIdentifier,
-            GetCurrentBuildingStates(),
+            states,
+            gridMap,
             out inputResourceIdentifiers,
             out inputResourceCounts,
             out outputResourceIdentifiers,
@@ -333,17 +370,26 @@ public class DesignRunner : RunnerBase
     public void RefreshBuildings()
     {
         GridGenHandler.ClearAllPlacedBuildings();
-        GridGenHandler.RefreshCalculationData(_temporaryBuildingStates);
 
-        foreach (BuildingState buildingState in _temporaryBuildingStates)
+        foreach (BuildingState state in _temporaryBuildingStates)
         {
-            BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.Id);
-            if (buildingData != null)
-            {
-                GridGenHandler.CreateBuildingObject(new Vector2Int(buildingState.positionX, buildingState.positionY), buildingData, buildingState);
-                GridGenHandler.MarkTilesAsOccupied(new Vector2Int(buildingState.positionX, buildingState.positionY), GridMathUtils.GetRotatedSize(buildingData.size, buildingState.rotation));
-            }
+            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
+            if (data == null) continue;
+            
+            Vector2Int pos = new Vector2Int(state.positionX, state.positionY);
+            GridGenHandler.CreateBuildingObject(pos, data, state);
+            GridGenHandler.MarkTilesAsOccupied(pos, GridMathUtils.GetRotatedSize(data.size, state.rotation));
         }
+        
+        RoadHandler.RefreshRoadResources(_temporaryBuildingStates);
+    }
+
+    /// <summary>
+    /// UI 위에 마우스가 있는지 확인합니다.
+    /// </summary>
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     /// <summary>
@@ -351,11 +397,8 @@ public class DesignRunner : RunnerBase
     /// </summary>
     private void HandleBuildingClick()
     {
-        if (EventSystem.current?.IsPointerOverGameObject() == true)
-        {
-            return;
-        }
-
+        if (IsPointerOverUI()) return;
+        
         if (Input.GetMouseButtonDown(0))
         {
             _mouseDownPos = Input.mousePosition;
@@ -365,8 +408,7 @@ public class DesignRunner : RunnerBase
         if (Input.GetMouseButtonUp(0) && _isPotentialClick)
         {
             _isPotentialClick = false;
-
-            if (Vector3.Distance(_mouseDownPos, Input.mousePosition) > DragThreshold)
+            if (IsPointerOverUI() || Vector3.Distance(_mouseDownPos, Input.mousePosition) > DragThreshold)
             {
                 return;
             }
@@ -409,9 +451,6 @@ public class DesignRunner : RunnerBase
     /// <summary>
     /// 스프라이트 스케일을 계산합니다.
     /// </summary>
-    /// <param name="buildingSprite">건물 스프라이트</param>
-    /// <param name="targetSize">목표 크기</param>
-    /// <returns>계산된 스케일</returns>
     public Vector3 CalculateSpriteScale(Sprite buildingSprite, Vector2Int targetSize)
     {
         if (buildingSprite == null) return Vector3.one;
@@ -424,11 +463,9 @@ public class DesignRunner : RunnerBase
     /// <summary>
     /// 스레드의 총 유지비를 계산합니다.
     /// </summary>
-    /// <param name="threadName">스레드 이름</param>
-    /// <returns>총 유지비</returns>
     public int CalculateTotalMaintenanceCost(string threadName)
     {
-        return DataManager.ThreadPlacement?.CalculateTotalMaintenanceCost(threadName, GetCurrentBuildingStates()) ?? 0;
+        return CalculationHandler.CalculateTotalMaintenanceCost(threadName, GetCurrentBuildingStates());
     }
 
     /// <summary>

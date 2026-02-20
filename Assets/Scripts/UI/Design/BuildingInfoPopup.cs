@@ -105,17 +105,30 @@ public class BuildingInfoPopup : BasePopup
     private void UpdateProductionContext()
     {
         bool isProd = _currentData.IsProductionBuilding;
+        bool isUnloadStation = _currentData.IsUnloadStation;
+        
+        // 생산 건물이거나 하역소인 경우 자원 선택 버튼 활성화
         _changeProductionBtn.gameObject.SetActive(true);
-        _changeProductionBtn.interactable = isProd;
+        _changeProductionBtn.interactable = isProd || isUnloadStation;
     }
 
     private void RefreshResourceGrids()
     {
         UpdateResourceGrid(_currentState.inputProductionIds, _inputGridTransform, "Input");
-        if (!_currentData.IsProductionBuilding)
-            UpdateNonProductionOutput();
-        else
+        
+        // 하역소인 경우 출력 자원 표시
+        if (_currentData.IsUnloadStation)
+        {
             UpdateResourceGrid(_currentState.outputProductionIds, _outputGridTransform, "Output");
+        }
+        else if (!_currentData.IsProductionBuilding)
+        {
+            UpdateNonProductionOutput();
+        }
+        else
+        {
+            UpdateResourceGrid(_currentState.outputProductionIds, _outputGridTransform, "Output");
+        }
     }
 
     private void UpdateResourceGrid(List<string> resourceIds, Transform container, string label)
@@ -153,6 +166,24 @@ public class BuildingInfoPopup : BasePopup
 
     public void ShowOutputResourceSelection()
     {
+        // 하역소인 경우 모든 자원 타입 허용
+        if (_currentData.IsUnloadStation)
+        {
+            List<ResourceType> allResourceTypes = new List<ResourceType>();
+            foreach (ResourceType type in System.Enum.GetValues(typeof(ResourceType)))
+            {
+                allResourceTypes.Add(type);
+            }
+            
+            _designCanvas.GameManager.ShowSelectResourcePopup(
+                allResourceTypes,
+                OnUnloadStationResourceSelected,
+                null  // 하역소는 모든 자원 선택 가능
+            );
+            return;
+        }
+        
+        // 생산 건물인 경우 기존 로직 사용
         if (_currentData.AllowedResourceTypes == null || _currentData.AllowedResourceTypes.Count == 0) return;
 
         List<ResourceData> producible = GetProducibleList();
@@ -161,6 +192,22 @@ public class BuildingInfoPopup : BasePopup
             OnOutputResourceSelected,
             producible
         );
+    }
+    
+    /// <summary>
+    /// 하역소에서 자원이 선택되었을 때 호출됩니다.
+    /// </summary>
+    private void OnUnloadStationResourceSelected(ResourceEntry selected)
+    {
+        if (_currentState == null || selected == null) return;
+
+        _currentState.outputProductionIds.Clear();
+        _currentState.outputProductionIds.Add(selected.data.id);
+
+        UpdateUI();
+        RefreshWorldIcons();
+
+        Close();
     }
 
     private List<ResourceData> GetProducibleList()

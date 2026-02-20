@@ -18,9 +18,6 @@ public class DesignRunnerCaptureHandler
     /// <summary>
     /// 특정 스레드(건물 배치 데이터)를 캡처하여 파일로 저장합니다.
     /// </summary>
-    /// <summary>
-    /// 특정 스레드(건물 배치 데이터)를 캡처하여 파일로 저장합니다.
-    /// </summary>
     public string CaptureThreadLayout(string threadName, List<BuildingState> statesToCapture)
     {
         if (string.IsNullOrEmpty(threadName) || _mainCamera == null || statesToCapture == null || statesToCapture.Count == 0)
@@ -165,7 +162,6 @@ public class DesignRunnerCaptureHandler
 
     private void RestoreCamera(Camera cam, CameraBackup backup)
     {
-        if (cam == null) return;
         cam.targetTexture = backup.rt;
         cam.clearFlags = backup.flags;
         cam.backgroundColor = backup.bg;

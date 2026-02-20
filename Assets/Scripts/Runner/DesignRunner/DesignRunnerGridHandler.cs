@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using System.Linq;
-using Unity.VisualScripting;
 
 /// <summary>
 /// 그리드 타일의 생성, 건물 오브젝트의 배치 및 좌표 변환을 관리하는 핸들러입니다.
@@ -17,31 +14,12 @@ public class DesignRunnerGridHandler
     private readonly Dictionary<Vector2Int, GameObject> _buildingOriginMap = new Dictionary<Vector2Int, GameObject>();
     private readonly Dictionary<Vector2Int, GameObject> _occupancyMap = new Dictionary<Vector2Int, GameObject>();
 
-    private List<BuildingState> _currentStates = new List<BuildingState>();
-    private Dictionary<Vector2Int, BuildingState> _stateGridMap = new Dictionary<Vector2Int, BuildingState>();
-
-    private bool _isPlacementActive;
-    private bool _canPlace;
-    private BuildingData _selectedBuilding;
-    private Vector2Int _currentGridPos;
-    private int _rotationIndex = 0;
-
-    private GameObject _previewObj;
-    private SpriteRenderer _previewRenderer;
-    private BuildingObject _previewComponent;
-
-    private bool _isRemovalActive;
-    private GameObject _hoveredBuilding;
 
     private const float TileZDepth = 10f;
     private const float BuildingZDepth = 9f;
 
     public int Width => _manager.GridWidth;
     public int Height => _manager.GridHeight;
-    public bool IsPlacementActive => _isPlacementActive;
-    public bool IsRemovalActive => _isRemovalActive;
-    public BuildingData SelectedBuilding => _selectedBuilding;
-    public int RotationIndex => _rotationIndex;
     private DataManager DataManager => _manager.DataManager;
 
     public DesignRunnerGridHandler(DesignRunner manager)
@@ -49,8 +27,6 @@ public class DesignRunnerGridHandler
         _manager = manager;
         _parentTransform = manager.transform;
     }
-
-    #region Grid Management
 
     public void CreateGrid(int width, int height)
     {
@@ -108,10 +84,6 @@ public class DesignRunnerGridHandler
         }
     }
 
-    #endregion
-
-    #region Building Object Management
-
     public GameObject CreateBuildingObject(Vector2Int gridPosition, BuildingData buildingData, BuildingState buildingState = null)
     {
         if (buildingData?.buildingSprite == null) return null;
@@ -130,7 +102,7 @@ public class DesignRunnerGridHandler
         buildingObject.transform.position = GridMathUtils.GetGridToWorldPos(_parentTransform, gridPosition, rotatedSize, BuildingZDepth);
         buildingObject.transform.rotation = Quaternion.Euler(0, 0, -rotation * 90f);
 
-        SpriteRenderer renderer = buildingObject.GetOrAddComponent<SpriteRenderer>();
+        SpriteRenderer renderer = buildingObject.GetComponent<SpriteRenderer>();
         renderer.sprite = buildingData.buildingSprite;
         buildingObject.transform.localScale = GameObjectUtils.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
 
@@ -143,14 +115,19 @@ public class DesignRunnerGridHandler
             renderer.color = Color.white;
         }
 
-        BuildingObject buildingComponent = buildingObject.GetOrAddComponent<BuildingObject>();
-        BoxCollider2D boxCollider = buildingObject.GetOrAddComponent<BoxCollider2D>();
+        BuildingObject buildingComponent = buildingObject.GetComponent<BuildingObject>();
+        BoxCollider2D boxCollider = buildingObject.GetComponent<BoxCollider2D>();
         boxCollider.size = new Vector2(buildingData.size.x, buildingData.size.y);
 
         if (buildingState != null)
         {
             buildingComponent.Initialize(buildingData, buildingState, _manager.InputMarkerPrefab, _manager.OutputMarkerPrefab, this);
             buildingComponent.SetupProductionIcons();
+            
+            if (buildingData.IsRoad)
+            {
+                buildingComponent.SetupRoadResources(_manager.RoadHandler);
+            }
         }
 
         RegisterBuildingToMaps(gridPosition, rotatedSize, buildingObject);
@@ -201,6 +178,43 @@ public class DesignRunnerGridHandler
     {
         return _occupancyMap.TryGetValue(gridPosition, out GameObject obj) ? obj : null;
     }
+    
+    /// <summary>
+    /// 특정 origin 위치의 건물 오브젝트를 가져옵니다.
+    /// </summary>
+    public GameObject GetBuildingAtOrigin(Vector2Int originPosition)
+    {
+        return _buildingOriginMap.TryGetValue(originPosition, out GameObject obj) ? obj : null;
+    }
+
+    /// <summary>
+    /// 특정 그리드 위치의 타일 오브젝트를 가져옵니다.
+    /// </summary>
+    public GameObject GetTileAtPosition(Vector2Int gridPosition)
+    {
+        return _tileObjectMap.TryGetValue(gridPosition, out GameObject tile) ? tile : null;
+    }
+    
+    /// <summary>
+    /// 모든 타일의 위치를 가져옵니다.
+    /// </summary>
+    public Dictionary<Vector2Int, GameObject> GetAllTiles()
+    {
+        return new Dictionary<Vector2Int, GameObject>(_tileObjectMap);
+    }
+    
+    /// <summary>
+    /// 특정 위치가 도로인지 확인합니다.
+    /// </summary>
+    public bool IsRoadAtPosition(Vector2Int gridPosition, Dictionary<Vector2Int, BuildingState> gridMap = null)
+    {
+        if (gridMap != null && gridMap.TryGetValue(gridPosition, out BuildingState state))
+        {
+            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
+            return data != null && data.IsRoad;
+        }
+        return false;
+    }
 
     private void SetTileOccupied(Vector2Int pos, bool occupied)
     {
@@ -223,140 +237,21 @@ public class DesignRunnerGridHandler
         }
     }
 
-    #endregion
-
-    #region Input & Logic (Placement/Removal)
-
-    public (Vector2Int gridPos, bool canPlace) UpdatePlacement(Vector3 mouseWorldPos)
+    public bool CanPlaceBuilding(Vector2Int startGridPos, Vector2Int rotatedSize)
     {
-        if (!_isPlacementActive || _selectedBuilding == null)
-            return (Vector2Int.zero, false);
+        if (!IsWithinBounds(startGridPos, rotatedSize)) return false;
 
-        bool isOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        
-        if (isOverUI)
+        for (int y = 0; y < rotatedSize.y; y++)
         {
-            SetPreviewVisible(false);
-            _canPlace = false;
-            return (Vector2Int.zero, false);
+            for (int x = 0; x < rotatedSize.x; x++)
+            {
+                if (_occupancyMap.ContainsKey(new Vector2Int(startGridPos.x + x, startGridPos.y + y)))
+                    return false;
+            }
         }
-
-        _currentGridPos = GridMathUtils.GetWorldToGridPos(_parentTransform, mouseWorldPos);
-        Vector2Int rotatedSize = GridMathUtils.GetRotatedSize(_selectedBuilding.size, _rotationIndex);
-        
-        bool isWithinBounds = IsWithinBounds(_currentGridPos, rotatedSize);
-
-        if (!isWithinBounds)
-        {
-            SetPreviewVisible(false);
-            _canPlace = false;
-            return (_currentGridPos, false);
-        }
-
-        SetPreviewVisible(true);
-        _canPlace = CanPlaceBuilding(_currentGridPos, rotatedSize);
-
-        UpdatePreviewVisuals(rotatedSize);
-
-        return (_currentGridPos, _canPlace);
+        return true;
     }
-
-    private void UpdatePreviewVisuals(Vector2Int rotatedSize)
-    {
-        if (_previewObj == null) return;
-
-        _previewObj.transform.position = GridMathUtils.GetGridToWorldPos(_parentTransform, _currentGridPos, rotatedSize, BuildingZDepth);
-        
-        Color stateColor = _canPlace 
-            ? (VisualManager.Instance?.ValidColor ?? Color.green) 
-            : (VisualManager.Instance?.InvalidColor ?? Color.red);
-        
-        if (_previewRenderer != null) _previewRenderer.color = stateColor;
-        _previewComponent?.UpdatePreviewMarkers(_currentGridPos, this, _rotationIndex);
-    }
-
-    public void StartPlacement(BuildingData data)
-    {
-        if (data == null) return;
-        ClearPreview();
-        _isPlacementActive = true;
-        _selectedBuilding = data;
-        _rotationIndex = 0;
-
-        CreatePreview();
-        _manager.DesignUiManager.UpdateModeBtnImages(true, false);
-        _manager.MainCameraController.SetDragEnabled(false);
-    }
-
-    public void CancelPlacement()
-    {
-        _isPlacementActive = false;
-        _selectedBuilding = null;
-
-        ClearPreview();
-        _manager.DesignUiManager.UpdateModeBtnImages(false, false);
-        _manager.MainCameraController.SetDragEnabled(true);
-    }
-
-    public void Rotate(bool clockwise)
-    {
-        _rotationIndex = clockwise ? (_rotationIndex + 1) % 4 : (_rotationIndex + 3) % 4;
-        if (_previewObj != null)
-        {
-            _previewObj.transform.rotation = Quaternion.Euler(0, 0, -_rotationIndex * 90f);
-            _previewObj.transform.localScale = GameObjectUtils.CalculateSpriteScale(
-                _selectedBuilding.buildingSprite, _selectedBuilding.size);
-        }
-    }
-
-    public void StartRemoval()
-    {
-        _isRemovalActive = true;
-        _manager.DesignUiManager?.UpdateModeBtnImages(false, true);
-    }
-
-    public void CancelRemoval()
-    {
-        _isRemovalActive = false;
-        ResetBuildingHighlight();
-        _manager.DesignUiManager?.UpdateModeBtnImages(false, false);
-    }
-
-    public GameObject UpdateRemoval(Vector3 mouseWorldPos)
-    {
-        if (!_isRemovalActive) return null;
-
-        bool isOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        if (isOverUI)
-        {
-            ResetBuildingHighlight();
-            return null;
-        }
-
-        Vector2Int gridPos = GridMathUtils.GetWorldToGridPos(_parentTransform, mouseWorldPos);
-        GameObject buildingAtPos = GetBuildingAtPosition(gridPos);
-
-        if (buildingAtPos != _hoveredBuilding)
-        {
-            ResetBuildingHighlight();
-            _hoveredBuilding = buildingAtPos;
-            HighlightBuilding(_hoveredBuilding);
-        }
-
-        return _hoveredBuilding;
-    }
-
-    public void ResetBuildingHighlight()
-    {
-        if (_hoveredBuilding != null && _hoveredBuilding.TryGetComponent(out SpriteRenderer r))
-            r.color = Color.white;
-        _hoveredBuilding = null;
-    }
-
-    #endregion
-
-    #region Helpers (Visual & Check)
-
+    
     private bool IsWithinBounds(Vector2Int gridPos, Vector2Int size)
     {
         return gridPos.x >= 0 && gridPos.y >= 0 &&
@@ -364,75 +259,16 @@ public class DesignRunnerGridHandler
                gridPos.y + size.y <= _manager.GridHeight;
     }
 
-    private bool CanPlaceBuilding(Vector2Int startGridPos, Vector2Int rotatedSize)
+    /// <summary>
+    /// 건물 상태 리스트로부터 그리드 맵을 생성합니다.
+    /// </summary>
+    public Dictionary<Vector2Int, BuildingState> BuildGridMap(List<BuildingState> states)
     {
-        if (!IsWithinBounds(startGridPos, rotatedSize))
-            return false;
-
-        for (int y = 0; y < rotatedSize.y; y++)
-        {
-            for (int x = 0; x < rotatedSize.x; x++)
-            {
-                Vector2Int pos = new Vector2Int(startGridPos.x + x, startGridPos.y + y);
-                if (_occupancyMap.ContainsKey(pos)) return false;
-            }
-        }
-        return true;
-    }
-
-    private void CreatePreview()
-    {
-        _previewObj = _manager.BuildingObjectPrefab != null 
-            ? Object.Instantiate(_manager.BuildingObjectPrefab, _manager.transform) 
-            : new GameObject("PlacementPreview");
-
-        _previewRenderer = _previewObj.GetOrAddComponent<SpriteRenderer>();
-        _previewRenderer.sprite = _selectedBuilding.buildingSprite;
-        _previewRenderer.sortingOrder = 10;
+        Dictionary<Vector2Int, BuildingState> map = new Dictionary<Vector2Int, BuildingState>();
         
-        Color c = _previewRenderer.color;
-        _previewRenderer.color = new Color(c.r, c.g, c.b, 0.6f);
-
-        _previewComponent = _previewObj.GetOrAddComponent<BuildingObject>();
-        _previewComponent.InitializePreview(_selectedBuilding, _manager.InputMarkerPrefab, _manager.OutputMarkerPrefab);
+        if (states == null) return map;
         
-        Rotate(false);
-        SetPreviewVisible(false);
-    }
-
-    private void ClearPreview()
-    {
-        if (_previewObj != null)
-        {
-            Object.Destroy(_previewObj);
-            _previewObj = null;
-            _previewRenderer = null;
-            _previewComponent = null;
-        }
-    }
-
-    private void SetPreviewVisible(bool visible)
-    {
-        if (_previewRenderer != null) _previewRenderer.enabled = visible;
-        _previewComponent?.SetMarkersActive(visible);
-    }
-
-    private void HighlightBuilding(GameObject building)
-    {
-        if (building != null && building.TryGetComponent(out SpriteRenderer r))
-            r.color = VisualManager.Instance?.InvalidColor ?? new Color(1, 0, 0, 0.5f);
-    }
-
-    #endregion
-
-    #region Calculation Wrappers (Delegates)
-
-    public void RefreshCalculationData(List<BuildingState> states)
-    {
-        _currentStates = states ?? new List<BuildingState>();
-        _stateGridMap.Clear();
-        
-        foreach (BuildingState state in _currentStates)
+        foreach (BuildingState state in states)
         {
             BuildingData data = DataManager.Building.GetBuildingData(state.Id);
             if (data == null) continue;
@@ -443,140 +279,13 @@ public class DesignRunnerGridHandler
                 for (int y = 0; y < size.y; y++)
                 {
                     Vector2Int pos = new Vector2Int(state.positionX + x, state.positionY + y);
-                    _stateGridMap[pos] = state;
+                    map[pos] = state;
                 }
             }
         }
-    }
-
-    public int CalculateThreadOutputs(string threadName, List<BuildingState> customStates = null)
-    {
-        if (DataManager == null) return 0;
-        List<BuildingState> states = customStates ?? _currentStates;
-        Dictionary<Vector2Int, BuildingState> map = customStates != null ? BuildTempMap(customStates) : _stateGridMap;
-        int count = 0;
-
-        foreach (BuildingState state in states)
-        {
-            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
-            if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
-
-            Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
-            Vector2Int inPos = basePos + GridMathUtils.GetRotatedOffset(data.InputPosition, state.rotation);
-            Vector2Int outPos = basePos + GridMathUtils.GetRotatedOffset(data.OutputPosition, state.rotation);
-
-            if (RoadNetworkAnalyzer.IsConnected(inPos, true, false, map, DataManager) &&
-                RoadNetworkAnalyzer.IsConnected(outPos, false, true, map, DataManager))
-            {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public int CalculateTotalMaintenanceCost(string threadName, List<BuildingState> customStates = null)
-    {
-        List<BuildingState> statesToUse = customStates ?? _currentStates;
-        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(DataManager, statesToUse);
-        return stats.TotalMaintenanceCost;
-    }
-
-    public void CalculateProductionChain(string threadName, List<BuildingState> states,
-        out List<string> inputIds, out Dictionary<string, int> inputCounts,
-        out List<string> outputIds, out Dictionary<string, int> outputCounts)
-    {
-        inputCounts = new Dictionary<string, int>();
-        outputCounts = new Dictionary<string, int>();
-        HashSet<string> reachableOutputs = new HashSet<string>();
         
-        List<BuildingState> targetStates = states ?? _currentStates;
-        Dictionary<Vector2Int, BuildingState> map = states != null ? BuildTempMap(states) : _stateGridMap;
-
-        foreach (BuildingState state in targetStates)
-        {
-            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
-            if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
-
-            Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
-            Vector2Int outPos = basePos + GridMathUtils.GetRotatedOffset(data.OutputPosition, state.rotation);
-            Vector2Int inPos = basePos + GridMathUtils.GetRotatedOffset(data.InputPosition, state.rotation);
-
-            if (RoadNetworkAnalyzer.IsConnected(outPos, false, true, map, DataManager))
-            {
-                if (state.outputProductionIds != null)
-                {
-                    foreach (string id in state.outputProductionIds)
-                    {
-                        if (string.IsNullOrEmpty(id)) continue;
-                        reachableOutputs.Add(id);
-                        outputCounts[id] = outputCounts.GetValueOrDefault(id, 0) + 1;
-                    }
-                }
-            }
-
-            if (RoadNetworkAnalyzer.IsConnected(inPos, true, false, map, DataManager))
-            {
-                ProcessInputs(state, inputCounts);
-            }
-        }
-
-        inputIds = inputCounts.Keys.ToList();
-        outputIds = reachableOutputs.ToList();
-    }
-
-    private Dictionary<Vector2Int, BuildingState> BuildTempMap(List<BuildingState> states)
-    {
-        Dictionary<Vector2Int, BuildingState> map = new Dictionary<Vector2Int, BuildingState>();
-        foreach (BuildingState s in states)
-        {
-            BuildingData d = DataManager.Building.GetBuildingData(s.Id);
-            if (d == null) continue;
-            Vector2Int size = GridMathUtils.GetRotatedSize(d.size, s.rotation);
-            for (int x = 0; x < size.x; x++)
-            {
-                for (int y = 0; y < size.y; y++)
-                {
-                    map[new Vector2Int(s.positionX + x, s.positionY + y)] = s;
-                }
-            }
-        }
         return map;
     }
-
-    private void ProcessInputs(BuildingState state, Dictionary<string, int> counts)
-    {
-        if (state.inputProductionIds != null && state.inputProductionIds.Count > 0)
-        {
-            foreach (string id in state.inputProductionIds)
-            {
-                if (string.IsNullOrEmpty(id)) continue;
-                counts[id] = counts.GetValueOrDefault(id, 0) + 1;
-            }
-        }
-        else if (state.outputProductionIds != null && state.outputProductionIds.Count > 0)
-        {
-            foreach (string outId in state.outputProductionIds)
-            {
-                if (string.IsNullOrEmpty(outId)) continue;
-
-                ResourceEntry entry = DataManager.Resource.GetResourceEntry(outId);
-                if (entry?.data?.requirements == null) continue;
-
-                foreach (ResourceRequirement req in entry.data.requirements)
-                {
-                    if (req.resource != null && !string.IsNullOrEmpty(req.resource.id))
-                    {
-                        int amount = Mathf.Max(1, req.count);
-                        counts[req.resource.id] = counts.GetValueOrDefault(req.resource.id, 0) + amount;
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region Coordinate Conversion (Legacy Support)
 
     public Vector2Int WorldToGridPosition(Vector3 worldPosition)
     {
@@ -587,6 +296,4 @@ public class DesignRunnerGridHandler
     {
         return GridMathUtils.GetGridToWorldPos(_parentTransform, gridPosition, size, BuildingZDepth);
     }
-
-    #endregion
 }

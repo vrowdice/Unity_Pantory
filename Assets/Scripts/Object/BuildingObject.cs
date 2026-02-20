@@ -19,6 +19,7 @@ public class BuildingObject : MonoBehaviour
     private GameObject _outputMarker;
     private GameObject _inputProductionContainer;
     private GameObject _outputProductionContainer;
+    private GameObject _roadResourceContainer;  // 도로 자원 표시용 컨테이너
 
     public BuildingData BuildingData => _buildingData;
     public BuildingState BuildingState => _buildingState;
@@ -60,9 +61,6 @@ public class BuildingObject : MonoBehaviour
     /// </summary>
     private void CreateMarkers(GameObject inputMarkerPrefab, GameObject outputMarkerPrefab, DesignRunnerGridHandler gridHandler)
     {
-        if (_buildingData == null || _buildingState == null || gridHandler == null)
-            return;
-
         if (_buildingData.InputPosition != Vector2Int.zero && inputMarkerPrefab != null)
         {
             _inputMarker = CreateMarkerAsChild("Input", inputMarkerPrefab);
@@ -80,13 +78,9 @@ public class BuildingObject : MonoBehaviour
     /// </summary>
     private GameObject CreateMarkerAsChild(string name, GameObject prefab)
     {
-        if (prefab == null)
-            return null;
-        
         GameObject marker = Instantiate(prefab, transform);
         marker.name = $"IOMarker_{name}";
         GameObjectUtils.CompensateParentScale(marker.transform, transform);
-        
         return marker;
     }
     
@@ -95,9 +89,6 @@ public class BuildingObject : MonoBehaviour
     /// </summary>
     private void UpdateMarkerPosition(GameObject marker, Vector2Int gridPos, DesignRunnerGridHandler gridHandler)
     {
-        if (marker == null || gridHandler == null)
-            return;
-        
         Vector3 worldPos = gridHandler.GridToWorldPosition(gridPos, Vector2Int.one);
         marker.transform.position = new Vector3(worldPos.x, worldPos.y, 1.0f);
     }
@@ -107,9 +98,6 @@ public class BuildingObject : MonoBehaviour
     /// </summary>
     public void UpdatePreviewMarkers(Vector2Int buildingGridPos, DesignRunnerGridHandler gridHandler, int rotation = 0)
     {
-        if (_buildingData == null || gridHandler == null)
-            return;
-
         Vector2Int rotatedInputPos = RotatePositionAroundCenter(_buildingData.InputPosition, rotation, _buildingData.size);
         Vector2Int rotatedOutputPos = RotatePositionAroundCenter(_buildingData.OutputPosition, rotation, _buildingData.size);
         Vector2Int inputPos = buildingGridPos + rotatedInputPos;
@@ -172,31 +160,19 @@ public class BuildingObject : MonoBehaviour
     /// </summary>
     public void SetMarkersActive(bool active)
     {
-        if (_inputMarker != null)
-            _inputMarker.SetActive(active);
-        
-        if (_outputMarker != null)
-            _outputMarker.SetActive(active);
+        _inputMarker?.SetActive(active);
+        _outputMarker?.SetActive(active);
     }
     
     /// <summary>
     /// 건물 위에 입출력 자원 아이콘을 표시합니다.
     /// </summary>
-    /// <param name="dataManager">게임 데이터 매니저</param>
     public void SetupProductionIcons()
     {
-        if (_buildingState == null)
-            return;
-
-        
         ClearProductionIconContainers();
         
         Transform sharedCanvas = _gameManager.GetWorldCanvas();
-        if (sharedCanvas == null)
-        {
-            Debug.LogWarning("[BuildingObject] Shared canvas is null. Production icons will not be displayed.");
-            return;
-        }
+        if (sharedCanvas == null) return;
 
         Dictionary<string, int> inputCounts = GameObjectUtils.AggregateResourceCounts(_buildingState.inputProductionIds);
         Dictionary<string, int> outputCounts = GameObjectUtils.AggregateResourceCounts(_buildingState.outputProductionIds);
@@ -240,22 +216,14 @@ public class BuildingObject : MonoBehaviour
     {
         if (_inputProductionContainer != null)
         {
-            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
-            if (PoolingManager.Instance != null)
-            {
-                PoolingManager.Instance.ClearChildrenToPool(_inputProductionContainer.transform);
-            }
+            PoolingManager.Instance?.ClearChildrenToPool(_inputProductionContainer.transform);
             Destroy(_inputProductionContainer);
             _inputProductionContainer = null;
         }
         
         if (_outputProductionContainer != null)
         {
-            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
-            if (PoolingManager.Instance != null)
-            {
-                PoolingManager.Instance.ClearChildrenToPool(_outputProductionContainer.transform);
-            }
+            PoolingManager.Instance?.ClearChildrenToPool(_outputProductionContainer.transform);
             Destroy(_outputProductionContainer);
             _outputProductionContainer = null;
         }
@@ -275,8 +243,57 @@ public class BuildingObject : MonoBehaviour
         return size;
     }
     
+    /// <summary>
+    /// 도로 건물에 전파된 자원들을 표시합니다.
+    /// </summary>
+    public void SetupRoadResources(DesignRunnerRoadHandler roadHandler)
+    {
+        if (!_buildingData.IsRoad) return;
+        
+        ClearRoadResourceContainer();
+        
+        Transform sharedCanvas = _gameManager.GetWorldCanvas();
+        if (sharedCanvas == null) return;
+        
+        Vector2Int roadPos = new Vector2Int(_buildingState.positionX, _buildingState.positionY);
+        HashSet<string> resources = roadHandler.GetResourcesAtRoad(roadPos);
+        
+        if (resources.Count == 0) return;
+        
+        Dictionary<string, int> resourceCounts = new Dictionary<string, int>();
+        foreach (string resourceId in resources)
+        {
+            resourceCounts[resourceId] = 1;
+        }
+        
+        Vector3 worldPosition = transform.position + new Vector3(0, 0, -1);
+        float roadIconScale = _productionIconScale * 0.7f; // 도로 자원 아이콘을 70% 크기로
+        
+        _roadResourceContainer = _gameManager.CreateProductionIconContainer(
+            sharedCanvas,
+            $"RoadResources_{gameObject.name}",
+            worldPosition,
+            roadIconScale,
+            resourceCounts
+        );
+    }
+    
+    /// <summary>
+    /// 도로 자원 컨테이너를 정리합니다.
+    /// </summary>
+    private void ClearRoadResourceContainer()
+    {
+        if (_roadResourceContainer != null)
+        {
+            PoolingManager.Instance?.ClearChildrenToPool(_roadResourceContainer.transform);
+            Destroy(_roadResourceContainer);
+            _roadResourceContainer = null;
+        }
+    }
+    
     void OnDestroy()
     {
         ClearProductionIconContainers();
+        ClearRoadResourceContainer();
     }
 }

@@ -64,7 +64,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Primary
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -378,7 +378,19 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6440975571895720504}
+        m_TargetAssemblyTypeName: ManageThreadCartegoryItemBtn, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -539,7 +551,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Primary (Soft)
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 0.05
@@ -1076,7 +1088,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Primary (Soft)
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 0.05
@@ -1479,7 +1491,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Background
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -1566,7 +1578,7 @@ MonoBehaviour:
   targetText: {fileID: 3368806946737131255}
   objectType: 1
   colorID: Primary
-  fontID: Inter - Regular
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -1612,8 +1624,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1648,6 +1660,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1884,7 +1897,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Secondary
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -2000,7 +2013,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.1
+  m_fontSize: 30.15
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2011,6 +2024,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2147,6 +2161,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2453,7 +2468,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Primary
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -2679,7 +2694,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Secondary
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -2847,7 +2862,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Background
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -2964,7 +2979,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Background
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -3081,7 +3096,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.1
+  m_fontSize: 30.15
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3092,6 +3107,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -3258,7 +3274,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Background
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -3375,7 +3391,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Primary (Soft)
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 0.05
@@ -3462,7 +3478,7 @@ MonoBehaviour:
   targetText: {fileID: 4865765296953016249}
   objectType: 1
   colorID: Primary
-  fontID: Inter - Regular
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -3508,8 +3524,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
+  m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3544,6 +3560,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

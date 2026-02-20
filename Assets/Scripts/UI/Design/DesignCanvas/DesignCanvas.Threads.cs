@@ -49,8 +49,15 @@ public partial class DesignCanvas
     /// </summary>
     public void SaveThreadChanges(string threadName, string categoryIdentifier)
     {
-        _designRunner.SaveThread(threadName, categoryIdentifier);
-        GameManager.ShowWarningPopup(WarningMessage.SavedSuccessfully);
+        bool success = _designRunner.SaveThread(threadName, categoryIdentifier);
+        if (success)
+        {
+            GameManager.ShowWarningPopup(WarningMessage.SavedSuccessfully);
+        }
+        else
+        {
+            GameManager.ShowWarningPopup(WarningMessage.SaveFailed);
+        }
 
         DeselectBuilding();
     }
