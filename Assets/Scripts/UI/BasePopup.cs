@@ -20,6 +20,7 @@ public class BasePopup : MonoBehaviour
     private Vector3? _originalScale = null;
 
     private Action _onShowCompleteCallback = null;
+    private Action _cachedClose;
 
     public virtual void Init()
     {
@@ -46,6 +47,12 @@ public class BasePopup : MonoBehaviour
         if (!_enabled)
         {
             return;
+        }
+
+        if (_cachedClose == null) _cachedClose = Close;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.PushCloseable(_cachedClose);
         }
 
         gameObject.SetActive(true);
@@ -114,6 +121,11 @@ public class BasePopup : MonoBehaviour
 
     public virtual void Close()
     {
+        if (_cachedClose != null && GameManager.Instance != null)
+        {
+            GameManager.Instance.RemoveCloseable(_cachedClose);
+        }
+
         if (_showCoroutine != null)
         {
             StopCoroutine(_showCoroutine);

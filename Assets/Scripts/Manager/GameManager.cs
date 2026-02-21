@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
+    private readonly List<Action> _closeStack = new List<Action>();
 
     private CanvasBase _currentCanvasBase;
     private RunnerBase _currentRunnerBase;
@@ -126,9 +128,54 @@ public class GameManager : Singleton<GameManager>
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TryCloseTopmost();
+        }
+    }
+
     void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void PushCloseable(Action onClose)
+    {
+        if (onClose != null)
+        {
+            _closeStack.Add(onClose);
+        }
+    }
+
+    public void RemoveCloseable(Action onClose)
+    {
+        if (onClose != null)
+        {
+            for (int i = _closeStack.Count - 1; i >= 0; i--)
+            {
+                if (_closeStack[i] == onClose)
+                {
+                    _closeStack.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+    }
+
+    public void TryCloseTopmost()
+    {
+        if (_closeStack.Count == 0) return;
+        int last = _closeStack.Count - 1;
+        Action close = _closeStack[last];
+        _closeStack.RemoveAt(last);
+        close?.Invoke();
+    }
+
+    public void ClearCloseStack()
+    {
+        _closeStack.Clear();
     }
 
     /// <summary>
@@ -136,6 +183,8 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        ClearCloseStack();
+
         if (_sharedWorldCanvas != null)
         {
             Destroy(_sharedWorldCanvas);

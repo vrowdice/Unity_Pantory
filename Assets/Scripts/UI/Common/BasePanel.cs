@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,8 @@ public abstract class BasePanel : MonoBehaviour
     protected GameManager _gameManager;
     protected DataManager _dataManager;
     protected MainCanvas _uiManager;
-    
+    private Action _cachedOnClose;
+
     [Header("Animation")]
     [SerializeField] private bool _usePanelAnimation = true;
     [SerializeField] private bool _deactivateAfterClose = true;
@@ -25,6 +27,12 @@ public abstract class BasePanel : MonoBehaviour
         _gameManager = GameManager.Instance;
         _dataManager = DataManager.Instance;
         _uiManager = argUIManager;
+
+        if (_cachedOnClose == null) _cachedOnClose = OnClose;
+        if (_gameManager != null)
+        {
+            _gameManager.PushCloseable(_cachedOnClose);
+        }
 
         PanelDoAni animator = null;
         if (TryGetPanelAnimator(out animator))
@@ -42,6 +50,11 @@ public abstract class BasePanel : MonoBehaviour
     /// </summary>
     public void OnClose()
     {
+        if (_cachedOnClose != null && _gameManager != null)
+        {
+            _gameManager.RemoveCloseable(_cachedOnClose);
+        }
+
         if (!gameObject.activeSelf)
         {
             return;
