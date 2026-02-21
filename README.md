@@ -1,25 +1,83 @@
-# Unity Pantory
+# 🧭 Pantory
 
-## Introduction
-Unity Pantory is a simulation game where players build and manage their own virtual pantry business. The objective is to maximize profit while maintaining a balanced resource management system.
+**Pantory** is a fantasy crafting & trading simulation game set in a world where magic and early industrial technology coexist. Players gather resources, craft various tools, and directly sell their creations in the market — shaping the economy with their own hands.
 
-## Thread System
-The game employs a thread management system to ensure smooth gameplay. By utilizing threads, the game can handle multiple tasks simultaneously, enhancing performance and responsiveness during intense gameplay situations.
+---
 
-## Building System
-Players can construct various buildings to support their business. Each building type serves a specific purpose, such as production, storage, or employee management, allowing for diverse strategies in gameplay.
+## 🌍 Overview
+Pantory is a production and commerce simulation where the fusion of fantasy and modern technology defines the world.
+* **Core Loop:** Gather raw materials → Refine/Process → Craft Items → Trade in the Market.
+* **Goal:** Understand production efficiency and market trends to grow your own grand workshop.
 
-## Market Economy
-Unity Pantory features a dynamic market economy where resource prices fluctuate based on supply and demand. Players must adapt their strategies to the changing market to maximize profits and ensure sustainable growth.
+---
 
-## Resource Management
-Resource management is crucial in Unity Pantory. Players can gather resources through different methods, including farming, trading, and production. Efficient management of these resources is key to ensuring the success of the player’s pantry business.
+## ⚙️ Core Game Systems
 
-## Employee System
-The employee system allows players to hire various roles that contribute to the business's success. Players can assign employees to different tasks, optimizing productivity and resource allocation.
+### 🏭 Thread System (Production Threads)
+* **Main Runner:** The primary interface for managing active production threads.
+* **Tracking:** Each thread utilizes a unique ID and category for resource consumption/production calculations.
+* **Interactivity:** Toggle between Placement and Removal modes for thread optimization.
 
-## Game Mechanics
-The core mechanics of Unity Pantory revolve around building, resource management, and market interactions. Players must balance growth and resource demand while navigating challenges that arise throughout the gameplay.
+### 🏢 Building System (Logistics & Design)
+* **Design Runner:** A specialized UI for designing complex production chains.
+* **Rotational Placement:** 4-way (90-degree) rotation for optimized layouts.
+* **Building Categories:**
+  * 🏭 **Raw Material Factory**: Basic extraction.
+  * 🔧 **Processing Building**: Component manufacturing.
+  * 🛣️ **Road/Distribution**: Logistics networking.
+  * 📦 **Unload Station**: Logistics endpoints.
 
-## Conclusion
-Explore all features of Unity Pantory and build your ideal pantry empire! Have fun and strategize your way to success!
+### 📊 Market & Economy
+* **Dynamic Price System**: Prices fluctuate based on real-time supply and demand.
+* **Market Actors**: NPC "Companies" act as market participants, driving liquidity.
+* **Financial Logic**: 5% transaction fees, trust/reputation systems, and daily asset management.
+
+### 🧩 Resource & Logistics
+* **Resource Types**: Metal, Wood, Tool, Weapon, etc.
+* **Trend Analysis**: Tracks up to 60 historical data points for price forecasting.
+* **Road Network Logic**: Validates connectivity from Unload Stations and handles circular dependencies in production.
+
+---
+
+## 🛠️ Technical Architecture
+
+### Manager System
+Centralized control via a high-level Manager/Handler pattern:
+* **GameManager**: Global state and UI Canvas control.
+* **DataManager**: Central hub for all specialized Data Handlers.
+* **SaveLoadManager**: Persistent JSON/Binary data handling.
+* **PoolingManager**: Object pooling for optimized performance.
+
+### Runner & Handler Logic
+The game separates logic through "Runners" (States) and "Handlers" (Functional logic):
+* **DesignRunnerGridHandler**: Manages building grid coordinates.
+* **DesignRunnerRoadHandler**: Calculates resource propagation across the road network.
+* **DesignRunnerCalculationHandler**: Real-time production chain math.
+
+---
+
+## 🎨 Tech Stack
+| Category | Technology |
+| :--- | :--- |
+| **Engine** | Unity 2022.x+ |
+| **Language** | C# (97.8%), Python (Automation) |
+| **Graphics** | ShaderLab, HLSL |
+| **UI** | TextMesh Pro, Unity Canvas, DOTween |
+| **Tools** | Python scripts for automated asset generation |
+
+---
+
+## 📁 Project Structure
+```text
+Assets/
+├── Scripts/
+│   ├── Manager/              # Global Singletons (Game, Data, Sound)
+│   ├── Runner/               # Screen Controllers (Main, Design)
+│   ├── Data/                 # ScriptableObjects & Data Structures
+│   ├── UI/                   # View logic & UI Panels
+│   └── Py/                   # Python scripts for asset automation
+├── Assets/
+│   ├── Sprites/              # 2D Assets
+│   ├── Prefabs/              # Construction & Thread objects
+│   └── Images/               # Generated icons
+└── ...
