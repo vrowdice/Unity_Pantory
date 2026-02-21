@@ -1,49 +1,25 @@
-# 🧭 Pantory
+# Unity Pantory
 
-**Pantory** is a fantasy crafting & trading simulation game set in a world where magic and early industrial technology coexist.  
-Players gather resources, craft various tools, and directly sell their creations in the market — shaping the economy with their own hands.
+## Introduction
+Unity Pantory is a simulation game where players build and manage their own virtual pantry business. The objective is to maximize profit while maintaining a balanced resource management system.
 
----
+## Thread System
+The game employs a thread management system to ensure smooth gameplay. By utilizing threads, the game can handle multiple tasks simultaneously, enhancing performance and responsiveness during intense gameplay situations.
 
-## 🌍 Overview / 개요
+## Building System
+Players can construct various buildings to support their business. Each building type serves a specific purpose, such as production, storage, or employee management, allowing for diverse strategies in gameplay.
 
-**Pantory**는 판타지와 근대 기술이 융합된 세계를 배경으로 한 제작·상거래 시뮬레이션 게임입니다.  
-플레이어는 다양한 재료를 채집하고, 공구나 아이템을 직접 제작해 시장에 판매합니다.  
-제작 공정과 시장의 흐름을 이해하며, 자신만의 공방을 성장시켜 나가는 것이 핵심입니다.
+## Market Economy
+Unity Pantory features a dynamic market economy where resource prices fluctuate based on supply and demand. Players must adapt their strategies to the changing market to maximize profits and ensure sustainable growth.
 
----
+## Resource Management
+Resource management is crucial in Unity Pantory. Players can gather resources through different methods, including farming, trading, and production. Efficient management of these resources is key to ensuring the success of the player’s pantry business.
 
-## ⚙️ Features / 주요 특징
+## Employee System
+The employee system allows players to hire various roles that contribute to the business's success. Players can assign employees to different tasks, optimizing productivity and resource allocation.
 
-- 🛠️ **Crafting System** – Combine magical and mechanical elements to create unique tools and items.  
-- 🧩 **Dynamic Economy** – Market prices fluctuate based on player supply and demand.  
-- 🧙 **Fantasy x Industry** – A world where steam power and mana coexist.  
-- 🏭 **Workshop Management** – Upgrade and expand your personal workshop to increase production efficiency.  
-- 💬 **Market Interaction** – Negotiate, trade, and compete with NPC merchants and other players.
+## Game Mechanics
+The core mechanics of Unity Pantory revolve around building, resource management, and market interactions. Players must balance growth and resource demand while navigating challenges that arise throughout the gameplay.
 
----
-
-## 🧰 Development Info / 개발 정보
-
-| 항목 | 내용 |
-|------|------|
-| **Engine** | Unity (C#) |
-| **Language** | Korean / English |
-| **Platform** | PC (Steam planned) |
-| **Genre** | Crafting / Simulation / Fantasy |
-| **Developer** | Vrowdice Studio |
-
-## 📚 게임 가이드 / Game Guide
-
-게임 플레이 방법을 자세히 알고 싶으시다면 **[게임 가이드 (GAME_GUIDE.md)](GAME_GUIDE.md)**를 참고해주세요!
-
-- 🎮 기본 조작 방법
-- 🧵 스레드(Thread) 시스템 설명
-- 🏗️ 건물 배치 가이드
-- ⚙️ 생산 체인 구성 방법
-- 💡 팁과 전략
-
----
-
-## 📁 Project Structure / 프로젝트 구조 (예시)
-
+## Conclusion
+Explore all features of Unity Pantory and build your ideal pantry empire! Have fun and strategize your way to success!
