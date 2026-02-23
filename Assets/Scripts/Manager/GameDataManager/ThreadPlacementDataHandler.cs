@@ -19,8 +19,15 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// <param name="gameDataManager">DataManager 인스턴스</param>
     public ThreadPlacementDataHandler(DataManager gameDataManager)
     {
-        _dataManager = gameDataManager ?? throw new ArgumentNullException(nameof(gameDataManager));
-        RefreshAllThreadCalculations();
+        _dataManager = gameDataManager;
+
+        foreach (ThreadPlacementState placement in _placedThreads.Values.ToList())
+        {
+            if (placement.RuntimeState != null)
+            {
+                RecalculateThreadStats(placement.RuntimeState);
+            }
+        }
     }
 
     /// <summary>
@@ -48,8 +55,7 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
 
         ThreadState newState = CloneThreadState(template);
-
-        newState.threadId = GenerateUniqueId(templateId, gridPosition);
+        newState.threadId = $"{templateId}_{gridPosition.x}_{gridPosition.y}_{Guid.NewGuid().ToString().Substring(0, 8)}";;
         newState.threadName = $"{template.threadName}";
 
         RecalculateThreadStats(newState);
@@ -57,7 +63,7 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
         ThreadPlacementState placement = new ThreadPlacementState(gridPosition, templateId, newState);
         _placedThreads[gridPosition] = placement;
 
-        RaisePlacementChanged();
+        OnPlacementChanged?.Invoke();
 
         return newState;
     }
@@ -88,7 +94,7 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
             
             ThreadPlacementState placement = new ThreadPlacementState(gridPosition, threadId, threadState);
             _placedThreads[gridPosition] = placement;
-            RaisePlacementChanged();
+            OnPlacementChanged?.Invoke();
         }
     }
 
@@ -101,7 +107,7 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         if (_placedThreads.Remove(gridPosition))
         {
-            RaisePlacementChanged();
+            OnPlacementChanged?.Invoke();
             return true;
         }
         return false;
@@ -113,7 +119,12 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void ClearAll()
     {
         _placedThreads.Clear();
-        RaisePlacementChanged();
+        OnPlacementChanged?.Invoke();
+    }
+
+    public void HandleDayChanged()
+    {
+        DayThreadProgress();
     }
 
     /// <summary>
@@ -122,36 +133,6 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void ClearAllSubscriptions()
     {
         OnPlacementChanged = null;
-    }
-
-    /// <summary>
-    /// 스레드의 총 유지비를 계산합니다.
-    /// </summary>
-    /// <param name="threadIdentifier">스레드 식별자</param>
-    /// <param name="buildingStates">건물 상태 리스트</param>
-    /// <returns>총 유지비</returns>
-    public int CalculateTotalMaintenanceCost(string threadIdentifier, List<BuildingState> buildingStates)
-    {
-        if (buildingStates == null || buildingStates.Count == 0)
-        {
-            return 0;
-        }
-
-        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
-        return stats.TotalMaintenanceCost;
-    }
-
-    /// <summary>
-    /// 건물 상태 리스트로부터 총 유지비를 계산합니다.
-    /// </summary>
-    /// <param name="buildingStates">건물 상태 리스트</param>
-    /// <returns>총 유지비</returns>
-    public int CalculateTotalMaintenanceCost(List<BuildingState> buildingStates)
-    {
-        if (buildingStates == null || buildingStates.Count == 0) return 0;
-
-        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(_dataManager, buildingStates);
-        return stats.TotalMaintenanceCost;
     }
 
     /// <summary>
@@ -272,32 +253,11 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
         outputIds.AddRange(outputCounts.Keys);
     }
 
-    /// <summary>
-    /// 저장된 모든 템플릿 스레드의 스탯을 갱신합니다.
-    /// </summary>
-    public void RefreshAllThreadCalculations()
-    {
-        foreach (ThreadPlacementState placement in _placedThreads.Values.ToList())
-        {
-            if (placement?.RuntimeState != null)
-            {
-                RecalculateThreadStats(placement.RuntimeState);
-            }
-        }
-    }
-
-    private void RaisePlacementChanged() => OnPlacementChanged?.Invoke();
-
     private ThreadState CloneThreadState(ThreadState source)
     {
         string json = JsonUtility.ToJson(source);
         ThreadState clone = JsonUtility.FromJson<ThreadState>(json);
         return clone;
-    }
-
-    private string GenerateUniqueId(string templateId, Vector2Int pos)
-    {
-        return $"{templateId}_{pos.x}_{pos.y}_{Guid.NewGuid().ToString().Substring(0, 8)}";
     }
 
     private void RecalculateThreadStats(ThreadState state)
@@ -316,15 +276,7 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
         state.cachedOutputCounts = new Dictionary<string, int>(stats.OutputResourceCounts);
     }
 
-    /// <summary>
-    /// 일 경과 시 배치된 스레드의 생산 진행도를 업데이트하고 자원 델타를 적용합니다.
-    /// </summary>
-    public void HandleDayChanged()
-    {
-        UpdateResourceDeltasFromPlacedThreads();
-    }
-
-    private void UpdateResourceDeltasFromPlacedThreads()
+    private void DayThreadProgress()
     {
         if (_placedThreads == null) return;
 
@@ -333,7 +285,65 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
             if (placement == null || placement.RuntimeState == null) continue;
 
             ThreadState threadState = placement.RuntimeState;
-            UpdateThreadProductionProgress(threadState);
+            if (threadState == null) return;
+
+            float quantityEfficiency = 0f;
+            float qualityEfficiency = 1.0f;
+
+            if (threadState.requiredEmployees <= 0)
+            {
+                quantityEfficiency = 1.0f;
+                qualityEfficiency = 1.0f;
+            }
+            else
+            {
+                int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
+                quantityEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
+
+                if (_dataManager.Employee != null && currentEmployees > 0)
+                {
+                    float totalEfficiencySum = 0f;
+                    if (threadState.currentWorkers > 0)
+                    {
+                        EmployeeEntry workerEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
+                        if (workerEntry != null)
+                        {
+                            float workerEff = workerEntry.state.currentEfficiency;
+                            totalEfficiencySum += threadState.currentWorkers * workerEff;
+                        }
+                    }
+
+                    if (threadState.currentTechnicians > 0)
+                    {
+                        EmployeeEntry techEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
+                        if (techEntry != null)
+                        {
+                            float techEff = techEntry.state.currentEfficiency;
+                            totalEfficiencySum += threadState.currentTechnicians * techEff;
+                        }
+                    }
+
+                    float averageEfficiency = totalEfficiencySum / currentEmployees;
+                    float technicianRatio = 0.0f;
+                    if (threadState.requiredTechnicians <= 0)
+                    {
+                        technicianRatio = 1.0f;
+                    }
+                    else if (threadState.currentTechnicians <= 0)
+                    {
+                        technicianRatio = 0f;
+                    }
+                    else
+                    {
+                        technicianRatio = (float)threadState.currentTechnicians / threadState.requiredTechnicians;
+                    }
+
+                    qualityEfficiency = Mathf.Min(averageEfficiency, technicianRatio);
+                }
+            }
+
+            threadState.currentProductionEfficiency = quantityEfficiency * qualityEfficiency;
+            threadState.currentProductionProgress += threadState.currentProductionEfficiency;
 
             if (threadState.currentProductionProgress >= 1.0f)
             {
@@ -352,57 +362,6 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
                 threadState.currentProductionProgress -= productionCount;
             }
         }
-    }
-
-    /// <summary>
-    /// 스레드의 생산 진행도와 효율을 업데이트합니다
-    /// </summary>
-    private void UpdateThreadProductionProgress(ThreadState threadState)
-    {
-        if (threadState == null) return;
-
-        float quantityEfficiency = 0f;
-        float qualityEfficiency = 1.0f;
-
-        if (threadState.requiredEmployees <= 0)
-        {
-            quantityEfficiency = 1.0f;
-            qualityEfficiency = 1.0f;
-        }
-        else
-        {
-            int currentEmployees = threadState.currentWorkers + threadState.currentTechnicians;
-            quantityEfficiency = Mathf.Clamp01((float)currentEmployees / threadState.requiredEmployees);
-
-            if (_dataManager.Employee != null && currentEmployees > 0)
-            {
-                float totalEfficiencySum = 0f;
-                if (threadState.currentWorkers > 0)
-                {
-                    EmployeeEntry workerEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
-                    if (workerEntry != null)
-                    {
-                        float workerEff = workerEntry.state.currentEfficiency;
-                        totalEfficiencySum += threadState.currentWorkers * workerEff;
-                    }
-                }
-
-                if (threadState.currentTechnicians > 0)
-                {
-                    EmployeeEntry techEntry = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
-                    if (techEntry != null)
-                    {
-                        float techEff = techEntry.state.currentEfficiency;
-                        totalEfficiencySum += threadState.currentTechnicians * techEff;
-                    }
-                }
-
-                qualityEfficiency = totalEfficiencySum / currentEmployees;
-            }
-        }
-
-        threadState.currentProductionEfficiency = quantityEfficiency * qualityEfficiency;
-        threadState.currentProductionProgress += threadState.currentProductionEfficiency;
     }
 
     /// <summary>

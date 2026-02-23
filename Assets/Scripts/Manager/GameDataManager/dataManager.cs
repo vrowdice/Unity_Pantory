@@ -108,7 +108,7 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(News);
         _dayHandlers.Add(Order);
 
-        LoadThreadData();
+        SaveLoadManager.Instance.Thread.LoadThreadData(Thread);
     }
 
 #if UNITY_EDITOR
@@ -142,19 +142,6 @@ public class DataManager : Singleton<DataManager>
         Debug.Log($"[DataManager] Loaded {list.Count} {typeName} to list.");
     }
 #endif
-    /// <summary> Thread 데이터를 로드합니다. SaveLoadManager로 위임합니다. </summary>
-    private void LoadThreadData()
-    {
-        if (SaveLoadManager.Instance != null && SaveLoadManager.Instance.Thread != null && Thread != null)
-        {
-            if (!SaveLoadManager.Instance.Thread.LoadThreadData(Thread))
-            {
-                Debug.LogWarning("[DataManager] Failed to load Thread data. Resetting.");
-                Thread.ResetThreadData();
-                ThreadPlacement?.ClearAll();
-            }
-        }
-    }
 
     /// <summary>
     /// 씬 전환 시 모든 핸들러의 이벤트 구독을 초기화합니다.

@@ -22,6 +22,15 @@ public partial class EmployeeDataHandler
 
         if (entry.state.count >= count)
         {
+            if (entry.data != null && _dataManager != null && _dataManager.Finances != null)
+            {
+                long totalFiringCost = entry.data.firingCost * (long)count;
+                if (totalFiringCost != 0)
+                {
+                    _dataManager.Finances.ModifyCredit(-totalFiringCost);
+                }
+            }
+
             int currentTotal = entry.state.count;
             float fireRatio = (float)count / Mathf.Max(1f, currentTotal);
             float penalty = 0f;

@@ -7,4 +7,5 @@ public static class ConfirmMessage
     public const string LoadConfirm = "LoadConfirm";
     public const string DeleteConfirm = "DeleteConfirm";
     public const string UnsavedProgressConfirm = "UnsavedProgressConfirm";
+    public const string OverwriteConfirm = "OverwriteConfirm";
 }

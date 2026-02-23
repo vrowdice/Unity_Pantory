@@ -10,8 +10,6 @@ public class EmployeeData : ScriptableObject
     public string id;
     public string displayName;
     public EmployeeType type;
-    [Tooltip("1=Worker, 2=Technician, 3=Researcher")]
-    public int tier = 1;
     public Sprite icon;
     public Sprite Image;
     [TextArea(3, 10)]
@@ -25,4 +23,6 @@ public class EmployeeData : ScriptableObject
     
     [Header("Salary")]
     public long baseSalary;
+    public long hiringCost;
+    public long firingCost;
 }

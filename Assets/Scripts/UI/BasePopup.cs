@@ -8,25 +8,39 @@ public class BasePopup : MonoBehaviour
     public const float DISPLAY_TIME = 0.6f;
     public const float MOVE_DURATION = 0.5f;
     public const float PUNCH_SCALE_DURATION = 1f;
-    public const float INOUT_DURATION = 0.5f;
+    public const float INOUT_DURATION = 0.1f;
 
     private RectTransform _rectTransform = null;
     private Canvas _canvas = null;
+    private CanvasGroup _canvasGroup = null;
 
-    [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.ZoomScale;
+    [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.FadeInFadeOut;
     [SerializeField] private bool _enabled = true;
     protected Coroutine _showCoroutine = null;
+    protected Coroutine _closeCoroutine = null;
 
     private Vector3? _originalScale = null;
 
     private Action _onShowCompleteCallback = null;
     private Action _cachedClose;
 
+    private void OnDestroy()
+    {
+        if (_canvasGroup != null)
+            _canvasGroup.DOKill();
+    }
+
     public virtual void Init()
     {
         _originalScale ??= transform.localScale;
         _rectTransform = GetComponent<RectTransform>();
         _canvas = FindAnyObjectByType<Canvas>();
+        if (_canvasGroup == null)
+        {
+            _canvasGroup = GetComponent<CanvasGroup>();
+            if (_canvasGroup == null)
+                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
         gameObject.SetActive(false);
     }
     public virtual void Init(Vector3 argPosition)
@@ -35,6 +49,12 @@ public class BasePopup : MonoBehaviour
         _originalScale ??= transform.localScale;
         _rectTransform = GetComponent<RectTransform>();
         _canvas = FindAnyObjectByType<Canvas>();
+        if (_canvasGroup == null)
+        {
+            _canvasGroup = GetComponent<CanvasGroup>();
+            if (_canvasGroup == null)
+                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
         gameObject.SetActive(false);
     }
     public virtual void Init(Vector3 argPosition, BasePanelEffectType.TYPE argType)
@@ -75,56 +95,26 @@ public class BasePopup : MonoBehaviour
 
     public virtual IEnumerator ShowEffectCoroutine()
     {
-        switch(_effectType)
+        switch (_effectType)
         {
-            case BasePanelEffectType.TYPE.ZoomScale:
-                transform.localScale = Vector3.zero;
-                yield return transform.DOScale(_originalScale.Value, 0.5f).SetEase(Ease.OutBack).SetUpdate(true).WaitForCompletion();
-                break;
-            case BasePanelEffectType.TYPE.L2R:
-                float canvasWidth = _canvas.GetComponent<RectTransform>().sizeDelta.x;
-                float halfUIWidth = _rectTransform.sizeDelta.x / 2;
-
-                float startX = -(canvasWidth / 2) - halfUIWidth;
-                float midX = 0;
-                float endX = (canvasWidth / 2) + halfUIWidth;
-
-                _rectTransform.anchoredPosition = new Vector2(startX, _rectTransform.anchoredPosition.y);
-
-                Sequence sequence = DOTween.Sequence();
-
-                sequence.Append(_rectTransform.DOAnchorPosX(midX, MOVE_DURATION).SetEase(Ease.OutQuad)
-                .OnStart(() =>
+            case BasePanelEffectType.TYPE.FadeInFadeOut:
+                if (_canvasGroup != null)
                 {
-                    
-                }));
-                sequence.AppendInterval(DISPLAY_TIME);
-                sequence.Append(_rectTransform.DOAnchorPosX(endX, MOVE_DURATION).SetEase(Ease.InQuad)
-                .OnStart(() =>
-                {
-                    
-                }));
-                yield return sequence.WaitForCompletion();
+                    _canvasGroup.alpha = 0f;
+                    Tween fadeTween = _canvasGroup.DOFade(1f, INOUT_DURATION).SetUpdate(true).SetLink(gameObject);
+                    yield return fadeTween.WaitForCompletion();
+                }
                 break;
-            case BasePanelEffectType.TYPE.PunchScale:
-                transform.localScale = new Vector3(0f,0f,1f);
-                Sequence seq = DOTween.Sequence();
-                seq.Append(transform.DOScale(_originalScale.Value, INOUT_DURATION).SetEase(Ease.OutCirc));
-                seq.Append(transform.DOPunchScale( _originalScale.Value * 0.3f, PUNCH_SCALE_DURATION, 4 , 0.2f)).SetEase(Ease.OutQuad);
-                seq.Append(transform.DOScale(0f, INOUT_DURATION).SetEase(Ease.OutQuad));
-                yield return seq.WaitForCompletion();
+            default:
                 break;
         }
         _onShowCompleteCallback?.Invoke();
-        yield break;
     }
 
     public virtual void Close()
     {
         if (_cachedClose != null && GameManager.Instance != null)
-        {
             GameManager.Instance.RemoveCloseable(_cachedClose);
-        }
 
         if (_showCoroutine != null)
         {
@@ -132,6 +122,26 @@ public class BasePopup : MonoBehaviour
             _showCoroutine = null;
         }
 
+        if (_effectType == BasePanelEffectType.TYPE.FadeInFadeOut && gameObject.activeInHierarchy)
+        {
+            if (_closeCoroutine != null)
+                StopCoroutine(_closeCoroutine);
+            _closeCoroutine = StartCoroutine(CloseEffectCoroutine());
+            return;
+        }
+
+        gameObject.SetActive(false);
+    }
+
+    protected virtual IEnumerator CloseEffectCoroutine()
+    {
+        if (_canvasGroup != null)
+        {
+            Tween fadeTween = _canvasGroup.DOFade(0f, INOUT_DURATION).SetUpdate(true).SetLink(gameObject);
+            yield return fadeTween.WaitForCompletion();
+        }
+
+        _closeCoroutine = null;
         gameObject.SetActive(false);
     }
 

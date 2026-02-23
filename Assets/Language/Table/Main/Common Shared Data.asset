@@ -351,6 +351,18 @@ MonoBehaviour:
     m_Key: Go Title
     m_Metadata:
       m_Items: []
+  - m_Id: 10615943929937920
+    m_Key: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10626581280473088
+    m_Key: When Hire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10626863544549376
+    m_Key: When Fire
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

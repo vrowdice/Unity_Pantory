@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: 保存されていない進行状況は失われます。続行しますか？
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269005
+    m_Localized: このスロットには既にセーブがあります。上書きしますか？
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1213,7 +1213,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:eb20261a195c57c44943fe2956a7f729
     m_TableEntryReference:
-      m_KeyId: 7984511986319360
+      m_KeyId: 10615943929937920
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -1355,9 +1355,9 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ConfirmPopup, Assembly-CSharp
-        m_MethodName: OnClickConfirm
+      - m_Target: {fileID: 1985831721663459441}
+        m_TargetAssemblyTypeName: EnterNamePopup, Assembly-CSharp
+        m_MethodName: OnClickOk
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

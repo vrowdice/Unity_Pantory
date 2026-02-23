@@ -101,6 +101,15 @@ public partial class EmployeeDataHandler : IDataHandlerEvents, ITimeChangeHandle
         if (!TryGetEntry(type, out EmployeeEntry entry))
             return;
 
+        if (entry.data != null && _dataManager != null && _dataManager.Finances != null)
+        {
+            long totalHiringCost = entry.data.hiringCost * (long)count;
+            if (totalHiringCost != 0)
+            {
+                _dataManager.Finances.ModifyCredit(-totalHiringCost);
+            }
+        }
+
         entry.state.count += count;
         UpdateSalary(entry);
         OnEmployeeChanged?.Invoke();

@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: Unsaved progress will be lost. Continue?
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269005
+    m_Localized: This slot already has a save. Overwrite?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

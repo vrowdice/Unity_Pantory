@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: 저장되지 않은 진행 상황은 손실됩니다. 계속하시겠습니까?
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269005
+    m_Localized: 이 슬롯에 이미 저장된 파일이 있습니다. 덮어쓰시겠습니까?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

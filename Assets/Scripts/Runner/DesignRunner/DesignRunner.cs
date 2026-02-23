@@ -217,7 +217,6 @@ public class DesignRunner : RunnerBase
 
         if (string.IsNullOrEmpty(threadId))
         {
-            Debug.LogWarning("[DesignRunner] Thread ID is empty");
             RefreshBuildings();
             return;
         }

@@ -31,8 +31,17 @@ public class MainRunnerThreadGridHandler
     public bool IsRemovalActive => _isRemovalActive;
     public ThreadState SelectedThread => _selectedThread;
 
-    // 마우스가 UI 위에 있는지 여부
-    private bool IsPointerOverUI => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    public bool IsPointerOverUI => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    public bool CanPlaceThread(Vector2Int pos) => pos.x >= 0 && pos.x < _gridWidth && pos.y >= 0 && pos.y < _gridHeight && !_threadObjects.ContainsKey(pos);
+    public void SetTileOccupied(Vector2Int pos, bool occ) { if (_threadTiles.TryGetValue(pos, out ThreadTile t)) t.SetOccupied(occ); }
+    public void SetAllTilesOutline(bool vis, Color col = default) { foreach (ThreadTile t in _threadTiles.Values) t?.SetOutlineVisible(vis, col); }
+    public Vector3 GridToWorldPosition(Vector2Int p) => _parentTransform.position + new Vector3((float)p.x, (float)-p.y, 9f);
+    public ThreadObject GetThreadObjectAt(Vector2Int p) => _threadObjects.TryGetValue(p, out ThreadObject o) ? o : null;
+    public Vector2Int WorldToGridPosition(Vector3 wPos)
+    {
+        Vector3 lp = wPos - _parentTransform.position;
+        return new Vector2Int(Mathf.RoundToInt(lp.x), Mathf.RoundToInt(-lp.y));
+    }
 
     public MainRunnerThreadGridHandler(Transform parentTransform, GameObject tilePrefab, GameObject objPrefab, int width, int height)
     {
@@ -103,10 +112,10 @@ public class MainRunnerThreadGridHandler
             return (Vector2Int.zero, false);
         }
 
-        _previewObject.SetActive(true);
         _currentGridPos = WorldToGridPosition(mouseWorldPos);
         _canPlace = CanPlaceThread(_currentGridPos);
 
+        _previewObject.SetActive(_canPlace);
         _previewObject.transform.position = GridToWorldPosition(_currentGridPos);
         _previewComponent.SetPreviewColor(_canPlace);
 
@@ -215,17 +224,6 @@ public class MainRunnerThreadGridHandler
         _previewObject.name = "ThreadPreview";
         if (!_previewObject.TryGetComponent<ThreadObject>(out _previewComponent)) _previewComponent = _previewObject.AddComponent<ThreadObject>();
         _previewComponent.InitializePreview(_selectedThread);
+        _previewObject.SetActive(false);
     }
-
-
-    public bool CanPlaceThread(Vector2Int pos) => pos.x >= 0 && pos.x < _gridWidth && pos.y >= 0 && pos.y < _gridHeight && !_threadObjects.ContainsKey(pos);
-    public void SetTileOccupied(Vector2Int pos, bool occ) { if (_threadTiles.TryGetValue(pos, out ThreadTile t)) t.SetOccupied(occ); }
-    public void SetAllTilesOutline(bool vis, Color col = default) { foreach (ThreadTile t in _threadTiles.Values) t?.SetOutlineVisible(vis, col); }
-    public Vector2Int WorldToGridPosition(Vector3 wPos)
-    {
-        Vector3 lp = wPos - _parentTransform.position;
-        return new Vector2Int(Mathf.RoundToInt(lp.x), Mathf.RoundToInt(-lp.y));
-    }
-    public Vector3 GridToWorldPosition(Vector2Int p) => _parentTransform.position + new Vector3((float)p.x, (float)-p.y, 9f);
-    public ThreadObject GetThreadObjectAt(Vector2Int p) => _threadObjects.TryGetValue(p, out ThreadObject o) ? o : null;
 }

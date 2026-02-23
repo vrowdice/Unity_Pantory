@@ -178,6 +178,17 @@ public class GameManager : Singleton<GameManager>
         _closeStack.Clear();
     }
 
+    public void CloseAllPopups()
+    {
+        if (_closeStack.Count == 0) return;
+        var copy = new List<Action>(_closeStack);
+        _closeStack.Clear();
+        for (int i = copy.Count - 1; i >= 0; i--)
+        {
+            copy[i]?.Invoke();
+        }
+    }
+
     /// <summary>
     /// 씬이 로드될 때마다 호출되는 콜백. 여기서 모든 매니저와 월드 캔버스를 초기화합니다.
     /// </summary>

@@ -354,6 +354,18 @@ MonoBehaviour:
     m_Localized: Go Title
     m_Metadata:
       m_Items: []
+  - m_Id: 10615943929937920
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10626581280473088
+    m_Localized: When Hire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10626863544549376
+    m_Localized: When Fire
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

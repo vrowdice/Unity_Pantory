@@ -27,10 +27,12 @@ public class MainRunner : RunnerBase
 
     private ThreadPlacementDataHandler _threadPlacementHandler;
 
-    internal GameObject ThreadObjectPrefab => _threadObjectPrefab;
     public bool IsPlacementMode => _gridHandler.IsPlacementActive;
     public bool IsRemovalMode => _gridHandler.IsRemovalActive;
     public ThreadState CurrentPlacementThread => _gridHandler.SelectedThread;
+
+    public void CancelPlacementMode() => _gridHandler?.CancelPlacement();
+    public void CancelRemovalMode() => _gridHandler?.CancelRemoval();
 
     public Transform SharedThreadLabelCanvas
     {
@@ -180,15 +182,11 @@ public class MainRunner : RunnerBase
         return true;
     }
 
-    public void CancelPlacementMode() => _gridHandler?.CancelPlacement();
-
     public void StartRemovalMode()
     {
         if (IsPlacementMode) _gridHandler.CancelPlacement();
         _gridHandler?.StartRemoval();
     }
-
-    public void CancelRemovalMode() => _gridHandler?.CancelRemoval();
 
     public void ToggleRemovalMode()
     {

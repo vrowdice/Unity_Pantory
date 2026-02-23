@@ -24,6 +24,8 @@ public class EmployeePanel : BasePanel
 
     [Header("Employee Stats")]
     [SerializeField] private TextMeshProUGUI _employeeCountText;
+    [SerializeField] private TextMeshProUGUI _whenHireText;
+    [SerializeField] private TextMeshProUGUI _whenFireText;
     [SerializeField] private TextMeshProUGUI _totalSalatyText;
 
     [Header("Efficiency")]
@@ -222,6 +224,8 @@ public class EmployeePanel : BasePanel
         _titleText.text = data.type.Localize();
         _descriptionText.text = data.type.ToString().Localize(LocalizationUtils.TABLE_EMPLOYEE_DESCRIPTION);
         _employeeCountText.text = $"{state.count}";
+        _whenHireText.text = $"- {data.hiringCost:N0}";
+        _whenFireText.text = $"- {data.firingCost:N0}";
         _totalSalatyText.text = $"{state.totalSalary:N0}";
 
         float normalizedEfficiency = Mathf.Clamp(state.currentEfficiency, 0f, 2f) / 2f;

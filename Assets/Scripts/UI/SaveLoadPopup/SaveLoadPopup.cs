@@ -85,11 +85,23 @@ public class SaveLoadPopup : BasePopup
             return;
         }
 
+        if (SaveLoadManager.Instance.SaveFile.HasSaveFile(fileName))
+        {
+            GameManager.Instance.ShowConfirmPopup(ConfirmMessage.OverwriteConfirm, () => DoSaveSavefile(fileName));
+            return;
+        }
+
+        DoSaveSavefile(fileName);
+    }
+
+    private void DoSaveSavefile(string fileName)
+    {
         bool success = SaveLoadManager.Instance.SaveFile.SaveSavefile(fileName, DataManager.Instance);
         if (success)
         {
             RefreshSaveFileList();
             GameManager.Instance.ShowWarningPopup(WarningMessage.SaveSuccess);
+            GameManager.Instance.CloseAllPopups();
         }
         else
         {
@@ -117,7 +129,7 @@ public class SaveLoadPopup : BasePopup
             if (success)
             {
                 SceneLoadManager.Instance.LoadScene("Main");
-                Close();
+                GameManager.Instance.CloseAllPopups();
             }
             else
             {
