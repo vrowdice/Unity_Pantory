@@ -6,7 +6,7 @@ using System.Linq;
 /// <summary>
 /// 주문 관리 패널
 /// </summary>
-public class OrderPanel : BasePanel
+public class OrderCanvas : BaseMainCanvasPanel
 {
     [SerializeField] private Transform _orderActionBtnContentTransform;
     [SerializeField] private Transform _orderMarketActorPopupBtnScrollViewContentTransform;
@@ -208,9 +208,12 @@ public class OrderPanel : BasePanel
     
     private void OnDisable()
     {
-        _dataManager.Order.OnOrderChanged -= HandleOrderUpdated;
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        _dataManager.Resource.OnResourceChanged -= HandleResourceChanged;
+        if(_dataManager != null)
+        {
+            _dataManager.Order.OnOrderChanged -= HandleOrderUpdated;
+            _dataManager.Time.OnDayChanged -= HandleDayChanged;
+            _dataManager.Resource.OnResourceChanged -= HandleResourceChanged;
+        }
     }
 }
 

@@ -5,17 +5,16 @@ using UnityEngine;
 
 public class BasePopup : MonoBehaviour
 {
+    [SerializeField] private RectTransform _animationTarget;
+    [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.FadeInFadeOut;
+    [SerializeField] private bool _enabled = true;
+
     public const float DISPLAY_TIME = 0.6f;
     public const float MOVE_DURATION = 0.5f;
     public const float PUNCH_SCALE_DURATION = 1f;
     public const float INOUT_DURATION = 0.1f;
 
-    private RectTransform _rectTransform = null;
-    private Canvas _canvas = null;
     private CanvasGroup _canvasGroup = null;
-
-    [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.FadeInFadeOut;
-    [SerializeField] private bool _enabled = true;
     protected Coroutine _showCoroutine = null;
     protected Coroutine _closeCoroutine = null;
 
@@ -27,55 +26,35 @@ public class BasePopup : MonoBehaviour
     private void OnDestroy()
     {
         if (_canvasGroup != null)
+        {
             _canvasGroup.DOKill();
+        }
+    }
+
+    private Transform GetAnimationTarget()
+    {
+        return _animationTarget != null ? _animationTarget : transform;
     }
 
     public virtual void Init()
     {
-        _originalScale ??= transform.localScale;
-        _rectTransform = GetComponent<RectTransform>();
-        _canvas = FindAnyObjectByType<Canvas>();
+        Transform target = GetAnimationTarget();
+        _originalScale ??= target.localScale;
+        _canvasGroup = target.GetComponent<CanvasGroup>();
         if (_canvasGroup == null)
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
-            if (_canvasGroup == null)
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
-        gameObject.SetActive(false);
-    }
-    public virtual void Init(Vector3 argPosition)
-    {
-        transform.position = argPosition;
-        _originalScale ??= transform.localScale;
-        _rectTransform = GetComponent<RectTransform>();
-        _canvas = FindAnyObjectByType<Canvas>();
-        if (_canvasGroup == null)
-        {
-            _canvasGroup = GetComponent<CanvasGroup>();
-            if (_canvasGroup == null)
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
-        gameObject.SetActive(false);
-    }
-    public virtual void Init(Vector3 argPosition, BasePanelEffectType.TYPE argType)
-    {
-        Init(argPosition);
-        _effectType = argType;
-    }
-    public virtual void Show()
-    {
-        if (!_enabled)
-        {
-            return;
-        }
-
-        if (_cachedClose == null) _cachedClose = Close;
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.PushCloseable(_cachedClose);
+            _canvasGroup = target.gameObject.AddComponent<CanvasGroup>();
         }
 
         gameObject.SetActive(true);
+    }
+
+    public virtual void Show()
+    {
+        if (_cachedClose == null) _cachedClose = Close;
+        GameManager.Instance.PushCloseable(_cachedClose);
+        gameObject.SetActive(true);
+
         if (_showCoroutine != null)
         {
             StopCoroutine(_showCoroutine);
@@ -101,7 +80,7 @@ public class BasePopup : MonoBehaviour
                 if (_canvasGroup != null)
                 {
                     _canvasGroup.alpha = 0f;
-                    Tween fadeTween = _canvasGroup.DOFade(1f, INOUT_DURATION).SetUpdate(true).SetLink(gameObject);
+                    Tween fadeTween = _canvasGroup.DOFade(1f, INOUT_DURATION).SetUpdate(true).SetLink(GetAnimationTarget().gameObject);
                     yield return fadeTween.WaitForCompletion();
                 }
                 break;
@@ -113,12 +92,17 @@ public class BasePopup : MonoBehaviour
 
     public virtual void Close()
     {
+        if (this == null) return;
+
         if (_cachedClose != null && GameManager.Instance != null)
             GameManager.Instance.RemoveCloseable(_cachedClose);
 
         if (_showCoroutine != null)
         {
-            StopCoroutine(_showCoroutine);
+            if (gameObject != null && gameObject.activeInHierarchy)
+            {
+                StopCoroutine(_showCoroutine);
+            }
             _showCoroutine = null;
         }
 
@@ -137,24 +121,11 @@ public class BasePopup : MonoBehaviour
     {
         if (_canvasGroup != null)
         {
-            Tween fadeTween = _canvasGroup.DOFade(0f, INOUT_DURATION).SetUpdate(true).SetLink(gameObject);
+            Tween fadeTween = _canvasGroup.DOFade(0f, INOUT_DURATION).SetUpdate(true).SetLink(GetAnimationTarget().gameObject);
             yield return fadeTween.WaitForCompletion();
         }
 
         _closeCoroutine = null;
         gameObject.SetActive(false);
-    }
-
-    public void SubscribeShowCompleteCallback(Action argCallback)
-    {
-        _onShowCompleteCallback += argCallback;
-    }
-    public void UnsubscribeShowCompleteCallback(Action argCallback)
-    {
-        _onShowCompleteCallback -= argCallback;
-    }
-    public void ClearShowCompleteCallback()
-    {
-        _onShowCompleteCallback = null;
     }
 }

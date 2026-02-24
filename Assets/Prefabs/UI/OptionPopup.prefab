@@ -3115,6 +3115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b102ef5af295a054194c40d871a44aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 7866574746901360383}
   _effectType: 0
   _enabled: 1
   _BGMSlider: {fileID: 7281964579962212529}

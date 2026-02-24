@@ -6,7 +6,6 @@ using UnityEngine;
 /// </summary>
 public partial class DesignCanvas
 {
-    [Header("Thread References")]
     [SerializeField] private ThreadSaveInfoPopup _threadSaveInformationPanel;
 
     /// <summary>

@@ -3,37 +3,37 @@ using UnityEngine;
 
 public partial class MainCanvas
 {
-    [Header("Panels")]
-    [SerializeField] private StoragePanel _storagePanel;
-    [SerializeField] private OrderPanel _orderPanel;
-    [SerializeField] private MarketPanel _marketPanel;
-    [SerializeField] private EmployeePanel _employmentPanel;
-    [SerializeField] private NewsPanel _newsPanel;
-    [SerializeField] private ResearchPanel _researchPanel;
-    [SerializeField] private FinancePanel _financePanel;
+    [Header("Main Panel Canvas")]
+    [SerializeField] private StorageCanvas _storageCanvas;
+    [SerializeField] private OrderCanvas _orderCanvas;
+    [SerializeField] private MarketCanvas _marketCanvas;
+    [SerializeField] private EmployeeCanvas _employmentCanvas;
+    [SerializeField] private NewsCanvas _newsCanvas;
+    [SerializeField] private ResearchCanvas _researchCanvas;
+    [SerializeField] private FinanceCanvas _financeCanvas;
 
     [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
-    private Dictionary<MainPanelType, BasePanel> _panelDict;
+    private Dictionary<MainPanelType, BaseMainCanvasPanel> _panelDict;
     private MainPanelType _currentOpenPanelType;
 
     private void InitializePanelDictionary()
     {
-        _panelDict = new Dictionary<MainPanelType, BasePanel>
+        _panelDict = new Dictionary<MainPanelType, BaseMainCanvasPanel>
         {
-            { MainPanelType.Storage, _storagePanel },
-            { MainPanelType.Order, _orderPanel },
-            { MainPanelType.Market, _marketPanel },
-            { MainPanelType.Employment, _employmentPanel },
-            { MainPanelType.Research, _researchPanel },
-            { MainPanelType.News, _newsPanel },
-            { MainPanelType.Finance, _financePanel }
+            { MainPanelType.Storage, _storageCanvas },
+            { MainPanelType.Order, _orderCanvas },
+            { MainPanelType.Market, _marketCanvas },
+            { MainPanelType.Employment, _employmentCanvas },
+            { MainPanelType.Research, _researchCanvas },
+            { MainPanelType.News, _newsCanvas },
+            { MainPanelType.Finance, _financeCanvas }
         };
     }
 
     private void InitializePanels()
     {
-        foreach (KeyValuePair<MainPanelType, BasePanel> kvp in _panelDict)
+        foreach (KeyValuePair<MainPanelType, BaseMainCanvasPanel> kvp in _panelDict)
         {
             if (kvp.Value != null)
             {
@@ -53,7 +53,7 @@ public partial class MainCanvas
             return;
         }
 
-        BasePanel panel = _panelDict[panelType];
+        BaseMainCanvasPanel panel = _panelDict[panelType];
 
         if (panel == null)
         {
@@ -84,7 +84,7 @@ public partial class MainCanvas
             return;
         }
 
-        BasePanel panel = _panelDict[panelType];
+        BaseMainCanvasPanel panel = _panelDict[panelType];
 
         if (panel == null)
         {
@@ -96,7 +96,7 @@ public partial class MainCanvas
 
     public void CloseAllPanels()
     {
-        foreach (KeyValuePair<MainPanelType, BasePanel> kvp in _panelDict)
+        foreach (KeyValuePair<MainPanelType, BaseMainCanvasPanel> kvp in _panelDict)
         {
             ClosePanelInternal(kvp.Key);
         }

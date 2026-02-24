@@ -66,7 +66,10 @@ public class ThreadInfoPopup : BasePopup
 
     private void OnDisable()
     {
-        _dataManager.Time.OnDayChanged -= OnDayChanged;
+        if (_dataManager != null)
+        {
+            _dataManager.Time.OnDayChanged -= OnDayChanged;
+        }
     }
 
     private void OnDayChanged()

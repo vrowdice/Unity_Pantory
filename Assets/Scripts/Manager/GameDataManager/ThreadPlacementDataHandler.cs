@@ -329,13 +329,16 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
                     {
                         technicianRatio = 1.0f;
                     }
-                    else if (threadState.currentTechnicians <= 0)
-                    {
-                        technicianRatio = 0f;
-                    }
                     else
                     {
-                        technicianRatio = (float)threadState.currentTechnicians / threadState.requiredTechnicians;
+                        if (threadState.currentTechnicians <= 0)
+                        {
+                            technicianRatio = 0f;
+                        }
+                        else
+                        {
+                            technicianRatio = (float)threadState.currentTechnicians / threadState.requiredTechnicians;
+                        }
                     }
 
                     qualityEfficiency = Mathf.Min(averageEfficiency, technicianRatio);

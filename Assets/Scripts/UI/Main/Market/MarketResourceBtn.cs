@@ -13,7 +13,7 @@ public class MarketResourceBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _deltaText = null;
     [SerializeField] private TextMeshProUGUI _tradeValueText = null;
 
-    private MarketPanel _marketPanel = null;
+    private MarketCanvas _marketPanel = null;
     private ResourceEntry _resourceEntry = null;
 
     /// <summary>
@@ -21,7 +21,7 @@ public class MarketResourceBtn : MonoBehaviour
     /// </summary>
     /// <param name="argMarketPanel">부모 마켓 패널 참조</param>
     /// <param name="resourceEntry">표시할 리소스 엔트리 데이터</param>
-    public void Init(MarketPanel argMarketPanel, ResourceEntry resourceEntry)
+    public void Init(MarketCanvas argMarketPanel, ResourceEntry resourceEntry)
     {
         _marketPanel = argMarketPanel;
         _resourceEntry = resourceEntry;

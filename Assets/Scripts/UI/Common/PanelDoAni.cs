@@ -44,11 +44,10 @@ public class PanelDoAni : MonoBehaviour
     {
         if (playOnEnable)
         {
-            ClosePanel();
+            SnapToClosedPosition();
         }
     }
 
-    [ContextMenu("Toggle Panel")]
     public void TogglePanel()
     {
         // 목표 상태를 반전시켜서 애니메이션 시작
@@ -71,7 +70,6 @@ public class PanelDoAni : MonoBehaviour
         }
     }
 
-    [ContextMenu("Play Close Animation")]
     public void ClosePanel(Action onComplete = null)
     {
         if (_target == null)
@@ -93,7 +91,6 @@ public class PanelDoAni : MonoBehaviour
         ClosePanelInternal(onComplete);
     }
 
-    [ContextMenu("Play Open Animation")]
     public void OpenPanel(Action onComplete = null)
     {
         if (_target == null)
@@ -138,18 +135,13 @@ public class PanelDoAni : MonoBehaviour
 
     public void SnapToClosedPosition()
     {
-        if (_target == null)
-        {
-            return;
-        }
-
-        if (_activeTween != null && _activeTween.IsActive())
-        {
-            _activeTween.Kill();
-        }
+        if (_target == null) _target = GetComponent<RectTransform>();
+        if (_activeTween != null && _activeTween.IsActive()) _activeTween.Kill();
         _activeTween = null;
-        
+
+        EnsureOpenedPositionCached();
         _target.anchoredPosition = GetOffScreenPosition();
+
         isOpen = false;
         _targetIsOpen = false;
     }
@@ -162,10 +154,9 @@ public class PanelDoAni : MonoBehaviour
             return;
         }
 
-        // 현재 위치에서 목표 위치로 애니메이션 시작 (호출부에서 이미 Kill 처리됨)
         _activeTween = _target.DOAnchorPos(destination, duration)
             .SetEase(ease)
-            .SetUpdate(UpdateType.Normal) // DOTween 설정과 일치
+            .SetUpdate(UpdateType.Normal)
             .OnComplete(() =>
             {
                 _activeTween = null;

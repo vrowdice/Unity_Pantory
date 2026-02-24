@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 창고(플레이어 인벤토리) 관리 패널
 /// </summary>
-public class StoragePanel : BasePanel
+public class StorageCanvas : BaseMainCanvasPanel
 {
     [SerializeField] private GameObject _storageResourceBtnPrefab;
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;

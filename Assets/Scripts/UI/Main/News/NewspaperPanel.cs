@@ -10,9 +10,9 @@ public class NewspaperPanel : MonoBehaviour
     [SerializeField] TextMeshProUGUI _descriptionText;
 
     DataManager _dataManager;
-    NewsPanel _newsPanel;
+    NewsCanvas _newsPanel;
 
-    public void Init(NewsState newsState, NewsPanel newsPanel)
+    public void Init(NewsState newsState, NewsCanvas newsPanel)
     {
         _dataManager = DataManager.Instance;
         _newsPanel = newsPanel;

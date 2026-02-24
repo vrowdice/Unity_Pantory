@@ -2093,6 +2093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e856c0476f27854e9617e69fdc7f676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConfirmPopup
+  _animationTarget: {fileID: 3663500864598406616}
   _effectType: 0
   _enabled: 1
   _text: {fileID: 3148520282764435611}

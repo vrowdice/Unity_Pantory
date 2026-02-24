@@ -5,7 +5,7 @@ using UnityEngine;
 /// 모든 패널의 베이스 클래스
 /// 공통 기능을 구현합니다.
 /// </summary>
-public abstract class BasePanel : MonoBehaviour
+public abstract class BaseMainCanvasPanel : MonoBehaviour
 {
     protected GameManager _gameManager;
     protected DataManager _dataManager;
@@ -13,6 +13,7 @@ public abstract class BasePanel : MonoBehaviour
     private Action _cachedOnClose;
 
     [Header("Animation")]
+    [SerializeField] private RectTransform _panelAnimationTarget;
     [SerializeField] private bool _usePanelAnimation = true;
     [SerializeField] private bool _deactivateAfterClose = true;
 
@@ -34,15 +35,13 @@ public abstract class BasePanel : MonoBehaviour
             _gameManager.PushCloseable(_cachedOnClose);
         }
 
-        PanelDoAni animator = null;
-        if (TryGetPanelAnimator(out animator))
-        {
-            animator.EnsureOpenedPositionCached();
-            animator.SnapToClosedPosition();
-        }
-
         gameObject.SetActive(true);
-        animator.OpenPanel();
+
+        if (TryGetPanelAnimator(out var animator))
+        {
+            animator.SnapToClosedPosition();
+            animator.OpenPanel();
+        }
     }
 
     /// <summary>
@@ -76,6 +75,8 @@ public abstract class BasePanel : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+
+        _uiManager.CloseAllPanels();
     }
 
     private bool TryGetPanelAnimator(out PanelDoAni animator)
@@ -89,7 +90,8 @@ public abstract class BasePanel : MonoBehaviour
 
         if (!_isAnimatorCached || _panelAnimator == null)
         {
-            _panelAnimator = GetComponent<PanelDoAni>();
+            Transform target = _panelAnimationTarget != null ? _panelAnimationTarget : transform;
+            _panelAnimator = target.GetComponent<PanelDoAni>();
             _isAnimatorCached = true;
         }
 

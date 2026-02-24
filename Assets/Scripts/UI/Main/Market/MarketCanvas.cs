@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 시장 시스템의 메인 컨트롤러로, 리소스와 거래자 뷰 사이의 전환 및 데이터 갱신을 관리합니다.
 /// </summary>
-public class MarketPanel : BasePanel
+public class MarketCanvas : BaseMainCanvasPanel
 {
     [Header("Action Buttons")]
     [SerializeField] private Transform _marketActionBtnContentTransform;

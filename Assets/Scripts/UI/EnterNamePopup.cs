@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 
-public class EnterNamePopup : MonoBehaviour
+public class EnterNamePopup : BasePopup
 {
     [SerializeField] private TMP_InputField _nameInputField = null;
 
@@ -15,14 +15,16 @@ public class EnterNamePopup : MonoBehaviour
     /// <param name="onConfirm">확인 버튼 클릭 시 호출될 콜백</param>
     public void Init(Action<string> onConfirm)
     {
+        base.Init();
         _onConfirm = onConfirm;
 
-        // 입력 필드 초기화
         if (_nameInputField != null)
         {
             _nameInputField.text = string.Empty;
             _nameInputField.ActivateInputField();
         }
+
+        Show();
     }
 
     /// <summary>
@@ -39,11 +41,7 @@ public class EnterNamePopup : MonoBehaviour
         }
 
         string enteredName = _nameInputField.text;
-
-        // 콜백 호출
         _onConfirm?.Invoke(enteredName);
-
-        // 패널 닫기
         Destroy(gameObject);
     }
 
@@ -52,6 +50,7 @@ public class EnterNamePopup : MonoBehaviour
     /// </summary>
     public void OnClickClose()
     {
+        Close();
         Destroy(gameObject);
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class NewsPanel : BasePanel
+public class NewsCanvas : BaseMainCanvasPanel
 {
     [SerializeField] Transform _newspaperContentTransform;
     [SerializeField] GameObject _newspaperPanelPrefab;
@@ -13,17 +13,17 @@ public class NewsPanel : BasePanel
     {
         base.Init(argUIManager);
 
-        RefreshNewsList();
-    }
-
-    private void OnEnable()
-    {
         _dataManager.News.OnNewsChanged += RefreshNewsList;
+
+        RefreshNewsList();
     }
 
     private void OnDisable()
     {
-        _dataManager.News.OnNewsChanged += RefreshNewsList;
+        if(_dataManager != null)
+        {
+            _dataManager.News.OnNewsChanged += RefreshNewsList;
+        }
     }
 
     private void RefreshNewsList(NewsState newsState = null)

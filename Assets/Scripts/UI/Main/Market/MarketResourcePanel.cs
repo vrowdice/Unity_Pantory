@@ -10,7 +10,7 @@ using Evo.UI;
 public class MarketResourcePanel : MonoBehaviour
 {
     private DataManager _dataManager;
-    private MarketPanel _marketPanel;
+    private MarketCanvas _marketPanel;
 
     [Header("Components")]
     [SerializeField] private LineChart _lineChart;
@@ -33,7 +33,7 @@ public class MarketResourcePanel : MonoBehaviour
     /// </summary>
     /// <param name="dataManager">데이터 관리자 참조</param>
     /// <param name="marketPanel">부모 마켓 패널 참조</param>
-    public void Init(MarketPanel marketPanel)
+    public void Init(MarketCanvas marketPanel)
     {
         _dataManager = DataManager.Instance;
         _marketPanel = marketPanel;

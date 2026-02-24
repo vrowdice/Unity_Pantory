@@ -443,6 +443,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 315cbc092ee62a942872f07a36d52879, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 1053059687622353390}
+  _effectType: 0
+  _enabled: 1
   _nameInputField: {fileID: 276705819320647874}
 --- !u!1 &925525624652452629
 GameObject:

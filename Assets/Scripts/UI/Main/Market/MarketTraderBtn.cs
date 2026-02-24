@@ -9,11 +9,11 @@ public class MarketTraderBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _wealthText = null;
     [SerializeField] private TextMeshProUGUI _currentChangeWealthText = null;
 
-    private MarketPanel _marketPanel = null;
+    private MarketCanvas _marketPanel = null;
     private MarketActorEntry _actorEntry = null;
     private bool _isPlayer = false;
 
-    public void Init(MarketPanel panel, MarketActorEntry actorEntry)
+    public void Init(MarketCanvas panel, MarketActorEntry actorEntry)
     {
         _marketPanel = panel;
         _actorEntry = actorEntry;
@@ -25,7 +25,7 @@ public class MarketTraderBtn : MonoBehaviour
         RefreshAllUI();
     }
 
-    public void InitPlayer(MarketPanel panel, int rank = 0)
+    public void InitPlayer(MarketCanvas panel, int rank = 0)
     {
         _marketPanel = panel;
         _actorEntry = null;

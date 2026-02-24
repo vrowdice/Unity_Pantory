@@ -7,7 +7,7 @@ using System.Linq;
 /// <summary>
 /// 직원 관리 패널
 /// </summary>
-public class EmployeePanel : BasePanel
+public class EmployeeCanvas : BaseMainCanvasPanel
 {
     [SerializeField] private Slider _managementSlider;
     [SerializeField] private Image _managementFillImage;

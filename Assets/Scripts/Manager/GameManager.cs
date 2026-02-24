@@ -231,10 +231,8 @@ public class GameManager : Singleton<GameManager>
     {
         GameObject canvasObj = new GameObject("ManagerCanvas");
         Canvas canvas = canvasObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        canvas.worldCamera = Camera.main;
-        canvas.sortingLayerName = "UI";
-        canvas.sortingOrder = 100;
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 30;
 
         canvasObj.AddComponent<CanvasScaler>();
         canvasObj.AddComponent<GraphicRaycaster>();

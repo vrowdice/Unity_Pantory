@@ -5,7 +5,7 @@ using TMPro;
 /// <summary>
 /// 연구 관리 패널
 /// </summary>
-public class ResearchPanel : BasePanel
+public class ResearchCanvas : BaseMainCanvasPanel
 {
     private List<ResearchTierPanel> _researchTierPanels = new List<ResearchTierPanel>();
 

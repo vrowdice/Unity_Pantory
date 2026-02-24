@@ -4,7 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 
-public class FinancePanel : BasePanel
+public class FinanceCanvas : BaseMainCanvasPanel
 {
     [SerializeField] private LineChart _creditChart;
     [SerializeField] private LineChart _welthChart;
@@ -32,8 +32,11 @@ public class FinancePanel : BasePanel
 
     private void OnDisable()
     {
-        _dataManager.Time.OnDayChanged -= UpdateDailyUI;
-        _dataManager.Time.OnMonthChanged -= UpdateMonthlyUI;
+        if (_dataManager != null)
+        {
+            _dataManager.Time.OnDayChanged -= UpdateDailyUI;
+            _dataManager.Time.OnMonthChanged -= UpdateMonthlyUI;
+        }
     }
 
     private void UpdateDailyUI()
