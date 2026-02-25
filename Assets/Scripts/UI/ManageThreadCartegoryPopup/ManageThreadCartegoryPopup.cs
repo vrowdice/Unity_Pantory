@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class ManageThreadCartegoryPopup : BasePopup
 {
@@ -71,6 +72,16 @@ public class ManageThreadCartegoryPopup : BasePopup
                 gameManager.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
+            
+            Dictionary<string, ThreadCategory> allCategories = _dataManager.Thread.GetAllCategories();
+            foreach (ThreadCategory category in allCategories.Values)
+            {
+                if (category != null && category.categoryName == categoryName)
+                {
+                    gameManager.ShowWarningPopup(WarningMessage.CategoryNameAlreadyExists);
+                    return;
+                }
+            }
 
             string categoryId = $"Category_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
             var newCategory = _dataManager.Thread.CreateCategory(categoryId, categoryName);
@@ -109,6 +120,20 @@ public class ManageThreadCartegoryPopup : BasePopup
                 gameManager.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
+
+            // 이름 중복 체크 (자기 자신 제외)
+            Dictionary<string, ThreadCategory> allCategories = _dataManager.Thread.GetAllCategories();
+            foreach (ThreadCategory category in allCategories.Values)
+            {
+                if (category != null &&
+                    category.categoryId != categoryId &&
+                    category.categoryName == newName)
+                {
+                    gameManager.ShowWarningPopup(WarningMessage.CategoryNameAlreadyExists);
+                    return;
+                }
+            }
+
             bool success = _dataManager.Thread.RenameCategory(categoryId, newName);
             
             if (success)

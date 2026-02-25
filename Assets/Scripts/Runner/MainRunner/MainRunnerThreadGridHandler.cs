@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 /// <summary>
 /// 그리드 타일 생성, 스레드 객체 배치 및 제거 모드를 관리하는 핸들러 클래스입니다.
@@ -197,6 +198,14 @@ public class MainRunnerThreadGridHandler
 
         _threadObjects[gridPos] = threadObj;
         SetTileOccupied(gridPos, true);
+
+        Vector3 originalScale = obj.transform.localScale;
+        obj.transform.localScale = Vector3.zero;
+        obj.transform.DOScale(originalScale, 0.2f)
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
+            .SetLink(obj);
+
         return threadObj;
     }
 

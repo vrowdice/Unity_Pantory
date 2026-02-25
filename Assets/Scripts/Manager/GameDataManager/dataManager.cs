@@ -164,7 +164,7 @@ public class DataManager : Singleton<DataManager>
 
     private void HandleThreadPlacementChanged()
     {
-        Employee.HandleDayChanged();
+        Employee.SyncAssignedCountsFromThreads(ThreadPlacement);
     }
 
     private void HandleDayChanged()

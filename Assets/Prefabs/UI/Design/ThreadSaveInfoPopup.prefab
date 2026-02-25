@@ -4245,7 +4245,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7010614992059692193}
         m_TargetAssemblyTypeName: ThreadSaveInfoPopup, Assembly-CSharp
-        m_MethodName: OnClickSelectCategory
+        m_MethodName: OnClickSave
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -114,6 +114,10 @@ MonoBehaviour:
     m_Localized: セーブファイルの削除に失敗しました。
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268025
+    m_Localized: 同じ名前のカテゴリーが既に存在します。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

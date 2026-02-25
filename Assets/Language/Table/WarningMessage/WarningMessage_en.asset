@@ -114,6 +114,10 @@ MonoBehaviour:
     m_Localized: Failed to delete save file.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268025
+    m_Localized: A category with this name already exists.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

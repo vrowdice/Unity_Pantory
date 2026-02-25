@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 그리드 타일의 생성, 건물 오브젝트의 배치 및 좌표 변환을 관리하는 핸들러입니다.
@@ -104,7 +105,8 @@ public class DesignRunnerGridHandler
 
         SpriteRenderer renderer = buildingObject.GetComponent<SpriteRenderer>();
         renderer.sprite = buildingData.buildingSprite;
-        buildingObject.transform.localScale = GameObjectUtils.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
+        Vector3 targetScale = GameObjectUtils.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
+        buildingObject.transform.localScale = targetScale;
 
         if (buildingState != null && !buildingState.IsUnlocked(DataManager))
         {
@@ -131,6 +133,13 @@ public class DesignRunnerGridHandler
         }
 
         RegisterBuildingToMaps(gridPosition, rotatedSize, buildingObject);
+        
+        Vector3 originalScale = buildingObject.transform.localScale;
+        buildingObject.transform.localScale = Vector3.zero;
+        buildingObject.transform.DOScale(originalScale, 0.2f)
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
+            .SetLink(buildingObject);
 
         return buildingObject;
     }

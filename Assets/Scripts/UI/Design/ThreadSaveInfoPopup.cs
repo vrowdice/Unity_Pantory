@@ -17,20 +17,8 @@ public class ThreadSaveInfoPopup : BasePopup
     [SerializeField] private TextMeshProUGUI _totalMaintenanceText = null;
 
     private DataManager _dataManager = null;
-    private GameManager _gameManager = null;
     private DesignCanvas _designCanvas = null;
     private string _selectedCategoryId = string.Empty;
-
-    /// <summary>
-    /// DataManager를 초기 설정합니다. (Awake/Initialize 단계)
-    /// </summary>
-    public void Init(DataManager dataManager)
-    {
-        base.Init();
-        
-        _dataManager = dataManager;
-        _gameManager = GameManager.Instance;
-    }
 
     /// <summary>
     /// Thread 정보를 계산된 데이터로 초기화하고 패널을 표시합니다.
@@ -39,7 +27,8 @@ public class ThreadSaveInfoPopup : BasePopup
     public void Init(List<string> inputResourceIds, Dictionary<string, int> inputResourceCounts, List<string> outputResourceIds, Dictionary<string, int> outputResourceCounts, int totalMaintenance, DesignCanvas designUiManager)
     {
         base.Init();
-        
+
+        _dataManager = DataManager.Instance;
         _designCanvas = designUiManager;
 
         string currentThreadId = _designCanvas.DesignRunner.CurrentThreadId;
@@ -48,20 +37,26 @@ public class ThreadSaveInfoPopup : BasePopup
         if (!string.IsNullOrEmpty(currentThreadId) && _dataManager != null)
         {
             ThreadState existingThread = _dataManager.Thread.GetThread(currentThreadId);
-            if (existingThread != null && !string.IsNullOrEmpty(existingThread.categoryId))
+            if (existingThread != null)
             {
-                _selectedCategoryId = existingThread.categoryId;
+                if (_threadTitleInputField != null)
+                {
+                    string displayName = string.IsNullOrEmpty(existingThread.threadName)
+                        ? existingThread.threadId
+                        : existingThread.threadName;
+                    _threadTitleInputField.text = displayName;
+                }
+
+                if (!string.IsNullOrEmpty(existingThread.categoryId))
+                {
+                    _selectedCategoryId = existingThread.categoryId;
+                }
             }
         }
 
         UpdateCategoryText();
         GameObjectUtils.ClearChildren(_inputProductionScrollVIewContent);
         GameObjectUtils.ClearChildren(_outputProductionScrollVIewContent);
-
-        inputResourceIds ??= new List<string>();
-        inputResourceCounts ??= new Dictionary<string, int>();
-        outputResourceIds ??= new List<string>();
-        outputResourceCounts ??= new Dictionary<string, int>();
 
         DisplayProductionIcons(inputResourceIds, _inputProductionScrollVIewContent, inputResourceCounts, isOutput: false);
         DisplayProductionIcons(outputResourceIds, _outputProductionScrollVIewContent, outputResourceCounts, isOutput: true);
@@ -110,13 +105,7 @@ public class ThreadSaveInfoPopup : BasePopup
     /// </summary>
     public void OnClickSelectCategory()
     {
-        if (_gameManager == null || _dataManager == null)
-        {
-            Debug.LogWarning("[ThreadSaveInfoPanel] Managers are null.");
-            return;
-        }
-
-        _gameManager.ShowManageThreadCartegoryPopup(_dataManager, (selectedCategoryId) =>
+        GameManager.Instance.ShowManageThreadCartegoryPopup(_dataManager, (selectedCategoryId) =>
         {
             _selectedCategoryId = selectedCategoryId;
             UpdateCategoryText();
@@ -153,22 +142,15 @@ public class ThreadSaveInfoPopup : BasePopup
     /// </summary>
     public void OnClickSave()
     {
-        if (_designCanvas == null || _gameManager == null)
-        {
-            Debug.LogError("[SaveInfoPanel] DesignUiManager or GameManager reference is missing.");
-            return;
-        }
         string threadName = _threadTitleInputField != null ? _threadTitleInputField.text : string.Empty;
 
         if (string.IsNullOrEmpty(threadName))
         {
-            _gameManager.ShowWarningPopup(WarningMessage.PleaseEnterThreadName);
+            GameManager.Instance.ShowWarningPopup(WarningMessage.PleaseEnterThreadName);
             return;
         }
 
         _designCanvas.SaveThreadChanges(threadName, _selectedCategoryId);
-
-        Debug.Log($"[ThreadSaveInfoPanel] Save request delegated for: {threadName} (Category: {_selectedCategoryId})");
 
         Close();
     }

@@ -163,10 +163,27 @@ public class ThreadObject : MonoBehaviour
         Transform sharedCanvas = _gameManager.GetWorldCanvas();
         if (sharedCanvas == null) return;
 
-        if (!_threadState.TryGetAggregatedResourceCounts(out var consumption, out var production)) return;
+        DataManager dataManager = DataManager.Instance;
+        if (dataManager == null || dataManager.ThreadPlacement == null || _threadState.buildingStateList == null)
+        {
+            return;
+        }
+        
+        dataManager.ThreadPlacement.CalculateProductionChain(
+            _threadState.buildingStateList,
+            out List<string> inputIds,
+            out Dictionary<string, int> inputCounts,
+            out List<string> outputIds,
+            out Dictionary<string, int> outputCounts);
 
-        _consumptionIconContainer = CreateProductionIconContainer(consumption, "Consumption", _consumptionYOffset, sharedCanvas);
-        _productionIconContainer = CreateProductionIconContainer(production, "Production", _productionYOffset, sharedCanvas);
+        if ((inputCounts == null || inputCounts.Count == 0) &&
+            (outputCounts == null || outputCounts.Count == 0))
+        {
+            return;
+        }
+
+        _consumptionIconContainer = CreateProductionIconContainer(inputCounts, "Consumption", _consumptionYOffset, sharedCanvas);
+        _productionIconContainer = CreateProductionIconContainer(outputCounts, "Production", _productionYOffset, sharedCanvas);
     }
 
     /// <summary>

@@ -7,7 +7,6 @@ public class BasePopup : MonoBehaviour
 {
     [SerializeField] private RectTransform _animationTarget;
     [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.FadeInFadeOut;
-    [SerializeField] private bool _enabled = true;
 
     public const float DISPLAY_TIME = 0.6f;
     public const float MOVE_DURATION = 0.5f;

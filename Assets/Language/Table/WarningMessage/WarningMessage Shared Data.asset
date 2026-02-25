@@ -111,6 +111,10 @@ MonoBehaviour:
     m_Key: DeleteFailed
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268025
+    m_Key: CategoryNameAlreadyExists
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

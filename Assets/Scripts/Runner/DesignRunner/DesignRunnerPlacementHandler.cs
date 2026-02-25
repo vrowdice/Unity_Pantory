@@ -199,7 +199,14 @@ public class DesignRunnerPlacementHandler
     
     private void HighlightBuilding(GameObject building)
     {
+        if (building == null)
+        {
+            return;
+        }
+
         if (building.TryGetComponent(out SpriteRenderer r))
+        {
             r.color = VisualManager.Instance?.InvalidColor ?? new Color(1, 0, 0, 0.5f);
+        }
     }
 }

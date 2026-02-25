@@ -790,10 +790,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1073820044618861082, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
-      propertyPath: m_Value
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1240362752853070218, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -821,10 +817,6 @@ PrefabInstance:
     - target: {fileID: 2066718298802921344, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2066718298802921344, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -0.00008091583
       objectReference: {fileID: 0}
     - target: {fileID: 2401251181362770641, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
       propertyPath: _designRunner
@@ -984,7 +976,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4039857486890272370, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
       propertyPath: m_Name
-      value: Canvas
+      value: DesignCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 4717778321871790281, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
       propertyPath: m_AnchorMax.x
@@ -994,12 +986,16 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4717778321871790281, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
-      propertyPath: m_AnchorMin.x
+    - target: {fileID: 5063042896846259294, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
+      propertyPath: m_fontColor.b
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5086906002334807087, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
-      propertyPath: m_Value
+    - target: {fileID: 5063042896846259294, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5063042896846259294, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
+      propertyPath: m_fontColor.r
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5331765626840425997, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
@@ -1397,14 +1393,6 @@ PrefabInstance:
     - target: {fileID: 7674730098263762727, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7674730098263762727, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8183364324741588396, guid: 31f6dd7d9c2f14e47a83679038a321a0, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -0.00008091583
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

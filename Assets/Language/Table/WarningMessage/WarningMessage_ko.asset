@@ -114,6 +114,10 @@ MonoBehaviour:
     m_Localized: 세이브 파일 삭제에 실패했습니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268025
+    m_Localized: 이미 존재하는 카테고리 이름입니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

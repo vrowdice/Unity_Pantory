@@ -55,8 +55,8 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
 
         ThreadState newState = CloneThreadState(template);
-        newState.threadId = $"{templateId}_{gridPosition.x}_{gridPosition.y}_{Guid.NewGuid().ToString().Substring(0, 8)}";;
-        newState.threadName = $"{template.threadName}";
+        newState.threadId = template.threadId;
+        newState.threadName = template.threadName;
 
         RecalculateThreadStats(newState);
 
@@ -257,6 +257,8 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         string json = JsonUtility.ToJson(source);
         ThreadState clone = JsonUtility.FromJson<ThreadState>(json);
+        clone.buildingStateList = source.buildingStateList;
+
         return clone;
     }
 

@@ -102,22 +102,29 @@ public class ThreadInfoPopup : BasePopup
 
     private void UpdateResourceIcons()
     {
-        if (PoolingManager.Instance != null)
+        PoolingManager.Instance.ClearChildrenToPool(_provideContentTransform);
+        PoolingManager.Instance.ClearChildrenToPool(_consumeContentTransform);
+
+        if (_currentThreadState == null || _dataManager == null || _dataManager.ThreadPlacement == null)
         {
-            PoolingManager.Instance.ClearChildrenToPool(_provideContentTransform);
-            PoolingManager.Instance.ClearChildrenToPool(_consumeContentTransform);
-        }
-        else
-        {
-            GameObjectUtils.ClearChildren(_provideContentTransform);
-            GameObjectUtils.ClearChildren(_consumeContentTransform);
+            return;
         }
 
-        if (_currentThreadState.TryGetAggregatedResourceCounts(out var consumption, out var production))
+        _dataManager.ThreadPlacement.CalculateProductionChain(
+            _currentThreadState.buildingStateList,
+            out List<string> inputIds,
+            out Dictionary<string, int> inputCounts,
+            out List<string> outputIds,
+            out Dictionary<string, int> outputCounts);
+
+        if ((inputCounts == null || inputCounts.Count == 0) &&
+            (outputCounts == null || outputCounts.Count == 0))
         {
-            SpawnIcons(consumption, _provideContentTransform);
-            SpawnIcons(production, _consumeContentTransform);
+            return;
         }
+
+        SpawnIcons(inputCounts, _provideContentTransform);
+        SpawnIcons(outputCounts, _consumeContentTransform);
     }
 
     private void SpawnIcons(Dictionary<string, int> resources, Transform parent)
@@ -274,8 +281,10 @@ public class ThreadInfoPopup : BasePopup
 
     private void SyncAndRefresh()
     {
-        _dataManager?.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
-        RefreshAllUI();
+        _dataManager.Employee.SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
+
+        UpdateEmployeeStatus();
+        UpdateProductionStatus();
     }
 
     private string GetCategoryName(string categoryId)

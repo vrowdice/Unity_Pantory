@@ -28,4 +28,5 @@ public static class WarningMessage
     public const string LoadFailed = "LoadFailed";
     public const string DeleteSuccess = "DeleteSuccess";
     public const string DeleteFailed = "DeleteFailed";
+    public const string CategoryNameAlreadyExists = "CategoryNameAlreadyExists";
 }

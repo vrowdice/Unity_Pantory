@@ -20,6 +20,8 @@ public class DesignRunnerCalculationHandler
     
     /// <summary>
     /// 생산 체인을 계산합니다.
+    /// ThreadPlacementDataHandler와 동일하게 BuildingCalculationUtils 기반으로 집계합니다.
+    /// (도로 연결/하역소 특수 로직 없이, 순수하게 건물 리스트만 기준으로 사용/생성 자원을 계산)
     /// </summary>
     public void CalculateProductionChain(
         string threadName,
@@ -30,70 +32,22 @@ public class DesignRunnerCalculationHandler
         out List<string> outputIds,
         out Dictionary<string, int> outputCounts)
     {
+        inputIds = new List<string>();
+        outputIds = new List<string>();
         inputCounts = new Dictionary<string, int>();
         outputCounts = new Dictionary<string, int>();
-        HashSet<string> finalOutputs = new HashSet<string>();
-        
-        foreach (BuildingState state in states ?? new List<BuildingState>())
+
+        if (states == null || states.Count == 0)
         {
-            BuildingData data = DataManager.Building.GetBuildingData(state.Id);
-            if (data == null || !state.IsUnlocked(DataManager)) continue;
-
-            Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
-            Vector2Int outPos = basePos + GridMathUtils.GetRotatedOffset(data.OutputPosition, state.rotation);
-            Vector2Int inPos = basePos + GridMathUtils.GetRotatedOffset(data.InputPosition, state.rotation);
-
-            if (data.IsProductionBuilding)
-            {
-                bool isRawMaterialFactory = data is RawMaterialFactoryData;
-                bool canProduce = false;
-                
-                if (isRawMaterialFactory)
-                {
-                    canProduce = RoadNetworkAnalyzer.IsConnected(outPos, false, true, gridMap, DataManager);
-                }
-                else
-                {
-                    canProduce = RoadNetworkAnalyzer.IsConnected(inPos, true, false, gridMap, DataManager) &&
-                                 AreAllInputResourcesAvailable(state, inPos, gridMap);
-                }
-                
-                if (canProduce)
-                {
-                    if (!isRawMaterialFactory)
-                    {
-                        ProcessInputs(state, inputCounts);
-                    }
-                    
-                    if (RoadNetworkAnalyzer.IsConnected(outPos, false, true, gridMap, DataManager))
-                    {
-                        if (state.outputProductionIds != null)
-                        {
-                            foreach (string id in state.outputProductionIds)
-                            {
-                                if (string.IsNullOrEmpty(id)) continue;
-                                finalOutputs.Add(id);
-                                outputCounts[id] = outputCounts.GetValueOrDefault(id, 0) + 1;
-                            }
-                        }
-                    }
-                }
-            }
-            else if (data.IsUnloadStation)
-            {
-                if (state.outputProductionIds != null)
-                {
-                    foreach (string id in state.outputProductionIds)
-                    {
-                        if (string.IsNullOrEmpty(id)) continue;
-                        inputCounts[id] = inputCounts.GetValueOrDefault(id, 0) + 1;
-                    }
-                }
-            }
+            return;
         }
 
-        inputIds = inputCounts.Keys.ToList();
-        outputIds = finalOutputs.ToList();
+        ThreadCalculationResult stats = BuildingCalculationUtils.CalculateProductionStats(DataManager, states);
+        inputCounts = stats.InputResourceCounts;
+        outputCounts = stats.OutputResourceCounts;
+
+        inputIds.AddRange(inputCounts.Keys);
+        outputIds.AddRange(outputCounts.Keys);
     }
     
     /// <summary>
