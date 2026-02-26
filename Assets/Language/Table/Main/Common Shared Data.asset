@@ -363,6 +363,14 @@ MonoBehaviour:
     m_Key: When Fire
     m_Metadata:
       m_Items: []
+  - m_Id: 11595204534878208
+    m_Key: Before
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11595284792885248
+    m_Key: Next
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -67,6 +67,6 @@ MonoBehaviour:
   - String: News
     Sprite: {fileID: 21300000, guid: 76f6c2e3017651d4e82d6f4185ba8fc3, type: 3}
   - String: Order
-    Sprite: {fileID: 21300000, guid: 4bc531f52d504e448b0719700a7b33b6, type: 3}
+    Sprite: {fileID: 21300000, guid: 7465d6a539315d541a99f02bab65d915, type: 3}
   - String: Finance
     Sprite: {fileID: 21300000, guid: fe81cfff8bf5d174dacc45039e9b7266, type: 3}

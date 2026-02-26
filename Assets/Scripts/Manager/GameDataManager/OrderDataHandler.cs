@@ -166,7 +166,7 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
             {
                 if (!_dataManager.Resource.ModifyResourceCount(request.resourceId, -request.requiredCount))
                 {
-                    GameManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughResources);
+                    UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughResources);
                     return;
                 }
             }

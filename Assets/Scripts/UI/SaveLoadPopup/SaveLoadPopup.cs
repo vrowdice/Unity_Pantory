@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class SaveLoadPopup : BasePopup
+public class SaveLoadPopup : PopupBase
 {
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private GameObject _newSavefileBtn;
@@ -81,13 +81,13 @@ public class SaveLoadPopup : BasePopup
     {
         if (string.IsNullOrEmpty(fileName))
         {
-            GameManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNameEmpty);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNameEmpty);
             return;
         }
 
         if (SaveLoadManager.Instance.SaveFile.HasSaveFile(fileName))
         {
-            GameManager.Instance.ShowConfirmPopup(ConfirmMessage.OverwriteConfirm, () => DoSaveSavefile(fileName));
+            UIManager.Instance.ShowConfirmPopup(ConfirmMessage.OverwriteConfirm, () => DoSaveSavefile(fileName));
             return;
         }
 
@@ -100,12 +100,12 @@ public class SaveLoadPopup : BasePopup
         if (success)
         {
             RefreshSaveFileList();
-            GameManager.Instance.ShowWarningPopup(WarningMessage.SaveSuccess);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.SaveSuccess);
             GameManager.Instance.CloseAllPopups();
         }
         else
         {
-            GameManager.Instance.ShowWarningPopup(WarningMessage.SaveFailed);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.SaveFailed);
         }
     }
 
@@ -113,17 +113,17 @@ public class SaveLoadPopup : BasePopup
     {
         if (string.IsNullOrEmpty(fileName))
         {
-            GameManager.Instance.ShowWarningPopup(WarningMessage.LoadFileNameEmpty);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.LoadFileNameEmpty);
             return;
         }
 
         if (!SaveLoadManager.Instance.SaveFile.HasSaveFile(fileName))
         {
-            GameManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNotFound);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNotFound);
             return;
         }
 
-        GameManager.Instance.ShowConfirmPopup(ConfirmMessage.LoadConfirm, () =>
+        UIManager.Instance.ShowConfirmPopup(ConfirmMessage.LoadConfirm, () =>
         {
             bool success = SaveLoadManager.Instance.SaveFile.LoadSaveFile(fileName, DataManager.Instance);
             if (success)
@@ -133,7 +133,7 @@ public class SaveLoadPopup : BasePopup
             }
             else
             {
-                GameManager.Instance.ShowWarningPopup(WarningMessage.LoadFailed);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.LoadFailed);
             }
         });
     }
@@ -142,7 +142,7 @@ public class SaveLoadPopup : BasePopup
     {
         if (string.IsNullOrEmpty(fileName))
         {
-            GameManager.Instance.ShowWarningPopup(WarningMessage.DeleteFileNameEmpty);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.DeleteFileNameEmpty);
             return;
         }
 
@@ -152,28 +152,28 @@ public class SaveLoadPopup : BasePopup
             return;
         }
 
-        GameManager.Instance.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
+        UIManager.Instance.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
         {
             bool success = SaveLoadManager.Instance.SaveFile.DeleteSaveFile(fileName);
             if (success)
             {
                 RefreshSaveFileList();
-                GameManager.Instance.ShowWarningPopup(WarningMessage.DeleteSuccess);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.DeleteSuccess);
             }
             else
             {
-                GameManager.Instance.ShowWarningPopup(WarningMessage.DeleteFailed);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.DeleteFailed);
             }
         });
     }
 
     public void CreateNewSavefile()
     {
-        GameManager.Instance.ShowEnterNamePopup((string fileName) =>
+        UIManager.Instance.ShowEnterNamePopup((string fileName) =>
         {
             if (string.IsNullOrEmpty(fileName))
             {
-                GameManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNameEmpty);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNameEmpty);
                 return;
             }
 

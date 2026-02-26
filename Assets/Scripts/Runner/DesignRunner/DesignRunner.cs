@@ -443,7 +443,7 @@ public class DesignRunner : RunnerBase
         }
         else
         {
-            GameManager.ShowWarningPopup(WarningMessage.BuildingLocked);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingLocked);
         }
     }
 

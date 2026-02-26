@@ -6,7 +6,7 @@ using System;
 /// 확인 팝업을 표시하는 클래스입니다.
 /// 확인/거부 버튼을 통해 사용자의 선택을 처리합니다.
 /// </summary>
-public class ConfirmPopup : BasePopup
+public class ConfirmPopup : PopupBase
 {
     [SerializeField] private TextMeshProUGUI _text;
 

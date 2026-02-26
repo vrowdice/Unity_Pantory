@@ -185,7 +185,7 @@ public class BuildingObject : MonoBehaviour
             float yOffset = buildingHeight * _productionIconContentOffset;
             Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
             
-            _inputProductionContainer = _gameManager.CreateProductionIconContainer(
+            _inputProductionContainer = UIManager.Instance.CreateProductionIconContainer(
                 sharedCanvas,
                 $"InputIcons_{gameObject.name}",
                 worldPosition,
@@ -199,7 +199,7 @@ public class BuildingObject : MonoBehaviour
             float yOffset = -buildingHeight * _productionIconContentOffset;
             Vector3 worldPosition = transform.position + new Vector3(0, yOffset, -1);
             
-            _outputProductionContainer = _gameManager.CreateProductionIconContainer(
+            _outputProductionContainer = UIManager.Instance.CreateProductionIconContainer(
                 sharedCanvas,
                 $"OutputIcons_{gameObject.name}",
                 worldPosition,
@@ -269,7 +269,7 @@ public class BuildingObject : MonoBehaviour
         Vector3 worldPosition = transform.position + new Vector3(0, 0, -1);
         float roadIconScale = _productionIconScale * 0.7f; // 도로 자원 아이콘을 70% 크기로
         
-        _roadResourceContainer = _gameManager.CreateProductionIconContainer(
+        _roadResourceContainer = UIManager.Instance.CreateProductionIconContainer(
             sharedCanvas,
             $"RoadResources_{gameObject.name}",
             worldPosition,

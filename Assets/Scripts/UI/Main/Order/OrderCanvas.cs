@@ -6,7 +6,7 @@ using System.Linq;
 /// <summary>
 /// 주문 관리 패널
 /// </summary>
-public class OrderCanvas : BaseMainCanvasPanel
+public class OrderCanvas : MainCanvasPanelBase
 {
     [SerializeField] private Transform _orderActionBtnContentTransform;
     [SerializeField] private Transform _orderMarketActorPopupBtnScrollViewContentTransform;
@@ -70,7 +70,7 @@ public class OrderCanvas : BaseMainCanvasPanel
         _gameManager.PoolingManager.ClearChildrenToPool(_orderActionBtnContentTransform);
         _filterButtonList.Clear();
 
-        GameObject allBtnObj = Instantiate(_gameManager.ActionBtnPrefab, _orderActionBtnContentTransform);
+        GameObject allBtnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _orderActionBtnContentTransform);
         ActionBtn allBtn = allBtnObj.GetComponent<ActionBtn>();
         allBtn.Init(LocalizationUtils.Localize("All"), () => {
             OnMarketActorTypeClick(null);
@@ -80,7 +80,7 @@ public class OrderCanvas : BaseMainCanvasPanel
 
         foreach (MarketActorType actorType in EnumUtils.GetAllEnumValues<MarketActorType>())
         {
-            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _orderActionBtnContentTransform);
+            GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _orderActionBtnContentTransform);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             MarketActorType capturedType = actorType;
             btn.Init(actorType.Localize(), () => {

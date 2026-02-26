@@ -16,12 +16,12 @@ public class TitleCanvas : CanvasBase
 
     public void ShowSaveLoadPopup()
     {
-        GameManager.ShowSaveLoadPopup(false);
+        UIManager.Instance.ShowSaveLoadPopup(false);
     }
 
     public void ShowOptionPopup()
     {
-        GameManager.ShowOptionPopup();
+        UIManager.Instance.ShowOptionPopup();
     }
 
     public void ExitGame()

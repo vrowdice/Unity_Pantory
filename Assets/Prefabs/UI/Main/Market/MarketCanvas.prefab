@@ -6878,6 +6878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039f95be7032a1d4ca3aa431ac87ac1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tutorialPanelInfo: []
   _panelAnimationTarget: {fileID: 1057055313589436191}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
@@ -13675,8 +13676,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 9019539711037618590}
   - {fileID: 4583720576486023910}
+  - {fileID: 9019539711037618590}
   m_Father: {fileID: 8917866412577917979}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

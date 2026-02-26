@@ -196,7 +196,7 @@ public class ThreadObject : MonoBehaviour
 
         Vector3 worldPosition = transform.position + new Vector3(0f, yOffset, 0f);
         
-        GameObject container = _gameManager.CreateProductionIconContainer(
+        GameObject container = UIManager.Instance.CreateProductionIconContainer(
             sharedCanvas, 
             $"Thread{suffix}_{_threadState.threadId}", 
             worldPosition, 

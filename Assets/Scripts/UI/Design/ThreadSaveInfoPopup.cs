@@ -6,7 +6,7 @@ using TMPro;
 /// <summary>
 /// Thread 저장 정보를 표시하고 최종 저장(Save) 명령을 처리하는 UI 패널입니다.
 /// </summary>
-public class ThreadSaveInfoPopup : BasePopup
+public class ThreadSaveInfoPopup : PopupBase
 {
     [Header("UI Prefabs & Contents")]
     [SerializeField] private GameObject _productionInfoIconPanel = null;
@@ -105,7 +105,7 @@ public class ThreadSaveInfoPopup : BasePopup
     /// </summary>
     public void OnClickSelectCategory()
     {
-        GameManager.Instance.ShowManageThreadCartegoryPopup(_dataManager, (selectedCategoryId) =>
+        UIManager.Instance.ShowManageThreadCartegoryPopup(_dataManager, (selectedCategoryId) =>
         {
             _selectedCategoryId = selectedCategoryId;
             UpdateCategoryText();
@@ -146,7 +146,7 @@ public class ThreadSaveInfoPopup : BasePopup
 
         if (string.IsNullOrEmpty(threadName))
         {
-            GameManager.Instance.ShowWarningPopup(WarningMessage.PleaseEnterThreadName);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.PleaseEnterThreadName);
             return;
         }
 

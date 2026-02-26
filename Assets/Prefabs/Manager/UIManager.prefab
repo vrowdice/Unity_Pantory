@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5489666049234866014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3882227386556805807}
+  - component: {fileID: 912302107545897818}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3882227386556805807
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5489666049234866014}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &912302107545897818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5489666049234866014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 688f8e7fcf494e847a4eaa9c719a8b96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _optionPanelPrefab: {fileID: 1923056497988357278, guid: a625bcab1fd8fcd4f84d59e9b520a492, type: 3}
+  _warningPanelPrefab: {fileID: 509094518299881478, guid: 90a762a4eed595d4fabadaa9e40a721d, type: 3}
+  _confirmPanelPrefab: {fileID: 7264973369040463461, guid: 1ed700c27c6a05c4bb39d595a119aca8, type: 3}
+  _enterNamePanelPrefab: {fileID: 915623633410631137, guid: bc5f5e5569d10e94ba5162370d635536, type: 3}
+  _selectResourcePanelPrefab: {fileID: 3902504510895382675, guid: 8e5e94113a3155c4baa0c42d053bcaed, type: 3}
+  _manageThreadPanelPrefab: {fileID: 3974597957071869347, guid: 734f746900304da4798ab8efff7ebddf, type: 3}
+  _manageThreadCartegoryPanelPrefab: {fileID: 2639419400245874255, guid: f65e8985534c69643be32468ceb4c333, type: 3}
+  _saveLoadPopupPrefab: {fileID: 5511691627187789550, guid: 6124701b6567c7a4eaf09a7ad327b4ca, type: 3}
+  _tutorialPopupPrefab: {fileID: 1601846500520044884, guid: 77b659caac0b87944861f599d6897417, type: 3}
+  _productionInfoImagePrefab: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
+  _gridSortContentPrefab: {fileID: 9210800356017659960, guid: 4f082e6a291457548b44223e7a304a2c, type: 3}
+  _textPairPanelPrefab: {fileID: 5195975711048486128, guid: 2af1b22cca5536341a68e8ab542df466, type: 3}
+  _actionBtnPrefab: {fileID: 6252256842686782447, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
+  _effectTextPairPanelPrefab: {fileID: 5774520682493067643, guid: c73d844a3a8e83a4daccb49f6576b23f, type: 3}
+  _productionIconScale: 1

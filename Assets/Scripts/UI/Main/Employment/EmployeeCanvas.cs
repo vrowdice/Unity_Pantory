@@ -7,7 +7,7 @@ using System.Linq;
 /// <summary>
 /// 직원 관리 패널
 /// </summary>
-public class EmployeeCanvas : BaseMainCanvasPanel
+public class EmployeeCanvas : MainCanvasPanelBase
 {
     [SerializeField] private Slider _managementSlider;
     [SerializeField] private Image _managementFillImage;
@@ -131,7 +131,7 @@ public class EmployeeCanvas : BaseMainCanvasPanel
     /// </summary>
     private void SetupEmployeeRoleButtons()
     {
-        if (_gameManager?.ActionBtnPrefab == null || EmployeeActionBtnContent == null)
+        if (UIManager.Instance?.ActionBtnPrefab == null || EmployeeActionBtnContent == null)
         {
             return;
         }
@@ -158,7 +158,7 @@ public class EmployeeCanvas : BaseMainCanvasPanel
         List<EmployeeType> roles = EnumUtils.GetAllEnumValues<EmployeeType>();
         foreach (EmployeeType role in roles)
         {
-            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, EmployeeActionBtnContent);
+            GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, EmployeeActionBtnContent);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {
@@ -365,7 +365,7 @@ public class EmployeeCanvas : BaseMainCanvasPanel
             {
                 if (effectState == null) continue;
 
-                _gameManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
+                UIManager.Instance.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
             }
         }
     }
@@ -385,7 +385,7 @@ public class EmployeeCanvas : BaseMainCanvasPanel
         {
             if (effectState == null) continue;
 
-            _gameManager.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectState);
+            UIManager.Instance.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectState);
         }
     }
 

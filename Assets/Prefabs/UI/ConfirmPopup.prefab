@@ -153,7 +153,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 150}
+  m_AnchoredPosition: {x: 0, y: 125}
   m_SizeDelta: {x: 800, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &897291964058587731
@@ -767,7 +767,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 600}
+  m_SizeDelta: {x: 900, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4142989989398976380
 CanvasRenderer:
@@ -1114,10 +1114,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3663500864598406616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 100}
-  m_SizeDelta: {x: 900, y: 300}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -150}
+  m_SizeDelta: {x: -100, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8767093554074128643
 CanvasRenderer:
@@ -2095,7 +2095,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConfirmPopup
   _animationTarget: {fileID: 3663500864598406616}
   _effectType: 0
-  _enabled: 1
   _text: {fileID: 3148520282764435611}
 --- !u!1 &7693675861306329258
 GameObject:

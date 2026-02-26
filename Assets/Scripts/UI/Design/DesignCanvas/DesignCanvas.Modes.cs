@@ -31,7 +31,7 @@ public partial class DesignCanvas
     {
         if (!isUnlocked)
         {
-            GameManager.ShowWarningPopup(WarningMessage.BuildingLockedResearchRequired);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingLockedResearchRequired);
             return;
         }
 

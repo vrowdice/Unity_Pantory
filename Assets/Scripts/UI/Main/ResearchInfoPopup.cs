@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class ResearchInfoPopup : BasePopup
+public class ResearchInfoPopup : PopupBase
 {
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _tireText;
@@ -73,7 +73,7 @@ public class ResearchInfoPopup : BasePopup
         PoolingManager.Instance.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
         foreach (EffectData effectData in _currentResearchEntry.data.effects)
         {
-            _gameManager.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, new EffectState(effectData));
+            UIManager.Instance.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, new EffectState(effectData));
         }
     }
 
@@ -81,7 +81,7 @@ public class ResearchInfoPopup : BasePopup
     {
         if (!_dataManager.Research.TryUnlockResearch(_currentResearchEntry.data.id))
         {
-            _gameManager.ShowWarningPopup(WarningMessage.ResearchCannotUnlock);
+            UIManager.Instance.ShowWarningPopup(WarningMessage.ResearchCannotUnlock);
         }
         else
         {

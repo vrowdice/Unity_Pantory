@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 
-public class EnterNamePopup : BasePopup
+public class EnterNamePopup : PopupBase
 {
     [SerializeField] private TMP_InputField _nameInputField = null;
 

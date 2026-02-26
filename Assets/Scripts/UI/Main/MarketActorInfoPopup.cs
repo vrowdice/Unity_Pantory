@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class MarketActorInfoPopup : BasePopup
+public class MarketActorInfoPopup : PopupBase
 {
     [Header("Basic Info")]
     [SerializeField] private TextMeshProUGUI _nameText;

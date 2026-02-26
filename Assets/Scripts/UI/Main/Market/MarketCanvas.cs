@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 시장 시스템의 메인 컨트롤러로, 리소스와 거래자 뷰 사이의 전환 및 데이터 갱신을 관리합니다.
 /// </summary>
-public class MarketCanvas : BaseMainCanvasPanel
+public class MarketCanvas : MainCanvasPanelBase
 {
     [Header("Action Buttons")]
     [SerializeField] private Transform _marketActionBtnContentTransform;
@@ -49,7 +49,7 @@ public class MarketCanvas : BaseMainCanvasPanel
     /// </summary>
     private void SetupActionButtons()
     {
-        if (_gameManager?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
+        if (UIManager.Instance?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
         {
             return;
         }
@@ -76,7 +76,7 @@ public class MarketCanvas : BaseMainCanvasPanel
         List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
         foreach (MarketPanelType panelType in panelTypes)
         {
-            GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _marketActionBtnContentTransform);
+            GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _marketActionBtnContentTransform);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {

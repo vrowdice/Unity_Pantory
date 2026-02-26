@@ -5,7 +5,7 @@ using UnityEngine.Localization.Settings;
 using System.Collections;
 using System.Collections.Generic;
 
-public class OptionPopup : BasePopup
+public class OptionPopup : PopupBase
 {
     [SerializeField] private Slider _BGMSlider;
     [SerializeField] private Slider _SFXSlider;
@@ -126,7 +126,7 @@ public class OptionPopup : BasePopup
 
     public void OnClickGoTitle()
     {
-        GameManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
+        UIManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
         {
             SceneLoadManager.Instance.LoadScene("Title");
             OnClickExit();
@@ -135,7 +135,7 @@ public class OptionPopup : BasePopup
 
     public void OnClickExitGame()
     {
-        GameManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
+        UIManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
         {
             Application.Quit();
 #if UNITY_EDITOR
@@ -147,7 +147,7 @@ public class OptionPopup : BasePopup
 
     public void OnClickSave()
     {
-        GameManager.Instance.ShowSaveLoadPopup(true);
+        UIManager.Instance.ShowSaveLoadPopup(true);
     }
 
     public void OnClickApply()

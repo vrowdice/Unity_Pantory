@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class BuildingInfoPopup : BasePopup
+public class BuildingInfoPopup : PopupBase
 {
     [Header("UI References")]
     [SerializeField] private Button _changeProductionBtn;
@@ -175,7 +175,7 @@ public class BuildingInfoPopup : BasePopup
                 allResourceTypes.Add(type);
             }
             
-            _designCanvas.GameManager.ShowSelectResourcePopup(
+            UIManager.Instance.ShowSelectResourcePopup(
                 allResourceTypes,
                 OnUnloadStationResourceSelected,
                 null  // 하역소는 모든 자원 선택 가능
@@ -187,7 +187,7 @@ public class BuildingInfoPopup : BasePopup
         if (_currentData.AllowedResourceTypes == null || _currentData.AllowedResourceTypes.Count == 0) return;
 
         List<ResourceData> producible = GetProducibleList();
-        _designCanvas.GameManager.ShowSelectResourcePopup(
+        UIManager.Instance.ShowSelectResourcePopup(
             _currentData.AllowedResourceTypes,
             OnOutputResourceSelected,
             producible

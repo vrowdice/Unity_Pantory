@@ -5,7 +5,7 @@ using System;
 /// <summary>
 /// 자원 타입별로 자원 목록을 필터링하여 사용자에게 선택 인터페이스를 제공하는 패널 클래스입니다.
 /// </summary>
-public class SelectResourcePopup : BasePopup
+public class SelectResourcePopup : PopupBase
 {
     [Header("Prefabs")]
     [SerializeField] private GameObject _selectResourceTypeBtnPrefab;

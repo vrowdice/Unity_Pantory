@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public class ManageThreadCartegoryPopup : BasePopup
+public class ManageThreadCartegoryPopup : PopupBase
 {
     [SerializeField] private Transform _contentTransform;
     [SerializeField] private GameObject _cartegoryItemBtnPrefab;
@@ -65,11 +65,11 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowEnterNamePopup((categoryName) =>
+        UIManager.Instance.ShowEnterNamePopup((categoryName) =>
         {
             if (string.IsNullOrEmpty(categoryName))
             {
-                gameManager.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
             
@@ -78,7 +78,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             {
                 if (category != null && category.categoryName == categoryName)
                 {
-                    gameManager.ShowWarningPopup(WarningMessage.CategoryNameAlreadyExists);
+                    UIManager.Instance.ShowWarningPopup(WarningMessage.CategoryNameAlreadyExists);
                     return;
                 }
             }
@@ -94,7 +94,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPopup(WarningMessage.FailedToCreateCategory);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.FailedToCreateCategory);
             }
         });
     }
@@ -113,11 +113,11 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowEnterNamePopup((newName) =>
+        UIManager.Instance.ShowEnterNamePopup((newName) =>
         {
             if (string.IsNullOrEmpty(newName))
             {
-                gameManager.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.PleaseEnterCategoryName);
                 return;
             }
 
@@ -129,7 +129,7 @@ public class ManageThreadCartegoryPopup : BasePopup
                     category.categoryId != categoryId &&
                     category.categoryName == newName)
                 {
-                    gameManager.ShowWarningPopup(WarningMessage.CategoryNameAlreadyExists);
+                    UIManager.Instance.ShowWarningPopup(WarningMessage.CategoryNameAlreadyExists);
                     return;
                 }
             }
@@ -144,7 +144,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPopup(WarningMessage.FailedToRenameCategory);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.FailedToRenameCategory);
             }
         });
     }
@@ -164,7 +164,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             return;
         }
 
-        gameManager.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
+        UIManager.Instance.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
         {
             bool success = _dataManager.Thread.RemoveCategory(categoryId);
 
@@ -175,7 +175,7 @@ public class ManageThreadCartegoryPopup : BasePopup
             }
             else
             {
-                gameManager.ShowWarningPopup(WarningMessage.FailedToDeleteCategory);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.FailedToDeleteCategory);
             }
         });
     }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 창고(플레이어 인벤토리) 관리 패널
 /// </summary>
-public class StorageCanvas : BaseMainCanvasPanel
+public class StorageCanvas : MainCanvasPanelBase
 {
     [SerializeField] private GameObject _storageResourceBtnPrefab;
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
@@ -70,7 +70,7 @@ public class StorageCanvas : BaseMainCanvasPanel
     /// </summary>
     private void CreateCategoryButton(ResourceType? type, string label)
     {
-        GameObject btnObj = Instantiate(_gameManager.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
+        GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
         ActionBtn btn = btnObj.GetComponent<ActionBtn>();
         
         ResourceType? capturedType = type;

@@ -4,7 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 
-public class FinanceCanvas : BaseMainCanvasPanel
+public class FinanceCanvas : MainCanvasPanelBase
 {
     [SerializeField] private LineChart _creditChart;
     [SerializeField] private LineChart _welthChart;

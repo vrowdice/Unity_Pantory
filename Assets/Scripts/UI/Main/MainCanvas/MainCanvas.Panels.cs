@@ -14,12 +14,12 @@ public partial class MainCanvas
 
     [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
-    private Dictionary<MainPanelType, BaseMainCanvasPanel> _panelDict;
+    private Dictionary<MainPanelType, MainCanvasPanelBase> _panelDict;
     private MainPanelType _currentOpenPanelType;
 
     private void InitializePanelDictionary()
     {
-        _panelDict = new Dictionary<MainPanelType, BaseMainCanvasPanel>
+        _panelDict = new Dictionary<MainPanelType, MainCanvasPanelBase>
         {
             { MainPanelType.Storage, _storageCanvas },
             { MainPanelType.Order, _orderCanvas },
@@ -33,7 +33,7 @@ public partial class MainCanvas
 
     private void InitializePanels()
     {
-        foreach (KeyValuePair<MainPanelType, BaseMainCanvasPanel> kvp in _panelDict)
+        foreach (KeyValuePair<MainPanelType, MainCanvasPanelBase> kvp in _panelDict)
         {
             if (kvp.Value != null)
             {
@@ -53,7 +53,7 @@ public partial class MainCanvas
             return;
         }
 
-        BaseMainCanvasPanel panel = _panelDict[panelType];
+        MainCanvasPanelBase panel = _panelDict[panelType];
 
         if (panel == null)
         {
@@ -84,7 +84,7 @@ public partial class MainCanvas
             return;
         }
 
-        BaseMainCanvasPanel panel = _panelDict[panelType];
+        MainCanvasPanelBase panel = _panelDict[panelType];
 
         if (panel == null)
         {
@@ -96,7 +96,7 @@ public partial class MainCanvas
 
     public void CloseAllPanels()
     {
-        foreach (KeyValuePair<MainPanelType, BaseMainCanvasPanel> kvp in _panelDict)
+        foreach (KeyValuePair<MainPanelType, MainCanvasPanelBase> kvp in _panelDict)
         {
             ClosePanelInternal(kvp.Key);
         }

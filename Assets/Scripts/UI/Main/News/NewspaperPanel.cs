@@ -28,7 +28,7 @@ public class NewspaperPanel : MonoBehaviour
         foreach (EffectData effectData in newsData.effects)
         {
             EffectState liveEffect = _dataManager.Effect.GetEffect(effectData, effectData.targetId);
-            GameManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, liveEffect, Color.black);
+            UIManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, liveEffect, Color.black);
         }*/
     }
 }

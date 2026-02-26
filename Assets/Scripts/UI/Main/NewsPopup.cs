@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class NewsPopup : BasePopup
+public class NewsPopup : PopupBase
 {
     [SerializeField] TextMeshProUGUI _titleText;
     [SerializeField] Image _iconImage;
@@ -27,7 +27,7 @@ public class NewsPopup : BasePopup
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
         foreach (EffectData effectData in newsData.effects)
         {
-            mainCanvas.GameManager.CreateEffectTextPairPanel(_effectScrollViewContextTransform, new EffectState(effectData));
+            UIManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, new EffectState(effectData));
         }
 
         Show();

@@ -13,7 +13,7 @@ public class CanvasBase : MonoBehaviour
         DataManager = DataManager.Instance;
 
         CanvasTrans = transform;
-        ProductionInfoImage = GameManager.ProductionInfoImage;
+        ProductionInfoImage = UIManager.Instance.ProductionInfoImagePrefab;
     }
 
     public virtual void UpdateAllMainText()

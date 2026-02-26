@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class NewsCanvas : BaseMainCanvasPanel
+public class NewsCanvas : MainCanvasPanelBase
 {
     [SerializeField] Transform _newspaperContentTransform;
     [SerializeField] GameObject _newspaperPanelPrefab;

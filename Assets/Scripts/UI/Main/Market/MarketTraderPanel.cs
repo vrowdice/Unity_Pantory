@@ -89,13 +89,13 @@ public class MarketTraderPanel : MonoBehaviour
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
             int productionCount = (int)_selectedActor.data.baseProductionCount;
-            gameManager.CreateProductionIcon(_consumeResourceContentTransform, resourceEntry, productionCount);
+            UIManager.Instance.CreateProductionIcon(_consumeResourceContentTransform, resourceEntry, productionCount);
         }
         foreach (ResourceData resourceData in _selectedActor.data.productionResourceList)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
             int productionCount = (int)_selectedActor.data.baseProductionCount;
-            gameManager.CreateProductionIcon(_provideResourceContentTransform, resourceEntry, productionCount);
+            UIManager.Instance.CreateProductionIcon(_provideResourceContentTransform, resourceEntry, productionCount);
         }
     }
 }

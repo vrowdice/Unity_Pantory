@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 스레드 목록(Thread List)을 관리하고 로드 기능을 제공하는 패널입니다.
 /// 카테고리별 필터링, 스레드 선택, 생성 및 삭제 기능을 포함합니다.
 /// </summary>
-public class ManageThreadPopup : BasePopup
+public class ManageThreadPopup : PopupBase
 {
     [SerializeField] private GameObject _threadCategoryBtnPrefab = null;
     [SerializeField] private GameObject _threadSelectBtnPrefab = null;
@@ -221,7 +221,7 @@ public class ManageThreadPopup : BasePopup
 
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.ShowWarningPopup(WarningMessage.ThreadDeleted);
+                UIManager.Instance.ShowWarningPopup(WarningMessage.ThreadDeleted);
             }
         }
         else
