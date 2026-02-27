@@ -79,7 +79,7 @@ public class ThreadSaveInfoPopup : PopupBase
             if (resourceEntry != null)
             {
                 GameObject panel = Instantiate(_productionInfoIconPanel, content);
-                ProductionInfoIconPanel iconPanel = panel.GetComponent<ProductionInfoIconPanel>();
+                ThreadSaveProductionInfoIconPanel iconPanel = panel.GetComponent<ThreadSaveProductionInfoIconPanel>();
 
                 if (iconPanel == null)
                     continue;

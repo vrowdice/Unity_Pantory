@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class ProductionInfoIconPanel : MonoBehaviour
+public class ThreadSaveProductionInfoIconPanel : MonoBehaviour
 {
     [SerializeField] private Image _image;
     [SerializeField] private TextMeshProUGUI _titleText;

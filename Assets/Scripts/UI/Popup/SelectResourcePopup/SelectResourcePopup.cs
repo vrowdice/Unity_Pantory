@@ -81,8 +81,6 @@ public class SelectResourcePopup : PopupBase
     public void OnResourceTypeClick(ResourceType resourceType)
     {
         GameObjectUtils.ClearChildren(_resourceScrollViewContentTransform);
-
-        // 특정 생산 가능 목록이 지정된 경우
         if (_producibleResources != null && _producibleResources.Count > 0)
         {
             foreach (ResourceData producibleResource in _producibleResources)
@@ -94,7 +92,7 @@ public class SelectResourcePopup : PopupBase
                 }
             }
         }
-        else // 전체 자원에서 필터링하는 경우
+        else
         {
             Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
             foreach (KeyValuePair<string, ResourceEntry> pair in resources)

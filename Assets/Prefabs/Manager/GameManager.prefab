@@ -55,3 +55,4 @@ MonoBehaviour:
   _soundManagerPrefab: {fileID: 4907807080177921240, guid: 5a2939907e18a914486a45cc7d8e150e, type: 3}
   _poolingManagerPrefab: {fileID: 2943756751407442316, guid: 345e8bd9ccc9eef49b8d1e29ed7838cf, type: 3}
   _uiManagerPrefab: {fileID: 5489666049234866014, guid: 9a8876ab6e3fbd34dbf8898c1d84abef, type: 3}
+  _tutorialManagerPrefab: {fileID: 3965149524578926930, guid: be55c2f7090d1ee49b475355679e2f5d, type: 3}

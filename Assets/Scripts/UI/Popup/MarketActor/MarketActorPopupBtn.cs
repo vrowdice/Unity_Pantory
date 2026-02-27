@@ -9,12 +9,10 @@ public class MarketActorPopupBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _trustText;
 
     private MarketActorEntry _marketActorEntry;
-    private MainCanvas _mainCanvas;
 
-    public void Init(MarketActorEntry marketActorEntry, MainCanvas mainCanvas)
+    public void Init(MarketActorEntry marketActorEntry)
     {
         _marketActorEntry = marketActorEntry;
-        _mainCanvas = mainCanvas;
 
         UpdateUI();
     }
@@ -30,8 +28,8 @@ public class MarketActorPopupBtn : MonoBehaviour
 
     public void OnClick()
     {
-        if (_marketActorEntry == null || _mainCanvas == null) return;
+        if (_marketActorEntry == null) return;
 
-        _mainCanvas.ShowMarketActorInfoPopup(_marketActorEntry);
+        UIManager.Instance.ShowMarketActorInfoPopup(_marketActorEntry, null);
     }
 }

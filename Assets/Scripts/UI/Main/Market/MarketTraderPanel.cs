@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using JetBrains.Annotations;
+using System.ComponentModel;
 
 public class MarketTraderPanel : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class MarketTraderPanel : MonoBehaviour
     private MarketActorEntry _selectedActor;
 
     [Header("Details")]
-    [SerializeField] private Image _traderImage;
+    [SerializeField] private MarketActorPopupBtn _marketActorPopupBtn;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private TextMeshProUGUI _wealthText;
@@ -55,7 +56,7 @@ public class MarketTraderPanel : MonoBehaviour
         MarketActorData data = _selectedActor.data;
         MarketActorState state = _selectedActor.state;
 
-        _traderImage.sprite = data.icon;
+        _marketActorPopupBtn.Init(_selectedActor);
         _nameText.text = data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
         _descriptionText.text = data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR_DESCRIPTION);
 

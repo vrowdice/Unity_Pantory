@@ -37,9 +37,9 @@ public class ThreadObject : MonoBehaviour
     /// <summary>
     /// 실제 배치된 스레드 오브젝트를 초기화합니다.
     /// </summary>
-    public void Init(ThreadState threadState, GameManager gameManager)
+    public void Init(ThreadState threadState)
     {
-        _gameManager = gameManager;
+        _gameManager = GameManager.Instance;
         _spriteRenderer = GetComponent<SpriteRenderer>();
 
         InitializeCommon(threadState, false);
@@ -158,8 +158,6 @@ public class ThreadObject : MonoBehaviour
         ClearProductionIconContainers();
         if (IsPreview || _threadState == null) return;
 
-        if (!EnsureGameManager()) return;
-
         Transform sharedCanvas = _gameManager.GetWorldCanvas();
         if (sharedCanvas == null) return;
 
@@ -207,40 +205,20 @@ public class ThreadObject : MonoBehaviour
     }
 
     /// <summary>
-    /// GameManager 참조를 확인하고 가져옵니다.
-    /// </summary>
-    private bool EnsureGameManager()
-    {
-        if (_gameManager != null)
-            return true;
-        
-        _gameManager = GameManager.Instance;
-        return _gameManager != null;
-    }
-
-    /// <summary>
     /// Production Icon 컨테이너들을 정리합니다.
     /// </summary>
     private void ClearProductionIconContainers()
     {
         if (_consumptionIconContainer != null)
         {
-            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
-            if (PoolingManager.Instance != null)
-            {
-                PoolingManager.Instance.ClearChildrenToPool(_consumptionIconContainer.transform);
-            }
+            PoolingManager.Instance.ClearChildrenToPool(_consumptionIconContainer.transform);
             Destroy(_consumptionIconContainer);
             _consumptionIconContainer = null;
         }
         
         if (_productionIconContainer != null)
         {
-            // 컨테이너 내부의 ProductionIcon들을 풀로 반환
-            if (PoolingManager.Instance != null)
-            {
-                PoolingManager.Instance.ClearChildrenToPool(_productionIconContainer.transform);
-            }
+            PoolingManager.Instance.ClearChildrenToPool(_productionIconContainer.transform);
             Destroy(_productionIconContainer);
             _productionIconContainer = null;
         }

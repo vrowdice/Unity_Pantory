@@ -33,7 +33,7 @@ public class OrderBtn : MonoBehaviour
 
         _orderData = _dataManager.Order.GetOrderData(orderState.id);
         _marketActorEntry = _dataManager.MarketActor.GetMarketActorEntry(_orderData.senderActorData.id);
-        _marketActorPopupBtn.Init(_marketActorEntry, mainCanvas);
+        _marketActorPopupBtn.Init(_marketActorEntry);
 
         if(_orderState.isAccepted)
         {

@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 897291964058587731}
   - component: {fileID: 6438020053809308609}
   m_Layer: 5
-  m_Name: BtnPanel
+  m_Name: BtnContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2093,6 +2093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e856c0476f27854e9617e69fdc7f676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConfirmPopup
+  _tutorialPanelInfo: []
   _animationTarget: {fileID: 3663500864598406616}
   _effectType: 0
   _text: {fileID: 3148520282764435611}

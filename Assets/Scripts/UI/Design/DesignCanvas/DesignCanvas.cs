@@ -7,7 +7,6 @@ public partial class DesignCanvas : CanvasBase
 {
     [SerializeField] private DesignRunner _designRunner;
     [SerializeField] private TextMeshProUGUI _loadThreadNameText;
-    [SerializeField] private ThreadSaveInfoPopup _threadSaveInformationPanel;
 
     public DesignRunner DesignRunner => _designRunner;
 
@@ -59,14 +58,13 @@ public partial class DesignCanvas : CanvasBase
 
         int totalMaintenanceCost = _designRunner.CalculateTotalMaintenanceCost(threadName);
 
-        _threadSaveInformationPanel.Init(
+        UIManager.Instance.ShowThreadSaveInfoPopup(
             inputResourceIdentifiers,
             inputResourceCounts,
             outputResourceIdentifiers,
             outputResourceCounts,
             totalMaintenanceCost,
-            this
-        );
+            this);
     }
 
     /// <summary>

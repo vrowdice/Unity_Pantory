@@ -15,12 +15,6 @@ public partial class MainCanvas : CanvasBase
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
-    [Header("Info Panel")]
-    [SerializeField] private ThreadInfoPopup _threadInfoPopup;
-    [SerializeField] private ResearchInfoPopup _researchInfoPopup;
-    [SerializeField] private MarketActorInfoPopup _marketActorInfoPopup;
-    [SerializeField] private NewsPopup _newsPopup;
-
     private MainRunner _mainRunner;
 
     public void Init(MainRunner mainRunner)
@@ -51,6 +45,7 @@ public partial class MainCanvas : CanvasBase
         _creditInfoPanel.Init(DataManager);
         _topInfoPanel.Init(DataManager);
 
+        CreateMainPanels();
         InitializePanelDictionary();
         InitializePanels();
         CreateQuickMoveBtns();
@@ -144,22 +139,22 @@ public partial class MainCanvas : CanvasBase
 
     public void ShowNewsPopup(NewsState newsState)
     {
-        _newsPopup.Init(newsState, this);
+        UIManager.Instance.ShowNewsPopup(newsState, this);
     }
 
     public void ShowThreadInfoPanel(ThreadState threadState)
     {
-        _threadInfoPopup.Init(threadState, this);
+        UIManager.Instance.ShowThreadInfoPopup(threadState, this);
     }
 
     public void ShowResearchInfoPanel(ResearchEntry researchEntry)
     {
-        _researchInfoPopup.Init(researchEntry, this);
+        UIManager.Instance.ShowResearchInfoPopup(researchEntry, this);
     }
 
     public void ShowMarketActorInfoPopup(MarketActorEntry marketActorEntry)
     {
-        _marketActorInfoPopup.Init(marketActorEntry, this);
+        UIManager.Instance.ShowMarketActorInfoPopup(marketActorEntry, this);
     }
 
     public void ShowOptionPanel()

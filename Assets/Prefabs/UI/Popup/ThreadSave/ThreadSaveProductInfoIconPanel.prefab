@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 5028320051308807976}
   - component: {fileID: 287327266764832734}
   m_Layer: 5
-  m_Name: ProductInfoIconPanel
+  m_Name: ThreadSaveProductInfoIconPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

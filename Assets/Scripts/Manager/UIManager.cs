@@ -26,6 +26,16 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _saveLoadPopupPrefab;
     [SerializeField] private GameObject _tutorialPopupPrefab;
 
+    [Header("Main Info Panels")]
+    [SerializeField] private GameObject _threadInfoPopupPrefab;
+    [SerializeField] private GameObject _researchInfoPopupPrefab;
+    [SerializeField] private GameObject _marketActorInfoPopupPrefab;
+    [SerializeField] private GameObject _newsPopupPrefab;
+
+    [Header("Design Info Panels")]
+    [SerializeField] private GameObject _buildingInfoPopupPrefab;
+    [SerializeField] private GameObject _threadSaveInfoPopupPrefab;
+
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
     [SerializeField] private GameObject _gridSortContentPrefab;
@@ -225,6 +235,132 @@ public class UIManager : Singleton<UIManager>
         panel.gameObject.SetActive(true);
         panel.Init(isSaveMode);
         return panel;
+    }
+
+    public ThreadInfoPopup ShowThreadInfoPopup(ThreadState threadState, MainCanvas mainCanvas)
+    {
+        ThreadInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<ThreadInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_threadInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<ThreadInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.Init(threadState, mainCanvas);
+        return popup;
+    }
+
+    public ResearchInfoPopup ShowResearchInfoPopup(ResearchEntry researchEntry, MainCanvas mainCanvas)
+    {
+        ResearchInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<ResearchInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_researchInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<ResearchInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.Init(researchEntry, mainCanvas);
+        return popup;
+    }
+
+    public MarketActorInfoPopup ShowMarketActorInfoPopup(MarketActorEntry marketActorEntry, MainCanvas mainCanvas)
+    {
+        MarketActorInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<MarketActorInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_marketActorInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<MarketActorInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.Init(marketActorEntry, mainCanvas);
+        return popup;
+    }
+
+    public NewsPopup ShowNewsPopup(NewsState newsState, MainCanvas mainCanvas)
+    {
+        NewsPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<NewsPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_newsPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<NewsPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.Init(newsState, mainCanvas);
+        return popup;
+    }
+
+    public BuildingInfoPopup ShowBuildingInfoPopup(BuildingData buildingData, BuildingState buildingState, DesignCanvas designCanvas)
+    {
+        BuildingInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<BuildingInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_buildingInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<BuildingInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.ShowBuildingInfo(buildingData, buildingState, designCanvas);
+        return popup;
+    }
+
+    public ThreadSaveInfoPopup ShowThreadSaveInfoPopup(
+        List<string> inputResourceIds,
+        Dictionary<string, int> inputResourceCounts,
+        List<string> outputResourceIds,
+        Dictionary<string, int> outputResourceCounts,
+        int totalMaintenance,
+        DesignCanvas designCanvas)
+    {
+        ThreadSaveInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<ThreadSaveInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_threadSaveInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<ThreadSaveInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.Init(
+            inputResourceIds,
+            inputResourceCounts,
+            outputResourceIds,
+            outputResourceCounts,
+            totalMaintenance,
+            designCanvas);
+        return popup;
     }
 
     public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> productionCounts)

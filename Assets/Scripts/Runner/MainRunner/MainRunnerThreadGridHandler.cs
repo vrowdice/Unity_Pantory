@@ -193,7 +193,7 @@ public class MainRunnerThreadGridHandler
         obj.transform.position = GridToWorldPosition(gridPos);
 
         if (!obj.TryGetComponent<ThreadObject>(out ThreadObject threadObj)) threadObj = obj.AddComponent<ThreadObject>();
-        threadObj.Init(threadState, GameManager.Instance);
+        threadObj.Init(threadState);
         threadObj.SetGridPosition(gridPos);
 
         _threadObjects[gridPos] = threadObj;

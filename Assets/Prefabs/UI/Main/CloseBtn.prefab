@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 77865352778771069}
   - component: {fileID: 7188360400126237502}
   m_Layer: 5
-  m_Name: CloseAllPanelsBtn
+  m_Name: CloseBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

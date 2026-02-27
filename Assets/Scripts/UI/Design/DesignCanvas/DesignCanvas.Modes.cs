@@ -15,9 +15,6 @@ public partial class DesignCanvas
     [SerializeField] private GameObject _buildingBtnPrefab;
     [SerializeField] private Transform _buildingBtnContent;
 
-    [Header("Panel References")]
-    [SerializeField] private BuildingInfoPopup _buildingInfoPanel;
-
     private bool _isRemovalMode;
     private BuildingType _selectedBuildingType = BuildingType.Distribution;
 
@@ -162,8 +159,7 @@ public partial class DesignCanvas
 
     public void ShowBuildingInfo(BuildingData buildingData, BuildingState buildingState)
     {
-        _buildingInfoPanel.gameObject.SetActive(true);
-        _buildingInfoPanel.ShowBuildingInfo(buildingData, buildingState, this);
+        UIManager.Instance.ShowBuildingInfoPopup(buildingData, buildingState, this);
     }
 
     public void RotateBuildingLeft()

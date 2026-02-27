@@ -992,7 +992,7 @@ GameObject:
   - component: {fileID: 4961534653144080935}
   - component: {fileID: 4738665559814498107}
   m_Layer: 5
-  m_Name: OptionBtnPanel
+  m_Name: OptionBtnContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3115,9 +3115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b102ef5af295a054194c40d871a44aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tutorialPanelInfo: []
   _animationTarget: {fileID: 7866574746901360383}
   _effectType: 0
-  _enabled: 1
   _BGMSlider: {fileID: 7281964579962212529}
   _SFXSlider: {fileID: 1376674732456824676}
   _localizatioinDropdown: {fileID: 5810073071532845132}
@@ -5810,7 +5810,7 @@ GameObject:
   - component: {fileID: 6692760576879868045}
   - component: {fileID: 6950186332573523337}
   m_Layer: 5
-  m_Name: SaveLoadBtnPanel
+  m_Name: SaveLoadBtnContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11610,7 +11610,7 @@ GameObject:
   - component: {fileID: 3958174704770384313}
   - component: {fileID: 5907766073477599643}
   m_Layer: 5
-  m_Name: BtnPanel
+  m_Name: BtnContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12617,7 +12617,7 @@ GameObject:
   - component: {fileID: 5001884736388795532}
   - component: {fileID: 3191685415944990840}
   m_Layer: 5
-  m_Name: ApplyPanel
+  m_Name: ApplyContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13394,7 +13394,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 902401585405520166, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
       propertyPath: m_Name
-      value: CloseAllPanelsBtn
+      value: CloseBtn
       objectReference: {fileID: 0}
     - target: {fileID: 7188360400126237502, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
       propertyPath: stylerPreset

@@ -133,7 +133,7 @@ public class OrderCanvas : MainCanvasPanelBase
             MarketActorPopupBtn btn = btnObj.GetComponent<MarketActorPopupBtn>();
             if (btn != null)
             {
-                btn.Init(actorEntry, _uiManager);
+                btn.Init(actorEntry);
             }
 
             _marketActorPopupBtnList.Add(btn);

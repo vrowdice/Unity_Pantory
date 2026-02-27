@@ -1,8 +1,9 @@
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using Evo.UI;
 using DG.Tweening;
+using Evo.UI;
+using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class TutorialPopup : PopupBase
 {
@@ -45,7 +46,7 @@ public class TutorialPopup : PopupBase
         _currentIndex = Mathf.Min(_tutorialDataList.Count - 1, _currentIndex + 1);
         UpdateDescription();
     }
-    
+
     private void UpdateDescription()
     {
         if (_tutorialDataList == null || _tutorialDataList.Count == 0) return;
@@ -57,15 +58,15 @@ public class TutorialPopup : PopupBase
         {
             TutorialData currentData = _tutorialDataList[_currentIndex];
             _indexText.text = $"{_currentIndex + 1} / {_totalCount}";
-            _descriptionText.text = currentData._description;
-            _panel.GetComponent<RectTransform>().anchoredPosition = currentData._tutorialPanelPosition;
+            _descriptionText.text = currentData.id.Localize(LocalizationUtils.TABLE_TUTORIAL);
+            _panel.GetComponent<RectTransform>().anchoredPosition = currentData.tutorialPanelPosition;
 
-            if (currentData._focusGameObject != null)
+            if (currentData.focusGameObject != null)
             {
                 _focusPanel.SetActive(true);
 
                 Transform focusTransform = _focusPanel.transform;
-                Transform targetTransform = currentData._focusGameObject.transform;
+                Transform targetTransform = currentData.focusGameObject.transform;
 
                 focusTransform.position = targetTransform.position;
                 focusTransform.DOKill();

@@ -26,6 +26,7 @@ public static class LocalizationUtils
     public const string TABLE_NEWS = "News";
     public const string TABLE_NEWS_DESCRIPTION = "NewsDescription";
     public const string TABLE_ORDER = "Order";
+    public const string TABLE_TUTORIAL = "Tutorial";
 
     private const string DEFAULT_TABLE = TABLE_COMMON;
 

@@ -38,6 +38,8 @@ public class ThreadInfoPopup : PopupBase
     [SerializeField] private TextMeshProUGUI _maxTechniciansText;
     [SerializeField] private TextMeshProUGUI _assignedWorkersText;
     [SerializeField] private TextMeshProUGUI _assignedTechniciansText;
+    [SerializeField] private GameObject _workerSliderContainer;
+    [SerializeField] private GameObject _technicianSliderContainer;
     [SerializeField] private Slider _workerSlider;
     [SerializeField] private Slider _technicianSlider;
 
@@ -162,6 +164,8 @@ public class ThreadInfoPopup : PopupBase
         _assignedWorkersText.text = _currentThreadState.currentWorkers.ToString("N0");
         _assignedTechniciansText.text = _currentThreadState.currentTechnicians.ToString("N0");
 
+        if(_workerSliderContainer) _workerSliderContainer.SetActive(requiredTotal > 0);
+        if(_technicianSliderContainer) _technicianSliderContainer.SetActive(_currentThreadState.requiredTechnicians > 0);
         UpdateSliderState(_workerSlider, currentWorkers, availWorkers, requiredTotal - _currentThreadState.requiredTechnicians);
         UpdateSliderState(_technicianSlider, currentTechs, availTechs, requiredTotal);
     }
