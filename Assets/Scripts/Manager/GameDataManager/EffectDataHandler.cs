@@ -177,7 +177,7 @@ public class EffectDataHandler : ITimeChangeHandler
         if (!string.IsNullOrEmpty(instanceId))
         {
             string key = GetInstanceKey(effectData.targetType, instanceId);
-            if (_instanceEffects.TryGetValue(key, out var statDict) && statDict.TryGetValue(effectData.statType, out var list))
+            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict) && statDict.TryGetValue(effectData.statType, out List<EffectState> list))
             {
                 foreach (EffectState item in list)
                 {
@@ -205,7 +205,7 @@ public class EffectDataHandler : ITimeChangeHandler
         if (!string.IsNullOrEmpty(instanceId))
         {
             string key = GetInstanceKey(targetType, instanceId);
-            if (_instanceEffects.TryGetValue(key, out var statDict) && statDict.TryGetValue(statType, out var list))
+            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict) && statDict.TryGetValue(statType, out List<EffectState> list))
                 result.AddRange(list);
         }
         return result;
@@ -222,7 +222,7 @@ public class EffectDataHandler : ITimeChangeHandler
         if (!string.IsNullOrEmpty(instanceId))
         {
             string key = GetInstanceKey(effectTargetType, instanceId);
-            if (_instanceEffects.TryGetValue(key, out var statDict))
+            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict))
                 result.AddRange(statDict.Values.SelectMany(list => list));
         }
         return result;

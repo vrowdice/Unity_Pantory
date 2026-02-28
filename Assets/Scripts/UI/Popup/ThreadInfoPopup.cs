@@ -294,7 +294,7 @@ public class ThreadInfoPopup : PopupBase
     private string GetCategoryName(string categoryId)
     {
         if (string.IsNullOrEmpty(categoryId) || _dataManager == null) return "None";
-        var category = _dataManager.Thread.GetCategory(categoryId);
+        ThreadCategory category = _dataManager.Thread.GetCategory(categoryId);
         return category != null ? category.categoryName : "None";
     }
 }

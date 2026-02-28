@@ -56,7 +56,7 @@ public class CreditTopInfoPanel : MonoBehaviour
         GameObjectUtils.ClearChildren(transform);
 
         CreatePanelIfValid(LocalizationUtils.Localize("Employee Salary", "Expenses"), -_dataManager.Finances.DailySalary);
-        CreatePanelIfValid(LocalizationUtils.Localize("Resource Changes", "Expenses"), -_dataManager.Finances.DailyResource);
+        CreatePanelIfValid(LocalizationUtils.Localize("Resource Changes", "Expenses"), _dataManager.Finances.DailyResource);
         CreatePanelIfValid(LocalizationUtils.Localize("Thread Maintenance Cost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
         CreatePanelIfValid(LocalizationUtils.Localize("Negative Interest", "Expenses"), -_dataManager.Finances.DailyInterest);
         

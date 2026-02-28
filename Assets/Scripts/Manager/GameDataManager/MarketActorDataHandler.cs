@@ -76,7 +76,7 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
 
     public MarketActorEntry GetMarketActorEntry(string actorId)
     {
-        if (_actorDic.TryGetValue(actorId, out var entry))
+        if (_actorDic.TryGetValue(actorId, out MarketActorEntry entry))
         {
             return entry;
         }
@@ -91,7 +91,7 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
 
     public void ModifyMarketActorTrust(string actorId, int trustChange)
     {
-        if (_actorDic.TryGetValue(actorId, out var entry))
+        if (_actorDic.TryGetValue(actorId, out MarketActorEntry entry))
         {
             entry.state.trust += trustChange;
             if (entry.state.trust < 0) entry.state.trust = 0;

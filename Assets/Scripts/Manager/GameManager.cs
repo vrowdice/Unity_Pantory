@@ -23,9 +23,7 @@ public class GameManager : Singleton<GameManager>
 
     private string _currentThreadId = string.Empty;
 
-    public CanvasBase CanvasBase => _currentCanvasBase;
     public string CurrentThreadId => _currentThreadId;
-    private Transform CanvasTransform => _currentCanvasBase.CanvasTrans;
     public MainCameraController MainCameraController => _mainCameraController;
     public PoolingManager PoolingManager => _poolingManager;
 
@@ -156,7 +154,7 @@ public class GameManager : Singleton<GameManager>
     public void CloseAllPopups()
     {
         if (_closeStack.Count == 0) return;
-        var copy = new List<Action>(_closeStack);
+        List<Action> copy = new List<Action>(_closeStack);
         _closeStack.Clear();
         for (int i = copy.Count - 1; i >= 0; i--)
         {

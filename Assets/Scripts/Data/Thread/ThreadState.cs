@@ -46,7 +46,7 @@ public class ThreadState
         if (buildingStateList == null)
             return false;
 
-        foreach (var buildingState in buildingStateList)
+        foreach (BuildingState buildingState in buildingStateList)
         {
             if (buildingState == null)
                 continue;
@@ -63,7 +63,7 @@ public class ThreadState
         if (resourceIds == null)
             return;
 
-        foreach (var resourceId in resourceIds)
+        foreach (string resourceId in resourceIds)
         {
             if (string.IsNullOrEmpty(resourceId))
                 continue;

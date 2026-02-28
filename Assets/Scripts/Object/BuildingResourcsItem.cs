@@ -15,7 +15,7 @@ public class ResourceItem : MonoBehaviour
         _managedPool = pool;
 
         // 스프라이트 설정
-        var renderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         if (renderer != null) 
         {
             renderer.sprite = resourceSprite;

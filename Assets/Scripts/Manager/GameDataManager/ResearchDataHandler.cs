@@ -95,7 +95,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public bool TryUnlockResearch(string researchId)
     {
-        if (!_researchEntries.TryGetValue(researchId, out var entry))
+        if (!_researchEntries.TryGetValue(researchId, out ResearchEntry entry))
         {
             Debug.LogWarning($"[ResearchDataHandler] Invalid ID: {researchId}");
             return false;
@@ -190,7 +190,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public ResearchEntry GetResearchEntry(string id)
     {
-        if (_researchEntries.TryGetValue(id, out var entry))
+        if (_researchEntries.TryGetValue(id, out ResearchEntry entry))
         {
             return entry;
         }
@@ -210,7 +210,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public bool IsResearchCompleted(string researchId)
     {
-        if (_researchEntries.TryGetValue(researchId, out var entry))
+        if (_researchEntries.TryGetValue(researchId, out ResearchEntry entry))
         {
             return entry.state.isCompleted;
         }

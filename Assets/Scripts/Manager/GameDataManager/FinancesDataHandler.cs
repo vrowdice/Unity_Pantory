@@ -72,11 +72,11 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void CalculateDailyCreditDelta()
     {
         _dailySalary = _dataManager.Employee.CalculateTotalSalary();
-        _dailyResource = _dataManager.Resource.CalculateResourceDeltaChangeCredit();
+        _dailyResource = _dataManager.Resource.TotalCreditChange;
         _dailyMaintenance = _dataManager.ThreadPlacement.CalculateTotalMaintenanceCostOfAllPlaced();
         _dailyInterest = CalculateNegativeInterest();
 
-        _dailyTotal = -(_dailySalary + _dailyResource + _dailyMaintenance + _dailyInterest);
+        _dailyTotal = _dailyResource - _dailySalary - _dailyMaintenance - _dailyInterest;
     }
 
     public long CalculateNegativeInterest()

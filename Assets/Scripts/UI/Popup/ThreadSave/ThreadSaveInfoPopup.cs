@@ -73,7 +73,7 @@ public class ThreadSaveInfoPopup : PopupBase
         if (_productionInfoIconPanel == null || content == null || _dataManager == null)
             return;
 
-        foreach (var resourceId in resourceIds)
+        foreach (string resourceId in resourceIds)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceId);
             if (resourceEntry != null)

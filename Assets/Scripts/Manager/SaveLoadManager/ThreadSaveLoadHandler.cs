@@ -40,7 +40,7 @@ public class ThreadSaveLoadHandler
         try
         {
             // 저장할 데이터를 ThreadSaveData 객체에 담기
-            var saveData = new ThreadSaveData
+            ThreadSaveData saveData = new ThreadSaveData
             {
                 threads = threadService.GetThreadListForSave(),
                 categories = threadService.GetCategoryListForSave()

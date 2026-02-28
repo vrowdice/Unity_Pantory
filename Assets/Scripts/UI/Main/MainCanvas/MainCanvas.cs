@@ -23,7 +23,7 @@ public partial class MainCanvas : CanvasBase
 
         _mainRunner = mainRunner;
 
-        DataManager.Resource.OnResourceChanged -= UpdateAllMainText;
+        DataManager.Resource.OnResourceChanged -= OnResourceChanged;
         DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
         DataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
@@ -32,7 +32,7 @@ public partial class MainCanvas : CanvasBase
         DataManager.Time.OnMonthChanged -= OnMonthChanged;
         DataManager.Time.OnYearChanged -= OnYearChanged;
 
-        DataManager.Resource.OnResourceChanged += UpdateAllMainText;
+        DataManager.Resource.OnResourceChanged += OnResourceChanged;
         DataManager.Finances.OnCreditChanged += UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
         DataManager.Thread.OnThreadChanged += OnThreadPlacementChanged;
@@ -50,9 +50,14 @@ public partial class MainCanvas : CanvasBase
         InitializePanels();
         CreateQuickMoveBtns();
 
-        RefreshThreadCategories();
-        RefreshThreadButtons();
-        RefreshResourceScrollView();
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.Init(this, mainRunner);
+            _resourceThreadCanvas.RefreshThreadCategories();
+            _resourceThreadCanvas.RefreshThreadButtons();
+            _resourceThreadCanvas.RefreshResourceScrollView();
+        }
+
         UpdateAllMainText();
     }
 
@@ -60,6 +65,15 @@ public partial class MainCanvas : CanvasBase
     {
         UpdateCreditText();
         UpdateResearchText();
+    }
+
+    private void OnResourceChanged()
+    {
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.RefreshResourceScrollView();
+        }
+        UpdateAllMainText();
     }
 
     private void UpdateCreditText()
@@ -110,13 +124,19 @@ public partial class MainCanvas : CanvasBase
 
     private void OnDayChanged()
     {
-        RefreshResourceScrollView();
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.RefreshResourceScrollView();
+        }
         UpdateAllMainText();
     }
 
     private void OnThreadPlacementChanged()
     {
-        RefreshResourceScrollView();
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.RefreshResourceScrollView();
+        }
         UpdateAllMainText();
     }
 
@@ -160,5 +180,38 @@ public partial class MainCanvas : CanvasBase
     public void ShowOptionPanel()
     {
         UIManager.Instance.ShowOptionPopup();
+    }
+
+    public void RegisterThreadTileManager(MainRunner threadTileManager)
+    {
+        _mainRunner = threadTileManager;
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.RegisterThreadTileManager(threadTileManager);
+        }
+    }
+
+    public void StartThreadPlacement(ThreadState threadState)
+    {
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.StartThreadPlacement(threadState);
+        }
+    }
+
+    public void CancelThreadPlacement()
+    {
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.CancelThreadPlacement();
+        }
+    }
+
+    public void ToggleThreadRemovalMode()
+    {
+        if (_resourceThreadCanvas != null)
+        {
+            _resourceThreadCanvas.ToggleThreadRemovalMode();
+        }
     }
 }

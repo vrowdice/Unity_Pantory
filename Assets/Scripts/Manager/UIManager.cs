@@ -66,7 +66,7 @@ public class UIManager : Singleton<UIManager>
     public void RefreshCamera()
     {
         if (_managerCanvasTransform == null) return;
-        var managerCanvas = _managerCanvasTransform.GetComponent<Canvas>();
+        Canvas managerCanvas = _managerCanvasTransform.GetComponent<Canvas>();
         if (managerCanvas != null)
             managerCanvas.worldCamera = Camera.main;
     }
@@ -398,10 +398,12 @@ public class UIManager : Singleton<UIManager>
 
     public void CreateProductionIcons(Transform parent, Dictionary<string, int> productionCounts)
     {
-        foreach (var (resourceId, amount) in productionCounts)
+        foreach (KeyValuePair<string, int> kvp in productionCounts)
         {
+            string resourceId = kvp.Key;
+            int amount = kvp.Value;
             if (string.IsNullOrEmpty(resourceId)) continue;
-            var entry = DataManager.Instance.Resource.GetResourceEntry(resourceId);
+            ResourceEntry entry = DataManager.Instance.Resource.GetResourceEntry(resourceId);
             if (entry != null)
                 CreateProductionIcon(parent, entry, amount);
         }

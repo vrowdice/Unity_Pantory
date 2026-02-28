@@ -122,7 +122,7 @@ public static class GameObjectUtils
         if (resourceIds == null)
             return counts;
 
-        foreach (var resourceId in resourceIds)
+        foreach (string resourceId in resourceIds)
         {
             if (string.IsNullOrEmpty(resourceId))
                 continue;

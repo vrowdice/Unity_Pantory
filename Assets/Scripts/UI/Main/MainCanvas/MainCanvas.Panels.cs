@@ -4,6 +4,7 @@ using UnityEngine;
 public partial class MainCanvas
 {
     [Header("Main Panel Prefabs")]
+    [SerializeField] private GameObject _resourceThreadCanvasPrefab;
     [SerializeField] private GameObject _storageCanvasPrefab;
     [SerializeField] private GameObject _orderCanvasPrefab;
     [SerializeField] private GameObject _marketCanvasPrefab;
@@ -12,6 +13,7 @@ public partial class MainCanvas
     [SerializeField] private GameObject _researchCanvasPrefab;
     [SerializeField] private GameObject _financeCanvasPrefab;
 
+    private ResourceThreadCanvas _resourceThreadCanvas;
     private StorageCanvas _storageCanvas;
     private OrderCanvas _orderCanvas;
     private MarketCanvas _marketCanvas;
@@ -30,6 +32,12 @@ public partial class MainCanvas
         if (_storageCanvas != null)
         {
             return;
+        }
+
+        if (_resourceThreadCanvasPrefab != null)
+        {
+            GameObject resourceThreadObj = Object.Instantiate(_resourceThreadCanvasPrefab);
+            _resourceThreadCanvas = resourceThreadObj.GetComponent<ResourceThreadCanvas>();
         }
 
         if (_storageCanvasPrefab != null)

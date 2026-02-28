@@ -37,7 +37,7 @@ public abstract class MainCanvasPanelBase : TutorialBase
 
         gameObject.SetActive(true);
 
-        if (TryGetPanelAnimator(out var animator))
+        if (TryGetPanelAnimator(out PanelDoAni animator))
         {
             animator.SnapToClosedPosition();
             animator.OpenPanel();
@@ -59,7 +59,7 @@ public abstract class MainCanvasPanelBase : TutorialBase
             return;
         }
 
-        if (TryGetPanelAnimator(out var animator))
+        if (TryGetPanelAnimator(out PanelDoAni animator))
         {
             animator.ClosePanel(() =>
             {

@@ -319,14 +319,7 @@ public class SaveFileSaveLoadHandler
         {
             dataManager.Time.SetDate(saveData.year, saveData.month, saveData.day);
             dataManager.Time.SetTimeSpeed(saveData.timeSpeed);
-            if (saveData.isPaused)
-            {
-                dataManager.Time.PauseTime();
-            }
-            else
-            {
-                dataManager.Time.ResumeTime();
-            }
+            dataManager.Time.PauseTime();
         }
 
         if (dataManager.Employee != null && saveData.employees != null)
@@ -483,6 +476,8 @@ public class SaveFileSaveLoadHandler
                         );
                         placedThreads[placementSave.gridPosition] = placement;
                     }
+
+                    dataManager.ThreadPlacement.RecalculateAllPlacedThreadStats();
 
                     System.Reflection.FieldInfo onPlacementChangedField = threadPlacementType.GetField("OnPlacementChanged", 
                         System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);

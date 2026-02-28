@@ -214,7 +214,7 @@ public class WindowGraph : MonoBehaviour
 
     private void ClearGraph()
     {
-        foreach (var element in _spawnedElements)
+        foreach (GameObject element in _spawnedElements)
         {
             if (element != null)
             {

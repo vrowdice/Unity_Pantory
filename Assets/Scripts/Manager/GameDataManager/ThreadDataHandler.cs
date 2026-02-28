@@ -39,7 +39,6 @@ public class ThreadDataHandler : IDataHandlerEvents
     {
         _threads.Clear();
         _categories.Clear();
-        Debug.Log("[ThreadDataHandler] All threads and categories reset to empty.");
 
         OnThreadChanged?.Invoke();
         OnCategoryChanged?.Invoke();
@@ -64,8 +63,7 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public ThreadState GetThread(string threadId)
     {
-        if (_threads.TryGetValue(threadId, out var thread)) return thread;
-        Debug.LogWarning($"[ThreadDataHandler] Thread not found: {threadId}");
+        if (_threads.TryGetValue(threadId, out ThreadState thread)) return thread;
         return null;
     }
 
@@ -94,13 +92,13 @@ public class ThreadDataHandler : IDataHandlerEvents
     /// </summary>
     public ThreadResourceSummary GetThreadResourceSummary(string threadId)
     {
-        if (!_threads.TryGetValue(threadId, out var thread))
+        if (!_threads.TryGetValue(threadId, out ThreadState thread))
         {
             Debug.LogWarning($"[ThreadDataHandler] Thread not found when aggregating resources: {threadId}");
             return null;
         }
 
-        thread.TryGetAggregatedResourceCounts(out var consumptionCounts, out var productionCounts);
+        thread.TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts);
         return new ThreadResourceSummary(thread.threadId, consumptionCounts, productionCounts);
     }
 
@@ -118,11 +116,11 @@ public class ThreadDataHandler : IDataHandlerEvents
     /// </summary>
     public List<ThreadResourceSummary> GetAllThreadResourceSummaries()
     {
-        var result = new List<ThreadResourceSummary>();
+        List<ThreadResourceSummary> result = new List<ThreadResourceSummary>();
 
-        foreach (var thread in _threads.Values)
+        foreach (ThreadState thread in _threads.Values)
         {
-            thread.TryGetAggregatedResourceCounts(out var consumptionCounts, out var productionCounts);
+            thread.TryGetAggregatedResourceCounts(out Dictionary<string, int> consumptionCounts, out Dictionary<string, int> productionCounts);
             result.Add(new ThreadResourceSummary(thread.threadId, consumptionCounts, productionCounts));
         }
 
@@ -138,7 +136,6 @@ public class ThreadDataHandler : IDataHandlerEvents
         }
 
         _threads[threadState.threadId] = threadState;
-        Debug.Log($"[ThreadDataHandler] Thread added: {threadState.threadName} ({threadState.threadId})");
 
         OnThreadChanged?.Invoke();
         SaveThreadData();
@@ -147,19 +144,18 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public ThreadState CreateThread(string threadId, string threadName)
     {
-        if (_threads.TryGetValue(threadId, out var existingThread))
+        if (_threads.TryGetValue(threadId, out ThreadState existingThread))
         {
             if (existingThread.threadName != threadName)
             {
                 existingThread.threadName = threadName;
-                Debug.Log($"[ThreadDataHandler] Thread updated: {threadName} ({threadId})");
                 OnThreadChanged?.Invoke();
                 SaveThreadData();
             }
             return existingThread;
         }
 
-        var newThread = new ThreadState(threadId, threadName);
+        ThreadState newThread = new ThreadState(threadId, threadName);
         if (AddThread(newThread)) return newThread;
 
         return null;
@@ -173,15 +169,14 @@ public class ThreadDataHandler : IDataHandlerEvents
             return false;
         }
 
-        var thread = _threads[threadId];
+        ThreadState thread = _threads[threadId];
 
-        foreach (var category in _categories.Values)
+        foreach (ThreadCategory category in _categories.Values)
         {
             category.threadIds.Remove(threadId);
         }
 
         _threads.Remove(threadId);
-        Debug.Log($"[ThreadDataHandler] Thread removed: {thread.threadName} ({threadId})");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -191,14 +186,14 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public List<BuildingState> GetBuildingStates(string threadId)
     {
-        if (_threads.TryGetValue(threadId, out var thread)) return thread.buildingStateList;
+        if (_threads.TryGetValue(threadId, out ThreadState thread)) return thread.buildingStateList;
         Debug.LogWarning($"[ThreadDataHandler] Thread not found: {threadId}");
         return null;
     }
 
     public bool OverwriteBuildings(string threadId, List<BuildingState> newBuildingStates)
     {
-        if (!_threads.TryGetValue(threadId, out var thread))
+        if (!_threads.TryGetValue(threadId, out ThreadState thread))
         {
             Debug.LogWarning($"[ThreadDataHandler] Cannot overwrite buildings: Thread not found: {threadId}");
             return false;
@@ -227,12 +222,10 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public bool AddBuilding(string threadId, BuildingState buildingState)
     {
-        if (!_threads.TryGetValue(threadId, out var thread) || buildingState == null) return false;
+        if (!_threads.TryGetValue(threadId, out ThreadState thread) || buildingState == null) return false;
 
         thread.buildingStateList.RemoveAll(b => b.positionX == buildingState.positionX && b.positionY == buildingState.positionY);
         thread.buildingStateList.Add(buildingState);
-
-        Debug.Log($"[ThreadDataHandler] Building added/replaced in thread {thread.threadName}: {buildingState.Id}");
 
         OnThreadChanged?.Invoke();
         return true;
@@ -240,7 +233,7 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public bool RemoveBuilding(string threadId, Vector2Int position)
     {
-        if (!_threads.TryGetValue(threadId, out var thread)) return false;
+        if (!_threads.TryGetValue(threadId, out ThreadState thread)) return false;
 
         int removedCount = thread.buildingStateList.RemoveAll(b => b.positionX == position.x && b.positionY == position.y);
         if (removedCount == 0)
@@ -249,21 +242,19 @@ public class ThreadDataHandler : IDataHandlerEvents
             return false;
         }
 
-        Debug.Log($"[ThreadDataHandler] Building removed from thread {thread.threadName} at {position}");
-
         OnThreadChanged?.Invoke();
         return true;
     }
 
     public BuildingState GetBuildingAt(string threadId, Vector2Int position)
     {
-        if (!_threads.TryGetValue(threadId, out var thread)) return null;
+        if (!_threads.TryGetValue(threadId, out ThreadState thread)) return null;
         return thread.buildingStateList.Find(b => b.positionX == position.x && b.positionY == position.y);
     }
 
     public ThreadCategory GetCategory(string categoryId)
     {
-        if (_categories.TryGetValue(categoryId, out var category)) return category;
+        if (_categories.TryGetValue(categoryId, out ThreadCategory category)) return category;
         Debug.LogWarning($"[ThreadDataHandler] Category not found: {categoryId}");
         return null;
     }
@@ -285,15 +276,15 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public List<string> GetThreadIdsInCategory(string categoryId)
     {
-        if (_categories.TryGetValue(categoryId, out var category)) return new List<string>(category.threadIds);
+        if (_categories.TryGetValue(categoryId, out ThreadCategory category)) return new List<string>(category.threadIds);
         Debug.LogWarning($"[ThreadDataHandler] Category not found: {categoryId}");
         return new List<string>();
     }
 
     public List<ThreadState> GetThreadsInCategory(string categoryId)
     {
-        var result = new List<ThreadState>();
-        foreach (var thread in _threads.Values)
+        List<ThreadState> result = new List<ThreadState>();
+        foreach (ThreadState thread in _threads.Values)
         {
             if (thread.categoryId == categoryId) result.Add(thread);
         }
@@ -318,7 +309,7 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public ThreadCategory CreateCategory(string categoryId, string categoryName)
     {
-        var newCategory = new ThreadCategory(categoryId, categoryName);
+        ThreadCategory newCategory = new ThreadCategory(categoryId, categoryName);
         if (AddCategory(newCategory)) return newCategory;
         return null;
     }
@@ -327,12 +318,12 @@ public class ThreadDataHandler : IDataHandlerEvents
     {
         if (!_categories.ContainsKey(categoryId)) return false;
 
-        var category = _categories[categoryId];
+        ThreadCategory category = _categories[categoryId];
         if (category.threadIds != null)
         {
-            foreach (var threadId in category.threadIds)
+            foreach (string threadId in category.threadIds)
             {
-                if (_threads.TryGetValue(threadId, out var thread)) thread.categoryId = string.Empty;
+                if (_threads.TryGetValue(threadId, out ThreadState thread)) thread.categoryId = string.Empty;
             }
         }
 
@@ -347,7 +338,7 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public bool RenameCategory(string categoryId, string newName)
     {
-        if (!_categories.TryGetValue(categoryId, out var category)) return false;
+        if (!_categories.TryGetValue(categoryId, out ThreadCategory category)) return false;
 
         category.categoryName = newName;
         Debug.Log($"[ThreadDataHandler] Category renamed: {categoryId} -> {newName}");
@@ -359,9 +350,9 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public bool AddThreadToCategory(string categoryId, string threadId)
     {
-        if (!_categories.TryGetValue(categoryId, out var category) || !_threads.TryGetValue(threadId, out var thread)) return false;
+        if (!_categories.TryGetValue(categoryId, out ThreadCategory category) || !_threads.TryGetValue(threadId, out ThreadState thread)) return false;
 
-        if (!string.IsNullOrEmpty(thread.categoryId) && _categories.TryGetValue(thread.categoryId, out var oldCategory))
+        if (!string.IsNullOrEmpty(thread.categoryId) && _categories.TryGetValue(thread.categoryId, out ThreadCategory oldCategory))
         {
             oldCategory.threadIds.Remove(threadId);
         }
@@ -369,7 +360,6 @@ public class ThreadDataHandler : IDataHandlerEvents
         if (!category.threadIds.Contains(threadId)) category.threadIds.Add(threadId);
 
         thread.categoryId = categoryId;
-        Debug.Log($"[ThreadDataHandler] Thread {thread.threadName} added to category {category.categoryName}");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -379,11 +369,10 @@ public class ThreadDataHandler : IDataHandlerEvents
 
     public bool RemoveThreadFromCategory(string categoryId, string threadId)
     {
-        if (!_categories.TryGetValue(categoryId, out var category) || !_threads.TryGetValue(threadId, out var thread)) return false;
+        if (!_categories.TryGetValue(categoryId, out ThreadCategory category) || !_threads.TryGetValue(threadId, out ThreadState thread)) return false;
 
         category.threadIds.Remove(threadId);
         thread.categoryId = string.Empty;
-        Debug.Log($"[ThreadDataHandler] Thread {thread.threadName} removed from category {category.categoryName}");
 
         OnCategoryChanged?.Invoke();
         OnThreadChanged?.Invoke();
@@ -408,7 +397,7 @@ public class ThreadDataHandler : IDataHandlerEvents
         int loadedCount = 0;
         int skippedCount = 0;
 
-        foreach (var thread in threads)
+        foreach (ThreadState thread in threads)
         {
             if (thread == null || string.IsNullOrEmpty(thread.threadId)) continue;
             if (_threads.ContainsKey(thread.threadId))
@@ -426,10 +415,8 @@ public class ThreadDataHandler : IDataHandlerEvents
 
             _threads[thread.threadId] = thread;
             loadedCount++;
-            Debug.Log($"[ThreadDataHandler] Loaded thread: {thread.threadName} ({thread.threadId}) with {thread.buildingStateList.Count} buildings");
         }
 
-        Debug.Log($"[ThreadDataHandler] Loaded {loadedCount} threads, skipped {skippedCount} duplicates");
         OnThreadChanged?.Invoke();
     }
 
@@ -437,7 +424,7 @@ public class ThreadDataHandler : IDataHandlerEvents
     {
         if (categories == null) return;
 
-        foreach (var category in categories)
+        foreach (ThreadCategory category in categories)
         {
             if (category != null && !string.IsNullOrEmpty(category.categoryId))
             {

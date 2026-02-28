@@ -77,7 +77,7 @@ public class BuildingInfoPopup : PopupBase
         {
             foreach (string id in _currentState.inputProductionIds)
             {
-                var entry = _dataManager.Resource.GetResourceEntry(id);
+                ResourceEntry entry = _dataManager.Resource.GetResourceEntry(id);
                 if (entry != null) inputCost += (long)entry.state.currentValue;
             }
         }
@@ -86,7 +86,7 @@ public class BuildingInfoPopup : PopupBase
         {
             foreach (string id in _currentState.outputProductionIds)
             {
-                var entry = _dataManager.Resource.GetResourceEntry(id);
+                ResourceEntry entry = _dataManager.Resource.GetResourceEntry(id);
                 if (entry != null) outputPrice += (long)entry.state.currentValue;
             }
         }

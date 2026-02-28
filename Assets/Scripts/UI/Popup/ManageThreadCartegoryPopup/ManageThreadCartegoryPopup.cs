@@ -37,9 +37,9 @@ public class ManageThreadCartegoryPopup : PopupBase
             return;
 
         GameObjectUtils.ClearChildren(_contentTransform);
-        var categories = _dataManager.Thread.GetAllCategories();
+        Dictionary<string, ThreadCategory> categories = _dataManager.Thread.GetAllCategories();
 
-        foreach (var category in categories.Values)
+        foreach (ThreadCategory category in categories.Values)
         {
             GameObject itemPanel = Instantiate(_cartegoryItemBtnPrefab, _contentTransform);
             ManageThreadCartegoryItemBtn manageThreadCartegoryItemBtn = itemPanel.GetComponent<ManageThreadCartegoryItemBtn>();
@@ -58,7 +58,7 @@ public class ManageThreadCartegoryPopup : PopupBase
     /// </summary>
     public void OnClickAddCartegory()
     {
-        var gameManager = GameManager.Instance;
+        GameManager gameManager = GameManager.Instance;
         if (gameManager == null)
         {
             Debug.LogWarning("[ManageThreadCartegoryPanel] GameManager is null.");
@@ -84,7 +84,7 @@ public class ManageThreadCartegoryPopup : PopupBase
             }
 
             string categoryId = $"Category_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
-            var newCategory = _dataManager.Thread.CreateCategory(categoryId, categoryName);
+            ThreadCategory newCategory = _dataManager.Thread.CreateCategory(categoryId, categoryName);
             
             if (newCategory != null)
             {
@@ -106,7 +106,7 @@ public class ManageThreadCartegoryPopup : PopupBase
     /// <param name="categoryName">현재 카테고리 이름</param>
     public void OnRequestRenameCategory(string categoryId, string categoryName)
     {
-        var gameManager = GameManager.Instance;
+        GameManager gameManager = GameManager.Instance;
         if (gameManager == null)
         {
             Debug.LogWarning("[ManageThreadCartegoryPanel] GameManager is null.");
@@ -157,7 +157,7 @@ public class ManageThreadCartegoryPopup : PopupBase
     /// <param name="categoryName">카테고리 이름</param>
     public void OnRequestDeleteCategory(string categoryId, string categoryName)
     {
-        var gameManager = GameManager.Instance;
+        GameManager gameManager = GameManager.Instance;
         if (gameManager == null)
         {
             Debug.LogWarning("[ManageThreadCartegoryPanel] GameManager is null.");

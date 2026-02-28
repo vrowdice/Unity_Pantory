@@ -29,7 +29,7 @@ public class MainScrollViewResouceBtn : MonoBehaviour
     private void UpdateChangeValue()
     {
         ResourceState resourceState = _resourceEntry.state;
-        long delta = resourceState.threadDeltaCount + resourceState.marketDeltaCount;
+        int delta = resourceState.currnetChangeCount;
 
         if (delta > 0)
         {

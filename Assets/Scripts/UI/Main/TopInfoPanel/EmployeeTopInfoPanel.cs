@@ -149,10 +149,10 @@ public class EmployeeTopInfoPanel : MonoBehaviour
 
         if (_dataManager?.Employee != null)
         {
-            var allEmployees = _dataManager.Employee.GetAllEmployees();
+            Dictionary<EmployeeType, EmployeeEntry> allEmployees = _dataManager.Employee.GetAllEmployees();
             if (allEmployees != null)
             {
-                foreach (var entry in allEmployees.Values)
+                foreach (EmployeeEntry entry in allEmployees.Values)
                 {
                     if (entry?.data != null && entry.data.type == type)
                     {

@@ -210,7 +210,7 @@ public class PoolingManager : Singleton<PoolingManager>
     /// </summary>
     public void ClearAllPools()
     {
-        foreach (var pool in poolDictionary.Values)
+        foreach (Queue<GameObject> pool in poolDictionary.Values)
         {
             foreach (GameObject obj in pool)
             {

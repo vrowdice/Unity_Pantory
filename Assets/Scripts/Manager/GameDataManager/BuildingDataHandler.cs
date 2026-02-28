@@ -23,7 +23,7 @@ public class BuildingDataHandler
         
         if (buildingDataList != null && buildingDataList.Count > 0)
         {
-            foreach (var data in buildingDataList)
+            foreach (BuildingData data in buildingDataList)
             {
                 if (data == null || string.IsNullOrEmpty(data.id)) continue;
                 if (_buildings.ContainsKey(data.id))
@@ -69,7 +69,7 @@ public class BuildingDataHandler
     /// <param name="buildingDataList">등록할 BuildingData 배열</param>
     public void RegisterBuildings(BuildingData[] buildingDataList)
     {
-        foreach (var data in buildingDataList)
+        foreach (BuildingData data in buildingDataList)
         {
             RegisterBuilding(data);
         }
@@ -82,7 +82,7 @@ public class BuildingDataHandler
     /// <returns>BuildingData 또는 null</returns>
     public BuildingData GetBuildingData(string buildingId)
     {
-        if (_buildings.TryGetValue(buildingId, out var data))
+        if (_buildings.TryGetValue(buildingId, out BuildingData data))
         {
             return data;
         }
@@ -118,7 +118,7 @@ public class BuildingDataHandler
     {
         List<BuildingData> result = new List<BuildingData>();
         
-        foreach (var data in _buildings.Values)
+        foreach (BuildingData data in _buildings.Values)
         {
             if (data.buildingType == buildingType)
             {

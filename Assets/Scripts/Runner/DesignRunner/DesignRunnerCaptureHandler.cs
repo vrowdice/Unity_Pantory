@@ -72,7 +72,7 @@ public class DesignRunnerCaptureHandler
         Vector3 min = new Vector3(float.MaxValue, float.MaxValue, 0);
         Vector3 max = new Vector3(float.MinValue, float.MinValue, 0);
 
-        foreach (var state in states)
+        foreach (BuildingState state in states)
         {
             BuildingData data = _manager.DataManager.Building.GetBuildingData(state.Id);
             if (data == null) continue;

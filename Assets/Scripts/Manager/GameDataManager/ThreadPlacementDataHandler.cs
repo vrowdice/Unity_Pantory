@@ -127,6 +127,15 @@ public class ThreadPlacementDataHandler : IDataHandlerEvents, ITimeChangeHandler
         DayThreadProgress();
     }
 
+    public void RecalculateAllPlacedThreadStats()
+    {
+        foreach (ThreadPlacementState placement in _placedThreads.Values)
+        {
+            if (placement?.RuntimeState != null)
+                RecalculateThreadStats(placement.RuntimeState);
+        }
+    }
+
     /// <summary>
     /// 모든 이벤트 구독을 초기화합니다.
     /// </summary>
