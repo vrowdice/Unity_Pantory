@@ -136,7 +136,7 @@ public class DesignRunnerCalculationHandler
         foreach (BuildingState state in states ?? new List<BuildingState>())
         {
             BuildingData data = DataManager.Building.GetBuildingData(state.Id);
-            if (data == null || !data.IsProductionBuilding || !state.IsUnlocked(DataManager)) continue;
+            if (data == null || !data.IsProductionBuilding) continue;
 
             Vector2Int basePos = new Vector2Int(state.positionX, state.positionY);
             Vector2Int inPos = basePos + GridMathUtils.GetRotatedOffset(data.InputPosition, state.rotation);

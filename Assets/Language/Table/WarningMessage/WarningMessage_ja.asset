@@ -118,6 +118,10 @@ MonoBehaviour:
     m_Localized: 同じ名前のカテゴリーが既に存在します。
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268026
+    m_Localized: この未研究の建物を配置すると、このスレッドはメインで配置できません。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -135,7 +135,7 @@ public class DesignRunner : RunnerBase
         int rotation = PlacementHandler.RotationIndex;
         BuildingState state = new BuildingState(selectedBuilding.id, gridPos, selectedBuilding, rotation);
         AddBuildingToTemp(state);
-        RefreshBuildings();
+        RefreshBuildings(gridPos);
     }
 
     private bool RemoveBuilding(Vector2Int origin)
@@ -366,7 +366,8 @@ public class DesignRunner : RunnerBase
     /// <summary>
     /// 배치된 모든 건물을 새로고침합니다.
     /// </summary>
-    public void RefreshBuildings()
+    /// <param name="animateOnlyOrigin">이 위치의 건물에만 배치 애니메이션을 재생합니다. null이면 애니메이션 없음.</param>
+    public void RefreshBuildings(Vector2Int? animateOnlyOrigin = null)
     {
         GridGenHandler.ClearAllPlacedBuildings();
 
@@ -376,7 +377,8 @@ public class DesignRunner : RunnerBase
             if (data == null) continue;
             
             Vector2Int pos = new Vector2Int(state.positionX, state.positionY);
-            GridGenHandler.CreateBuildingObject(pos, data, state);
+            bool playPlaceAnimation = animateOnlyOrigin.HasValue && pos == animateOnlyOrigin.Value;
+            GridGenHandler.CreateBuildingObject(pos, data, state, playPlaceAnimation);
             GridGenHandler.MarkTilesAsOccupied(pos, GridMathUtils.GetRotatedSize(data.size, state.rotation));
         }
         
@@ -437,14 +439,7 @@ public class DesignRunner : RunnerBase
     private void ShowBuildingInfo(BuildingState buildingState)
     {
         BuildingData buildingData = DataManager.Building.GetBuildingData(buildingState.Id);
-        if (buildingState.IsUnlocked(DataManager))
-        {
-            _designCanvas.ShowBuildingInfo(buildingData, buildingState);
-        }
-        else
-        {
-            UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingLocked);
-        }
+        _designCanvas.ShowBuildingInfo(buildingData, buildingState);
     }
 
     /// <summary>

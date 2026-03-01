@@ -115,6 +115,10 @@ MonoBehaviour:
     m_Key: CategoryNameAlreadyExists
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268026
+    m_Key: UnresearchedBuildingBlocksThreadPlacement
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

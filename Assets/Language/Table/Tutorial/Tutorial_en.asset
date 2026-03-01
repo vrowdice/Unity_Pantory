@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Tutorial_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: e00198e87a257ff41b02cc989c3a409a, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 2319839819189715041
+  m_TableData:
+  - m_Id: 11264212992
+    m_Localized: Hello! Welcome to Pantory!
+    m_Metadata:
+      m_Items:
+      - rid: 2319839819189715041
+  - m_Id: 438890283008
+    m_Localized: Pantory is a factory management simulation game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 575934971904
+    m_Localized: First, let me explain how to play the game. You can view the tutorial
+      at any time by clicking the question mark button in each window.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1678642659328
+    m_Localized: You can see where your capital is going with the Credits and Research
+      Points buttons in the top left.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2291514359808
+    m_Localized: This container displays the employment status, allocation status,
+      and satisfaction level of employees.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2320476028928
+    m_Localized: And this container has a time and time adjustment button, a tutorial
+      button and a settings button.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2777508364288
+    m_Localized: This is where the buttons for quickly switching between each important
+      panel are located.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5943566155776
+    m_Localized: Now let's talk about threads. It's easy to think of threads as a
+      collection of factories.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7203816095744
+    m_Localized: When you create a thread, it takes the amount of resources designed
+      for that thread and can create resources.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7579063697408
+    m_Localized: Thread installation is possible from the corresponding panel. Simply
+      create a thread, select it, and install it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7894026567680
+    m_Localized: When creating a thread, you can also set a category for the thread.
+      The thread will be classified according to that category, and you can filter
+      the thread categories in this panel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8131256401920
+    m_Localized: Resources are crucial, as your primary goal is to generate them
+      and sell them on the market. You can check your current resource status on
+      this panel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9056704413696
+    m_Localized: This concludes the main panel description for Pantory. There are
+      tutorials for other panels, so familiarizing yourself with them will help you
+      enjoy the game. We hope you enjoy your time in Pantory! Thank you!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11779361357824
+    m_Localized: This is the button that toggles between thread build mode and thread
+      remove mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12960301203456
+    m_Localized: This is the storage panel. This panel shows you the inventory of
+      resources you currently have.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13340426780672
+    m_Localized: Resources have categories corresponding to each resource, and you
+      can filter resources by category in the resource panel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17836750028800
+    m_Localized: This is the order panel. Each group requests resources from you,
+      and you accept the requests and submit the resources.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17928651423744
+    m_Localized: Each order comes from the Market, Company, and Government, and the
+      size of the order tends to increase in that order. The size of the order may
+      also vary depending on your company's Wealth.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18539786682368
+    m_Localized: You can filter where each order came from here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18834268766208
+    m_Localized: If you accept an order, you can view the accepted orders through
+      this toggle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19061579071488
+    m_Localized: A list of clients by client category can be found here. Clicking
+      on a client will display a list of orders available to that client.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19397370855424
+    m_Localized: If an order comes in, it will be displayed here and if you click
+      to accept it, it will be moved to the accepted order.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19716532224000
+    m_Localized: This is the Market Panel. Here, you can buy and sell resources and
+      check out information about other competing companies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22018345287680
+    m_Localized: Here you can choose whether to display the resource view or the
+      trader (competitor) view via the button.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22020337582080
+    m_Localized: This is the Resource View. You can adjust your current resource
+      purchase and sale volume here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24215317528576
+    m_Localized: Resource information is displayed here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24483870425088
+    m_Localized: The price history of resources is visually displayed here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24698149027840
+    m_Localized: This is the Trader (Competitor) View. You can view information about
+      each trader.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36510642880512
+    m_Localized: This is the panel where you can manage your employees.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36904429305856
+    m_Localized: This is where your current management skills are demonstrated. Employees
+      require a certain number of managers per employee. Depending on how many managers
+      are lacking, your satisfaction level will be penalized.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37440536854528
+    m_Localized: Employees' satisfaction is affected by various variables, and you
+      can find out where the influence comes from here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37828904239104
+    m_Localized: Employee efficiency depends on their satisfaction, and this efficiency
+      affects the productivity of the thread. Employees' demands also change depending
+      on their satisfaction.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38302378246144
+    m_Localized: The easiest way to increase employee satisfaction is to pay them
+      more. And the opposite is also true.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39086448852992
+    m_Localized: Employees are divided into Workers, Technicians, Researchers, and
+      Managers. Workers perform simple tasks within a thread, Technicians perform
+      technical tasks within a thread, Researchers produce RP (Research Points),
+      and Managers are responsible for managing employees.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39688935456768
+    m_Localized: Here, you can decide whether to hire or fire employees. Hiring or
+      firing employees costs credits, and firing employees will decrease their satisfaction.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 2319839819189715041
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 11264212992

@@ -27,6 +27,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _tutorialPopupPrefab;
 
     [Header("Main Info Panels")]
+    [SerializeField] private GameObject _creditTopInfoPopupPrefab;
     [SerializeField] private GameObject _threadInfoPopupPrefab;
     [SerializeField] private GameObject _researchInfoPopupPrefab;
     [SerializeField] private GameObject _marketActorInfoPopupPrefab;
@@ -199,7 +200,7 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public TutorialPopup ShowTutorialPopup(List<TutorialData> tutorialDataList)
+    public TutorialPopup ShowTutorialPopup(List<TutorialData> tutorialDataList, string gameObjectName)
     {
         TutorialPopup panel = null;
         if (_managerCanvasTransform != null)
@@ -214,7 +215,7 @@ public class UIManager : Singleton<UIManager>
         }
 
         panel.gameObject.SetActive(true);
-        panel.Init(tutorialDataList);
+        panel.Init(tutorialDataList, gameObjectName);
         return panel;
     }
 
@@ -310,6 +311,29 @@ public class UIManager : Singleton<UIManager>
 
         popup.gameObject.SetActive(true);
         popup.Init(newsState, mainCanvas);
+        return popup;
+    }
+
+    public CreditTopInfoPopup ShowCreditTopInfoPopup()
+    {
+        CreditTopInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<CreditTopInfoPopup>(true);
+        }
+
+        if (popup == null && _creditTopInfoPopupPrefab != null)
+        {
+            GameObject obj = Instantiate(_creditTopInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<CreditTopInfoPopup>();
+        }
+
+        if (popup != null)
+        {
+            popup.Init();
+            popup.gameObject.SetActive(true);
+            popup.ShowCreditInfo();
+        }
         return popup;
     }
 

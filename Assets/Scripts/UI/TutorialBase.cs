@@ -11,6 +11,6 @@ public class TutorialBase : MonoBehaviour
     public void StartTutorial()
     {
         if (_tutorialPanelInfo == null || _tutorialPanelInfo.Count == 0) return;
-        UIManager.Instance.ShowTutorialPopup(_tutorialPanelInfo);
+        UIManager.Instance.ShowTutorialPopup(_tutorialPanelInfo, this.name);
     }
 }

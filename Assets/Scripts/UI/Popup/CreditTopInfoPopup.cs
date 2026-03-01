@@ -1,15 +1,17 @@
 using UnityEngine;
 
-public class CreditTopInfoPanel : MonoBehaviour
+public class CreditTopInfoPopup : PopupBase
 {
     [SerializeField] private GameObject _titleDeltaTextPanelPrefab;
     [SerializeField] private PanelDoAni _panelDoAni;
+    [SerializeField] private RectTransform _popupArea;
 
     private DataManager _dataManager;
 
-    public void Init(DataManager dataManager)
+    public override void Init()
     {
-        _dataManager = dataManager;
+        base.Init();
+        _dataManager = DataManager.Instance;
 
         _panelDoAni?.SnapToClosedPosition();
         gameObject.SetActive(false);
@@ -22,6 +24,8 @@ public class CreditTopInfoPanel : MonoBehaviour
             _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
             _dataManager.Finances.OnCreditChanged += HandleDayChanged;
         }
+
+        Show();
     }
 
     public void ToggleCreditInfo()
@@ -59,7 +63,7 @@ public class CreditTopInfoPanel : MonoBehaviour
         CreatePanelIfValid(LocalizationUtils.Localize("Resource Changes", "Expenses"), _dataManager.Finances.DailyResource);
         CreatePanelIfValid(LocalizationUtils.Localize("Thread Maintenance Cost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
         CreatePanelIfValid(LocalizationUtils.Localize("Negative Interest", "Expenses"), -_dataManager.Finances.DailyInterest);
-        
+
         CreatePanelIfValid(LocalizationUtils.Localize("Daily Change", "Expenses"), _dataManager.Finances.DailyTotal, true);
     }
 
@@ -80,15 +84,25 @@ public class CreditTopInfoPanel : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (!gameObject.activeInHierarchy) return;
+        bool isOpen = _panelDoAni != null ? _panelDoAni.IsOpen : true;
+        if (!isOpen) return;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            RectTransform rect = _popupArea != null ? _popupArea : transform as RectTransform;
+            if (rect != null && !RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition, null))
+            {
+                HideCreditInfo();
+            }
+        }
+    }
+
     private void OnDestroy()
     {
-        if (_dataManager?.Time != null)
-        {
-            _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        }
-        if (_dataManager?.Finances != null)
-        {
-            _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
-        }
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
     }
 }

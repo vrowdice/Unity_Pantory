@@ -118,6 +118,10 @@ MonoBehaviour:
     m_Localized: A category with this name already exists.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268026
+    m_Localized: If you place this unresearched building, this thread cannot be placed in the main scene.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

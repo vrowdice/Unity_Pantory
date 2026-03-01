@@ -42,7 +42,6 @@ public partial class MainCanvas : CanvasBase
         DataManager.Time.OnYearChanged += OnYearChanged;
 
         _infoDatePanel.Init(DataManager);
-        _creditInfoPanel.Init(DataManager);
         _topInfoPanel.Init(DataManager);
 
         CreateMainPanels();
@@ -50,14 +49,9 @@ public partial class MainCanvas : CanvasBase
         InitializePanels();
         CreateQuickMoveBtns();
 
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.Init(this, mainRunner);
-            _resourceThreadCanvas.RefreshThreadCategories();
-            _resourceThreadCanvas.RefreshThreadButtons();
-            _resourceThreadCanvas.RefreshResourceScrollView();
-        }
-
+        RefreshThreadCategories();
+        RefreshThreadButtons();
+        RefreshResourceScrollView();
         UpdateAllMainText();
     }
 
@@ -69,10 +63,7 @@ public partial class MainCanvas : CanvasBase
 
     private void OnResourceChanged()
     {
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.RefreshResourceScrollView();
-        }
+        RefreshResourceScrollView();
         UpdateAllMainText();
     }
 
@@ -124,28 +115,14 @@ public partial class MainCanvas : CanvasBase
 
     private void OnDayChanged()
     {
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.RefreshResourceScrollView();
-        }
+        RefreshResourceScrollView();
         UpdateAllMainText();
     }
 
     private void OnThreadPlacementChanged()
     {
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.RefreshResourceScrollView();
-        }
+        RefreshResourceScrollView();
         UpdateAllMainText();
-    }
-
-    /// <summary>
-    /// 크레딧 정보 패널을 토글합니다.
-    /// </summary>
-    public void ToggleCreditInfo()
-    {
-        _creditInfoPanel.ToggleCreditInfo();
     }
 
     /// <summary>
@@ -177,41 +154,13 @@ public partial class MainCanvas : CanvasBase
         UIManager.Instance.ShowMarketActorInfoPopup(marketActorEntry, this);
     }
 
+    public void ShowCreditInfoPopup()
+    {
+        UIManager.Instance.ShowCreditTopInfoPopup();
+    }
+
     public void ShowOptionPanel()
     {
         UIManager.Instance.ShowOptionPopup();
-    }
-
-    public void RegisterThreadTileManager(MainRunner threadTileManager)
-    {
-        _mainRunner = threadTileManager;
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.RegisterThreadTileManager(threadTileManager);
-        }
-    }
-
-    public void StartThreadPlacement(ThreadState threadState)
-    {
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.StartThreadPlacement(threadState);
-        }
-    }
-
-    public void CancelThreadPlacement()
-    {
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.CancelThreadPlacement();
-        }
-    }
-
-    public void ToggleThreadRemovalMode()
-    {
-        if (_resourceThreadCanvas != null)
-        {
-            _resourceThreadCanvas.ToggleThreadRemovalMode();
-        }
     }
 }

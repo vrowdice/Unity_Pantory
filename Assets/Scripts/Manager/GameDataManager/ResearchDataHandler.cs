@@ -101,33 +101,28 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
             return false;
         }
 
-        // 1. 이미 완료된 연구인지 확인
         if (entry.state.isCompleted)
         {
             Debug.Log($"[ResearchDataHandler] Already completed: {entry.data.displayName}");
             return false;
         }
 
-        // 2. 선행 연구(Prerequisites) 확인
         if (!CheckPrerequisites(entry.data))
         {
             Debug.Log($"[ResearchDataHandler] Prerequisites not met for: {entry.data.displayName}");
             return false;
         }
 
-        // 3. 비용(RP) 확인
         if (ResearchPoint < entry.data.researchPointCost)
         {
             Debug.Log($"[ResearchDataHandler] Not enough RP. Need: {entry.data.researchPointCost}, Have: {ResearchPoint}");
             return false;
         }
 
-        // 4. RP 차감
         _researchPoint -= entry.data.researchPointCost;
         OnResearchPointsChanged?.Invoke();
         entry.state.isCompleted = true;
         ApplyResearchEffects(entry.data);
-        Debug.Log($"[ResearchDataHandler] UNLOCKED: {entry.data.displayName}");
         OnResearchUnlocked?.Invoke(researchId);
 
         return true;

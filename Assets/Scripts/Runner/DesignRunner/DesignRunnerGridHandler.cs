@@ -85,7 +85,7 @@ public class DesignRunnerGridHandler
         }
     }
 
-    public GameObject CreateBuildingObject(Vector2Int gridPosition, BuildingData buildingData, BuildingState buildingState = null)
+    public GameObject CreateBuildingObject(Vector2Int gridPosition, BuildingData buildingData, BuildingState buildingState = null, bool playPlaceAnimation = false)
     {
         if (buildingData?.buildingSprite == null) return null;
 
@@ -108,14 +108,7 @@ public class DesignRunnerGridHandler
         Vector3 targetScale = GameObjectUtils.CalculateSpriteScale(buildingData.buildingSprite, buildingData.size);
         buildingObject.transform.localScale = targetScale;
 
-        if (buildingState != null && !buildingState.IsUnlocked(DataManager))
-        {
-            renderer.color = new Color(1f, 1f, 1f, 0.5f);
-        }
-        else
-        {
-            renderer.color = Color.white;
-        }
+        renderer.color = Color.white;
 
         BuildingObject buildingComponent = buildingObject.GetComponent<BuildingObject>();
         BoxCollider2D boxCollider = buildingObject.GetComponent<BoxCollider2D>();
@@ -134,12 +127,15 @@ public class DesignRunnerGridHandler
 
         RegisterBuildingToMaps(gridPosition, rotatedSize, buildingObject);
         
-        Vector3 originalScale = buildingObject.transform.localScale;
-        buildingObject.transform.localScale = Vector3.zero;
-        buildingObject.transform.DOScale(originalScale, 0.2f)
-            .SetEase(Ease.OutBack)
-            .SetUpdate(true)
-            .SetLink(buildingObject);
+        if (playPlaceAnimation)
+        {
+            Vector3 originalScale = buildingObject.transform.localScale;
+            buildingObject.transform.localScale = Vector3.zero;
+            buildingObject.transform.DOScale(originalScale, 0.2f)
+                .SetEase(Ease.OutBack)
+                .SetUpdate(true)
+                .SetLink(buildingObject);
+        }
 
         return buildingObject;
     }

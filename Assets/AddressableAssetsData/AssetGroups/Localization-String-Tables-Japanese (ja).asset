@@ -94,6 +94,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ja
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 71d8a4c57a52511489f2290abc26d72e
+    m_Address: Tutorial_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8224b36b6ece8f944bcf57af6a64f49d
     m_Address: BuildingType_ja
     m_ReadOnly: 1

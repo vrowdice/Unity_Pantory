@@ -28,8 +28,7 @@ public partial class DesignCanvas
     {
         if (!isUnlocked)
         {
-            UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingLockedResearchRequired);
-            return;
+            UIManager.Instance.ShowWarningPopup(WarningMessage.UnresearchedBuildingBlocksThreadPlacement);
         }
 
         _selectedBuilding = buildingData;
@@ -48,7 +47,7 @@ public partial class DesignCanvas
         {
             _designRunner.StartPlacementMode(buildingData);
         }
-        
+
         UpdateBuildingButtonStates();
     }
 

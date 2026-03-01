@@ -149,7 +149,7 @@ public class MarketCanvas : MainCanvasPanelBase
     /// <summary>
     /// 화면을 리소스 목록 뷰로 전환합니다.
     /// </summary>
-    private void ShowResourceView()
+    public void ShowResourceView()
     {
         _isResourceView = true;
         TogglePanels(true);
@@ -162,7 +162,7 @@ public class MarketCanvas : MainCanvasPanelBase
     /// <summary>
     /// 화면을 거래자 목록 뷰로 전환합니다.
     /// </summary>
-    private void ShowTraderView()
+    public void ShowTraderView()
     {
         _isResourceView = false;
         TogglePanels(false);

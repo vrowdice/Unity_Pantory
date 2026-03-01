@@ -19,7 +19,7 @@ public class BuildingObject : MonoBehaviour
     private GameObject _outputMarker;
     private GameObject _inputProductionContainer;
     private GameObject _outputProductionContainer;
-    private GameObject _roadResourceContainer;  // 도로 자원 표시용 컨테이너
+    private GameObject _roadResourceContainer;
 
     public BuildingData BuildingData => _buildingData;
     public BuildingState BuildingState => _buildingState;
@@ -256,18 +256,12 @@ public class BuildingObject : MonoBehaviour
         if (sharedCanvas == null) return;
         
         Vector2Int roadPos = new Vector2Int(_buildingState.positionX, _buildingState.positionY);
-        HashSet<string> resources = roadHandler.GetResourcesAtRoad(roadPos);
+        Dictionary<string, int> resourceCounts = roadHandler.GetResourceCountsAtRoad(roadPos);
         
-        if (resources.Count == 0) return;
-        
-        Dictionary<string, int> resourceCounts = new Dictionary<string, int>();
-        foreach (string resourceId in resources)
-        {
-            resourceCounts[resourceId] = 1;
-        }
+        if (resourceCounts == null || resourceCounts.Count == 0) return;
         
         Vector3 worldPosition = transform.position + new Vector3(0, 0, -1);
-        float roadIconScale = _productionIconScale * 0.7f; // 도로 자원 아이콘을 70% 크기로
+        float roadIconScale = _productionIconScale * 0.6f;
         
         _roadResourceContainer = UIManager.Instance.CreateProductionIconContainer(
             sharedCanvas,

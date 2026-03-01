@@ -53,6 +53,7 @@ MonoBehaviour:
   _manageThreadCartegoryPanelPrefab: {fileID: 2639419400245874255, guid: f65e8985534c69643be32468ceb4c333, type: 3}
   _saveLoadPopupPrefab: {fileID: 5511691627187789550, guid: 6124701b6567c7a4eaf09a7ad327b4ca, type: 3}
   _tutorialPopupPrefab: {fileID: 1601846500520044884, guid: 77b659caac0b87944861f599d6897417, type: 3}
+  _creditTopInfoPopupPrefab: {fileID: 5306945310880352919, guid: 88678014564df034ba522c0f0c2371f1, type: 3}
   _threadInfoPopupPrefab: {fileID: 2130550313099607185, guid: cc240579370e35e4e8b49a395653104b, type: 3}
   _researchInfoPopupPrefab: {fileID: 2491370192534101071, guid: e550badc5e9a07249ab0f0615c91eadd, type: 3}
   _marketActorInfoPopupPrefab: {fileID: 7666810672625045054, guid: 0cb468b0d2132834a821944f98e6ea1b, type: 3}

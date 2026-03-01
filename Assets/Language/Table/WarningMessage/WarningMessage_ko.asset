@@ -118,6 +118,10 @@ MonoBehaviour:
     m_Localized: 이미 존재하는 카테고리 이름입니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268026
+    m_Localized: 이 연구 안 된 건물을 설치하면 이 스레드는 메인에서 배치할 수 없습니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

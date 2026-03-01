@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Tutorial Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Tutorial
+  m_TableCollectionNameGuidString: e00198e87a257ff41b02cc989c3a409a
+  m_Entries:
+  - m_Id: 11264212992
+    m_Key: MainCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 438890283008
+    m_Key: MainCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 575934971904
+    m_Key: MainCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1678642659328
+    m_Key: MainCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2291514359808
+    m_Key: MainCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2320476028928
+    m_Key: MainCanvas5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2777508364288
+    m_Key: MainCanvas6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5943566155776
+    m_Key: MainCanvas7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7203816095744
+    m_Key: MainCanvas8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7579063697408
+    m_Key: MainCanvas9
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7894026567680
+    m_Key: MainCanvas10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11779361357824
+    m_Key: MainCanvas11
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8131256401920
+    m_Key: MainCanvas12
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9056704413696
+    m_Key: MainCanvas13
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12960301203456
+    m_Key: StorageCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13340426780672
+    m_Key: StorageCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17836750028800
+    m_Key: OrderCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17928651423744
+    m_Key: OrderCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18539786682368
+    m_Key: OrderCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18834268766208
+    m_Key: OrderCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19061579071488
+    m_Key: OrderCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19397370855424
+    m_Key: OrderCanvas5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19716532224000
+    m_Key: MarketCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22018345287680
+    m_Key: MarketCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22020337582080
+    m_Key: MarketCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24215317528576
+    m_Key: MarketCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24483870425088
+    m_Key: MarketCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24698149027840
+    m_Key: MarketCanvas5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36510642880512
+    m_Key: EmployeeCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39086448852992
+    m_Key: EmployeeCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36904429305856
+    m_Key: EmployeeCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37440536854528
+    m_Key: EmployeeCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37828904239104
+    m_Key: EmployeeCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38302378246144
+    m_Key: EmployeeCanvas5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39688935456768
+    m_Key: EmployeeCanvas6
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 2319839819189715027
+  references:
+    version: 2
+    RefIds:
+    - rid: 2319839819189715027
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1772342416568

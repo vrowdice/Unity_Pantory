@@ -19,14 +19,16 @@ public class TutorialPopup : PopupBase
     [SerializeField] private float _focusPulseDuration = 0.6f;
 
     private List<TutorialData> _tutorialDataList;
+    private string _gameObjectName;
     private int _currentIndex = 0;
     private int _totalCount = 0;
 
-    public void Init(List<TutorialData> tutorialDataList)
+    public void Init(List<TutorialData> tutorialDataList, string gameObjectName)
     {
         base.Init();
 
         _tutorialDataList = tutorialDataList;
+        _gameObjectName = gameObjectName;
         _currentIndex = 0;
         _totalCount = _tutorialDataList.Count;
 
@@ -58,21 +60,22 @@ public class TutorialPopup : PopupBase
         {
             TutorialData currentData = _tutorialDataList[_currentIndex];
             _indexText.text = $"{_currentIndex + 1} / {_totalCount}";
-            _descriptionText.text = currentData.id.Localize(LocalizationUtils.TABLE_TUTORIAL);
+            _descriptionText.text = $"{_gameObjectName + _currentIndex}".Localize(LocalizationUtils.TABLE_TUTORIAL);
             _panel.GetComponent<RectTransform>().anchoredPosition = currentData.tutorialPanelPosition;
+            currentData.onStepStart?.Invoke();
 
             if (currentData.focusGameObject != null)
             {
                 _focusPanel.SetActive(true);
 
-                Transform focusTransform = _focusPanel.transform;
-                Transform targetTransform = currentData.focusGameObject.transform;
+                RectTransform focusTransform = _focusPanel.GetComponent<RectTransform>();
+                RectTransform targetTransform = currentData.focusGameObject.GetComponent<RectTransform>();
 
                 focusTransform.position = targetTransform.position;
-                focusTransform.DOKill();
-
                 Vector3 baseScale = targetTransform.localScale;
                 focusTransform.localScale = baseScale;
+                RectTransformUtils.SyncSizeToTarget(focusTransform, targetTransform);
+                focusTransform.DOKill();
 
                 focusTransform
                     .DOScale(baseScale * _focusPulseScale, _focusPulseDuration)

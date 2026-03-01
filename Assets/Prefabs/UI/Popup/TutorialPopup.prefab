@@ -412,7 +412,7 @@ MonoBehaviour:
   _focusPanel: {fileID: 1339452573194018229}
   _beforeBtn: {fileID: 1169185989631823572}
   _nextBtn: {fileID: 7889637128922762222}
-  _focusPulseScale: 1.1
+  _focusPulseScale: 1.02
   _focusPulseDuration: 0.6
 --- !u!1 &1742283104909658011
 GameObject:
@@ -1706,7 +1706,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -195}
-  m_SizeDelta: {x: -40, y: 200}
+  m_SizeDelta: {x: -60, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &811282408301387314
 CanvasRenderer:
@@ -1736,7 +1736,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Text
+  m_text: '
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
@@ -1767,7 +1769,7 @@ MonoBehaviour:
   m_fontSizeBase: 42
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 18
+  m_fontSizeMin: 15
   m_fontSizeMax: 42
   m_fontStyle: 0
   m_HorizontalAlignment: 2

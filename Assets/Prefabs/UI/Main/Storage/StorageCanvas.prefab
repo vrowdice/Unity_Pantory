@@ -893,14 +893,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tutorialPanelInfo:
-  - _description: "\uC774\uACF3\uC740 \uC0C1\uD488 \uC7AC\uACE0\uB97C \uD655\uC778\uD560
-      \uC218 \uC788\uB294 \uCC3D\uC785\uB2C8\uB2E4. "
-    _focusGameObject: {fileID: 0}
-    _tutorialPanelPosition: {x: 0, y: 0}
-  - _description: "\uAC01 \uCE74\uD14C\uACE0\uB9AC\uBCC4\uB85C \uC7AC\uACE0\uB97C
-      \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
-    _focusGameObject: {fileID: 0}
-    _tutorialPanelPosition: {x: 0, y: 0}
+  - id: StorageCanvas1
+    focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - id: StorageCanvas2
+    focusGameObject: {fileID: 22010665357046727}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
   _panelAnimationTarget: {fileID: 8834582772067085463}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1

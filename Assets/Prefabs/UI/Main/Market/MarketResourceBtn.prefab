@@ -625,7 +625,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Background
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -742,7 +742,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Background
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
@@ -865,7 +865,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -24.999992, y: 0}
-  m_SizeDelta: {x: -189.99998, y: 70}
+  m_SizeDelta: {x: -189.99998, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5934266611773762594
 CanvasRenderer:
@@ -922,7 +922,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 22
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -939,7 +939,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 0
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -1221,7 +1221,7 @@ MonoBehaviour:
   targetText: {fileID: 0}
   objectType: 0
   colorID: Primary (Soft)
-  fontID: Inter - Thin
+  fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 0.05

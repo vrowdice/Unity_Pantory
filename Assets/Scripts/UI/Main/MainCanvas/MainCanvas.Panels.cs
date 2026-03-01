@@ -4,7 +4,6 @@ using UnityEngine;
 public partial class MainCanvas
 {
     [Header("Main Panel Prefabs")]
-    [SerializeField] private GameObject _resourceThreadCanvasPrefab;
     [SerializeField] private GameObject _storageCanvasPrefab;
     [SerializeField] private GameObject _orderCanvasPrefab;
     [SerializeField] private GameObject _marketCanvasPrefab;
@@ -13,7 +12,6 @@ public partial class MainCanvas
     [SerializeField] private GameObject _researchCanvasPrefab;
     [SerializeField] private GameObject _financeCanvasPrefab;
 
-    private ResourceThreadCanvas _resourceThreadCanvas;
     private StorageCanvas _storageCanvas;
     private OrderCanvas _orderCanvas;
     private MarketCanvas _marketCanvas;
@@ -21,8 +19,6 @@ public partial class MainCanvas
     private NewsCanvas _newsCanvas;
     private ResearchCanvas _researchCanvas;
     private FinanceCanvas _financeCanvas;
-
-    [SerializeField] private CreditTopInfoPanel _creditInfoPanel;
 
     private Dictionary<MainPanelType, MainCanvasPanelBase> _panelDict;
     private MainPanelType _currentOpenPanelType;
@@ -34,51 +30,52 @@ public partial class MainCanvas
             return;
         }
 
-        if (_resourceThreadCanvasPrefab != null)
-        {
-            GameObject resourceThreadObj = Object.Instantiate(_resourceThreadCanvasPrefab);
-            _resourceThreadCanvas = resourceThreadObj.GetComponent<ResourceThreadCanvas>();
-        }
-
         if (_storageCanvasPrefab != null)
         {
             GameObject storageObj = Object.Instantiate(_storageCanvasPrefab);
+            storageObj.name = _storageCanvasPrefab.name;
             _storageCanvas = storageObj.GetComponent<StorageCanvas>();
         }
 
         if (_orderCanvasPrefab != null)
         {
             GameObject orderObj = Object.Instantiate(_orderCanvasPrefab);
+            orderObj.name = _orderCanvasPrefab.name;
             _orderCanvas = orderObj.GetComponent<OrderCanvas>();
         }
 
         if (_marketCanvasPrefab != null)
         {
             GameObject marketObj = Object.Instantiate(_marketCanvasPrefab);
+            marketObj.name = _marketCanvasPrefab.name;
             _marketCanvas = marketObj.GetComponent<MarketCanvas>();
         }
 
         if (_employmentCanvasPrefab != null)
         {
             GameObject employmentObj = Object.Instantiate(_employmentCanvasPrefab);
+            employmentObj.name = _employmentCanvasPrefab.name;
             _employmentCanvas = employmentObj.GetComponent<EmployeeCanvas>();
         }
 
         if (_newsCanvasPrefab != null)
         {
             GameObject newsObj = Object.Instantiate(_newsCanvasPrefab);
+            newsObj.name = _newsCanvasPrefab.name;
             _newsCanvas = newsObj.GetComponent<NewsCanvas>();
         }
 
         if (_researchCanvasPrefab != null)
         {
             GameObject researchObj = Object.Instantiate(_researchCanvasPrefab);
+            researchObj.name = _researchCanvasPrefab.name;
             _researchCanvas = researchObj.GetComponent<ResearchCanvas>();
         }
 
         if (_financeCanvasPrefab != null)
         {
             GameObject financeObj = Object.Instantiate(_financeCanvasPrefab);
+            financeObj.name = _financeCanvasPrefab.name;
             _financeCanvas = financeObj.GetComponent<FinanceCanvas>();
         }
     }
