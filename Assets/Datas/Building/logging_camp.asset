@@ -9,26 +9,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a740e7a900a9b074da18f72983caaf80, type: 3}
-  m_Name: sawmill
+  m_Script: {fileID: 11500000, guid: 1af18d5a9edb4f35b7fe389f0d0e25fb, type: 3}
+  m_Name: logging_camp
   m_EditorClassIdentifier: 
-  id: sawmill
-  displayName: Sawmill
+  id: logging_camp
+  displayName: Logging Camp
   buildingType: 1
   icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  description: Processes raw logs from logging camps into lumber and fabric. Saws
-    logs into usable lumber and produces fabric from wood pulp. Most efficient when
-    placed near logging camps.
+  description: Harvests raw timber from nearby forests. Produces logs without consuming
+    any auxiliary materials. First step in the wood production chain.
   isUnlockedByDefault: 1
   isProfessional: 0
-  requiredEmployees: 4
-  buildCost: 180
-  maintenanceCost: 10
+  requiredEmployees: 5
+  buildCost: 140
+  maintenanceCost: 7
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 0}
-  allowedResourceTypes: 05000000
+  allowedResourceTypes: 00000000
   _producibleResources:
-  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
-  inputPosition: {x: -1, y: 1}
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+  inputPosition: {x: 0, y: 0}
   outputPosition: {x: 2, y: 1}
+  _producibleRawResources:
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}

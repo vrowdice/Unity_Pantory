@@ -7,14 +7,12 @@ using TMPro;
 /// </summary>
 public class ResearchCanvas : MainCanvasPanelBase
 {
-    private List<ResearchTierPanel> _researchTierPanels = new List<ResearchTierPanel>();
-
     [SerializeField] private TextMeshProUGUI _researchText;
     [SerializeField] private TextMeshProUGUI _deltaResearchText;
     [SerializeField] private TextMeshProUGUI _researcherText;
 
-    [SerializeField] private GameObject _researchTierPanelPrefab;
-    [SerializeField] private Transform _researchTirePanelContentTransform;
+    [SerializeField] private GameObject _researchBtnContainerPrefab;
+    [SerializeField] private Transform _researchBtnContainerContentTransform;
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -50,17 +48,8 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     public void UpdateResearchScrollView()
     {
-        GameObjectUtils.ClearChildren(_researchTirePanelContentTransform);
+        GameObjectUtils.ClearChildren(_researchBtnContainerContentTransform);
 
-        int maxTier = 0;
-        maxTier = _dataManager.InitialResearchData.maxTier;
-
-        for (int i = 1; i <= maxTier; i++)
-        {
-            List<ResearchEntry> entrys = _dataManager.Research.GetResearchEntriesByTier(i);
-            GameObject researchPanelObj = Instantiate(_researchTierPanelPrefab, _researchTirePanelContentTransform);
-            ResearchTierPanel _researchPanel = researchPanelObj.GetComponent<ResearchTierPanel>();
-            _researchPanel.Init(i, entrys, _uiManager);
-        }
+        GameObject researchBtnContainer = Instantiate(_researchBtnContainerPrefab, _researchBtnContainerContentTransform);
     }
 }

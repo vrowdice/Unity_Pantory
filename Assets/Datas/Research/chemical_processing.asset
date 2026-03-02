@@ -9,19 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
-  m_Name: 2_chemical_processing
+  m_Script: {fileID: 11500000, guid: 75286c78e7a72ce4e98d0e5a4cf5bfdb, type: 3}
+  m_Name: chemical_processing
   m_EditorClassIdentifier: 
-  id: 2_chemical_processing
-  tier: 2
+  id: chemical_processing
   displayName: Chemical Processing
+  icon: {fileID: 21300000, guid: 9fe7b4b202fb8c3409751ee59db406b6, type: 3}
   description: Unlocks the construction of chemical plants. Enables processing of
     crude oil into synthetic fabrics and chemical products. Serves as an alternative
     and complement to lumber mills, reducing wood dependency through petroleum-based
     fabric production.
-  icon: {fileID: 21300000, guid: 9fe7b4b202fb8c3409751ee59db406b6, type: 3}
+  isDefaultUnlocked: 0
   researchPointCost: 2400
-  prerequisiteResearchs: []
-  appleyEffects: []
-  unlockableBuildings:
-  - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
+  unlockResearchList: []
+  effects: []

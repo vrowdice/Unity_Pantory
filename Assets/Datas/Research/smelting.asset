@@ -9,19 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
-  m_Name: 2_smelting
+  m_Script: {fileID: 11500000, guid: 75286c78e7a72ce4e98d0e5a4cf5bfdb, type: 3}
+  m_Name: smelting
   m_EditorClassIdentifier: 
-  id: 2_smelting
-  tier: 2
+  id: smelting
   displayName: Metal Smelting
+  icon: {fileID: 21300000, guid: 0596e0751e148c94fbadafff858c700d, type: 3}
   description: Unlocks the construction of smelters. Enables processing of raw ores
     mined from mines into refined metal ingots. Produces iron ingots, copper ingots,
     aluminum ingots, and more, providing essential intermediate materials for the
     metal industry.
-  icon: {fileID: 21300000, guid: 0596e0751e148c94fbadafff858c700d, type: 3}
+  isDefaultUnlocked: 0
   researchPointCost: 1200
-  prerequisiteResearchs: []
-  appleyEffects: []
-  unlockableBuildings:
-  - {fileID: 11400000, guid: 4daf92d31ee54b04ebef537da8819cf3, type: 2}
+  unlockResearchList: []
+  effects: []

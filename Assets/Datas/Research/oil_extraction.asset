@@ -9,19 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0528dbe3e9d27e44aaac2fa2d85eeb6, type: 3}
-  m_Name: 2_oil_extraction
+  m_Script: {fileID: 11500000, guid: 75286c78e7a72ce4e98d0e5a4cf5bfdb, type: 3}
+  m_Name: oil_extraction
   m_EditorClassIdentifier: 
-  id: 2_oil_extraction
-  tier: 2
+  id: oil_extraction
   displayName: Oil Extraction
+  icon: {fileID: 21300000, guid: da9e73387f0ab3644bf0dbe9ebd100ce, type: 3}
   description: Unlocks the construction of oil pumps. Enables extraction of crude
     oil from underground reserves. Marks the beginning of strategic resource self-sufficiency.
     Requires very high maintenance costs, but forms the foundation of chemical industry
     and fuel production.
-  icon: {fileID: 21300000, guid: da9e73387f0ab3644bf0dbe9ebd100ce, type: 3}
+  isDefaultUnlocked: 0
   researchPointCost: 2000
-  prerequisiteResearchs: []
-  appleyEffects: []
-  unlockableBuildings:
-  - {fileID: 11400000, guid: b4dfdbf7432d37e49bb02d3c83c2f303, type: 2}
+  unlockResearchList: []
+  effects: []

@@ -43,7 +43,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270007
-    m_Localized: 製材所
+    m_Localized: 伐採場
     m_Metadata:
       m_Items: []
   - m_Id: 864226270008
@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270012
-    m_Localized: 製材所（森林）
+    m_Localized: 製材所
     m_Metadata:
       m_Items: []
   - m_Id: 864226270013

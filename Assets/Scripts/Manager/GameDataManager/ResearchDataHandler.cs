@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 /// <summary>
 /// 연구 데이터를 관리하고 연구력(RP) 생산, 연구 해금, 효과 적용을 담당하는 핸들러
@@ -10,7 +9,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
     private readonly DataManager _dataManager;
-    private Dictionary<string, ResearchEntry> _researchEntries = new();
+    private Dictionary<string, ResearchEntry> _researchEntryList = new();
     private long _researchPoint;
     private bool _isAutoPatentMode = false;
 
@@ -18,7 +17,6 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public bool IsAutoPatentMode => _isAutoPatentMode;
 
     public event Action OnResearchPointsChanged;
-    public event Action<string> OnResearchUnlocked;
 
     /// <summary>
     /// 모든 이벤트 구독을 초기화합니다.
@@ -26,7 +24,6 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void ClearAllSubscriptions()
     {
         OnResearchPointsChanged = null;
-        OnResearchUnlocked = null;
     }
 
     public ResearchDataHandler(DataManager dataManager, List<ResearchData> researchDataList = null)
@@ -40,7 +37,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
                 if (data == null || string.IsNullOrEmpty(data.id))
                     continue;
 
-                if (_researchEntries.ContainsKey(data.id))
+                if (_researchEntryList.ContainsKey(data.id))
                 {
                     Debug.LogWarning($"[ResearchDataHandler] Duplicate research ID: {data.id}");
                     continue;
@@ -49,9 +46,13 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
                 ResearchEntry entry = new ResearchEntry
                 {
                     data = data,
-                    state = new ResearchState { isCompleted = false }
+                    state = new ResearchState
+                    {
+                        isUnlocked = data.isDefaultUnlocked,
+                        isCompleted = false 
+                    }
                 };
-                _researchEntries.Add(data.id, entry);
+                _researchEntryList.Add(data.id, entry);
             }
         }
 
@@ -95,60 +96,21 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public bool TryUnlockResearch(string researchId)
     {
-        if (!_researchEntries.TryGetValue(researchId, out ResearchEntry entry))
-        {
-            Debug.LogWarning($"[ResearchDataHandler] Invalid ID: {researchId}");
-            return false;
-        }
-
-        if (entry.state.isCompleted)
-        {
-            Debug.Log($"[ResearchDataHandler] Already completed: {entry.data.displayName}");
-            return false;
-        }
-
-        if (!CheckPrerequisites(entry.data))
-        {
-            Debug.Log($"[ResearchDataHandler] Prerequisites not met for: {entry.data.displayName}");
-            return false;
-        }
-
-        if (ResearchPoint < entry.data.researchPointCost)
-        {
-            Debug.Log($"[ResearchDataHandler] Not enough RP. Need: {entry.data.researchPointCost}, Have: {ResearchPoint}");
-            return false;
-        }
+        if (!_researchEntryList.TryGetValue(researchId, out ResearchEntry entry)) return false;
+        if (entry.state.isCompleted) return false;
+        if (ResearchPoint < entry.data.researchPointCost) return false;
 
         _researchPoint -= entry.data.researchPointCost;
-        OnResearchPointsChanged?.Invoke();
         entry.state.isCompleted = true;
         ApplyResearchEffects(entry.data);
-        OnResearchUnlocked?.Invoke(researchId);
-
-        return true;
-    }
-
-    /// <summary>
-    /// 선행 연구들이 모두 완료되었는지 확인합니다.
-    /// </summary>
-    public bool CheckPrerequisites(ResearchData data)
-    {
-        if (data.prerequisiteResearchs == null || data.prerequisiteResearchs.Count == 0)
-            return true;
-
-        foreach (ResearchData item in data.prerequisiteResearchs)
+        foreach(ResearchData researchData in entry.data.unlockResearchList)
         {
-            foreach(KeyValuePair<string, ResearchEntry> entry in _researchEntries)
-            {
-                if(item == entry.Value.data)
-                {
-                    if(!entry.Value.state.isCompleted)
-                    {
-                        return false; 
-                    }
-                }
-            }
+            _researchEntryList[researchData.id].state.isCompleted = false;
+            _researchEntryList[researchData.id].state.isUnlocked = true;
         }
+
+        OnResearchPointsChanged?.Invoke();
+
         return true;
     }
 
@@ -177,7 +139,6 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
         if (amount <= 0) return;
         
         _researchPoint += amount;
-        OnResearchPointsChanged?.Invoke();
     }
 
     /// <summary>
@@ -185,7 +146,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public ResearchEntry GetResearchEntry(string id)
     {
-        if (_researchEntries.TryGetValue(id, out ResearchEntry entry))
+        if (_researchEntryList.TryGetValue(id, out ResearchEntry entry))
         {
             return entry;
         }
@@ -197,7 +158,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public List<ResearchEntry> GetAllResearchEntries()
     {
-        return new List<ResearchEntry>(_researchEntries.Values);
+        return new List<ResearchEntry>(_researchEntryList.Values);
     }
 
     /// <summary>
@@ -205,29 +166,11 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public bool IsResearchCompleted(string researchId)
     {
-        if (_researchEntries.TryGetValue(researchId, out ResearchEntry entry))
+        if (_researchEntryList.TryGetValue(researchId, out ResearchEntry entry))
         {
             return entry.state.isCompleted;
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// 특정 티어의 연구 목록을 반환합니다.
-    /// </summary>
-    public List<ResearchEntry> GetResearchEntriesByTier(int tier)
-    {
-        List<ResearchEntry> researchs = new List<ResearchEntry>();
-
-        foreach(KeyValuePair<string ,ResearchEntry> item in _researchEntries)
-        {
-            if(item.Value.data.tier == tier)
-            {
-                researchs.Add(item.Value);
-            }
-        }
-
-        return researchs;
     }
 }

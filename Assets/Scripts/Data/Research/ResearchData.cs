@@ -6,15 +6,11 @@ public class ResearchData : ScriptableObject
 {
     [Header("Basic Info")]
     public string id;
-    public int tier;
     public string displayName;
-    [TextArea] public string description;
     public Sprite icon;
-
-    [Header("Costs & Requirements")]
+    [TextArea] public string description;
+    public bool isDefaultUnlocked;
     public long researchPointCost;
-    public List<ResearchData> prerequisiteResearchs;
-
-    [Header("Rewards")]
+    public List<ResearchData> unlockResearchList;
     public List<EffectData> effects;
 }

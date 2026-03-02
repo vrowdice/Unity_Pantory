@@ -43,7 +43,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270107
-    m_Localized: A wood processing facility that transforms raw logs into fine wood and fabric. Processes wood logs into usable lumber and can also produce fabric from wood pulp. Most efficient when placed near sawmills.
+    m_Localized: A sawmill that processes raw logs from logging camps into lumber and fabric. Saws logs into usable lumber and produces fabric from wood pulp. Most efficient when placed near logging camps.
     m_Metadata:
       m_Items: []
   - m_Id: 864226270108
@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270112
-    m_Localized: Harvests raw timber directly from nearby forests. Produces fresh logs without consuming any auxiliary materials.
+    m_Localized: A logging camp that harvests raw timber from nearby forests. Produces logs without consuming any auxiliary materials. First step in the wood production chain.
     m_Metadata:
       m_Items: []
   - m_Id: 864226270113

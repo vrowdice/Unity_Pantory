@@ -17,42 +17,27 @@ public class ResearchInfoPopup : PopupBase
 
     private GameManager _gameManager;
 
-    private bool _isSubscribed = false;
-
     public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager)
     {
         base.Init();
         
+        _gameManager = GameManager.Instance;
+        _dataManager = DataManager.Instance;
         _currentResearchEntry = researchEntry;
         _mainUiManager = mainUiManager;
-        _dataManager = DataManager.Instance;
 
-        _gameManager = mainUiManager.GameManager;
+        _dataManager.Time.OnDayChanged -= OnDayChanged;
+        _dataManager.Time.OnDayChanged += OnDayChanged;
 
-        SubscribeToDayChanged();
         RefreshAllUI();
 
         Show();
     }
 
-    private void OnEnable() => SubscribeToDayChanged();
-    private void OnDisable() => UnsubscribeFromDayChanged();
-    private void OnDestroy() => UnsubscribeFromDayChanged();
-
-    private void SubscribeToDayChanged()
+    private void OnDisable()
     {
-        if (_isSubscribed || _dataManager?.Time == null) return;
-
-        _dataManager.Time.OnDayChanged += OnDayChanged;
-        _isSubscribed = true;
-    }
-
-    private void UnsubscribeFromDayChanged()
-    {
-        if (!_isSubscribed || _dataManager?.Time == null) return;
-
+        if (_dataManager?.Time == null) return;
         _dataManager.Time.OnDayChanged -= OnDayChanged;
-        _isSubscribed = false;
     }
 
     private void OnDayChanged()
@@ -64,7 +49,6 @@ public class ResearchInfoPopup : PopupBase
     {
         string researchId = _currentResearchEntry.data.id;
         _nameText.text = researchId.Localize(LocalizationUtils.TABLE_RESEARCH);
-        _tireText.text = $"Tier {_currentResearchEntry.data.tier}";
         _descriptionText.text = researchId.Localize(LocalizationUtils.TABLE_RESEARCH_DESCRIPTION);
         _iconImage.sprite = _currentResearchEntry.data.icon;
         _costPanelText.text = _currentResearchEntry.data.researchPointCost.ToString();

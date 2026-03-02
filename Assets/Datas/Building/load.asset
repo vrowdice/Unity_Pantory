@@ -21,9 +21,10 @@ MonoBehaviour:
     onto the production line. Workers efficiently transfer materials to begin the
     manufacturing process.
   isUnlockedByDefault: 1
+  isProfessional: 0
   requiredEmployees: 2
   buildCost: 100
   maintenanceCost: 10
   size: {x: 1, y: 1}
-  requiredResearch: {fileID: 0}
+  requiredResearch: {fileID: 11400000, guid: f60d293f759af1e46a247c69045fc81f, type: 2}
   inputPosition: {x: -1, y: 0}
