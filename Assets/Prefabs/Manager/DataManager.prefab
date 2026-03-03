@@ -60,11 +60,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 22f6b00305a71104b841be99e0ddcc99, type: 2}
   - {fileID: 11400000, guid: b64972c612c45a944be1d20721ab921a, type: 2}
   - {fileID: 11400000, guid: 4c05c2345c26a244aa72bbe662f6ae4c, type: 2}
-  - {fileID: 11400000, guid: 05c772ea65a8faa4faa455f8a1ccff77, type: 2}
+  - {fileID: 11400000, guid: a4f14a0d12b341f0beef87be9f3b1e83, type: 2}
   - {fileID: 11400000, guid: 5a62b980cb0940b8ba485e5ad9fa2f8b, type: 2}
   - {fileID: 11400000, guid: b4dfdbf7432d37e49bb02d3c83c2f303, type: 2}
   - {fileID: 11400000, guid: 0319718c19d19d34db801b073c1619ab, type: 2}
-  - {fileID: 11400000, guid: a4f14a0d12b341f0beef87be9f3b1e83, type: 2}
+  - {fileID: 11400000, guid: 05c772ea65a8faa4faa455f8a1ccff77, type: 2}
   - {fileID: 11400000, guid: 4daf92d31ee54b04ebef537da8819cf3, type: 2}
   - {fileID: 11400000, guid: 584b579b4230d7448ba4be9746501ec9, type: 2}
   - {fileID: 11400000, guid: a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2, type: 2}
@@ -106,14 +106,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 95e9fdae86915c844b2dbf8c38173c7d, type: 2}
   - {fileID: 11400000, guid: 8e85b0d77f93554459c197716f0cd012, type: 2}
   _researchDataList:
-  - {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
-  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
   - {fileID: 11400000, guid: 83b8f7012fcac67439b4d0d15ceb7691, type: 2}
+  - {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
+  - {fileID: 11400000, guid: 11d63bc3f292d9a4b8c4b8b56a89d9c1, type: 2}
+  - {fileID: 11400000, guid: f60d293f759af1e46a247c69045fc81f, type: 2}
   - {fileID: 11400000, guid: 4235d531f57ebdf40922de9b738db379, type: 2}
+  - {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
   - {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
   - {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}
-  - {fileID: 11400000, guid: 11d63bc3f292d9a4b8c4b8b56a89d9c1, type: 2}
-  - {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
   - {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   _marketActorDataList:
   - {fileID: 11400000, guid: 5c8f2d1a0b3e49d5a7c8e1f2345678ab, type: 2}

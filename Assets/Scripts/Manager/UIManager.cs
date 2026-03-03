@@ -257,7 +257,7 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
-    public ResearchInfoPopup ShowResearchInfoPopup(ResearchEntry researchEntry, MainCanvas mainCanvas)
+    public ResearchInfoPopup ShowResearchInfoPopup(ResearchEntry researchEntry)
     {
         ResearchInfoPopup popup = null;
         if (_managerCanvasTransform != null)
@@ -272,7 +272,7 @@ public class UIManager : Singleton<UIManager>
         }
 
         popup.gameObject.SetActive(true);
-        popup.Init(researchEntry, mainCanvas);
+        popup.Init(researchEntry);
         return popup;
     }
 

@@ -21,5 +21,7 @@ MonoBehaviour:
     metal industry.
   isDefaultUnlocked: 0
   researchPointCost: 1200
-  unlockResearchList: []
+  unlockResearchList:
+  - {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
+  - {fileID: 11400000, guid: 4235d531f57ebdf40922de9b738db379, type: 2}
   effects: []

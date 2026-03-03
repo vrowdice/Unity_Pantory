@@ -51,6 +51,10 @@ MonoBehaviour:
     m_Key: vehicle_assembly
     m_Metadata:
       m_Items: []
+  - m_Id: 10606215174701056
+    m_Key: factory_basics
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

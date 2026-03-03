@@ -144,21 +144,6 @@ public partial class MainCanvas : CanvasBase
         UIManager.Instance.ShowThreadInfoPopup(threadState, this);
     }
 
-    public void ShowResearchInfoPanel(ResearchEntry researchEntry)
-    {
-        UIManager.Instance.ShowResearchInfoPopup(researchEntry, this);
-    }
-
-    public void ShowMarketActorInfoPopup(MarketActorEntry marketActorEntry)
-    {
-        UIManager.Instance.ShowMarketActorInfoPopup(marketActorEntry, this);
-    }
-
-    public void ShowCreditInfoPopup()
-    {
-        UIManager.Instance.ShowCreditTopInfoPopup();
-    }
-
     public void ShowOptionPanel()
     {
         UIManager.Instance.ShowOptionPopup();

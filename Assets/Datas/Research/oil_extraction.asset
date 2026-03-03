@@ -21,5 +21,6 @@ MonoBehaviour:
     and fuel production.
   isDefaultUnlocked: 0
   researchPointCost: 2000
-  unlockResearchList: []
+  unlockResearchList:
+  - {fileID: 11400000, guid: 83b8f7012fcac67439b4d0d15ceb7691, type: 2}
   effects: []

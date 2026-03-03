@@ -21,5 +21,6 @@ MonoBehaviour:
     materials for advanced buildings and vehicle production.
   isDefaultUnlocked: 0
   researchPointCost: 1400
-  unlockResearchList: []
+  unlockResearchList:
+  - {fileID: 11400000, guid: 11d63bc3f292d9a4b8c4b8b56a89d9c1, type: 2}
   effects: []

@@ -418,6 +418,9 @@ public class SaveFileSaveLoadHandler
                     }
                 }
             }
+
+            // 세이브된 완료 상태를 기준으로 언락 상태 재계산
+            dataManager.Research.RefreshUnlockedResearchStates();
         }
 
         if (dataManager.Order != null && saveData.activeOrders != null)

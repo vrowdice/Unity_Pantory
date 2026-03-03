@@ -21,5 +21,7 @@ MonoBehaviour:
     margins.
   isDefaultUnlocked: 0
   researchPointCost: 3600
-  unlockResearchList: []
+  unlockResearchList:
+  - {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
+  - {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   effects: []

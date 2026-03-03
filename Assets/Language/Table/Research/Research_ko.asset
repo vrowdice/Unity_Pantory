@@ -19,39 +19,43 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226266001
-    m_Localized: 부품 제조
+    m_Localized: "\uBD80\uD488 \uC81C\uC870"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
-    m_Localized: 채굴
+    m_Localized: "\uCC44\uAD74"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266003
-    m_Localized: 화학 공정
+    m_Localized: "\uD654\uD559 \uACF5\uC815"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266004
-    m_Localized: 중공업
+    m_Localized: "\uC911\uACF5\uC5C5"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266005
-    m_Localized: 석유 채굴
+    m_Localized: "\uC11D\uC720 \uCC44\uAD74"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266006
-    m_Localized: 금속 제련
+    m_Localized: "\uAE08\uC18D \uC81C\uB828"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266007
-    m_Localized: 엔진 제조
+    m_Localized: "\uC5D4\uC9C4 \uC81C\uC870"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266008
-    m_Localized: 군사 생산
+    m_Localized: "\uAD70\uC0AC \uC0DD\uC0B0"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266009
-    m_Localized: 차량 조립
+    m_Localized: "\uCC28\uB7C9 \uC870\uB9BD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10606215174701056
+    m_Localized: "\uACF5\uC7A5 \uAE30\uBCF8"
     m_Metadata:
       m_Items: []
   references:

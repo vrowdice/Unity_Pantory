@@ -49,7 +49,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
                     state = new ResearchState
                     {
                         isUnlocked = data.isDefaultUnlocked,
-                        isCompleted = false 
+                        isCompleted = data.isDefaultUnlocked
                     }
                 };
                 _researchEntryList.Add(data.id, entry);
@@ -59,6 +59,37 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
         if (_dataManager.InitialResearchData != null)
         {
             _researchPoint = _dataManager.InitialResearchData.initialResearchPoint;
+        }
+
+        RefreshUnlockedResearchStates();
+    }
+
+    /// <summary>
+    /// 현재 완료/기본 해금 상태를 기준으로 모든 연구의 isUnlocked를 재계산합니다.
+    /// </summary>
+    public void RefreshUnlockedResearchStates()
+    {
+        foreach (ResearchEntry entry in _researchEntryList.Values)
+        {
+            bool unlockedByDefault = entry.data != null && entry.data.isDefaultUnlocked;
+            entry.state.isUnlocked = unlockedByDefault || entry.state.isCompleted;
+        }
+        
+        foreach (ResearchEntry entry in _researchEntryList.Values)
+        {
+            if (!entry.state.isCompleted || entry.data == null || entry.data.unlockResearchList == null)
+                continue;
+
+            foreach (ResearchData next in entry.data.unlockResearchList)
+            {
+                if (next == null || string.IsNullOrEmpty(next.id))
+                    continue;
+
+                if (_researchEntryList.TryGetValue(next.id, out ResearchEntry target))
+                {
+                    target.state.isUnlocked = true;
+                }
+            }
         }
     }
 

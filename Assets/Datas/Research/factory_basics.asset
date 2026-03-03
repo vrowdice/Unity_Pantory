@@ -19,5 +19,7 @@ MonoBehaviour:
   isDefaultUnlocked: 1
   researchPointCost: 0
   unlockResearchList:
-  - {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
+  - {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}
+  - {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
   effects: []

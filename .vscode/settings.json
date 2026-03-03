@@ -53,7 +53,7 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Project_Linked.slnx",
+    "dotnet.defaultSolution": "Unity_Pantory.slnx",
     "dotnet.preferCSharpExtension": true,
     "csharp.suppressBuildAssetsNotification": false,
     "files.encoding": "utf8",

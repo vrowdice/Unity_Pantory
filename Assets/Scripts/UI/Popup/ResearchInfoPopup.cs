@@ -17,14 +17,13 @@ public class ResearchInfoPopup : PopupBase
 
     private GameManager _gameManager;
 
-    public void Init(ResearchEntry researchEntry, MainCanvas mainUiManager)
+    public void Init(ResearchEntry researchEntry)
     {
         base.Init();
         
         _gameManager = GameManager.Instance;
         _dataManager = DataManager.Instance;
         _currentResearchEntry = researchEntry;
-        _mainUiManager = mainUiManager;
 
         _dataManager.Time.OnDayChanged -= OnDayChanged;
         _dataManager.Time.OnDayChanged += OnDayChanged;

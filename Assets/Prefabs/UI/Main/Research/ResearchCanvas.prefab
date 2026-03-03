@@ -2800,8 +2800,11 @@ MonoBehaviour:
   _researchText: {fileID: 6355119681926578265}
   _deltaResearchText: {fileID: 3737041908643514663}
   _researcherText: {fileID: 5641382076037877143}
-  _researchBtnContainerPrefab: {fileID: 0}
-  _researchBtnContainerContentTransform: {fileID: 0}
+  _researchBtnPrefab: {fileID: 6409170462972983953, guid: ccbe09774fb912d438612987cec914a2, type: 3}
+  _researchBtnContainerPrefab: {fileID: 386840064659724661, guid: 0422e456292ea034eba9ff8bf33eb6dd, type: 3}
+  _researchBtnContainerContentTransform: {fileID: 1010129423689547118}
+  _linePrefab: {fileID: 5815302338130445571, guid: 1b2c03a932f7a8140afa24e9db65810d, type: 3}
+  _lineParent: {fileID: 0}
 --- !u!1 &8874844543092743646
 GameObject:
   m_ObjectHideFlags: 0
