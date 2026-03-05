@@ -1,6 +1,12 @@
 import os
 import numpy as np
 from PIL import Image
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../../../"))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 try:
     from scipy.ndimage import label
@@ -9,17 +15,9 @@ except ImportError:
     SCIPY_AVAILABLE = False
     print("Warning: scipy module not found.")
 
-# ============================================
-# 설정
-# ============================================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# 처리를 원하는 폴더 경로 (여기에 덮어씌워집니다)
 TARGET_DIR = os.path.join(BASE_DIR, "../../Images/Resource/Raw")
-
 THRESH_LOWER = 200
 THRESH_UPPER = 250
-
-# ============================================
 
 def get_connected_background_mask(binary_mask):
     if not SCIPY_AVAILABLE:

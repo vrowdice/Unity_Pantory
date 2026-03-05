@@ -7,29 +7,17 @@ from google.genai import types
 from PIL import Image
 from io import BytesIO
 
-# .env 파일에서 환경 변수 로드
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
-PY_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PY_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(PY_DIR, ".env"))
 
-# 프로젝트 루트의 .env 파일 먼저 시도
-env_path = os.path.join(PROJECT_ROOT, ".env")
-load_dotenv(env_path)
-
-# Py 폴더의 Api.env 파일도 시도 (fallback)
-api_env_path = os.path.join(PY_SCRIPT_DIR, "Api.env")
-if not os.getenv("GOOGLE_AI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
-    load_dotenv(api_env_path)
-
-# Google AI API 키 설정 (.env 파일 또는 환경 변수에서 가져오기)
 GOOGLE_AI_API_KEY = os.getenv("GOOGLE_AI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 IMAGEN_MODEL = os.getenv("IMAGEN_MODEL", "imagen-4.0-fast-generate-001")
 
-# Imagen 클라이언트 초기화
 imagen_client = None
 if not GOOGLE_AI_API_KEY:
-    print("⚠️  경고: GOOGLE_AI_API_KEY가 설정되지 않았습니다.")
-    print(f"   프로젝트 루트에 .env 파일을 생성하고 GOOGLE_AI_API_KEY=your_key를 추가하세요.")
-    print(f"   또는 환경 변수로 설정하세요.\n")
+    print("경고: GOOGLE_AI_API_KEY가 없습니다. 프로젝트 루트 또는 Py 폴더에 .env 파일에 추가하세요.")
 elif GOOGLE_AI_API_KEY:
     try:
         os.environ["GOOGLE_API_KEY"] = GOOGLE_AI_API_KEY
@@ -38,7 +26,6 @@ elif GOOGLE_AI_API_KEY:
         print(f"Imagen 클라이언트 초기화 실패: {e}")
         imagen_client = None
 
-# 프로젝트 루트 디렉토리 (이미 위에서 정의됨)
 DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/Building")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/Building")
 
@@ -49,7 +36,6 @@ def parse_asset_file(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             
-        # id, displayName, description, buildingType 추출
         id_match = re.search(r'^  id:\s*([a-zA-Z_][a-zA-Z0-9_]*)', content, re.MULTILINE)
         name_match = re.search(r'^  displayName:\s*(.+)', content, re.MULTILINE)
         # description은 여러 줄일 수 있으므로 특별 처리
@@ -61,7 +47,6 @@ def parse_asset_file(file_path):
         if name_match:
             data['displayName'] = name_match.group(1).strip()
         if description_match:
-            # 여러 줄 description을 한 줄로 정리
             desc_text = description_match.group(1).strip()
             desc_text = re.sub(r'\s+', ' ', desc_text)  # 여러 공백을 하나로
             data['description'] = desc_text
@@ -90,8 +75,7 @@ def generate_image_prompt(item_data):
     building_type = item_data.get('buildingType', 1)
     building_type_name = get_building_type_name(building_type)
     
-    # BuildingType별 특징 설정
-    if building_type == 0:  # Storage
+    if building_type == 0:
         type_features = "warehouse features: large loading doors, few windows, simple rectangular structure, storage facility appearance"
         type_style = "storage facility, warehouse"
     elif building_type == 1:  # Production
@@ -107,7 +91,6 @@ def generate_image_prompt(item_data):
         type_features = "industrial building features"
         type_style = "industrial building"
     
-    # description과 name을 적극 활용
     building_context = f"{name}"
     if description:
         building_context += f" - {description}"
@@ -158,10 +141,8 @@ def process_generated_image(img, item_name):
 def generate_image_with_imagen(prompt, output_path, item_name, description="", building_type=1):
     """Google Imagen 4.0 API를 사용해서 이미지 생성"""
     try:
-        # description이 있으면 간단한 프롬프트에도 포함
         desc_part = f", {description}" if description else ""
         
-        # BuildingType별 특징 키워드 추가
         building_type_features = {
             0: "warehouse with large loading doors few windows simple structure storage facility",
             1: "factory with multiple windows chimneys vents manufacturing equipment production facility",
@@ -170,7 +151,6 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", b
         }
         type_features = building_type_features.get(building_type, "industrial building")
         
-        # name과 description을 더 적극적으로 활용
         building_name = item_name
         if description:
             building_context = f"{building_name} - {description}"
@@ -179,7 +159,6 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", b
         
         simple_prompt = f"completely flat 2D image mandatory, casual pixel art square building front facade for {building_context}, {type_features}, include distinctive features matching building type, square building viewed from front straight on, building width and height equal square proportions, draw only building no ground no base no foundation no floor building floats on white background, flat 2D sprite style like game icon, 512x512 pixels size not text, pure white background, building fills 70-80 percent centered, sharp pixels no anti-aliasing, early 20th century industrial architecture, no text no letters no numbers, no side view no angled view no isometric view, no 3D perspective no depth no shadows no shading"
         
-        # Imagen으로 실제 이미지 생성
         if imagen_client:
             try:
                 response = imagen_client.models.generate_images(
@@ -190,25 +169,18 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", b
                     )
                 )
                 
-                # 생성된 이미지 저장
                 if response.generated_images:
                     generated_image = response.generated_images[0]
                     
-                    # PIL Image로 변환 (여러 방법 시도)
                     img = None
                     try:
-                        # 방법 1: 직접 PIL Image인 경우
                         if hasattr(generated_image.image, 'resize'):
                             img = generated_image.image
-                        # 방법 2: _pil_image 속성이 있는 경우
                         elif hasattr(generated_image.image, '_pil_image'):
                             img = generated_image.image._pil_image
-                        # 방법 3: bytes 데이터인 경우
                         elif isinstance(generated_image.image, bytes):
                             img = Image.open(BytesIO(generated_image.image))
-                        # 방법 4: 다른 속성들 확인
                         else:
-                            # 일반적인 속성명 시도
                             for attr_name in ['pil_image', 'data', 'bytes', 'content']:
                                 if hasattr(generated_image.image, attr_name):
                                     img_data = getattr(generated_image.image, attr_name)
@@ -220,7 +192,6 @@ def generate_image_with_imagen(prompt, output_path, item_name, description="", b
                         return False
                     
                     if img and hasattr(img, 'resize'):
-                        # 이미지 후처리
                         img_final = process_generated_image(img, item_name)
                         img_final.save(output_path, 'PNG')
                         print(f"  생성 완료: {item_name}")
@@ -283,15 +254,13 @@ def process_buildings():
         building_type = item_data.get('buildingType', 1)
         success = generate_image_with_imagen(prompt, output_image_path, item_name, description, building_type)
         
-        # API가 작동하지 않으면 아무것도 생성하지 않음
         if not success:
             print(f"  생성 실패: {item_name} (API 미사용)")
-            # 할당량 초과 시 더 이상 시도하지 않음
             if "429" in str(success) or "quota" in str(success).lower():
-                print(f"\n⚠️  API 할당량 초과로 인해 처리를 중단합니다.")
+                print("API 할당량 초과로 중단합니다.")
                 break
         
-        time.sleep(2.0)  # 할당량 절약을 위해 대기 시간 증가
+        time.sleep(2.0)
 
 def main():
     """메인 실행 함수"""

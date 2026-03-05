@@ -1,8 +1,11 @@
 import os
 import re
+from dotenv import load_dotenv
 
-# 프로젝트 루트 디렉토리
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+PY_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(PY_DIR, ".env"))
 DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/MarketActor")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/MarketActor")
 
@@ -129,7 +132,7 @@ def process_market_actors():
         
         # asset 파일 업데이트 (덮어쓰기)
         if update_asset_icon(asset_file_path, guid, sprite_id):
-            print(f"  ✓ 적용됨: {item_id} ({asset_file})")
+            print(f"  적용됨: {item_id} ({asset_file})")
             updated_count += 1
         else:
             print(f"  - 변경사항 없음: {item_id} ({asset_file})")
