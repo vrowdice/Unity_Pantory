@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: coal
   displayName: Coal
-  baseValue: 12
+  baseValue: 18
   volatilityMultiplier: 0.9
   maxPriceMultiplier: 10
   type: 0

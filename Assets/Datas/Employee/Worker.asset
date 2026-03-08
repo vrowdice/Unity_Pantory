@@ -21,6 +21,6 @@ MonoBehaviour:
     handling physical work and basic crafting.
   baseEfficiency: 1
   baseSatisfaction: 0
-  baseSalary: 10
+  baseSalary: 8
   hiringCost: 100
   firingCost: 10

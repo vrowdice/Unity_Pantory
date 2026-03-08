@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: aluminum_ore
   displayName: Aluminum Ore
-  baseValue: 40
+  baseValue: 56
   volatilityMultiplier: 1.1
   maxPriceMultiplier: 10
   type: 0

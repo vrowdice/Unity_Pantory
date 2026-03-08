@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: machine_parts
   displayName: Machine Parts
-  baseValue: 150
+  baseValue: 180
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5

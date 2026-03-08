@@ -155,6 +155,82 @@ MonoBehaviour:
     m_Key: EmployeeCanvas6
     m_Metadata:
       m_Items: []
+  - m_Id: 2561770013474816
+    m_Key: ResearchCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2562082698838016
+    m_Key: ResearchCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2562316594200576
+    m_Key: ResearchCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2562738453102592
+    m_Key: ResearchCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2563160425250816
+    m_Key: FinenceCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2564533472608256
+    m_Key: FinenceCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2565297930649600
+    m_Key: FinenceCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2566859943985152
+    m_Key: FinenceCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2566981499109376
+    m_Key: FinenceCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2568369331388416
+    m_Key: DesignCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2568866050228224
+    m_Key: DesignCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2569802302767104
+    m_Key: DesignCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2571217918115840
+    m_Key: DesignCanvas3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2571541005352960
+    m_Key: DesignCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2572921984139264
+    m_Key: DesignCanvas5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2572931048030208
+    m_Key: DesignCanvas6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2575685451661312
+    m_Key: DesignCanvas7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2575868566585344
+    m_Key: DesignCanvas8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2577984999800832
+    m_Key: New Entry
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

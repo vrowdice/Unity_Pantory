@@ -131,9 +131,19 @@ public class BuildingInfoPopup : PopupBase
         }
     }
 
+    private GameObject GetProductionInfoImagePrefab()
+    {
+        if (_designCanvas != null)
+            return _designCanvas.ProductionInfoImage;
+        return UIManager.Instance != null ? UIManager.Instance.ProductionInfoImagePrefab : null;
+    }
+
     private void UpdateResourceGrid(List<string> resourceIds, Transform container, string label)
     {
         GameObjectUtils.ClearChildren(container);
+        GameObject prefab = GetProductionInfoImagePrefab();
+        if (prefab == null) return;
+
         Dictionary<string, int> counts = GameObjectUtils.AggregateResourceCounts(resourceIds);
 
         foreach (KeyValuePair<string, int> kvp in counts)
@@ -141,7 +151,7 @@ public class BuildingInfoPopup : PopupBase
             ResourceEntry entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             if (entry == null) continue;
 
-            Instantiate(_designCanvas.ProductionInfoImage, container)
+            Instantiate(prefab, container)
                 .GetComponent<ProductionInfoImage>().Init(entry, kvp.Value);
 
             string reqs = (label == "Output") ? BuildRequirementText(entry.data) : "";
@@ -156,10 +166,13 @@ public class BuildingInfoPopup : PopupBase
         string handlingId = _currentState.currentResourceId;
         if (string.IsNullOrEmpty(handlingId)) return;
 
+        GameObject prefab = GetProductionInfoImagePrefab();
+        if (prefab == null) return;
+
         ResourceEntry entry = _dataManager.Resource.GetResourceEntry(handlingId);
         if (entry != null)
         {
-            Instantiate(_designCanvas.ProductionInfoImage, _outputGridTransform)
+            Instantiate(prefab, _outputGridTransform)
                 .GetComponent<ProductionInfoImage>().Init(entry, 1);
         }
     }

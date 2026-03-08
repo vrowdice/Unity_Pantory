@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: tank
   displayName: Battle Tank
-  baseValue: 25000
+  baseValue: 27500
   marketSensitivity: 0.35
   meanReversionStrength: 0.72
   volatilityMultiplier: 1

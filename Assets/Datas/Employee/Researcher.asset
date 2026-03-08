@@ -21,6 +21,6 @@ MonoBehaviour:
     recipes and improves production efficiency through research.
   baseEfficiency: 1
   baseSatisfaction: 0
-  baseSalary: 25
+  baseSalary: 22
   hiringCost: 100
   firingCost: 10

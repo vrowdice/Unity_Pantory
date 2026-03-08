@@ -150,6 +150,12 @@ public class ThreadSaveInfoPopup : PopupBase
             return;
         }
 
+        if (_designCanvas == null)
+        {
+            Close();
+            return;
+        }
+
         _designCanvas.SaveThreadChanges(threadName, _selectedCategoryId);
 
         Close();

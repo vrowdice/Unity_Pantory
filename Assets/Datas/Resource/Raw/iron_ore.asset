@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ore
   displayName: Iron Ore
-  baseValue: 15
+  baseValue: 24
   volatilityMultiplier: 0.8
   maxPriceMultiplier: 10
   type: 0

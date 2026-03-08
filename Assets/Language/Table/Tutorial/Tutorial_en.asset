@@ -44,8 +44,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2320476028928
-    m_Localized: And this container has a time and time adjustment button, a tutorial
-      button and a settings button.
+    m_Localized: This container has the clock, time adjustment, tutorial, and settings
+      buttons.
     m_Metadata:
       m_Items: []
   - m_Id: 2777508364288
@@ -59,13 +59,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7203816095744
-    m_Localized: When you create a thread, it takes the amount of resources designed
-      for that thread and can create resources.
+    m_Localized: When you create a thread, it uses the resources assigned to it and
+      produces new resources.
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
-    m_Localized: Thread installation is possible from the corresponding panel. Simply
-      create a thread, select it, and install it.
+    m_Localized: You can install threads from this panel. Create a thread, select
+      it, then place it.
     m_Metadata:
       m_Items: []
   - m_Id: 7894026567680
@@ -87,8 +87,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: This is the button that toggles between thread build mode and thread
-      remove mode.
+    m_Localized: This button toggles between thread build mode and thread remove
+      mode.
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
@@ -127,13 +127,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19397370855424
-    m_Localized: If an order comes in, it will be displayed here and if you click
-      to accept it, it will be moved to the accepted order.
+    m_Localized: New orders appear here. Click to accept an order and it will move
+      to your accepted orders list.
     m_Metadata:
       m_Items: []
   - m_Id: 19716532224000
-    m_Localized: This is the Market Panel. Here, you can buy and sell resources and
-      check out information about other competing companies.
+    m_Localized: This is the Market panel. Here you can buy and sell resources and
+      view information about competing companies.
     m_Metadata:
       m_Items: []
   - m_Id: 22018345287680
@@ -164,14 +164,14 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 36904429305856
-    m_Localized: This is where your current management skills are demonstrated. Employees
-      require a certain number of managers per employee. Depending on how many managers
-      are lacking, your satisfaction level will be penalized.
+    m_Localized: This shows your current management capacity. A certain number of
+      managers are required per employee. If you are short on managers, employee
+      satisfaction will be penalized.
     m_Metadata:
       m_Items: []
   - m_Id: 37440536854528
-    m_Localized: Employees' satisfaction is affected by various variables, and you
-      can find out where the influence comes from here.
+    m_Localized: Employee satisfaction is affected by many factors. You can see what
+      is affecting it here.
     m_Metadata:
       m_Items: []
   - m_Id: 37828904239104
@@ -181,8 +181,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 38302378246144
-    m_Localized: The easiest way to increase employee satisfaction is to pay them
-      more. And the opposite is also true.
+    m_Localized: The easiest way to raise employee satisfaction is to pay them more.
+      Lower pay will reduce it.
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
@@ -195,6 +195,91 @@ MonoBehaviour:
   - m_Id: 39688935456768
     m_Localized: Here, you can decide whether to hire or fire employees. Hiring or
       firing employees costs credits, and firing employees will decrease their satisfaction.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2561770013474816
+    m_Localized: This is the research panel. You can unlock buildings and boost productivity.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2562082698838016
+    m_Localized: This is where you can see your Research Points (RP) and how many
+      Research Points you gain each day.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2562316594200576
+    m_Localized: This is a panel where you can see the number of researchers and
+      the effects they are receiving.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2562738453102592
+    m_Localized: This is the research tree. Completed research is highlighted, and
+      the next connected research becomes available to unlock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2563160425250816
+    m_Localized: This is the Finance panel, where you can view your company's growth
+      over time.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2564533472608256
+    m_Localized: Shows your current monthly growth rate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2565297930649600
+    m_Localized: Shows your current monthly profit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2566859943985152
+    m_Localized: Shows your current company value in a graph.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2566981499109376
+    m_Localized: Shows your current credits in a graph.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2568369331388416
+    m_Localized: Hello. This is the design screen. Here, you can design your own
+      threads.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2568866050228224
+    m_Localized: This is where you can control the overall thread. There are buttons
+      for resetting, saving, and loading threads.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2569802302767104
+    m_Localized: Each building has a category. Production buildings have a Production
+      category, and distribution buildings have a Distribution category.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2571217918115840
+    m_Localized: After clicking the category button, the buttons for accessing each
+      building are displayed here. Clicking a button allows you to select it and
+      add it directly to your thread design.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2571541005352960
+    m_Localized: Here you can change the installation direction of the selected building
+      and manage the construction mode and removal mode status.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2572921984139264
+    m_Localized: In design, the "road" is crucial. The efficiency of the threads
+      depends on the design of the road.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2572931048030208
+    m_Localized: When you install a building, there are inputs and outputs, and those
+      must be aligned with the road.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2575685451661312
+    m_Localized: Each input must be connected to another building's output or to
+      an unloading station.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2575868566585344
+    m_Localized: Connect the output to the trading office to complete the thread.
     m_Metadata:
       m_Items: []
   references:

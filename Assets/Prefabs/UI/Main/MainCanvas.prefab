@@ -3873,7 +3873,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 31.05
+  m_fontSize: 28.6
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7890,86 +7890,84 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tutorialPanelInfo:
-  - id: MainCanvas1
-    focusGameObject: {fileID: 0}
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1297958502235259899}
+          m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
+          m_MethodName: CloseAllPanels
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas2
-    focusGameObject: {fileID: 0}
+  - focusGameObject: {fileID: 9126928803568556017}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas3
-    focusGameObject: {fileID: 9126928803568556017}
+  - focusGameObject: {fileID: 7484345267587496400}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas4
-    focusGameObject: {fileID: 7484345267587496400}
+  - focusGameObject: {fileID: 2444295896698151632}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas5
-    focusGameObject: {fileID: 2444295896698151632}
+  - focusGameObject: {fileID: 6274633778987670776}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas6
-    focusGameObject: {fileID: 6274633778987670776}
+  - focusGameObject: {fileID: 532382176933728163}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas7
-    focusGameObject: {fileID: 532382176933728163}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas8
-    focusGameObject: {fileID: 0}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas9
-    focusGameObject: {fileID: 0}
+  - focusGameObject: {fileID: 7982097513046849654}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas10
-    focusGameObject: {fileID: 7982097513046849654}
+  - focusGameObject: {fileID: 1646617216873743239}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas11
-    focusGameObject: {fileID: 1646617216873743239}
+  - focusGameObject: {fileID: 6836908012103095886}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas12
-    focusGameObject: {fileID: 6836908012103095886}
+  - focusGameObject: {fileID: 149838796137830201}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas13
-    focusGameObject: {fileID: 149838796137830201}
-    onStepStart:
-      m_PersistentCalls:
-        m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
-  - id: MainCanvas14
-    focusGameObject: {fileID: 0}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
@@ -8712,7 +8710,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 31.05
+  m_fontSize: 28.6
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

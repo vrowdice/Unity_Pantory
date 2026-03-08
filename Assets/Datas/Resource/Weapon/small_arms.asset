@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: small_arms
   displayName: Small Arms
-  baseValue: 1000
+  baseValue: 1150
   marketSensitivity: 0.3
   meanReversionStrength: 0.65
   volatilityMultiplier: 1

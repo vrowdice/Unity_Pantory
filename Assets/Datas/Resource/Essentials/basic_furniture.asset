@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_furniture
   displayName: Basic Furniture
-  baseValue: 240
+  baseValue: 300
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 3

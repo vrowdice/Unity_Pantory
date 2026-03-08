@@ -18,8 +18,8 @@ public class ResearchCanvas : MainCanvasPanelBase
     [SerializeField] private Transform _researchBtnContainerContentTransform;
 
     [SerializeField] private GameObject _linePrefab;
-    [SerializeField] private Transform _lineParent;
 
+    private Transform _lineParent;
     private List<Transform> _researchBtnContainerList = new();
     private Dictionary<string, RectTransform> _buttonMap = new();
 
@@ -46,7 +46,9 @@ public class ResearchCanvas : MainCanvasPanelBase
     public void UpdateResearchScrollView()
     {
         GameObjectUtils.ClearChildren(_researchBtnContainerContentTransform);
-        _lineParent = Instantiate(new GameObject(), _researchBtnContainerContentTransform).GetComponent<Transform>();
+        GameObject lineParentObj = new GameObject("LineParent");
+        lineParentObj.transform.SetParent(_researchBtnContainerContentTransform, false);
+        _lineParent = lineParentObj.transform;
         _researchBtnContainerList.Clear();
         _buttonMap.Clear();
 
@@ -136,5 +138,14 @@ public class ResearchCanvas : MainCanvasPanelBase
         VisualManager visualManager = VisualManager.Instance;
         _deltaResearchText.color = visualManager.GetDeltaColor(deltaResearch);
         _researcherText.text = _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Researcher).ToString();
+    }
+
+    private void OnDisable()
+    {
+        if (_dataManager != null)
+        {
+            _dataManager.Research.OnResearchPointsChanged -= ResearchChanged;
+            _dataManager.Time.OnDayChanged -= ResearchChanged;
+        }
     }
 }

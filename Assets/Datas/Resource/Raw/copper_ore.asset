@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: copper_ore
   displayName: Copper Ore
-  baseValue: 25
+  baseValue: 36
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 0

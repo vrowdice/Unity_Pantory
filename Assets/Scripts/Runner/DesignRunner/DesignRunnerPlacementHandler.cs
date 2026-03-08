@@ -71,7 +71,7 @@ public class DesignRunnerPlacementHandler
         _rotationIndex = 0;
 
         CreatePreview();
-        _manager.DesignUiManager.UpdateModeBtnImages(true, false);
+        _manager.DesignUiManager?.UpdateModeBtnImages(true, false);
         _manager.MainCameraController.SetDragEnabled(false);
     }
     
@@ -80,7 +80,7 @@ public class DesignRunnerPlacementHandler
         _isPlacementActive = false;
         _selectedBuilding = null;
         ClearPreview();
-        _manager.DesignUiManager.UpdateModeBtnImages(false, false);
+        _manager.DesignUiManager?.UpdateModeBtnImages(false, false);
         _manager.MainCameraController.SetDragEnabled(true);
     }
     
