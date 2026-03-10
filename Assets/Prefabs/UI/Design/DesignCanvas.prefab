@@ -1568,7 +1568,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8667539343614940422
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1583,10 +1583,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2251205866857264110}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 36.023537, y: -60}
-  m_SizeDelta: {x: 32.04707, y: 90}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5149497670168067399
 CanvasRenderer:
@@ -1657,7 +1657,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 84eafa975c3919745a06ff6386417a05, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 62dbe75926c58484d8be1c122750b278, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3003,7 +3003,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00019689855, y: 0}
+  m_AnchoredPosition: {x: -0.000052604893, y: 0}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &372636834560220652
@@ -3169,7 +3169,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3683248183233017425
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3184,10 +3184,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6694277811823822838}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 36.023537, y: -60}
-  m_SizeDelta: {x: 32.04707, y: 90}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4044572728949533408
 CanvasRenderer:
@@ -3258,7 +3258,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 84eafa975c3919745a06ff6386417a05, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5238004c7f7bfa9418533e56706fbd23, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3384,7 +3384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4174967247347252482
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3399,10 +3399,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6694277811823822838}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80.62884, y: -60}
+  m_SizeDelta: {x: 38.742325, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2260890990321411788
 CanvasRenderer:
@@ -3473,7 +3473,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Mode
+  m_text: Button
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
@@ -3500,7 +3500,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.6
+  m_fontSize: 18
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4160,15 +4160,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9456d8af5e75b4f9ebfd08d6404a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tutorialPanelInfo: []
-  _designRunner: {fileID: 0}
-  _loadThreadNameText: {fileID: 5063042896846259294}
+  _tutorialPanelInfo:
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 3871339875554349553}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 1589498231293481433}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 1075392256473073152}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 8504439594056978125}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
   _deselectBuildingBtnImage: {fileID: 1460185098609151146}
   _removalModeBtnImage: {fileID: 7294542498043469727}
   _buildingTypeBtnPrefab: {fileID: 5843711190326734755, guid: 1df3294a1ba7ef54eac87bc4a0d0da5a, type: 3}
   _buildingTypeBtnContent: {fileID: 8183364324741588396}
   _buildingBtnPrefab: {fileID: 412398129040250562, guid: ca8cf8656f83546468bec330025d97f7, type: 3}
   _buildingBtnContent: {fileID: 2066718298802921344}
+  _designRunner: {fileID: 0}
+  _loadThreadNameText: {fileID: 5063042896846259294}
 --- !u!1 &4248223063267768509
 GameObject:
   m_ObjectHideFlags: 0
@@ -6019,12 +6064,12 @@ MonoBehaviour:
   settingsFoldout: 0
   styleFoldout: 0
   navigationFoldout: 0
-  referencesFoldout: 0
+  referencesFoldout: 1
   eventsFoldout: 1
-  enableIcon: 0
-  icon: {fileID: 21300000, guid: 84eafa975c3919745a06ff6386417a05, type: 3}
+  enableIcon: 1
+  icon: {fileID: 21300000, guid: 62dbe75926c58484d8be1c122750b278, type: 3}
   iconSize: 75
-  enableText: 1
+  enableText: 0
   text: Button
   textSize: 24
   dynamicScale: 1
@@ -6040,7 +6085,7 @@ MonoBehaviour:
   doubleClickDuration: 0.25
   imageObject: {fileID: 3353204489803039396}
   iconElement: {fileID: 97677033391949888}
-  textObject: {fileID: 0}
+  textObject: {fileID: 8902010628244161953}
   textContainer: {fileID: 0}
   contentFitter: {fileID: 0}
   contentLayout: {fileID: 3999351898179328577}
@@ -8563,7 +8608,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3705712106335605539
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8578,10 +8623,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2251205866857264110}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 59.999996, y: -60}
+  m_SizeDelta: {x: 79.99999, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4242784811409987053
 CanvasRenderer:
@@ -8652,7 +8697,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Mode
+  m_text: Button
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   m_sharedMaterial: {fileID: 7460981532550024399, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
@@ -8679,7 +8724,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.6
+  m_fontSize: 23.1
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -9661,12 +9706,12 @@ MonoBehaviour:
   settingsFoldout: 0
   styleFoldout: 0
   navigationFoldout: 0
-  referencesFoldout: 0
+  referencesFoldout: 1
   eventsFoldout: 1
-  enableIcon: 0
-  icon: {fileID: 21300000, guid: 84eafa975c3919745a06ff6386417a05, type: 3}
+  enableIcon: 1
+  icon: {fileID: 21300000, guid: 5238004c7f7bfa9418533e56706fbd23, type: 3}
   iconSize: 75
-  enableText: 1
+  enableText: 0
   text: Button
   textSize: 24
   dynamicScale: 1
@@ -9682,7 +9727,7 @@ MonoBehaviour:
   doubleClickDuration: 0.25
   imageObject: {fileID: 4437199870312966013}
   iconElement: {fileID: 6555421566209822596}
-  textObject: {fileID: 0}
+  textObject: {fileID: 7363661903137303088}
   textContainer: {fileID: 0}
   contentFitter: {fileID: 0}
   contentLayout: {fileID: 3920443511772144086}

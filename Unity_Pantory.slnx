@@ -1,8 +1,0 @@
-﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
-  <Project Path="Evo.UI.csproj" />
-  <Project Path="Evo.UI.Editor.csproj" />
-  <Project Path="Evo.Editor.csproj" />
-  <Project Path="DOTween.Modules.csproj" />
-  <Project Path="Evo.csproj" />
-</Solution>
