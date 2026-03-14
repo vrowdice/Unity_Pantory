@@ -48,7 +48,7 @@ public class ResearchInfoPopup : PopupBase
     {
         string researchId = _currentResearchEntry.data.id;
         _nameText.text = researchId.Localize(LocalizationUtils.TABLE_RESEARCH);
-        _descriptionText.text = researchId.Localize(LocalizationUtils.TABLE_RESEARCH_DESCRIPTION);
+        _descriptionText.text = (researchId + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_RESEARCH);
         _iconImage.sprite = _currentResearchEntry.data.icon;
         _costPanelText.text = _currentResearchEntry.data.researchPointCost.ToString();
 

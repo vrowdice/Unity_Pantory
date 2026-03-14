@@ -58,7 +58,7 @@ public class MarketTraderPanel : MonoBehaviour
 
         _marketActorPopupBtn.Init(_selectedActor);
         _nameText.text = data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
-        _descriptionText.text = data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR_DESCRIPTION);
+        _descriptionText.text = (data.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
 
         string deltaSymbol = state.currentChangeWealth > 0 ? "+" : "";
         _wealthText.text = $"{ReplaceUtils.FormatNumber(state.wealth)} {deltaSymbol}{ReplaceUtils.FormatNumber(state.currentChangeWealth)}";

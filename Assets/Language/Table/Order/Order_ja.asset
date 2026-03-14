@@ -19,95 +19,95 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226270001
-    m_Localized: 高級家具納品契約
+    m_Localized: "\u9AD8\u7D1A\u5BB6\u5177\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270002
-    m_Localized: 高級家具納品契約
+    m_Localized: "\u9AD8\u7D1A\u5BB6\u5177\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
-    m_Localized: 高級資源納品契約
+    m_Localized: "\u9AD8\u7D1A\u8CC7\u6E90\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270004
-    m_Localized: 研究材料納品契約
+    m_Localized: "\u7814\u7A76\u6750\u6599\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270005
-    m_Localized: 小火器納品契約
+    m_Localized: "\u5C0F\u706B\u5668\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270006
-    m_Localized: 工業材料納品契約
+    m_Localized: "\u5DE5\u696D\u6750\u6599\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270007
-    m_Localized: 帝国金属納品契約
+    m_Localized: "\u5E1D\u56FD\u91D1\u5C5E\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270008
-    m_Localized: 金属・工具納品契約
+    m_Localized: "\u91D1\u5C5E\u30FB\u5DE5\u5177\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270009
-    m_Localized: アルミ地金納品契約
+    m_Localized: "\u30A2\u30EB\u30DF\u5730\u91D1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
-    m_Localized: 高級木材納品契約
+    m_Localized: "\u9AD8\u7D1A\u6728\u6750\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270011
-    m_Localized: アルミ地金納品契約
+    m_Localized: "\u30A2\u30EB\u30DF\u5730\u91D1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270012
-    m_Localized: 軍備品納品契約
+    m_Localized: "\u8ECD\u5099\u54C1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270013
-    m_Localized: 混合資源納品契約
+    m_Localized: "\u6DF7\u5408\u8CC7\u6E90\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270014
-    m_Localized: 高級家具納品契約
+    m_Localized: "\u9AD8\u7D1A\u5BB6\u5177\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270015
-    m_Localized: 高級金属・工具納品契約
+    m_Localized: "\u9AD8\u7D1A\u91D1\u5C5E\u30FB\u5DE5\u5177\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270016
-    m_Localized: 純金納品契約
+    m_Localized: "\u7D14\u91D1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270017
-    m_Localized: インフラ材料納品契約
+    m_Localized: "\u30A4\u30F3\u30D5\u30E9\u6750\u6599\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270018
-    m_Localized: 高級家具納品契約
+    m_Localized: "\u9AD8\u7D1A\u5BB6\u5177\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270019
-    m_Localized: 電子部品納品契約
+    m_Localized: "\u96FB\u5B50\u90E8\u54C1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270020
-    m_Localized: 純金納品契約
+    m_Localized: "\u7D14\u91D1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270021
-    m_Localized: 木材・小火器納品契約
+    m_Localized: "\u6728\u6750\u30FB\u5C0F\u706B\u5668\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270022
-    m_Localized: 鉄地金納品契約
+    m_Localized: "\u9244\u5730\u91D1\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270023
-    m_Localized: 小火器納品契約
+    m_Localized: "\u5C0F\u706B\u5668\u7D0D\u54C1\u5951\u7D04"
     m_Metadata:
       m_Items: []
   references:

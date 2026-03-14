@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq;
 
 /// <summary>
 /// 직원 관리 패널
@@ -64,8 +63,6 @@ public class EmployeeCanvas : MainCanvasPanelBase
         OnEmployeeTypeClick(EmployeeType.Worker);
     }
 
-    #region Public Methods
-
     /// <summary>
     /// 직원 수를 delta 값만큼 변경
     /// 양수면 증가, 음수면 감소
@@ -122,10 +119,6 @@ public class EmployeeCanvas : MainCanvasPanelBase
         UpdateRoleButtonHighlight();
     }
 
-    #endregion
-
-    #region Role Button Setup
-
     /// <summary>
     /// 직원 역할별 버튼 생성
     /// </summary>
@@ -163,7 +156,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
             if (btn != null)
             {
                 EmployeeType capturedRole = role;
-                string localizedName = capturedRole.Localize();
+                string localizedName = capturedRole.Localize(LocalizationUtils.TABLE_EMPLOYEE);
                 btn.Init(localizedName, () => {
                     ShowEmployeeByRole(capturedRole);
                     UpdateRoleButtonHighlight();
@@ -204,10 +197,6 @@ public class EmployeeCanvas : MainCanvasPanelBase
         OnEmployeeTypeClick(role);
     }
 
-    #endregion
-
-    #region UI Update
-
     /// <summary>
     /// 직원 UI 정보 업데이트
     /// </summary>
@@ -221,8 +210,8 @@ public class EmployeeCanvas : MainCanvasPanelBase
 
         _employeeImage.sprite = data.Image;
         _employeeIconImage.sprite = data.icon;
-        _titleText.text = data.type.Localize();
-        _descriptionText.text = data.type.ToString().Localize(LocalizationUtils.TABLE_EMPLOYEE_DESCRIPTION);
+        _titleText.text = data.type.Localize(LocalizationUtils.TABLE_EMPLOYEE);
+        _descriptionText.text = (data.type.ToString() + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_EMPLOYEE);
         _employeeCountText.text = $"{state.count}";
         _whenHireText.text = $"- {data.hiringCost:N0}";
         _whenFireText.text = $"- {data.firingCost:N0}";
@@ -251,14 +240,12 @@ public class EmployeeCanvas : MainCanvasPanelBase
             return;
         }
 
-        // GetManagementRatio()는 0.0 ~ 1.0 범위의 값을 반환
         float managementRatio = _dataManager.Employee.GetManagementRatio();
         if (_managementSlider != null)
         {
             _managementSlider.value = managementRatio;
         }
 
-        // 텍스트 업데이트
         if (_managementRatioText != null)
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
@@ -274,7 +261,6 @@ public class EmployeeCanvas : MainCanvasPanelBase
             }
         }
 
-        // Fill 이미지 색상 업데이트
         if (_managementFillImage != null)
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
@@ -332,10 +318,6 @@ public class EmployeeCanvas : MainCanvasPanelBase
     {
         UpdateEmployeeUI();
     }
-
-    #endregion
-
-    #region Effect Status Display
 
     /// <summary>
     /// 효율성 및 만족도 관련 이펙트 상태를 업데이트합니다.
@@ -404,9 +386,6 @@ public class EmployeeCanvas : MainCanvasPanelBase
             PoolingManager.Instance.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
         }
     }
-
-    #endregion
-
 
     /// <summary>
     /// 직원 변경 핸들러

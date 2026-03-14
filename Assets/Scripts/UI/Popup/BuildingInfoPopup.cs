@@ -50,8 +50,8 @@ public class BuildingInfoPopup : PopupBase
     private void UpdateUI()
     {
         _nameText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING);
-        _typeText.text = $"{_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING_TYPE)}";
-        _descriptionText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING_DESCRIPTION);
+        _typeText.text = $"{_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING)}";
+        _descriptionText.text = (_currentData.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_BUILDING);
         _buildCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
         _maintenanceText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)} / day";
         _requiredEmployeeText.text = $"{_currentData.requiredEmployees}";

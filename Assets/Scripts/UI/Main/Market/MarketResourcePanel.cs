@@ -104,7 +104,7 @@ public class MarketResourcePanel : MonoBehaviour
         ResourceState state = _selectedResourceEntry.state;
 
         _resouceImage.sprite = data.icon;
-        _resourceNameText.text = data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _resourceNameText.text = data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
         _resourceStorageText.text = state.count.ToString("N0");
 
         string priceText = $"{state.currentValue:N0}";

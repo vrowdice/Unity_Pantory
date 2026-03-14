@@ -21,7 +21,7 @@ public class ConfirmPopup : PopupBase
     {
         base.Init();
 
-        _text.text = messageKey.Localize(LocalizationUtils.TABLE_CONFIRM_MESSAGE);
+        _text.text = messageKey.Localize(LocalizationUtils.TABLE_COMMON);
         _onConfirm = onConfirm;
 
         Show();

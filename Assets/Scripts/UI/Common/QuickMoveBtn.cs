@@ -17,7 +17,7 @@ public class QuickMoveBtn : MonoBehaviour
         _mainUiManager = argUiManager;
         _penalType = argPenalType;
 
-        _text.text = argPenalType.Localize();
+        _text.text = argPenalType.Localize(LocalizationUtils.TABLE_COMMON);
         _icon.sprite = VisualManager.Instance.GetMainPanelIcon(_penalType.ToString());
 
         _alartImage.SetActive(false);

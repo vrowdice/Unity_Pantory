@@ -83,7 +83,7 @@ public class OrderCanvas : MainCanvasPanelBase
             GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _orderActionBtnContentTransform);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             MarketActorType capturedType = actorType;
-            btn.Init(actorType.Localize(), () => {
+            btn.Init(actorType.Localize(LocalizationUtils.TABLE_MARKET_ACTOR), () => {
                 OnMarketActorTypeClick(capturedType);
                 UpdateFilterHighlight();
             });

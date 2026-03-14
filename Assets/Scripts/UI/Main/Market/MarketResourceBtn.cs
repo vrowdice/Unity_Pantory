@@ -27,7 +27,7 @@ public class MarketResourceBtn : MonoBehaviour
         _resourceEntry = resourceEntry;
 
         _image.sprite = resourceEntry.data.icon;
-        _nameText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _nameText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
 
         RefreshAllUI();
     }

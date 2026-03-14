@@ -40,7 +40,7 @@ public class WarningPopup : MonoBehaviour
     {
         if (_messageText != null)
         {
-            _messageText.text = messageKey.Localize(LocalizationUtils.TABLE_WARNING_MESSAGE);
+            _messageText.text = messageKey.Localize(LocalizationUtils.TABLE_COMMON);
         }
 
         _sequence?.Kill();

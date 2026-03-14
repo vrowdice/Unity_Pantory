@@ -16,7 +16,7 @@ public class ProductionInfoImage : MonoBehaviour
     public void Init(ResourceEntry resourceEntry, int amount)
     {
         _productionImage.sprite = resourceEntry.data.icon;
-        _productionText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _productionText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
         SetRaycastTargets(false);
 
         if (amount >= 0)

@@ -38,7 +38,7 @@ public class MarketActorInfoPopup : PopupBase
     public void RefreshAllUI()
     {
         _nameText.text = _currentMarketActorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
-        _descriptionText.text = _currentMarketActorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR_DESCRIPTION);
+        _descriptionText.text = (_currentMarketActorEntry.data.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
         _trustText.text = _currentMarketActorEntry.state.trust.ToString("F1");
         _wealthText.text = _currentMarketActorEntry.state.wealth.ToString("F1");
 

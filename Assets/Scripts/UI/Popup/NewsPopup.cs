@@ -21,7 +21,7 @@ public class NewsPopup : PopupBase
 
         _titleText.text = newsState.id.Localize(LocalizationUtils.TABLE_NEWS);
         _iconImage.sprite = newsData.icon;
-        _descriptionText.text = newsState.id.Localize(LocalizationUtils.TABLE_NEWS_DESCRIPTION);
+        _descriptionText.text = (newsState.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_NEWS);
 
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);

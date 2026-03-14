@@ -19,152 +19,316 @@ MonoBehaviour:
     m_Key: artisan_furniture_workshop
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269101
+    m_Key: artisan_furniture_workshop_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269002
     m_Key: automotive_industry_group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269102
+    m_Key: automotive_industry_group_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269004
     m_Key: electronics_manufacturing_corp
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269104
+    m_Key: electronics_manufacturing_corp_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269005
     m_Key: elite_armaments_group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269105
+    m_Key: elite_armaments_group_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269007
     m_Key: fashion_retail_chain
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269107
+    m_Key: fashion_retail_chain_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269008
     m_Key: frontier_sawmill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269108
+    m_Key: frontier_sawmill_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269009
     m_Key: global_resource_syndicate
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269109
+    m_Key: global_resource_syndicate_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269010
     m_Key: imperial_logistics_bureau
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269110
+    m_Key: imperial_logistics_bureau_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269011
     m_Key: industrial_brokerage_network
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269111
+    m_Key: industrial_brokerage_network_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269012
     m_Key: iron_mining_consortium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269112
+    m_Key: iron_mining_consortium_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269013
     m_Key: lumber_consortium
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269113
+    m_Key: lumber_consortium_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269014
     m_Key: luxury_furniture_showroom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269114
+    m_Key: luxury_furniture_showroom_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269015
     m_Key: military_armory
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269115
+    m_Key: military_armory_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269016
     m_Key: national_exchange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269116
+    m_Key: national_exchange_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269017
     m_Key: northwind_industrial_union
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269117
+    m_Key: northwind_industrial_union_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269018
     m_Key: precision_components_ltd
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269118
+    m_Key: precision_components_ltd_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269019
     m_Key: precision_weapons_workshop
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269119
+    m_Key: precision_weapons_workshop_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269020
     m_Key: premium_industrial_logistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269120
+    m_Key: premium_industrial_logistics_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269021
     m_Key: smelter_collective
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269121
+    m_Key: smelter_collective_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269022
     m_Key: vanguard_steelworks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269122
+    m_Key: vanguard_steelworks_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269023
     m_Key: verdant_continental_exchange
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269123
+    m_Key: verdant_continental_exchange_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269024
     m_Key: diplomatic_corps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269124
+    m_Key: diplomatic_corps_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269025
     m_Key: imperial_academy
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269125
+    m_Key: imperial_academy_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269026
     m_Key: imperial_guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269126
+    m_Key: imperial_guard_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269027
     m_Key: imperial_treasury
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269127
+    m_Key: imperial_treasury_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269028
     m_Key: military_procurement_office
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269128
+    m_Key: military_procurement_office_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269029
     m_Key: public_works_department
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269129
+    m_Key: public_works_department_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269030
     m_Key: royal_court
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269130
+    m_Key: royal_court_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269031
     m_Key: treasury_reserve
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269131
+    m_Key: treasury_reserve_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269032
     m_Key: art_collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269132
+    m_Key: art_collector_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269033
     m_Key: industrial_investor
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269133
+    m_Key: industrial_investor_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269034
     m_Key: master_craftsman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269134
+    m_Key: master_craftsman_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269035
     m_Key: merchant_guild
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269135
+    m_Key: merchant_guild_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269036
     m_Key: noble_estate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269136
+    m_Key: noble_estate_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269037
     m_Key: private_collector
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269137
+    m_Key: private_collector_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269038
     m_Key: scholar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269138
+    m_Key: scholar_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226269039
     m_Key: wealthy_merchant
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269139
+    m_Key: wealthy_merchant_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226269040
     m_Key: weapon_enthusiast
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269140
+    m_Key: weapon_enthusiast_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263054
+    m_Key: Government
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263055
+    m_Key: Company
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263056
+    m_Key: Individual
     m_Metadata:
       m_Items: []
   m_Metadata:

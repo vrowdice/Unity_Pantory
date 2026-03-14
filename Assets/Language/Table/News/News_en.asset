@@ -70,6 +70,73 @@ MonoBehaviour:
     m_Localized: Textile Workers Strike
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001001
+    m_Localized: Escalating international conflicts have triggered a global arms
+      race. Demand for Small Arms, Heavy Arms, Munitions, and Tanks is skyrocketing
+      as nations bolster their defenses.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001002
+    m_Localized: Technological breakthroughs and government subsidies have fueled
+      an auto industry boom. Expect sharp price increases for Cars, Engines, Steel,
+      Aluminum, and Oil.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001003
+    m_Localized: A revolutionary aerospace engine design has revitalized the market.
+      Demand for Airplanes, Aluminum, Engines, and Electronics is soaring.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001004
+    m_Localized: Global supply chain disruptions have halted semiconductor production.
+      Prices for Electronics, Precision Tools, and Machine Parts are rising rapidly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001005
+    m_Localized: A massive global shopping event has emptied warehouses. Demand for
+      Electronics, Basic & Premium Clothing, and Furniture has hit record highs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001006
+    m_Localized: Economic instability is driving investors to safe havens. The value
+      of Gold Ore and Pure Gold is climbing steeply.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001007
+    m_Localized: Rapid urbanization has sparked a construction frenzy. Prices for
+      Steel, Basic & Premium Furniture, and Fine & Premium Wood are surging.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001008
+    m_Localized: New sumptuary laws strictly prohibit the sale of luxury goods. Markets
+      for Premium Clothing, Premium Furniture, and Pure Gold are crashing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001009
+    m_Localized: Catastrophic failures in major mines have halted extraction. Shortages
+      of Coal, Iron Ore, Aluminum Ore, and Gold Ore are expected.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001010
+    m_Localized: Geopolitical conflicts in oil-producing regions have slashed output.
+      Oil prices are spiking to unprecedented levels.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001011
+    m_Localized: Historic peace treaties have led to global demilitarization. Promoting
+      a decline in Munitions, Tanks, and Airplanes prices.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001012
+    m_Localized: New heavy tariffs on imported metals have disrupted trade. Domestic
+      prices for Steel Ingot and Iron Ore are surging.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001013
+    m_Localized: Massive strikes across the textile industry have paralyzed production.
+      Fabric, Basic Clothing, and Premium Clothing are becoming scarce.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

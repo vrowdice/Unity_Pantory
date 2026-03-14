@@ -19,95 +19,95 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226270001
-    m_Localized: 고급 가구 공급 계약
+    m_Localized: "\uACE0\uAE09 \uAC00\uAD6C \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270002
-    m_Localized: 고급 가구 공급 계약
+    m_Localized: "\uACE0\uAE09 \uAC00\uAD6C \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
-    m_Localized: 고급 자원 공급 계약
+    m_Localized: "\uACE0\uAE09 \uC790\uC6D0 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270004
-    m_Localized: 연구 재료 공급 계약
+    m_Localized: "\uC5F0\uAD6C \uC7AC\uB8CC \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270005
-    m_Localized: 경화기 공급 계약
+    m_Localized: "\uACBD\uD654\uAE30 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270006
-    m_Localized: 산업 자재 공급 계약
+    m_Localized: "\uC0B0\uC5C5 \uC790\uC7AC \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270007
-    m_Localized: 제국 금속 공급 계약
+    m_Localized: "\uC81C\uAD6D \uAE08\uC18D \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270008
-    m_Localized: 금속 및 도구 공급 계약
+    m_Localized: "\uAE08\uC18D \uBC0F \uB3C4\uAD6C \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270009
-    m_Localized: 알루미늄 괴 공급 계약
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD34 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
-    m_Localized: 고급 목재 공급 계약
+    m_Localized: "\uACE0\uAE09 \uBAA9\uC7AC \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270011
-    m_Localized: 알루미늄 괴 공급 계약
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD34 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270012
-    m_Localized: 군장비 공급 계약
+    m_Localized: "\uAD70\uC7A5\uBE44 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270013
-    m_Localized: 혼합 자원 공급 계약
+    m_Localized: "\uD63C\uD569 \uC790\uC6D0 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270014
-    m_Localized: 고급 가구 공급 계약
+    m_Localized: "\uACE0\uAE09 \uAC00\uAD6C \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270015
-    m_Localized: 고급 금속 및 도구 공급 계약
+    m_Localized: "\uACE0\uAE09 \uAE08\uC18D \uBC0F \uB3C4\uAD6C \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270016
-    m_Localized: 순금 공급 계약
+    m_Localized: "\uC21C\uAE08 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270017
-    m_Localized: 인프라 자재 공급 계약
+    m_Localized: "\uC778\uD504\uB77C \uC790\uC7AC \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270018
-    m_Localized: 고급 가구 공급 계약
+    m_Localized: "\uACE0\uAE09 \uAC00\uAD6C \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270019
-    m_Localized: 전자 부품 공급 계약
+    m_Localized: "\uC804\uC790 \uBD80\uD488 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270020
-    m_Localized: 순금 공급 계약
+    m_Localized: "\uC21C\uAE08 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270021
-    m_Localized: 원목 및 경화기 공급 계약
+    m_Localized: "\uC6D0\uBAA9 \uBC0F \uACBD\uD654\uAE30 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270022
-    m_Localized: 철 괴 공급 계약
+    m_Localized: "\uCCA0 \uAD34 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270023
-    m_Localized: 경화기 공급 계약
+    m_Localized: "\uACBD\uD654\uAE30 \uACF5\uAE09 \uACC4\uC57D"
     m_Metadata:
       m_Items: []
   references:

@@ -17,14 +17,14 @@ public class OrderRequireResourceItemPanel : MonoBehaviour
         _conditionAmount = conditionAmount;
 
         _resourceIcon.sprite = _resourceEntry.data.icon;
-        _resourceNameText.text = _resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _resourceNameText.text = _resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
         _conditionText.text = $"{_resourceEntry.state.count} / {_conditionAmount}";
     }
 
     public void UpdateUI()
     {
         _resourceIcon.sprite = _resourceEntry.data.icon;
-        _resourceNameText.text = _resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _resourceNameText.text = _resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
         _conditionText.text = $"{_resourceEntry.state.count} / {_conditionAmount}";
     }
 }

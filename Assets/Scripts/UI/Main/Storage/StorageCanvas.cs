@@ -59,7 +59,7 @@ public class StorageCanvas : MainCanvasPanelBase
 
         foreach (ResourceType resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
         {
-            CreateCategoryButton(resourceType, resourceType.Localize());
+            CreateCategoryButton(resourceType, resourceType.Localize(LocalizationUtils.TABLE_RESOURCE));
         }
         
         UpdateCategoryHighlight();

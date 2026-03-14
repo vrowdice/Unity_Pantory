@@ -15,80 +15,20 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-English (en)
   m_GUID: 249efc2b55162cd42bc465abaa68fb90
   m_SerializeEntries:
-  - m_GUID: 10fe3d778b3604841ad3a57f1b7b2991
-    m_Address: ResearchDescription_en
+  - m_GUID: 0f16036cbc3ba3f4e9f589eb27d654c9
+    m_Address: Employee_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 20318807f6bc07d408ee15cf98831c02
-    m_Address: ResourceDisplayName_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 26f1043167d78324283352a41ecffa0b
-    m_Address: EmployeeDescription_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3badb3644c7b6764ea28f9d77cc6bae0
-    m_Address: MarketActorType_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3bc7f50f1a1290249ad4d91e90aa7ce0
-    m_Address: ConfirmMessage_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 45ddd1b92783a7a4a86f16df145e372f
-    m_Address: MarketPanelType_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 640b9a485debdd540ade8a00dcadb54d
-    m_Address: MarketActorDescription_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7731d1dd7bede9c4a96b31e411a4882f
-    m_Address: NewsDescription_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 79e06e4f679f93745a2c7493e8ca6502
-    m_Address: WarningMessage_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 88727fbc2658a2744bb9f6cfa39a641f
-    m_Address: ResourceType_en
+  - m_GUID: 8c8330eb39bbc4a4b8d93093fcf6303d
+    m_Address: Resource_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99d23d430ef97e44da83ff33ec4aa810
     m_Address: Tutorial_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a499d311c28dc2343b7f95a5dc5b8006
-    m_Address: BuildingDescription_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a4bdb186214a063459f7e4b4a3edadcc
-    m_Address: MainPanelType_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
@@ -101,12 +41,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c0fb213c8dc191f43965e5d358a1b4a5
     m_Address: Expenses_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c1fe521881397874abc7b71dbad000a5
-    m_Address: BuildingType_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
@@ -138,12 +72,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e0dba1e936c8c37469e527168db0e32b
     m_Address: News_en
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-en
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e1069f2c97eab1e4da718e89dc80b408
-    m_Address: EmployeeType_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en

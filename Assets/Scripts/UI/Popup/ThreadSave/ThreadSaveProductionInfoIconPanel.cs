@@ -11,7 +11,7 @@ public class ThreadSaveProductionInfoIconPanel : MonoBehaviour
     public void Init(ResourceEntry resourceEntry, int productionCount = -1)
     {
         _image.sprite = resourceEntry.data.icon;
-        _titleText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _titleText.text = resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
 
         if (productionCount >= 0)
         {

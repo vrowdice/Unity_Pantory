@@ -81,7 +81,7 @@ public class MarketCanvas : MainCanvasPanelBase
             if (btn != null)
             {
                 MarketPanelType capturedType = panelType;
-                string localizedName = capturedType.Localize();
+                string localizedName = capturedType.Localize(LocalizationUtils.TABLE_COMMON);
                 btn.Init(localizedName, () => {
                     OnMarketPanelTypeClick(capturedType);
                     UpdateActionButtonHighlight();

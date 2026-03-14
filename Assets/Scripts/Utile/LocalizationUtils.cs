@@ -1,32 +1,22 @@
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.Localization.Settings;
 using System;
 
 public static class LocalizationUtils
 {
-    public const string TABLE_EMPLOYEE_TYPE = "EmployeeType";
-    public const string TABLE_EMPLOYEE_DESCRIPTION = "EmployeeDescription";
     public const string TABLE_COMMON = "Common";
-    public const string TABLE_MAIN_PANEL_TYPE = "MainPanelType";
-    public const string TABLE_MARKET_PANEL_TYPE = "MarketPanelType";
-    public const string TABLE_RESOURCE_DISPLAY_NAME = "ResourceDisplayName";
-    public const string TABLE_RESOURCE_TYPE = "ResourceType";
-    public const string TABLE_RESEARCH = "Research";
-    public const string TABLE_RESEARCH_DESCRIPTION = "ResearchDescription";
-    public const string TABLE_MARKET_ACTOR = "MarketActor";
-    public const string TABLE_MARKET_ACTOR_DESCRIPTION = "MarketActorDescription";
-    public const string TABLE_MARKET_ACTOR_TYPE = "MarketActorType";
     public const string TABLE_BUILDING = "Building";
-    public const string TABLE_BUILDING_DESCRIPTION = "BuildingDescription";
-    public const string TABLE_BUILDING_TYPE = "BuildingType";
-    public const string TABLE_WARNING_MESSAGE = "WarningMessage";
-    public const string TABLE_CONFIRM_MESSAGE = "ConfirmMessage";
     public const string TABLE_EFFECT = "Effect";
+    public const string TABLE_EMPLOYEE = "Employee";
+    public const string TABLE_EXPENSES = "Expenses";
+    public const string TABLE_MARKET_ACTOR = "MarketActor";
     public const string TABLE_NEWS = "News";
-    public const string TABLE_NEWS_DESCRIPTION = "NewsDescription";
     public const string TABLE_ORDER = "Order";
+    public const string TABLE_RESEARCH = "Research";
+    public const string TABLE_RESOURCE = "Resource";
     public const string TABLE_TUTORIAL = "Tutorial";
+
+    public const string KEY_SUFFIX_DESC = "_Desc";
 
     private const string DEFAULT_TABLE = TABLE_COMMON;
 
