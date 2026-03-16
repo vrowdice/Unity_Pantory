@@ -527,6 +527,10 @@ MonoBehaviour:
     m_Key: UnresearchedBuildingBlocksThreadPlacement
     m_Metadata:
       m_Items: []
+  - m_Id: 18270374867648512
+    m_Key: Automated employee placement
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
