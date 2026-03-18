@@ -57,7 +57,7 @@ public static class EffectUtils
         if (effectLists == null || effectLists.Length == 0)
             return baseValue;
 
-        var combined = new List<EffectState>();
+        List<EffectState> combined = new List<EffectState>();
         foreach (IReadOnlyList<EffectState> list in effectLists)
         {
             if (list == null) continue;

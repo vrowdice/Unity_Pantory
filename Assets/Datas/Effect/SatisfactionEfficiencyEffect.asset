@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetType: 1
   isGlobalEffect: 0
-  id: atisfactionEfficiency
+  id: satisfactionEfficiency
   displayName: Satisfaction Efficiency
   statType: 4
-  type: 1
+  modifierType: 1
   value: 0
   durationDays: 0
+  targetId: 

@@ -673,6 +673,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   title: 
   description: Brightness
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
+  titleKey: 
+  descriptionKey: 
   followCursor: 1
   is3DObject: 0
   maxWidth: 400
@@ -856,6 +860,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   title: 
   description: Opacity
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
+  titleKey: 
+  descriptionKey: 
   followCursor: 1
   is3DObject: 0
   maxWidth: 400
@@ -1268,6 +1276,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   title: 
   description: Saturation
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
+  titleKey: 
+  descriptionKey: 
   followCursor: 1
   is3DObject: 0
   maxWidth: 400

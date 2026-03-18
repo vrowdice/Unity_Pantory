@@ -1,11 +1,16 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewOrderData", menuName = "Game Data/Order Data")]
 public class OrderData : ScriptableObject
 {
-    [Header("Basic Info")]
     public string id;
     public string displayName;
-    [TextArea(2, 6)]
-    public string description;
+    public MarketActorData senderActorData;
+    public MarketActorType marketActorType;
+    public int durationDays;
+    public int rewardTrust;
+    public float scaleFactor;
+    public List<ResourceData> potentialResources;
+    public float priceMultiplier;
 }

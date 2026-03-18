@@ -10,7 +10,7 @@ using Evo.UI;
 public class MarketResourcePanel : MonoBehaviour
 {
     private DataManager _dataManager;
-    private MarketPanel _marketPanel;
+    private MarketCanvas _marketPanel;
 
     [Header("Components")]
     [SerializeField] private LineChart _lineChart;
@@ -33,7 +33,7 @@ public class MarketResourcePanel : MonoBehaviour
     /// </summary>
     /// <param name="dataManager">데이터 관리자 참조</param>
     /// <param name="marketPanel">부모 마켓 패널 참조</param>
-    public void Init(MarketPanel marketPanel)
+    public void Init(MarketCanvas marketPanel)
     {
         _dataManager = DataManager.Instance;
         _marketPanel = marketPanel;
@@ -43,9 +43,12 @@ public class MarketResourcePanel : MonoBehaviour
             _selectedResourceEntry = _dataManager.Resource.GetResourceEntry("iron_ore");
             ChangeResource(_selectedResourceEntry);
         }
-
-        RefreshUI();
+        else
+        {
+            RefreshUI();
+        }
     }
+
 
     /// <summary>
     /// 리소스 목록에서 버튼 클릭 시 호출되어 상세 정보를 갱신합니다.
@@ -101,7 +104,7 @@ public class MarketResourcePanel : MonoBehaviour
         ResourceState state = _selectedResourceEntry.state;
 
         _resouceImage.sprite = data.icon;
-        _resourceNameText.text = data.id.Localize(LocalizationUtils.TABLE_RESOURCE_DISPLAY_NAME);
+        _resourceNameText.text = data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
         _resourceStorageText.text = state.count.ToString("N0");
 
         string priceText = $"{state.currentValue:N0}";
@@ -125,15 +128,14 @@ public class MarketResourcePanel : MonoBehaviour
 
     /// <summary>
     /// 가격 히스토리를 LineChart에 반영합니다.
-    /// X축 라벨: 포인트가 많을 때는 일정 간격으로만 표시해 겹침을 줄입니다.
     /// </summary>
     private void RefreshLineChart(List<float> priceHistory)
     {
         if (_lineChart == null || priceHistory == null) return;
 
-        _lineChart.dataPoints.Clear();
         int count = priceHistory.Count;
         int labelStep = count <= 12 ? 1 : Mathf.Max(1, count / 10);
+        _lineChart.dataPoints.Clear();
 
         for (int i = 0; i < count; i++)
         {
@@ -146,6 +148,7 @@ public class MarketResourcePanel : MonoBehaviour
             float v = _lineChart.dataPoints[0].value;
             _lineChart.dataPoints.Add(new LineChart.DataPoint("2", v));
         }
+
         _lineChart.DrawChart();
     }
 }

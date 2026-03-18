@@ -1,0 +1,544 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Common Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Common
+  m_TableCollectionNameGuidString: eb20261a195c57c44943fe2956a7f729
+  m_Entries:
+  - m_Id: 139039577882624
+    m_Key: Provide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 139184558194688
+    m_Key: Efficiency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821549664190464
+    m_Key: Satisfaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821897967583232
+    m_Key: Salary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821686377529344
+    m_Key: Employment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 828943693660160
+    m_Key: Total Salary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829479545356288
+    m_Key: Very Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829850258915328
+    m_Key: Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 829996099059712
+    m_Key: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832125903716352
+    m_Key: High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 832342812147712
+    m_Key: Very High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834105048973312
+    m_Key: Efficiency Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 837713131880448
+    m_Key: Satisfaction Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 834127593357312
+    m_Key: Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840083911884800
+    m_Key: Research Point
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840589317128192
+    m_Key: Change Effect Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 840826593099776
+    m_Key: News
+    m_Metadata:
+      m_Items: []
+  - m_Id: 841202692145152
+    m_Key: Managment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201322299113472
+    m_Key: Left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201325092519936
+    m_Key: Right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201327516827648
+    m_Key: Building Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1201328489906176
+    m_Key: Removal Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202133720776704
+    m_Key: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202160061005824
+    m_Key: Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202171805057024
+    m_Key: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202630846464000
+    m_Key: Save Thread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202736043802624
+    m_Key: Thread Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202752342867968
+    m_Key: Category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1202914645655552
+    m_Key: Material
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1203055897231360
+    m_Key: Product
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205398315352064
+    m_Key: Enter Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205624384143360
+    m_Key: OK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206435495428096
+    m_Key: Manage Thread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208291269427200
+    m_Key: Rename
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208330368729088
+    m_Key: Delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1208475260960768
+    m_Key: Thread Cartegory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2975805825499136
+    m_Key: Research Effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2976802937389056
+    m_Key: Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3623468774342656
+    m_Key: "Name\t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624501495873536
+    m_Key: Inventory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624718412693504
+    m_Key: Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3624781545357312
+    m_Key: Buy Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3626057641377792
+    m_Key: Sell Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629248013549568
+    m_Key: Apply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629356734103552
+    m_Key: Exit Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629698750234624
+    m_Key: Background Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3629811170164736
+    m_Key: Effect Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4430228779057152
+    m_Key: Build Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4430339647094784
+    m_Key: Maintenance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4435693617430528
+    m_Key: Maintenance Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4437906502860800
+    m_Key: Material Purchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4438087889731584
+    m_Key: Product Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4438241380286464
+    m_Key: Expected profit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4846360811945984
+    m_Key: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5085346176319488
+    m_Key: Buildings requiring expertise
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5137769091710976
+    m_Key: Production progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5790638061010944
+    m_Key: Required Employee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5811090242289664
+    m_Key: Finance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5829164722962432
+    m_Key: Total Welth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5829236516864000
+    m_Key: Credit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5867400837087232
+    m_Key: Monthly growth rate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5867590201524224
+    m_Key: Monthly profit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6186306437005312
+    m_Key: Trust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6186432832356352
+    m_Key: Wealth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6192745884827648
+    m_Key: Consume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6618040123146240
+    m_Key: All
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6882479783165952
+    m_Key: Accepted Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6888989527523328
+    m_Key: Remaining period
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6900129099825152
+    m_Key: Reward Trust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7046105819136000
+    m_Key: Type of Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7051428965531648
+    m_Key: Reward Cradit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7253072416227328
+    m_Key: Max Employee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7254054646726656
+    m_Key: Required Technician
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7366665979707392
+    m_Key: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7378564653924352
+    m_Key: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7378644786102272
+    m_Key: Load Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7613205935702016
+    m_Key: Setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7771937462173696
+    m_Key: Save Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7961787373076480
+    m_Key: Save Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7969719171039232
+    m_Key: Thread Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7984511986319360
+    m_Key: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7984575139954688
+    m_Key: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7990221100957696
+    m_Key: New Savefile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8077524498530304
+    m_Key: Go Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10615943929937920
+    m_Key: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10626581280473088
+    m_Key: When Hire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10626863544549376
+    m_Key: When Fire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11595204534878208
+    m_Key: Before
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11595284792885248
+    m_Key: Next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33351417856
+    m_Key: Storage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263040
+    m_Key: Market
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263041
+    m_Key: Employment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263042
+    m_Key: Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263043
+    m_Key: News
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263044
+    m_Key: Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5842431105187840
+    m_Key: Finance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143774
+    m_Key: Resources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143775
+    m_Key: Traders
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269002
+    m_Key: LoadConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269003
+    m_Key: DeleteConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269004
+    m_Key: UnsavedProgressConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269005
+    m_Key: OverwriteConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268001
+    m_Key: ResearchCannotUnlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268002
+    m_Key: PleaseEnterCategoryName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268003
+    m_Key: FailedToCreateCategory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268004
+    m_Key: FailedToRenameCategory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268005
+    m_Key: DeleteCategoryConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268006
+    m_Key: FailedToDeleteCategory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268007
+    m_Key: PleaseEnterThreadName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268008
+    m_Key: SavedSuccessfully
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268009
+    m_Key: BuildingLockedResearchRequired
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268010
+    m_Key: ThreadDeleted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268011
+    m_Key: BuildingLocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268012
+    m_Key: ThreadContainsLockedBuildings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268013
+    m_Key: NotEnoughResources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268014
+    m_Key: NotEnoughCredits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268015
+    m_Key: SaveFileNameEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268016
+    m_Key: LoadFileNameEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268017
+    m_Key: DeleteFileNameEmpty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268018
+    m_Key: SaveFileNotFound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268019
+    m_Key: SaveSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268020
+    m_Key: SaveFailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268021
+    m_Key: LoadSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268022
+    m_Key: LoadFailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268023
+    m_Key: DeleteSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268024
+    m_Key: DeleteFailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268025
+    m_Key: CategoryNameAlreadyExists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226268026
+    m_Key: UnresearchedBuildingBlocksThreadPlacement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18270374867648512
+    m_Key: Auto employee placement
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3640385713308434458
+  references:
+    version: 2
+    RefIds:
+    - rid: 3640385713308434458
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1769315185181

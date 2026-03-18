@@ -4,7 +4,7 @@ using UnityEngine;
 public static class BuildingCalculationUtils
 {
     /// <summary>
-    /// 연구가 완료된 건물들을 필터링하여 경제/자원 수치를 계산합니다.
+    /// 건물 목록 기준으로 경제/자원 수치를 계산합니다. 연구 완료 여부와 관계없이 모든 건물을 포함합니다.
     /// </summary>
     public static ThreadCalculationResult CalculateProductionStats(
         DataManager dataManager,

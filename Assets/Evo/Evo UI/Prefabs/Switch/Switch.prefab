@@ -1087,7 +1087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 3
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -1178,7 +1178,7 @@ MonoBehaviour:
       m_Calls: []
   settingsFoldout: 1
   styleFoldout: 0
-  navigationFoldout: 0
+  navigationFoldout: 1
   referencesFoldout: 0
   eventsFoldout: 0
   isOn: 0

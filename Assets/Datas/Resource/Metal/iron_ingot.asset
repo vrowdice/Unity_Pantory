@@ -14,15 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ingot
   displayName: Iron Ingot
-  baseValue: 60
-  volatilityMultiplier: 1
-  maxPriceMultiplier: 1.5
+  baseValue: 72
   type: 1
-  nextStage: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f9, type: 2}
   icon: {fileID: 21300000, guid: 0596e0751e148c94fbadafff858c700d, type: 3}
   description: A solid bar of smelted iron, forged from raw ore. Versatile and durable,
     ready for crafting.
   requirements:
   - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
     count: 3
-  initialAmount: 100
+  initialAmount: 5000

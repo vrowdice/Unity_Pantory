@@ -80,7 +80,7 @@ public static class SpriteUtils
     /// </summary>
     public static void ClearCache()
     {
-        foreach (var kvp in _spriteCache)
+        foreach (KeyValuePair<string, Sprite> kvp in _spriteCache)
         {
             Sprite sprite = kvp.Value;
             if (sprite == null)

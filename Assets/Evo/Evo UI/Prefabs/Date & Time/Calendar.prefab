@@ -654,6 +654,8 @@ MonoBehaviour:
     m_Right: 15
     m_Top: 15
     m_Bottom: 15
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   customContent: 0
   allowDoubleClick: 0
   doubleClickDuration: 0.25
@@ -731,28 +733,42 @@ MonoBehaviour:
   dayButtonPrefab: {fileID: 3553707161245432743, guid: 157112a0e990fcd449a2ee1c1be7dbe9, type: 3}
   january:
     monthName: January
+    localizationKey: 
   february:
     monthName: February
+    localizationKey: 3 tu
   march:
     monthName: March
+    localizationKey: 
   april:
     monthName: April
+    localizationKey: 
   may:
     monthName: May
+    localizationKey: 
   june:
     monthName: June
+    localizationKey: 
   july:
     monthName: July
+    localizationKey: 
   august:
     monthName: August
+    localizationKey: 
   september:
     monthName: September
+    localizationKey: 
   october:
     monthName: October
+    localizationKey: 
   november:
     monthName: November
+    localizationKey: 
   december:
     monthName: December
+    localizationKey: 
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   onDateSelected:
     m_PersistentCalls:
       m_Calls: []
@@ -1032,6 +1048,8 @@ MonoBehaviour:
     m_Right: 15
     m_Top: 15
     m_Bottom: 15
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   customContent: 0
   allowDoubleClick: 0
   doubleClickDuration: 0.25
@@ -1512,15 +1530,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0

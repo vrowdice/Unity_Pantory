@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Evo.EditorTools;
@@ -16,6 +16,10 @@ namespace Evo.UI
         SerializedProperty fontItems;
         SerializedProperty updateMode;
 
+        // Cache
+        bool isDefaultPreset;
+        bool isFallbackPreset;
+
         void OnEnable()
         {
             spTarget = (StylerPreset)target;
@@ -27,6 +31,14 @@ namespace Evo.UI
 
             // Register this editor for hover repaints
             EvoEditorGUI.RegisterEditor(this);
+
+            // Check default status once when enabled
+            CheckDefaultStatus();
+            CheckFallbackStatus();
+
+            string currentPath = AssetDatabase.GetAssetPath(spTarget);
+            string resourcePath = GetResourcePath(currentPath);
+            isFallbackPreset = !string.IsNullOrEmpty(resourcePath) &&  resourcePath.Replace('\\', '/') == Constants.STYLER_FALLBACK_PATH;
         }
 
         void OnDisable()
@@ -54,6 +66,7 @@ namespace Evo.UI
             DrawColorItems();
             DrawFontItems();
             DrawSettings();
+            if (!isFallbackPreset) { DrawSetDefault(); }
 
             EvoEditorGUI.EndCenteredInspector();
             serializedObject.ApplyModifiedProperties();
@@ -67,8 +80,8 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 DrawItemList(audioItems, Styler.ItemType.Audio);
-				GUILayout.Space(2);
-				if (EvoEditorGUI.DrawButton("New Audio", "Add", height: 20, iconSize: 8, revertBackgroundColor: true))
+                GUILayout.Space(2);
+                if (EvoEditorGUI.DrawButton("New Audio", "Add", height: 20, iconSize: 8, revertBackgroundColor: true))
                 {
                     audioItems.arraySize++;
                     var newItem = audioItems.GetArrayElementAtIndex(audioItems.arraySize - 1);
@@ -117,8 +130,8 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 DrawItemList(fontItems, Styler.ItemType.Font);
-				GUILayout.Space(2);
-				if (EvoEditorGUI.DrawButton("New Font", "Add", height: 20, iconSize: 8, revertBackgroundColor: true))
+                GUILayout.Space(2);
+                if (EvoEditorGUI.DrawButton("New Font", "Add", height: 20, iconSize: 8, revertBackgroundColor: true))
                 {
                     fontItems.arraySize++;
                     var newItem = fontItems.GetArrayElementAtIndex(fontItems.arraySize - 1);
@@ -146,8 +159,8 @@ namespace Evo.UI
                     EvoEditorGUI.DrawProperty(updateMode, "Update Mode", "Default update mode for all StylerObjects using this preset.", false, false);
                     EvoEditorGUI.BeginContainer(4);
                     string description = null;
-                    if (updateMode.enumValueIndex == 0) { description = "Styler objects are updated in the editor and on every frame at runtime."; }
-                    else if(updateMode.enumValueIndex == 1) { description = "Styler objects are always updated in the editor and whenever the object is enabled at runtime."; }
+                    if (updateMode.enumValueIndex == 0) { description = "Styler objects are updated in the editor and on every change at runtime."; }
+                    else if (updateMode.enumValueIndex == 1) { description = "Styler objects are always updated in the editor and whenever the object is enabled at runtime."; }
                     GUILayout.Space(2);
                     EvoEditorGUI.DrawInfoBox(description);
                     EvoEditorGUI.EndContainer();
@@ -157,6 +170,7 @@ namespace Evo.UI
             }
 
             EvoEditorGUI.EndVerticalBackground();
+            EvoEditorGUI.AddFoldoutSpace();
         }
 
         void DrawItemList(SerializedProperty listProperty, Styler.ItemType itemType)
@@ -243,6 +257,145 @@ namespace Evo.UI
             }
 
             EvoEditorGUI.EndVerticalBackground(true);
+        }
+
+        void DrawSetDefault()
+        {
+            GUI.enabled = !isDefaultPreset;
+            string btnText = isDefaultPreset ? "Currently Default" : "Set as Default Preset";
+            if (EvoEditorGUI.DrawButton(btnText, isDefaultPreset ? "UI_DefaultStylerCheck" : null, 
+                "Sets this preset as the global default. Preset must be in a Resources folder.", 
+                height: 28, iconSize: 11, revertBackgroundColor: isDefaultPreset))
+            {
+                SetAsDefault();
+            }
+            GUI.enabled = true;
+        }
+
+        void SetAsDefault()
+        {
+            string assetPath = AssetDatabase.GetAssetPath(spTarget);
+            string resourcePath = GetResourcePath(assetPath);
+
+            // Validate Resources path
+            if (resourcePath == null)
+            {
+                EditorUtility.DisplayDialog("Invalid Location", "To set this as the default preset, it must be located inside a 'Resources' folder.", "OK");
+                return;
+            }
+
+            // Determine target path based on Styler.cs location
+            string stylerScriptPath = FindStylerScriptPath();
+            if (string.IsNullOrEmpty(stylerScriptPath))
+            {
+                EditorUtility.DisplayDialog("Error", "Could not locate 'Styler.cs' to determine config save location.", "OK");
+                return;
+            }
+
+            int scriptsIndex = stylerScriptPath.LastIndexOf("/Scripts/");
+
+            // Find "Scripts" and strip it to get the root "Evo UI" folder
+            // Path: .../Evo UI/Scripts/Styler.cs
+            string evoUiRoot;
+            if (scriptsIndex != -1)
+            {
+                // Take everything before "/Scripts/"
+                evoUiRoot = stylerScriptPath[..scriptsIndex];
+            }
+            else
+            {
+                // Fallback: If not in a "Scripts" folder, assume Styler.cs is in the root or deeper custom structure.
+                // We'll just go up one level from the file to be safe.
+                evoUiRoot = Path.GetDirectoryName(stylerScriptPath);
+            }
+
+            // Construct Resources path
+            string resourcesDir = Path.Combine(evoUiRoot, "Resources");
+            if (!Directory.Exists(resourcesDir)) { Directory.CreateDirectory(resourcesDir); }
+
+            // Construct Config path using the Constant constant: "Styler Presets/Config"
+            // This ensures we save it exactly where Styler.cs looks for it
+            string fullPath = Path.Combine(resourcesDir, Constants.STYLER_CONFIG_PATH + ".txt");
+
+            // Normalize path separators for Unity
+            fullPath = fullPath.Replace('\\', '/');
+
+            // Ensure subdirectories exist (e.g. "Styler Presets")
+            string configDir = Path.GetDirectoryName(fullPath);
+            if (!Directory.Exists(configDir)) { Directory.CreateDirectory(configDir); }
+
+            // Write Config
+            try
+            {
+                File.WriteAllText(fullPath, resourcePath);
+                AssetDatabase.Refresh();
+                CheckDefaultStatus();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Styler] Failed to save config file: {e.Message}");
+            }
+        }
+
+        void CheckDefaultStatus()
+        {
+            TextAsset config = Resources.Load<TextAsset>(Constants.STYLER_CONFIG_PATH);
+            if (config == null) 
+            { 
+                isDefaultPreset = false;
+                return;
+            }
+
+            string path = AssetDatabase.GetAssetPath(spTarget);
+            string resourcePath = GetResourcePath(path);
+
+            // Trim to handle potential whitespace or line endings in the text file
+            isDefaultPreset = config.text.Trim() == resourcePath;
+        }
+
+        void CheckFallbackStatus()
+        {
+            string currentPath = AssetDatabase.GetAssetPath(spTarget);
+            string resourcePath = GetResourcePath(currentPath);
+            isFallbackPreset = !string.IsNullOrEmpty(resourcePath) && resourcePath.Replace('\\', '/') == Constants.STYLER_FALLBACK_PATH;
+        }
+
+        bool IsCurrentPresetDefault()
+        {
+            TextAsset config = Resources.Load<TextAsset>(Constants.STYLER_CONFIG_PATH);
+            if (config == null) { return false; }
+
+            string path = AssetDatabase.GetAssetPath(spTarget);
+            string resourcePath = GetResourcePath(path);
+
+            // Trim to handle potential whitespace or line endings in the text file
+            return config.text.Trim() == resourcePath;
+        }
+
+        string GetResourcePath(string assetPath)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+                return null;
+
+            // We need the path relative to Resources for the config file content
+            int resourcesIndex = assetPath.LastIndexOf("/Resources/");
+            if (resourcesIndex == -1) { return null; }
+
+            string relativePath = assetPath[(resourcesIndex + 11)..]; // Length of "/Resources/"
+            int extensionIndex = relativePath.LastIndexOf(".");
+            if (extensionIndex != -1) { relativePath = relativePath[..extensionIndex]; }
+            return relativePath;
+        }
+
+        string FindStylerScriptPath()
+        {
+            string[] guids = AssetDatabase.FindAssets("Styler t:Script");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (Path.GetFileName(path) == "Styler.cs") { return path; }
+            }
+            return null;
         }
     }
 }

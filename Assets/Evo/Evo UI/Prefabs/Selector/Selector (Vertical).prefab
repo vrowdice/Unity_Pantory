@@ -372,6 +372,8 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   customContent: 0
   allowDoubleClick: 0
   doubleClickDuration: 0.25
@@ -516,21 +518,25 @@ MonoBehaviour:
     onItemSelection:
       m_PersistentCalls:
         m_Calls: []
+    tableKey: 
   - label: Option B
     icon: {fileID: 21300000, guid: 3c56e859ac02b4e46b10760296681bf3, type: 3}
     onItemSelection:
       m_PersistentCalls:
         m_Calls: []
+    tableKey: 
   - label: Option C
     icon: {fileID: 21300000, guid: 520f06e222bc0cc458460309c8e78974, type: 3}
     onItemSelection:
       m_PersistentCalls:
         m_Calls: []
+    tableKey: 
   - label: Option D
     icon: {fileID: 21300000, guid: c06ed3ac2d0760e4e9594cdf12e3ef19, type: 3}
     onItemSelection:
       m_PersistentCalls:
         m_Calls: []
+    tableKey: 
   loop: 0
   invokeAtStart: 0
   isHorizontal: 0
@@ -564,6 +570,8 @@ MonoBehaviour:
   selectedIndicatorAlpha: 1
   unselectedIndicatorAlpha: 0.1
   indicatorFadeDuration: 0.15
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   contentParent: {fileID: 6197897517299110661}
   contentCanvasGroup: {fileID: 8868564620965372621}
   textObject: {fileID: 3834136064520067671}
@@ -576,7 +584,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   itemsFoldout: 1
-  settingsFoldout: 1
+  settingsFoldout: 0
   referencesFoldout: 0
   eventsFoldout: 0
 --- !u!1 &7457120395626475814
@@ -878,6 +886,8 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   customContent: 0
   allowDoubleClick: 0
   doubleClickDuration: 0.25
@@ -1038,15 +1048,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0

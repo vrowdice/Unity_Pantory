@@ -7,29 +7,17 @@ from google.genai import types
 from PIL import Image
 from io import BytesIO
 
-# .env 파일에서 환경 변수 로드
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
-PY_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PY_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(PY_DIR, ".env"))
 
-# 프로젝트 루트의 .env 파일 먼저 시도
-env_path = os.path.join(PROJECT_ROOT, ".env")
-load_dotenv(env_path)
-
-# Py 폴더의 Api.env 파일도 시도 (fallback)
-api_env_path = os.path.join(PY_SCRIPT_DIR, "Api.env")
-if not os.getenv("GOOGLE_AI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
-    load_dotenv(api_env_path)
-
-# Google AI API 키 설정 (.env 파일 또는 환경 변수에서 가져오기)
 GOOGLE_AI_API_KEY = os.getenv("GOOGLE_AI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 IMAGEN_MODEL = os.getenv("IMAGEN_MODEL", "imagen-4.0-fast-generate-001")
 
-# Imagen 클라이언트 초기화
 imagen_client = None
 if not GOOGLE_AI_API_KEY:
-    print("⚠️  경고: GOOGLE_AI_API_KEY가 설정되지 않았습니다.")
-    print(f"   프로젝트 루트에 .env 파일을 생성하고 GOOGLE_AI_API_KEY=your_key를 추가하세요.")
-    print(f"   또는 환경 변수로 설정하세요.\n")
+    print("경고: GOOGLE_AI_API_KEY가 없습니다. 프로젝트 루트 또는 Py 폴더에 .env 파일에 추가하세요.")
 elif GOOGLE_AI_API_KEY:
     try:
         os.environ["GOOGLE_API_KEY"] = GOOGLE_AI_API_KEY
@@ -163,21 +151,15 @@ def generate_image_with_imagen(output_path, item_name, description="", archetype
                 if response.generated_images:
                     generated_image = response.generated_images[0]
                     
-                    # PIL Image로 변환 (여러 방법 시도)
                     img = None
                     try:
-                        # 방법 1: 직접 PIL Image인 경우
                         if hasattr(generated_image.image, 'resize'):
                             img = generated_image.image
-                        # 방법 2: _pil_image 속성이 있는 경우
                         elif hasattr(generated_image.image, '_pil_image'):
                             img = generated_image.image._pil_image
-                        # 방법 3: bytes 데이터인 경우
                         elif isinstance(generated_image.image, bytes):
                             img = Image.open(BytesIO(generated_image.image))
-                        # 방법 4: 다른 속성들 확인
                         else:
-                            # 일반적인 속성명 시도
                             for attr_name in ['pil_image', 'data', 'bytes', 'content']:
                                 if hasattr(generated_image.image, attr_name):
                                     img_data = getattr(generated_image.image, attr_name)

@@ -19,60 +19,128 @@ MonoBehaviour:
     m_Key: chemical_plant
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270101
+    m_Key: chemical_plant_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270002
     m_Key: component_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270102
+    m_Key: component_plant_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
     m_Key: engine_plant
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270103
+    m_Key: engine_plant_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270004
     m_Key: heavy_factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270104
+    m_Key: heavy_factory_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270005
     m_Key: light_factory
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270105
+    m_Key: light_factory_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270006
     m_Key: load
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270106
+    m_Key: load_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270007
-    m_Key: lumber_mill
+    m_Key: logging_camp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270116
+    m_Key: logging_camp_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270008
     m_Key: military_plant
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270108
+    m_Key: military_plant_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270009
     m_Key: mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270109
+    m_Key: mine_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
     m_Key: oil_pump
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270110
+    m_Key: oil_pump_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270011
     m_Key: road
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270111
+    m_Key: road_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270012
     m_Key: sawmill
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270112
+    m_Key: sawmill_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270013
     m_Key: smelter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270113
+    m_Key: smelter_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270014
     m_Key: unload
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270114
+    m_Key: unload_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226270015
     m_Key: vehicle_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270115
+    m_Key: vehicle_plant_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270201
+    m_Key: Distribution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270202
+    m_Key: Production
     m_Metadata:
       m_Items: []
   m_Metadata:

@@ -29,10 +29,19 @@ namespace Evo.UI
 
         [EvoHeader("Title Display", Constants.CUSTOM_EDITOR_ID)]
         [SerializeField] private TextMeshProUGUI titleObject;
+        [SerializeField] private bool animateTitleDirectionally = false;
         [SerializeField] private AnimationCurve titleSlideCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
         [SerializeField, Range(0, 1)] private float titleSlideDuration = 0.2f;
         [SerializeField, Range(0, 0.5f)] private float titleChangeDelay = 0;
         [SerializeField] private Vector2 titleSlideOffset = new(0, -25);
+
+        [EvoHeader("Indicator", Constants.CUSTOM_EDITOR_ID)]
+        [SerializeField] private RectTransform indicatorObject;
+        [SerializeField] private IndicatorDirection indicatorDirection = IndicatorDirection.Horizontal;
+        [SerializeField] private bool indicatorAutoSize = true;
+        [SerializeField] private float indicatorStretch = 50f;
+        [SerializeField] private AnimationCurve indicatorCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        [SerializeField, Range(0.01f, 1)] private float indicatorDuration = 0.3f;
 
         [EvoHeader("Events", Constants.CUSTOM_EDITOR_ID)]
         public UnityEvent<int> onTabChanged = new();
@@ -44,7 +53,8 @@ namespace Evo.UI
         bool isAnimating = false;
         readonly Dictionary<string, int> tabIDToIndex = new();
 
-        // Tab name animation cache
+        // Cache
+        Coroutine indicatorCoroutine;
         CanvasGroup titleCanvasGroup;
         const float TAB_NAME_ANIMATION_SPLIT = 0.5f;
 
@@ -55,6 +65,12 @@ namespace Evo.UI
             Scale,
             SlideHorizontal,
             SlideVertical
+        }
+
+        public enum IndicatorDirection
+        {
+            Horizontal,
+            Vertical
         }
 
         void Awake()
@@ -69,7 +85,7 @@ namespace Evo.UI
         void Start()
         {
             InitializeTabs();
-            OpenTab(defaultTabIndex);
+            OpenTab(defaultTabIndex, false);
         }
 
         void OnEnable()
@@ -80,7 +96,7 @@ namespace Evo.UI
             int cachedIndex = upcomingTabIndex;
             currentTabIndex = -1;
             upcomingTabIndex = -1;
-            OpenTab(cachedIndex);
+            OpenTab(cachedIndex, false);
         }
 
         void OnDisable()
@@ -105,7 +121,11 @@ namespace Evo.UI
                 // Map tab ID to index (validate unique IDs)
                 if (!string.IsNullOrEmpty(tab.tabID))
                 {
-                    if (tabIDToIndex.ContainsKey(tab.tabID)) { Debug.LogWarning($"Duplicate tab ID '{tab.tabID}' found at index {i}. Each tab should have a unique ID.", this); }
+                    if (tabIDToIndex.ContainsKey(tab.tabID))
+                    {
+                        Debug.LogWarning($"Duplicate tab ID '{tab.tabID}' found at index {i}. " +
+                        $"Each tab should have a unique ID.", this);
+                    }
                     else { tabIDToIndex[tab.tabID] = i; }
                 }
 
@@ -163,7 +183,7 @@ namespace Evo.UI
             return false;
         }
 
-        IEnumerator SwitchTab(int newTabIndex)
+        IEnumerator SwitchTab(int newTabIndex, bool animate = true)
         {
             isAnimating = true;
             upcomingTabIndex = newTabIndex;
@@ -197,10 +217,14 @@ namespace Evo.UI
             UpdateButtonStates(newTabIndex);
 
             // Animate header text
-            if (titleObject != null) { StartCoroutine(AnimateTabTitle(currentTab, newTab)); }
+            if (titleObject != null) { StartCoroutine(AnimateTabTitle(currentTab, newTab, currentTabIndex, newTabIndex)); }
+
+            // Trigger Indicator Animation
+            UpdateIndicator(newTab, animate);
 
             // Perform animation
-            yield return StartCoroutine(AnimateTabTransition(currentTab, newTab, newTabIndex));
+            if (animate) { yield return StartCoroutine(AnimateTabTransition(currentTab, newTab, newTabIndex)); }
+            else { yield return StartCoroutine(AnimateNone(currentTab, newTab)); }
 
             // Disable old tab if needed
             if (currentTab != null && disableInvisibleTabs && currentTab.tabObject != null) { currentTab.tabObject.gameObject.SetActive(false); }
@@ -213,12 +237,140 @@ namespace Evo.UI
             SelectUIElement(newTab);
         }
 
-        IEnumerator AnimateTabTitle(Item previousTab, Item newTab)
+        void UpdateIndicator(Item targetTab, bool animate)
+        {
+            if (indicatorObject == null || !gameObject.activeInHierarchy)
+                return;
+
+            if (indicatorCoroutine != null) { StopCoroutine(indicatorCoroutine); }
+            indicatorCoroutine = StartCoroutine(AnimateIndicatorRoutine(targetTab, animate));
+        }
+
+        IEnumerator AnimateIndicatorRoutine(Item targetTab, bool animate)
+        {
+            // Wait for end of frame to ensure layout rebuilds if this was called during initialization
+            if (!animate) { yield return new WaitForEndOfFrame(); }
+
+            RectTransform targetRect = (targetTab != null && targetTab.tabButton != null)
+                ? targetTab.tabButton.GetComponent<RectTransform>() : null;
+
+            // Capture current visual state (world space)
+            Vector3 worldPos = indicatorObject.position;
+            Vector2 startSize = indicatorObject.sizeDelta;
+            Vector2 startAnchoredPos;
+
+            // Determine Target Values
+            Vector2 targetAnchoredPos;
+            Vector2 targetSize = startSize;
+
+            if (targetRect != null)
+            {
+                // Apply target anchors and pivot
+                if (indicatorDirection == IndicatorDirection.Horizontal)
+                {
+                    indicatorObject.anchorMin = new Vector2(targetRect.anchorMin.x, indicatorObject.anchorMin.y);
+                    indicatorObject.anchorMax = new Vector2(targetRect.anchorMax.x, indicatorObject.anchorMax.y);
+                    indicatorObject.pivot = new Vector2(targetRect.pivot.x, indicatorObject.pivot.y);
+                }
+                else
+                {
+                    indicatorObject.anchorMin = new Vector2(indicatorObject.anchorMin.x, targetRect.anchorMin.y);
+                    indicatorObject.anchorMax = new Vector2(indicatorObject.anchorMax.x, targetRect.anchorMax.y);
+                    indicatorObject.pivot = new Vector2(indicatorObject.pivot.x, targetRect.pivot.y);
+                }
+
+                // Restore visual position after anchor change
+                indicatorObject.position = worldPos;
+                startAnchoredPos = indicatorObject.anchoredPosition;
+                targetAnchoredPos = indicatorObject.anchoredPosition; // Default to current
+
+                // Calculate target position and size based on target rect
+                if (indicatorDirection == IndicatorDirection.Horizontal)
+                {
+                    targetAnchoredPos.x = targetRect.anchoredPosition.x;
+                    if (indicatorAutoSize) { targetSize.x = targetRect.sizeDelta.x; }
+                }
+                else
+                {
+                    targetAnchoredPos.y = targetRect.anchoredPosition.y;
+                    if (indicatorAutoSize) { targetSize.y = targetRect.sizeDelta.y; }
+                }
+            }
+            else
+            {
+                // Keep existing anchors/pivots to shrink in place.
+                startAnchoredPos = indicatorObject.anchoredPosition;
+                targetAnchoredPos = startAnchoredPos;
+
+                // Shrink size to 0 on relevant axis
+                if (indicatorDirection == IndicatorDirection.Horizontal) { targetSize.x = 0; }
+                else { targetSize.y = 0; }
+            }
+
+            // Animate or Snap
+            if (animate && Application.isPlaying)
+            {
+                float elapsed = 0f;
+                while (elapsed < indicatorDuration)
+                {
+                    elapsed += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsed / indicatorDuration);
+                    float curveValue = indicatorCurve.Evaluate(t);
+
+                    // Calculate stretch based on progression
+                    // Only stretch if there's a target, otherwise just shrink (disappear)
+                    float stretchValue = (targetRect != null) ? Mathf.Sin(Mathf.Clamp01(curveValue) * Mathf.PI) * indicatorStretch : 0f;
+
+                    // Lerp specific axis only
+                    Vector2 currentPos = indicatorObject.anchoredPosition;
+                    Vector2 currentSize = indicatorObject.sizeDelta;
+
+                    if (indicatorDirection == IndicatorDirection.Horizontal)
+                    {
+                        currentPos.x = Mathf.Lerp(startAnchoredPos.x, targetAnchoredPos.x, curveValue);
+                        currentSize.x = Mathf.Lerp(startSize.x, targetSize.x, curveValue) + stretchValue;
+                    }
+                    else
+                    {
+                        currentPos.y = Mathf.Lerp(startAnchoredPos.y, targetAnchoredPos.y, curveValue);
+                        currentSize.y = Mathf.Lerp(startSize.y, targetSize.y, curveValue) + stretchValue;
+                    }
+
+                    indicatorObject.anchoredPosition = currentPos;
+                    indicatorObject.sizeDelta = currentSize;
+                    yield return null;
+                }
+            }
+
+            // Ensure exact snap at end
+            Vector2 finalPos = indicatorObject.anchoredPosition;
+            Vector2 finalSize = indicatorObject.sizeDelta;
+
+            if (indicatorDirection == IndicatorDirection.Horizontal)
+            {
+                finalPos.x = targetAnchoredPos.x;
+                finalSize.x = targetSize.x;
+            }
+            else
+            {
+                finalPos.y = targetAnchoredPos.y;
+                finalSize.y = targetSize.y;
+            }
+
+            indicatorObject.anchoredPosition = finalPos;
+            indicatorObject.sizeDelta = finalSize;
+        }
+
+        IEnumerator AnimateTabTitle(Item previousTab, Item newTab, int previousIndex, int newIndex)
         {
             if (titleObject == null || titleCanvasGroup == null)
                 yield break;
 
             float halfDuration = titleSlideDuration * TAB_NAME_ANIMATION_SPLIT;
+
+            // Calculate effective offset based on direction if enabled
+            Vector2 currentSlideOffset = titleSlideOffset;
+            if (animateTitleDirectionally && newIndex < previousIndex) { currentSlideOffset = -titleSlideOffset; }
 
             // Animate out (previous tab name)
             if (previousTab != null)
@@ -233,13 +385,13 @@ namespace Evo.UI
                     float progress = elapsed / halfDuration;
                     float curveValue = titleSlideCurve.Evaluate(progress);
 
-                    titleObject.rectTransform.anchoredPosition = Vector2.Lerp(startPos, startPos - titleSlideOffset, curveValue);
+                    titleObject.rectTransform.anchoredPosition = Vector2.Lerp(startPos, startPos - currentSlideOffset, curveValue);
                     titleCanvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, progress);
 
                     yield return null;
                 }
 
-                titleObject.rectTransform.anchoredPosition = startPos - titleSlideOffset;
+                titleObject.rectTransform.anchoredPosition = startPos - currentSlideOffset;
                 titleCanvasGroup.alpha = 0f;
             }
 
@@ -251,7 +403,7 @@ namespace Evo.UI
 
             // Animate in (new tab name)
             Vector2 targetPos = Vector2.zero;
-            titleObject.rectTransform.anchoredPosition = titleSlideOffset;
+            titleObject.rectTransform.anchoredPosition = currentSlideOffset;
             titleCanvasGroup.alpha = 0f;
 
             float elapsedIn = 0f;
@@ -260,7 +412,7 @@ namespace Evo.UI
                 elapsedIn += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
                 float progress = elapsedIn / halfDuration;
 
-                titleObject.rectTransform.anchoredPosition = Vector2.Lerp(titleSlideOffset, targetPos, progress);
+                titleObject.rectTransform.anchoredPosition = Vector2.Lerp(currentSlideOffset, targetPos, progress);
                 titleCanvasGroup.alpha = Mathf.Lerp(0f, 1f, progress);
 
                 yield return null;
@@ -525,17 +677,20 @@ namespace Evo.UI
             onComplete?.Invoke();
         }
 
-        public void OpenTab(string tabID)
+        public void OpenTab(string tabID) => OpenTab(tabID, true);
+        public void OpenTab(int tabIndex) => OpenTab(tabIndex, true);
+
+        public void OpenTab(string tabID, bool animate = true)
         {
             if (string.IsNullOrEmpty(tabID)) { return; }
-            if (tabIDToIndex.TryGetValue(tabID, out int index)) { OpenTab(index); }
+            if (tabIDToIndex.TryGetValue(tabID, out int index)) { OpenTab(index, animate); }
             else { Debug.LogWarning($"Tab with ID '{tabID}' not found! Available tabs: {string.Join(", ", tabIDToIndex.Keys)}", this); }
         }
 
-        public void OpenTab(int tabIndex)
+        public void OpenTab(int tabIndex, bool animate = true)
         {
             // Condition checks
-            if (upcomingTabIndex == tabIndex || tabs[tabIndex].tabObject == null) { return; }
+            if (tabs.Count == 0 || upcomingTabIndex == tabIndex || tabs[tabIndex].tabObject == null) { return; }
             if (tabIndex < 0 || tabIndex >= tabs.Count)
             {
                 Debug.LogWarning($"Tab index {tabIndex} is out of range. Valid range: 0 to {tabs.Count - 1}", this);
@@ -567,7 +722,17 @@ namespace Evo.UI
             }
 
             // Start the switch process
-            StartCoroutine(SwitchTab(tabIndex));
+            if (gameObject.activeInHierarchy) { StartCoroutine(SwitchTab(tabIndex, animate)); }
+            else
+            {
+                CurrentTab?.tabObject.gameObject.SetActive(false);
+
+                if (isInitialized) { upcomingTabIndex = tabIndex; }
+                else { defaultTabIndex = tabIndex; }
+
+                // If initializing inactive, snap indicator logically
+                if (upcomingTabIndex >= 0 && upcomingTabIndex < tabs.Count) { UpdateIndicator(tabs[upcomingTabIndex], false); }
+            }
         }
 
         public void OpenFirstTab()
@@ -651,7 +816,7 @@ namespace Evo.UI
 
 #if UNITY_EDITOR
         [HideInInspector] public bool objectFoldout = true;
-        [HideInInspector] public bool settingsFoldout = true;
+        [HideInInspector] public bool settingsFoldout = false;
         [HideInInspector] public bool eventsFoldout = false;
         int lastDefaultTabIndex = -1;
         bool pendingEditorUpdate = false;
@@ -704,14 +869,19 @@ namespace Evo.UI
                     canvasGroup.interactable = true;
                     canvasGroup.blocksRaycasts = true;
                     if (!tab.tabObject.gameObject.activeInHierarchy) { tab.tabObject.gameObject.SetActive(true); }
+
+                    // Update Indicator Preview
+                    UpdateIndicator(tab, false);
                 }
                 else
                 {
-                    // Hide other tabs
-                    canvasGroup.alpha = 0f;
-                    canvasGroup.interactable = false;
-                    canvasGroup.blocksRaycasts = false;
                     if (disableInvisibleTabs && tab.tabObject.gameObject.activeInHierarchy) { tab.tabObject.gameObject.SetActive(false); }
+                    else if (!disableInvisibleTabs)
+                    {
+                        canvasGroup.alpha = 0f;
+                        canvasGroup.interactable = false;
+                        canvasGroup.blocksRaycasts = false;
+                    }
                 }
 
                 // Button state 
@@ -720,16 +890,6 @@ namespace Evo.UI
 
             // Update tab name display in editor
             if (titleObject != null && defaultTabIndex >= 0 && defaultTabIndex < tabs.Count) { titleObject.text = tabs[defaultTabIndex].tabID; }
-
-            // Mark scene as dirty to save changes
-            // To-do: Replace SetDirty calls
-            /*
-            if (!Application.isPlaying)
-            {
-                // UnityEditor.EditorUtility.SetDirty(this);
-                // UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
-            }
-            */
         }
 #endif
     }

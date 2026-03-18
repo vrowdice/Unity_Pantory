@@ -1,5 +1,5 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 using Evo.EditorTools;
 
 namespace Evo.UI
@@ -28,10 +28,19 @@ namespace Evo.UI
 
         // Title Display
         SerializedProperty titleObject;
+        SerializedProperty animateTitleDirectionally;
         SerializedProperty titleSlideCurve;
         SerializedProperty titleSlideDuration;
         SerializedProperty titleChangeDelay;
         SerializedProperty titleSlideOffset;
+
+        // Indicator
+        SerializedProperty indicatorObject;
+        SerializedProperty indicatorDirection;
+        SerializedProperty indicatorAutoSize;
+        SerializedProperty indicatorStretch;
+        SerializedProperty indicatorCurve;
+        SerializedProperty indicatorDuration;
 
         // Events
         SerializedProperty onTabChanged;
@@ -54,10 +63,18 @@ namespace Evo.UI
             slideDistance = serializedObject.FindProperty("slideDistance");
 
             titleObject = serializedObject.FindProperty("titleObject");
+            animateTitleDirectionally = serializedObject.FindProperty("animateTitleDirectionally");
             titleSlideCurve = serializedObject.FindProperty("titleSlideCurve");
             titleSlideDuration = serializedObject.FindProperty("titleSlideDuration");
             titleChangeDelay = serializedObject.FindProperty("titleChangeDelay");
             titleSlideOffset = serializedObject.FindProperty("titleSlideOffset");
+
+            indicatorObject = serializedObject.FindProperty("indicatorObject");
+            indicatorDirection = serializedObject.FindProperty("indicatorDirection");
+            indicatorAutoSize = serializedObject.FindProperty("indicatorAutoSize");
+            indicatorStretch = serializedObject.FindProperty("indicatorStretch");
+            indicatorCurve = serializedObject.FindProperty("indicatorCurve");
+            indicatorDuration = serializedObject.FindProperty("indicatorDuration");
 
             onTabChanged = serializedObject.FindProperty("onTabChanged");
 
@@ -136,6 +153,8 @@ namespace Evo.UI
                 {
                     EvoEditorGUI.DrawToggle(useUnscaledTime, "Use Unscaled Time", null, true, true, true);
                     EvoEditorGUI.DrawToggle(disableInvisibleTabs, "Disable Invisible Tabs", null, true, true, true);
+
+                    // Animation Settings
                     EvoEditorGUI.BeginVerticalBackground(true);
                     {
                         EvoEditorGUI.DrawProperty(animationType, "Animation Type", null, false, false);
@@ -157,16 +176,36 @@ namespace Evo.UI
                         }
                     }
                     EvoEditorGUI.EndVerticalBackground(true);
+
+                    // Title Display
                     EvoEditorGUI.BeginVerticalBackground(true);
                     {
                         EvoEditorGUI.DrawProperty(titleObject, "Title Object", null, false, false);
                         if (titleObject.objectReferenceValue)
                         {
                             EvoEditorGUI.BeginContainer(3);
+                            EvoEditorGUI.DrawToggle(animateTitleDirectionally, "Animate Directionally", null, true, true);
                             EvoEditorGUI.DrawProperty(titleSlideCurve, "Animation Curve", null, true, true);
                             EvoEditorGUI.DrawProperty(titleSlideDuration, "Animation Duration", null, true, true);
                             EvoEditorGUI.DrawProperty(titleChangeDelay, "Change Delay", "Add a delay before setting the new tab title.", true, true);
                             EvoEditorGUI.DrawProperty(titleSlideOffset, "Animation Offset", null, false, true);
+                            EvoEditorGUI.EndContainer();
+                        }
+                    }
+                    EvoEditorGUI.EndVerticalBackground(true);
+
+                    // Indicator
+                    EvoEditorGUI.BeginVerticalBackground(true);
+                    {
+                        EvoEditorGUI.DrawProperty(indicatorObject, "Indicator Object", null, false, false);
+                        if (indicatorObject.objectReferenceValue)
+                        {
+                            EvoEditorGUI.BeginContainer(3);
+                            EvoEditorGUI.DrawToggle(indicatorAutoSize, "Auto Size", null, true, true);
+                            EvoEditorGUI.DrawProperty(indicatorDirection, "Direction", null, true, true);
+                            EvoEditorGUI.DrawProperty(indicatorStretch, "Elastic Stretch", "Amount of stretch effect during animation.", true, true);
+                            EvoEditorGUI.DrawProperty(indicatorCurve, "Animation Curve", null, true, true);
+                            EvoEditorGUI.DrawProperty(indicatorDuration, "Animation Duration", null, false, true);
                             EvoEditorGUI.EndContainer();
                         }
                     }

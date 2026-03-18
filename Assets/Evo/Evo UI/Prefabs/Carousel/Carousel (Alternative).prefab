@@ -294,18 +294,24 @@ MonoBehaviour:
     onClick:
       m_PersistentCalls:
         m_Calls: []
+    titleKey: 
+    descriptionKey: 
   - title: Item #2
     description: Description here
     background: {fileID: 21300000, guid: 6b9e7093e94dfd846a83c7e29affcee2, type: 3}
     onClick:
       m_PersistentCalls:
         m_Calls: []
+    titleKey: 
+    descriptionKey: 
   - title: Item #3
     description: Description here
     background: {fileID: 21300000, guid: aac109089a640c248b66cc0d6bae3931, type: 3}
     onClick:
       m_PersistentCalls:
         m_Calls: []
+    titleKey: 
+    descriptionKey: 
   useUnscaledTime: 0
   autoSlide: 1
   autoSlideTimer: 3
@@ -336,6 +342,8 @@ MonoBehaviour:
   animationDuration: 0.4
   indicatorShrink: 1
   slideOffset: {x: 100, y: 0}
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   itemParent: {fileID: 2730903706521304056}
   itemPreset: {fileID: 8350551265714906028, guid: d12224a5abc474f429063adadf84a6de, type: 3}
   indicatorParent: {fileID: 138896756762265976}

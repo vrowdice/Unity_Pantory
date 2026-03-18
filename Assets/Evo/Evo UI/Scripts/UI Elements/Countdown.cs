@@ -10,7 +10,7 @@ namespace Evo.UI
     [HelpURL(Constants.HELP_URL + "ui-elements/countdown")]
     [AddComponentMenu("Evo/UI/UI Elements/Countdown")]
     [RequireComponent(typeof(RectTransform))]
-    public class Countdown : MonoBehaviour
+    public class Countdown : MonoBehaviour, IStylerHandler
     {
         [EvoHeader("Timer", Constants.CUSTOM_EDITOR_ID)]
         [Range(0, 23)] public int hours = 2;
@@ -61,6 +61,7 @@ namespace Evo.UI
         bool isRunning;
         double currentTime;
         int lastDisplayedHours = -1, lastDisplayedMinutes = -1, lastDisplayedSeconds = -1;
+        bool pendingRedraw;
 
         [System.Serializable]
         public class DigitDisplay
@@ -70,6 +71,18 @@ namespace Evo.UI
             public TextMeshProUGUI animText;
             public string currentValue = "0";
             public bool isAnimating = false;
+        }
+
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => stylerPreset;
+            set
+            {
+                if (stylerPreset == value) { return; }
+                stylerPreset = value;
+                UpdateStyler();
+            }
         }
 
         void Awake()
@@ -85,7 +98,7 @@ namespace Evo.UI
         void OnEnable()
         {
             if (autoStart)
-            { 
+            {
                 StartTimer();
                 CreateTimerDisplay();
                 UpdateDisplayImmediate();
@@ -97,6 +110,14 @@ namespace Evo.UI
             if (isRunning)
             {
                 PauseTimer();
+            }
+        }
+
+        void OnRectTransformDimensionsChange()
+        {
+            if (gameObject.activeInHierarchy && !Application.isPlaying)
+            {
+                RequestRedraw();
             }
         }
 
@@ -127,6 +148,30 @@ namespace Evo.UI
             minutes = (totalSeconds % 3600) / 60;
             seconds = totalSeconds % 60;
             if (hours != prevHours || minutes != prevMinutes || seconds != prevSeconds) { UpdateDisplay(); }
+        }
+
+        void RequestRedraw()
+        {
+#if UNITY_EDITOR
+            if (pendingRedraw)
+                return;
+
+            pendingRedraw = true;
+
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                pendingRedraw = false;
+                if (this != null)
+                {
+                    currentTime = (double)(hours * 3600 + minutes * 60 + seconds);
+                    CreateTimerDisplay();
+                    UpdateDisplayImmediate();
+                }
+            };
+#else
+            CreateTimerDisplay();
+            UpdateDisplayImmediate();
+#endif
         }
 
         void CreateTimerDisplay()
@@ -351,7 +396,7 @@ namespace Evo.UI
 
         float CreateSingleDigit(float startX, float width)
         {
-            GameObject containerObj = new($"Digit {allDigits.Count}");
+            GameObject containerObj = new($"Digit {allDigits.Count}") { hideFlags = HideFlags.DontSave };
             containerObj.transform.SetParent(transform, false);
             containerObj.transform.localScale = Vector3.one;
 
@@ -385,7 +430,7 @@ namespace Evo.UI
 
         float CreateSeparatorObject(float startX, float width)
         {
-            GameObject sepObj = new($"Separator {separators.Count}");
+            GameObject sepObj = new($"Separator {separators.Count}") { hideFlags = HideFlags.DontSave };
             sepObj.transform.SetParent(transform, false);
             sepObj.transform.localScale = Vector3.one;
 
@@ -404,7 +449,7 @@ namespace Evo.UI
 
         TextMeshProUGUI CreateTextMeshPro(GameObject parent, string name)
         {
-            GameObject textObj = new(name);
+            GameObject textObj = new(name) { hideFlags = HideFlags.DontSave };
             textObj.transform.SetParent(parent.transform, false);
             textObj.transform.localScale = Vector3.one;
 
@@ -499,9 +544,12 @@ namespace Evo.UI
 
         public void RefreshDisplay()
         {
-            currentTime = (double)(hours * 3600 + minutes * 60 + seconds);
-            CreateTimerDisplay();
-            UpdateDisplayImmediate();
+            RequestRedraw();
+        }
+
+        public void UpdateStyler()
+        {
+            RequestRedraw();
         }
 
         public void StartTimer() => isRunning = true;
@@ -520,15 +568,7 @@ namespace Evo.UI
         {
             if (!Application.isPlaying && gameObject.activeInHierarchy)
             {
-                UnityEditor.EditorApplication.delayCall += () =>
-                {
-                    if (this != null)
-                    {
-                        currentTime = (double)(hours * 3600 + minutes * 60 + seconds);
-                        CreateTimerDisplay();
-                        UpdateDisplayImmediate();
-                    }
-                };
+                RequestRedraw();
             }
         }
 #endif

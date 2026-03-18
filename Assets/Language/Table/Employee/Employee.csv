@@ -1,0 +1,9 @@
+Key,Id,English(en),Japanese(ja),Korean(ko)
+"Worker",13994704896,"Worker","労働者","근로자"
+"Worker_Desc",864226263054,"A basic laborer skilled in manual tasks. The backbone of any workshop, handling physical work and basic crafting.","手作業に熟練した基本的な労働者。あらゆるワークショップの基盤となり、肉体労働と基本的なクラフト作業を担当する。","수작업에 숙련된 기본 노동자. 모든 작업장의 기반이 되어 육체 노동과 기본 제작 작업을 담당한다."
+"Technician",864226263051,"Technician","技術者","기술자"
+"Technician_Desc",864226263055,"A skilled craftsman with technical expertise. Proficient in complex assembly and advanced crafting techniques.","技術的専門知識を持つ熟練した職人。複雑な組み立てと高度なクラフト技術に精通している。","기술적 전문 지식을 가진 숙련된 장인. 복잡한 조립과 고급 제작 기술에 능통하다."
+"Researcher",864226263052,"Researcher","研究者","연구원"
+"Researcher_Desc",864226263056,"A brilliant mind dedicated to innovation and discovery. Unlocks new recipes and improves production efficiency through research.","革新と発見に専念する優秀な頭脳。研究を通じて新しいレシピを解禁し、生産効率を向上させる。","혁신과 발견에 전념하는 뛰어난 두뇌. 연구를 통해 새로운 레시피를 해금하고 생산 효율을 향상시킨다."
+"Manager",864226263053,"Manager","マネージャー","관리자"
+"Manager_Desc",864226263057,"An experienced leader who oversees operations and staff. Boosts team morale and reduces fatigue through efficient management.","業務とスタッフを監督する経験豊富なリーダー。効率的な管理によりチームの士気を高め、疲労を軽減する。","운영과 직원을 감독하는 경험 많은 리더. 효율적인 관리로 팀 사기를 높이고 피로를 줄인다."

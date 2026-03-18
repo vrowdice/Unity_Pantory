@@ -20,9 +20,8 @@ public class TitleDeltaTextPanel : MonoBehaviour
 
         if (_deltaText != null)
         {
-            // + - 기호와 값 표시 (쉼표 포맷 적용)
             long longValue = (long)deltaValue;
-            string formattedValue = ReplaceUtils.FormatNumberWithCommas(longValue);
+            string formattedValue = ReplaceUtils.FormatNumber(longValue);
             
             string deltaText = deltaValue > 0f 
                 ? $"+{formattedValue}" 
@@ -31,8 +30,7 @@ public class TitleDeltaTextPanel : MonoBehaviour
                 : "0";
             
             _deltaText.text = deltaText;
-            
-            // VisualManager에서 색상 가져오기
+
             VisualManager visualManager = VisualManager.Instance;
             if (visualManager != null)
             {

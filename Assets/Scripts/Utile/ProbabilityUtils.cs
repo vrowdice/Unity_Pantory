@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ProbabilityUtils
+public static class ProbabilityUtils
 {
     /// <summary>
     /// Returns true with the given chance (between 0 and 100).

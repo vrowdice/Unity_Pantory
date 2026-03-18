@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fine_wood
   displayName: Fine Wood
-  baseValue: 30
+  baseValue: 40
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5

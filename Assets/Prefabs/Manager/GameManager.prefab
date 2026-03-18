@@ -48,21 +48,11 @@ MonoBehaviour:
   _worldCanvasSortingOrder: 1
   _worldCanvasDynamicPixelsPerUnit: 100
   _worldCanvasSize: {x: 1000, y: 1000}
-  _optionPanelPrefab: {fileID: 1923056497988357278, guid: a625bcab1fd8fcd4f84d59e9b520a492, type: 3}
-  _warningPanelPrefab: {fileID: 509094518299881478, guid: 90a762a4eed595d4fabadaa9e40a721d, type: 3}
-  _enterNamePanelPrefab: {fileID: 915623633410631137, guid: bc5f5e5569d10e94ba5162370d635536, type: 3}
-  _selectResourcePanelPrefab: {fileID: 3902504510895382675, guid: 8e5e94113a3155c4baa0c42d053bcaed, type: 3}
-  _manageThreadPanelPrefab: {fileID: 3974597957071869347, guid: 734f746900304da4798ab8efff7ebddf, type: 3}
-  _manageThreadCartegoryPanelPrefab: {fileID: 2639419400245874255, guid: f65e8985534c69643be32468ceb4c333, type: 3}
-  _productionInfoImagePrefab: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
-  _gridSortContentPrefab: {fileID: 9210800356017659960, guid: 4f082e6a291457548b44223e7a304a2c, type: 3}
-  _textPairPanelPrefab: {fileID: 5195975711048486128, guid: 2af1b22cca5536341a68e8ab542df466, type: 3}
-  _actionBtnPrefab: {fileID: 6252256842686782447, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
-  _effectTextPairPanelPrefab: {fileID: 5774520682493067643, guid: c73d844a3a8e83a4daccb49f6576b23f, type: 3}
-  _productionIconScale: 0.8
   _dataManagerPrefab: {fileID: 8528956353445437084, guid: 10c608d4ef825d14b8a641b7ad998c7f, type: 3}
   _visualManagerPrefab: {fileID: 3783952558090352044, guid: a9a6b4feda52725479ea0aa16606b313, type: 3}
   _saveLoadManagerPrefab: {fileID: 8979309171805832512, guid: 74be5c094f98f1c479a5375745d16474, type: 3}
   _sceneLoadManagerPrefab: {fileID: 9005788335752144167, guid: b38980ce5d78c9f4a8386184e1f9c3b4, type: 3}
   _soundManagerPrefab: {fileID: 4907807080177921240, guid: 5a2939907e18a914486a45cc7d8e150e, type: 3}
   _poolingManagerPrefab: {fileID: 2943756751407442316, guid: 345e8bd9ccc9eef49b8d1e29ed7838cf, type: 3}
+  _uiManagerPrefab: {fileID: 5489666049234866014, guid: 9a8876ab6e3fbd34dbf8898c1d84abef, type: 3}
+  _tutorialManagerPrefab: {fileID: 3965149524578926930, guid: be55c2f7090d1ee49b475355679e2f5d, type: 3}

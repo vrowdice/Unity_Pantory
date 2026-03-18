@@ -1,18 +1,9 @@
 fileFormatVersion: 2
 guid: 1e6059da5240f364c8332b068dec390f
-MonoImporter:
-  externalObjects: {}
-  serializedVersion: 2
-  defaultReferences: []
-  executionOrder: 0
-  icon: {instanceID: 0}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
   productId: 310303
   packageName: Evo UI - Modern UI Framework
-  packageVersion: 1.1.1
+  packageVersion: 1.7.0
   assetPath: Assets/Evo/Evo UI/Editor/Scripts/Layout/PagesEditor.cs
-  uploadId: 827088
+  uploadId: 856698

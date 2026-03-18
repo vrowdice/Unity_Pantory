@@ -84,7 +84,7 @@ namespace Evo.UI
         {
             base.OnPointerEnter(eventData);
           
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             isPointerOver = true;
 
             UpdateAnimationState();
@@ -94,7 +94,7 @@ namespace Evo.UI
         {
             base.OnPointerExit(eventData);
         
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             isPointerOver = false;
 
             UpdateAnimationState();
@@ -104,7 +104,7 @@ namespace Evo.UI
         {
             base.OnPointerDown(eventData);
         
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             isPressed = true;
 
             UpdateAnimationState();
@@ -114,17 +114,17 @@ namespace Evo.UI
         {
             base.OnPointerUp(eventData);
         
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             isPressed = false;
          
             UpdateAnimationState();
         }
 
-        public virtual void OnSelect(PointerEventData eventData)
+        public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
            
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             isPointerOver = true;
 
             UpdateAnimationState();
@@ -134,7 +134,7 @@ namespace Evo.UI
         {
             base.OnDeselect(eventData);
         
-            if (!interactable) { return; }
+            if (!IsInteractable()) { return; }
             isPointerOver = false;
 
             UpdateAnimationState();

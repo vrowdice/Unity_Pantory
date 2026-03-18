@@ -17,6 +17,8 @@ namespace Evo.UI
         SerializedProperty canvasGroup;
         SerializedProperty image;
         SerializedProperty text;
+        SerializedProperty onAnimationStart;
+        SerializedProperty onAnimationEnd;
 
         // Helpers
         bool runtimeFoldout = true;
@@ -32,6 +34,8 @@ namespace Evo.UI
             canvasGroup = serializedObject.FindProperty("canvasGroup");
             image = serializedObject.FindProperty("image");
             text = serializedObject.FindProperty("text");
+            onAnimationStart = serializedObject.FindProperty("onAnimationStart");
+            onAnimationEnd = serializedObject.FindProperty("onAnimationEnd");
 
             // Register this editor for hover repaints
             EvoEditorGUI.RegisterEditor(this);
@@ -58,6 +62,7 @@ namespace Evo.UI
             DrawGroupsSection();
             DrawSettingsSection();
             DrawReferencesSection();
+            DrawEventsSection();
 
             EvoEditorGUI.EndCenteredInspector();
             serializedObject.ApplyModifiedProperties();
@@ -90,6 +95,23 @@ namespace Evo.UI
             EvoEditorGUI.AddFoldoutSpace();
         }
 
+        void DrawEventsSection()
+        {
+            EvoEditorGUI.BeginVerticalBackground();
+
+            if (EvoEditorGUI.DrawFoldout(ref animator.eventsFoldout, "Events", EvoEditorGUI.GetIcon("UI_Event")))
+            {
+                EvoEditorGUI.BeginContainer();
+                {
+                    EditorGUILayout.PropertyField(onAnimationStart, new GUIContent("On Animation Start", "Called when any animation group starts"));
+                    EditorGUILayout.PropertyField(onAnimationEnd, new GUIContent("On Animation End", "Called when any animation group ends (all animations complete)"));
+                }
+                EvoEditorGUI.EndContainer();
+            }
+
+            EvoEditorGUI.EndVerticalBackground();
+        }
+
         void DrawSettingsSection()
         {
             EvoEditorGUI.BeginVerticalBackground();
@@ -106,6 +128,7 @@ namespace Evo.UI
             EvoEditorGUI.EndVerticalBackground();
             EvoEditorGUI.AddLayoutSpace();
         }
+
         void DrawReferencesSection()
         {
             EvoEditorGUI.BeginVerticalBackground();
@@ -123,8 +146,8 @@ namespace Evo.UI
             }
 
             EvoEditorGUI.EndVerticalBackground();
+            EvoEditorGUI.AddLayoutSpace();
         }
-
 
         void DrawRuntimeSection()
         {
@@ -254,6 +277,10 @@ namespace Evo.UI
                         GUILayout.Space(3);
                     }
 
+                    // Draw local events section
+                    DrawGroupEvents(groupProp, group);
+                    GUILayout.Space(3);
+
                     // Add animation button
                     if (EvoEditorGUI.DrawButton("Add Animation", "Add", height: 22, iconSize: 8))
                     {
@@ -267,6 +294,35 @@ namespace Evo.UI
             }
 
             EvoEditorGUI.EndVerticalBackground(true);
+        }
+
+        void DrawGroupEvents(SerializedProperty groupProp, UIAnimator.AnimationGroup group)
+        {
+            EvoEditorGUI.BeginVerticalBackground();
+
+            SerializedProperty eventsExpandedProp = groupProp.FindPropertyRelative("eventsExpanded");
+
+            // Foldout button
+            if (EvoEditorGUI.DrawButton("Local Events", group.eventsExpanded ? "Minimize" : "Expand", height: 22, normalColor: Color.clear,
+                iconSize: 8, textAlignment: TextAnchor.MiddleLeft, iconAlignment: EvoEditorGUI.ButtonAlignment.Left))
+            {
+                eventsExpandedProp.boolValue = !eventsExpandedProp.boolValue;
+            }
+
+            if (group.eventsExpanded)
+            {
+                EvoEditorGUI.BeginContainer(3);
+                {
+                    SerializedProperty onGroupStartProp = groupProp.FindPropertyRelative("onGroupStart");
+                    SerializedProperty onGroupEndProp = groupProp.FindPropertyRelative("onGroupEnd");
+
+                    EditorGUILayout.PropertyField(onGroupStartProp, new GUIContent("On Group Start", "Called when this animation group starts"));
+                    EditorGUILayout.PropertyField(onGroupEndProp, new GUIContent("On Group End", "Called when this animation group ends (all animations complete)"));
+                }
+                EvoEditorGUI.EndContainer();
+            }
+
+            EvoEditorGUI.EndVerticalBackground();
         }
 
         void DrawAnimation(SerializedProperty animProp, int animIndex, UIAnimator.AnimationGroup group)

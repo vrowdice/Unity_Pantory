@@ -4,7 +4,7 @@ namespace Evo.UI
 {
     [DisallowMultipleComponent]
     [HelpURL(Constants.HELP_URL + "effects/selection-box-override")]
-    [AddComponentMenu("Evo/UI/Effects/Selection Box Override")]
+    [AddComponentMenu("Evo/UI/Navigation/Selection Box Override")]
     public class SelectionBoxOverride : MonoBehaviour
     {
         [Header("Settings")]

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: aluminum_ingot
   displayName: Aluminum Ingot
-  baseValue: 120
+  baseValue: 142
   marketSensitivity: 0.19
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

@@ -13,6 +13,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     private Dictionary<string, ResourceEntry> _resourceDic;
 
     public event Action OnResourceChanged;
+    public long TotalCreditChange { get; private set; }
 
     /// <summary>
     /// ResourceService 생성자
@@ -33,14 +34,14 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
                     Debug.LogWarning($"[ResourceDataHandler] Resource already registered: {data.id}");
                     continue;
                 }
-                _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData != null ? _initialResourceData.priceHistoryCapacity : 60);
+                _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData.priceHistoryCapacity);
             }
         }
     }
 
     public ResourceEntry GetResourceEntry(string resourceId)
     {
-        if (_resourceDic.TryGetValue(resourceId, out var entry))
+        if (_resourceDic.TryGetValue(resourceId, out ResourceEntry entry))
         {
             return entry;
         }
@@ -51,31 +52,6 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public Dictionary<string, ResourceEntry> GetAllResources()
     {
         return new Dictionary<string, ResourceEntry>(_resourceDic);
-    }
-
-    public long CalculateResourceDeltaChangeCredit()
-    {
-        long totalCreditChange = 0;
-
-        foreach (ResourceEntry entry in _resourceDic.Values)
-        {
-            long basePrice = entry.state.currentValue;
-            int marketDelta = entry.state.marketDeltaCount;
-            int threadDelta = entry.state.threadDeltaCount;
-
-            totalCreditChange += (long)threadDelta * basePrice;
-
-            if (marketDelta > 0)
-            {
-                totalCreditChange += (long)marketDelta * GetSalePrice(entry.data.id);
-            }
-            else if (marketDelta < 0)
-            {
-                totalCreditChange += (long)marketDelta * GetPurchasePrice(entry.data.id);
-            }
-        }
-
-        return totalCreditChange;
     }
 
     public void ModifyThreadDelta(string resourceId, int count)
@@ -100,13 +76,32 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
     }
 
+    public bool ModifyResourceCount(string resourceId, int count)
+    {
+        ResourceEntry resourceEntry = null;
+        _resourceDic.TryGetValue(resourceId, out resourceEntry);
+        if (resourceEntry != null)
+        {
+            bool result = resourceEntry.ModifyCount(count);
+            if(result)
+            {
+                OnResourceChanged?.Invoke();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
     /// <summary>
     /// 누적된 deltaCount를 실제 자원 수량에 반영하고 초기화합니다.
     /// </summary>
     public void HandleDayChanged()
     {
         ApplyDeltaChange();
-
         ApplyCurrentEventValue();
         ApplyValueChange();
 
@@ -115,17 +110,44 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
     private void ApplyDeltaChange()
     {
+        long totalCreditChange = 0;
+
         foreach (ResourceEntry entry in _resourceDic.Values)
         {
-            int changeCount = 0;
-            changeCount += entry.state.threadDeltaCount;
-            changeCount += entry.state.marketDeltaCount;
+            int threadDelta = entry.state.threadDeltaCount;
+            int marketDelta = entry.state.marketDeltaCount;
+
+            int toBuy = 0;
+            int actualSell = 0;
+            int changeCount;
+
+            if (threadDelta < 0)
+            {
+                int consumAmount = -threadDelta;
+                int fromInventory = Math.Min(consumAmount, entry.state.count);
+                toBuy = consumAmount - fromInventory;
+                int availableAfterConsumption = entry.state.count - fromInventory + toBuy;
+                actualSell = marketDelta < 0 ? Math.Min(-marketDelta, availableAfterConsumption) : 0;
+                changeCount = threadDelta + toBuy + (marketDelta > 0 ? marketDelta : -actualSell);
+            }
+            else
+            {
+                int availableAfterProduction = entry.state.count + threadDelta;
+                actualSell = marketDelta < 0 ? Math.Min(-marketDelta, availableAfterProduction) : 0;
+                changeCount = threadDelta + (marketDelta > 0 ? marketDelta : -actualSell);
+            }
+
+            if (threadDelta > 0) totalCreditChange += (long)threadDelta * GetSalePrice(entry.data.id);
+            if (toBuy > 0) totalCreditChange -= (long)toBuy * GetPurchasePrice(entry.data.id);
+            if (marketDelta > 0) totalCreditChange -= (long)marketDelta * GetPurchasePrice(entry.data.id);
+            else if (actualSell > 0) totalCreditChange += (long)actualSell * GetSalePrice(entry.data.id);
 
             entry.state.currnetChangeCount = changeCount;
             entry.ModifyCount(changeCount);
-
             entry.state.threadDeltaCount = 0;
         }
+
+        TotalCreditChange = totalCreditChange;
     }
 
     /// <summary>
@@ -176,7 +198,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
             resourceState.currentChangeValue = resourceState.currentValue - previousValue;
 
-            entry.RecordPrice(resourceState.currentValue);
+            entry.RecordPrice(resourceState.currentValue, _initialResourceData.priceHistoryCapacity);
         }
     }
 
@@ -185,7 +207,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public long GetPurchasePrice(string resourceId)
     {
-        var entry = GetResourceEntry(resourceId);
+        ResourceEntry entry = GetResourceEntry(resourceId);
         if (entry == null) return 0;
 
         float feeMultiplier = 1f + _initialResourceData.transactionFee;
@@ -197,7 +219,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public long GetSalePrice(string resourceId)
     {
-        var entry = GetResourceEntry(resourceId);
+        ResourceEntry entry = GetResourceEntry(resourceId);
         if (entry == null) return 0;
 
         float feeMultiplier = 1f - _initialResourceData.transactionFee;

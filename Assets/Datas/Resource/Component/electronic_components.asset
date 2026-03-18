@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: electronic_components
   displayName: Electronic Components
-  baseValue: 250
+  baseValue: 300
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5

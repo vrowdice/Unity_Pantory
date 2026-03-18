@@ -7,6 +7,7 @@ namespace Evo.UI
     [DisallowMultipleComponent]
     [HelpURL(Constants.HELP_URL + "ui-elements/context-menu")]
     [RequireComponent(typeof(CanvasGroup))]
+    [RequireComponent(typeof(RectTransform))]
     public class ContextMenuPreset : MonoBehaviour
     {
         [Header("References")]
@@ -54,7 +55,6 @@ namespace Evo.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         }
 
-        // Overload for SectionItems
         public void Setup(ContextMenu source, List<ContextMenu.SectionItem> sectionItems)
         {
             sourceMenu = source;
@@ -63,10 +63,24 @@ namespace Evo.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         }
 
+        public void CollapseAllSections(bool immediate = false)
+        {
+            foreach (var section in sectionInstances.Values)
+            {
+                if (section != null && section.IsExpanded)
+                {
+                    section.CollapseSubmenu(immediate);
+                }
+            }
+        }
+
         void CreateMenuItems(List<ContextMenu.Item> items)
         {
             foreach (var item in items)
             {
+                if (!item.IsActive)
+                    continue;
+
                 CreateMenuItem(item);
             }
         }
@@ -164,13 +178,15 @@ namespace Evo.UI
 
             foreach (var sectionItem in sectionItems)
             {
+                if (!sectionItem.IsActive)
+                    continue;
+
                 var item = new ContextMenu.Item
                 {
                     itemName = sectionItem.itemName,
                     icon = sectionItem.icon,
                     onClick = sectionItem.onClick,
                     customPrefab = sectionItem.customPrefab,
-                    // Convert ItemType (note: SectionItem.ItemType doesn't have Section)
                     itemType = sectionItem.itemType switch
                     {
                         ContextMenu.SectionItem.ItemType.Button => ContextMenu.Item.ItemType.Button,

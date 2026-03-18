@@ -21,12 +21,12 @@ MonoBehaviour:
     furniture, clothing, and simple tools. Flexible production allows switching between
     different product lines based on market demand.
   isUnlockedByDefault: 1
+  isProfessional: 0
   requiredEmployees: 6
   buildCost: 240
-  maintenanceCost: 12
+  maintenanceCost: 10
   size: {x: 2, y: 2}
-  requiredResearchId: 
-  handlingResource: {fileID: 0}
+  requiredResearch: {fileID: 11400000, guid: f60d293f759af1e46a247c69045fc81f, type: 2}
   allowedResourceTypes: 0300000005000000
   _producibleResources:
   - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
@@ -34,5 +34,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
   inputPosition: {x: -1, y: 1}
   outputPosition: {x: 2, y: 1}
-  baseProductionRate: 1
-  processingTime: 0.9

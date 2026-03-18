@@ -435,6 +435,8 @@ MonoBehaviour:
     m_Right: 20
     m_Top: 15
     m_Bottom: 15
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   customContent: 0
   allowDoubleClick: 0
   doubleClickDuration: 0.25

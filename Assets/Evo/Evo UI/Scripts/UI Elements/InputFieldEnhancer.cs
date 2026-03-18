@@ -8,9 +8,12 @@ namespace Evo.UI
     [DisallowMultipleComponent]
     [HelpURL(Constants.HELP_URL + "ui-elements/input-field")]
     [AddComponentMenu("Evo/UI/UI Elements/Input Field Enhancer")]
-    public class InputFieldEnhancer : MonoBehaviour
+    public class InputFieldEnhancer : MonoBehaviour, IStylerHandler
     {
         [EvoHeader("Settings", Constants.CUSTOM_EDITOR_ID)]
+        public bool clearAfterSubmit = false;
+        [SerializeField] private bool deselectOnEndEdit = false;
+        [SerializeField] private bool handleShiftEnter = false;
         [SerializeField] private PlaceholderAnimation animationType = PlaceholderAnimation.Slide;
         [SerializeField] private Vector2 slideOffset = new(0, 20);
         [SerializeField, Range(0, 1)] private float fadeAlpha = 0;
@@ -20,10 +23,20 @@ namespace Evo.UI
 
         [EvoHeader("References", Constants.CUSTOM_EDITOR_ID)]
         public TMP_InputField source;
-        [SerializeField] private Interactive interactableObject;
+        public Interactive interactableObject;
 
         [EvoHeader("Events", Constants.CUSTOM_EDITOR_ID)]
         public SubmitEvent onSubmit = new();
+
+        // Cache
+        TextMeshProUGUI placeholderText;
+        RectTransform placeholderRect;
+
+        // Animation state
+        Coroutine currentAnimation;
+        Vector2 originalPlaceholderPosition;
+        Vector3 originalPlaceholderScale;
+        float originalPlaceholderAlpha = 0.5f;
 
         public enum PlaceholderAnimation
         {
@@ -34,15 +47,16 @@ namespace Evo.UI
 
         [System.Serializable] public class SubmitEvent : UnityEvent<string> { }
 
-        // Cache
-        TextMeshProUGUI placeholderText;
-        RectTransform placeholderRect;
-
-        // Animation state
-        Coroutine currentAnimation;
-        Vector2 originalPlaceholderPosition;
-        Vector3 originalPlaceholderScale;
-        Color originalPlaceholderColor;
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => null;
+            set
+            {
+                if (placeholderText != null && !gameObject.activeInHierarchy) { UpdateStyler(); }
+                else if (placeholderText != null) { StartCoroutine(UpdateStylerNextFrame()); }
+            }
+        }
 
         void Awake()
         {
@@ -66,6 +80,13 @@ namespace Evo.UI
                 return;
             }
 
+            // Set source settings if Shift+Enter enabled
+            if (handleShiftEnter) 
+            {
+                source.lineType = TMP_InputField.LineType.MultiLineSubmit;
+                source.onFocusSelectAll = false;
+            }
+
             source.onEndEdit.AddListener(OnEndEdit);
             source.onValueChanged.AddListener(OnValueChanged);
             source.onSelect.AddListener(delegate { AnimatePlaceholder(true); });
@@ -80,7 +101,7 @@ namespace Evo.UI
 
                 originalPlaceholderPosition = placeholderRect.anchoredPosition;
                 originalPlaceholderScale = placeholderRect.localScale;
-                originalPlaceholderColor = placeholderText.color;
+                originalPlaceholderAlpha = placeholderText.color.a;
             }
 
             if (interactableObject != null)
@@ -97,7 +118,21 @@ namespace Evo.UI
         {
             if (Utilities.WasEnterKeyPressed())
             {
+                if (handleShiftEnter && Utilities.WasShiftKeyPressed())
+                {
+                    source.text += "\n";
+                    Focus();
+                    source.MoveTextEnd(false);
+                    return;
+                }
+
                 onSubmit?.Invoke(value);
+                if (clearAfterSubmit) { source.text = null; }
+            }
+
+            if (deselectOnEndEdit && Utilities.GetSelectedObject() == source.gameObject)
+            {
+                Utilities.SetSelectedObject(null);
             }
         }
 
@@ -110,7 +145,7 @@ namespace Evo.UI
         void OnInteractableStateChanged(InteractionState newState)
         {
             if (newState == InteractionState.Disabled && source.interactable) { source.interactable = false; }
-            if (!source.interactable) { interactableObject.SetState(InteractionState.Disabled); }
+            else if (!source.interactable) { source.interactable = true; }
         }
 
         void AnimatePlaceholder(bool animate)
@@ -123,11 +158,9 @@ namespace Evo.UI
                 case PlaceholderAnimation.Fade:
                     currentAnimation = StartCoroutine(AnimateFade(animate));
                     break;
-
                 case PlaceholderAnimation.FadeScale:
                     currentAnimation = StartCoroutine(AnimateFadeScale(animate));
                     break;
-
                 case PlaceholderAnimation.Slide:
                     currentAnimation = StartCoroutine(AnimateSlide(animate));
                     break;
@@ -143,12 +176,9 @@ namespace Evo.UI
         IEnumerator AnimateFade(bool animate)
         {
             Color startColor = placeholderText.color;
-            Color sourceColor = animate ?
-                new Color(originalPlaceholderColor.r, originalPlaceholderColor.g, originalPlaceholderColor.b, fadeAlpha) :
-                originalPlaceholderColor;
+            Color sourceColor = new(startColor.r, startColor.g, startColor.b, animate ? fadeAlpha : originalPlaceholderAlpha);
 
             float elapsed = 0f;
-
             while (elapsed < animationDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
@@ -167,15 +197,12 @@ namespace Evo.UI
         IEnumerator AnimateFadeScale(bool animate)
         {
             Color startColor = placeholderText.color;
-            Color sourceColor = animate ?
-                new Color(originalPlaceholderColor.r, originalPlaceholderColor.g, originalPlaceholderColor.b, fadeAlpha) :
-                originalPlaceholderColor;
+            Color sourceColor = new(startColor.r, startColor.g, startColor.b, animate ? fadeAlpha : originalPlaceholderAlpha);
 
             Vector3 startScale = placeholderRect.localScale;
             Vector3 sourceScale = animate ? originalPlaceholderScale * scaleMultiplier : originalPlaceholderScale;
 
             float elapsed = 0f;
-
             while (elapsed < animationDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
@@ -202,7 +229,6 @@ namespace Evo.UI
             Vector3 sourceScale = animate ? originalPlaceholderScale * scaleMultiplier : originalPlaceholderScale;
 
             float elapsed = 0f;
-
             while (elapsed < animationDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
@@ -220,10 +246,49 @@ namespace Evo.UI
             currentAnimation = null;
         }
 
+        IEnumerator UpdateStylerNextFrame()
+        {
+            // Disable the text to ensure it's not "blinking" when the placeholder is active
+            if (!string.IsNullOrEmpty(source.text)) { placeholderText.enabled = false; }
+
+            // Check for affected transitions
+            if (animationType != PlaceholderAnimation.Slide && currentAnimation != null)
+            {
+                StopCoroutine(currentAnimation);
+                currentAnimation = null;
+            }
+
+            // Wait a frame for child object to be updated properly
+            yield return new WaitForEndOfFrame();
+
+            // Update cached and current references
+            UpdateStyler();
+
+            // We're done
+            if (!string.IsNullOrEmpty(source.text)) { placeholderText.enabled = true; }
+        }
+
+        public void UpdateStyler()
+        {
+            if (placeholderText.TryGetComponent<StylerObject>(out var stObj) && !stObj.enableInteraction)
+            {
+                Color clr = stObj.preset.GetColor(stObj.colorID);
+                placeholderText.color = clr;
+                originalPlaceholderAlpha = placeholderText.color.a;
+                placeholderText.color = new(clr.r, clr.g, clr.b, string.IsNullOrEmpty(source.text) ? originalPlaceholderAlpha : fadeAlpha);
+            }
+        }
+
         public void Focus()
         {
             source.Select();
             source.ActivateInputField();
+        }
+
+        public void SetInteractable(bool value)
+        {
+            if (interactableObject != null) { interactableObject.SetInteractable(value); }
+            else { source.interactable = value; }
         }
 
 #if UNITY_EDITOR

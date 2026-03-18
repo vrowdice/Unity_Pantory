@@ -117,7 +117,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -426,11 +426,11 @@ namespace Evo.UI
         {
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
         }
 
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             if (!string.IsNullOrEmpty(titleKey)) { title = localizedObject.GetString(titleKey); }
             if (!string.IsNullOrEmpty(descriptionKey)) { description = localizedObject.GetString(descriptionKey); }

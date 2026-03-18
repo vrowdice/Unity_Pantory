@@ -107,7 +107,7 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
     public NewsData GetNewsData(string newsId)
     {
-        if (_newsDataDict.TryGetValue(newsId, out var data))
+        if (_newsDataDict.TryGetValue(newsId, out NewsData data))
         {
             return data;
         }

@@ -11,7 +11,7 @@ namespace Evo.UI
     [RequireComponent(typeof(RectTransform))]
     [HelpURL(Constants.HELP_URL + "ui-elements/radar-chart")]
     [AddComponentMenu("Evo/UI/UI Elements/Radar Chart")]
-    public class RadarChart : MonoBehaviour
+    public class RadarChart : MonoBehaviour, IStylerHandler
     {
         [EvoHeader("Chart Data", Constants.CUSTOM_EDITOR_ID)]
         public List<DataPoint> dataPoints = new()
@@ -103,6 +103,19 @@ namespace Evo.UI
             }
         }
 
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => stylerPreset;
+            set
+            {
+                if (stylerPreset == value) { return; }
+                stylerPreset = value;
+                UpdateStyler();
+            }
+        }
+        public void UpdateStyler() => DrawChartSafe();
+
         void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
@@ -116,7 +129,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -129,6 +142,11 @@ namespace Evo.UI
         }
 
         void OnRectTransformDimensionsChange()
+        {
+            DrawChartSafe();
+        }
+
+        void DrawChartSafe()
         {
             if (gameObject.activeInHierarchy && rectTransform != null && !pendingRedraw)
             {
@@ -159,8 +177,12 @@ namespace Evo.UI
 
         public void DrawChart()
         {
-            if (rectTransform == null)
+            if (rectTransform == null) { return; }
+            if (!gameObject.activeInHierarchy)
+            {
+                pendingRedraw = true;
                 return;
+            }
 
             ClearChart();
 
@@ -174,7 +196,7 @@ namespace Evo.UI
             radius = (minDimension / 2f) * scaleMultiplier;
 
             // Create containers with full anchors
-            GameObject gridContainer = new($"Grid {GEN_SUFFIX}");
+            GameObject gridContainer = new($"Grid {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             gridContainer.transform.SetParent(transform, false);
       
             RectTransform gridRT = gridContainer.AddComponent<RectTransform>();
@@ -183,7 +205,7 @@ namespace Evo.UI
             gridRT.offsetMin = Vector2.zero;
             gridRT.offsetMax = Vector2.zero;
 
-            GameObject dataContainer = new($"Data {GEN_SUFFIX}");
+            GameObject dataContainer = new($"Data {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             dataContainer.transform.SetParent(transform, false);
             RectTransform dataRT = dataContainer.AddComponent<RectTransform>();
             dataRT.anchorMin = Vector2.zero;
@@ -191,7 +213,7 @@ namespace Evo.UI
             dataRT.offsetMin = Vector2.zero;
             dataRT.offsetMax = Vector2.zero;
 
-            GameObject labelContainer = new($"Labels {GEN_SUFFIX}");
+            GameObject labelContainer = new($"Labels {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             labelContainer.transform.SetParent(transform, false);
             RectTransform labelRT = labelContainer.AddComponent<RectTransform>();
             labelRT.anchorMin = Vector2.zero;
@@ -278,7 +300,7 @@ namespace Evo.UI
             // Draw filled area
             if (showFill && points.Count >= 3)
             {
-                GameObject fillObj = new("Fill");
+                GameObject fillObj = new("Fill") { hideFlags = HideFlags.DontSave };
                 fillObj.transform.SetParent(container.transform, false);
 
                 RectTransform rt = fillObj.AddComponent<RectTransform>();
@@ -353,7 +375,7 @@ namespace Evo.UI
 
         void DrawLine(GameObject container, Vector2 start, Vector2 end, Color color, float thickness, string name)
         {
-            GameObject lineObj = new(name);
+            GameObject lineObj = new(name) { hideFlags = HideFlags.DontSave };
             lineObj.transform.SetParent(container.transform, false);
 
             RectTransform rt = lineObj.AddComponent<RectTransform>();
@@ -375,7 +397,7 @@ namespace Evo.UI
 
         void DrawPoint(GameObject container, Vector2 position, Color color, float size, string name)
         {
-            GameObject pointObj = new(name);
+            GameObject pointObj = new(name) { hideFlags = HideFlags.DontSave };
             pointObj.transform.SetParent(container.transform, false);
 
             RectTransform rt = pointObj.AddComponent<RectTransform>();
@@ -394,7 +416,7 @@ namespace Evo.UI
 
         void CreateLabel(string text, Vector2 position, GameObject parent, string name, TMP_FontAsset font, Color textColor, Color backgroundColor)
         {
-            GameObject labelObj = new(name);
+            GameObject labelObj = new(name) { hideFlags = HideFlags.DontSave };
             labelObj.transform.SetParent(parent.transform, false);
 
             RectTransform rt = labelObj.AddComponent<RectTransform>();
@@ -406,7 +428,7 @@ namespace Evo.UI
             // Create background first if enabled
             if (drawLabelBackground)
             {
-                GameObject bgObj = new("Background");
+                GameObject bgObj = new("Background") { hideFlags = HideFlags.DontSave };
                 bgObj.transform.SetParent(labelObj.transform, false);
 
                 RectTransform bgRt = bgObj.AddComponent<RectTransform>();
@@ -423,7 +445,7 @@ namespace Evo.UI
             }
 
             // Create text after background
-            GameObject textObj = new("Text");
+            GameObject textObj = new("Text") { hideFlags = HideFlags.DontSave };
             textObj.transform.SetParent(labelObj.transform, false);
 
             RectTransform textRt = textObj.AddComponent<RectTransform>();
@@ -476,6 +498,68 @@ namespace Evo.UI
             DrawChart();
         }
 
+        /// <summary>
+        /// Adds a new data point to the chart with a label and value.
+        /// </summary>
+        public void AddDataPoint(string label, float value)
+        {
+            dataPoints.Add(new DataPoint(label, value));
+            DrawChart();
+        }
+
+        /// <summary>
+        /// Adds a pre-configured DataPoint object to the chart.
+        /// </summary>
+        public void AddDataPoint(DataPoint point)
+        {
+            if (point != null)
+            {
+                dataPoints.Add(point);
+                DrawChart();
+            }
+        }
+
+        /// <summary>
+        /// Removes the first data point matching the specified label.
+        /// </summary>
+        /// <param name="label">The label to search for.</param>
+        public void RemoveDataPoint(string label)
+        {
+            var point = dataPoints.Find(p => p.label == label);
+            if (point != null)
+            {
+                dataPoints.Remove(point);
+                DrawChart();
+            }
+        }
+
+        /// <summary>
+        /// Removes a data point at a specific index.
+        /// </summary>
+        public void RemoveDataPoint(int index)
+        {
+            if (index >= 0 && index < dataPoints.Count)
+            {
+                dataPoints.RemoveAt(index);
+                DrawChart();
+            }
+        }
+
+        /// <summary>
+        /// Removes a specific DataPoint object reference.
+        /// </summary>
+        public void RemoveDataPoint(DataPoint point)
+        {
+            if (dataPoints.Contains(point))
+            {
+                dataPoints.Remove(point);
+                DrawChart();
+            }
+        }
+
+        /// <summary>
+        /// Sets data point using the data index.
+        /// </summary>
         public void SetDataPoint(int index, float value)
         {
             if (index >= 0 && index < dataPoints.Count)
@@ -485,6 +569,9 @@ namespace Evo.UI
             }
         }
 
+        /// <summary>
+        /// Sets data point using the data label.
+        /// </summary>
         public void SetDataPoint(string label, float value)
         {
             var point = dataPoints.Find(p => p.label == label);
@@ -495,6 +582,9 @@ namespace Evo.UI
             }
         }
 
+        /// <summary>
+        /// Sets data point using a specific data reference.
+        /// </summary>
         public void SetDataPoint(DataPoint data, string label, float value)
         {
             data.label = label;
@@ -502,9 +592,21 @@ namespace Evo.UI
             DrawChart();
         }
 
+        /// <summary>
+        /// Updates all chart data.
+        /// </summary>
         public void UpdateAllData(float[] values)
         {
             for (int i = 0; i < values.Length && i < dataPoints.Count; i++) { dataPoints[i].value = Mathf.Clamp(values[i], 0f, 100f); }
+            DrawChart();
+        }
+
+        /// <summary>
+        /// Removes all data points from the chart.
+        /// </summary>
+        public void ClearDataPoints()
+        {
+            dataPoints.Clear();
             DrawChart();
         }
 
@@ -569,11 +671,11 @@ namespace Evo.UI
         {
             if (Application.isPlaying && enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
         }
 
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (DataPoint item in dataPoints)
             {

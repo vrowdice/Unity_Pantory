@@ -15,37 +15,28 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_GUID: 58fc16af51fb1b04fb9e36409f35ba0e
   m_SerializeEntries:
-  - m_GUID: 0016ed8c2f2ad5e47bb38a1a46c27fc7
-    m_Address: Assets/Language/Table/ResourceDisplayName/ResourceDisplayName Shared
-      Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 456e196011c2ed9419127689f8898172
     m_Address: Assets/Language/Table/Building/Building Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 50732f9fa28f1df438110b6c9d789e65
-    m_Address: Assets/Language/Table/NewsDescription/NewsDescription Shared Data.asset
+  - m_GUID: 4b4055db605178142b599c1b4a299cbc
+    m_Address: Assets/Language/Table/Employee/Employee Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 56883579e18354a4c988dc94eb36f1e2
-    m_Address: Assets/Language/Table/BuildingDescription/BuildingDescription Shared
-      Data.asset
+  - m_GUID: 51b8b2d043143bc46b614498289fe684
+    m_Address: Assets/Language/Table/Expenses/Expenses Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6c0c64239e73f4648b0de1876e938649
-    m_Address: Assets/Language/Table/EmployeeDescription/EmployeeDescription Shared
-      Data.asset
+  - m_GUID: 53f8aa9b41065654f8a323cefbe21a73
+    m_Address: Assets/Language/Table/Order/Order Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 740bc9ac83aa3db418c788204869ac98
-    m_Address: Assets/Language/Table/MarketActorDescription/MarketActorDescription
-      Shared Data.asset
+  - m_GUID: 72e91faa79a78f44fb7e8d3d4e626469
+    m_Address: Assets/Language/Table/Resource/Resource Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -54,43 +45,18 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 99422b58f729b244581168e91eb4d050
-    m_Address: Assets/Language/Table/MarketPanelType/MarketPanelType Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9c43967971729554e82b9e584a256c17
-    m_Address: Assets/Language/Table/EmployeeType/EmployeeType Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: acbcbc6a4e8cbd34a9d39091062470e6
-    m_Address: Assets/Language/Table/MainPanelType/MainPanelType Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aed7278ca072b414e8b2eb19921bbfa1
     m_Address: Assets/Language/Table/MarketActor/MarketActor Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bdc46038ed61eaf4fad32491663ffca1
-    m_Address: Assets/Language/Table/BuildingType/BuildingType Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c20e3c63f3981354cba66382471db2cd
-    m_Address: Assets/Language/Table/ResourceType/ResourceType Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d435bb95bb65d204dbac50ae562f5f2e
-    m_Address: Assets/Language/Table/WarningMessage/WarningMessage Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd95d24e58d70574b952610eb5d4f8a4
     m_Address: Assets/Language/Table/Effect/Effect Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e00198e87a257ff41b02cc989c3a409a
+    m_Address: Assets/Language/Table/Tutorial/Tutorial Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -101,12 +67,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f1e74d72452eb1249a13ac4e02de7fcb
     m_Address: Assets/Language/Table/News/News Shared Data.asset
-    m_ReadOnly: 1
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ffeffd319fd382447972467e83303c2a
-    m_Address: Assets/Language/Table/ResearchDescription/ResearchDescription Shared
-      Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

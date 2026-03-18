@@ -21,7 +21,6 @@ public class InitialResearchData : ScriptableObject
     /// </summary>
     private void OnValidate()
     {
-        // Prevent negative values
         if (maxTier < 0) maxTier = 0;
         if (initialResearchPoint < 0) initialResearchPoint = 0;
     }

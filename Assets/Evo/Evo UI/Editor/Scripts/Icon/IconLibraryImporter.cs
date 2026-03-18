@@ -64,7 +64,7 @@ namespace Evo.UI
             EditorGUILayout.HelpBox(
                 "How it works:\n" +
                 "• Scans the root folder and all subfolders\n" +
-                "• Uses folder name as Category (e.g., 'Icons/Media/Play' → Category: 'Play')\n" +
+                "• Uses folder name as Category (e.g., 'Icons/Media/' → Category: 'Media')\n" +
                 "• Uses texture name as Icon ID (e.g., 'Play Circle.png' → ID: 'Play Circle')\n" +
                 "• Automatically detects sprite resolution from texture import settings\n" +
                 "• Only processes Sprite assets",
@@ -138,11 +138,7 @@ namespace Evo.UI
                     }
 
                     // Add new resolution to existing item
-                    if (existingItem.resolutions == null)
-                    {
-                        existingItem.resolutions = new List<IconLibrary.Item.Resolution>();
-                    }
-
+                    existingItem.resolutions ??= new List<IconLibrary.Item.Resolution>();
                     existingItem.resolutions.Add(new IconLibrary.Item.Resolution
                     {
                         resolution = resolution,

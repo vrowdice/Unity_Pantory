@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -11,7 +9,7 @@ namespace Evo.UI
     [RequireComponent(typeof(RectTransform))]
     [HelpURL(Constants.HELP_URL + "ui-elements/list-view")]
     [AddComponentMenu("Evo/UI/UI Elements/List View (Preview)")]
-    public class ListView : MonoBehaviour
+    public partial class ListView : MonoBehaviour, IStylerHandler
     {
         // Content
         public List<ListViewColumn> columns = new();
@@ -47,6 +45,28 @@ namespace Evo.UI
         int rowDataHash = 0;
         int layoutPropertiesHash = 0;
         int stylePropertiesHash = 0;
+
+        // Draw safety
+        bool pendingRedraw = false;
+
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => stylerPreset;
+            set
+            {
+                if (stylerPreset == value) { return; }
+                stylerPreset = value;
+                UpdateStyler();
+            }
+        }
+
+        public void UpdateStyler()
+        {
+            // Invalidate style hash to ensure visual update even if the preset reference is the same
+            stylePropertiesHash = 0;
+            RequestRefresh();
+        }
 
         void Awake()
         {
@@ -120,18 +140,18 @@ namespace Evo.UI
 
         void CreateContainerStructure()
         {
-            var contentObj = new GameObject("Content [Generated]");
+            var contentObj = new GameObject("Content [Generated]") { hideFlags = HideFlags.DontSave };
             contentObj.transform.SetParent(transform, false);
             contentContainer = contentObj.AddComponent<RectTransform>();
 
             SetupFullRectTransform(contentContainer);
 
-            var headerObj = new GameObject("Header");
+            var headerObj = new GameObject("Header") { hideFlags = HideFlags.DontSave };
             headerObj.transform.SetParent(contentContainer, false);
             headerContainer = headerObj.AddComponent<RectTransform>();
             SetupHeaderContainer();
 
-            var rowContainerObj = new GameObject("Rows");
+            var rowContainerObj = new GameObject("Rows") { hideFlags = HideFlags.DontSave };
             rowContainerObj.transform.SetParent(contentContainer, false);
             rowContainer = rowContainerObj.AddComponent<RectTransform>();
             SetupRowContainer();
@@ -185,9 +205,14 @@ namespace Evo.UI
             CleanupListViewContent();
             InvalidateLayoutCache();
             ResetChangeTracking();
+
             CreateHeader();
             CreateRows();
+
+            UpdateHeaderContent();
+            UpdateRowContent();
             UpdateParentHeight();
+
             isDirty = false;
         }
 
@@ -210,6 +235,7 @@ namespace Evo.UI
             UpdateHeaderContent();
             UpdateRowContent();
             UpdateParentHeight();
+
             isDirty = false;
         }
 
@@ -258,63 +284,32 @@ namespace Evo.UI
 
         void UpdateContentOnly()
         {
-            for (int rowIndex = 0; rowIndex < rowObjects.Count && rowIndex < rows.Count; rowIndex++)
-            {
-                var rowCells = rowObjects[rowIndex];
-                var row = rows[rowIndex];
-
-                for (int colIndex = 0; colIndex < rowCells.Count && colIndex < row.values.Count; colIndex++)
-                {
-                    var textComponent = rowCells[colIndex].GetComponentInChildren<TextMeshProUGUI>();
-                    if (textComponent != null) { textComponent.text = row.values[colIndex]; }
-                }
-            }
-
+            UpdateRowContent();
             isDirty = false;
         }
 
-        /// <summary>
-        /// Calculates the total height of the ListView including header, rows, and spacing.
-        /// </summary>
         float CalculateTotalHeight()
         {
             float totalHeight = 0f;
-
-            // Add header height
             totalHeight += style.headerHeight;
-
-            // Add spacing after header if there are rows
-            if (rows.Count > 0)
-            {
-                totalHeight += style.rowSpacing;
-            }
-
-            // Add all row heights and spacing between them
+            if (rows.Count > 0) totalHeight += style.rowSpacing;
             if (rows.Count > 0)
             {
                 totalHeight += rows.Count * style.rowHeight;
                 totalHeight += (rows.Count - 1) * style.rowSpacing;
             }
-
             return totalHeight;
         }
 
-        /// <summary>
-        /// Updates the parent RectTransform height if assigned.
-        /// </summary>
         void UpdateParentHeight()
         {
             if (parentRect == null)
                 return;
 
             float totalHeight = CalculateTotalHeight();
-
-            // Only update if height has changed to avoid unnecessary updates
             if (Mathf.Abs(cachedTotalHeight - totalHeight) > 0.01f)
             {
                 cachedTotalHeight = totalHeight;
-
-                // Set the height while preserving the current anchors and width
                 parentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
             }
         }
@@ -332,15 +327,15 @@ namespace Evo.UI
 
             cachedColumnWidths = new float[columns.Count];
             RectTransform target = headerContainer ? headerContainer : rowContainer;
+
             float containerWidth = target ? target.rect.width : 0f;
             float totalWidth = containerWidth - (style.columnSpacing * (columns.Count - 1));
-
             float totalFixedWidth = 0f;
             int flexibleCount = 0;
 
             for (int i = 0; i < columns.Count; i++)
             {
-                if (columns[i].useFlexibleWidth) { flexibleCount++; }
+                if (columns[i].useFlexibleWidth) flexibleCount++;
                 else
                 {
                     cachedColumnWidths[i] = columns[i].width;
@@ -349,6 +344,7 @@ namespace Evo.UI
             }
 
             float flexibleWidth = flexibleCount > 0 ? (totalWidth - totalFixedWidth) / flexibleCount : 0f;
+
             for (int i = 0; i < columns.Count; i++)
             {
                 if (columns[i].useFlexibleWidth)
@@ -361,6 +357,7 @@ namespace Evo.UI
         void CleanupListViewContent()
         {
             ClearObjectPool(headerObjects);
+
             foreach (var rowList in rowObjects) { ClearObjectPool(rowList); }
             rowObjects.Clear();
 
@@ -374,10 +371,7 @@ namespace Evo.UI
             for (int i = container.childCount - 1; i >= 0; i--)
             {
                 var child = container.GetChild(i);
-                if (child != null)
-                {
-                    DestroyGameObject(child.gameObject);
-                }
+                if (child != null) DestroyGameObject(child.gameObject);
             }
         }
 
@@ -405,7 +399,6 @@ namespace Evo.UI
                 return;
 
             var columnWidths = GetColumnWidths();
-
             for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
             {
                 var rowCells = CreateRowCells(rowIndex, columnWidths);
@@ -435,10 +428,7 @@ namespace Evo.UI
 
         void AddIconToContent(GameObject content, Sprite icon, Color color)
         {
-            if (icon == null)
-                return;
-
-            var iconObj = new GameObject("Icon");
+            var iconObj = new GameObject("Icon") { hideFlags = HideFlags.DontSave };
             iconObj.transform.SetParent(content.transform, false);
 
             var iconImage = iconObj.AddComponent<Image>();
@@ -460,7 +450,7 @@ namespace Evo.UI
 
         void AddTextToContent(GameObject content, string text, Color color, int fontSize, FontStyles fontStyle, TMP_FontAsset font = null)
         {
-            var textObj = new GameObject("Text");
+            var textObj = new GameObject("Text") { hideFlags = HideFlags.DontSave };
             textObj.transform.SetParent(content.transform, false);
 
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
@@ -495,8 +485,7 @@ namespace Evo.UI
                 var headerBgColor = GetStyleColor(ListViewStyle.Type.HeaderBackgroundColor, style.headerBackgroundColor);
                 var headerTextColor = GetStyleColor(ListViewStyle.Type.HeaderTextColor, style.headerTextColor);
                 var headerFont = GetStyleFont(ListViewStyle.Type.HeaderFont, style.headerFont);
-
-                UpdateCellContent(headerObjects[i], columns[i], columns[i].columnName, columns[i].columnIcon, style.iconSize,
+                UpdateCellContent(headerObjects[i], columns[i], columns[i].columnName, columns[i].columnIcon, null, style.iconSize,
                     headerBgColor, headerTextColor, style.headerFontSize, style.headerFontStyle, headerFont);
             }
         }
@@ -507,23 +496,22 @@ namespace Evo.UI
             {
                 var rowCells = rowObjects[rowIndex];
                 var row = rows[rowIndex];
-
                 for (int colIndex = 0; colIndex < rowCells.Count && colIndex < columns.Count; colIndex++)
                 {
                     string cellValue = colIndex < row.values.Count ? row.values[colIndex] : "";
                     Sprite cellIcon = row.GetIcon(colIndex);
+                    GameObject customObj = row.GetCustomObject(colIndex);
                     Color bgColor = GetRowBackgroundColor(rowIndex);
                     var rowTextColor = GetStyleColor(ListViewStyle.Type.RowTextColor, style.rowTextColor);
                     var rowFont = GetStyleFont(ListViewStyle.Type.RowFont, style.rowFont);
-
-                    UpdateCellContent(rowCells[colIndex], columns[colIndex], cellValue, cellIcon, style.iconSize,
+                    UpdateCellContent(rowCells[colIndex], columns[colIndex], cellValue, cellIcon, customObj, style.iconSize,
                         bgColor, rowTextColor, style.rowFontSize, style.rowFontStyle, rowFont);
                 }
             }
         }
 
-        void UpdateCellContent(GameObject cell, ListViewColumn column, string text, Sprite icon, float iconSize,
-            Color backgroundColor, Color textColor, int fontSize, FontStyles fontStyle, TMP_FontAsset font = null)
+        void UpdateCellContent(GameObject cell, ListViewColumn column, string text, Sprite icon, GameObject customObject,
+            float iconSize, Color backgroundColor, Color textColor, int fontSize, FontStyles fontStyle, TMP_FontAsset font = null)
         {
             if (cell.TryGetComponent<Image>(out var bgImage))
             {
@@ -546,84 +534,115 @@ namespace Evo.UI
             if (style.showBorder)
             {
                 var borderColor = GetStyleColor(ListViewStyle.Type.BorderColor, style.borderColor);
-                if (outline == null) outline = cell.AddComponent<Outline>();
+                if (outline == null) { outline = cell.AddComponent<Outline>(); }
                 outline.effectColor = borderColor;
                 outline.effectDistance = new Vector2(style.borderWidth, style.borderWidth);
                 outline.enabled = true;
             }
-            else if (outline != null)
-            {
-                outline.enabled = false;
-            }
+            else if (outline != null) outline.enabled = false;
 
             var content = cell.transform.Find("Content");
             if (content == null) { return; }
-            if (content.TryGetComponent<HorizontalLayoutGroup>(out var layoutGroup))
+
+            var contentRect = content.GetComponent<RectTransform>();
+            var layoutGroup = content.GetComponent<HorizontalLayoutGroup>();
+            var fitter = content.GetComponent<ContentSizeFitter>();
+
+            if (layoutGroup)
             {
                 layoutGroup.childAlignment = column.alignment;
                 layoutGroup.padding = style.contentPadding;
             }
-            if (content.TryGetComponent<RectTransform>(out var contentRect))
-            {
-                SetContentPivot(contentRect, column.alignment);
-            }
+            if (contentRect) { SetContentPivot(contentRect, column.alignment); }
 
-            var existingIcon = content.Find("Icon");
-            if (icon != null)
+            // Child Management
+            var customWrapper = content.Find("CustomObjectWrapper");
+            var iconObj = content.Find("Icon");
+            var textObj = content.Find("Text");
+
+            if (customObject != null)
             {
-                if (existingIcon == null) { AddIconToContent(content.gameObject, icon, textColor); }
-                else if (existingIcon.TryGetComponent<Image>(out var iconImage))
+                if (fitter) fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                if (customWrapper == null)
                 {
-                    iconImage.sprite = icon;
-                    iconImage.color = textColor;
+                    var wrapper = new GameObject("CustomObjectWrapper") { hideFlags = HideFlags.DontSave };
+                    wrapper.transform.SetParent(content.transform, false);
+                    var wrapperRT = wrapper.AddComponent<RectTransform>();
+                    wrapperRT.anchorMin = Vector2.zero;
+                    wrapperRT.anchorMax = Vector2.one;
+                    wrapperRT.offsetMin = Vector2.zero;
+                    wrapperRT.offsetMax = Vector2.zero;
+                    var le = wrapper.AddComponent<LayoutElement>();
+                    le.flexibleWidth = 1;
+                    le.flexibleHeight = 1;
+                    customWrapper = wrapper.transform;
+                }
+                if (iconObj) { iconObj.gameObject.SetActive(false); }
+                if (textObj) { textObj.gameObject.SetActive(false); }
+
+                customWrapper.gameObject.SetActive(true);
+
+                // Instance logic
+                bool needsInstance = customWrapper.childCount == 0 || customWrapper.GetChild(0).name != customObject.name + "_Instance";
+                if (needsInstance)
+                {
+                    for (int i = customWrapper.childCount - 1; i >= 0; i--) DestroyGameObject(customWrapper.GetChild(i).gameObject);
+                    var instance = Instantiate(customObject, customWrapper, false);
+                    instance.name = customObject.name + "_Instance";
+                    if (instance.TryGetComponent<RectTransform>(out var instanceRT))
+                    {
+                        instanceRT.anchorMin = Vector2.zero;
+                        instanceRT.anchorMax = Vector2.one;
+                        instanceRT.offsetMin = Vector2.zero;
+                        instanceRT.offsetMax = Vector2.zero;
+                    }
                 }
             }
-            else if (existingIcon != null)
+            else
             {
-                DestroyGameObject(existingIcon.gameObject);
-            }
+                if (fitter) fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                if (customWrapper) customWrapper.gameObject.SetActive(false);
 
-            var textComponent = content.GetComponentInChildren<TextMeshProUGUI>();
-            if (textComponent != null)
-            {
-                textComponent.text = text;
-                textComponent.color = textColor;
-                textComponent.font = font != null ? font : style.rowFont;
-                textComponent.fontSize = fontSize;
-                textComponent.fontStyle = fontStyle;
+                // Handle Icon creation/update
+                if (icon != null)
+                {
+                    if (iconObj == null) { AddIconToContent(content.gameObject, icon, textColor); iconObj = content.Find("Icon"); }
+                    iconObj.gameObject.SetActive(true);
+                    if (iconObj.TryGetComponent<Image>(out var img)) { img.sprite = icon; img.color = textColor; }
+                }
+                else if (iconObj) iconObj.gameObject.SetActive(false);
+
+                // Handle Text creation/update
+                if (textObj == null)
+                {
+                    AddTextToContent(content.gameObject, text, textColor, fontSize, fontStyle, font);
+                    textObj = content.Find("Text");
+                }
+                textObj.gameObject.SetActive(true);
+                if (textObj.TryGetComponent<TextMeshProUGUI>(out var tmp))
+                {
+                    tmp.text = text;
+                    tmp.color = textColor;
+                    tmp.font = font != null ? font : style.rowFont;
+                    tmp.fontSize = fontSize;
+                    tmp.fontStyle = fontStyle;
+                }
             }
         }
 
         bool NeedsFullRebuild((int column, int row, int layout, int style) hashes)
         {
-            return hashes.column != columnDataHash ||
-                   hashes.layout != layoutPropertiesHash ||
-                   rows.Count != rowObjects.Count ||
-                   columns.Count != headerObjects.Count ||
-                   layoutCacheDirty;
+            return hashes.column != columnDataHash || hashes.layout != layoutPropertiesHash || rows.Count != rowObjects.Count || columns.Count != headerObjects.Count || layoutCacheDirty;
         }
 
         bool HasStyleChanges((int column, int row, int layout, int style) hashes)
         {
-            return hashes.style != stylePropertiesHash ||
-                   hashes.row != rowDataHash ||
-                   hashes.column != columnDataHash;
+            return hashes.style != stylePropertiesHash || hashes.row != rowDataHash || hashes.column != columnDataHash;
         }
 
-        bool IsValidCellIndex(int rowIndex, int columnIndex)
-        {
-            return rowIndex >= 0 && rowIndex < rows.Count && columnIndex >= 0 && columnIndex < columns.Count;
-        }
-
-        bool IsLeftAligned(TextAnchor alignment)
-        {
-            return alignment == TextAnchor.MiddleLeft || alignment == TextAnchor.UpperLeft || alignment == TextAnchor.LowerLeft;
-        }
-
-        bool IsRightAligned(TextAnchor alignment)
-        {
-            return alignment == TextAnchor.MiddleRight || alignment == TextAnchor.UpperRight || alignment == TextAnchor.LowerRight;
-        }
+        bool IsValidCellIndex(int rowIndex, int columnIndex) => rowIndex >= 0 && rowIndex < rows.Count && columnIndex >= 0 && columnIndex < columns.Count;
+        bool IsLeftAligned(TextAnchor alignment) => alignment == TextAnchor.MiddleLeft || alignment == TextAnchor.UpperLeft || alignment == TextAnchor.LowerLeft;
+        bool IsRightAligned(TextAnchor alignment) => alignment == TextAnchor.MiddleRight || alignment == TextAnchor.UpperRight || alignment == TextAnchor.LowerRight;
 
         int HashColumns()
         {
@@ -649,43 +668,27 @@ namespace Evo.UI
 
                 hash = hash * 31 + row.icons.Count;
                 foreach (var icon in row.icons) { hash = hash * 31 + (icon != null ? icon.GetHashCode() : 0); }
+
+                hash = hash * 31 + row.customObjects.Count;
+                foreach (var obj in row.customObjects) { hash = hash * 31 + (obj != null ? obj.GetHashCode() : 0); }
             }
             return hash;
         }
 
-        int HashLayoutProperties()
-        {
-            return style.columnSpacing.GetHashCode() * 31 + style.rowSpacing.GetHashCode() * 31 + style.contentSpacing.GetHashCode() * 31;
-        }
-
-        int HashStyleMappings()
-        {
-            int hash = (stylerPreset != null ? stylerPreset.GetHashCode() : 0);
-            foreach (var mapping in styleMapping)
-            {
-                hash = hash * 31 + mapping.type.GetHashCode();
-                hash = hash * 31 + (mapping.colorID?.GetHashCode() ?? 0);
-                hash = hash * 31 + (mapping.fontID?.GetHashCode() ?? 0);
-            }
-            return hash;
-        }
+        int HashLayoutProperties() => style.columnSpacing.GetHashCode() * 31 + style.rowSpacing.GetHashCode() * 31 + style.contentSpacing.GetHashCode() * 31;
 
         (int column, int row, int layout, int style) CalculateCurrentHashes()
         {
-            int columnHash = HashColumns();
-            int rowHash = HashRows();
-            int layoutHash = HashLayoutProperties();
-            int styleHash = style.GetHashCode() * 31 + (int)stylingSource * 31 + HashStyleMappings();
-            return (columnHash, rowHash, layoutHash, styleHash);
+            int colH = HashColumns();
+            int rowH = HashRows();
+            int layH = HashLayoutProperties();
+            int styH = style.GetHashCode() * 31 + (int)stylingSource * 31 + (stylerPreset != null ? stylerPreset.GetHashCode() : 0);
+            return (colH, rowH, layH, styH);
         }
 
         float[] GetColumnWidths()
         {
-            if (layoutCacheDirty || cachedColumnWidths == null)
-            {
-                RecalculateColumnWidths();
-                layoutCacheDirty = false;
-            }
+            if (layoutCacheDirty || cachedColumnWidths == null) { RecalculateColumnWidths(); layoutCacheDirty = false; }
             return cachedColumnWidths;
         }
 
@@ -694,20 +697,14 @@ namespace Evo.UI
             if (stylingSource == ListViewStyle.StylingSource.StylerPreset && stylerPreset != null)
             {
                 var mapping = GetStyleMapping(ListViewStyle.Type.AlternatingRowColor);
-                if (style.useAlternatingRowColor && rowIndex % 2 == 1 && !string.IsNullOrEmpty(mapping?.colorID))
-                {
-                    return stylerPreset.GetColor(mapping.colorID);
-                }
-                else
-                {
-                    var rowBgMapping = GetStyleMapping(ListViewStyle.Type.RowBackgroundColor);
-                    if (!string.IsNullOrEmpty(rowBgMapping?.colorID)) { return stylerPreset.GetColor(rowBgMapping.colorID); }
-                    else { return Color.clear; }
-                }
-            }
+                if (style.useAlternatingRowColor && rowIndex % 2 == 1 && !string.IsNullOrEmpty(mapping?.colorID)) { return stylerPreset.GetColor(mapping.colorID); }
 
-            return style.useAlternatingRowColor && rowIndex % 2 == 1 ?
-                   style.alternatingRowColor : style.rowBackgroundColor;
+                var rowBgMapping = GetStyleMapping(ListViewStyle.Type.RowBackgroundColor);
+                if (!string.IsNullOrEmpty(rowBgMapping?.colorID)) { return stylerPreset.GetColor(rowBgMapping.colorID); }
+
+                return Color.clear;
+            }
+            return style.useAlternatingRowColor && rowIndex % 2 == 1 ? style.alternatingRowColor : style.rowBackgroundColor;
         }
 
         Color GetStyleColor(ListViewStyle.Type styleType, Color fallback)
@@ -716,7 +713,7 @@ namespace Evo.UI
             {
                 var mapping = GetStyleMapping(styleType);
                 if (!string.IsNullOrEmpty(mapping?.colorID)) { return stylerPreset.GetColor(mapping.colorID); }
-                else { return Color.clear; }
+                return Color.clear;
             }
             return fallback;
         }
@@ -726,10 +723,7 @@ namespace Evo.UI
             if (stylingSource == ListViewStyle.StylingSource.StylerPreset && stylerPreset != null)
             {
                 var mapping = GetStyleMapping(styleType);
-                if (!string.IsNullOrEmpty(mapping?.fontID))
-                {
-                    return stylerPreset.GetFont(mapping.fontID);
-                }
+                if (!string.IsNullOrEmpty(mapping?.fontID)) { return stylerPreset.GetFont(mapping.fontID); }
             }
             return fallback;
         }
@@ -739,58 +733,43 @@ namespace Evo.UI
             foreach (var mapping in styleMapping)
             {
                 if (mapping.type == styleType)
+                {
                     return mapping;
+                }
             }
             return null;
         }
 
         GameObject CreateHeaderCell(ListViewColumn column)
         {
-            var headerBgColor = GetStyleColor(ListViewStyle.Type.HeaderBackgroundColor, style.headerBackgroundColor);
-            var cell = CreateBaseCell($"Header {column.columnName}", headerBgColor);
-            var content = CreateCellContent(cell, column.alignment);
-
-            var headerTextColor = GetStyleColor(ListViewStyle.Type.HeaderTextColor, style.headerTextColor);
-            var headerFont = GetStyleFont(ListViewStyle.Type.HeaderFont, style.headerFont);
-
-            AddIconToContent(content, column.columnIcon, headerTextColor);
-            AddTextToContent(content, column.columnName, headerTextColor, style.headerFontSize, style.headerFontStyle, headerFont);
-
+            var cell = CreateBaseCell($"Header {column.columnName}", style.headerBackgroundColor);
+            CreateCellContent(cell, column.alignment);
             return cell;
         }
 
-        GameObject CreateRowCell(ListViewColumn column, string value, Sprite icon, Color backgroundColor)
+        GameObject CreateRowCell(ListViewColumn column, string value, Sprite icon, GameObject customObject, Color backgroundColor)
         {
             var cell = CreateBaseCell($"Cell {column.columnName}", backgroundColor);
-            var content = CreateCellContent(cell, column.alignment);
-            var rowTextColor = GetStyleColor(ListViewStyle.Type.RowTextColor, style.rowTextColor);
-            var rowFont = GetStyleFont(ListViewStyle.Type.RowFont, style.rowFont);
-
-            AddIconToContent(content, icon, rowTextColor);
-            AddTextToContent(content, value, rowTextColor, style.rowFontSize, style.rowFontStyle, rowFont);
-
+            CreateCellContent(cell, column.alignment);
             return cell;
         }
 
         GameObject CreateBaseCell(string name, Color backgroundColor)
         {
             var cell = new GameObject(name);
-
             var bgImage = cell.AddComponent<Image>();
             bgImage.color = backgroundColor;
 
             if (style.backgroundSprite != null)
             {
                 bgImage.sprite = style.backgroundSprite;
-                bgImage.type = Image.Type.Sliced;
-                bgImage.pixelsPerUnitMultiplier = style.ppuMultiplier;
+                bgImage.type = Image.Type.Sliced; bgImage.pixelsPerUnitMultiplier = style.ppuMultiplier;
             }
 
             if (style.showBorder)
             {
-                var borderColor = GetStyleColor(ListViewStyle.Type.BorderColor, style.borderColor);
                 var outline = cell.AddComponent<Outline>();
-                outline.effectColor = borderColor;
+                outline.effectColor = style.borderColor;
                 outline.effectDistance = new Vector2(style.borderWidth, style.borderWidth);
             }
 
@@ -799,13 +778,11 @@ namespace Evo.UI
 
         GameObject CreateCellContent(GameObject parent, TextAnchor alignment)
         {
-            var contentObj = new GameObject("Content");
+            var contentObj = new GameObject("Content") { hideFlags = HideFlags.DontSave };
             contentObj.transform.SetParent(parent.transform, false);
-
             var contentRect = contentObj.AddComponent<RectTransform>();
             SetupFullRectTransform(contentRect);
             SetContentPivot(contentRect, alignment);
-
             var layout = contentObj.AddComponent<HorizontalLayoutGroup>();
             layout.childAlignment = alignment;
             layout.childControlWidth = true;
@@ -814,11 +791,9 @@ namespace Evo.UI
             layout.childForceExpandHeight = false;
             layout.spacing = style.contentSpacing;
             layout.padding = style.contentPadding;
-
             var fitter = contentObj.AddComponent<ContentSizeFitter>();
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
-
             return contentObj;
         }
 
@@ -828,22 +803,38 @@ namespace Evo.UI
             var row = rows[rowIndex];
             float currentX = 0f;
             float currentY = rowIndex * (style.rowHeight + style.rowSpacing);
-
             for (int colIndex = 0; colIndex < columns.Count; colIndex++)
             {
-                string cellValue = colIndex < row.values.Count ? row.values[colIndex] : "";
-                Sprite cellIcon = row.GetIcon(colIndex);
-                Color bgColor = GetRowBackgroundColor(rowIndex);
-
-                var rowCell = CreateRowCell(columns[colIndex], cellValue, cellIcon, bgColor);
+                var rowCell = CreateRowCell(columns[colIndex], "", null, null, Color.white);
                 rowCell.transform.SetParent(rowContainer, false);
                 PositionCell(rowCell, currentX, columnWidths[colIndex], currentY, false);
-
                 rowCells.Add(rowCell);
                 currentX += columnWidths[colIndex] + style.columnSpacing;
             }
-
             return rowCells;
+        }
+
+        /// <summary>
+        /// Wrapper for safe editor updates.
+        /// </summary>
+        void RequestRefresh()
+        {
+            if (this == null) { return; }
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                if (pendingRedraw) { return; }
+                pendingRedraw = true;
+
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    pendingRedraw = false;
+                    if (this != null) { Refresh(); }
+                };
+                return;
+            }
+#endif
+            Refresh();
         }
 
         public void Refresh()
@@ -858,19 +849,15 @@ namespace Evo.UI
             }
 
             Vector2 currentContainerSize = contentContainer.rect.size;
-            if (currentContainerSize != lastContainerSize)
-            {
-                InvalidateLayoutCache();
-                lastContainerSize = currentContainerSize;
-            }
+            if (currentContainerSize != lastContainerSize) { InvalidateLayoutCache(); lastContainerSize = currentContainerSize; }
 
-            var currentHashes = CalculateCurrentHashes();
+            var hashes = CalculateCurrentHashes();
 
-            if (NeedsFullRebuild(currentHashes)) { Initialize(); FullRebuild(); }
-            else if (HasStyleChanges(currentHashes)) { SmartUpdateContent(); }
+            if (NeedsFullRebuild(hashes)) { Initialize(); FullRebuild(); }
+            else if (HasStyleChanges(hashes)) { SmartUpdateContent(); }
             else if (isDirty) { UpdateContentOnly(); }
 
-            UpdateHashes(currentHashes);
+            UpdateHashes(hashes);
         }
 
         public void AddColumn(ListViewColumn column)
@@ -891,6 +878,7 @@ namespace Evo.UI
             {
                 if (index < row.values.Count) { row.values.RemoveAt(index); }
                 if (index < row.icons.Count) { row.icons.RemoveAt(index); }
+                if (index < row.customObjects.Count) { row.customObjects.RemoveAt(index); }
             }
 
             InvalidateLayoutCache();
@@ -939,25 +927,18 @@ namespace Evo.UI
             }
         }
 
-        public void SetCellData(int rowIndex, int columnIndex, string value, Sprite icon = null)
+        public void SetCellData(int rowIndex, int columnIndex, string value, Sprite icon = null, GameObject customObject = null)
         {
             if (IsValidCellIndex(rowIndex, columnIndex))
             {
-                rows[rowIndex].SetCell(columnIndex, value, icon);
+                rows[rowIndex].SetCell(columnIndex, value, icon, customObject);
                 isDirty = true;
                 Refresh();
             }
         }
 
-        public string GetCellValue(int rowIndex, int columnIndex)
-        {
-            if (IsValidCellIndex(rowIndex, columnIndex))
-            {
-                var row = rows[rowIndex];
-                return columnIndex < row.values.Count ? row.values[columnIndex] : null;
-            }
-            return null;
-        }
+        public string GetCellValue(int rowIndex, int columnIndex) => IsValidCellIndex(rowIndex, columnIndex)
+            ? (columnIndex < rows[rowIndex].values.Count ? rows[rowIndex].values[columnIndex] : null) : null;
 
         public void UseAlternatingRowColor(bool value)
         {
@@ -965,314 +946,28 @@ namespace Evo.UI
             Refresh();
         }
 
-        #region CSV Methods
-        /// <summary>
-        /// Imports CSV data into the ListView. Automatically creates columns from headers.
-        /// </summary>
-        public void ImportFromCSV(string csvText, bool hasHeaders = true, bool clearExisting = true)
+        public GameObject GetCellCustomInstance(int rowIndex, int columnIndex)
         {
-            if (string.IsNullOrEmpty(csvText))
-            {
-                Debug.LogWarning("CSV text is empty");
-                return;
-            }
+            if (!IsValidCellIndex(rowIndex, columnIndex)) { return null; }
+            if (rowIndex >= rowObjects.Count || columnIndex >= rowObjects[rowIndex].Count) { return null; }
 
-            var parsedData = ParseCSV(csvText);
-            if (parsedData.Count == 0)
-            {
-                Debug.LogWarning("No data found in CSV");
-                return;
-            }
+            var cell = rowObjects[rowIndex][columnIndex];
+            if (!cell) { return null; }
 
-            // Replace everything
-            if (clearExisting)
-            {
-                columns.Clear();
-                rows.Clear();
-            }
+            var content = cell.transform.Find("Content");
+            if (!content) { return null; }
 
-            int startRow = 0;
+            var wrapper = content.Find("CustomObjectWrapper");
+            if (!wrapper || wrapper.childCount == 0) { return null; }
 
-            // Handle columns
-            if (hasHeaders && parsedData.Count > 0)
-            {
-                var headers = parsedData[0];
-
-                if (columns.Count == 0)
-                {
-                    // No columns exist, create them
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        columns.Add(new ListViewColumn
-                        {
-                            columnName = string.IsNullOrWhiteSpace(headers[i]) ? $"Column {i + 1}" : headers[i].Trim(),
-                            useFlexibleWidth = true,
-                            alignment = TextAnchor.MiddleCenter
-                        });
-                    }
-                }
-                else
-                {
-                    // Update existing column headers
-                    for (int i = 0; i < headers.Count && i < columns.Count; i++)
-                    {
-                        string newName = string.IsNullOrWhiteSpace(headers[i]) ? $"Column {i + 1}" : headers[i].Trim();
-                        columns[i].columnName = newName;
-                    }
-
-                    // Add new columns if CSV has more
-                    for (int i = columns.Count; i < headers.Count; i++)
-                    {
-                        columns.Add(new ListViewColumn
-                        {
-                            columnName = string.IsNullOrWhiteSpace(headers[i]) ? $"Column {i + 1}" : headers[i].Trim(),
-                            useFlexibleWidth = true,
-                            alignment = TextAnchor.MiddleCenter
-                        });
-                    }
-                }
-
-                startRow = 1;
-            }
-            else if (columns.Count == 0 && parsedData.Count > 0)
-            {
-                // No headers, create default columns
-                var firstRow = parsedData[0];
-                for (int i = 0; i < firstRow.Count; i++)
-                {
-                    columns.Add(new ListViewColumn
-                    {
-                        columnName = $"Column {i + 1}",
-                        useFlexibleWidth = true,
-                        alignment = TextAnchor.MiddleCenter
-                    });
-                }
-            }
-
-            // Update existing rows and add new ones
-            if (!clearExisting)
-            {
-                // Update existing rows
-                int rowsToUpdate = Mathf.Min(rows.Count, parsedData.Count - startRow);
-                for (int i = 0; i < rowsToUpdate; i++)
-                {
-                    var rowData = parsedData[i + startRow];
-                    var existingRow = rows[i];
-
-                    // Update values
-                    for (int j = 0; j < columns.Count; j++)
-                    {
-                        string newValue = j < rowData.Count ? rowData[j] : "";
-
-                        if (j < existingRow.values.Count) { existingRow.values[j] = newValue; }
-                        else { existingRow.values.Add(newValue); }
-
-                        // Ensure icons list matches
-                        while (existingRow.icons.Count < existingRow.values.Count) { existingRow.icons.Add(null); }
-                    }
-                }
-
-                // Add only new rows (if CSV has more rows than current)
-                for (int i = rows.Count; i < parsedData.Count - startRow; i++)
-                {
-                    var rowData = parsedData[i + startRow];
-                    var row = new ListViewRow();
-
-                    for (int j = 0; j < columns.Count; j++)
-                    {
-                        row.values.Add(j < rowData.Count ? rowData[j] : "");
-                        row.icons.Add(null);
-                    }
-
-                    rows.Add(row);
-                }
-            }
-            else
-            {
-                // Add all rows fresh
-                for (int i = startRow; i < parsedData.Count; i++)
-                {
-                    var rowData = parsedData[i];
-                    var row = new ListViewRow();
-
-                    for (int j = 0; j < columns.Count; j++)
-                    {
-                        row.values.Add(j < rowData.Count ? rowData[j] : "");
-                        row.icons.Add(null);
-                    }
-
-                    rows.Add(row);
-                }
-            }
-
-            isDirty = true;
+            return wrapper.GetChild(0).gameObject;
         }
 
-        /// <summary>
-        /// Exports the ListView data to CSV format.
-        /// </summary>
-        public string ExportToCSV(bool includeHeaders = true)
+        public T GetCellCustomInstance<T>(int rowIndex, int columnIndex) where T : Component
         {
-            var csv = new StringBuilder();
-
-            // Add headers
-            if (includeHeaders && columns.Count > 0)
-            {
-                for (int i = 0; i < columns.Count; i++)
-                {
-                    csv.Append(EscapeCSVValue(columns[i].columnName));
-                    if (i < columns.Count - 1) { csv.Append(","); }
-                }
-                csv.AppendLine();
-            }
-
-            // Add rows
-            foreach (var row in rows)
-            {
-                for (int i = 0; i < columns.Count; i++)
-                {
-                    string value = i < row.values.Count ? row.values[i] : "";
-                    csv.Append(EscapeCSVValue(value));
-                    if (i < columns.Count - 1) { csv.Append(","); }
-                }
-                csv.AppendLine();
-            }
-
-            return csv.ToString();
+            var obj = GetCellCustomInstance(rowIndex, columnIndex);
+            return obj != null ? obj.GetComponent<T>() : null;
         }
-
-        /// <summary>
-        /// Parses CSV text into a list of string lists (rows and cells).
-        /// Handles quoted values, commas within quotes, and escaped quotes.
-        /// </summary>
-        List<List<string>> ParseCSV(string csvText)
-        {
-            var result = new List<List<string>>();
-            var currentRow = new List<string>();
-            var currentCell = new StringBuilder();
-            bool inQuotes = false;
-
-            for (int i = 0; i < csvText.Length; i++)
-            {
-                char c = csvText[i];
-                char? nextChar = i + 1 < csvText.Length ? csvText[i + 1] : (char?)null;
-
-                if (c == '"')
-                {
-                    if (inQuotes && nextChar == '"')
-                    {
-                        // Escaped quote
-                        currentCell.Append('"');
-                        i++; // Skip next quote
-                    }
-                    else
-                    {
-                        // Toggle quote mode
-                        inQuotes = !inQuotes;
-                    }
-                }
-                else if (c == ',' && !inQuotes)
-                {
-                    // End of cell
-                    currentRow.Add(currentCell.ToString().Trim());
-                    currentCell.Clear();
-                }
-                else if ((c == '\n' || c == '\r') && !inQuotes)
-                {
-                    // End of row
-                    if (c == '\r' && nextChar == '\n') { i++; } // Skip \n in \r\n
-
-                    // Add current cell and row if not empty
-                    if (currentCell.Length > 0 || currentRow.Count > 0)
-                    {
-                        currentRow.Add(currentCell.ToString().Trim());
-                        currentCell.Clear();
-
-                        if (currentRow.Count > 0)
-                        {
-                            result.Add(currentRow);
-                            currentRow = new List<string>();
-                        }
-                    }
-                }
-                else
-                {
-                    currentCell.Append(c);
-                }
-            }
-
-            // Add final cell and row
-            if (currentCell.Length > 0 || currentRow.Count > 0)
-            {
-                currentRow.Add(currentCell.ToString().Trim());
-                if (currentRow.Count > 0) { result.Add(currentRow); }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Escapes a CSV value by adding quotes if needed and escaping internal quotes.
-        /// </summary>
-        string EscapeCSVValue(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-                return "";
-
-            bool needsQuotes = value.Contains(",") || value.Contains("\"") ||
-                              value.Contains("\n") || value.Contains("\r");
-
-            if (needsQuotes)
-            {
-                value = value.Replace("\"", "\"\"");
-                return $"\"{value}\"";
-            }
-
-            return value;
-        }
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// Saves the ListView data to a CSV file.
-        /// </summary>
-        public void SaveToCSVFile(string filePath, bool includeHeaders = true)
-        {
-            try
-            {
-                string csv = ExportToCSV(includeHeaders);
-                File.WriteAllText(filePath, csv, Encoding.UTF8);
-                Debug.Log($"CSV exported successfully to: {filePath}");
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Failed to save CSV: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Loads CSV data from a file.
-        /// </summary>
-        public void LoadFromCSVFile(string filePath, bool hasHeaders = true, bool clearExisting = true)
-        {
-            try
-            {
-                if (!File.Exists(filePath))
-                {
-                    Debug.LogError($"CSV file not found: {filePath}");
-                    return;
-                }
-
-                string csvText = File.ReadAllText(filePath, Encoding.UTF8);
-                ImportFromCSV(csvText, hasHeaders, clearExisting);
-                Debug.Log($"CSV imported successfully from: {filePath}");
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Failed to load CSV: {ex.Message}");
-            }
-        }
-#endif
-        #endregion
 
 #if UNITY_EDITOR
         [HideInInspector] public bool autoRefresh = true;
@@ -1286,220 +981,26 @@ namespace Evo.UI
             InitializeStyleMappings();
             EnsureRowDataConsistency();
             isDirty = true;
+
+            // Use safe wrapper instead of direct Refresh or passive isDirty
+            if (gameObject.activeInHierarchy && !Application.isPlaying) { RequestRefresh(); }
         }
 
         void EnsureRowDataConsistency()
         {
-            int columnCount = columns.Count;
+            int colCount = columns.Count;
             foreach (var row in rows)
             {
-                if (row.values.Count < columnCount)
-                {
-                    int toAdd = columnCount - row.values.Count;
-                    for (int i = 0; i < toAdd; i++) row.values.Add("");
-                }
-                else if (row.values.Count > columnCount)
-                {
-                    row.values.RemoveRange(columnCount, row.values.Count - columnCount);
-                }
+                while (row.values.Count < colCount) { row.values.Add(""); }
+                if (row.values.Count > colCount) { row.values.RemoveRange(colCount, row.values.Count - colCount); }
 
-                if (row.icons.Count < columnCount)
-                {
-                    int toAdd = columnCount - row.icons.Count;
-                    for (int i = 0; i < toAdd; i++) row.icons.Add(null);
-                }
-                else if (row.icons.Count > columnCount)
-                {
-                    row.icons.RemoveRange(columnCount, row.icons.Count - columnCount);
-                }
+                while (row.icons.Count < colCount) { row.icons.Add(null); }
+                if (row.icons.Count > colCount) { row.icons.RemoveRange(colCount, row.icons.Count - colCount); }
+
+                while (row.customObjects.Count < colCount) { row.customObjects.Add(null); }
+                if (row.customObjects.Count > colCount) { row.customObjects.RemoveRange(colCount, row.customObjects.Count - colCount); }
             }
         }
 #endif
-    }
-
-    [System.Serializable]
-    public class ListViewColumn
-    {
-        public string columnName = "Column";
-        public Sprite columnIcon;
-        public float width = 100;
-        public bool useFlexibleWidth = true;
-        public TextAnchor alignment = TextAnchor.MiddleCenter;
-    }
-
-    [System.Serializable]
-    public class ListViewRow
-    {
-        public List<string> values = new();
-        public List<Sprite> icons = new();
-
-        public ListViewRow()
-        {
-            values = new List<string>();
-            icons = new List<Sprite>();
-        }
-
-        public ListViewRow(params string[] rowValues)
-        {
-            values = new List<string>(rowValues);
-            icons = new List<Sprite>(new Sprite[rowValues.Length]);
-        }
-
-        public void SetCell(int index, string value, Sprite icon = null)
-        {
-            EnsureCapacity(index + 1);
-            values[index] = value;
-            icons[index] = icon;
-        }
-
-        public Sprite GetIcon(int index)
-        {
-            return index < icons.Count ? icons[index] : null;
-        }
-
-        void EnsureCapacity(int requiredCapacity)
-        {
-            while (values.Count < requiredCapacity) { values.Add(""); }
-            while (icons.Count < requiredCapacity) { icons.Add(null); }
-        }
-    }
-
-    [System.Serializable]
-    public class ListViewStyle
-    {
-        // Text Settings
-        public TMP_FontAsset headerFont;
-        public TMP_FontAsset rowFont;
-        public int headerFontSize = 24;
-        public int rowFontSize = 24;
-        public FontStyles headerFontStyle = FontStyles.Bold;
-        public FontStyles rowFontStyle = FontStyles.Normal;
-        public Color headerTextColor = Color.white;
-        public Color rowTextColor = Color.black;
-
-        // Layout Settings
-        public float headerHeight = 60;
-        public float rowHeight = 60;
-        public float columnSpacing = 0;
-        public float rowSpacing = 0;
-        public float iconSize = 16;
-        public float contentSpacing = 15;
-        public RectOffset contentPadding = new();
-
-        // Background Settings
-        public Color headerBackgroundColor = Color.gray;
-        public Color rowBackgroundColor = Color.white;
-        public bool useAlternatingRowColor = false;
-        public Color alternatingRowColor = new(0.9f, 0.9f, 0.9f, 1f);
-        public bool showBorder = true;
-        public Color borderColor = Color.black;
-        public float borderWidth = 1;
-        public Sprite backgroundSprite;
-        [Range(0.1f, 50f)] public float ppuMultiplier = 1;
-
-        public enum StylingSource
-        {
-            Custom = 0,
-            StylerPreset = 1
-        }
-
-        public enum Type
-        {
-            HeaderFont,
-            RowFont,
-            HeaderTextColor,
-            RowTextColor,
-            HeaderBackgroundColor,
-            RowBackgroundColor,
-            AlternatingRowColor,
-            BorderColor
-        }
-
-        [System.Serializable]
-        public class Mapping
-        {
-            public Type type;
-            public string colorID = "";
-            public string fontID = "";
-        }
-
-        public ListViewStyle()
-        {
-            // Initialize with default values (already set above)
-        }
-
-        public ListViewStyle(ListViewStyle other)
-        {
-            CopyFrom(other);
-        }
-
-        public void CopyFrom(ListViewStyle other)
-        {
-            if (other == null)
-                return;
-
-            // Text Settings
-            headerFont = other.headerFont;
-            rowFont = other.rowFont;
-            headerFontSize = other.headerFontSize;
-            rowFontSize = other.rowFontSize;
-            headerFontStyle = other.headerFontStyle;
-            rowFontStyle = other.rowFontStyle;
-            headerTextColor = other.headerTextColor;
-            rowTextColor = other.rowTextColor;
-
-            // Layout Settings
-            headerHeight = other.headerHeight;
-            rowHeight = other.rowHeight;
-            iconSize = other.iconSize;
-            columnSpacing = other.columnSpacing;
-            rowSpacing = other.rowSpacing;
-            contentSpacing = other.contentSpacing;
-            contentPadding = new RectOffset(other.contentPadding.left, other.contentPadding.right,
-                                          other.contentPadding.top, other.contentPadding.bottom);
-
-            // Style Settings
-            headerBackgroundColor = other.headerBackgroundColor;
-            rowBackgroundColor = other.rowBackgroundColor;
-            useAlternatingRowColor = other.useAlternatingRowColor;
-            alternatingRowColor = other.alternatingRowColor;
-            showBorder = other.showBorder;
-            borderColor = other.borderColor;
-            borderWidth = other.borderWidth;
-            backgroundSprite = other.backgroundSprite;
-            ppuMultiplier = other.ppuMultiplier;
-        }
-
-        public override int GetHashCode()
-        {
-            int hash = headerBackgroundColor.GetHashCode();
-            hash = hash * 31 + rowBackgroundColor.GetHashCode();
-            hash = hash * 31 + alternatingRowColor.GetHashCode();
-            hash = hash * 31 + useAlternatingRowColor.GetHashCode();
-            hash = hash * 31 + showBorder.GetHashCode();
-            hash = hash * 31 + borderColor.GetHashCode();
-            hash = hash * 31 + borderWidth.GetHashCode();
-            hash = hash * 31 + headerTextColor.GetHashCode();
-            hash = hash * 31 + rowTextColor.GetHashCode();
-            hash = hash * 31 + headerFontSize.GetHashCode();
-            hash = hash * 31 + rowFontSize.GetHashCode();
-            hash = hash * 31 + headerFontStyle.GetHashCode();
-            hash = hash * 31 + rowFontStyle.GetHashCode();
-            hash = hash * 31 + (headerFont != null ? headerFont.GetHashCode() : 0);
-            hash = hash * 31 + (rowFont != null ? rowFont.GetHashCode() : 0);
-            hash = hash * 31 + (backgroundSprite != null ? backgroundSprite.GetHashCode() : 0);
-            hash = hash * 31 + ppuMultiplier.GetHashCode();
-            hash = hash * 31 + contentSpacing.GetHashCode();
-            hash = hash * 31 + contentPadding.left;
-            hash = hash * 31 + contentPadding.right;
-            hash = hash * 31 + contentPadding.top;
-            hash = hash * 31 + contentPadding.bottom;
-            hash = hash * 31 + rowHeight.GetHashCode();
-            hash = hash * 31 + headerHeight.GetHashCode();
-            hash = hash * 31 + iconSize.GetHashCode();
-            hash = hash * 31 + columnSpacing.GetHashCode();
-            hash = hash * 31 + rowSpacing.GetHashCode();
-            return hash;
-        }
     }
 }

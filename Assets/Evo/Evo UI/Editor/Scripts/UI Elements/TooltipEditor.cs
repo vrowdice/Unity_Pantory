@@ -119,6 +119,7 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 {
+                    GUI.enabled = customContent.objectReferenceValue == null;
                     EvoEditorGUI.DrawProperty(tooltipPreset, "Preset", null, true, true, true);
                     EvoEditorGUI.DrawProperty(icon, "Icon", null, true, true, true);
                     EvoEditorGUI.DrawProperty(title, "Title", null, true, true, true);
@@ -126,12 +127,14 @@ namespace Evo.UI
 #if EVO_LOCALIZATION
                     EvoEditorGUI.AddLayoutSpace();
                     string[] exProps = new string[] { "titleKey", "descriptionKey" };
-                    Localization.ExternalEditor.DrawLocalizationContainer(serializedObject, tooltipTarget.gameObject, null, exProps, addSpace: false);
+                    Localization.ExternalEditor.DrawLocalizationContainer(serializedObject, tooltipTarget.gameObject, null, exProps);
 #endif
+                    GUI.enabled = true;
+                    EvoEditorGUI.DrawProperty(customContent, "Custom Content", "Instantiates a custom prefab instead of the default content.", false, true, true);
                     if (customContent.objectReferenceValue != null)
                     {
-                        GUILayout.Space(4);
-                        EvoEditorGUI.DrawInfoBox("'Custom Content' is assigned in the References tab, so these values will be bypassed.", revertBackgroundColor: true);
+                        EvoEditorGUI.AddLayoutSpace();
+                        EvoEditorGUI.DrawInfoBox("Custom Content is assigned. The attached object will be used to generate the tooltip content.", revertBackgroundColor: true);
                     }
                 }
                     EvoEditorGUI.EndContainer();
@@ -201,8 +204,7 @@ namespace Evo.UI
             if (EvoEditorGUI.DrawFoldout(ref tooltipTarget.referencesFoldout, "References", EvoEditorGUI.GetIcon("UI_References")))
             {
                 EvoEditorGUI.BeginContainer();
-                EvoEditorGUI.DrawProperty(tooltipCanvas, "Tooltip Canvas", "The canvas on which the tooltip object will be rendered. If left unset, a default canvas will be created at runtime.", true, true, true);
-                EvoEditorGUI.DrawProperty(customContent, "Custom Content", "Instantiates a custom prefab instead of the default content.", false, true, true);
+                EvoEditorGUI.DrawProperty(tooltipCanvas, "Tooltip Canvas", "The canvas on which the tooltip object will be rendered. If left unset, a default canvas will be created at runtime.", false, true, true);
                 EvoEditorGUI.EndContainer();
             }
 

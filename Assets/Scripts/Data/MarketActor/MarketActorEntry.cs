@@ -12,7 +12,7 @@ public class MarketActorEntry
         this.data = data;
 
         state = new MarketActorState();
-        state.wealth = data.wealth;
+        state.wealth = data.baseWealth;
     }
 }
 

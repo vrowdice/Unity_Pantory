@@ -19,52 +19,104 @@ MonoBehaviour:
     m_Key: News_Arms_Race
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001001
+    m_Key: News_Arms_Race_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000002
     m_Key: News_Auto_Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001002
+    m_Key: News_Auto_Surge_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000003
     m_Key: News_Aviation_Breakthrough
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001003
+    m_Key: News_Aviation_Breakthrough_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000004
     m_Key: News_Chip_Shortage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001004
+    m_Key: News_Chip_Shortage_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000005
     m_Key: News_Cyber_Monday
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001005
+    m_Key: News_Cyber_Monday_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000006
     m_Key: News_Gold_Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001006
+    m_Key: News_Gold_Surge_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000007
     m_Key: News_Housing_Boom
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001007
+    m_Key: News_Housing_Boom_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000008
     m_Key: News_Luxury_Ban
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001008
+    m_Key: News_Luxury_Ban_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000009
     m_Key: News_Mining_Collapse
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001009
+    m_Key: News_Mining_Collapse_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000010
     m_Key: News_Oil_Shock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001010
+    m_Key: News_Oil_Shock_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000011
     m_Key: News_Peace_Treaty
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001011
+    m_Key: News_Peace_Treaty_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000012
     m_Key: News_Steel_Tariffs
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000001012
+    m_Key: News_Steel_Tariffs_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000013
     m_Key: News_Textile_Strike
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000001013
+    m_Key: News_Textile_Strike_Desc
     m_Metadata:
       m_Items: []
   m_Metadata:

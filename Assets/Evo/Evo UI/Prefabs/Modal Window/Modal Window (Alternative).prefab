@@ -290,7 +290,7 @@ MonoBehaviour:
   m_text: Modal Window
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_sharedMaterial: {fileID: 3107891133831500437, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -330,15 +330,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -806,6 +808,10 @@ MonoBehaviour:
   title: Modal Window
   description: This window can be used for confirmations, warnings, item details,
     dialogue prompts, or other focused interactions.
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
+  titleKey: 
+  descriptionKey: 
   animationType: 3
   animationDuration: 0.25
   animationCurve:
@@ -1188,7 +1194,7 @@ MonoBehaviour:
     prompts, or other focused interactions.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-  m_sharedMaterial: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
+  m_sharedMaterial: {fileID: 3107891133831500437, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1228,15 +1234,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1368,7 +1376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5131600166785954505, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 155.70999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5131600166785954505, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1579,10 +1587,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7375202084701991122, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
-    - target: {fileID: 7375202084701991122, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4284769535
       objectReference: {fileID: 0}
@@ -1785,7 +1789,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5131600166785954505, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 167.86
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5131600166785954505, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1923,10 +1927,6 @@ PrefabInstance:
       propertyPath: m_fontColor.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7375202084701991122, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: -8965312031696399558, guid: 6bdb9c1d8b3ace1408d2de12e30ae744, type: 2}
     - target: {fileID: 7570112282329265524, guid: a2f7b7e9d0c2cc141b61a5d8d356b81e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

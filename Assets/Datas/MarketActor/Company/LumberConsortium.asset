@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: LumberConsortium
+  m_EditorClassIdentifier: 
+  id: lumber_consortium
+  displayName: Lumber Consortium
+  icon: {fileID: 21300000, guid: a5a7d19d45076f643b2b20dba6d81ecb, type: 3}
+  description: A sprawling federation of logging houses that controls most timber
+    exports along the northern frontier.
+  marketActorType: 1
+  baseWealth: 45000
+  baseProductionCount: 250
+  comsumeResourceList:
+  - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
+  productionResourceList:
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}

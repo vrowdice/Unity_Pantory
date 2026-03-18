@@ -15,11 +15,6 @@ public partial class MainCanvas : CanvasBase
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
 
-    [Header("Info Panel")]
-    [SerializeField] private ThreadInfoPopup _threadInfoPopup;
-    [SerializeField] private ResearchInfoPopup _researchInfoPopup;
-    [SerializeField] private NewsPopup _newsPopup;
-
     private MainRunner _mainRunner;
 
     public void Init(MainRunner mainRunner)
@@ -28,35 +23,31 @@ public partial class MainCanvas : CanvasBase
 
         _mainRunner = mainRunner;
 
-        DataManager.Resource.OnResourceChanged -= UpdateAllMainText;
+        DataManager.Resource.OnResourceChanged -= OnResourceChanged;
         DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
-        DataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
 
         DataManager.Time.OnDayChanged -= OnDayChanged;
         DataManager.Time.OnMonthChanged -= OnMonthChanged;
         DataManager.Time.OnYearChanged -= OnYearChanged;
 
-        DataManager.Resource.OnResourceChanged += UpdateAllMainText;
+        DataManager.Resource.OnResourceChanged += OnResourceChanged;
         DataManager.Finances.OnCreditChanged += UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
-        DataManager.Thread.OnThreadChanged += OnThreadPlacementChanged;
 
         DataManager.Time.OnDayChanged += OnDayChanged;
         DataManager.Time.OnMonthChanged += OnMonthChanged;
         DataManager.Time.OnYearChanged += OnYearChanged;
 
         _infoDatePanel.Init(DataManager);
-        _creditInfoPanel.Init(DataManager);
         _topInfoPanel.Init(DataManager);
 
+        CreateMainPanels();
         InitializePanelDictionary();
         InitializePanels();
         CreateQuickMoveBtns();
-        UpdateAllMainText();
 
-        RefreshThreadCategories();
-        RefreshThreadButtons();
+        InitBuildUi();
         RefreshResourceScrollView();
         UpdateAllMainText();
     }
@@ -65,6 +56,12 @@ public partial class MainCanvas : CanvasBase
     {
         UpdateCreditText();
         UpdateResearchText();
+    }
+
+    private void OnResourceChanged()
+    {
+        RefreshResourceScrollView();
+        UpdateAllMainText();
     }
 
     private void UpdateCreditText()
@@ -119,46 +116,13 @@ public partial class MainCanvas : CanvasBase
         UpdateAllMainText();
     }
 
-    private void OnThreadPlacementChanged()
-    {
-        RefreshResourceScrollView();
-        UpdateAllMainText();
-    }
-
-    /// <summary>
-    /// 크레딧 정보 패널을 토글합니다.
-    /// </summary>
-    public void ToggleCreditInfo()
-    {
-        _creditInfoPanel.ToggleCreditInfo();
-    }
-
-    /// <summary>
-    /// FinancesDataHandler에서 크레딧 정보를 가져옵니다.
-    /// </summary>
-    /// <returns>크레딧 정보가 포함된 FinancesDataHandler, 없으면 null</returns>
-    public FinancesDataHandler GetFinancesDataHandler()
-    {
-        return DataManager.Finances;
-    }
-
     public void ShowNewsPopup(NewsState newsState)
     {
-        _newsPopup.Init(newsState, this);
-    }
-
-    public void ShowThreadInfoPanel(ThreadState threadState)
-    {
-        _threadInfoPopup.Init(threadState, this);
-    }
-
-    public void ShowResearchInfoPanel(ResearchEntry researchEntry)
-    {
-        _researchInfoPopup.Init(researchEntry, this);
+        UIManager.Instance.ShowNewsPopup(newsState, this);
     }
 
     public void ShowOptionPanel()
     {
-        GameManager.ShowOptionPanel();
+        UIManager.Instance.ShowOptionPopup();
     }
 }

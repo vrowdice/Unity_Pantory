@@ -11,7 +11,7 @@ namespace Evo.UI
     [RequireComponent(typeof(RectTransform))]
     [HelpURL(Constants.HELP_URL + "ui-elements/vertical-chart")]
     [AddComponentMenu("Evo/UI/UI Elements/Vertical Chart")]
-    public class VerticalChart : MonoBehaviour
+    public class VerticalChart : MonoBehaviour, IStylerHandler
     {
         [EvoHeader("Chart Data", Constants.CUSTOM_EDITOR_ID)]
         public List<DataPoint> dataPoints = new()
@@ -90,6 +90,19 @@ namespace Evo.UI
             }
         }
 
+        // Styler Interface
+        public StylerPreset Preset
+        {
+            get => stylerPreset;
+            set
+            {
+                if (stylerPreset == value) { return; }
+                stylerPreset = value;
+                UpdateStyler();
+            }
+        }
+        public void UpdateStyler() => DrawChartSafe();
+
         void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
@@ -107,7 +120,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -130,12 +143,17 @@ namespace Evo.UI
 #if EVO_LOCALIZATION
             if (Application.isPlaying && enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
 #endif
         }
 
         void OnRectTransformDimensionsChange()
+        {
+            DrawChartSafe();
+        }
+
+        void DrawChartSafe()
         {
             if (gameObject.activeInHierarchy && rectTransform != null && !pendingRedraw)
             {
@@ -206,8 +224,12 @@ namespace Evo.UI
 
         public void DrawChart()
         {
-            if (rectTransform == null)
-                rectTransform = GetComponent<RectTransform>();
+            if (rectTransform == null) { return; }
+            if (!gameObject.activeInHierarchy)
+            {
+                pendingRedraw = true;
+                return;
+            }
 
             ClearChart();
 
@@ -227,7 +249,7 @@ namespace Evo.UI
                 return;
 
             // Create containers with full anchors
-            GameObject gridContainer = new($"Grid {GEN_SUFFIX}");
+            GameObject gridContainer = new($"Grid {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             gridContainer.transform.SetParent(transform, false);
             RectTransform gridRT = gridContainer.AddComponent<RectTransform>();
             gridRT.anchorMin = Vector2.zero;
@@ -235,7 +257,7 @@ namespace Evo.UI
             gridRT.offsetMin = Vector2.zero;
             gridRT.offsetMax = Vector2.zero;
 
-            GameObject dataContainer = new($"Data {GEN_SUFFIX}");
+            GameObject dataContainer = new($"Data {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             dataContainer.transform.SetParent(transform, false);
             RectTransform dataRT = dataContainer.AddComponent<RectTransform>();
             dataRT.anchorMin = Vector2.zero;
@@ -243,7 +265,7 @@ namespace Evo.UI
             dataRT.offsetMin = Vector2.zero;
             dataRT.offsetMax = Vector2.zero;
 
-            GameObject labelContainer = new($"Labels {GEN_SUFFIX}");
+            GameObject labelContainer = new($"Labels {GEN_SUFFIX}") { hideFlags = HideFlags.DontSave };
             labelContainer.transform.SetParent(transform, false);
             RectTransform labelRT = labelContainer.AddComponent<RectTransform>();
             labelRT.anchorMin = Vector2.zero;
@@ -441,7 +463,7 @@ namespace Evo.UI
 
         void CreateBar(GameObject container, Vector2 position, Vector2 size, Color color, string name)
         {
-            GameObject barObj = new(name, typeof(RectTransform), typeof(Image));
+            GameObject barObj = new(name, typeof(RectTransform), typeof(Image)) { hideFlags = HideFlags.DontSave };
             barObj.transform.SetParent(container.transform, false);
 
             Image img = barObj.GetComponent<Image>();
@@ -460,7 +482,7 @@ namespace Evo.UI
 
         void CreateLine(GameObject container, Vector2 start, Vector2 end, Color color, float thickness, string name)
         {
-            GameObject lineObj = new(name, typeof(RectTransform), typeof(RawImage));
+            GameObject lineObj = new(name, typeof(RectTransform), typeof(RawImage)) { hideFlags = HideFlags.DontSave };
             lineObj.transform.SetParent(container.transform, false);
 
             RawImage img = lineObj.GetComponent<RawImage>();
@@ -483,7 +505,7 @@ namespace Evo.UI
 
         void CreateTMPLabel(GameObject container, string text, Vector2 position, TextAlignmentOptions alignment, string name, Vector2 size, TMP_FontAsset font = null, float fontSize = 0, Color? color = null)
         {
-            GameObject labelObj = new(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+            GameObject labelObj = new(name, typeof(RectTransform), typeof(TextMeshProUGUI)) { hideFlags = HideFlags.DontSave };
             labelObj.transform.SetParent(container.transform, false);
 
             TextMeshProUGUI textComp = labelObj.GetComponent<TextMeshProUGUI>();
@@ -564,7 +586,7 @@ namespace Evo.UI
         }
 
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (DataPoint item in dataPoints)
             {

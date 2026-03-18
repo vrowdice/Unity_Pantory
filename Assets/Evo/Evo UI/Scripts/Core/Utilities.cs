@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 #endif
 
 namespace Evo.UI
@@ -255,6 +256,42 @@ namespace Evo.UI
         }
 
         /// <summary>
+        /// Checks if the Shift key was pressed based on the active input handler.
+        /// </summary>
+        public static bool WasShiftKeyPressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            var keyboard = Keyboard.current;
+            if (keyboard == null) { return false; }
+            return keyboard.shiftKey.isPressed;
+#else
+            return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+#endif
+        }
+
+        /// <summary>
+        /// Checks if the submit button is pressed.
+        /// </summary>
+        public static bool WasSubmitPressed()
+        {
+            bool isSubmitPressed = false;
+
+#if ENABLE_INPUT_SYSTEM
+            if (EventSystem.current != null && EventSystem.current.currentInputModule is InputSystemUIInputModule inputModule)
+            {
+                if (inputModule.submit != null && inputModule.submit.action != null)
+                {
+                    isSubmitPressed = inputModule.submit.action.IsPressed();
+                }
+            }
+#else
+            isSubmitPressed = Input.GetButton("Submit");
+#endif
+
+            return isSubmitPressed;
+        }
+
+        /// <summary>
         /// Checks for tab navigation combos.
         /// </summary>
         public static bool HandleTabNavigation(out bool reverseTab)
@@ -305,7 +342,7 @@ namespace Evo.UI
         public static void SetSelectedObject(GameObject targetObject)
         {
             EventSystem eventSystem = EventSystem.current;
-            if (eventSystem != null) { eventSystem.SetSelectedGameObject(targetObject); }
+            if (eventSystem != null && !eventSystem.alreadySelecting) { eventSystem.SetSelectedGameObject(targetObject); }
         }
         #endregion
     }

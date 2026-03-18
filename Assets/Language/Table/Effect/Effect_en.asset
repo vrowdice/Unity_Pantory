@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7000000000001
-    m_Localized: Management Deficit
+    m_Localized: lackofManagers
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000002

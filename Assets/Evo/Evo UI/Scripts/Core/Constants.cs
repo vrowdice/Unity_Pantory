@@ -8,9 +8,14 @@ namespace Evo.UI
         public const string CUSTOM_EDITOR_ID = "Evo_UI";
 
         /// <summary>
-        /// Default Styler preset file root and name.
+        /// Default Styler preset asset root and name.
         /// </summary>
-        public const string DEFAULT_STYLER_PRESET = "Styler Presets/Default";
+        public const string STYLER_FALLBACK_PATH = "Styler Presets/Default";
+
+        /// <summary>
+        /// Styler config asset root and name. Used for fetching default preset.
+        /// </summary>
+        public const string STYLER_CONFIG_PATH = "Styler Presets/Config";
 
         /// <summary>
         /// Default Styler preset file root and name.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using TMPro;
 
 namespace Evo.UI
@@ -23,9 +24,14 @@ namespace Evo.UI
         // Settings
         [SerializeField] private bool useUnscaledTime = false;
 
+        // Global Events
+        public UnityEvent onAnimationStart = new();
+        public UnityEvent onAnimationEnd = new();
+
         // Cache
         readonly Dictionary<AnimationType, Coroutine> activeAnimations = new();
         readonly Dictionary<AnimationType, int> animationIds = new();
+        readonly Dictionary<int, int> groupActiveAnimations = new(); // Track active animations per group
         Vector3 cachedShakeOffset = Vector3.zero;
         int nextAnimationID = 0;
 
@@ -40,13 +46,13 @@ namespace Evo.UI
         [System.Serializable]
         public enum AnimationType
         {
-            Fade = 0, 
-            Scale = 1, 
-            Slide = 2, 
-            Rotate = 3, 
-            PunchScale = 4, 
-            Shake = 5, 
-            Bounce = 6, 
+            Fade = 0,
+            Scale = 1,
+            Slide = 2,
+            Rotate = 3,
+            PunchScale = 4,
+            Shake = 5,
+            Bounce = 6,
             ColorTint = 7
         }
 
@@ -67,7 +73,7 @@ namespace Evo.UI
             OnClick = 1,
             OnPointerEnter = 2,
             OnPointerLeave = 3,
-            OnPointerDown = 4, 
+            OnPointerDown = 4,
             OnPointerUp = 5,
             Manual = 6
         }
@@ -103,8 +109,14 @@ namespace Evo.UI
             public string label;
             public TriggerType trigger = TriggerType.OnEnable;
             public List<AnimationData> animations = new();
+
+            // Local Events
+            public UnityEvent onGroupStart = new();
+            public UnityEvent onGroupEnd = new();
+
 #if UNITY_EDITOR
             [HideInInspector] public bool isExpanded = true;
+            [HideInInspector] public bool eventsExpanded = false;
 #endif
         }
 
@@ -157,14 +169,17 @@ namespace Evo.UI
             originalValuesStored = true;
         }
 
-        void PlayAnimation(AnimationData animData)
+        void PlayAnimation(AnimationData animData, int groupIndex)
         {
             // Generate unique ID for this animation
             int animationID = ++nextAnimationID;
-            animationIds[animData.type] = animationID;
+
+            // Track group animation count
+            if (!groupActiveAnimations.ContainsKey(groupIndex)) { groupActiveAnimations[groupIndex] = 0; }
+            groupActiveAnimations[groupIndex]++;
 
             // Start the new animation with its unique ID
-            Coroutine coroutine = StartCoroutine(AnimateCoroutineWithID(animData, animationID));
+            Coroutine coroutine = StartCoroutine(AnimateCoroutineWithID(animData, animationID, groupIndex));
             activeAnimations[animData.type] = coroutine;
         }
 
@@ -337,13 +352,16 @@ namespace Evo.UI
             return reversed;
         }
 
-        IEnumerator AnimateCoroutineWithID(AnimationData animData, int animationId)
+        IEnumerator AnimateCoroutineWithID(AnimationData animData, int animationId, int groupIndex)
         {
             if (animData.delay > 0)
             {
                 if (useUnscaledTime) { yield return new WaitForSecondsRealtime(animData.delay); }
                 else { yield return new WaitForSeconds(animData.delay); }
             }
+
+            // The previous animation will continue running until this exact moment.
+            animationIds[animData.type] = animationId;
 
             do
             {
@@ -355,7 +373,8 @@ namespace Evo.UI
                     yield return StartCoroutine(ExecuteAnimation(reversedData, animationId));
                 }
 
-            } while (animData.loop && IsAnimationActive(animData.type, animationId));
+            } 
+            while (animData.loop && IsAnimationActive(animData.type, animationId));
 
             // Clean up when animation completes (only if this is still the active animation)
             if (IsAnimationActive(animData.type, animationId))
@@ -367,6 +386,26 @@ namespace Evo.UI
                 if (!animData.loop && ShouldRestoreOriginalValues(animData))
                 {
                     yield return StartCoroutine(RestoreToOriginalValues(animData, 0.1f));
+                }
+
+                // Decrement group animation count and trigger end event if this was the last one
+                if (groupActiveAnimations.ContainsKey(groupIndex))
+                {
+                    groupActiveAnimations[groupIndex]--;
+                    if (groupActiveAnimations[groupIndex] <= 0)
+                    {
+                        groupActiveAnimations.Remove(groupIndex);
+
+                        // Trigger group end event
+                        if (groupIndex >= 0 && groupIndex < animationGroups.Count)
+                        {
+                            var group = animationGroups[groupIndex];
+                            group.onGroupEnd?.Invoke();
+                        }
+
+                        // Trigger global end event
+                        onAnimationEnd?.Invoke();
+                    }
                 }
             }
         }
@@ -455,11 +494,27 @@ namespace Evo.UI
                 AnimationGroup group = animationGroups[groupIndex];
                 if (group?.trigger == triggerType && group.animations != null)
                 {
+                    bool hasEnabledAnimations = false;
                     foreach (var animData in group.animations)
                     {
                         if (animData?.enabled == true)
                         {
-                            PlayAnimation(animData);
+                            hasEnabledAnimations = true;
+                            break;
+                        }
+                    }
+
+                    if (hasEnabledAnimations)
+                    {
+                        group.onGroupStart?.Invoke();
+                        onAnimationStart?.Invoke();
+
+                        foreach (var animData in group.animations)
+                        {
+                            if (animData?.enabled == true)
+                            {
+                                PlayAnimation(animData, groupIndex);
+                            }
                         }
                     }
                 }
@@ -477,11 +532,63 @@ namespace Evo.UI
             }
             activeAnimations.Clear();
             animationIds.Clear();
+            groupActiveAnimations.Clear();
         }
 
+        /// <summary>
+        /// Plays all manual animation groups.
+        /// </summary>
         public void PlayManualAnimations()
         {
             ExecuteAnimations(TriggerType.Manual);
+        }
+
+        /// <summary>
+        /// Plays specified animation group by label.
+        /// </summary>
+        public void PlayAnimationGroup(string targetLabel)
+        {
+            if (animationGroups == null || !gameObject.activeInHierarchy || string.IsNullOrEmpty(targetLabel))
+                return;
+
+            for (int groupIndex = 0; groupIndex < animationGroups.Count; groupIndex++)
+            {
+                AnimationGroup group = animationGroups[groupIndex];
+
+                // Check if this group matches the target label
+                if (group.label == targetLabel && group.animations != null)
+                {
+                    bool hasEnabledAnimations = false;
+                    foreach (var animData in group.animations)
+                    {
+                        if (animData?.enabled == true)
+                        {
+                            hasEnabledAnimations = true;
+                            break;
+                        }
+                    }
+
+                    if (hasEnabledAnimations)
+                    {
+                        group.onGroupStart?.Invoke();
+                        onAnimationStart?.Invoke();
+
+                        foreach (var animData in group.animations)
+                        {
+                            if (animData?.enabled == true)
+                            {
+                                PlayAnimation(animData, groupIndex);
+                            }
+                        }
+                    }
+
+                    // Found and played the matching group
+                    return;
+                }
+            }
+
+            // Optional: Log warning if no matching group was found
+            Debug.LogWarning($"No manual animation group found with label: {targetLabel}");
         }
 
         public void ResetToOriginalValues()
@@ -497,21 +604,21 @@ namespace Evo.UI
             SetColor(originalColor);
         }
 
-        public void RemoveAnimationGroup(int index) 
+        public void RemoveAnimationGroup(int index)
         {
             if (index < 0 || index >= animationGroups.Count) { return; }
             animationGroups.RemoveAt(index);
         }
-     
-        public void MoveGroupUp(int index) 
+
+        public void MoveGroupUp(int index)
         {
-            if (index > 0) 
+            if (index > 0)
             {
                 (animationGroups[index - 1], animationGroups[index]) = (animationGroups[index], animationGroups[index - 1]);
             }
         }
 
-        public void MoveGroupDown(int index) 
+        public void MoveGroupDown(int index)
         {
             if (index < animationGroups.Count - 1)
             {
@@ -523,6 +630,7 @@ namespace Evo.UI
         [HideInInspector] public bool groupFoldout = true;
         [HideInInspector] public bool referencesFoldout = false;
         [HideInInspector] public bool settingsFoldout = false;
+        [HideInInspector] public bool eventsFoldout = false;
 #endif
     }
 }

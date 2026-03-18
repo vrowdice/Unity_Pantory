@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CanvasBase : MonoBehaviour
+public class CanvasBase : TutorialBase
 {
     public GameManager GameManager { get; private set; }
     public DataManager DataManager { get; private set; }
@@ -13,7 +13,7 @@ public class CanvasBase : MonoBehaviour
         DataManager = DataManager.Instance;
 
         CanvasTrans = transform;
-        ProductionInfoImage = GameManager.ProductionInfoImage;
+        ProductionInfoImage = UIManager.Instance.ProductionInfoImagePrefab;
     }
 
     public virtual void UpdateAllMainText()

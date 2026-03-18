@@ -15,13 +15,12 @@ MonoBehaviour:
   id: technician
   displayName: Technician
   type: 1
-  tier: 2
   icon: {fileID: 21300000, guid: 702e69aa521c3eb409091b93f472f93f, type: 3}
   Image: {fileID: 21300000, guid: be40cd7d02703244dbe8af74759055fa, type: 3}
   description: A skilled craftsman with technical expertise. Proficient in complex
     assembly and advanced crafting techniques.
   baseEfficiency: 1
   baseSatisfaction: 0
-  baseSalary: 15
-  efficiencyEffectId: EfficiencyEffect_2
-  satisfactionEffectId: SatisfactionEffect_2
+  baseSalary: 12
+  hiringCost: 100
+  firingCost: 10

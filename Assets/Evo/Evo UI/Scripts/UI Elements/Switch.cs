@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using TMPro;
 
 namespace Evo.UI
 {
@@ -70,43 +69,43 @@ namespace Evo.UI
         public override void OnPointerClick(PointerEventData eventData)
         {
             base.OnPointerClick(eventData);
-            if (interactable) { Toggle(); }
+            if (IsInteractable()) { Toggle(); }
         }
 
         public override void OnPointerUp(PointerEventData eventData)
         {
             base.OnPointerUp(eventData);
-            if (interactable) { UpdateStates(); }
+            if (IsInteractable()) { UpdateStates(); }
         }
 
         public override void OnPointerEnter(PointerEventData eventData)
         {
             base.OnPointerEnter(eventData);
-            if (interactable) { UpdateStates(); }
+            if (IsInteractable()) { UpdateStates(); }
         }
 
         public override void OnPointerExit(PointerEventData eventData)
         {
             base.OnPointerExit(eventData);
-            if (interactable) { UpdateStates(); }
+            if (IsInteractable()) { UpdateStates(); }
         }
 
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
-            if (interactable) { UpdateStates(); }
+            if (IsInteractable()) { UpdateStates(); }
         }
 
         public override void OnDeselect(BaseEventData eventData)
         {
             base.OnDeselect(eventData);
-            if (interactable) { UpdateStates(); }
+            if (IsInteractable()) { UpdateStates(); }
         }
 
         public override void OnSubmit(BaseEventData eventData)
         {
             base.OnSubmit(eventData);
-            if (interactable) { Toggle(); }
+            if (IsInteractable()) { Toggle(); }
         }
 
         void InitializeHandle()

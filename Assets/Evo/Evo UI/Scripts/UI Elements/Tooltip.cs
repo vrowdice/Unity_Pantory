@@ -25,7 +25,7 @@ namespace Evo.UI
 #endif
 
         [EvoHeader("Settings", Constants.CUSTOM_EDITOR_ID)]
-        [SerializeField] private bool followCursor = true;
+        public bool followCursor = true;
         public bool is3DObject = false;
         [SerializeField] private float maxWidth = 400;
         [SerializeField, Range(0, 10)] private float showDelay = 0;
@@ -66,6 +66,14 @@ namespace Evo.UI
         Coroutine positionCoroutine;
         Coroutine animationCoroutine;
 
+        // Helpers
+        bool isCustomLogGiven;
+
+        // Public Properties
+        public TooltipPreset Instance => tooltipInstance;
+        public bool IsVisible() => tooltipInstance != null;
+
+        // Helper Properties
         Canvas ActiveCanvas
         {
             get
@@ -92,7 +100,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -107,7 +115,7 @@ namespace Evo.UI
         void OnDestroy()
         {
 #if EVO_LOCALIZATION
-            if (enableLocalization && localizedObject != null) { Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization; }
+            if (enableLocalization && localizedObject != null) { Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization; }
 #endif
             Hide();
         }
@@ -182,9 +190,8 @@ namespace Evo.UI
                 case AnimationType.Slide:
                     tooltipInstance.canvasGroup.alpha = 0f;
                     // Store the current position as base, then apply offset
-                    RectTransform tooltipRect = tooltipInstance.GetComponent<RectTransform>();
-                    Vector3 currentPos = tooltipRect.anchoredPosition;
-                    tooltipRect.anchoredPosition = currentPos + (Vector3)slideOffset;
+                    Vector3 currentPos = tooltipInstance.tooltipRect.anchoredPosition;
+                    tooltipInstance.tooltipRect.anchoredPosition = currentPos + (Vector3)slideOffset;
                     break;
             }
         }
@@ -216,27 +223,12 @@ namespace Evo.UI
                     tooltipInstance.canvasGroup.alpha = progress;
                     if (isIn)
                     {
-                        RectTransform tooltipRect = tooltipInstance.GetComponent<RectTransform>();
                         Vector2 currentTarget = CalculateCurrentTargetPosition();
                         Vector2 slideStartPos = currentTarget + slideOffset;
-                        tooltipRect.anchoredPosition = Vector2.Lerp(slideStartPos, currentTarget, progress);
+                        tooltipInstance.tooltipRect.anchoredPosition = Vector2.Lerp(slideStartPos, currentTarget, progress);
                     }
                     break;
             }
-        }
-
-        bool SetupTooltipContent()
-        {
-            if (tooltipInstance == null)
-            {
-                Debug.LogError($"Tooltip prefab must have 'Tooltip Preset' component!", this);
-                return false;
-            }
-
-            if (customContent != null) { tooltipInstance.SetupCustomContent(customContent, maxWidth); }
-            else { tooltipInstance.SetupTooltip(title, description, icon, maxWidth); }
-
-            return true;
         }
 
         Vector2 CalculateTargetPosition(Camera targetCamera)
@@ -291,13 +283,11 @@ namespace Evo.UI
         {
             Canvas canvas = ActiveCanvas;
             if (canvas.worldCamera != null) { return canvas.worldCamera; }
-
             if (TryGetComponent<RectTransform>(out _))
             {
                 Canvas parentCanvas = GetComponentInParent<Canvas>();
                 if (parentCanvas != null && parentCanvas.worldCamera != null) { return parentCanvas.worldCamera; }
             }
-
             return Camera.main;
         }
 
@@ -305,13 +295,13 @@ namespace Evo.UI
         {
             if (offsetPosition == OffsetPosition.Custom) { return customOffset; }
             if (tooltipInstance == null) { return Vector2.zero; }
-            if (!tooltipInstance.TryGetComponent<RectTransform>(out var tooltipRect)) { return Vector2.zero; }
+            if (tooltipInstance.tooltipRect == null) { return Vector2.zero; }
 
             // Force layout update to get accurate size
             Canvas.ForceUpdateCanvases();
 
-            float width = tooltipRect.rect.width;
-            float height = tooltipRect.rect.height;
+            float width = tooltipInstance.tooltipRect.rect.width;
+            float height = tooltipInstance.tooltipRect.rect.height;
 
             Vector2 offset = Vector2.zero;
 
@@ -354,7 +344,7 @@ namespace Evo.UI
             Camera targetCamera = GetTargetCamera();
             Vector2 currentTarget = CalculateTargetPosition(targetCamera);
             currentTarget += GetOffsetVector();
-            return ClampToCanvasBounds(currentTarget, tooltipInstance.GetComponent<RectTransform>());
+            return ClampToCanvasBounds(currentTarget, tooltipInstance.tooltipRect);
         }
 
         Vector2 ClampToCanvasBounds(Vector2 anchoredPosition, RectTransform tooltipRect)
@@ -382,7 +372,7 @@ namespace Evo.UI
             return anchoredPosition;
         }
 
-        IEnumerator ShowTooltipDelayed()
+        IEnumerator ShowTooltip()
         {
             yield return new WaitForSeconds(showDelay);
 
@@ -390,16 +380,35 @@ namespace Evo.UI
             if (this == null || !gameObject.activeInHierarchy)
                 yield break;
 
-            // Instantiate tooltip
-            GameObject toGo = Instantiate(tooltipPreset, ActiveCanvas.transform);
-            tooltipInstance = toGo.GetComponent<TooltipPreset>();
+            // Determine which prefab to use
+            GameObject prefabToUse = customContent != null ? customContent : tooltipPreset;
 
-            // Setup tooltip content
-            if (!SetupTooltipContent())
+            if (prefabToUse == null)
             {
-                HideImmediate();
+                Debug.LogWarning($"No Tooltip Preset or Custom Content assigned to {gameObject.name}.", this);
                 yield break;
             }
+
+            // Instantiate tooltip
+            GameObject toGo = Instantiate(prefabToUse, ActiveCanvas.transform);
+            bool isCustom = customContent != null;
+
+            // Try to get existing TooltipPreset, or add one if missing
+            if (!toGo.TryGetComponent<TooltipPreset>(out tooltipInstance))
+            {
+                tooltipInstance = toGo.AddComponent<TooltipPreset>();
+                if (!isCustomLogGiven)
+                {
+                    Debug.Log($"<b>Tooltip Preset</b> component is not attached to <b>{gameObject.name}</b>, " +
+                        $"but it's assigned as Tooltip Preset." +
+                        $"\nThis tooltip will be treated as Custom Content, and the default content will be skipped.\n", this);
+                    isCustomLogGiven = true;
+                }
+                isCustom = true;
+            }
+
+            // Setup tooltip content
+            tooltipInstance.Setup(title, description, icon, maxWidth, isCustom);
 
             // Start position updates immediately for all animations
             positionCoroutine = StartCoroutine(UpdateTooltipPosition());
@@ -413,7 +422,7 @@ namespace Evo.UI
 
         IEnumerator UpdateTooltipPosition()
         {
-            if (!tooltipInstance.TryGetComponent<RectTransform>(out var tooltipRect))
+            if (tooltipInstance.tooltipRect == null)
                 yield break;
 
             // Cache camera reference
@@ -423,14 +432,14 @@ namespace Evo.UI
             {
                 Vector2 newTargetPosition = CalculateTargetPosition(targetCamera);
                 newTargetPosition += GetOffsetVector();
-                newTargetPosition = ClampToCanvasBounds(newTargetPosition, tooltipRect);
+                newTargetPosition = ClampToCanvasBounds(newTargetPosition, tooltipInstance.tooltipRect);
 
-                if (movementSmoothing == 0) { tooltipRect.anchoredPosition = newTargetPosition; }
+                if (movementSmoothing == 0) { tooltipInstance.tooltipRect.anchoredPosition = newTargetPosition; }
                 else
                 {
-                    Vector2 currentPosition = tooltipRect.anchoredPosition;
+                    Vector2 currentPosition = tooltipInstance.tooltipRect.anchoredPosition;
                     Vector2 smoothedPosition = Vector2.Lerp(currentPosition, newTargetPosition, movementSmoothing * Time.unscaledDeltaTime);
-                    tooltipRect.anchoredPosition = smoothedPosition;
+                    tooltipInstance.tooltipRect.anchoredPosition = smoothedPosition;
                 }
 
                 yield return null;
@@ -439,7 +448,7 @@ namespace Evo.UI
 
         IEnumerator AnimateTooltipIn()
         {
-            if (tooltipInstance == null || tooltipInstance.canvasGroup == null)
+            if (tooltipInstance == null)
                 yield break;
 
             SetInitialAnimationState();
@@ -466,7 +475,7 @@ namespace Evo.UI
 
         IEnumerator AnimateTooltipOut()
         {
-            if (tooltipInstance == null || tooltipInstance.canvasGroup == null)
+            if (tooltipInstance == null)
             {
                 HideImmediate();
                 yield break;
@@ -475,7 +484,7 @@ namespace Evo.UI
             // Store initial values
             float startingAlpha = tooltipInstance.canvasGroup.alpha;
             Vector3 startingScale = tooltipInstance.transform.localScale;
-            Vector2 startPosition = tooltipInstance.GetComponent<RectTransform>().anchoredPosition;
+            Vector2 startPosition = tooltipInstance.tooltipRect.anchoredPosition;
 
             float elapsedTime = 0f;
 
@@ -498,7 +507,7 @@ namespace Evo.UI
                     case AnimationType.Slide:
                         tooltipInstance.canvasGroup.alpha = Mathf.Lerp(startingAlpha, 0f, progress);
                         Vector2 endPos = startPosition + slideOffset;
-                        tooltipInstance.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(startPosition, endPos, progress);
+                        tooltipInstance.tooltipRect.anchoredPosition = Vector2.Lerp(startPosition, endPos, progress);
                         break;
                 }
 
@@ -510,9 +519,11 @@ namespace Evo.UI
 
         public void Show()
         {
-            if (tooltipPreset == null)
+            // Check if we have either a tooltip preset or custom content
+            if (tooltipPreset == null && customContent == null)
             {
-                Debug.LogWarning($"No tooltip preset assigned to {gameObject.name}. Please assign a prefab with 'Tooltip Preset' component.");
+                Debug.LogWarning($"No tooltip preset or custom content assigned to {gameObject.name}. " +
+                    $"Please assign a prefab with 'Tooltip Preset' component or a custom content GameObject.", this);
                 return;
             }
 
@@ -523,7 +534,7 @@ namespace Evo.UI
             HideImmediate();
 
             // Start delayed show
-            showCoroutine = StartCoroutine(ShowTooltipDelayed());
+            showCoroutine = StartCoroutine(ShowTooltip());
 
             // Invoke events
             onShow?.Invoke();
@@ -553,16 +564,26 @@ namespace Evo.UI
 
         public void SetContent(string newTitle, string newDescription, Sprite newIcon = null, GameObject newCustomContent = null)
         {
+            if (newCustomContent != null)
+            {
+                customContent = newCustomContent;
+                if (tooltipInstance != null)
+                {
+                    HideImmediate();
+                    Show();
+                }
+                return;
+            }
+
             title = newTitle;
             description = newDescription;
             icon = newIcon;
             customContent = newCustomContent;
 
-            if (tooltipInstance == null)
-                return;
-
-            if (customContent != null) { tooltipInstance.SetupCustomContent(customContent, maxWidth); }
-            else { tooltipInstance.SetupTooltip(title, description, icon, maxWidth); }
+            if (tooltipInstance != null) 
+            {
+                tooltipInstance.Setup(title, description, icon, maxWidth); 
+            }
         }
 
         public void SetContent(GameObject newCustomContent)
@@ -570,10 +591,26 @@ namespace Evo.UI
             SetContent(null, null, null, newCustomContent);
         }
 
-        public bool IsVisible() => tooltipInstance != null;
+        public void SetTitle(string newTitle)
+        {
+            title = newTitle;
+            if (tooltipInstance != null) { tooltipInstance.Setup(title, description, icon, maxWidth); }
+        }
+
+        public void SetDescription(string newDescription)
+        {
+            description = newDescription;
+            if (tooltipInstance != null) { tooltipInstance.Setup(title, description, icon, maxWidth); }
+        }
+
+        public void SetIcon(Sprite newIcon)
+        {
+            icon = newIcon;
+            if (tooltipInstance != null) { tooltipInstance.Setup(title, description, icon, maxWidth); }
+        }
 
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             if (!string.IsNullOrEmpty(titleKey)) { title = localizedObject.GetString(titleKey); }
             if (!string.IsNullOrEmpty(descriptionKey)) { description = localizedObject.GetString(descriptionKey); }

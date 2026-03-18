@@ -10,9 +10,9 @@ public class NewspaperPanel : MonoBehaviour
     [SerializeField] TextMeshProUGUI _descriptionText;
 
     DataManager _dataManager;
-    NewsPanel _newsPanel;
+    NewsCanvas _newsPanel;
 
-    public void Init(NewsState newsState, NewsPanel newsPanel)
+    public void Init(NewsState newsState, NewsCanvas newsPanel)
     {
         _dataManager = DataManager.Instance;
         _newsPanel = newsPanel;
@@ -21,14 +21,14 @@ public class NewspaperPanel : MonoBehaviour
 
         _titleText.text = newsState.id.Localize(LocalizationUtils.TABLE_NEWS);
         _iconImage.sprite = newsData.icon;
-        _descriptionText.text = newsState.id.Localize(LocalizationUtils.TABLE_NEWS_DESCRIPTION);
+        _descriptionText.text = (newsState.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_NEWS);
 
 /*        PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
 
         foreach (EffectData effectData in newsData.effects)
         {
             EffectState liveEffect = _dataManager.Effect.GetEffect(effectData, effectData.targetId);
-            GameManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, liveEffect, Color.black);
+            UIManager.Instance.CreateEffectTextPairPanel(_effectScrollViewContextTransform, liveEffect, Color.black);
         }*/
     }
 }

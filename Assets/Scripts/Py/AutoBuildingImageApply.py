@@ -1,8 +1,11 @@
 import os
 import re
+from dotenv import load_dotenv
 
-# 프로젝트 루트 디렉토리
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+PY_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(PY_DIR, ".env"))
 DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/Building")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/Building")
 
@@ -96,7 +99,7 @@ def process_buildings():
         # asset 파일 업데이트 (덮어쓰기)
         asset_file_path = os.path.join(DATAS_PATH, asset_file)
         if update_asset_icon_and_sprite(asset_file_path, guid, sprite_id):
-            print(f"  ✓ 적용됨: {item_id}")
+            print(f"  적용됨: {item_id}")
             updated_count += 1
         else:
             print(f"  - 변경사항 없음: {item_id}")

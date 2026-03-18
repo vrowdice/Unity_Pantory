@@ -15,26 +15,20 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Korean (ko)
   m_GUID: 6e3abd39893981c42bbe752095f959a1
   m_SerializeEntries:
-  - m_GUID: 0982e6ca5030a0741a7caf15c1f68eee
-    m_Address: EmployeeType_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 14acd047478409e4789aaf3427dffb0b
     m_Address: News_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1a9066b2b8e0a714b921dc4cc2dda413
-    m_Address: ResourceDisplayName_ko
+  - m_GUID: 2a1efe0500328a04ab97fe29d152d0ce
+    m_Address: Tutorial_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 38232fc5889a2d14592ddfd9a659acdf
-    m_Address: BuildingDescription_ko
+  - m_GUID: 2bb6afa35cfdfee428658ae85de1ceb4
+    m_Address: Employee_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
@@ -45,26 +39,21 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4b0a62c579298dc41b21fc12c1d2b1f2
+    m_Address: Resource_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5042d1ab144137f4fae31a15ce6485d0
     m_Address: MarketActor_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7ded5095236ac5e40b52a66c0d1fa303
-    m_Address: MainPanelType_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 872a68c7f63580b4e8c581979dfe647e
-    m_Address: ResourceType_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 91c0ff2b8ed538b4daf5b1560872d247
-    m_Address: WarningMessage_ko
+  - m_GUID: 89164e0a0690b934399c98e5e609b4f9
+    m_Address: Order_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
@@ -81,45 +70,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 943f78ba49cb4a44799ad20ca128805a
-    m_Address: MarketActorDescription_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9aabd209fcac5964bad31fb1be1c7bdc
     m_Address: Common_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
-    - Preload
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ab45d1f8304320d48b83951cab1d03d2
-    m_Address: BuildingType_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ae115675c7f704b4388f02522fdedb61
-    m_Address: NewsDescription_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ae7e2027be2d10942a2ef6400e3ce5b8
-    m_Address: EmployeeDescription_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: deda4ba8a7a634e42aae5c9107ccd2fe
-    m_Address: MarketPanelType_ko
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-ko
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e2cbcbb66400d6c41aaf18baad60576c
-    m_Address: ResearchDescription_ko
+  - m_GUID: fe8d25464e35d1a42ad1cc29109a8bf4
+    m_Address: Expenses_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko

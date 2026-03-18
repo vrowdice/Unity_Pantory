@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: gold_ore
   displayName: Gold Ore
-  baseValue: 120
+  baseValue: 150
   volatilityMultiplier: 1.2
   maxPriceMultiplier: 10
   type: 0

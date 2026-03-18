@@ -20,24 +20,11 @@ public class ResourceState
 
     public List<float> _priceHistory;
 
-    public int PriceHistoryCapacity { get; private set; }
-
-    public ResourceState(int priceHistoryCapacity = 60)
+    public ResourceState()
     {
-        PriceHistoryCapacity = priceHistoryCapacity;
-        _priceHistory = new List<float>(PriceHistoryCapacity);
-        InitializeDefaults();
-    }
-
-    private void InitializeDefaults()
-    {
+        _priceHistory = new List<float>();
         currentValue = 0;
         count = 0;
         threadDeltaCount = 0;
-
-        if (_priceHistory == null)
-            _priceHistory = new List<float>(PriceHistoryCapacity);
-        else
-            _priceHistory.Clear();
     }
 }

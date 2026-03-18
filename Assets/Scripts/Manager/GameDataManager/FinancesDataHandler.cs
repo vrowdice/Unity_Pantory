@@ -72,11 +72,12 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void CalculateDailyCreditDelta()
     {
         _dailySalary = _dataManager.Employee.CalculateTotalSalary();
-        _dailyResource = _dataManager.Resource.CalculateResourceDeltaChangeCredit();
-        _dailyMaintenance = _dataManager.ThreadPlacement.CalculateTotalMaintenanceCostOfAllPlaced();
+        _dailyResource = _dataManager.Resource.TotalCreditChange;
+        // Thread/ThreadPlacement 시스템 제거: 건물 유지비는 추후 '메인 건물 설치 데이터' 기반으로 재구현
+        _dailyMaintenance = 0;
         _dailyInterest = CalculateNegativeInterest();
 
-        _dailyTotal = -(_dailySalary + _dailyResource + _dailyMaintenance + _dailyInterest);
+        _dailyTotal = _dailyResource - _dailySalary - _dailyMaintenance - _dailyInterest;
     }
 
     public long CalculateNegativeInterest()
@@ -91,7 +92,8 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
         long currentCredit = _credit;
         long inventoryValue = _dataManager.Resource.GetAllResources().Values
             .Sum(entry => entry.state.count * entry.state.currentValue);
-        long assetValue = _dataManager.ThreadPlacement.CalculateAllBuildingValue();
+        // Thread/ThreadPlacement 시스템 제거: 자산가치는 추후 '메인 건물 설치 데이터' 기반으로 재구현
+        long assetValue = 0;
 
         return currentCredit + inventoryValue + assetValue;
     }

@@ -151,15 +151,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 1
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -427,15 +429,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 3
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 1
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -881,10 +885,13 @@ MonoBehaviour:
   m_GlobalFontAsset: {fileID: 11400000, guid: b9eaf5570922ec845b483eb8974e9cef, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
+  m_KeepTextSelectionVisible: 0
   m_RestoreOriginalTextOnEscape: 1
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
+  isAlert: 0
   m_InputValidator: {fileID: 0}
+  m_ShouldActivateOnSelect: 1
 --- !u!114 &8282869224288723293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1387,26 +1394,32 @@ MonoBehaviour:
     icon: {fileID: 0}
     index: 0
     generatedButton: {fileID: 0}
+    tableKey: 
   - label: Item 2
     icon: {fileID: 0}
     index: 1
     generatedButton: {fileID: 0}
+    tableKey: 
   - label: Item 3
     icon: {fileID: 0}
     index: 2
     generatedButton: {fileID: 0}
+    tableKey: 
   - label: Item 4
     icon: {fileID: 0}
     index: 2
     generatedButton: {fileID: 0}
+    tableKey: 
   - label: Item 5
     icon: {fileID: 0}
     index: 2
     generatedButton: {fileID: 0}
+    tableKey: 
   - label: Item 6
     icon: {fileID: 0}
     index: 2
     generatedButton: {fileID: 0}
+    tableKey: 
   itemSpacing: 0
   itemHeight: 55
   padding:
@@ -1447,6 +1460,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  enableLocalization: 1
+  localizedObject: {fileID: 0}
   itemPrefab: {fileID: 4408574246646789059, guid: ddfe75cf2ad21b64e9a51c02ebd71511, type: 3}
   itemParent: {fileID: 4177970871157364450}
   headerButton: {fileID: 0}

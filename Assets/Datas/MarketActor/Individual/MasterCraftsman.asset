@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: MasterCraftsman
+  m_EditorClassIdentifier: 
+  id: master_craftsman
+  displayName: Master Craftsman
+  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  description: A renowned artisan specializing in fine craftsmanship, constantly
+    sourcing premium wood, precision tools, and quality materials for custom creations.
+  marketActorType: 2
+  baseWealth: 100000
+  baseProductionCount: 28
+  comsumeResourceList:
+  - {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+  productionResourceList: []

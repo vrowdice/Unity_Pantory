@@ -7,19 +7,12 @@ public class BuildingTile : MonoBehaviour
 {
     private Collider2D _collider;
     private SpriteRenderer _spriteRenderer;
-    private SpriteRenderer _outlineRenderer;  // 윤곽선용 렌더러
     private Vector2Int _gridPosition;
-    private DesignRunner _manager;
-    private bool _isOccupied = false;  // 타일이 건물에 의해 차지되었는지
-    private bool _showOutline = false;  // 윤곽선 표시 여부
+    private bool _isOccupied = false;
 
     [Header("Tile Colors")]
     [SerializeField] private Color _normalColor = Color.white;
     [SerializeField] private Color _occupiedColor = new Color(0.7f, 0.7f, 0.7f, 1f);
-    
-    [Header("Outline Settings")]
-    [SerializeField] private Color _outlineColor = new Color(0.2f, 0.8f, 1f, 0.8f);  // 밝은 파란색 윤곽선
-    [SerializeField] private float _outlineThickness = 0.05f;
 
     public Vector2Int GridPosition => _gridPosition;
     public bool IsOccupied => _isOccupied;
@@ -28,60 +21,15 @@ public class BuildingTile : MonoBehaviour
     {
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        CreateOutline();
     }
 
     /// <summary>
     /// 타일을 초기화합니다.
     /// </summary>
-    public void Initialize(Vector2Int position, DesignRunner manager)
+    public void Initialize(Vector2Int position)
     {
         _gridPosition = position;
-        _manager = manager;
         UpdateVisual();
-    }
-
-    /// <summary>
-    /// 윤곽선 오브젝트를 생성합니다.
-    /// </summary>
-    private void CreateOutline()
-    {
-        if (_spriteRenderer == null) return;
-
-        // 윤곽선용 자식 오브젝트 생성
-        GameObject outlineObj = new GameObject("Outline");
-        outlineObj.transform.SetParent(transform);
-        outlineObj.transform.localPosition = Vector3.zero;
-        outlineObj.transform.localRotation = Quaternion.identity;
-        outlineObj.transform.localScale = Vector3.one * (1f + _outlineThickness);
-
-        // 윤곽선 렌더러 설정
-        _outlineRenderer = outlineObj.AddComponent<SpriteRenderer>();
-        _outlineRenderer.sprite = _spriteRenderer.sprite;
-        _outlineRenderer.color = _outlineColor;
-        _outlineRenderer.sortingLayerName = _spriteRenderer.sortingLayerName;
-        _outlineRenderer.sortingOrder = _spriteRenderer.sortingOrder;
-        _outlineRenderer.enabled = false;  // 기본적으로 비활성화
-    }
-
-    /// <summary>
-    /// 윤곽선 표시/숨김을 설정합니다.
-    /// </summary>
-    public void SetOutlineVisible(bool visible, Color color = default)
-    {
-        _showOutline = visible;
-        
-        if (_outlineRenderer != null)
-        {
-            _outlineRenderer.enabled = visible;
-            
-            // color가 default가 아닌 경우에만 색상 적용
-            if (color != default(Color))
-            {
-                _outlineColor = color;
-                _outlineRenderer.color = color;
-            }
-        }
     }
 
     /// <summary>
@@ -98,10 +46,7 @@ public class BuildingTile : MonoBehaviour
     /// </summary>
     private void UpdateVisual()
     {
-        if (_spriteRenderer != null)
-        {
-            _spriteRenderer.color = _isOccupied ? _occupiedColor : _normalColor;
-        }
+        _spriteRenderer.color = _isOccupied ? _occupiedColor : _normalColor;
     }
 
     /// <summary>

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: ArtCollector
+  m_EditorClassIdentifier: 
+  id: art_collector
+  displayName: Art Collector
+  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  description: An avid collector of fine art and craftsmanship, seeking premium furniture,
+    luxury clothing, and fine wood for their extensive collection.
+  marketActorType: 2
+  baseWealth: 140000
+  baseProductionCount: 24
+  comsumeResourceList:
+  - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
+  - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}
+  - {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  productionResourceList: []

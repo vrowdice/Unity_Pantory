@@ -27,7 +27,7 @@ namespace Evo.UI
         {
             public Sprite shape;
             public Color color = new(1f, 1f, 1f, 0.8f);
-            [Range(0.1f, 20)] public float scale = 1;
+            [Range(0.1f, 50)] public float scale = 1;
             public Vector2 offset = Vector2.zero;
 
             [Header("Animation")]
@@ -89,6 +89,7 @@ namespace Evo.UI
     public class PointerTrailHandler : MonoBehaviour
     {
         Image trailImage;
+        RectTransform parentRect;
         Canvas targetCanvas;
         Camera worldCamera;
         Color originalColor;
@@ -124,9 +125,13 @@ namespace Evo.UI
 
         void Initialize()
         {
-            // Find canvas for coordinate conversion
+            // Find canvas and parent rect for coordinate conversion
+            parentRect = transform.parent as RectTransform;
             targetCanvas = GetComponentInParent<Canvas>();
-            if (targetCanvas != null) { worldCamera = targetCanvas.worldCamera; }
+            if (targetCanvas != null && targetCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            {
+                worldCamera = targetCanvas.worldCamera;
+            }
 
             // Create and setup image component
             trailImage = gameObject.AddComponent<Image>();
@@ -147,25 +152,23 @@ namespace Evo.UI
 
         void UpdatePosition()
         {
-            Vector2 mousePos = GetPointerPosition() + preset.offset;
-            transform.position = mousePos;
-        }
+            Vector2 screenPosition = Utilities.GetPointerPosition();
 
-        Vector2 GetPointerPosition()
-        {
-            Vector2 mousePos = Utilities.GetPointerPosition();
-
-            if (targetCanvas != null && worldCamera != null)
+            if (parentRect != null && targetCanvas != null)
             {
-                switch (targetCanvas.renderMode)
-                {
-                    case RenderMode.WorldSpace:
-                    case RenderMode.ScreenSpaceCamera:
-                        return worldCamera.ScreenToWorldPoint(mousePos);
-                }
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parentRect,
+                    screenPosition,
+                    worldCamera,
+                    out Vector2 localPos
+                );
+                transform.localPosition = localPos + preset.offset;
             }
-
-            return mousePos;
+            else
+            {
+                // Fallback for non-RectTransform parents
+                transform.position = screenPosition + preset.offset;
+            }
         }
 
         public void Show()

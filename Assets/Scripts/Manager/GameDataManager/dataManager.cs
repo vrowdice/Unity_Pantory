@@ -30,10 +30,9 @@ public class DataManager : Singleton<DataManager>
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
     public InitialResearchData InitialResearchData => _initialResearchData;
     public InitialEffectData InitialEffectData => _initialEffectData;
+    public InitialOrderData InitialOrderData => _initialOrderData;
 
     public TimeDataHandler Time { get; private set; }
-    public ThreadDataHandler Thread { get; private set; }
-    public ThreadPlacementDataHandler ThreadPlacement { get; private set; }
     public ResourceDataHandler Resource { get; private set; }
     public MarketActorDataHandler MarketActor { get; private set; }
     public FinancesDataHandler Finances { get; private set; }
@@ -71,8 +70,6 @@ public class DataManager : Singleton<DataManager>
 
     private void InitializeServices()
     {
-        Thread = new ThreadDataHandler(this);
-        ThreadPlacement = new ThreadPlacementDataHandler(this);
         Time = new TimeDataHandler(this, _timeSettingsData);
         Resource = new ResourceDataHandler(this, _resourceDataList, _initialResourceData);
         MarketActor = new MarketActorDataHandler(this, _marketActorDataList, _initialMarketActorData);
@@ -85,10 +82,8 @@ public class DataManager : Singleton<DataManager>
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
 
         _eventHandlers.Clear();
-        _eventHandlers.Add(ThreadPlacement);
         _eventHandlers.Add(Time);
         _eventHandlers.Add(Resource);
-        _eventHandlers.Add(Thread);
         _eventHandlers.Add(Finances);
         _eventHandlers.Add(Employee);
         _eventHandlers.Add(Research);
@@ -103,11 +98,8 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(Employee);
         _dayHandlers.Add(Finances);
         _dayHandlers.Add(Effect);
-        _dayHandlers.Add(ThreadPlacement);
         _dayHandlers.Add(News);
         _dayHandlers.Add(Order);
-
-        LoadThreadData();
     }
 
 #if UNITY_EDITOR
@@ -119,6 +111,7 @@ public class DataManager : Singleton<DataManager>
         AutoLoadToList(_employeeDataList);
         AutoLoadToList(_researchDataList);
         AutoLoadToList(_marketActorDataList);
+        AutoLoadToList(_orderDataList);
         AutoLoadToList(_newsDataList);
 
         UnityEditor.EditorUtility.SetDirty(this);
@@ -140,19 +133,6 @@ public class DataManager : Singleton<DataManager>
         Debug.Log($"[DataManager] Loaded {list.Count} {typeName} to list.");
     }
 #endif
-    /// <summary> Thread 데이터를 로드합니다. SaveLoadManager로 위임합니다. </summary>
-    private void LoadThreadData()
-    {
-        if (SaveLoadManager.Instance != null && SaveLoadManager.Instance.Thread != null && Thread != null)
-        {
-            if (!SaveLoadManager.Instance.Thread.LoadThreadData(Thread))
-            {
-                Debug.LogWarning("[DataManager] Failed to load Thread data. Resetting.");
-                Thread.ResetThreadData();
-                ThreadPlacement?.ClearAll();
-            }
-        }
-    }
 
     /// <summary>
     /// 씬 전환 시 모든 핸들러의 이벤트 구독을 초기화합니다.
@@ -163,19 +143,12 @@ public class DataManager : Singleton<DataManager>
         foreach (IDataHandlerEvents handler in _eventHandlers)
             handler.ClearAllSubscriptions();
 
-        ThreadPlacement.OnPlacementChanged -= HandleThreadPlacementChanged;
-        ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
         Time.OnDayChanged -= HandleDayChanged;
         Time.OnDayChanged += HandleDayChanged;
         Time.OnMonthChanged -= HandleMonthChanged;
         Time.OnMonthChanged += HandleMonthChanged;
 
         Debug.Log("[DataManager] All event subscriptions cleared.");
-    }
-
-    private void HandleThreadPlacementChanged()
-    {
-        Employee.HandleDayChanged();
     }
 
     private void HandleDayChanged()

@@ -15,13 +15,12 @@ MonoBehaviour:
   id: manager
   displayName: Manager
   type: 3
-  tier: 2
   icon: {fileID: 21300000, guid: 23146b55090e00e44924e063ba593029, type: 3}
   Image: {fileID: 21300000, guid: 5407a46bd23962c42a5e56f954b25c44, type: 3}
   description: An experienced leader who oversees operations and staff. Boosts team
     morale and reduces fatigue through efficient management.
   baseEfficiency: 1
   baseSatisfaction: 0
-  baseSalary: 40
-  efficiencyEffectId: EfficiencyEffect_0
-  satisfactionEffectId: SatisfactionEffect_0
+  baseSalary: 34
+  hiringCost: 100
+  firingCost: 10

@@ -16,7 +16,7 @@ public class ResourceEntry
     {
         this.data = data;
 
-        state = new ResourceState(priceHistoryCapacity);
+        state = new ResourceState();
         state.currentEventValue = data.baseValue;
         state.count = data.initialAmount;
     }
@@ -24,18 +24,13 @@ public class ResourceEntry
     /// <summary>
     /// 가격을 기록하고 히스토리에 추가합니다.
     /// </summary>
-    public void RecordPrice(float price)
+    public void RecordPrice(float price, int priceHistoryCapacity)
     {
-        if (state._priceHistory == null)
-        {
-            state._priceHistory = new List<float>(state.PriceHistoryCapacity);
-        }
-
         float clampedPrice = Mathf.Max(0.01f, price);
 
         state._priceHistory.Add(clampedPrice);
 
-        if (state._priceHistory.Count > state.PriceHistoryCapacity)
+        if (state._priceHistory.Count > priceHistoryCapacity)
         {
             state._priceHistory.RemoveAt(0);
         }
@@ -46,10 +41,14 @@ public class ResourceEntry
     /// </summary>
     /// <param name="amount">변경할 수량</param>
     /// <returns>실제로 변경된 수량</returns>
-    public int ModifyCount(int amount)
+    public bool ModifyCount(int amount)
     {
-        int oldCount = state.count;
-        state.count = Mathf.Max(0, state.count + amount);
-        return state.count - oldCount;
+        int newCount = state.count + amount;
+        if (newCount < 0)
+        {
+            return false;
+        }
+        state.count = newCount;
+        return true;
     }
 }

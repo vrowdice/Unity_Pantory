@@ -22,6 +22,12 @@ public partial class EmployeeDataHandler
 
         if (entry.state.count >= count)
         {
+            long totalFiringCost = entry.data.firingCost * (long)count;
+            if (totalFiringCost != 0)
+            {
+                _dataManager.Finances.ModifyCredit(-totalFiringCost);
+            }
+
             int currentTotal = entry.state.count;
             float fireRatio = (float)count / Mathf.Max(1f, currentTotal);
             float penalty = 0f;
@@ -37,15 +43,22 @@ public partial class EmployeeDataHandler
                 {
                     int totalEmployees = 0;
                     foreach (EmployeeEntry emp in _employees.Values)
+                    {
                         totalEmployees += emp.state.count;
+                    }
+
                     if (totalEmployees > 0)
                     {
                         int coveragePerManager = _initialEmployeeData.managerCoverage;
                         float managerCoverage = (float)managerEntry.state.count * coveragePerManager / totalEmployees;
                         if (managerCoverage >= 1.0f)
+                        {
                             penalty *= _initialEmployeeData.managerMitigationRatio;
+                        }
                         else
+                        {
                             penalty *= 1.0f - (managerCoverage * (1.0f - _initialEmployeeData.managerMitigationRatio));
+                        }
                     }
                 }
             }
@@ -60,10 +73,8 @@ public partial class EmployeeDataHandler
                 -100f, 100f
             );
 
-            float crossPenaltyRatio = _initialEmployeeData != null 
-                ? _initialEmployeeData.crossEmployeeTypeSatisfactionPenaltyRatio 
-                : 0.3f;
-            
+            float crossPenaltyRatio = _initialEmployeeData.crossEmployeeTypeSatisfactionPenaltyRatio;
+
             foreach (EmployeeEntry otherEntry in _employees.Values)
             {
                 if (otherEntry != entry && otherEntry.state.count > 0)

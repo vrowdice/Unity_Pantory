@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: oil
   displayName: Oil
-  baseValue: 20
+  baseValue: 28
   volatilityMultiplier: 1.5
   maxPriceMultiplier: 10
   type: 0

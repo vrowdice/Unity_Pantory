@@ -1,6 +1,12 @@
 import os
 import numpy as np
 from PIL import Image
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../../../"))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 try:
     from scipy.ndimage import label
@@ -9,17 +15,9 @@ except ImportError:
     SCIPY_AVAILABLE = False
     print("Warning: scipy module not found.")
 
-# ============================================
-# 설정
-# ============================================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# 처리를 원하는 폴더 경로 (여기에 덮어씌워집니다)
 TARGET_DIR = os.path.join(BASE_DIR, "../../Images/Resource/Raw")
-
 THRESH_LOWER = 200
 THRESH_UPPER = 250
-
-# ============================================
 
 def get_connected_background_mask(binary_mask):
     if not SCIPY_AVAILABLE:
@@ -46,21 +44,12 @@ def process_image(file_path):
         r, g, b, a = data[:,:,0], data[:,:,1], data[:,:,2], data[:,:,3]
         
         brightness = (r + g + b) / 3.0
-        
-        # 마스크 생성
         candidate_mask = brightness >= THRESH_LOWER
         target_mask = get_connected_background_mask(candidate_mask)
-        
-        # Alpha 값 계산
         alpha_factor = (THRESH_UPPER - brightness) / (THRESH_UPPER - THRESH_LOWER)
         alpha_factor = np.clip(alpha_factor, 0.0, 1.0)
-        
-        # 적용
         new_alpha = np.where(target_mask, a * alpha_factor, a)
         data[:,:,3] = new_alpha
-        
-        # 같은 경로에 덮어쓰기 (확장자는 PNG로 고정)
-        # 원본이 png면 덮어쓰고, jpg면 같은 이름의 png 생성
         save_path = os.path.splitext(file_path)[0] + ".png"
         
         result = Image.fromarray(data.astype(np.uint8), 'RGBA')
@@ -78,7 +67,6 @@ def main():
         return
 
     image_exts = ('.png', '.jpg', '.jpeg', '.bmp')
-    # 파일 목록을 미리 리스트로 저장 (처리 중 파일 생성으로 인한 루프 방지)
     files = [f for f in os.listdir(TARGET_DIR) if f.lower().endswith(image_exts)]
     
     print(f"Processing {len(files)} files in: {TARGET_DIR}")

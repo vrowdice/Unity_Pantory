@@ -220,7 +220,7 @@ namespace Evo.UI
                         $"Are you sure you want to delete '{displayName}'?", "Yes", "No"))
                     {
                         RemoveColumn(index);
-                      
+
                         serializedObject.ApplyModifiedProperties();
                         labelsNeedUpdate = true;
 
@@ -325,7 +325,7 @@ namespace Evo.UI
                 if (EvoEditorGUI.DrawButton(null, "Delete", "Delete row", iconSize: 8, width: 24, height: 24, normalColor: Color.clear))
                 {
                     RemoveRow(index);
-                
+
                     serializedObject.ApplyModifiedProperties();
                     labelsNeedUpdate = true;
 
@@ -347,12 +347,13 @@ namespace Evo.UI
 
                     SerializedProperty valuesProp = rowProp.FindPropertyRelative("values");
                     SerializedProperty iconsProp = rowProp.FindPropertyRelative("icons");
+                    SerializedProperty customObjectsProp = rowProp.FindPropertyRelative("customObjects");
 
                     // Draw cells - limit to actual column count
                     int cellCount = Mathf.Min(cachedColumnCount, valuesProp.arraySize);
                     for (int j = 0; j < cellCount; j++)
                     {
-                        DrawCellData(j, valuesProp, iconsProp);
+                        DrawCellData(j, valuesProp, iconsProp, customObjectsProp);
                         if (j < cellCount - 1) { GUILayout.Space(3); }
                     }
                 }
@@ -362,7 +363,7 @@ namespace Evo.UI
             EvoEditorGUI.EndVerticalBackground(index < cachedRowCount - 1);
         }
 
-        void DrawCellData(int index, SerializedProperty valuesProp, SerializedProperty iconsProp)
+        void DrawCellData(int index, SerializedProperty valuesProp, SerializedProperty iconsProp, SerializedProperty customObjectsProp)
         {
             // Use cached column name instead of fetching every frame
             string columnName = columnLabels != null && index < columnLabels.Length ?
@@ -370,12 +371,18 @@ namespace Evo.UI
 
             SerializedProperty valueProp = valuesProp.GetArrayElementAtIndex(index);
             SerializedProperty iconProp = iconsProp.GetArrayElementAtIndex(index);
+            SerializedProperty customObjectProp = customObjectsProp.GetArrayElementAtIndex(index);
 
             EvoEditorGUI.BeginVerticalBackground();
             EvoEditorGUI.BeginContainer(columnName, 3);
 
+            // If custom object is assigned, suggest that text/icon might be ignored
+            GUI.enabled = customObjectProp.objectReferenceValue == null;
             EvoEditorGUI.DrawProperty(iconProp, "Icon", null, true, true, true);
-            EvoEditorGUI.DrawProperty(valueProp, "Value", null, false, true, true);
+            EvoEditorGUI.DrawProperty(valueProp, "Label", null, true, true, true);
+            GUI.enabled = true;
+
+            EvoEditorGUI.DrawProperty(customObjectProp, "Custom Object", "Custom GameObject to use for this cell.", false, true, true);
 
             EvoEditorGUI.EndContainer();
             EvoEditorGUI.EndVerticalBackground();
@@ -585,7 +592,7 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 {
-                    EvoEditorGUI.DrawProperty(parentRect, "Parent Rect", 
+                    EvoEditorGUI.DrawProperty(parentRect, "Parent Rect",
                         "Optional: RectTransform to automatically resize based on ListView total height.", false, true, true);
                 }
                 EvoEditorGUI.EndContainer();
@@ -599,6 +606,7 @@ namespace Evo.UI
         {
             SerializedProperty valuesProp = rowProp.FindPropertyRelative("values");
             SerializedProperty iconsProp = rowProp.FindPropertyRelative("icons");
+            SerializedProperty customObjectsProp = rowProp.FindPropertyRelative("customObjects");
 
             // Batch resize - only if size differs
             if (valuesProp.arraySize != targetCount)
@@ -622,6 +630,18 @@ namespace Evo.UI
                 for (int i = oldSize; i < targetCount; i++)
                 {
                     iconsProp.GetArrayElementAtIndex(i).objectReferenceValue = null;
+                }
+            }
+
+            if (customObjectsProp.arraySize != targetCount)
+            {
+                int oldSize = customObjectsProp.arraySize;
+                customObjectsProp.arraySize = targetCount;
+
+                // Initialize only new elements
+                for (int i = oldSize; i < targetCount; i++)
+                {
+                    customObjectsProp.GetArrayElementAtIndex(i).objectReferenceValue = null;
                 }
             }
         }
@@ -669,9 +689,11 @@ namespace Evo.UI
                 {
                     SerializedProperty valuesProp = rowProp.FindPropertyRelative("values");
                     SerializedProperty iconsProp = rowProp.FindPropertyRelative("icons");
+                    SerializedProperty customObjectsProp = rowProp.FindPropertyRelative("customObjects");
 
                     if (index < valuesProp.arraySize) { valuesProp.DeleteArrayElementAtIndex(index); }
                     if (index < iconsProp.arraySize) { iconsProp.DeleteArrayElementAtIndex(index); }
+                    if (index < customObjectsProp.arraySize) { customObjectsProp.DeleteArrayElementAtIndex(index); }
                 }
             }
 
@@ -720,6 +742,10 @@ namespace Evo.UI
                 {
                     (row.icons[index - 1], row.icons[index]) = (row.icons[index], row.icons[index - 1]);
                 }
+                if (index < row.customObjects.Count)
+                {
+                    (row.customObjects[index - 1], row.customObjects[index]) = (row.customObjects[index], row.customObjects[index - 1]);
+                }
             }
 
             listView.isDirty = true;
@@ -745,6 +771,10 @@ namespace Evo.UI
                 if (index + 1 < row.icons.Count)
                 {
                     (row.icons[index + 1], row.icons[index]) = (row.icons[index], row.icons[index + 1]);
+                }
+                if (index + 1 < row.customObjects.Count)
+                {
+                    (row.customObjects[index + 1], row.customObjects[index]) = (row.customObjects[index], row.customObjects[index + 1]);
                 }
             }
 
@@ -870,7 +900,7 @@ namespace Evo.UI
                 }
 
                 Undo.RecordObject(targetListView, "Import CSV");
-               
+
                 // Temporarily disable auto-refresh to prevent double refresh
                 bool wasAutoRefresh = targetListView.autoRefresh;
                 targetListView.autoRefresh = false;
@@ -904,7 +934,7 @@ namespace Evo.UI
             void OnGUI()
             {
                 EditorGUILayout.LabelField("Export Options", EditorStyles.boldLabel);
-  
+
                 includeHeaders = EditorGUILayout.Toggle(
                     new GUIContent("Include Headers", "Export column names as the first row."),
                     includeHeaders

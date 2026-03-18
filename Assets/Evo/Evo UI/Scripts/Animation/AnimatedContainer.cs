@@ -32,7 +32,7 @@ namespace Evo.UI
 
         [Header("Settings")]
         public bool useUnscaledTime = false;
-        [SerializeField] private bool playOnEnable = true;
+        public bool playOnEnable = true;
         [Tooltip("Play the animation only once.")]
         public bool playOnce = false;
         [Tooltip("Add a cooldown before skipping to the next item.")]
@@ -133,7 +133,7 @@ namespace Evo.UI
 
             if (!gameObject.TryGetComponent<CanvasGroup>(out var tempCg)) { tempCg = gameObject.AddComponent<CanvasGroup>(); }
             cg = tempCg;
-            if (container.playOnce) { cg.alpha = 0; }
+            if (container.playOnce || container.playOnEnable) { cg.alpha = 0; }
         }
 
         void OnDisable()

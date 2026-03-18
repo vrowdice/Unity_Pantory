@@ -34,35 +34,17 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
         }
     }
 
-    public MarketActorEntry GetMarketActorEntry(string actorId)
-    {
-        if (_actorDic.TryGetValue(actorId, out var entry))
-        {
-            return entry;
-        }
-
-        return null;
-    }
-
-    public Dictionary<string, MarketActorEntry> GetAllMarketActors()
-    {
-        return new Dictionary<string, MarketActorEntry>(_actorDic);
-    }
-
-    public void HandleDayChanged()
-    {
-        DayActorWealthChange();
-    }
-
     private void DayActorWealthChange()
     {
         foreach (MarketActorEntry actorEntry in _actorDic.Values)
         {
+            if (actorEntry.data.marketActorType != MarketActorType.Company) continue;
+
             float businessSuccess = UnityEngine.Random.Range(_initialMarketActorData.businessSuccessMin, _initialMarketActorData.businessSuccessMax);
             long totalDailyEarnings = 0;
             long totalDailyCost = 0;
 
-            foreach (ResourceData resourceData in actorEntry.data.productionResources)
+            foreach (ResourceData resourceData in actorEntry.data.productionResourceList)
             {
                 ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
                 if (resourceEntry == null) continue;
@@ -84,12 +66,41 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
             actorEntry.state.wealth += dailyNetProfit;
             actorEntry.state.currentChangeWealth = dailyNetProfit;
 
-            if (actorEntry.state.wealth < actorEntry.data.wealth)
+            if (actorEntry.state.wealth < actorEntry.data.baseWealth)
             {
-                actorEntry.state.wealth = actorEntry.data.wealth;
+                actorEntry.state.wealth = actorEntry.data.baseWealth;
                 actorEntry.state.currentChangeWealth = 0;
             }
         }
+    }
+
+    public MarketActorEntry GetMarketActorEntry(string actorId)
+    {
+        if (_actorDic.TryGetValue(actorId, out MarketActorEntry entry))
+        {
+            return entry;
+        }
+
+        return null;
+    }
+
+    public Dictionary<string, MarketActorEntry> GetAllMarketActors()
+    {
+        return new Dictionary<string, MarketActorEntry>(_actorDic);
+    }
+
+    public void ModifyMarketActorTrust(string actorId, int trustChange)
+    {
+        if (_actorDic.TryGetValue(actorId, out MarketActorEntry entry))
+        {
+            entry.state.trust += trustChange;
+            if (entry.state.trust < 0) entry.state.trust = 0;
+        }
+    }
+
+    public void HandleDayChanged()
+    {
+        DayActorWealthChange();
     }
 
     public void ClearAllSubscriptions()

@@ -67,8 +67,6 @@ public partial class EmployeeDataHandler
         {
             if (entry.state.count == 0)
             {
-                entry.state.currentSatisfaction = entry.data.baseSatisfaction;
-                entry.state.currentEfficiency = Mathf.Clamp(entry.data.baseEfficiency, 0f, 2f);
                 continue;
             }
 
@@ -94,7 +92,6 @@ public partial class EmployeeDataHandler
         }
 
         RefreshAllSalaries();
-        SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
 
         OnEmployeeChanged?.Invoke();
     }

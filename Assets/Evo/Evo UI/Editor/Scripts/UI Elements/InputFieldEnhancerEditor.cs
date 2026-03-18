@@ -12,6 +12,9 @@ namespace Evo.UI
         InputFieldEnhancer ifTarget;
 
         // Settings
+        SerializedProperty clearAfterSubmit;
+        SerializedProperty deselectOnEndEdit;
+        SerializedProperty handleShiftEnter;
         SerializedProperty animationType;
         SerializedProperty slideOffset;
         SerializedProperty fadeAlpha;
@@ -34,6 +37,9 @@ namespace Evo.UI
         {
             ifTarget = (InputFieldEnhancer)target;
 
+            clearAfterSubmit = serializedObject.FindProperty("clearAfterSubmit");
+            deselectOnEndEdit = serializedObject.FindProperty("deselectOnEndEdit");
+            handleShiftEnter = serializedObject.FindProperty("handleShiftEnter");
             animationType = serializedObject.FindProperty("animationType");
             slideOffset = serializedObject.FindProperty("slideOffset");
             fadeAlpha = serializedObject.FindProperty("fadeAlpha");
@@ -105,6 +111,9 @@ namespace Evo.UI
             {
                 EvoEditorGUI.BeginContainer();
                 {
+                    EvoEditorGUI.DrawToggle(clearAfterSubmit, "Clear After Submit", null, true, true, true);
+                    EvoEditorGUI.DrawToggle(deselectOnEndEdit, "Deselect On End Edit", "Deselects Input Field from EventSystem.current on end edit.", true, true, true);
+                    EvoEditorGUI.DrawToggle(handleShiftEnter, "Handle Shift+Enter", "Changes multi-line behavior for Shift+Enter and submit combo.", true, true, true);
                     EvoEditorGUI.BeginVerticalBackground(true);
                     {
                         EvoEditorGUI.DrawProperty(animationType, "Animation Type", null, false, false);

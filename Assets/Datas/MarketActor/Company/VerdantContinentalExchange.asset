@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646ccb034cd0ae544a2f3bddd0e55758, type: 3}
+  m_Name: VerdantContinentalExchange
+  m_EditorClassIdentifier: 
+  id: verdant_continental_exchange
+  displayName: Verdant Continental Exchange
+  icon: {fileID: 21300000, guid: ce6601d5ab80c364aa129eac85fcafd2, type: 3}
+  description: Pan-regional wholesalers that keep carpenters supplied with every
+    grade of wood and basic arms for militias.
+  marketActorType: 1
+  baseWealth: 65000
+  baseProductionCount: 120
+  comsumeResourceList:
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  - {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
+  productionResourceList:
+  - {fileID: 11400000, guid: a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1, type: 2}
+  - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}

@@ -100,7 +100,7 @@ namespace Evo.UI
                 localizedObject = Localization.LocalizedObject.Check(gameObject);
                 if (localizedObject != null)
                 {
-                    Localization.LocalizationManager.OnLanguageChanged += UpdateLocalization;
+                    Localization.LocalizationManager.OnLanguageSet += UpdateLocalization;
                     UpdateLocalization();
                 }
             }
@@ -111,7 +111,7 @@ namespace Evo.UI
         {
             if (enableLocalization && localizedObject != null)
             {
-                Localization.LocalizationManager.OnLanguageChanged -= UpdateLocalization;
+                Localization.LocalizationManager.OnLanguageSet -= UpdateLocalization;
             }
         }
 #endif
@@ -395,7 +395,7 @@ namespace Evo.UI
         }
 
 #if EVO_LOCALIZATION
-        void UpdateLocalization()
+        void UpdateLocalization(Localization.LocalizationLanguage language = null)
         {
             foreach (Item item in items)
             {

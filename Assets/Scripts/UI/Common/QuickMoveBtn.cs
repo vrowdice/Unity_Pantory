@@ -17,7 +17,7 @@ public class QuickMoveBtn : MonoBehaviour
         _mainUiManager = argUiManager;
         _penalType = argPenalType;
 
-        _text.text = argPenalType.Localize();
+        _text.text = argPenalType.Localize(LocalizationUtils.TABLE_COMMON);
         _icon.sprite = VisualManager.Instance.GetMainPanelIcon(_penalType.ToString());
 
         _alartImage.SetActive(false);
@@ -33,6 +33,14 @@ public class QuickMoveBtn : MonoBehaviour
     private void OnNewsChanged(NewsState newsState)
     {
         if (newsState != null && !newsState.IsExpired)
+        {
+            SetAlertActive(true);
+        }
+    }
+
+    private void OnOrderChanged(OrderState orderState)
+    {
+        if (orderState != null)
         {
             SetAlertActive(true);
         }
@@ -66,6 +74,9 @@ public class QuickMoveBtn : MonoBehaviour
         {
             case MainPanelType.News:
                 DataManager.Instance.News.OnNewsChanged += OnNewsChanged;
+                break;
+            case MainPanelType.Order:
+                DataManager.Instance.Order.OnOrderChanged += OnOrderChanged;
                 break;
             default:
                 break;

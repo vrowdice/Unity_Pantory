@@ -16,7 +16,7 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: dd95d24e58d70574b952610eb5d4f8a4
   m_Entries:
   - m_Id: 7000000000001
-    m_Key: managementDeficit
+    m_Key: lackofManagers
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000002
@@ -24,7 +24,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000003
-    m_Key: atisfactionEfficiency
+    m_Key: satisfactionEfficiency
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000004

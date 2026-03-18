@@ -70,14 +70,8 @@ namespace Evo.UI
         public void SetAudio(string itemID, AudioClip audioClip)
         {
             var item = audioItems.FirstOrDefault(x => x.itemID == itemID);
-            if (item != null)
-            {
-                item.audioAsset = audioClip;
-            }
-            else
-            {
-                audioItems.Add(new Styler.AudioItem(itemID, audioClip));
-            }
+            if (item != null) { item.audioAsset = audioClip; }
+            else { audioItems.Add(new Styler.AudioItem(itemID, audioClip)); }
         }
 
         /// <summary>
@@ -86,14 +80,8 @@ namespace Evo.UI
         public void SetColor(string itemID, Color color)
         {
             var item = colorItems.FirstOrDefault(x => x.itemID == itemID);
-            if (item != null)
-            {
-                item.colorValue = color;
-            }
-            else
-            {
-                colorItems.Add(new Styler.ColorItem(itemID, color));
-            }
+            if (item != null) { item.colorValue = color; }
+            else { colorItems.Add(new Styler.ColorItem(itemID, color)); }
         }
 
         /// <summary>
@@ -102,14 +90,8 @@ namespace Evo.UI
         public void SetFont(string itemID, TMP_FontAsset font)
         {
             var item = fontItems.FirstOrDefault(x => x.itemID == itemID);
-            if (item != null)
-            {
-                item.fontAsset = font;
-            }
-            else
-            {
-                fontItems.Add(new Styler.FontItem(itemID, font));
-            }
+            if (item != null) { item.fontAsset = font; }
+            else { fontItems.Add(new Styler.FontItem(itemID, font)); }
         }
 
         /// <summary>
@@ -209,13 +191,13 @@ namespace Evo.UI
 
         void NotifyStylerObjects()
         {
-            StylerObject[] allStylers = FindObjectsByType<StylerObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (var styler in allStylers)
+            // Find all MonoBehaviours, but filter for the ones implementing our interface
+            var targets = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).OfType<IStylerHandler>();
+            foreach (var target in targets)
             {
-                if (styler.preset == this)
+                if (target.Preset == this)
                 {
-                    styler.UpdateStyle();
-                    // UnityEditor.EditorUtility.SetDirty(styler);
+                    target.UpdateStyler();
                 }
             }
         }

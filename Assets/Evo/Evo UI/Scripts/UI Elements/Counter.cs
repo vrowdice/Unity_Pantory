@@ -5,8 +5,8 @@ using TMPro;
 namespace Evo.UI
 {
     [DisallowMultipleComponent]
-    [HelpURL(Constants.HELP_URL + "ui-elements/counter")]
-    [AddComponentMenu("Evo/UI/UI Elements/Counter")]
+    [HelpURL(Constants.HELP_URL + "animation/counter")]
+    [AddComponentMenu("Evo/UI/Animation/Counter")]
     public class Counter : MonoBehaviour
     {
         [EvoHeader("References", Constants.CUSTOM_EDITOR_ID)]

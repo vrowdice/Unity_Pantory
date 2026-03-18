@@ -16,39 +16,83 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: 8787241877551f54c958b660f510e5a2
   m_Entries:
   - m_Id: 864226266001
-    m_Key: 1_components
+    m_Key: components
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267001
+    m_Key: components_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
-    m_Key: 1_mining
+    m_Key: mining
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267002
+    m_Key: mining_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266003
-    m_Key: 2_chemical_processing
+    m_Key: chemical_processing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267003
+    m_Key: chemical_processing_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266004
-    m_Key: 2_heavy_industry
+    m_Key: heavy_industry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267004
+    m_Key: heavy_industry_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266005
-    m_Key: 2_oil_extraction
+    m_Key: oil_extraction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267005
+    m_Key: oil_extraction_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266006
-    m_Key: 2_smelting
+    m_Key: smelting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267006
+    m_Key: smelting_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266007
-    m_Key: 3_engine_manufacturing
+    m_Key: engine_manufacturing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267007
+    m_Key: engine_manufacturing_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266008
-    m_Key: 3_military_production
+    m_Key: military_production
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267008
+    m_Key: military_production_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266009
-    m_Key: 4_vehicle_assembly
+    m_Key: vehicle_assembly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267009
+    m_Key: vehicle_assembly_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10606215174701056
+    m_Key: factory_basics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10166970572226560
+    m_Key: factory_basics_Desc
     m_Metadata:
       m_Items: []
   m_Metadata:

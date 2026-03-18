@@ -110,6 +110,281 @@ MonoBehaviour:
     m_Localized: Verdant Continental Exchange
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269024
+    m_Localized: Diplomatic Corps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269025
+    m_Localized: Imperial Academy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269026
+    m_Localized: Imperial Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269027
+    m_Localized: Imperial Treasury
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269028
+    m_Localized: Military Procurement Office
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269029
+    m_Localized: Public Works Department
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269030
+    m_Localized: Royal Court
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269031
+    m_Localized: Treasury Reserve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269032
+    m_Localized: Art Collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269033
+    m_Localized: Industrial Investor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269034
+    m_Localized: Master Craftsman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269035
+    m_Localized: Merchant Guild
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269036
+    m_Localized: Noble Estate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269037
+    m_Localized: Private Collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269038
+    m_Localized: Scholar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269039
+    m_Localized: Wealthy Merchant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269040
+    m_Localized: Weapon Enthusiast
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269101
+    m_Localized: Master craftsmen who turn premium wood into bespoke furniture and
+      architectural elements for luxury estates.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269102
+    m_Localized: A major automotive manufacturer producing cars, trucks, and military
+      vehicles for civilian and government markets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269104
+    m_Localized: A major electronics manufacturer producing motors, light bulbs,
+      and wiring for industrial and consumer markets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269105
+    m_Localized: A prestige weapons conglomerate that outfits military units and
+      security forces with premium steel, gold, and advanced weaponry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269107
+    m_Localized: A nationwide clothing retailer offering both basic and premium fashion
+      for everyday consumers and luxury markets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269108
+    m_Localized: Pioneering lumber mills that flood the market with processed timber
+      and furniture while buying raw logs in bulk from suppliers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269109
+    m_Localized: Empire-spanning traders that consolidate precious metals, fine lumber,
+      and refined ingots for government and corporate contracts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269110
+    m_Localized: The empire's central distribution network, coordinating the flow
+      of essential resources across provinces while maintaining strategic reserves
+      for imperial operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269111
+    m_Localized: A sophisticated trading network specializing in metals, tools, and
+      weapons for industrial and military clients.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269112
+    m_Localized: A cartel of deep-shaft mines that floods the market with cheap ore
+      and undercuts rivals with ruthless efficiency.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269113
+    m_Localized: A sprawling federation of logging houses that controls most timber
+      exports along the northern frontier.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269114
+    m_Localized: An upscale furniture retailer specializing in premium and custom-made
+      furniture for affluent clients and luxury estates.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269115
+    m_Localized: The capital's military workshop, renowned for disciplined output
+      of military-grade weapons and equipment for armed forces.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269116
+    m_Localized: Government-sanctioned brokers who balance the capital's supply of
+      lumber, ore, and luxury goods through tightly regulated auctions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269117
+    m_Localized: Heavy-industry magnates who churn out tools and alloys for inland
+      factories while swallowing iron and timber supplies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269118
+    m_Localized: A specialized manufacturer producing precision gears, bolts, and
+      mechanical components for industrial machinery and vehicles.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269119
+    m_Localized: Boutique workshop famed for precision-crafted weapons, sourcing
+      only the purest metals and fine wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269120
+    m_Localized: High-end logistics company specializing in sourcing premium metals,
+      tools, and weapons for industrial facilities and military contractors.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269121
+    m_Localized: Cooperative furnaces that refine mountains of ore into ingots, keeping
+      city forges supplied year-round.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269122
+    m_Localized: A disciplined foundry house that converts premium ore into dependable
+      steel for the nation's military and construction industries.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269123
+    m_Localized: Pan-regional wholesalers that keep carpenters supplied with every
+      grade of wood and basic arms for militias.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269124
+    m_Localized: The diplomatic service requires luxury goods, fine furniture, and
+      precious metals for official ceremonies, state visits, and diplomatic gifts
+      to foreign dignitaries.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269125
+    m_Localized: The empire's premier institution for research and education, requiring
+      electronic components, precision tools, and various materials for scientific
+      experiments and studies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269126
+    m_Localized: Elite security force protecting the capital, requiring small arms,
+      munitions, and vehicles for patrols and security operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269127
+    m_Localized: The empire's central treasury managing state finances and procuring
+      resources for imperial operations across all provinces.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269128
+    m_Localized: Government agency responsible for acquiring weapons, vehicles, and
+      military equipment to supply the empire's armed forces.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269129
+    m_Localized: Government agency responsible for infrastructure projects, constantly
+      procuring metals, wood, and tools for roads, bridges, and public buildings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269130
+    m_Localized: The royal court maintains its opulent lifestyle, constantly acquiring
+      luxury goods, fine furniture, and precious metals for ceremonies and displays
+      of wealth.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269131
+    m_Localized: The empire's strategic reserve, accumulating precious metals and
+      gold to maintain financial stability and back the imperial currency.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269132
+    m_Localized: An avid collector of fine art and craftsmanship, seeking premium
+      furniture, luxury clothing, and fine wood for their extensive collection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269133
+    m_Localized: A wealthy investor funding industrial ventures, purchasing metals,
+      components, and tools to support various manufacturing projects and factories.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269134
+    m_Localized: A renowned artisan specializing in fine craftsmanship, constantly
+      sourcing premium wood, precision tools, and quality materials for custom creations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269135
+    m_Localized: A powerful trade association pooling resources to purchase various
+      goods for distribution across trade routes and markets.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269136
+    m_Localized: A prestigious noble family maintaining their ancestral estate, requiring
+      fine furniture, luxury goods, and premium materials for their opulent lifestyle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269137
+    m_Localized: An eccentric collector with deep pockets, seeking rare and valuable
+      resources including precious metals, fine wood, and unique components for their
+      private collection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269138
+    m_Localized: A learned academic conducting research, requiring electronic components,
+      precision tools, and basic materials for experiments and scholarly work.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269139
+    m_Localized: A prosperous merchant with extensive trade networks, purchasing
+      various resources for personal ventures and investments across the empire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269140
+    m_Localized: A private collector and enthusiast of military weapons, constantly
+      acquiring small arms, heavy arms, and munitions for their private arsenal.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263054
+    m_Localized: Government
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263055
+    m_Localized: Company
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226263056
+    m_Localized: Individual
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
