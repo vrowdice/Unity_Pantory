@@ -21,21 +21,17 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _confirmPanelPrefab;
     [SerializeField] private GameObject _enterNamePanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
-    [SerializeField] private GameObject _manageThreadPanelPrefab;
-    [SerializeField] private GameObject _manageThreadCartegoryPanelPrefab;
     [SerializeField] private GameObject _saveLoadPopupPrefab;
     [SerializeField] private GameObject _tutorialPopupPrefab;
 
     [Header("Main Info Panels")]
     [SerializeField] private GameObject _creditTopInfoPopupPrefab;
-    [SerializeField] private GameObject _threadInfoPopupPrefab;
     [SerializeField] private GameObject _researchInfoPopupPrefab;
     [SerializeField] private GameObject _marketActorInfoPopupPrefab;
     [SerializeField] private GameObject _newsPopupPrefab;
 
     [Header("Design Info Panels")]
     [SerializeField] private GameObject _buildingInfoPopupPrefab;
-    [SerializeField] private GameObject _threadSaveInfoPopupPrefab;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
@@ -116,43 +112,7 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public ManageThreadCartegoryPopup ShowManageThreadCartegoryPopup(DataManager dataManager, Action<string> onCategorySelected)
-    {
-        ManageThreadCartegoryPopup panel = null;
-        if (_managerCanvasTransform != null)
-        {
-            panel = _managerCanvasTransform.GetComponentInChildren<ManageThreadCartegoryPopup>(true);
-        }
-
-        if (panel == null)
-        {
-            GameObject panelObj = Instantiate(_manageThreadCartegoryPanelPrefab, _managerCanvasTransform, false);
-            panel = panelObj.GetComponent<ManageThreadCartegoryPopup>();
-        }
-
-        panel.gameObject.SetActive(true);
-        panel.Init(dataManager, onCategorySelected);
-        return panel;
-    }
-
-    public ManageThreadPopup ShowManageThreadPopup(Action<string> onThreadSelected)
-    {
-        ManageThreadPopup panel = null;
-        if (_managerCanvasTransform != null)
-        {
-            panel = _managerCanvasTransform.GetComponentInChildren<ManageThreadPopup>(true);
-        }
-
-        if (panel == null)
-        {
-            GameObject panelObj = Instantiate(_manageThreadPanelPrefab, _managerCanvasTransform, false);
-            panel = panelObj.GetComponent<ManageThreadPopup>();
-        }
-
-        panel.gameObject.SetActive(true);
-        panel.Init(onThreadSelected);
-        return panel;
-    }
+    // Thread/ManageThread 팝업은 시스템 삭제로 제거
 
     public ConfirmPopup ShowConfirmPopup(string messageKey, Action onConfirm)
     {
@@ -238,24 +198,7 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public ThreadInfoPopup ShowThreadInfoPopup(ThreadState threadState, MainCanvas mainCanvas)
-    {
-        ThreadInfoPopup popup = null;
-        if (_managerCanvasTransform != null)
-        {
-            popup = _managerCanvasTransform.GetComponentInChildren<ThreadInfoPopup>(true);
-        }
-
-        if (popup == null)
-        {
-            GameObject obj = Instantiate(_threadInfoPopupPrefab, _managerCanvasTransform, false);
-            popup = obj.GetComponent<ThreadInfoPopup>();
-        }
-
-        popup.gameObject.SetActive(true);
-        popup.Init(threadState, mainCanvas);
-        return popup;
-    }
+    // ThreadInfoPopup은 시스템 삭제로 제거
 
     public ResearchInfoPopup ShowResearchInfoPopup(ResearchEntry researchEntry)
     {
@@ -337,7 +280,7 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
-    public BuildingInfoPopup ShowBuildingInfoPopup(BuildingData buildingData, BuildingState buildingState, DesignCanvas designCanvas)
+    public BuildingInfoPopup ShowBuildingInfoPopup(BuildingData buildingData, BuildingState buildingState)
     {
         BuildingInfoPopup popup = null;
         if (_managerCanvasTransform != null)
@@ -352,40 +295,10 @@ public class UIManager : Singleton<UIManager>
         }
 
         popup.gameObject.SetActive(true);
-        popup.ShowBuildingInfo(buildingData, buildingState, designCanvas);
+        popup.ShowBuildingInfo(buildingData, buildingState);
         return popup;
     }
-
-    public ThreadSaveInfoPopup ShowThreadSaveInfoPopup(
-        List<string> inputResourceIds,
-        Dictionary<string, int> inputResourceCounts,
-        List<string> outputResourceIds,
-        Dictionary<string, int> outputResourceCounts,
-        int totalMaintenance,
-        DesignCanvas designCanvas)
-    {
-        ThreadSaveInfoPopup popup = null;
-        if (_managerCanvasTransform != null)
-        {
-            popup = _managerCanvasTransform.GetComponentInChildren<ThreadSaveInfoPopup>(true);
-        }
-
-        if (popup == null)
-        {
-            GameObject obj = Instantiate(_threadSaveInfoPopupPrefab, _managerCanvasTransform, false);
-            popup = obj.GetComponent<ThreadSaveInfoPopup>();
-        }
-
-        popup.gameObject.SetActive(true);
-        popup.Init(
-            inputResourceIds,
-            inputResourceCounts,
-            outputResourceIds,
-            outputResourceCounts,
-            totalMaintenance,
-            designCanvas);
-        return popup;
-    }
+    // ThreadSaveInfoPopup은 시스템 삭제로 제거
 
     public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> productionCounts)
     {

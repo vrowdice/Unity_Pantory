@@ -1,69 +1,50 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 그리드 시스템 내에서 스레드 타일의 생성, 배치, 삭제 및 상호작용을 관리하는 매니저 클래스입니다.
+/// 메인 씬의 건설(건물 배치) 러너.
+/// 기존 Thread(타일) 배치 시스템을 제거하고 BuildingData 기반 설치/회전/삭제만 제공합니다.
 /// </summary>
 public class MainRunner : RunnerBase
 {
     [Header("UI Manager")]
     [SerializeField] private MainCanvas _mainCanvas;
 
-    [Header("Prefab")]
-    [SerializeField] private GameObject _threadTilePrefab;
-    [SerializeField] private GameObject _threadObjectPrefab;
+    [Header("Prefabs")]
+    [SerializeField] private GameObject _buildingTilePrefab;
+    [SerializeField] private GameObject _buildingObjectPrefab;
 
     [Header("Grid Settings")]
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
+    [SerializeField] private float _cameraZOffset = 11f;
 
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
     private BoxCollider2D _cameraCollider;
-    private MainRunnerThreadGridHandler _gridHandler;
-    private GameObject _sharedThreadLabelCanvas;
+    private MainBuildingGridHandler _gridHandler;
+    private MainBuildingPlacementHandler _placementHandler;
 
-    private ThreadPlacementDataHandler _threadPlacementHandler;
+    public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsPlacementMode;
+    public bool IsRemovalMode => _placementHandler != null && _placementHandler.IsRemovalMode;
 
-    public bool IsPlacementMode => _gridHandler.IsPlacementActive;
-    public bool IsRemovalMode => _gridHandler.IsRemovalActive;
-    public ThreadState CurrentPlacementThread => _gridHandler.SelectedThread;
-
-    public void CancelPlacementMode() => _gridHandler?.CancelPlacement();
-    public void CancelRemovalMode() => _gridHandler?.CancelRemoval();
-
-    public Transform SharedThreadLabelCanvas
+    public bool StartPlacementMode(BuildingData buildingData)
     {
-        get
-        {
-            if (_sharedThreadLabelCanvas == null && GameManager != null)
-            {
-                RectTransform canvasRect = GameManager.GetWorldCanvas();
-                if (canvasRect != null)
-                {
-                    _sharedThreadLabelCanvas = canvasRect.gameObject;
-                }
-            }
-            return _sharedThreadLabelCanvas != null ? _sharedThreadLabelCanvas.transform : null;
-        }
+        if (_placementHandler == null || buildingData == null) return false;
+        _placementHandler.StartPlacement(buildingData);
+        return true;
     }
+
+    public void CancelPlacementMode() => _placementHandler?.CancelPlacement();
+    public void StartRemovalMode() => _placementHandler?.StartRemoval();
+    public void CancelRemovalMode() => _placementHandler?.CancelRemoval();
+    public void ToggleRemovalMode() => _placementHandler?.ToggleRemoval();
+    public void RotateSelectedBuilding(bool clockwise) => _placementHandler?.Rotate(clockwise);
 
     private void Update()
     {
-        if (IsPlacementMode)
-        {
-            UpdatePlacementMode();
-        }
-        else if (IsRemovalMode)
-        {
-            UpdateRemovalMode();
-        }
-        else
-        {
-            HandleThreadClick();
-        }
+        if (_placementHandler == null) return;
+        _placementHandler.Update(_mainCamera);
     }
 
     /// <summary>
@@ -75,15 +56,14 @@ public class MainRunner : RunnerBase
 
         _mainCamera = Camera.main;
         _mainCameraController = GameManager.MainCameraController;
-        _threadPlacementHandler = DataManager.ThreadPlacement;
 
-        _gridHandler = new MainRunnerThreadGridHandler(transform, _threadTilePrefab, _threadObjectPrefab, _gridWidth, _gridHeight);
-        transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, 11f);
+        _gridHandler = new MainBuildingGridHandler(transform, _buildingTilePrefab, _buildingObjectPrefab, _gridWidth, _gridHeight);
+        _placementHandler = new MainBuildingPlacementHandler(transform, _gridHandler);
+
+        transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, _cameraZOffset);
 
         CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
-        CreateSharedThreadLabelCanvas();
-        RefreshThreads();
 
         _mainCanvas.Init(this);
     }
@@ -111,51 +91,6 @@ public class MainRunner : RunnerBase
         }
     }
 
-    /// <summary>
-    /// 배치 모드 상태에서 마우스 입력 및 미리보기를 처리합니다.
-    /// </summary>
-    private void UpdatePlacementMode()
-    {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
-
-        Vector3 mouseWorldPos = GetMouseWorldPosition();
-        (Vector2Int gridPos, bool canPlace) = _gridHandler.UpdatePlacement(mouseWorldPos);
-
-        if (Input.GetMouseButtonDown(0) && canPlace)
-        {
-            PlaceThread(gridPos, CurrentPlacementThread);
-        }
-        else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-        {
-            CancelPlacementMode();
-        }
-    }
-
-    /// <summary>
-    /// 삭제 모드 상태에서 마우스 입력을 처리합니다.
-    /// </summary>
-    private void UpdateRemovalMode()
-    {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
-
-        Vector3 mouseWorldPos = GetMouseWorldPosition();
-        ThreadObject hoveredThread = _gridHandler.UpdateRemoval(mouseWorldPos);
-
-        if (Input.GetMouseButtonDown(0) && hoveredThread != null)
-        {
-            if (RemoveThread(hoveredThread.GridPosition))
-            {
-                _gridHandler.ResetHighlight();
-            }
-        }
-        else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-        {
-            CancelRemovalMode();
-        }
-    }
-
     private Vector3 GetMouseWorldPosition()
     {
         Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -170,131 +105,5 @@ public class MainRunner : RunnerBase
         _gridWidth = width;
         _gridHeight = height;
         _gridHandler.CreateGrid(width, height);
-    }
-
-    public bool StartPlacementMode(ThreadState threadState)
-    {
-        if (threadState == null) return false;
-
-        if (IsRemovalMode) _gridHandler.CancelRemoval();
-
-        _gridHandler.StartPlacement(threadState);
-        return true;
-    }
-
-    public void StartRemovalMode()
-    {
-        if (IsPlacementMode) _gridHandler.CancelPlacement();
-        _gridHandler?.StartRemoval();
-    }
-
-    public void ToggleRemovalMode()
-    {
-        if (IsRemovalMode) CancelRemovalMode();
-        else StartRemovalMode();
-    }
-
-    /// <summary>
-    /// 그리드의 특정 위치에 스레드를 배치합니다.
-    /// </summary>
-    public bool PlaceThread(Vector2Int gridPos, ThreadState templateThread)
-    {
-        if (!_gridHandler.CanPlaceThread(gridPos)) return false;
-        foreach(BuildingState item in templateThread.buildingStateList)
-        {
-            if (!DataManager.Building.IsBuildingResearchUnlocked(item.Id))
-            {
-                UIManager.Instance.ShowWarningPopup(WarningMessage.ThreadContainsLockedBuildings);
-                return false;
-            }
-        }
-
-        ThreadState newThreadInstance = _threadPlacementHandler.PlaceThread(gridPos, templateThread.threadId);
-        DataManager.Finances.ModifyCredit(-newThreadInstance.requiredBuildCost);
-        if (newThreadInstance == null) return false;
-
-        ThreadObject threadObject = _gridHandler.CreateThreadObject(gridPos, newThreadInstance);
-        if (threadObject == null) return false;
-
-        threadObject.SetGridPosition(gridPos);
-        _gridHandler.SetTileOccupied(gridPos, true);
-
-        _mainCameraController.ShakeCamera();
-
-        return true;
-    }
-
-    /// <summary>
-    /// 그리드의 특정 위치에 있는 스레드를 제거합니다.
-    /// </summary>
-    public bool RemoveThread(Vector2Int gridPos)
-    {
-        ThreadObject threadObject = _gridHandler?.GetThreadObjectAt(gridPos);
-        bool placementRemoved = _threadPlacementHandler != null && _threadPlacementHandler.RemovePlacedThread(gridPos);
-
-        if (threadObject == null && !placementRemoved) return false;
-
-        _gridHandler?.RemoveThreadObject(gridPos);
-        return true;
-    }
-
-    public ThreadObject GetThreadObjectAt(Vector2Int gridPos) => _gridHandler?.GetThreadObjectAt(gridPos);
-
-    /// <summary>
-    /// 데이터 핸들러로부터 모든 배치된 스레드 정보를 가져와 그리드 UI를 갱신합니다.
-    /// </summary>
-    public void RefreshThreads()
-    {
-        _gridHandler.ClearAllThreadObjects();
-
-        foreach (KeyValuePair<Vector2Int, ThreadPlacementState> kvp in _threadPlacementHandler.GetAllPlacedThreads())
-        {
-            ThreadState threadState = kvp.Value.RuntimeState;
-            if (threadState == null) continue;
-
-            _gridHandler.SetTileOccupied(kvp.Key, true);
-            ThreadObject threadObject = _gridHandler.CreateThreadObject(kvp.Key, threadState);
-            if (threadObject != null)
-            {
-                threadObject.SetGridPosition(kvp.Key);
-            }
-        }
-    }
-
-    private void CreateSharedThreadLabelCanvas()
-    {
-        RectTransform canvasRect = GameManager.GetWorldCanvas();
-        if (canvasRect != null)
-        {
-            _sharedThreadLabelCanvas = canvasRect.gameObject;
-        }
-    }
-
-    private void HandleThreadClick()
-    {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 mouseWorldPos = GetMouseWorldPosition();
-            Vector2Int gridPos = _gridHandler.WorldToGridPosition(mouseWorldPos);
-            ThreadObject clickedThread = GetThreadObjectAt(gridPos);
-
-            if (clickedThread != null && !clickedThread.IsPreview)
-            {
-                OnThreadClicked(clickedThread);
-            }
-        }
-    }
-
-    private void OnThreadClicked(ThreadObject threadObject)
-    {
-        if (threadObject == null || threadObject.ThreadState == null) return;
-
-        if (_mainCanvas != null)
-        {
-            _mainCanvas.ShowThreadInfoPanel(threadObject.ThreadState);
-        }
     }
 }

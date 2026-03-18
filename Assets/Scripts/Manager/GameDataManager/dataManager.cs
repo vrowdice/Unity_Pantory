@@ -33,8 +33,6 @@ public class DataManager : Singleton<DataManager>
     public InitialOrderData InitialOrderData => _initialOrderData;
 
     public TimeDataHandler Time { get; private set; }
-    public ThreadDataHandler Thread { get; private set; }
-    public ThreadPlacementDataHandler ThreadPlacement { get; private set; }
     public ResourceDataHandler Resource { get; private set; }
     public MarketActorDataHandler MarketActor { get; private set; }
     public FinancesDataHandler Finances { get; private set; }
@@ -72,8 +70,6 @@ public class DataManager : Singleton<DataManager>
 
     private void InitializeServices()
     {
-        Thread = new ThreadDataHandler(this);
-        ThreadPlacement = new ThreadPlacementDataHandler(this);
         Time = new TimeDataHandler(this, _timeSettingsData);
         Resource = new ResourceDataHandler(this, _resourceDataList, _initialResourceData);
         MarketActor = new MarketActorDataHandler(this, _marketActorDataList, _initialMarketActorData);
@@ -86,10 +82,8 @@ public class DataManager : Singleton<DataManager>
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
 
         _eventHandlers.Clear();
-        _eventHandlers.Add(ThreadPlacement);
         _eventHandlers.Add(Time);
         _eventHandlers.Add(Resource);
-        _eventHandlers.Add(Thread);
         _eventHandlers.Add(Finances);
         _eventHandlers.Add(Employee);
         _eventHandlers.Add(Research);
@@ -104,11 +98,8 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(Employee);
         _dayHandlers.Add(Finances);
         _dayHandlers.Add(Effect);
-        _dayHandlers.Add(ThreadPlacement);
         _dayHandlers.Add(News);
         _dayHandlers.Add(Order);
-
-        SaveLoadManager.Instance.Thread.LoadThreadData(Thread);
     }
 
 #if UNITY_EDITOR
@@ -152,19 +143,12 @@ public class DataManager : Singleton<DataManager>
         foreach (IDataHandlerEvents handler in _eventHandlers)
             handler.ClearAllSubscriptions();
 
-        ThreadPlacement.OnPlacementChanged -= HandleThreadPlacementChanged;
-        ThreadPlacement.OnPlacementChanged += HandleThreadPlacementChanged;
         Time.OnDayChanged -= HandleDayChanged;
         Time.OnDayChanged += HandleDayChanged;
         Time.OnMonthChanged -= HandleMonthChanged;
         Time.OnMonthChanged += HandleMonthChanged;
 
         Debug.Log("[DataManager] All event subscriptions cleared.");
-    }
-
-    private void HandleThreadPlacementChanged()
-    {
-        Employee.SyncAssignedCountsFromThreads(ThreadPlacement);
     }
 
     private void HandleDayChanged()

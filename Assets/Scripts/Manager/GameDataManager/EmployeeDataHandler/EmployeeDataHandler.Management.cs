@@ -92,7 +92,6 @@ public partial class EmployeeDataHandler
         }
 
         RefreshAllSalaries();
-        SyncAssignedCountsFromThreads(_dataManager.ThreadPlacement);
 
         OnEmployeeChanged?.Invoke();
     }

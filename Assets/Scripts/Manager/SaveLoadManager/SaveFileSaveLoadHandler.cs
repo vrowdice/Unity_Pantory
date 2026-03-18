@@ -222,19 +222,7 @@ public class SaveFileSaveLoadHandler
             }
         }
 
-        if (dataManager.ThreadPlacement != null)
-        {
-            Dictionary<Vector2Int, ThreadPlacementState> placements = dataManager.ThreadPlacement.GetAllPlacedThreads();
-            foreach (KeyValuePair<Vector2Int, ThreadPlacementState> kvp in placements)
-            {
-                ThreadState threadStateCopy = CloneThreadState(kvp.Value.RuntimeState);
-                saveData.threadPlacements.Add(new ThreadPlacementStateSaveData(
-                    kvp.Key,
-                    kvp.Value.TemplateThreadId,
-                    threadStateCopy
-                ));
-            }
-        }
+        // ThreadPlacement 시스템 제거로 저장하지 않음
 
         if (dataManager.Effect != null)
         {
@@ -449,49 +437,7 @@ public class SaveFileSaveLoadHandler
             }
         }
 
-        if (dataManager.ThreadPlacement != null && saveData.threadPlacements != null)
-        {
-            Dictionary<Vector2Int, ThreadPlacementState> placements = dataManager.ThreadPlacement.GetAllPlacedThreads();
-            List<Vector2Int> keysToRemove = new List<Vector2Int>(placements.Keys);
-            foreach (Vector2Int key in keysToRemove)
-            {
-                dataManager.ThreadPlacement.RemovePlacedThread(key);
-            }
-
-            Type threadPlacementType = typeof(ThreadPlacementDataHandler);
-            System.Reflection.FieldInfo placedThreadsField = threadPlacementType.GetField("_placedThreads", 
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            if (placedThreadsField != null)
-            {
-                Dictionary<Vector2Int, ThreadPlacementState> placedThreads = placedThreadsField.GetValue(dataManager.ThreadPlacement) as 
-                    Dictionary<Vector2Int, ThreadPlacementState>;
-
-                if (placedThreads != null)
-                {
-                    foreach (ThreadPlacementStateSaveData placementSave in saveData.threadPlacements)
-                    {
-                        ThreadState threadStateCopy = CloneThreadState(placementSave.runtimeState);
-                        ThreadPlacementState placement = new ThreadPlacementState(
-                            placementSave.gridPosition,
-                            placementSave.templateThreadId,
-                            threadStateCopy
-                        );
-                        placedThreads[placementSave.gridPosition] = placement;
-                    }
-
-                    dataManager.ThreadPlacement.RecalculateAllPlacedThreadStats();
-
-                    System.Reflection.FieldInfo onPlacementChangedField = threadPlacementType.GetField("OnPlacementChanged", 
-                        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                    if (onPlacementChangedField != null)
-                    {
-                        Action onPlacementChanged = onPlacementChangedField.GetValue(dataManager.ThreadPlacement) as Action;
-                        onPlacementChanged?.Invoke();
-                    }
-                }
-            }
-        }
+        // ThreadPlacement 시스템 제거로 로드하지 않음
 
         if (dataManager.Effect != null && saveData.effects != null)
         {

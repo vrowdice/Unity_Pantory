@@ -99,40 +99,6 @@ public partial class EmployeeDataHandler
         return entry.state.assignedCount;
     }
 
-    /// <summary>
-    /// 모든 배치된 스레드 인스턴스의 직원 할당 상태를 동기화합니다.
-    /// ThreadPlacementDataHandler의 실제 배치된 인스턴스들의 currentWorkers와 currentTechnicians를 기반으로 assignedCount를 업데이트합니다.
-    /// 배치된 인원은 다른 스레드에 배치될 수 없도록 보장합니다.
-    /// </summary>
-    public void SyncAssignedCountsFromThreads(ThreadPlacementDataHandler threadPlacementHandler)
-    {
-        if (threadPlacementHandler == null) return;
-
-        foreach (EmployeeEntry entry in _employees.Values)
-        {
-            entry.state.assignedCount = 0;
-        }
-
-        Dictionary<Vector2Int, ThreadPlacementState> allPlacements = threadPlacementHandler.GetAllPlacedThreads();
-        if (allPlacements == null)
-        {
-            OnEmployeeChanged?.Invoke();
-            return;
-        }
-
-        foreach (ThreadPlacementState placement in allPlacements.Values)
-        {
-            if (placement?.RuntimeState == null)
-                continue;
-            ThreadState threadState = placement.RuntimeState;
-
-            if (threadState.currentWorkers > 0 && TryGetEntry(EmployeeType.Worker, out EmployeeEntry workerEntry))
-                workerEntry.state.assignedCount += threadState.currentWorkers;
-            if (threadState.currentTechnicians > 0 && TryGetEntry(EmployeeType.Technician, out EmployeeEntry technicianEntry))
-                technicianEntry.state.assignedCount += threadState.currentTechnicians;
-        }
-
-        OnEmployeeChanged?.Invoke();
-    }
+    // Thread(생산 라인) 시스템 제거로 동기화 로직 제거
 }
 

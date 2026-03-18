@@ -28,11 +28,9 @@ public class BuildingInfoPopup : PopupBase
 
     private BuildingData _currentData;
     private BuildingState _currentState;
-    private DesignCanvas _designCanvas;
     private DataManager _dataManager;
-    private DesignRunner _designRunner;
 
-    public void ShowBuildingInfo(BuildingData data, BuildingState state, DesignCanvas canvas)
+    public void ShowBuildingInfo(BuildingData data, BuildingState state)
     {
         if (data == null) return;
 
@@ -40,7 +38,6 @@ public class BuildingInfoPopup : PopupBase
         
         _currentData = data;
         _currentState = state;
-        _designCanvas = canvas;
         _dataManager = DataManager.Instance;
 
         UpdateUI();
@@ -133,8 +130,6 @@ public class BuildingInfoPopup : PopupBase
 
     private GameObject GetProductionInfoImagePrefab()
     {
-        if (_designCanvas != null)
-            return _designCanvas.ProductionInfoImage;
         return UIManager.Instance != null ? UIManager.Instance.ProductionInfoImagePrefab : null;
     }
 
@@ -260,8 +255,7 @@ public class BuildingInfoPopup : PopupBase
 
     private void RefreshWorldIcons()
     {
-        if (_designRunner == null) _designRunner = FindFirstObjectByType<DesignRunner>();
-        _designRunner?.RefreshBuildings();
+        // DesignRunner/Design 씬 제거: 월드 아이콘 새로고침은 추후 메인 건물 시스템 기준으로 재구현
     }
 
     private string BuildRequirementText(ResourceData data)

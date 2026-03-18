@@ -8,8 +8,7 @@ public class BuildingTile : MonoBehaviour
     private Collider2D _collider;
     private SpriteRenderer _spriteRenderer;
     private Vector2Int _gridPosition;
-    private DesignRunner _manager;
-    private bool _isOccupied = false;  // 타일이 건물에 의해 차지되었는지
+    private bool _isOccupied = false;
 
     [Header("Tile Colors")]
     [SerializeField] private Color _normalColor = Color.white;
@@ -27,10 +26,9 @@ public class BuildingTile : MonoBehaviour
     /// <summary>
     /// 타일을 초기화합니다.
     /// </summary>
-    public void Initialize(Vector2Int position, DesignRunner manager)
+    public void Initialize(Vector2Int position)
     {
         _gridPosition = position;
-        _manager = manager;
         UpdateVisual();
     }
 

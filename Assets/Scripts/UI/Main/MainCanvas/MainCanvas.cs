@@ -26,7 +26,6 @@ public partial class MainCanvas : CanvasBase
         DataManager.Resource.OnResourceChanged -= OnResourceChanged;
         DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
-        DataManager.Thread.OnThreadChanged -= OnThreadPlacementChanged;
 
         DataManager.Time.OnDayChanged -= OnDayChanged;
         DataManager.Time.OnMonthChanged -= OnMonthChanged;
@@ -35,7 +34,6 @@ public partial class MainCanvas : CanvasBase
         DataManager.Resource.OnResourceChanged += OnResourceChanged;
         DataManager.Finances.OnCreditChanged += UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
-        DataManager.Thread.OnThreadChanged += OnThreadPlacementChanged;
 
         DataManager.Time.OnDayChanged += OnDayChanged;
         DataManager.Time.OnMonthChanged += OnMonthChanged;
@@ -49,8 +47,7 @@ public partial class MainCanvas : CanvasBase
         InitializePanels();
         CreateQuickMoveBtns();
 
-        RefreshThreadCategories();
-        RefreshThreadButtons();
+        InitBuildUi();
         RefreshResourceScrollView();
         UpdateAllMainText();
     }
@@ -119,29 +116,9 @@ public partial class MainCanvas : CanvasBase
         UpdateAllMainText();
     }
 
-    private void OnThreadPlacementChanged()
-    {
-        RefreshResourceScrollView();
-        UpdateAllMainText();
-    }
-
-    /// <summary>
-    /// FinancesDataHandler에서 크레딧 정보를 가져옵니다.
-    /// </summary>
-    /// <returns>크레딧 정보가 포함된 FinancesDataHandler, 없으면 null</returns>
-    public FinancesDataHandler GetFinancesDataHandler()
-    {
-        return DataManager.Finances;
-    }
-
     public void ShowNewsPopup(NewsState newsState)
     {
         UIManager.Instance.ShowNewsPopup(newsState, this);
-    }
-
-    public void ShowThreadInfoPanel(ThreadState threadState)
-    {
-        UIManager.Instance.ShowThreadInfoPopup(threadState, this);
     }
 
     public void ShowOptionPanel()
