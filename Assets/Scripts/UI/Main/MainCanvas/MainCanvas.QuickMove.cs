@@ -27,14 +27,15 @@ public partial class MainCanvas
         {
             if (btn != null)
             {
-                Destroy(btn.gameObject);
+                GameManager.Instance.PoolingManager.ReturnToPool(btn.gameObject);
             }
         }
         _quickMoveBtns.Clear();
 
         foreach (MainPanelType panelType in System.Enum.GetValues(typeof(MainPanelType)))
         {
-            GameObject btnObj = Instantiate(_quickMoveBtnPrefeb, _quickMovePanelContent);
+            GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_quickMoveBtnPrefeb);
+            btnObj.transform.SetParent(_quickMovePanelContent, false);
 
             QuickMoveBtn btn = btnObj.GetComponent<QuickMoveBtn>();
 
@@ -46,7 +47,7 @@ public partial class MainCanvas
             else
             {
                 Debug.LogError("[MainUiManager] QuickMoveBtn component not found on prefab.");
-                Destroy(btnObj);
+                GameManager.Instance.PoolingManager.ReturnToPool(btnObj);
             }
         }
     }

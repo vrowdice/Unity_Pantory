@@ -25,11 +25,12 @@ public partial class MainCanvas
         _buildingTypeBtns.Clear();
         if (_buildingTypeBtnPrefab != null && _buildingTypeBtnContent != null)
         {
-            GameObjectUtils.ClearChildren(_buildingTypeBtnContent);
+            GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
 
             foreach (BuildingType t in EnumUtils.GetAllEnumValues<BuildingType>())
             {
-                GameObject btnObj = Instantiate(_buildingTypeBtnPrefab, _buildingTypeBtnContent);
+                GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
+                btnObj.transform.SetParent(_buildingTypeBtnContent, false);
                 MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
                 if (btn != null)
                 {
@@ -135,7 +136,7 @@ public partial class MainCanvas
 
     public void SelectBuildingType(BuildingType buildingType)
     {
-        if (_buildingBtnContent != null) GameObjectUtils.ClearChildren(_buildingBtnContent);
+        if (_buildingBtnContent != null) GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
 
         _selectedBuildingType = buildingType;
@@ -148,7 +149,8 @@ public partial class MainCanvas
                     ? true
                     : (DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault);
 
-                GameObject btnObj = Instantiate(_buildingBtnPrefab, _buildingBtnContent);
+                GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingBtnPrefab);
+                btnObj.transform.SetParent(_buildingBtnContent, false);
                 MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
                 if (btn != null)
                 {

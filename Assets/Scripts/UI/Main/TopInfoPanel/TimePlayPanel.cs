@@ -33,7 +33,8 @@ public class TimePlayPanel : MonoBehaviour
         for (int i = 0; i < _btnSpeedGenList.Count; i++)
         {
             float speed = _btnSpeedGenList[i];
-            GameObject go = Instantiate(_speedBtnPrefab, _speedBtnContentTransform);
+            GameObject go = GameManager.Instance.PoolingManager.GetPooledObject(_speedBtnPrefab);
+            go.transform.SetParent(_speedBtnContentTransform, false);
             SpeedBtn btn = go.GetComponent<SpeedBtn>();
             int index = i;
             btn.Init(speed, index, OnSpeedBtnClicked);

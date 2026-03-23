@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 시장 시스템의 메인 컨트롤러로, 리소스와 거래자 뷰 사이의 전환 및 데이터 갱신을 관리합니다.
@@ -70,13 +71,14 @@ public class MarketCanvas : MainCanvasPanelBase
             return;
         }
 
-        GameObjectUtils.ClearChildren(_marketActionBtnContentTransform);
+        _gameManager.PoolingManager.ClearChildrenToPool(_marketActionBtnContentTransform);
         _actionButtons.Clear();
 
         List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
         foreach (MarketPanelType panelType in panelTypes)
         {
-            GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _marketActionBtnContentTransform);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            btnObj.transform.SetParent(_marketActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {
@@ -214,14 +216,27 @@ public class MarketCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshResourceList()
     {
-        GameObjectUtils.ClearChildren(_marketScrollViewContent);
+        ScrollRect scroll = _marketScrollViewContent.GetComponentInParent<ScrollRect>();
+        if (scroll != null)
+        {
+            scroll.enabled = false;
+        }
+
+        PoolingManager pool = _gameManager.PoolingManager;
+        pool.ClearChildrenToPool(_marketScrollViewContent);
 
         Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
         foreach (ResourceEntry entry in resources.Values)
         {
-            GameObject btnObj = Instantiate(_marketResourceBtnPrefab, _marketScrollViewContent);
+            GameObject btnObj = pool.GetPooledObject(_marketResourceBtnPrefab);
+            btnObj.transform.SetParent(_marketScrollViewContent, false);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
             resourceBtn.Init(this, entry);
+        }
+
+        if (scroll != null)
+        {
+            scroll.enabled = true;
         }
     }
 
@@ -231,20 +246,33 @@ public class MarketCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshTraderList()
     {
-        GameObjectUtils.ClearChildren(_marketScrollViewContent);
+        ScrollRect scroll = _marketScrollViewContent.GetComponentInParent<ScrollRect>();
+        if (scroll != null)
+        {
+            scroll.enabled = false;
+        }
+
+        PoolingManager pool = _gameManager.PoolingManager;
+        pool.ClearChildrenToPool(_marketScrollViewContent);
 
         Dictionary<string, MarketActorEntry> traders = _dataManager.MarketActor.GetAllMarketActors();
-        
+
         List<MarketActorEntry> sortedTraders = new List<MarketActorEntry>(traders.Values);
         sortedTraders.Sort((a, b) => b.state.wealth.CompareTo(a.state.wealth));
-        
+
         foreach (MarketActorEntry entry in sortedTraders)
         {
             if (entry.data.marketActorType != MarketActorType.Company) continue;
 
-            GameObject btnObj = Instantiate(_marketTraderBtnPrefab, _marketScrollViewContent);
+            GameObject btnObj = pool.GetPooledObject(_marketTraderBtnPrefab);
+            btnObj.transform.SetParent(_marketScrollViewContent, false);
             MarketTraderBtn traderBtn = btnObj.GetComponent<MarketTraderBtn>();
             traderBtn.Init(this, entry);
+        }
+
+        if (scroll != null)
+        {
+            scroll.enabled = true;
         }
     }
 }

@@ -46,6 +46,8 @@ public class DataManager : Singleton<DataManager>
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
     private readonly List<ITimeChangeHandler> _dayHandlers = new List<ITimeChangeHandler>();
 
+    private bool _servicesInitialized;
+
     void Update()
     {
         float deltaTime = UnityEngine.Time.deltaTime;
@@ -55,16 +57,14 @@ public class DataManager : Singleton<DataManager>
     protected override void Awake()
     {
         base.Awake();
-
-        if (Instance != this) return;
-
-        InitializeServices();
     }
 
     public void Init()
     {
         if (Instance != this) return;
+        if (_servicesInitialized) return;
 
+        _servicesInitialized = true;
         InitializeServices();
     }
 

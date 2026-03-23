@@ -22,7 +22,7 @@ public class NewsCanvas : MainCanvasPanelBase
     {
         if(_dataManager != null)
         {
-            _dataManager.News.OnNewsChanged += RefreshNewsList;
+            _dataManager.News.OnNewsChanged -= RefreshNewsList;
         }
     }
 
@@ -38,7 +38,7 @@ public class NewsCanvas : MainCanvasPanelBase
         {
             if (_newsPanelMap.TryGetValue(id, out NewspaperPanel panel))
             {
-                Destroy(panel.gameObject);
+                _gameManager.PoolingManager.ReturnToPool(panel.gameObject);
                 _newsPanelMap.Remove(id);
             }
         }
@@ -48,7 +48,8 @@ public class NewsCanvas : MainCanvasPanelBase
             if (item == null) continue;
             if (_newsPanelMap.ContainsKey(item.id)) continue;
 
-            GameObject newsObj = Instantiate(_newspaperPanelPrefab, _newspaperContentTransform);
+            GameObject newsObj = _gameManager.PoolingManager.GetPooledObject(_newspaperPanelPrefab);
+            newsObj.transform.SetParent(_newspaperContentTransform, false);
             NewspaperPanel newsPanel = newsObj.GetComponent<NewspaperPanel>();
             if (newsPanel != null)
             {

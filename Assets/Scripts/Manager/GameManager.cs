@@ -8,7 +8,6 @@ public class GameManager : Singleton<GameManager>
 {
     private readonly List<Action> _closeStack = new List<Action>();
 
-    private CanvasBase _currentCanvasBase;
     private RunnerBase _currentRunnerBase;
     private DataManager _dataManager;
     private VisualManager _visualManager;
@@ -16,14 +15,10 @@ public class GameManager : Singleton<GameManager>
     private PoolingManager _poolingManager;
     private MainCameraController _mainCameraController;
 
-    private Canvas _currnetWorldCanvas;
     private GameObject _sharedWorldCanvas;
     private RectTransform _canvasRect;
     private CanvasScaler _scaler;
 
-    private string _currentThreadId = string.Empty;
-
-    public string CurrentThreadId => _currentThreadId;
     public MainCameraController MainCameraController => _mainCameraController;
     public PoolingManager PoolingManager => _poolingManager;
 
@@ -168,6 +163,8 @@ public class GameManager : Singleton<GameManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ClearCloseStack();
+        _mainCameraController = null;
+        _currentRunnerBase = null;
 
         if (_sharedWorldCanvas != null)
         {
@@ -177,15 +174,29 @@ public class GameManager : Singleton<GameManager>
         _dataManager.ClearAllEventSubscriptions();
         _dataManager.Time.PauseTime();
 
-        MainCameraController mainCamera = GameObject.Find("MainCamera").GetComponent<MainCameraController>();
+        MainCameraController mainCamera = FindAnyObjectByType<MainCameraController>();
+        if (mainCamera == null)
+        {
+            Debug.LogError("[GameManager] MainCameraController not found in loaded scene.");
+            return;
+        }
+
         _mainCameraController = mainCamera;
         mainCamera.Init();
 
         CreateWorldCanvas(_mainCameraController.Camera);
 
         RunnerBase runnerBase = FindAnyObjectByType<RunnerBase>();
-        _currentRunnerBase = runnerBase;
-        _currentRunnerBase.Init();
+        if (runnerBase == null)
+        {
+            _currentRunnerBase = null;
+            Debug.LogError("[GameManager] RunnerBase not found in loaded scene.");
+        }
+        else
+        {
+            _currentRunnerBase = runnerBase;
+            _currentRunnerBase.Init();
+        }
 
         UIManager.Instance?.RefreshCamera();
     }
@@ -206,10 +217,10 @@ public class GameManager : Singleton<GameManager>
         _sharedWorldCanvas = new GameObject(_worldCanvasName);
         _sharedWorldCanvas.transform.SetParent(this.transform, false);
 
-        _currnetWorldCanvas = _sharedWorldCanvas.AddComponent<Canvas>();
-        _currnetWorldCanvas.renderMode = RenderMode.WorldSpace;
-        _currnetWorldCanvas.worldCamera = worldCamera != null ? worldCamera : Camera.main;
-        _currnetWorldCanvas.sortingOrder = _worldCanvasSortingOrder;
+        Canvas worldCanvas = _sharedWorldCanvas.AddComponent<Canvas>();
+        worldCanvas.renderMode = RenderMode.WorldSpace;
+        worldCanvas.worldCamera = worldCamera != null ? worldCamera : Camera.main;
+        worldCanvas.sortingOrder = _worldCanvasSortingOrder;
 
         _scaler = _sharedWorldCanvas.AddComponent<CanvasScaler>();
         _scaler.dynamicPixelsPerUnit = _worldCanvasDynamicPixelsPerUnit;

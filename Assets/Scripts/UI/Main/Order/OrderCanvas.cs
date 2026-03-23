@@ -70,7 +70,8 @@ public class OrderCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_orderActionBtnContentTransform);
         _filterButtonList.Clear();
 
-        GameObject allBtnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _orderActionBtnContentTransform);
+        GameObject allBtnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+        allBtnObj.transform.SetParent(_orderActionBtnContentTransform, false);
         ActionBtn allBtn = allBtnObj.GetComponent<ActionBtn>();
         allBtn.Init(LocalizationUtils.Localize("All"), () => {
             OnMarketActorTypeClick(null);
@@ -80,7 +81,8 @@ public class OrderCanvas : MainCanvasPanelBase
 
         foreach (MarketActorType actorType in EnumUtils.GetAllEnumValues<MarketActorType>())
         {
-            GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _orderActionBtnContentTransform);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            btnObj.transform.SetParent(_orderActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             MarketActorType capturedType = actorType;
             btn.Init(actorType.Localize(LocalizationUtils.TABLE_MARKET_ACTOR), () => {
@@ -122,6 +124,7 @@ public class OrderCanvas : MainCanvasPanelBase
     private void RefreshMarketActorButtons()
     {
         _gameManager.PoolingManager.ClearChildrenToPool(_orderMarketActorPopupBtnScrollViewContentTransform);
+        _marketActorPopupBtnList.Clear();
         foreach (MarketActorEntry actorEntry in _dataManager.MarketActor.GetAllMarketActors().Values)
         {
             if (actorEntry == null) continue;
@@ -129,7 +132,8 @@ public class OrderCanvas : MainCanvasPanelBase
             if (_currentMarketActorType != null && actorEntry.data.marketActorType != _currentMarketActorType.Value)
                 continue;
 
-            GameObject btnObj = Instantiate(_orderMarketActorPopupBtnPrefab, _orderMarketActorPopupBtnScrollViewContentTransform);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_orderMarketActorPopupBtnPrefab);
+            btnObj.transform.SetParent(_orderMarketActorPopupBtnScrollViewContentTransform, false);
             MarketActorPopupBtn btn = btnObj.GetComponent<MarketActorPopupBtn>();
             if (btn != null)
             {

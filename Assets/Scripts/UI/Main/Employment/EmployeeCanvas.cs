@@ -145,13 +145,14 @@ public class EmployeeCanvas : MainCanvasPanelBase
             return;
         }
 
-        GameObjectUtils.ClearChildren(EmployeeActionBtnContent);
+        _gameManager.PoolingManager.ClearChildrenToPool(EmployeeActionBtnContent);
         _roleButtons.Clear();
 
         List<EmployeeType> roles = EnumUtils.GetAllEnumValues<EmployeeType>();
         foreach (EmployeeType role in roles)
         {
-            GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, EmployeeActionBtnContent);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            btnObj.transform.SetParent(EmployeeActionBtnContent, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {

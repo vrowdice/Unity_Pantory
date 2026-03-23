@@ -45,7 +45,7 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     public void UpdateResearchScrollView()
     {
-        GameObjectUtils.ClearChildren(_researchBtnContainerContentTransform);
+        _gameManager.PoolingManager.ClearChildrenToPool(_researchBtnContainerContentTransform);
         GameObject lineParentObj = new GameObject("LineParent");
         lineParentObj.transform.SetParent(_researchBtnContainerContentTransform, false);
         _lineParent = lineParentObj.transform;
@@ -73,7 +73,8 @@ public class ResearchCanvas : MainCanvasPanelBase
 
         for (int i = _researchBtnContainerList.Count; i <= currentDepth; i++)
         {
-            GameObject containerObj = Instantiate(_researchBtnContainerPrefab, _researchBtnContainerContentTransform);
+            GameObject containerObj = _gameManager.PoolingManager.GetPooledObject(_researchBtnContainerPrefab);
+            containerObj.transform.SetParent(_researchBtnContainerContentTransform, false);
             containerObj.name = $"Layer_{i}";
             _researchBtnContainerList.Add(containerObj.transform);
         }
@@ -82,7 +83,8 @@ public class ResearchCanvas : MainCanvasPanelBase
         {
             ResearchEntry entry = _dataManager.Research.GetResearchEntry(data.id);
             Transform parentLayer = _researchBtnContainerList[currentDepth];
-            GameObject btnObj = Instantiate(_researchBtnPrefab, parentLayer);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_researchBtnPrefab);
+            btnObj.transform.SetParent(parentLayer, false);
 
             _buttonMap.Add(data.id, btnObj.GetComponent<RectTransform>());
 
@@ -116,7 +118,8 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     private void ConnectButtons(RectTransform start, RectTransform end)
     {
-        GameObject lineObj = Instantiate(_linePrefab, _lineParent);
+        GameObject lineObj = _gameManager.PoolingManager.GetPooledObject(_linePrefab);
+        lineObj.transform.SetParent(_lineParent, false);
         RectTransform lineRect = lineObj.GetComponent<RectTransform>();
 
         Vector3 startPos = start.position;

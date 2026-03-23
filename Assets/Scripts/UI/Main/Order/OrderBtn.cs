@@ -69,30 +69,42 @@ public class OrderBtn : MonoBehaviour
         if (_RequireResrouceScrollViewContent == null || _orderRequireResourceItemPrefab == null) return;
         if (_orderState.resourceRequestList == null) return;
 
-        if (_resourceItemPanels.Count == 0)
-        {
-            foreach (OrderState.ResourceRequest request in _orderState.resourceRequestList)
-            {
-                ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(request.resourceId);
-                if (resourceEntry == null) continue;
+        int targetCount = _orderState.resourceRequestList.Count;
 
-                GameObject itemObj = Instantiate(_orderRequireResourceItemPrefab, _RequireResrouceScrollViewContent);
-                OrderRequireResourceItemPanel panel = itemObj.GetComponent<OrderRequireResourceItemPanel>();
-                if (panel != null)
-                {
-                    panel.Init(resourceEntry, request.requiredCount);
-                    _resourceItemPanels.Add(panel);
-                }
+        while (_resourceItemPanels.Count > targetCount)
+        {
+            int lastIndex = _resourceItemPanels.Count - 1;
+            OrderRequireResourceItemPanel panelToReturn = _resourceItemPanels[lastIndex];
+            _resourceItemPanels.RemoveAt(lastIndex);
+            if (panelToReturn != null)
+            {
+                GameManager.Instance.PoolingManager.ReturnToPool(panelToReturn.gameObject);
             }
         }
-        else
+
+        for (int i = 0; i < targetCount; i++)
         {
-            for (int i = 0; i < _resourceItemPanels.Count && i < _orderState.resourceRequestList.Count; i++)
+            OrderState.ResourceRequest request = _orderState.resourceRequestList[i];
+            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(request.resourceId);
+            if (resourceEntry == null) continue;
+
+            if (i >= _resourceItemPanels.Count)
+            {
+                GameObject itemObj = GameManager.Instance.PoolingManager.GetPooledObject(_orderRequireResourceItemPrefab);
+                itemObj.transform.SetParent(_RequireResrouceScrollViewContent, false);
+                OrderRequireResourceItemPanel newPanel = itemObj.GetComponent<OrderRequireResourceItemPanel>();
+                if (newPanel != null)
+                {
+                    _resourceItemPanels.Add(newPanel);
+                }
+            }
+
+            if (i < _resourceItemPanels.Count)
             {
                 OrderRequireResourceItemPanel panel = _resourceItemPanels[i];
                 if (panel != null)
                 {
-                    panel.UpdateUI();
+                    panel.Init(resourceEntry, request.requiredCount);
                 }
             }
         }

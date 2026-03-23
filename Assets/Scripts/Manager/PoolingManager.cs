@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +13,11 @@ public class PoolingManager : Singleton<PoolingManager>
     [SerializeField] private Transform _canvasTransform;
 
     const int maxPoolSize = 20;
+
+    /// <summary>
+    /// 풀 최초 생성 시 미리 만들 개수. 과다하면 첫 사용 프레임에 Instantiate가 몰립니다.
+    /// </summary>
+    const int initialPoolBatchCount = 6;
 
     /// <summary>
     /// PoolingManager를 초기화합니다.
@@ -103,7 +107,7 @@ public class PoolingManager : Singleton<PoolingManager>
         string prefabName = _prefab.name;
         if (!poolDictionary.ContainsKey(prefabName))
         {
-            CreatePool(_prefab, maxPoolSize);
+            CreatePool(_prefab, initialPoolBatchCount);
         }
 
         Queue<GameObject> pool = poolDictionary[prefabName];
@@ -154,7 +158,7 @@ public class PoolingManager : Singleton<PoolingManager>
     /// <param name="_obj">반환할 오브젝트</param>
     public void ReturnToPool(GameObject _obj)
     {
-        string prefabName = _obj.name.Replace("(Clone)", "");
+        string prefabName = _obj.name.Replace("(Clone)", "").Trim();
 
         if (!poolDictionary.ContainsKey(prefabName))
         {

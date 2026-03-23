@@ -1,7 +1,5 @@
-using Mono.Cecil;
 using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -70,7 +68,8 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void CreateCategoryButton(ResourceType? type, string label)
     {
-        GameObject btnObj = Instantiate(UIManager.Instance.ActionBtnPrefab, _resourceTypeScrollViewContentTransform);
+        GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+        btnObj.transform.SetParent(_resourceTypeScrollViewContentTransform, false);
         ActionBtn btn = btnObj.GetComponent<ActionBtn>();
         
         ResourceType? capturedType = type;
@@ -114,6 +113,12 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshCurrentResourceTypeList()
     {
+        ScrollRect scroll = _resourceScrollViewContentTransform.GetComponentInParent<ScrollRect>();
+        if (scroll != null)
+        {
+            scroll.enabled = false;
+        }
+
         _gameManager.PoolingManager.ClearChildrenToPool(_resourceScrollViewContentTransform);
 
         foreach (KeyValuePair<string, ResourceEntry> resourceEntry in _dataManager.Resource.GetAllResources())
@@ -124,6 +129,11 @@ public class StorageCanvas : MainCanvasPanelBase
                 btnObj.transform.SetParent(_resourceScrollViewContentTransform, false);
                 btnObj.GetComponent<StorageResourceBtn>().Init(this, resourceEntry.Value);
             }
+        }
+
+        if (scroll != null)
+        {
+            scroll.enabled = true;
         }
     }
 }
