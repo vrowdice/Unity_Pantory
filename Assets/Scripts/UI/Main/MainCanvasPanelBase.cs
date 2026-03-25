@@ -30,10 +30,7 @@ public abstract class MainCanvasPanelBase : TutorialBase
         _uiManager = argUIManager;
 
         if (_cachedOnClose == null) _cachedOnClose = OnClose;
-        if (_gameManager != null)
-        {
-            _gameManager.PushCloseable(_cachedOnClose);
-        }
+        UIManager.Instance?.PushCloseable(_cachedOnClose);
 
         gameObject.SetActive(true);
 
@@ -49,10 +46,8 @@ public abstract class MainCanvasPanelBase : TutorialBase
     /// </summary>
     public void OnClose()
     {
-        if (_cachedOnClose != null && _gameManager != null)
-        {
-            _gameManager.RemoveCloseable(_cachedOnClose);
-        }
+        if (_cachedOnClose != null && UIManager.Instance != null)
+            UIManager.Instance.RemoveCloseable(_cachedOnClose);
 
         if (!gameObject.activeSelf)
         {

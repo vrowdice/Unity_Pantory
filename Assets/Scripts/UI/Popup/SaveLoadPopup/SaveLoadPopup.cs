@@ -101,7 +101,7 @@ public class SaveLoadPopup : PopupBase
         {
             RefreshSaveFileList();
             UIManager.Instance.ShowWarningPopup(WarningMessage.SaveSuccess);
-            GameManager.Instance.CloseAllPopups();
+            UIManager.Instance.CloseAllPopups();
         }
         else
         {
@@ -129,7 +129,7 @@ public class SaveLoadPopup : PopupBase
             if (success)
             {
                 SceneLoadManager.Instance.LoadScene("Main");
-                GameManager.Instance.CloseAllPopups();
+                UIManager.Instance.CloseAllPopups();
             }
             else
             {

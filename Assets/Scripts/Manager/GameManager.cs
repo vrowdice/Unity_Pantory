@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
-    private readonly List<Action> _closeStack = new List<Action>();
-
     private RunnerBase _currentRunnerBase;
     private DataManager _dataManager;
     private VisualManager _visualManager;
@@ -96,65 +92,9 @@ public class GameManager : Singleton<GameManager>
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            TryCloseTopmost();
-        }
-    }
-
     void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    public void PushCloseable(Action onClose)
-    {
-        if (onClose != null)
-        {
-            _closeStack.Add(onClose);
-        }
-    }
-
-    public void RemoveCloseable(Action onClose)
-    {
-        if (onClose != null)
-        {
-            for (int i = _closeStack.Count - 1; i >= 0; i--)
-            {
-                if (_closeStack[i] == onClose)
-                {
-                    _closeStack.RemoveAt(i);
-                    return;
-                }
-            }
-        }
-    }
-
-    public void TryCloseTopmost()
-    {
-        if (_closeStack.Count == 0) return;
-        int last = _closeStack.Count - 1;
-        Action close = _closeStack[last];
-        _closeStack.RemoveAt(last);
-        close?.Invoke();
-    }
-
-    public void ClearCloseStack()
-    {
-        _closeStack.Clear();
-    }
-
-    public void CloseAllPopups()
-    {
-        if (_closeStack.Count == 0) return;
-        List<Action> copy = new List<Action>(_closeStack);
-        _closeStack.Clear();
-        for (int i = copy.Count - 1; i >= 0; i--)
-        {
-            copy[i]?.Invoke();
-        }
     }
 
     /// <summary>
@@ -162,7 +102,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        ClearCloseStack();
+        UIManager.Instance?.ClearCloseStack();
         _mainCameraController = null;
         _currentRunnerBase = null;
 

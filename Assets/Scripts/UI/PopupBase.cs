@@ -51,7 +51,7 @@ public class PopupBase : TutorialBase
     public virtual void Show()
     {
         if (_cachedClose == null) _cachedClose = Close;
-        GameManager.Instance.PushCloseable(_cachedClose);
+        UIManager.Instance?.PushCloseable(_cachedClose);
         gameObject.SetActive(true);
 
         if (_showCoroutine != null)
@@ -93,8 +93,8 @@ public class PopupBase : TutorialBase
     {
         if (this == null) return;
 
-        if (_cachedClose != null && GameManager.Instance != null)
-            GameManager.Instance.RemoveCloseable(_cachedClose);
+        if (_cachedClose != null && UIManager.Instance != null)
+            UIManager.Instance.RemoveCloseable(_cachedClose);
 
         if (_showCoroutine != null)
         {
