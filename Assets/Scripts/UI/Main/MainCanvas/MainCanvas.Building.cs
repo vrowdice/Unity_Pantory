@@ -72,12 +72,12 @@ public partial class MainCanvas
         if (isOn)
         {
             _selectedBuilding = null;
-            _mainRunner?.CancelPlacementMode();
-            _mainRunner?.StartRemovalMode();
+            _mainRunner.PlacementHandler.CancelPlacement();
+            _mainRunner.PlacementHandler.StartRemoval();
         }
         else
         {
-            _mainRunner?.CancelRemovalMode();
+            _mainRunner.PlacementHandler.CancelRemoval();
         }
 
         UpdateBuildingButtonStates();
@@ -95,7 +95,7 @@ public partial class MainCanvas
 
         if (_mainRunner != null && _mainRunner.IsRemovalMode)
         {
-            _mainRunner.CancelRemovalMode();
+            _mainRunner.PlacementHandler.CancelRemoval();
         }
 
         if (isSelected)
@@ -113,7 +113,7 @@ public partial class MainCanvas
     public void DeselectBuilding()
     {
         _selectedBuilding = null;
-        _mainRunner?.CancelPlacementMode();
+        _mainRunner.PlacementHandler.CancelPlacement();
         UpdateBuildingButtonStates();
     }
 
@@ -181,7 +181,4 @@ public partial class MainCanvas
             btn.SetSelected(_selectedBuilding == btn.BuildingData);
         }
     }
-
-    public void RotateBuildingLeft() => _mainRunner?.RotateSelectedBuilding(false);
-    public void RotateBuildingRight() => _mainRunner?.RotateSelectedBuilding(true);
 }

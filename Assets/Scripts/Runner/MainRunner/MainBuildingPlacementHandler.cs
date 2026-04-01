@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 public class MainBuildingPlacementHandler
 {
     private readonly Transform _parent;
-    private readonly MainBuildingGridHandler _grid;
+    private readonly MainBuildingGridHandler _gridHandler;
 
     private BuildingData _selectedBuilding;
     private int _rotation;
@@ -27,7 +27,7 @@ public class MainBuildingPlacementHandler
     public MainBuildingPlacementHandler(Transform parent, MainBuildingGridHandler grid)
     {
         _parent = parent;
-        _grid = grid;
+        _gridHandler = grid;
     }
 
     public void StartPlacement(BuildingData data)
@@ -99,15 +99,22 @@ public class MainBuildingPlacementHandler
         Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
 
-        Vector2Int origin = _grid.WorldToGridPosition(mouseWorld);
+        Vector2Int origin = _gridHandler.WorldToGridPosition(mouseWorld);
         Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
-        bool canPlace = _grid.CanPlace(origin, size);
+        bool canPlace = _gridHandler.CanPlace(origin, size);
 
         UpdatePreview(origin, size, canPlace);
 
         if (Input.GetMouseButtonDown(0) && canPlace)
         {
-            _grid.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _);
+            if (_selectedBuilding.IsRoad)
+            {
+
+            }
+            else
+            {
+                _gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _);
+            }
         }
     }
 
@@ -121,11 +128,11 @@ public class MainBuildingPlacementHandler
 
         Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
-        Vector2Int p = _grid.WorldToGridPosition(mouseWorld);
+        Vector2Int p = _gridHandler.WorldToGridPosition(mouseWorld);
 
         if (Input.GetMouseButtonDown(0))
         {
-            _grid.TryRemoveAt(p);
+            _gridHandler.TryRemoveAt(p);
         }
     }
 
@@ -150,10 +157,10 @@ public class MainBuildingPlacementHandler
     {
         if (_previewObj == null) return;
 
-        _previewObj.transform.position = _grid.GridToWorldPosition(origin, size);
-        Color ok = VisualManager.Instance != null ? VisualManager.Instance.ValidColor : Color.green;
-        Color no = VisualManager.Instance != null ? VisualManager.Instance.InvalidColor : Color.red;
-        _previewRenderer.color = canPlace ? new Color(ok.r, ok.g, ok.b, 0.65f) : new Color(no.r, no.g, no.b, 0.65f);
+        _previewObj.transform.position = _gridHandler.GridToWorldPosition(origin, size);
+        Color okColor = VisualManager.Instance != null ? VisualManager.Instance.ValidColor : Color.green;
+        Color noColor = VisualManager.Instance != null ? VisualManager.Instance.InvalidColor : Color.red;
+        _previewRenderer.color = canPlace ? new Color(okColor.r, okColor.g, okColor.b, 0.65f) : new Color(noColor.r, noColor.g, noColor.b, 0.65f);
     }
 
     private void DestroyPreview()

@@ -7,7 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewRoadBuilding", menuName = "Game Data/Building Data/Road")]
 public class RoadBuildingData : BuildingData
 {
-    // BuildingData 가상 속성 구현
     public override bool IsRoad => true;
 
     [Header("Visualization")]

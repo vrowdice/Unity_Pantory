@@ -24,9 +24,14 @@ public class MainRunner : RunnerBase
     private BoxCollider2D _cameraCollider;
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
+    private MainResourceHandler _resourceHandler;
 
-    public bool IsPlacementMode => _placementHandler != null && _placementHandler.IsPlacementMode;
-    public bool IsRemovalMode => _placementHandler != null && _placementHandler.IsRemovalMode;
+    public bool IsPlacementMode => _placementHandler.IsPlacementMode;
+    public bool IsRemovalMode => _placementHandler.IsRemovalMode;
+
+    public MainBuildingGridHandler GridHandler => _gridHandler;
+    public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
+    public MainResourceHandler ResourceHandler => _resourceHandler;
 
     public bool StartPlacementMode(BuildingData buildingData)
     {
@@ -34,12 +39,6 @@ public class MainRunner : RunnerBase
         _placementHandler.StartPlacement(buildingData);
         return true;
     }
-
-    public void CancelPlacementMode() => _placementHandler?.CancelPlacement();
-    public void StartRemovalMode() => _placementHandler?.StartRemoval();
-    public void CancelRemovalMode() => _placementHandler?.CancelRemoval();
-    public void ToggleRemovalMode() => _placementHandler?.ToggleRemoval();
-    public void RotateSelectedBuilding(bool clockwise) => _placementHandler?.Rotate(clockwise);
 
     private void Update()
     {
@@ -62,7 +61,7 @@ public class MainRunner : RunnerBase
 
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, _cameraZOffset);
 
-        CreateGrid(_gridWidth, _gridHeight);
+        _gridHandler.CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
 
         _mainCanvas.Init(this);
@@ -89,21 +88,5 @@ public class MainRunner : RunnerBase
             Vector2 size = new Vector2(_gridWidth, _gridHeight);
             _mainCameraController.SetBoundary(center, size);
         }
-    }
-
-    private Vector3 GetMouseWorldPosition()
-    {
-        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos.z = 0f;
-        return mouseWorldPos;
-    }
-
-    public void CreateGrid(int width, int height)
-    {
-        if (_gridHandler == null) return;
-
-        _gridWidth = width;
-        _gridHeight = height;
-        _gridHandler.CreateGrid(width, height);
     }
 }

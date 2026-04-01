@@ -7,26 +7,39 @@ using DG.Tweening;
 /// </summary>
 public class MainBuildingGridHandler
 {
-    private readonly Transform _parent;
+    private readonly Transform _tileParent;
+    private readonly Transform _buildingParent;
+    private readonly Transform _roadParent;
+
     private readonly GameObject _tilePrefab;
+    private readonly GameObject _roadPrefab;
     private readonly GameObject _buildingPrefab;
 
     private int _width;
     private int _height;
 
-    private readonly Dictionary<Vector2Int, BuildingTile> _tiles = new Dictionary<Vector2Int, BuildingTile>();
-    private readonly Dictionary<Vector2Int, GameObject> _buildingOrigins = new Dictionary<Vector2Int, GameObject>();
-    private readonly Dictionary<Vector2Int, Vector2Int> _occupiedToOrigin = new Dictionary<Vector2Int, Vector2Int>();
+    private readonly Dictionary<Vector2Int, BuildingTile> _tileList = new Dictionary<Vector2Int, BuildingTile>();
+    private readonly Dictionary<Vector2Int, GameObject> _buildingObjectList = new Dictionary<Vector2Int, GameObject>();
+    private readonly Dictionary<Vector2Int, GameObject> _roadObjectList = new Dictionary<Vector2Int, GameObject>();
+    private readonly Dictionary<Vector2Int, Vector2Int> _occupiedAsObject = new Dictionary<Vector2Int, Vector2Int>();
 
     private const float TileZ = 10f;
     private const float BuildingZ = 9f;
 
-    public int Width => _width;
-    public int Height => _height;
-
     public MainBuildingGridHandler(Transform parent, GameObject tilePrefab, GameObject buildingPrefab, int width, int height)
     {
-        _parent = parent;
+        GameObject tileParentObj = new GameObject("Tiles");
+        tileParentObj.transform.SetParent(parent, worldPositionStays: false);
+        _tileParent = tileParentObj.transform;
+
+        GameObject buildingParentObj = new GameObject("Buildings");
+        buildingParentObj.transform.SetParent(parent, worldPositionStays: false);
+        _buildingParent = buildingParentObj.transform;
+
+        GameObject roadParentObj = new GameObject("Roads");
+        roadParentObj.transform.SetParent(parent, worldPositionStays: false);
+        _roadParent = roadParentObj.transform;
+
         _tilePrefab = tilePrefab;
         _buildingPrefab = buildingPrefab;
         _width = width;
@@ -44,7 +57,7 @@ public class MainBuildingGridHandler
             for (int x = 0; x < width; x++)
             {
                 Vector2Int p = new Vector2Int(x, y);
-                GameObject tileObj = Object.Instantiate(_tilePrefab, _parent);
+                GameObject tileObj = Object.Instantiate(_tilePrefab, _tileParent);
                 tileObj.transform.localPosition = new Vector3(x, -y, TileZ);
 
                 if (!tileObj.TryGetComponent(out BuildingTile tile))
@@ -53,7 +66,7 @@ public class MainBuildingGridHandler
                 }
 
                 tile.Initialize(p);
-                _tiles[p] = tile;
+                _tileList[p] = tile;
             }
         }
     }
@@ -62,31 +75,31 @@ public class MainBuildingGridHandler
     {
         ClearAllBuildings();
 
-        foreach (BuildingTile t in _tiles.Values)
+        foreach (BuildingTile tile in _tileList.Values)
         {
-            if (t != null) Object.Destroy(t.gameObject);
+            if (tile != null) Object.Destroy(tile.gameObject);
         }
-        _tiles.Clear();
+        _tileList.Clear();
     }
 
     public void ClearAllBuildings()
     {
-        foreach (GameObject b in _buildingOrigins.Values)
+        foreach (GameObject building in _buildingObjectList.Values)
         {
-            if (b != null) Object.Destroy(b);
+            if (building != null) Object.Destroy(building);
         }
-        _buildingOrigins.Clear();
-        _occupiedToOrigin.Clear();
+        _buildingObjectList.Clear();
+        _occupiedAsObject.Clear();
 
-        foreach (BuildingTile t in _tiles.Values)
+        foreach (BuildingTile tile in _tileList.Values)
         {
-            t?.SetOccupied(false);
+            tile?.SetOccupied(false);
         }
     }
 
     public Vector2Int WorldToGridPosition(Vector3 worldPos)
     {
-        Vector3 lp = worldPos - _parent.position;
+        Vector3 lp = worldPos - _tileParent.position;
         return new Vector2Int(Mathf.RoundToInt(lp.x), Mathf.RoundToInt(-lp.y));
     }
 
@@ -94,7 +107,7 @@ public class MainBuildingGridHandler
     {
         float cx = gridPos.x + (size.x - 1) * 0.5f;
         float cy = -gridPos.y - (size.y - 1) * 0.5f;
-        return _parent.position + new Vector3(cx, cy, BuildingZ);
+        return _tileParent.position + new Vector3(cx, cy, BuildingZ);
     }
 
     public static Vector2Int GetRotatedSize(Vector2Int size, int rotation)
@@ -103,46 +116,66 @@ public class MainBuildingGridHandler
         return (rotation == 1 || rotation == 3) ? new Vector2Int(size.y, size.x) : size;
     }
 
-    public bool IsWithinBounds(Vector2Int origin, Vector2Int size)
+    public bool IsWithinBounds(Vector2Int position, Vector2Int size)
     {
-        return origin.x >= 0 && origin.y >= 0 &&
-               origin.x + size.x <= _width &&
-               origin.y + size.y <= _height;
+        return position.x >= 0 && position.y >= 0 &&
+               position.x + size.x <= _width &&
+               position.y + size.y <= _height;
     }
 
-    public bool CanPlace(Vector2Int origin, Vector2Int size)
+    public bool CanPlace(Vector2Int position, Vector2Int size)
     {
-        if (!IsWithinBounds(origin, size)) return false;
+        if (!IsWithinBounds(position, size)) return false;
 
         for (int dx = 0; dx < size.x; dx++)
         {
             for (int dy = 0; dy < size.y; dy++)
             {
-                if (_occupiedToOrigin.ContainsKey(new Vector2Int(origin.x + dx, origin.y + dy)))
+                if (_occupiedAsObject.ContainsKey(new Vector2Int(position.x + dx, position.y + dy)))
                     return false;
             }
         }
         return true;
     }
 
-    public bool TryPlaceBuilding(BuildingData data, Vector2Int origin, int rotation, out GameObject placed)
+    public bool TryPlaceRoad(Vector2Int position, out GameObject placed)
+    {
+        placed = null;
+        if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObject.ContainsKey(position)) return false;
+
+        GameObject obj = _buildingPrefab != null ? Object.Instantiate(_buildingPrefab, _roadParent) : new GameObject($"Road_{position.x}_{position.y}");
+        obj.name = $"Road_{position.x}_{position.y}";
+
+        obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
+        _roadObjectList[position] = obj;
+        Vector3 s = obj.transform.localScale;
+
+        obj.transform.localScale = Vector3.zero;
+        obj.transform.DOScale(s, 0.18f).SetEase(Ease.OutBack).SetUpdate(true).SetLink(obj);
+        _occupiedAsObject[position] = position;
+        if (_tileList.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
+
+        placed = obj;
+        return true;
+    }
+
+    public bool TryPlaceBuilding(BuildingData data, Vector2Int position, int rotation, out GameObject placed)
     {
         placed = null;
         if (data == null || data.buildingSprite == null) return false;
 
         Vector2Int rotatedSize = GetRotatedSize(data.size, rotation);
-        if (!CanPlace(origin, rotatedSize)) return false;
+        if (!CanPlace(position, rotatedSize)) return false;
 
-        GameObject obj = _buildingPrefab != null ? Object.Instantiate(_buildingPrefab, _parent) : new GameObject($"Building_{data.id}");
-        obj.name = $"Building_{data.id}_{origin.x}_{origin.y}";
+        GameObject obj = Object.Instantiate(_buildingPrefab, _buildingParent);
+        obj.name = $"Building_{data.id}_{position.x}_{position.y}";
 
-        obj.transform.position = GridToWorldPosition(origin, rotatedSize);
+        obj.transform.position = GridToWorldPosition(position, rotatedSize);
         BuildingObject placedComp = obj.GetComponent<BuildingObject>();
-        if (placedComp == null) placedComp = obj.AddComponent<BuildingObject>();
-        placedComp.Init(data, origin, rotatedSize, rotation);
+        placedComp.Init(data, position, rotatedSize, rotation);
 
-        RegisterOccupancy(origin, rotatedSize);
-        _buildingOrigins[origin] = obj;
+        RegisterOccupancy(position, rotatedSize);
+        _buildingObjectList[position] = obj;
 
         Vector3 s = obj.transform.localScale;
         obj.transform.localScale = Vector3.zero;
@@ -154,10 +187,10 @@ public class MainBuildingGridHandler
 
     public bool TryRemoveAt(Vector2Int anyOccupiedCell)
     {
-        if (!_occupiedToOrigin.TryGetValue(anyOccupiedCell, out Vector2Int origin))
+        if (!_occupiedAsObject.TryGetValue(anyOccupiedCell, out Vector2Int origin))
             return false;
 
-        if (!_buildingOrigins.TryGetValue(origin, out GameObject obj) || obj == null)
+        if (!_buildingObjectList.TryGetValue(origin, out GameObject obj) || obj == null)
             return false;
 
         Vector2Int size = Vector2Int.one;
@@ -171,33 +204,33 @@ public class MainBuildingGridHandler
         }
 
         UnregisterOccupancy(origin, size);
-        _buildingOrigins.Remove(origin);
+        _buildingObjectList.Remove(origin);
         Object.Destroy(obj);
         return true;
     }
 
-    private void RegisterOccupancy(Vector2Int origin, Vector2Int size)
+    private void RegisterOccupancy(Vector2Int position, Vector2Int size)
     {
         for (int dx = 0; dx < size.x; dx++)
         {
             for (int dy = 0; dy < size.y; dy++)
             {
-                Vector2Int p = new Vector2Int(origin.x + dx, origin.y + dy);
-                _occupiedToOrigin[p] = origin;
-                if (_tiles.TryGetValue(p, out BuildingTile t)) t.SetOccupied(true);
+                Vector2Int p = new Vector2Int(position.x + dx, position.y + dy);
+                _occupiedAsObject[p] = position;
+                if (_tileList.TryGetValue(p, out BuildingTile t)) t.SetOccupied(true);
             }
         }
     }
 
-    private void UnregisterOccupancy(Vector2Int origin, Vector2Int size)
+    private void UnregisterOccupancy(Vector2Int position, Vector2Int size)
     {
         for (int dx = 0; dx < size.x; dx++)
         {
             for (int dy = 0; dy < size.y; dy++)
             {
-                Vector2Int p = new Vector2Int(origin.x + dx, origin.y + dy);
-                _occupiedToOrigin.Remove(p);
-                if (_tiles.TryGetValue(p, out BuildingTile t)) t.SetOccupied(false);
+                Vector2Int p = new Vector2Int(position.x + dx, position.y + dy);
+                _occupiedAsObject.Remove(p);
+                if (_tileList.TryGetValue(p, out BuildingTile t)) t.SetOccupied(false);
             }
         }
     }

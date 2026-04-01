@@ -147,8 +147,6 @@ public class DataManager : Singleton<DataManager>
         Time.OnDayChanged += HandleDayChanged;
         Time.OnMonthChanged -= HandleMonthChanged;
         Time.OnMonthChanged += HandleMonthChanged;
-
-        Debug.Log("[DataManager] All event subscriptions cleared.");
     }
 
     private void HandleDayChanged()

@@ -5,23 +5,17 @@ using UnityEngine;
 /// </summary>
 public class BuildingTile : MonoBehaviour
 {
-    private Collider2D _collider;
-    private SpriteRenderer _spriteRenderer;
-    private Vector2Int _gridPosition;
-    private bool _isOccupied = false;
+    [SerializeField] SpriteRenderer _spriteRenderer;
 
     [Header("Tile Colors")]
     [SerializeField] private Color _normalColor = Color.white;
     [SerializeField] private Color _occupiedColor = new Color(0.7f, 0.7f, 0.7f, 1f);
 
+    private Vector2Int _gridPosition;
+    private bool _isOccupied = false;
+
     public Vector2Int GridPosition => _gridPosition;
     public bool IsOccupied => _isOccupied;
-
-    void Awake()
-    {
-        _collider = GetComponent<Collider2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-    }
 
     /// <summary>
     /// 타일을 초기화합니다.
@@ -47,21 +41,5 @@ public class BuildingTile : MonoBehaviour
     private void UpdateVisual()
     {
         _spriteRenderer.color = _isOccupied ? _occupiedColor : _normalColor;
-    }
-
-    /// <summary>
-    /// 마우스가 타일 위에 올라갔을 때
-    /// </summary>
-    void OnMouseEnter()
-    {
-        // 추후 하이라이트 효과 등 추가 가능
-    }
-
-    /// <summary>
-    /// 마우스가 타일에서 벗어났을 때
-    /// </summary>
-    void OnMouseExit()
-    {
-        // 추후 하이라이트 해제 등 추가 가능
     }
 }

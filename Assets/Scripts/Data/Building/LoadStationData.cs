@@ -11,9 +11,7 @@ public class LoadStationData : BuildingData
     [Tooltip("입력 위치 (건물 기준 상대 좌표) - 외부에서 자원을 받아오는 위치")]
     public Vector2Int inputPosition = new Vector2Int(0, 0);
     
-    // BuildingData 가상 속성 구현
     public override bool IsLoadStation => true;
     public override Vector2Int InputPosition => inputPosition;
-    // LoadStation은 출력이 없으므로 OutputPosition은 zero 유지
 }
 
