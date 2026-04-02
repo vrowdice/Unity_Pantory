@@ -22,6 +22,16 @@ public class ProductionBuildingData : BuildingData
     [Tooltip("출력 위치 (건물 기준 상대 좌표)")]
     public Vector2Int outputPosition = new Vector2Int(2, 1);
 
+    [Header("Simulation (가공 건물)")]
+    [Tooltip("입력 버퍼에 쌓을 수 있는 자원 슬롯 최대 개수")]
+    public int inputBufferCapacity = 64;
+
+    [Tooltip("한 배치 생산 완료까지 필요한 시간 틱(시간) 수")]
+    public int ticksPerBatch = 24;
+
+    [Tooltip("한 배치당 버퍼에서 소비할 입력 자원 개수")]
+    public int inputResourcesPerBatch = 1;
+
     /// <summary>
     /// 인스펙터에서 설정한 생산 가능 자원 목록을 반환합니다.
     /// </summary>

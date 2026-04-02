@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a3c469eff3bd1a14f8b12280a7ab2b52, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 7366941079865235445}
   - component: {fileID: -6159406716591174052}
   m_Layer: 0
-  m_Name: LoadObject
+  m_Name: RoadObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -179,3 +179,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e32ead63d6622246b01e30eff0a95a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gridPosition: {x: 0, y: 0}
+  _rotation: 0
+  _outputIndicatorPrefab: {fileID: 4329135525379065979, guid: 3983bd3e3a5ec024997cd1a1a0d233a4, type: 3}

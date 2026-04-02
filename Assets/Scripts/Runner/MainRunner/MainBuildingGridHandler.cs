@@ -7,16 +7,11 @@ using DG.Tweening;
 /// </summary>
 public class MainBuildingGridHandler
 {
+    private readonly MainRunner _runner;
+
     private readonly Transform _tileParent;
     private readonly Transform _buildingParent;
     private readonly Transform _roadParent;
-
-    private readonly GameObject _tilePrefab;
-    private readonly GameObject _roadPrefab;
-    private readonly GameObject _buildingPrefab;
-
-    private int _width;
-    private int _height;
 
     private readonly Dictionary<Vector2Int, BuildingTile> _tileList = new Dictionary<Vector2Int, BuildingTile>();
     private readonly Dictionary<Vector2Int, GameObject> _buildingObjectList = new Dictionary<Vector2Int, GameObject>();
@@ -26,38 +21,33 @@ public class MainBuildingGridHandler
     private const float TileZ = 10f;
     private const float BuildingZ = 9f;
 
-    public MainBuildingGridHandler(Transform parent, GameObject tilePrefab, GameObject buildingPrefab, int width, int height)
+    public MainBuildingGridHandler(MainRunner runner)
     {
+        _runner = runner;
+
         GameObject tileParentObj = new GameObject("Tiles");
-        tileParentObj.transform.SetParent(parent, worldPositionStays: false);
+        tileParentObj.transform.SetParent(runner.transform, worldPositionStays: false);
         _tileParent = tileParentObj.transform;
 
         GameObject buildingParentObj = new GameObject("Buildings");
-        buildingParentObj.transform.SetParent(parent, worldPositionStays: false);
+        buildingParentObj.transform.SetParent(runner.transform, worldPositionStays: false);
         _buildingParent = buildingParentObj.transform;
 
         GameObject roadParentObj = new GameObject("Roads");
-        roadParentObj.transform.SetParent(parent, worldPositionStays: false);
+        roadParentObj.transform.SetParent(runner.transform, worldPositionStays: false);
         _roadParent = roadParentObj.transform;
-
-        _tilePrefab = tilePrefab;
-        _buildingPrefab = buildingPrefab;
-        _width = width;
-        _height = height;
     }
 
     public void CreateGrid(int width, int height)
     {
         ClearGrid();
-        _width = width;
-        _height = height;
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 Vector2Int p = new Vector2Int(x, y);
-                GameObject tileObj = Object.Instantiate(_tilePrefab, _tileParent);
+                GameObject tileObj = Object.Instantiate(_runner.TilePrefab, _tileParent);
                 tileObj.transform.localPosition = new Vector3(x, -y, TileZ);
 
                 if (!tileObj.TryGetComponent(out BuildingTile tile))
@@ -119,8 +109,8 @@ public class MainBuildingGridHandler
     public bool IsWithinBounds(Vector2Int position, Vector2Int size)
     {
         return position.x >= 0 && position.y >= 0 &&
-               position.x + size.x <= _width &&
-               position.y + size.y <= _height;
+               position.x + size.x <= _runner.GridWidth &&
+               position.y + size.y <= _runner.GridHeight;
     }
 
     public bool CanPlace(Vector2Int position, Vector2Int size)
@@ -138,12 +128,12 @@ public class MainBuildingGridHandler
         return true;
     }
 
-    public bool TryPlaceRoad(Vector2Int position, out GameObject placed)
+    public bool TryPlaceRoad(Vector2Int position, int rotation, out GameObject placed)
     {
         placed = null;
         if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObject.ContainsKey(position)) return false;
 
-        GameObject obj = _buildingPrefab != null ? Object.Instantiate(_buildingPrefab, _roadParent) : new GameObject($"Road_{position.x}_{position.y}");
+        GameObject obj = Object.Instantiate(_runner.RoadObjectPrefab, _roadParent);
         obj.name = $"Road_{position.x}_{position.y}";
 
         obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
@@ -154,6 +144,12 @@ public class MainBuildingGridHandler
         obj.transform.DOScale(s, 0.18f).SetEase(Ease.OutBack).SetUpdate(true).SetLink(obj);
         _occupiedAsObject[position] = position;
         if (_tileList.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
+
+        RoadObject roadObject = obj.GetComponent<RoadObject>();
+        if (roadObject != null)
+        {
+            roadObject.Init(position, rotation);
+        }
 
         placed = obj;
         return true;
@@ -167,12 +163,16 @@ public class MainBuildingGridHandler
         Vector2Int rotatedSize = GetRotatedSize(data.size, rotation);
         if (!CanPlace(position, rotatedSize)) return false;
 
-        GameObject obj = Object.Instantiate(_buildingPrefab, _buildingParent);
+        GameObject obj = Object.Instantiate(_runner.BuildingObjectPrefab, _buildingParent);
         obj.name = $"Building_{data.id}_{position.x}_{position.y}";
 
         obj.transform.position = GridToWorldPosition(position, rotatedSize);
+
         BuildingObject placedComp = obj.GetComponent<BuildingObject>();
-        placedComp.Init(data, position, rotatedSize, rotation);
+        if (placedComp != null)
+        {
+            placedComp.Init(data, position, rotatedSize, rotation);
+        }
 
         RegisterOccupancy(position, rotatedSize);
         _buildingObjectList[position] = obj;
@@ -207,6 +207,116 @@ public class MainBuildingGridHandler
         _buildingObjectList.Remove(origin);
         Object.Destroy(obj);
         return true;
+    }
+
+    public void TickResourceFlow()
+    {
+        foreach (KeyValuePair<Vector2Int, GameObject> kvp in _roadObjectList)
+        {
+            GameObject obj = kvp.Value;
+            if (obj == null)
+            {
+                continue;
+            }
+
+            if (!obj.TryGetComponent(out RoadObject road))
+            {
+                continue;
+            }
+
+            if (road.IsEmpty)
+            {
+                continue;
+            }
+
+            foreach (Vector2Int outCell in road.OutputGridPositions)
+            {
+                GameObject destObj = null;
+
+                if (!_roadObjectList.TryGetValue(outCell, out destObj))
+                {
+                    if (_occupiedAsObject.TryGetValue(outCell, out Vector2Int origin) &&
+                        _buildingObjectList.TryGetValue(origin, out destObj))
+                    {
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                if (destObj == null)
+                {
+                    continue;
+                }
+
+                if (!destObj.TryGetComponent(out IResourceNode destNode))
+                {
+                    continue;
+                }
+
+                if (destNode.IsFull)
+                {
+                    continue;
+                }
+
+                if (!road.TryPeek(out ResourcePacket packet))
+                {
+                    continue;
+                }
+
+                if (destNode.TryPush(packet))
+                {
+                    road.TryPop(out _);
+                }
+
+                break;
+            }
+        }
+
+        foreach (KeyValuePair<Vector2Int, GameObject> kvp in _buildingObjectList)
+        {
+            GameObject obj = kvp.Value;
+            if (obj == null)
+            {
+                continue;
+            }
+
+            if (!obj.TryGetComponent(out BuildingObject building))
+            {
+                continue;
+            }
+
+            if (!building.TryPeek(out ResourcePacket packet))
+            {
+                continue;
+            }
+
+            foreach (Vector2Int outCell in building.OutputGridPositions)
+            {
+                if (!_roadObjectList.TryGetValue(outCell, out GameObject roadObj) || roadObj == null)
+                {
+                    continue;
+                }
+
+                if (!roadObj.TryGetComponent(out IResourceNode roadNode))
+                {
+                    continue;
+                }
+
+                if (roadNode.IsFull)
+                {
+                    continue;
+                }
+
+                if (roadNode.TryPush(packet))
+                {
+                    building.TryPop(out _);
+                }
+
+                break;
+            }
+        }
     }
 
     private void RegisterOccupancy(Vector2Int position, Vector2Int size)

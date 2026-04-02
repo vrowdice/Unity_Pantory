@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class MainBuildingPlacementHandler
 {
-    private readonly Transform _parent;
+    private readonly MainRunner _runner;
     private readonly MainBuildingGridHandler _gridHandler;
 
     private BuildingData _selectedBuilding;
@@ -24,10 +24,11 @@ public class MainBuildingPlacementHandler
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int Rotation => _rotation;
 
-    public MainBuildingPlacementHandler(Transform parent, MainBuildingGridHandler grid)
+    public MainBuildingPlacementHandler(MainRunner runner)
     {
-        _parent = parent;
-        _gridHandler = grid;
+        _runner = runner;
+
+        _gridHandler = _runner.GridHandler;
     }
 
     public void StartPlacement(BuildingData data)
@@ -109,7 +110,7 @@ public class MainBuildingPlacementHandler
         {
             if (_selectedBuilding.IsRoad)
             {
-
+                _gridHandler.TryPlaceRoad(origin, _rotation, out _);
             }
             else
             {
@@ -142,7 +143,7 @@ public class MainBuildingPlacementHandler
         if (_selectedBuilding == null) return;
 
         _previewObj = new GameObject("BuildingPreview");
-        _previewObj.transform.SetParent(_parent, worldPositionStays: true);
+        _previewObj.transform.SetParent(_runner.transform, worldPositionStays: true);
 
         _previewRenderer = _previewObj.AddComponent<SpriteRenderer>();
         _previewRenderer.transform.localScale = new Vector3(_selectedBuilding.size.x, _selectedBuilding.size.y, 1);

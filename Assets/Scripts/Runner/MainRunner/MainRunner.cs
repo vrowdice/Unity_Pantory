@@ -11,17 +11,20 @@ public class MainRunner : RunnerBase
     [SerializeField] private MainCanvas _mainCanvas;
 
     [Header("Prefabs")]
-    [SerializeField] private GameObject _buildingTilePrefab;
+    [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private GameObject _buildingObjectPrefab;
+    [SerializeField] private GameObject _roadObjectPrefab;
 
     [Header("Grid Settings")]
     [SerializeField] private int _gridWidth = 10;
     [SerializeField] private int _gridHeight = 10;
     [SerializeField] private float _cameraZOffset = 11f;
 
+    private DataManager _dataManager;
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
     private BoxCollider2D _cameraCollider;
+
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
     private MainResourceHandler _resourceHandler;
@@ -33,6 +36,12 @@ public class MainRunner : RunnerBase
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
     public MainResourceHandler ResourceHandler => _resourceHandler;
 
+    public int GridWidth => _gridWidth;
+    public int GridHeight => _gridHeight;
+    public GameObject TilePrefab => _tilePrefab;
+    public GameObject BuildingObjectPrefab => _buildingObjectPrefab;
+    public GameObject RoadObjectPrefab => _roadObjectPrefab;
+
     public bool StartPlacementMode(BuildingData buildingData)
     {
         if (_placementHandler == null || buildingData == null) return false;
@@ -42,7 +51,6 @@ public class MainRunner : RunnerBase
 
     private void Update()
     {
-        if (_placementHandler == null) return;
         _placementHandler.Update(_mainCamera);
     }
 
@@ -56,13 +64,16 @@ public class MainRunner : RunnerBase
         _mainCamera = Camera.main;
         _mainCameraController = GameManager.MainCameraController;
 
-        _gridHandler = new MainBuildingGridHandler(transform, _buildingTilePrefab, _buildingObjectPrefab, _gridWidth, _gridHeight);
-        _placementHandler = new MainBuildingPlacementHandler(transform, _gridHandler);
+        _gridHandler = new MainBuildingGridHandler(this);
+        _placementHandler = new MainBuildingPlacementHandler(this);
 
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, _cameraZOffset);
 
         _gridHandler.CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
+
+        DataManager.Time.OnHourChanged -= _gridHandler.TickResourceFlow;
+        DataManager.Time.OnHourChanged += _gridHandler.TickResourceFlow;
 
         _mainCanvas.Init(this);
     }
@@ -88,5 +99,10 @@ public class MainRunner : RunnerBase
             Vector2 size = new Vector2(_gridWidth, _gridHeight);
             _mainCameraController.SetBoundary(center, size);
         }
+    }
+
+    private void OnDisable()
+    {
+        _dataManager.Time.OnHourChanged -= _gridHandler.TickResourceFlow;
     }
 }

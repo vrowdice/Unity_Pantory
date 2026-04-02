@@ -377,8 +377,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainCanvas: {fileID: 789901298}
-  _buildingTilePrefab: {fileID: 439694459351957875, guid: 2883a97c15064334e9930e3cf7771678, type: 3}
+  _tilePrefab: {fileID: 439694459351957875, guid: 2883a97c15064334e9930e3cf7771678, type: 3}
   _buildingObjectPrefab: {fileID: 4788968508785240937, guid: c11a7645413457d49842259c4ae0af64, type: 3}
+  _roadObjectPrefab: {fileID: 4788968508785240937, guid: 6e7924c93a28da54a80d66883902e559, type: 3}
   _gridWidth: 20
   _gridHeight: 20
   _cameraZOffset: 11
@@ -713,15 +714,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1788786020965216641, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1788786020965216641, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1788786020965216641, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1814366789056339878, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1077,7 +1078,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5125560840458634942, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_fontSize
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5792593746420108247, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_SizeDelta.y
