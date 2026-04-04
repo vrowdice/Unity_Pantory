@@ -148,11 +148,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226263047
-    m_Key: Essentials
+    m_Key: essentials
     m_Metadata:
       m_Items: []
   - m_Id: 864226263048
-    m_Key: Luxuries
+    m_Key: luxuries
     m_Metadata:
       m_Items: []
   - m_Id: 864226263049

@@ -31,8 +31,6 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _researchInfoPopupPrefab;
     [SerializeField] private GameObject _marketActorInfoPopupPrefab;
     [SerializeField] private GameObject _newsPopupPrefab;
-
-    [Header("Design Info Panels")]
     [SerializeField] private GameObject _buildingInfoPopupPrefab;
 
     [Header("Common UI")]
@@ -163,8 +161,6 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    // Thread/ManageThread 팝업은 시스템 삭제로 제거
-
     public ConfirmPopup ShowConfirmPopup(string messageKey, Action onConfirm)
     {
         GameObject panelObj = Instantiate(_confirmPanelPrefab, _managerCanvasTransform, false);
@@ -248,8 +244,6 @@ public class UIManager : Singleton<UIManager>
         panel.Init(isSaveMode);
         return panel;
     }
-
-    // ThreadInfoPopup은 시스템 삭제로 제거
 
     public ResearchInfoPopup ShowResearchInfoPopup(ResearchEntry researchEntry)
     {
@@ -349,7 +343,25 @@ public class UIManager : Singleton<UIManager>
         popup.ShowBuildingInfo(buildingData, buildingState);
         return popup;
     }
-    // ThreadSaveInfoPopup은 시스템 삭제로 제거
+
+    public BuildingInfoPopup ShowBuildingInfoPopup(BuildingObject buildingObject)
+    {
+        BuildingInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<BuildingInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_buildingInfoPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<BuildingInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.ShowBuildingInfo(buildingObject);
+        return popup;
+    }
 
     public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> productionCounts)
     {

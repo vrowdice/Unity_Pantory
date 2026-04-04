@@ -8,34 +8,79 @@ using TMPro;
 public class BuildingInfoPopup : PopupBase
 {
     [Header("UI References")]
-    [SerializeField] private Button _changeProductionBtn;
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private TextMeshProUGUI _typeText;
+    [SerializeField] private Image _buildingImage;
+    [SerializeField] private Toggle _IsNeededExpertToggle;
     [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private TextMeshProUGUI _buildCostText;
     [SerializeField] private TextMeshProUGUI _maintenanceText;
-    [SerializeField] private TextMeshProUGUI _requiredEmployeeText;
-    [SerializeField] private Image _buildingImage;
-    [SerializeField] private Toggle _IsNeededExpertToggle;
 
-    [SerializeField] private TextMeshProUGUI _materialPurchaseText;
-    [SerializeField] private TextMeshProUGUI _productPriceText;
-    [SerializeField] private TextMeshProUGUI _expectedCostText;
+    [Header("Employee Assignment (Global Stats)")]
+    [SerializeField] private TextMeshProUGUI _maxEmployeeText;
+    [SerializeField] private TextMeshProUGUI _requiredTechnicianText;
 
-    [Header("Containers")]
+    [Header("Employee Assignment (Local Stats)")]
+    [SerializeField] private TextMeshProUGUI _currentWorkersText;
+    [SerializeField] private TextMeshProUGUI _maxWorkersText;
+    [SerializeField] private TextMeshProUGUI _assignedWorkersText;
+    [SerializeField] private GameObject _workerSliderContainer;
+    [SerializeField] private Slider _workerSlider;
+
+    [SerializeField] private TextMeshProUGUI _currentTechniciansText;
+    [SerializeField] private TextMeshProUGUI _maxTechniciansText;
+    [SerializeField] private TextMeshProUGUI _assignedTechniciansText;
+    [SerializeField] private GameObject _technicianSliderContainer;
+    [SerializeField] private Slider _technicianSlider;
+
+    [Header("Change Production Btn")]
+    [SerializeField] private Button _changeProductionBtn;
     [SerializeField] private Transform _inputGridTransform;
     [SerializeField] private Transform _outputGridTransform;
+
+    [Header("Production Stats")]
+    [SerializeField] private Slider _productionProgressSlider;
+    [SerializeField] private TextMeshProUGUI _productionProgressText;
+    [SerializeField] private Slider _productionEfficiencySlider;
+    [SerializeField] private TextMeshProUGUI _productionEfficiencyText;
 
     private BuildingData _currentData;
     private BuildingState _currentState;
     private DataManager _dataManager;
+    private BuildingObject _buildingObject;
+
+    public void ShowBuildingInfo(BuildingObject buildingObject)
+    {
+        if (buildingObject == null || buildingObject.BuildingData == null)
+        {
+            return;
+        }
+
+        base.Init();
+
+        UnsubscribeTimeEvents();
+        _buildingObject = buildingObject;
+        _currentData = buildingObject.BuildingData;
+        _currentState = buildingObject.CreateStateSnapshot();
+        _dataManager = DataManager.Instance;
+
+        if (_dataManager != null && _dataManager.Time != null)
+        {
+            _dataManager.Time.OnDayChanged -= OnDayChangedRefresh;
+            _dataManager.Time.OnDayChanged += OnDayChangedRefresh;
+        }
+
+        UpdateUI();
+        Show();
+    }
 
     public void ShowBuildingInfo(BuildingData data, BuildingState state)
     {
         if (data == null) return;
 
         base.Init();
-        
+
+        UnsubscribeTimeEvents();
+        _buildingObject = null;
         _currentData = data;
         _currentState = state;
         _dataManager = DataManager.Instance;
@@ -44,14 +89,36 @@ public class BuildingInfoPopup : PopupBase
         Show();
     }
 
+    private void OnDisable()
+    {
+        UnsubscribeTimeEvents();
+    }
+
+    private void UnsubscribeTimeEvents()
+    {
+        if (_dataManager != null && _dataManager.Time != null)
+        {
+            _dataManager.Time.OnDayChanged -= OnDayChangedRefresh;
+        }
+    }
+
+    private void OnDayChangedRefresh()
+    {
+        if (!gameObject.activeSelf || _buildingObject == null)
+        {
+            return;
+        }
+
+        _currentState = _buildingObject.CreateStateSnapshot();
+        RefreshAllRuntimePanels();
+    }
+
     private void UpdateUI()
     {
         _nameText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING);
-        _typeText.text = $"{_currentData.buildingType.Localize(LocalizationUtils.TABLE_BUILDING)}";
         _descriptionText.text = (_currentData.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_BUILDING);
         _buildCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
         _maintenanceText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)} / day";
-        _requiredEmployeeText.text = $"{_currentData.requiredEmployees}";
         _IsNeededExpertToggle.isOn = _currentData.isProfessional;
 
         if (_buildingImage != null)
@@ -63,10 +130,139 @@ public class BuildingInfoPopup : PopupBase
         UpdateProductionContext();
         RefreshResourceGrids();
         UpdateFinancialInfo();
+        RefreshAllRuntimePanels();
+    }
+
+    /// <summary>직원 슬라이더·생산 진행/효율 (메인 건물 오브젝트 연동 시).</summary>
+    private void RefreshAllRuntimePanels()
+    {
+        if (_buildingObject == null || _dataManager == null)
+        {
+            if (_workerSliderContainer != null) _workerSliderContainer.SetActive(false);
+            if (_technicianSliderContainer != null) _technicianSliderContainer.SetActive(false);
+            return;
+        }
+
+        UpdateEmployeeStatusFromBuilding();
+        UpdateProductionStatusFromBuilding();
+    }
+
+    private void UpdateEmployeeStatusFromBuilding()
+    {
+        BuildingObject b = _buildingObject;
+        int requiredTotal = b.RequiredEmployeeSlots;
+        int minTech = b.RequiredTechnicianMinimum;
+        int currentWorkers = b.AssignedWorkers;
+        int currentTechs = b.AssignedTechnicians;
+
+        int availWorkers = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker));
+        int availTechs = Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
+
+        if (_currentWorkersText != null)
+        {
+            EmployeeEntry ew = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
+            _currentWorkersText.text = ew != null ? $"{ew.state.count:N0}" : "0";
+        }
+
+        if (_currentTechniciansText != null)
+        {
+            EmployeeEntry et = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
+            _currentTechniciansText.text = et != null ? $"{et.state.count:N0}" : "0";
+        }
+
+        if (_maxEmployeeText != null) _maxEmployeeText.text = $"{requiredTotal:N0}";
+        if (_requiredTechnicianText != null) _requiredTechnicianText.text = $"{minTech:N0}";
+        if (_maxWorkersText != null) _maxWorkersText.text = $"MAX {requiredTotal - minTech}";
+        if (_maxTechniciansText != null) _maxTechniciansText.text = $"MAX {requiredTotal}";
+
+        if (_assignedWorkersText != null) _assignedWorkersText.text = currentWorkers.ToString("N0");
+        if (_assignedTechniciansText != null) _assignedTechniciansText.text = currentTechs.ToString("N0");
+
+        if (_workerSliderContainer != null) _workerSliderContainer.SetActive(requiredTotal > 0);
+        if (_technicianSliderContainer != null) _technicianSliderContainer.SetActive(minTech > 0);
+
+        int maxWorkerSlots = b.MaxWorkerSlots;
+        UpdateSliderState(_workerSlider, currentWorkers, availWorkers, maxWorkerSlots);
+        UpdateSliderState(_technicianSlider, currentTechs, availTechs, requiredTotal);
+    }
+
+    private static void UpdateSliderState(Slider slider, int currentAssigned, int availableGlobal, int maxRequired)
+    {
+        if (slider == null) return;
+
+        int logicMax = Mathf.Min(maxRequired, currentAssigned + availableGlobal);
+        int clamped = Mathf.Clamp(currentAssigned, 0, logicMax);
+        slider.minValue = 0;
+        slider.maxValue = Mathf.Max(0, logicMax);
+        slider.SetValueWithoutNotify(clamped);
+    }
+
+    private void UpdateProductionStatusFromBuilding()
+    {
+        BuildingObject b = _buildingObject;
+        float efficiency = b.GetAverageAssignedEfficiencyNormalized(_dataManager);
+        float progress = b.GetProductionProgressNormalized();
+
+        if (_productionEfficiencySlider != null) _productionEfficiencySlider.value = efficiency;
+        if (_productionProgressSlider != null) _productionProgressSlider.value = progress;
+
+        if (_productionEfficiencyText != null) _productionEfficiencyText.text = $"{Mathf.RoundToInt(efficiency * 100)}%";
+        if (_productionProgressText != null) _productionProgressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
+    }
+
+    /// <summary>Worker 슬라이더 (인스펙터 OnValueChanged → ThreadInfoPopup과 동일)</summary>
+    public void OnWorkerSliderChanged()
+    {
+        if (_buildingObject == null || _workerSlider == null || _dataManager == null) return;
+
+        int targetCount = Mathf.RoundToInt(_workerSlider.value);
+        int delta = targetCount - _buildingObject.AssignedWorkers;
+        if (delta == 0) return;
+
+        if (_buildingObject.TryApplyEmployeeDelta(EmployeeType.Worker, delta))
+        {
+            _currentState = _buildingObject.CreateStateSnapshot();
+            UpdateEmployeeStatusFromBuilding();
+            UpdateProductionStatusFromBuilding();
+        }
+        else
+        {
+            UpdateSliderState(_workerSlider, _buildingObject.AssignedWorkers,
+                Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker)),
+                _buildingObject.MaxWorkerSlots);
+        }
+    }
+
+    /// <summary>Technician 슬라이더</summary>
+    public void OnTechnicianSliderChanged()
+    {
+        if (_buildingObject == null || _technicianSlider == null || _dataManager == null) return;
+
+        int targetCount = Mathf.RoundToInt(_technicianSlider.value);
+        int delta = targetCount - _buildingObject.AssignedTechnicians;
+        if (delta == 0) return;
+
+        if (_buildingObject.TryApplyEmployeeDelta(EmployeeType.Technician, delta))
+        {
+            _currentState = _buildingObject.CreateStateSnapshot();
+            UpdateEmployeeStatusFromBuilding();
+            UpdateProductionStatusFromBuilding();
+        }
+        else
+        {
+            UpdateSliderState(_technicianSlider, _buildingObject.AssignedTechnicians,
+                Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician)),
+                _buildingObject.RequiredEmployeeSlots);
+        }
     }
 
     private void UpdateFinancialInfo()
     {
+        if (_currentState == null)
+        {
+            return;
+        }
+
         long inputCost = 0;
         long outputPrice = 0;
 
@@ -90,13 +286,13 @@ public class BuildingInfoPopup : PopupBase
 
         long profit = outputPrice - inputCost;
 
-        if (_materialPurchaseText) _materialPurchaseText.text = $"{ReplaceUtils.FormatNumberWithCommas(inputCost)}";
-        if (_productPriceText) _productPriceText.text = $"{ReplaceUtils.FormatNumberWithCommas(outputPrice)}";
-        if (_expectedCostText)
-        {
-            _expectedCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(profit)}";
-            _expectedCostText.color = VisualManager.Instance.GetDeltaColor(profit);
-        }
+        //if (_materialPurchaseText) _materialPurchaseText.text = $"{ReplaceUtils.FormatNumberWithCommas(inputCost)}";
+        //if (_productPriceText) _productPriceText.text = $"{ReplaceUtils.FormatNumberWithCommas(outputPrice)}";
+        //if (_expectedCostText)
+        //{
+        //    _expectedCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(profit)}";
+        //    _expectedCostText.color = VisualManager.Instance.GetDeltaColor(profit);
+        //}
     }
 
     private void UpdateProductionContext()
@@ -111,9 +307,13 @@ public class BuildingInfoPopup : PopupBase
 
     private void RefreshResourceGrids()
     {
+        if (_currentState == null)
+        {
+            return;
+        }
+
         UpdateResourceGrid(_currentState.inputProductionIds, _inputGridTransform, "Input");
-        
-        // 하역소인 경우 출력 자원 표시
+
         if (_currentData.IsUnloadStation)
         {
             UpdateResourceGrid(_currentState.outputProductionIds, _outputGridTransform, "Output");
@@ -186,12 +386,11 @@ public class BuildingInfoPopup : PopupBase
             UIManager.Instance.ShowSelectResourcePopup(
                 allResourceTypes,
                 OnUnloadStationResourceSelected,
-                null  // 하역소는 모든 자원 선택 가능
+                null
             );
             return;
         }
-        
-        // 생산 건물인 경우 기존 로직 사용
+
         if (_currentData.AllowedResourceTypes == null || _currentData.AllowedResourceTypes.Count == 0) return;
 
         List<ResourceData> producible = GetProducibleList();
@@ -207,10 +406,22 @@ public class BuildingInfoPopup : PopupBase
     /// </summary>
     private void OnUnloadStationResourceSelected(ResourceEntry selected)
     {
-        if (_currentState == null || selected == null) return;
+        if (selected == null) return;
 
-        _currentState.outputProductionIds.Clear();
-        _currentState.outputProductionIds.Add(selected.data.id);
+        if (_buildingObject != null)
+        {
+            _buildingObject.TrySetSelectedResource(selected.data);
+            _currentState = _buildingObject.CreateStateSnapshot();
+        }
+        else if (_currentState != null)
+        {
+            _currentState.outputProductionIds.Clear();
+            _currentState.outputProductionIds.Add(selected.data.id);
+        }
+        else
+        {
+            return;
+        }
 
         UpdateUI();
         RefreshWorldIcons();
@@ -227,12 +438,28 @@ public class BuildingInfoPopup : PopupBase
 
     private void OnOutputResourceSelected(ResourceEntry selected)
     {
-        if (_currentState == null || selected == null) return;
+        if (selected == null) return;
 
-        _currentState.outputProductionIds.Clear();
-        _currentState.outputProductionIds.Add(selected.data.id);
+        if (_buildingObject != null)
+        {
+            if (!_buildingObject.TrySetSelectedResource(selected.data))
+            {
+                return;
+            }
 
-        SyncInputToRequirements(selected.data);
+            _currentState = _buildingObject.CreateStateSnapshot();
+        }
+        else if (_currentState != null)
+        {
+            _currentState.outputProductionIds.Clear();
+            _currentState.outputProductionIds.Add(selected.data.id);
+            SyncInputToRequirements(selected.data);
+        }
+        else
+        {
+            return;
+        }
+
         UpdateUI();
         RefreshWorldIcons();
 

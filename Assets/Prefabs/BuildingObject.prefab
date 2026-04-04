@@ -184,5 +184,5 @@ MonoBehaviour:
   _size: {x: 0, y: 0}
   _rotation: 0
   _viewObjRenderer: {fileID: 6224605308098508104}
-  _collider: {fileID: 0}
+  _collider: {fileID: 7366941079865235445}
   _outputIndicatorPrefab: {fileID: 4329135525379065979, guid: 3983bd3e3a5ec024997cd1a1a0d233a4, type: 3}

@@ -12,7 +12,7 @@ public class SelectResourceTypeBtn : MonoBehaviour
     public void Init(SelectResourcePopup selectResourcePanel, ResourceType resourceType)
     {
         string key = resourceType.ToString();
-        LocalizedString localizedString = new LocalizedString("ResourceType", key);
+        LocalizedString localizedString = new LocalizedString("Resource", key);
         _resourceTypeNameText.text = localizedString.GetLocalizedString();
         _resourceType = resourceType;
         _selectResourcePanel = selectResourcePanel;

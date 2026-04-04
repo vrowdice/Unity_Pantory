@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 /// <summary>
@@ -26,8 +27,9 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     private int _productionProgress;
     private int _outputRoundRobinIndex;
 
-    [Header("Player Selection (런타임)")]
-    [Tooltip("가공/원자재: 생산할 자원. 하역: 창고에서 뺄 자원. 인스펙터 또는 클릭 UI에서 설정")]
+    private MainRunner _mainRunner;
+
+    [Header("Player Selection")]
     [SerializeField] private ResourceData _selectedResource;
 
     public BuildingData BuildingData => _buildingData;
@@ -36,8 +38,30 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     public Vector2Int Size => _size;
     public int Rotation => _rotation;
 
+    [Header("Employees")]
+    [SerializeField] private int _assignedWorkers;
+    [SerializeField] private int _assignedTechnicians;
+
+    public int AssignedWorkers => _assignedWorkers;
+    public int AssignedTechnicians => _assignedTechnicians;
+    public int RequiredEmployeeSlots => _buildingData != null ? Mathf.Max(0, _buildingData.requiredEmployees) : 0;
+    public int RequiredTechnicianMinimum => _buildingData != null && _buildingData.isProfessional && _buildingData.requiredEmployees > 0 ? 1 : 0;
+    public int MaxWorkerSlots => Mathf.Max(0, RequiredEmployeeSlots - RequiredTechnicianMinimum);
+    public int MaxTechnicianSlots => RequiredEmployeeSlots;
+
     public bool IsEmpty => _buffer.Count == 0;
     public bool IsFull => _buffer.Count >= _maxCapacity;
+
+    private void Awake()
+    {
+        if (_collider == null)
+            _collider = GetComponent<BoxCollider2D>();
+    }
+
+    private void Start()
+    {
+        _mainRunner = FindAnyObjectByType<MainRunner>();
+    }
 
     public void Init(BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation)
     {
@@ -59,92 +83,171 @@ public class BuildingObject : MonoBehaviour, IResourceNode
             _viewObjRenderer.transform.localScale = new Vector3(rotatedSize.x, rotatedSize.y, 1);
         }
 
-        if (_collider != null)
-        {
-            _collider.size = new Vector2(rotatedSize.x, rotatedSize.y);
-            _collider.offset = Vector2.zero;
-        }
+        if (_collider != null) { _collider.size = new Vector2(rotatedSize.x, rotatedSize.y); _collider.offset = Vector2.zero; }
 
         UpdateOutputIndicators();
     }
 
+    /// <summary>
+    /// UI/저장용 스냅샷. 선택한 생산 자원·입력 요구를 반영합니다.
+    /// </summary>
+    public BuildingState CreateStateSnapshot()
+    {
+        if (_buildingData == null) return null;
+
+        BuildingState state = new BuildingState(_buildingData.id, _origin, _buildingData, _rotation);
+        state.outputProductionIds.Clear();
+        state.inputProductionIds.Clear();
+        state.currentResourceId = null;
+
+        if (_selectedResource == null) return state;
+
+        state.outputProductionIds.Add(_selectedResource.id);
+        state.currentResourceId = _selectedResource.id;
+        if (_selectedResource.requirements == null) return state;
+
+        foreach (ResourceRequirement req in _selectedResource.requirements)
+        {
+            if (req == null || req.resource == null) continue;
+            int count = Mathf.Max(1, req.count);
+            for (int i = 0; i < count; i++) state.inputProductionIds.Add(req.resource.id);
+        }
+
+        return state;
+    }
+
+    public float GetProductionProgressNormalized()
+    {
+        if (_buildingData is ProductionBuildingData prod && prod.ticksPerBatch > 0)
+            return Mathf.Clamp01((float)_productionProgress / prod.ticksPerBatch);
+        return 0f;
+    }
+
+    /// <summary>
+    /// 이 건물에 배치된 직원 타입별 인원과 DataManager 직원 효율을 가중 평균한 값을 0~1로 (슬라이더용).
+    /// 배치 인원이 없으면 0.
+    /// </summary>
+    public float GetAverageAssignedEfficiencyNormalized(DataManager dataManager)
+    {
+        if (dataManager == null || _buildingData == null) return 0f;
+        int total = _assignedWorkers + _assignedTechnicians;
+        if (total <= 0) return 0f;
+
+        EmployeeEntry workerEntry = dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
+        EmployeeEntry techEntry = dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
+        float effW = workerEntry != null ? workerEntry.state.currentEfficiency : 1f;
+        float effT = techEntry != null ? techEntry.state.currentEfficiency : 1f;
+        return Mathf.Clamp01(((_assignedWorkers * effW + _assignedTechnicians * effT) / total) / 2f);
+    }
+
+    /// <summary>ThreadInfoPopup과 동일한 할당 규칙으로 인원을 늘리거나 줄입니다.</summary>
+    public bool TryApplyEmployeeDelta(EmployeeType type, int delta)
+    {
+        if (delta == 0) return true;
+        DataManager dataManager = DataManager.Instance;
+        if (dataManager == null) return false;
+
+        int requiredTotal = RequiredEmployeeSlots;
+
+        if (delta > 0)
+        {
+            int room = requiredTotal - (_assignedWorkers + _assignedTechnicians);
+            if (room <= 0) return false;
+
+            if (type == EmployeeType.Worker)
+            {
+                int addAmount = Mathf.Min(delta, room, MaxWorkerSlots - _assignedWorkers, dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker));
+                if (addAmount <= 0 || !dataManager.Employee.TryAssignEmployee(EmployeeType.Worker, addAmount)) return false;
+                _assignedWorkers += addAmount;
+                return true;
+            }
+
+            if (type == EmployeeType.Technician)
+            {
+                int addAmount = Mathf.Min(delta, room, MaxTechnicianSlots - _assignedTechnicians, dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician));
+                if (addAmount <= 0 || !dataManager.Employee.TryAssignEmployee(EmployeeType.Technician, addAmount)) return false;
+                _assignedTechnicians += addAmount;
+                return true;
+            }
+
+            return false;
+        }
+
+        int removeAmount = -delta;
+        if (type == EmployeeType.Worker)
+        {
+            removeAmount = Mathf.Min(removeAmount, _assignedWorkers);
+            if (removeAmount <= 0 || !dataManager.Employee.TryUnassignEmployee(EmployeeType.Worker, removeAmount)) return false;
+            _assignedWorkers -= removeAmount;
+            return true;
+        }
+
+        if (type == EmployeeType.Technician)
+        {
+            removeAmount = Mathf.Min(removeAmount, _assignedTechnicians);
+            if (removeAmount <= 0 || !dataManager.Employee.TryUnassignEmployee(EmployeeType.Technician, removeAmount)) return false;
+            _assignedTechnicians -= removeAmount;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void Update()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (_mainRunner != null && (_mainRunner.IsPlacementMode || _mainRunner.IsRemovalMode)) return;
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(-1)) return;
+        if (_collider == null) return;
+
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0f;
+        if (!_collider.OverlapPoint(mouseWorld)) return;
+
+        UIManager.Instance?.ShowBuildingInfoPopup(this);
+    }
+
     private void ApplyCapacityFromBuildingData()
     {
-        if (_buildingData == null)
-        {
-            return;
-        }
+        if (_buildingData == null) return;
 
-        if (_buildingData is LoadStationData)
+        switch (_buildingData)
         {
-            _maxCapacity = 1;
-            return;
-        }
-
-        if (_buildingData is UnloadStationData unloadData)
-        {
-            _maxCapacity = Mathf.Max(1, unloadData.pullPerHour);
-            return;
-        }
-
-        if (_buildingData is RawMaterialFactoryData)
-        {
-            _maxCapacity = 0;
-            return;
-        }
-
-        if (_buildingData is ProductionBuildingData prodData)
-        {
-            _maxCapacity = Mathf.Max(1, prodData.inputBufferCapacity);
+            case LoadStationData:
+                _maxCapacity = 1;
+                break;
+            case UnloadStationData unloadData:
+                _maxCapacity = Mathf.Max(1, unloadData.pullPerHour);
+                break;
+            case RawMaterialFactoryData:
+                _maxCapacity = 0;
+                break;
+            case ProductionBuildingData prodData:
+                _maxCapacity = Mathf.Max(1, prodData.inputBufferCapacity);
+                break;
         }
     }
 
     public bool TryPush(ResourcePacket packet)
     {
-        if (packet == null)
-        {
-            return false;
-        }
-
-        if (_buildingData is RawMaterialFactoryData)
-        {
-            return false;
-        }
-
-        if (_maxCapacity <= 0)
-        {
-            return false;
-        }
-
-        if (_buffer.Count >= _maxCapacity)
-        {
-            return false;
-        }
-
+        if (packet == null || _buildingData is RawMaterialFactoryData || _maxCapacity <= 0 || _buffer.Count >= _maxCapacity) return false;
         _buffer.Enqueue(packet);
         return true;
     }
 
     public bool TryPeek(out ResourcePacket packet)
     {
-        if (_buffer.Count == 0)
-        {
-            packet = null;
-            return false;
-        }
-
+        if (_buffer.Count == 0) { packet = null; return false; }
         packet = _buffer.Peek();
         return true;
     }
 
     public bool TryPop(out ResourcePacket packet)
     {
-        if (_buffer.Count == 0)
-        {
-            packet = null;
-            return false;
-        }
-
+        if (_buffer.Count == 0) { packet = null; return false; }
         packet = _buffer.Dequeue();
         return true;
     }
@@ -154,10 +257,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     /// </summary>
     public void TickSimulation(DataManager dataManager)
     {
-        if (_buildingData == null || dataManager == null)
-        {
-            return;
-        }
+        if (_buildingData == null || dataManager == null) return;
 
         if (_buildingData is RawMaterialFactoryData rawFactory)
         {
@@ -190,11 +290,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     {
         if (_buildingData is ProductionBuildingData prod)
         {
-            if (resource != null && !IsResourceAllowedForProduction(prod, resource))
-            {
-                return false;
-            }
-
+            if (resource != null && !IsResourceAllowedForProduction(prod, resource)) return false;
             _selectedResource = resource;
             _productionProgress = 0;
             return true;
@@ -202,11 +298,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
         if (_buildingData is RawMaterialFactoryData raw)
         {
-            if (resource != null && !IsResourceAllowedForRawFactory(raw, resource))
-            {
-                return false;
-            }
-
+            if (resource != null && !IsResourceAllowedForRawFactory(raw, resource)) return false;
             _selectedResource = resource;
             return true;
         }
@@ -222,52 +314,29 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private static bool IsResourceAllowedForProduction(ProductionBuildingData prod, ResourceData resource)
     {
-        if (resource == null || string.IsNullOrEmpty(resource.id))
-        {
-            return false;
-        }
+        if (resource == null || string.IsNullOrEmpty(resource.id)) return false;
 
         List<ResourceData> list = prod.ProducibleResources;
         if (list != null && list.Count > 0)
         {
             foreach (ResourceData item in list)
-            {
-                if (item != null && item.id == resource.id)
-                {
-                    return true;
-                }
-            }
-
+                if (item != null && item.id == resource.id) return true;
             return false;
         }
 
         List<ResourceType> types = prod.AllowedResourceTypes;
-        if (types != null && types.Count > 0)
-        {
-            return types.Contains(resource.type);
-        }
-
-        return true;
+        return types == null || types.Count == 0 || types.Contains(resource.type);
     }
 
     private static bool IsResourceAllowedForRawFactory(RawMaterialFactoryData raw, ResourceData resource)
     {
-        if (resource == null || string.IsNullOrEmpty(resource.id))
-        {
-            return false;
-        }
+        if (resource == null || string.IsNullOrEmpty(resource.id)) return false;
 
         List<ResourceData> list = raw.ProducibleRawResources;
         if (list != null && list.Count > 0)
         {
             foreach (ResourceData item in list)
-            {
-                if (item != null && item.id == resource.id)
-                {
-                    return true;
-                }
-            }
-
+                if (item != null && item.id == resource.id) return true;
             return false;
         }
 
@@ -276,16 +345,8 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void TickRawMaterialFactory(DataManager dataManager, RawMaterialFactoryData rawFactory)
     {
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id))
-        {
-            return;
-        }
-
-        if (!IsResourceAllowedForRawFactory(rawFactory, _selectedResource))
-        {
-            return;
-        }
-
+        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
+        if (!IsResourceAllowedForRawFactory(rawFactory, _selectedResource)) return;
         dataManager.Resource.ModifyResourceCount(_selectedResource.id, 1);
     }
 
@@ -309,10 +370,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void TickUnloadStation(DataManager dataManager, UnloadStationData unloadData)
     {
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id))
-        {
-            return;
-        }
+        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
 
         string resourceId = _selectedResource.id;
         int pulls = Mathf.Max(0, unloadData.pullPerHour);
@@ -335,29 +393,15 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void TickProductionBuilding(ProductionBuildingData prodData)
     {
-        if (prodData.ticksPerBatch <= 0)
-        {
-            return;
-        }
-
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id))
-        {
-            return;
-        }
-
-        if (!IsResourceAllowedForProduction(prodData, _selectedResource))
-        {
-            return;
-        }
+        if (prodData.ticksPerBatch <= 0) return;
+        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
+        if (!IsResourceAllowedForProduction(prodData, _selectedResource)) return;
 
         string outputId = _selectedResource.id;
 
         _productionProgress++;
 
-        if (_productionProgress < prodData.ticksPerBatch)
-        {
-            return;
-        }
+        if (_productionProgress < prodData.ticksPerBatch) return;
 
         int need = Mathf.Max(0, prodData.inputResourcesPerBatch);
         if (_buffer.Count < need)
@@ -409,11 +453,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     public void AdvanceOutputRoundRobin()
     {
         int count = OutputGridPositions != null ? OutputGridPositions.Count : 0;
-        if (count <= 0)
-        {
-            return;
-        }
-
+        if (count <= 0) return;
         _outputRoundRobinIndex = (_outputRoundRobinIndex + 1) % count;
     }
 
@@ -426,15 +466,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void UpdateOutputIndicators()
     {
-        if (_buildingData == null)
-        {
-            return;
-        }
-
-        if (_outputIndicatorPrefab == null)
-        {
-            return;
-        }
+        if (_buildingData == null || _outputIndicatorPrefab == null) return;
 
         foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
         {

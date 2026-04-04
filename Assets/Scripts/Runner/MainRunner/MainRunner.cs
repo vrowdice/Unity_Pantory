@@ -103,6 +103,7 @@ public class MainRunner : RunnerBase
 
     private void OnDisable()
     {
-        _dataManager.Time.OnHourChanged -= _gridHandler.TickResourceFlow;
+        if(_dataManager != null)
+            _dataManager.Time.OnHourChanged -= _gridHandler.TickResourceFlow;
     }
 }

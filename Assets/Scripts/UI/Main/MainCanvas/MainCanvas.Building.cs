@@ -88,6 +88,7 @@ public partial class MainCanvas
         if (!isUnlocked)
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.UnresearchedBuildingBlocksThreadPlacement);
+            return;
         }
 
         _selectedBuilding = buildingData;

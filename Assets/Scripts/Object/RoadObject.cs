@@ -36,40 +36,21 @@ public class RoadObject : MonoBehaviour, IResourceNode
 
     public bool TryPush(ResourcePacket packet)
     {
-        if (packet == null)
-        {
-            return false;
-        }
-
-        if (_buffer.Count >= _maxCapacity)
-        {
-            return false;
-        }
-
+        if (packet == null || _buffer.Count >= _maxCapacity) return false;
         _buffer.Enqueue(packet);
         return true;
     }
 
     public bool TryPeek(out ResourcePacket packet)
     {
-        if (_buffer.Count == 0)
-        {
-            packet = null;
-            return false;
-        }
-
+        if (_buffer.Count == 0) { packet = null; return false; }
         packet = _buffer.Peek();
         return true;
     }
 
     public bool TryPop(out ResourcePacket packet)
     {
-        if (_buffer.Count == 0)
-        {
-            packet = null;
-            return false;
-        }
-
+        if (_buffer.Count == 0) { packet = null; return false; }
         packet = _buffer.Dequeue();
         return true;
     }
@@ -82,10 +63,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
 
     private void UpdateOutputIndicators()
     {
-        if (_outputIndicatorPrefab == null)
-        {
-            return;
-        }
+        if (_outputIndicatorPrefab == null) return;
 
         Vector2Int size = Vector2Int.one;
         foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(size))
