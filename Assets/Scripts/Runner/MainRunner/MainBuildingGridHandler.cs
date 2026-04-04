@@ -214,20 +214,9 @@ public class MainBuildingGridHandler
         foreach (KeyValuePair<Vector2Int, GameObject> kvp in _roadObjectList)
         {
             GameObject obj = kvp.Value;
-            if (obj == null)
-            {
-                continue;
-            }
-
-            if (!obj.TryGetComponent(out RoadObject road))
-            {
-                continue;
-            }
-
-            if (road.IsEmpty)
-            {
-                continue;
-            }
+            if (obj == null) continue;
+            if (!obj.TryGetComponent(out RoadObject road)) continue;
+            if (road.IsEmpty) continue;
 
             foreach (Vector2Int outCell in road.OutputGridPositions)
             {
@@ -238,6 +227,7 @@ public class MainBuildingGridHandler
                     if (_occupiedAsObject.TryGetValue(outCell, out Vector2Int origin) &&
                         _buildingObjectList.TryGetValue(origin, out destObj))
                     {
+
                     }
                     else
                     {
@@ -245,30 +235,11 @@ public class MainBuildingGridHandler
                     }
                 }
 
-                if (destObj == null)
-                {
-                    continue;
-                }
-
-                if (!destObj.TryGetComponent(out IResourceNode destNode))
-                {
-                    continue;
-                }
-
-                if (destNode.IsFull)
-                {
-                    continue;
-                }
-
-                if (!road.TryPeek(out ResourcePacket packet))
-                {
-                    continue;
-                }
-
-                if (destNode.TryPush(packet))
-                {
-                    road.TryPop(out _);
-                }
+                if (destObj == null) continue;
+                if (!destObj.TryGetComponent(out IResourceNode destNode)) continue;
+                if (destNode.IsFull) continue;
+                if (!road.TryPeek(out ResourcePacket packet)) continue;
+                if (destNode.TryPush(packet)) road.TryPop(out _);
 
                 break;
             }
@@ -277,43 +248,16 @@ public class MainBuildingGridHandler
         foreach (KeyValuePair<Vector2Int, GameObject> kvp in _buildingObjectList)
         {
             GameObject obj = kvp.Value;
-            if (obj == null)
-            {
-                continue;
-            }
-
-            if (!obj.TryGetComponent(out BuildingObject building))
-            {
-                continue;
-            }
-
-            if (!building.TryPeek(out ResourcePacket packet))
-            {
-                continue;
-            }
+            if (obj == null) continue;
+            if (!obj.TryGetComponent(out BuildingObject building)) continue;
+            if (!building.TryPeek(out ResourcePacket packet)) continue;
 
             foreach (Vector2Int outCell in building.OutputGridPositions)
             {
-                if (!_roadObjectList.TryGetValue(outCell, out GameObject roadObj) || roadObj == null)
-                {
-                    continue;
-                }
-
-                if (!roadObj.TryGetComponent(out IResourceNode roadNode))
-                {
-                    continue;
-                }
-
-                if (roadNode.IsFull)
-                {
-                    continue;
-                }
-
-                if (roadNode.TryPush(packet))
-                {
-                    building.TryPop(out _);
-                }
-
+                if (!_roadObjectList.TryGetValue(outCell, out GameObject roadObj) || roadObj == null) continue;
+                if (!roadObj.TryGetComponent(out IResourceNode roadNode)) continue;
+                if (roadNode.IsFull) continue;
+                if (roadNode.TryPush(packet)) building.TryPop(out _);
                 break;
             }
         }

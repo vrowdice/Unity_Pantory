@@ -183,6 +183,7 @@ MonoBehaviour:
   _gridPosition: {x: 0, y: 0}
   _rotation: 0
   _outputIndicatorPrefab: {fileID: 4329135525379065979, guid: 3983bd3e3a5ec024997cd1a1a0d233a4, type: 3}
+  _heldIconScale: 0.01
   _maxCapacity: 1
 --- !u!1 &8876456922134046606
 GameObject:

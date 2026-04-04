@@ -17,12 +17,15 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     [Header("Output Indicators")]
     [SerializeField] private GameObject _outputIndicatorPrefab;
+    [SerializeField] private float _outgoingIconScale = 0.01f;
+
+    private GameObject _outgoingIconContainer;
 
     public List<Vector2Int> OutputGridPositions { get; private set; }
 
     [Header("Resource Buffer")]
     [SerializeField] private int _maxCapacity = 1;
-    private readonly Queue<ResourcePacket> _buffer = new Queue<ResourcePacket>();
+    private readonly Queue<ResourcePacket> _resourceBuffer = new Queue<ResourcePacket>();
 
     private int _productionProgress;
     private int _outputRoundRobinIndex;
@@ -49,8 +52,8 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     public int MaxWorkerSlots => Mathf.Max(0, RequiredEmployeeSlots - RequiredTechnicianMinimum);
     public int MaxTechnicianSlots => RequiredEmployeeSlots;
 
-    public bool IsEmpty => _buffer.Count == 0;
-    public bool IsFull => _buffer.Count >= _maxCapacity;
+    public bool IsEmpty => _resourceBuffer.Count == 0;
+    public bool IsFull => _resourceBuffer.Count >= _maxCapacity;
 
     private void Awake()
     {
@@ -86,6 +89,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         if (_collider != null) { _collider.size = new Vector2(rotatedSize.x, rotatedSize.y); _collider.offset = Vector2.zero; }
 
         UpdateOutputIndicators();
+        RefreshOutgoingResourceIcons();
     }
 
     /// <summary>
@@ -233,22 +237,24 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     public bool TryPush(ResourcePacket packet)
     {
-        if (packet == null || _buildingData is RawMaterialFactoryData || _maxCapacity <= 0 || _buffer.Count >= _maxCapacity) return false;
-        _buffer.Enqueue(packet);
+        if (packet == null || _buildingData is RawMaterialFactoryData || _maxCapacity <= 0 || _resourceBuffer.Count >= _maxCapacity) return false;
+        _resourceBuffer.Enqueue(packet);
+        RefreshOutgoingResourceIcons();
         return true;
     }
 
     public bool TryPeek(out ResourcePacket packet)
     {
-        if (_buffer.Count == 0) { packet = null; return false; }
-        packet = _buffer.Peek();
+        if (_resourceBuffer.Count == 0) { packet = null; return false; }
+        packet = _resourceBuffer.Peek();
         return true;
     }
 
     public bool TryPop(out ResourcePacket packet)
     {
-        if (_buffer.Count == 0) { packet = null; return false; }
-        packet = _buffer.Dequeue();
+        if (_resourceBuffer.Count == 0) { packet = null; return false; }
+        packet = _resourceBuffer.Dequeue();
+        RefreshOutgoingResourceIcons();
         return true;
     }
 
@@ -260,27 +266,15 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         if (_buildingData == null || dataManager == null) return;
 
         if (_buildingData is RawMaterialFactoryData rawFactory)
-        {
             TickRawMaterialFactory(dataManager, rawFactory);
-            return;
-        }
-
-        if (_buildingData is LoadStationData)
-        {
+        else if (_buildingData is LoadStationData)
             TickLoadStation(dataManager);
-            return;
-        }
-
-        if (_buildingData is UnloadStationData unloadData)
-        {
+        else if (_buildingData is UnloadStationData unloadData)
             TickUnloadStation(dataManager, unloadData);
-            return;
-        }
-
-        if (_buildingData is ProductionBuildingData prodData)
-        {
+        else if (_buildingData is ProductionBuildingData prodData)
             TickProductionBuilding(prodData);
-        }
+
+        RefreshOutgoingResourceIcons();
     }
 
     /// <summary>
@@ -293,6 +287,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
             if (resource != null && !IsResourceAllowedForProduction(prod, resource)) return false;
             _selectedResource = resource;
             _productionProgress = 0;
+            RefreshOutgoingResourceIcons();
             return true;
         }
 
@@ -300,12 +295,14 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         {
             if (resource != null && !IsResourceAllowedForRawFactory(raw, resource)) return false;
             _selectedResource = resource;
+            RefreshOutgoingResourceIcons();
             return true;
         }
 
         if (_buildingData is UnloadStationData)
         {
             _selectedResource = resource;
+            RefreshOutgoingResourceIcons();
             return true;
         }
 
@@ -352,7 +349,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void TickLoadStation(DataManager dataManager)
     {
-        while (_buffer.Count > 0)
+        while (_resourceBuffer.Count > 0)
         {
             if (!TryPeek(out ResourcePacket packet))
             {
@@ -404,7 +401,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         if (_productionProgress < prodData.ticksPerBatch) return;
 
         int need = Mathf.Max(0, prodData.inputResourcesPerBatch);
-        if (_buffer.Count < need)
+        if (_resourceBuffer.Count < need)
         {
             _productionProgress = prodData.ticksPerBatch;
             return;
@@ -474,5 +471,97 @@ public class BuildingObject : MonoBehaviour, IResourceNode
             indicator.transform.localPosition = localPos;
             indicator.transform.localRotation = Quaternion.identity;
         }
+    }
+
+    /// <summary>
+    /// 도로/다음 노드로 나가는 자원: 선택 출력 품목 + (가공/하역) 버퍼에 쌓인 동일 품목 수량.
+    /// 하역장은 버퍼 전체, 원자재 공장은 창고로 나가는 선택 품목 표시. 적재소(Load)는 도로로 안보냄.
+    /// </summary>
+    private Dictionary<string, int> BuildOutgoingResourceCounts()
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+        if (_buildingData == null || _buildingData is LoadStationData)
+            return counts;
+
+        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id))
+            return counts;
+
+        string outId = _selectedResource.id;
+
+        if (_buildingData is ProductionBuildingData)
+        {
+            foreach (ResourcePacket p in _resourceBuffer)
+            {
+                if (p == null || p.Id != outId) continue;
+                AddResourceCount(counts, p.Id, p.Amount);
+            }
+
+            if (!counts.ContainsKey(outId))
+                counts[outId] = 1;
+            return counts;
+        }
+
+        if (_buildingData is UnloadStationData)
+        {
+            foreach (ResourcePacket p in _resourceBuffer)
+            {
+                if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+                AddResourceCount(counts, p.Id, p.Amount);
+            }
+
+            if (counts.Count == 0)
+                counts[outId] = 1;
+            return counts;
+        }
+
+        if (_buildingData is RawMaterialFactoryData)
+        {
+            counts[outId] = 1;
+            return counts;
+        }
+
+        return counts;
+    }
+
+    private static void AddResourceCount(Dictionary<string, int> counts, string id, int amount)
+    {
+        if (string.IsNullOrEmpty(id) || amount == 0) return;
+        if (counts.TryGetValue(id, out int v)) counts[id] = v + amount;
+        else counts[id] = amount;
+    }
+
+    private void RefreshOutgoingResourceIcons()
+    {
+        ClearOutgoingIconContainer();
+
+        GameManager gameManager = GameManager.Instance;
+        if (gameManager == null || UIManager.Instance == null) return;
+
+        Transform worldCanvas = gameManager.GetWorldCanvas();
+        if (worldCanvas == null) return;
+
+        Dictionary<string, int> counts = BuildOutgoingResourceCounts();
+        if (counts == null || counts.Count == 0) return;
+        Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
+
+        _outgoingIconContainer = UIManager.Instance.CreateProductionIconContainer(
+            worldCanvas,
+            $"BuildingOutgoingIcons_{gameObject.GetInstanceID()}",
+            worldPosition,
+            _outgoingIconScale,
+            counts);
+    }
+
+    private void ClearOutgoingIconContainer()
+    {
+        if (_outgoingIconContainer == null) return;
+        PoolingManager.Instance?.ClearChildrenToPool(_outgoingIconContainer.transform);
+        Destroy(_outgoingIconContainer);
+        _outgoingIconContainer = null;
+    }
+
+    private void OnDestroy()
+    {
+        ClearOutgoingIconContainer();
     }
 }

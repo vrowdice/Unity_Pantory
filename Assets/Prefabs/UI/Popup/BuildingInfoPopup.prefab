@@ -4874,8 +4874,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ThreadInfoPopup, Assembly-CSharp
+      - m_Target: {fileID: 2448955331136490064}
+        m_TargetAssemblyTypeName: BuildingInfoPopup, Assembly-CSharp
         m_MethodName: OnWorkerSliderChanged
         m_Mode: 1
         m_Arguments:
@@ -8227,8 +8227,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ThreadInfoPopup, Assembly-CSharp
+      - m_Target: {fileID: 2448955331136490064}
+        m_TargetAssemblyTypeName: BuildingInfoPopup, Assembly-CSharp
         m_MethodName: OnTechnicianSliderChanged
         m_Mode: 1
         m_Arguments:

@@ -11,6 +11,11 @@ public class RoadObject : MonoBehaviour, IResourceNode
     [SerializeField] private int _rotation;
     [SerializeField] private GameObject _outputIndicatorPrefab;
 
+    [Header("World resource icons (held)")]
+    [SerializeField] private float _heldIconScale = 0.14f;
+
+    private GameObject _heldIconContainer;
+
     public List<Vector2Int> OutputGridPositions { get; private set; }
 
     [Header("Resource Buffer")]
@@ -32,12 +37,14 @@ public class RoadObject : MonoBehaviour, IResourceNode
 
         RebuildOutputGridPositions();
         UpdateOutputIndicators();
+        RefreshHeldResourceIcons();
     }
 
     public bool TryPush(ResourcePacket packet)
     {
         if (packet == null || _buffer.Count >= _maxCapacity) return false;
         _buffer.Enqueue(packet);
+        RefreshHeldResourceIcons();
         return true;
     }
 
@@ -52,6 +59,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
     {
         if (_buffer.Count == 0) { packet = null; return false; }
         packet = _buffer.Dequeue();
+        RefreshHeldResourceIcons();
         return true;
     }
 
@@ -72,5 +80,50 @@ public class RoadObject : MonoBehaviour, IResourceNode
             indicator.transform.localPosition = localPos;
             indicator.transform.localRotation = Quaternion.identity;
         }
+    }
+
+    private Dictionary<string, int> BuildHeldResourceCounts()
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+        foreach (ResourcePacket p in _buffer)
+        {
+            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            if (counts.TryGetValue(p.Id, out int v)) counts[p.Id] = v + p.Amount;
+            else counts[p.Id] = p.Amount;
+        }
+
+        return counts;
+    }
+
+    private void RefreshHeldResourceIcons()
+    {
+        ClearHeldIconContainer();
+
+        GameManager gameManager = GameManager.Instance;
+        Transform worldCanvas = gameManager.GetWorldCanvas();
+        if (worldCanvas == null) return;
+        Dictionary<string, int> counts = BuildHeldResourceCounts();
+        if (counts == null || counts.Count == 0) return;
+
+        Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
+        _heldIconContainer = UIManager.Instance.CreateProductionIconContainer(
+            worldCanvas,
+            $"RoadHeldIcons_{gameObject.GetInstanceID()}",
+            worldPosition,
+            _heldIconScale,
+            counts);
+    }
+
+    private void ClearHeldIconContainer()
+    {
+        if (_heldIconContainer == null) return;
+        PoolingManager.Instance?.ClearChildrenToPool(_heldIconContainer.transform);
+        Destroy(_heldIconContainer);
+        _heldIconContainer = null;
+    }
+
+    private void OnDestroy()
+    {
+        ClearHeldIconContainer();
     }
 }
