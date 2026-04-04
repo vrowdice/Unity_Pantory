@@ -50,10 +50,12 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
         RebuildOutputGridPositions();
 
+        transform.localRotation = Quaternion.Euler(0f, 0f, -rotation * 90f);
+
         if (_viewObjRenderer != null)
         {
             _viewObjRenderer.sprite = buildingData != null ? buildingData.buildingSprite : null;
-            _viewObjRenderer.transform.localRotation = Quaternion.Euler(0, 0, -rotation * 90f);
+            _viewObjRenderer.transform.localRotation = Quaternion.identity;
             _viewObjRenderer.transform.localScale = new Vector3(rotatedSize.x, rotatedSize.y, 1);
         }
 
@@ -434,11 +436,11 @@ public class BuildingObject : MonoBehaviour, IResourceNode
             return;
         }
 
-        foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size, _rotation))
+        foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
         {
             GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
             indicator.transform.localPosition = localPos;
-            indicator.transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
+            indicator.transform.localRotation = Quaternion.identity;
         }
     }
 }

@@ -73,10 +73,10 @@ public static class BuildingCalculationUtils
     }
 
     /// <summary>
-    /// 건물/도로의 사이즈, 회전 기준으로 출력 인디케이터의 로컬 위치들을 계산합니다.
-    /// BuildingObject / RoadObject 양쪽에서 공통 사용.
+    /// 회전 0 기준(로컬 +X가 오른쪽 면)으로 출력 인디케이터 위치를 냅니다.
+    /// 실제 오브젝트 루트에 <c>-rotation * 90°</c>를 걸면 월드에서 맞는 면에 붙습니다.
     /// </summary>
-    public static List<Vector3> GetOutputLocalPositions(Vector2Int size, int rotation)
+    public static List<Vector3> GetOutputLocalPositions(Vector2Int size)
     {
         List<Vector3> result = new List<Vector3>();
 
@@ -84,9 +84,7 @@ public static class BuildingCalculationUtils
         for (int y = 0; y < size.y; y++)
         {
             Vector2Int localCell = new Vector2Int(rightX, y);
-            Vector3 localPos = GetLocalPositionForCell(localCell, size);
-            localPos = RotateOffset(localPos, rotation);
-            result.Add(localPos);
+            result.Add(GetLocalPositionForCell(localCell, size));
         }
 
         return result;
@@ -101,13 +99,6 @@ public static class BuildingCalculationUtils
         float y = -(cell.y + 0.5f) + centerY;
 
         return new Vector3(x, y, 0f);
-    }
-
-    private static Vector3 RotateOffset(Vector3 offset, int rotation)
-    {
-        float angle = -rotation * 90f;
-        Quaternion rot = Quaternion.Euler(0f, 0f, angle);
-        return rot * offset;
     }
 
     private static Vector2Int RotateCellAroundCenter(Vector2Int cell, int rotation, Vector2Int size)

@@ -28,6 +28,8 @@ public class RoadObject : MonoBehaviour, IResourceNode
         _gridPosition = gridPosition;
         _rotation = rotation % 4;
 
+        transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
+
         RebuildOutputGridPositions();
         UpdateOutputIndicators();
     }
@@ -86,11 +88,11 @@ public class RoadObject : MonoBehaviour, IResourceNode
         }
 
         Vector2Int size = Vector2Int.one;
-        foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(size, _rotation))
+        foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(size))
         {
             GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
             indicator.transform.localPosition = localPos;
-            indicator.transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
+            indicator.transform.localRotation = Quaternion.identity;
         }
     }
 }

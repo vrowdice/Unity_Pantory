@@ -48,12 +48,6 @@ public class MainBuildingPlacementHandler
         DestroyPreview();
     }
 
-    public void ToggleRemoval()
-    {
-        if (_removalMode) CancelRemoval();
-        else StartRemoval();
-    }
-
     public void StartRemoval()
     {
         CancelPlacement();
