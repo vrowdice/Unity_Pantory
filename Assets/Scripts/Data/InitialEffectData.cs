@@ -6,5 +6,4 @@ public class InitialEffectData : ScriptableObject
     public EffectData managementDeficitEffect;
     public EffectData salarySatisfactionEffect;
     public EffectData satisfactionEfficiencyEffect;
-    public EffectData priceEventEffect;
 }

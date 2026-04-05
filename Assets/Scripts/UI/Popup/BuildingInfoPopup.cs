@@ -255,7 +255,12 @@ public class BuildingInfoPopup : PopupBase
         _buildingObject.GetRecipeDisplayData(_recipeInputIds, _recipeOutputIds, out _recipeCurrentResourceId);
         RefreshRecipeGrids();
 
-        if (_currentData.IsProductionBuilding || _currentData.IsUnloadStation)
+        if (_currentData.IsLoadStation)
+        {
+            UpdateResourceGridFromCounts(_buildingObject.GetRuntimeInputResourceCounts(), _inputResourceContent);
+            ClearRuntimeOutputContents();
+        }
+        else if (_currentData.IsProductionBuilding || _currentData.IsUnloadStation)
         {
             UpdateResourceGridFromCounts(_buildingObject.GetRuntimeInputResourceCounts(), _inputResourceContent);
             UpdateResourceGridFromCounts(_buildingObject.GetRuntimeOutputResourceCounts(), _outputResourceContent);
@@ -279,6 +284,11 @@ public class BuildingInfoPopup : PopupBase
     private void ClearRuntimeQueueContents()
     {
         if (_inputResourceContent != null) GameObjectUtils.ClearChildren(_inputResourceContent);
+        ClearRuntimeOutputContents();
+    }
+
+    private void ClearRuntimeOutputContents()
+    {
         if (_outputResourceContent != null) GameObjectUtils.ClearChildren(_outputResourceContent);
     }
 

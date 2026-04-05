@@ -17,7 +17,6 @@ public class EffectState
     public float value;
     public float durationDays;
     public float remainingDays;
-
     public string targetId;
     
     public bool IsPermanent => durationDays <= 0;
@@ -34,6 +33,7 @@ public class EffectState
         value = data.value;
         durationDays = data.durationDays;
         remainingDays = data.durationDays;
+        targetId = data.targetId;
     }
 
     public bool ProcessDayPass(int date)

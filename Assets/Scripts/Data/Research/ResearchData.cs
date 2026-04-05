@@ -7,6 +7,7 @@ public class ResearchData : ScriptableObject
     [Header("Basic Info")]
     public string id;
     public string displayName;
+    public ResearchType researchType;
     public Sprite icon;
     [TextArea] public string description;
     public bool isDefaultUnlocked;

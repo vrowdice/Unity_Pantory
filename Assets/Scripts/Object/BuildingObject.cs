@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -89,11 +90,6 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         UIManager.Instance?.ShowBuildingInfoPopup(this);
     }
 
-    private void OnDestroy()
-    {
-        ClearOutgoingIconContainer();
-    }
-
     /// <summary>
     /// UI 레시피 그리드용. 선택 레시피 기준 입력/출력 ID 목록을 채웁니다.
     /// </summary>
@@ -132,7 +128,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     public float GetProductionProgressNormalized()
     {
-        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
+        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is LoadStationData)
             return Mathf.Clamp01(_workProgress);
         return 0f;
     }
@@ -150,8 +146,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     public float GetWorkProgressDeltaPerTick(DataManager dataManager)
     {
-        if (dataManager == null) return 0f;
-        if (!(_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)) return 0f;
+        if (dataManager == null || !UsesStaffedBatchSimulation()) return 0f;
 
         int assigned = _assignedWorkers + _assignedTechnicians;
         int required = RequiredEmployeeSlots;
@@ -163,6 +158,13 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         GetGlobalEmployeeEfficienciesNormalized(dataManager, out float effW, out float effT);
         float effAvg = (_assignedWorkers * effW + _assignedTechnicians * effT) / assigned;
         return Mathf.Clamp01(staffingFill * effAvg);
+    }
+
+    private bool UsesStaffedBatchSimulation()
+    {
+        return _buildingData is ProductionBuildingData
+            || _buildingData is UnloadStationData
+            || _buildingData is LoadStationData;
     }
 
     private static void GetGlobalEmployeeEfficienciesNormalized(DataManager dm, out float effW, out float effT)
@@ -276,13 +278,44 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     public void TickSimulation(DataManager dataManager)
     {
         if (_buildingData is RawMaterialFactoryData rawFactory)
+        {
             TickRawMaterialFactory(dataManager, rawFactory);
-        else if (_buildingData is LoadStationData)
-            TickLoadStation(dataManager);
-        else if (_buildingData is UnloadStationData)
-            TickUnloadStation(dataManager);
-        else if (_buildingData is ProductionBuildingData)
-            TickProductionBuilding(dataManager);
+            return;
+        }
+
+        if (_buildingData is LoadStationData)
+        {
+            TickStaffedBatchWork(dataManager, () => CanCompleteLoadBatch(dataManager), () => TryCompleteLoadBatch(dataManager));
+            return;
+        }
+
+        if (_buildingData is UnloadStationData)
+        {
+            if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
+            TickStaffedBatchWork(dataManager, () => CanCompleteUnloadBatch(dataManager), () => TryCompleteUnloadBatch(dataManager));
+            return;
+        }
+
+        if (_buildingData is ProductionBuildingData)
+        {
+            if (_selectedResource == null) return;
+            TickStaffedBatchWork(dataManager, CanCompleteProductionBatch, TryCompleteProductionBatch);
+        }
+    }
+
+    private void TickStaffedBatchWork(DataManager dataManager, System.Func<bool> canCompleteBatch, System.Func<bool> tryCompleteBatch)
+    {
+        float delta = GetWorkProgressDeltaPerTick(dataManager);
+        if (delta <= 0f) return;
+
+        _workProgress += delta;
+        if (_workProgress > 1f && !canCompleteBatch()) _workProgress = 1f;
+
+        while (_workProgress >= 1f)
+        {
+            if (!tryCompleteBatch()) break;
+            _workProgress -= 1f;
+        }
     }
 
     private void TickRawMaterialFactory(DataManager dataManager, RawMaterialFactoryData rawFactory)
@@ -292,31 +325,37 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         dataManager.Resource.ModifyResourceCount(_selectedResource.id, 1);
     }
 
-    private void TickLoadStation(DataManager dataManager)
+    private bool CanCompleteLoadBatch(DataManager dataManager)
     {
-        while (_inputBuffer.Count > 0)
-        {
-            ResourcePacket packet = _inputBuffer.Peek();
-            if (!dataManager.Resource.ModifyResourceCount(packet.Id, packet.Amount)) break;
-            _inputBuffer.Dequeue();
-        }
+        if (!(_buildingData is LoadStationData l) || dataManager == null || _inputBuffer.Count == 0) return false;
+        ResourcePacket p = _inputBuffer.Peek();
+        int move = Mathf.Min(Mathf.Max(1, l.pushPerHour), p.Amount);
+        return dataManager.Resource.GetResourceEntry(p.Id) != null && move > 0;
     }
 
-    private void TickUnloadStation(DataManager dataManager)
+    private bool TryCompleteLoadBatch(DataManager dataManager)
     {
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
+        if (!(_buildingData is LoadStationData l) || dataManager == null || _inputBuffer.Count == 0) return false;
+        ResourcePacket p = _inputBuffer.Peek();
+        int move = Mathf.Min(Mathf.Max(1, l.pushPerHour), p.Amount);
+        if (!dataManager.Resource.ModifyResourceCount(p.Id, move)) return false;
+        ConsumeFromInputFront(move);
+        return true;
+    }
 
-        float delta = GetWorkProgressDeltaPerTick(dataManager);
-        if (delta <= 0f) return;
+    private void ConsumeFromInputFront(int amountFromFrontPacket)
+    {
+        ResourcePacket p = _inputBuffer.Dequeue();
+        int remainder = p.Amount - amountFromFrontPacket;
+        if (remainder <= 0) return;
 
-        _workProgress += delta;
-        if (_workProgress > 1f && !CanCompleteUnloadBatch(dataManager)) _workProgress = 1f;
+        List<ResourcePacket> tail = new List<ResourcePacket>();
+        while (_inputBuffer.Count > 0)
+            tail.Add(_inputBuffer.Dequeue());
 
-        while (_workProgress >= 1f)
-        {
-            if (!TryCompleteUnloadBatch(dataManager)) break;
-            _workProgress -= 1f;
-        }
+        _inputBuffer.Enqueue(new ResourcePacket(p.Id, remainder));
+        foreach (ResourcePacket t in tail)
+            _inputBuffer.Enqueue(t);
     }
 
     private bool CanCompleteUnloadBatch(DataManager dataManager)
@@ -336,23 +375,6 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         if (!dataManager.Resource.ModifyResourceCount(_selectedResource.id, -pull)) return false;
         _outputBuffer.Enqueue(new ResourcePacket(_selectedResource.id, pull));
         return true;
-    }
-
-    private void TickProductionBuilding(DataManager dataManager)
-    {
-        if (_selectedResource == null) return;
-
-        float delta = GetWorkProgressDeltaPerTick(dataManager);
-        if (delta <= 0f) return;
-
-        _workProgress += delta;
-        if (_workProgress > 1f && !CanCompleteProductionBatch()) _workProgress = 1f;
-
-        while (_workProgress >= 1f)
-        {
-            if (!TryCompleteProductionBatch()) break;
-            _workProgress -= 1f;
-        }
     }
 
     private bool CanCompleteProductionBatch()
@@ -510,7 +532,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void UpdateOutputIndicators()
     {
-        if (_outputIndicatorPrefab == null) return;
+        if (_outputIndicatorPrefab == null || _buildingData is LoadStationData) return;
         foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
         {
             GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
@@ -575,5 +597,10 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         }
 
         return counts;
+    }
+
+    private void OnDestroy()
+    {
+        ClearOutgoingIconContainer();
     }
 }

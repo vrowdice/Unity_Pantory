@@ -138,6 +138,18 @@ MonoBehaviour:
       \uC5F0\uAD6C\uB97C \uC9C4\uD589\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 22606259738263552
+    m_Localized: "\uAC74\uBB3C \uC7A0\uAE08 \uD574\uC81C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22606455687757824
+    m_Localized: "\uC6D0\uC790\uC7AC \uD0D0\uC0C9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22606619886370816
+    m_Localized: "\uC0DD\uC0B0 \uD6A8\uC728"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

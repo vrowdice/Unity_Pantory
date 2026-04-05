@@ -143,6 +143,10 @@ MonoBehaviour:
     m_Key: Production
     m_Metadata:
       m_Items: []
+  - m_Id: 22446163628539904
+    m_Key: RawProduction
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

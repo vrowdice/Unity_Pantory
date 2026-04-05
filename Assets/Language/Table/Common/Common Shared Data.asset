@@ -539,6 +539,10 @@ MonoBehaviour:
     m_Key: OutputResource
     m_Metadata:
       m_Items: []
+  - m_Id: 25487220754759680
+    m_Key: ResearchPoint
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: InitialResearchData
   m_EditorClassIdentifier: 
   maxTier: 4
-  initialResearchPoint: 100
+  initialResearchPoint: 0

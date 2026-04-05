@@ -95,6 +95,18 @@ MonoBehaviour:
     m_Key: factory_basics_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 22606259738263552
+    m_Key: UnlockBuilding
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22606455687757824
+    m_Key: RawResourceSearch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22606619886370816
+    m_Key: ProductionEfficiency
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

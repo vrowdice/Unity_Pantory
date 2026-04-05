@@ -14,25 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: oil_pump
   displayName: Oil Pump
-  buildingType: 1
+  buildingType: 2
   icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
   description: An oil drilling facility that extracts crude oil from underground
     reserves. Essential for fuel production and chemical processing. Requires high
     maintenance costs.
   isUnlockedByDefault: 0
+  isProfessional: 0
   requiredEmployees: 3
   buildCost: 600
   maintenanceCost: 30
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
-  handlingResource: {fileID: 0}
+  maxInputBufferCapacity: 16
+  maxOutputBufferCapacity: 16
   allowedResourceTypes: 00000000
   _producibleResources:
   - {fileID: 11400000, guid: 707bdf8bad3258b4b80e6bc374ece4de, type: 2}
-  inputPosition: {x: 0, y: 0}
-  outputPosition: {x: 2, y: 1}
-  baseProductionRate: 0.7
-  processingTime: 1.8
+  ticksPerBatch: 24
+  inputResourcesPerBatch: 1
   _producibleRawResources:
   - {fileID: 11400000, guid: 707bdf8bad3258b4b80e6bc374ece4de, type: 2}

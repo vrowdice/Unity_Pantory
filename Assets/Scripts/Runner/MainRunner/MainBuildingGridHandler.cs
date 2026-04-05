@@ -13,7 +13,7 @@ public class MainBuildingGridHandler
     private readonly Transform _tileParent;
     private readonly Transform _buildingParent;
     private readonly Transform _roadParent;
-
+    
     private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
     private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();

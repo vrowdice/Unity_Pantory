@@ -545,6 +545,10 @@ MonoBehaviour:
     m_Localized: Output Resource
     m_Metadata:
       m_Items: []
+  - m_Id: 25487220754759680
+    m_Localized: Research Point
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

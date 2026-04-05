@@ -125,6 +125,18 @@ MonoBehaviour:
     m_Localized: We conduct basic research to run the factory.
     m_Metadata:
       m_Items: []
+  - m_Id: 22606259738263552
+    m_Localized: Unlock Building
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22606455687757824
+    m_Localized: Raw Resource Search
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22606619886370816
+    m_Localized: Production Efficiency
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

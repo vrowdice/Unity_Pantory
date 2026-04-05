@@ -947,7 +947,7 @@ GameObject:
   - component: {fileID: 7477119635691914075}
   - component: {fileID: 5543390825650741669}
   m_Layer: 5
-  m_Name: ThreadControllPanel
+  m_Name: BuildingControllPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2982,7 +2982,7 @@ GameObject:
   - component: {fileID: 7499341975686375436}
   - component: {fileID: 6719949791622022408}
   m_Layer: 5
-  m_Name: ThreadCategoryScrollView
+  m_Name: BuildingCategoryScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5981,7 +5981,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7462991770510136679}
   m_Layer: 5
-  m_Name: ThreadScrollViewPanel
+  m_Name: BuildingScrollViewPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12937,7 +12937,7 @@ GameObject:
   - component: {fileID: 6621596165156485857}
   - component: {fileID: 4283986947711051658}
   m_Layer: 5
-  m_Name: ThreadScrollView
+  m_Name: BuildingScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
