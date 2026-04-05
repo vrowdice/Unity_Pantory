@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: royal_court
   displayName: Royal Court
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 91923e00004d8c64f8f251937b440983, type: 3}
   description: The royal court maintains its opulent lifestyle, constantly acquiring
     luxury goods, fine furniture, and precious metals for ceremonies and displays of
     wealth.

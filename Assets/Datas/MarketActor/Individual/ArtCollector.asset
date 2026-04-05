@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: art_collector
   displayName: Art Collector
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 42a017d417525c84b8885b103451bc1f, type: 3}
   description: An avid collector of fine art and craftsmanship, seeking premium furniture,
     luxury clothing, and fine wood for their extensive collection.
   marketActorType: 2

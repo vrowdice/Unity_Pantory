@@ -15,8 +15,8 @@ MonoBehaviour:
   id: smelter
   displayName: Smelter
   buildingType: 1
-  icon: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
-  buildingSprite: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
+  icon: {fileID: 21300000, guid: f61fa4fc334c0a44ca016b08826b3efe, type: 3}
+  buildingSprite: {fileID: 21300000, guid: f61fa4fc334c0a44ca016b08826b3efe, type: 3}
   description: A smelting facility that transforms raw ores into refined metal ingots.
     Processes iron ore, copper ore, aluminum ore, and gold ore into their respective
     ingots. Essential for metalworking industries.

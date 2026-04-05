@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: imperial_treasury
   displayName: Imperial Treasury
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 21698fb650f7bba46acad89781895b62, type: 3}
   description: The empire's central treasury managing state finances and procuring
     resources for imperial operations across all provinces.
   marketActorType: 0

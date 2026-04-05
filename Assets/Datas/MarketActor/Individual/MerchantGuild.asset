@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: merchant_guild
   displayName: Merchant Guild
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 6f9f401bc6c9749469894b97adaf6823, type: 3}
   description: A powerful trade association pooling resources to purchase various
     goods for distribution across trade routes and markets.
   marketActorType: 2

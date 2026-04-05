@@ -15,8 +15,8 @@ MonoBehaviour:
   id: logging_camp
   displayName: Logging Camp
   buildingType: 2
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: 9102710e333f6404e94d48570f7ec493, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 9102710e333f6404e94d48570f7ec493, type: 3}
   description: Harvests raw timber from nearby forests. Produces logs without consuming
     any auxiliary materials. First step in the wood production chain.
   isUnlockedByDefault: 1

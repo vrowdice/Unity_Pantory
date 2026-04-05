@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weapon_enthusiast
   displayName: Weapon Enthusiast
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: be33efa4539c8d0478c24c3baf5e3915, type: 3}
   description: A private collector and enthusiast of military weapons, constantly
     acquiring small arms, heavy arms, and munitions for their private arsenal.
   marketActorType: 2

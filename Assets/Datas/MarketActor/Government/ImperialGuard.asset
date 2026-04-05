@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: imperial_guard
   displayName: Imperial Guard
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: c8d39d048a81ab340a199d11e5c27d34, type: 3}
   description: Elite security force protecting the capital, requiring small arms,
     munitions, and vehicles for patrols and security operations.
   marketActorType: 0

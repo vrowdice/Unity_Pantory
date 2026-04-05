@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: treasury_reserve
   displayName: Treasury Reserve
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: c3e6c2dc9bd73e64082efb7d50a1ba0f, type: 3}
   description: The empire's strategic reserve, accumulating precious metals and
     gold to maintain financial stability and back the imperial currency.
   marketActorType: 0

@@ -100,12 +100,15 @@ def generate_image_prompt(item_data):
 BUILDING TYPE: {type_style}
 SPECIFIC FEATURES: {type_features}
 
+CAMERA / VIEW (critical):
+- Show the building as a frontal elevation: standing in front of the building, camera at eye level or slightly below, looking straight at the main facade (the wall with the entrance or primary face).
+- This is NOT a map, NOT a floor plan, NOT a roof plan. Show the front wall filling the frame vertically (doors/windows on that wall), not the roof from above.
+
 REQUIREMENTS:
+- MANDATORY: Orthographic frontal view only — one flat face of the building toward the viewer, like a 2D game sprite or UI icon. No vanishing lines, no tilted horizon.
 - MANDATORY: This must be a completely flat 2D image, no 3D perspective, no depth, no shadows, no shading suggesting 3D
 - 512x512 pixels (size specification only, do not render as text)
 - Pure white background #FFFFFF - this is just background, do not draw ground
-- Square building front view, straight on
-- Building shape: Perfect square when viewed from front
 - Building width and height should be approximately equal (square proportions)
 - Casual pixel art style, sharp pixels, no anti-aliasing
 - Early 20th century industrial architecture
@@ -113,7 +116,8 @@ REQUIREMENTS:
 - Draw ONLY the building, NO ground, NO base, NO foundation, NO floor
 - Building should float on white background with no ground line or base
 - NO text, NO letters, NO numbers
-- NO side view, NO angled view, NO isometric view
+- NO top-down view, NO bird's eye, NO aerial, NO overhead, NO roof-only shot, NO isometric, NO dimetric, NO strategy-game map angle
+- NO side view, NO angled view (except straight-on front), NO three-quarter view
 - NO 3D perspective, NO depth, NO shadows, NO shading suggesting 3D
 - Completely flat 2D sprite style, like a game icon
 """
@@ -138,32 +142,19 @@ def process_generated_image(img, item_name):
         print(f"  이미지 후처리 오류: {e}")
         return img
 
-def generate_image_with_imagen(prompt, output_path, item_name, description="", building_type=1):
-    """Google Imagen 4.0 API를 사용해서 이미지 생성"""
+def generate_image_with_imagen(prompt, output_path, item_name):
+    """Google Imagen 4.0 API를 사용해서 이미지 생성. prompt는 generate_image_prompt() 결과를 그대로 사용한다."""
     try:
-        desc_part = f", {description}" if description else ""
-        
-        building_type_features = {
-            0: "warehouse with large loading doors few windows simple structure storage facility",
-            1: "factory with multiple windows chimneys vents manufacturing equipment production facility",
-            2: "processing facility with pipes tanks complex industrial equipment refinery",
-            3: "infrastructure utility building transport facility simple functional structure"
-        }
-        type_features = building_type_features.get(building_type, "industrial building")
-        
-        building_name = item_name
-        if description:
-            building_context = f"{building_name} - {description}"
-        else:
-            building_context = building_name
-        
-        simple_prompt = f"completely flat 2D image mandatory, casual pixel art square building front facade for {building_context}, {type_features}, include distinctive features matching building type, square building viewed from front straight on, building width and height equal square proportions, draw only building no ground no base no foundation no floor building floats on white background, flat 2D sprite style like game icon, 512x512 pixels size not text, pure white background, building fills 70-80 percent centered, sharp pixels no anti-aliasing, early 20th century industrial architecture, no text no letters no numbers, no side view no angled view no isometric view, no 3D perspective no depth no shadows no shading"
-        
+        api_prompt = (prompt or "").strip()
+        if not api_prompt:
+            print(f"  프롬프트가 비어 있습니다: {item_name}")
+            return False
+
         if imagen_client:
             try:
                 response = imagen_client.models.generate_images(
                     model=IMAGEN_MODEL,
-                    prompt=simple_prompt,
+                    prompt=api_prompt,
                     config=types.GenerateImagesConfig(
                         number_of_images=1,
                     )
@@ -250,9 +241,7 @@ def process_buildings():
             continue
         
         prompt = generate_image_prompt(item_data)
-        description = item_data.get('description', '')
-        building_type = item_data.get('buildingType', 1)
-        success = generate_image_with_imagen(prompt, output_image_path, item_name, description, building_type)
+        success = generate_image_with_imagen(prompt, output_image_path, item_name)
         
         if not success:
             print(f"  생성 실패: {item_name} (API 미사용)")

@@ -6,8 +6,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 PY_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 load_dotenv(os.path.join(PY_DIR, ".env"))
-DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/MarketActor")
-IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/MarketActor")
+DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/MarketActor/Individual")
+IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/MarketActor/Individual")
 
 def get_image_guid(meta_file_path):
     """이미지의 .meta 파일에서 GUID와 sprite ID 추출"""

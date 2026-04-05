@@ -15,8 +15,8 @@ MonoBehaviour:
   id: sawmill
   displayName: Sawmill
   buildingType: 1
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: 9694cc8cbbc82e44c9191b416fbfb4fd, type: 3}
+  buildingSprite: {fileID: 21300000, guid: 9694cc8cbbc82e44c9191b416fbfb4fd, type: 3}
   description: Processes raw logs from logging camps into lumber and fabric. Saws
     logs into usable lumber and produces fabric from wood pulp. Most efficient when
     placed near logging camps.

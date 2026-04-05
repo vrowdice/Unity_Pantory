@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: industrial_investor
   displayName: Industrial Investor
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 032b8609db6199d45b83695953b46349, type: 3}
   description: A wealthy investor funding industrial ventures, purchasing metals,
     components, and tools to support various manufacturing projects and factories.
   marketActorType: 2

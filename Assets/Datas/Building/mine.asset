@@ -15,8 +15,8 @@ MonoBehaviour:
   id: mine
   displayName: Mine
   buildingType: 2
-  icon: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
-  buildingSprite: {fileID: 21300000, guid: cb30fb799cab6aa43922313ed10bfcd1, type: 3}
+  icon: {fileID: 21300000, guid: ec25fe544e4460647936b5f977868f8e, type: 3}
+  buildingSprite: {fileID: 21300000, guid: ec25fe544e4460647936b5f977868f8e, type: 3}
   description: A deep-shaft mining facility that extracts iron ore, coal, copper
     ore, gold ore, and aluminum ore from the earth. Requires significant investment
     but provides essential raw materials for industry.

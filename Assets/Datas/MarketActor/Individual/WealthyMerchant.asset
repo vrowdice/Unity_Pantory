@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: wealthy_merchant
   displayName: Wealthy Merchant
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: d934ba8a51281be4db42689f824fa43f, type: 3}
   description: A prosperous merchant with extensive trade networks, purchasing various
     resources for personal ventures and investments across the empire.
   marketActorType: 2

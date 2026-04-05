@@ -15,7 +15,7 @@ except ImportError:
     SCIPY_AVAILABLE = False
     print("Warning: scipy module not found.")
 
-TARGET_DIR = os.path.join(BASE_DIR, "../../Images/Resource/Raw")
+TARGET_DIR = os.path.join(BASE_DIR, "../../Images/MarketActor/Government")
 THRESH_LOWER = 200
 THRESH_UPPER = 250
 

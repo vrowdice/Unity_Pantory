@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: noble_estate
   displayName: Noble Estate
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 8caf91ce8fccc6d4fa340e5a0407ac7d, type: 3}
   description: A prestigious noble family maintaining their ancestral estate, requiring
     fine furniture, luxury goods, and premium materials for their opulent lifestyle.
   marketActorType: 2

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: master_craftsman
   displayName: Master Craftsman
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: d4c5b32dac68cf743b54627704f090dc, type: 3}
   description: A renowned artisan specializing in fine craftsmanship, constantly
     sourcing premium wood, precision tools, and quality materials for custom creations.
   marketActorType: 2

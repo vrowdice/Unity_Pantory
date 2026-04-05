@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: diplomatic_corps
   displayName: Diplomatic Corps
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: addec37b63863a44e89ded2c163c346e, type: 3}
   description: The diplomatic service requires luxury goods, fine furniture, and
     precious metals for official ceremonies, state visits, and diplomatic gifts to
     foreign dignitaries.

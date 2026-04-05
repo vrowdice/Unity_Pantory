@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: public_works_department
   displayName: Public Works Department
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: e0956fd1cb65184488cff5eeb167d7e5, type: 3}
   description: Government agency responsible for infrastructure projects, constantly
     procuring metals, wood, and tools for roads, bridges, and public buildings.
   marketActorType: 0

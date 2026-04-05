@@ -27,8 +27,8 @@ elif GOOGLE_AI_API_KEY:
         imagen_client = None
 
 # 프로젝트 루트 디렉토리
-DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/MarketActor")
-IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/MarketActor")
+DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/MarketActor/Individual")
+IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/MarketActor/Individual")
 
 # Archetype별 로고 스타일 키워드
 ARCHETYPE_STYLES = {

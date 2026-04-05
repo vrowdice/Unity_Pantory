@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: scholar
   displayName: Scholar
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 4ae3d9ed2669acd42beff535a4c2776c, type: 3}
   description: A learned academic conducting research, requiring electronic components,
     precision tools, and basic materials for experiments and scholarly work.
   marketActorType: 2

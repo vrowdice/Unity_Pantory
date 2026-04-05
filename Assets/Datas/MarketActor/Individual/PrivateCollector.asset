@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: private_collector
   displayName: Private Collector
-  icon: {fileID: 21300000, guid: 5a9fb12c01c9cf1468448635a8a453e5, type: 3}
+  icon: {fileID: 21300000, guid: 42c9bf64a53b50d4a8dca32019514951, type: 3}
   description: An eccentric collector with deep pockets, seeking rare and valuable
     resources including precious metals, fine wood, and unique components for their
     private collection.
