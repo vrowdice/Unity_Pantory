@@ -24,11 +24,12 @@ public abstract class BuildingData : ScriptableObject
     public Vector2Int size = new Vector2Int(1, 1);
     public ResearchData requiredResearch;
 
+    public int maxInputBufferCapacity = 16;
+    public int maxOutputBufferCapacity = 16;
+
     public virtual bool IsProductionBuilding => false;
     public virtual bool IsLoadStation => false;
     public virtual bool IsUnloadStation => false;
     public virtual bool IsRoad => false;
-    public virtual Vector2Int InputPosition => Vector2Int.zero;
-    public virtual Vector2Int OutputPosition => Vector2Int.zero;
     public virtual List<ResourceType> AllowedResourceTypes => null;
 }

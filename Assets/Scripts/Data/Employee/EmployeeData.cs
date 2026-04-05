@@ -16,8 +16,8 @@ public class EmployeeData : ScriptableObject
     public string description;
 
     [Header("Initial Stats")]
-    [Range(0f, 2f)]
-    public float baseEfficiency;
+    [Range(0f, 1f)]
+    public float baseEfficiency = 0.5f;
     [Range(-100f, 100f)]
     public float baseSatisfaction;
     

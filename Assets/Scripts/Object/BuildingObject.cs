@@ -1,17 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 /// <summary>
-/// 메인 씬에서 그리드에 설치된 건물 오브젝트의 데이터 + 뷰 + 콜라이더를 모두 관리합니다.
-/// 건물 데이터 타입에 따라 시간 틱 시 자원 입출력/생산을 처리합니다.
+/// 그리드에 설치된 건물: 뷰, 입출력 큐, 시간 틱 시뮬, 직원, 클릭 UI.
 /// </summary>
 public class BuildingObject : MonoBehaviour, IResourceNode
 {
-    [SerializeField] private BuildingData _buildingData;
-    [SerializeField] private Vector2Int _origin;
-    [SerializeField] private Vector2Int _size;
-    [SerializeField] private int _rotation;
     [SerializeField] private SpriteRenderer _viewObjRenderer;
     [SerializeField] private BoxCollider2D _collider;
 
@@ -19,132 +14,168 @@ public class BuildingObject : MonoBehaviour, IResourceNode
     [SerializeField] private GameObject _outputIndicatorPrefab;
     [SerializeField] private float _outgoingIconScale = 0.01f;
 
-    private GameObject _outgoingIconContainer;
-
-    public List<Vector2Int> OutputGridPositions { get; private set; }
-
-    [Header("Resource Buffer")]
-    [SerializeField] private int _maxCapacity = 1;
-    private readonly Queue<ResourcePacket> _resourceBuffer = new Queue<ResourcePacket>();
-
-    private int _productionProgress;
-    private int _outputRoundRobinIndex;
-
-    private MainRunner _mainRunner;
-
     [Header("Player Selection")]
     [SerializeField] private ResourceData _selectedResource;
-
-    public BuildingData BuildingData => _buildingData;
-    public ResourceData SelectedResource => _selectedResource;
-    public Vector2Int Origin => _origin;
-    public Vector2Int Size => _size;
-    public int Rotation => _rotation;
 
     [Header("Employees")]
     [SerializeField] private int _assignedWorkers;
     [SerializeField] private int _assignedTechnicians;
 
+    private GameObject _outgoingIconContainer;
+    private readonly Queue<ResourcePacket> _inputBuffer = new Queue<ResourcePacket>();
+    private readonly Queue<ResourcePacket> _outputBuffer = new Queue<ResourcePacket>();
+
+    private MainRunner _mainRunner;
+    private BuildingData _buildingData;
+    private Vector2Int _origin;
+    private Vector2Int _size;
+    private int _rotation;
+    private float _workProgress;
+    private int _maxInputCapacity;
+    private int _maxOutputCapacity;
+
+    public BuildingData BuildingData => _buildingData;
+    public Vector2Int Origin => _origin;
+    public Vector2Int Size => _size;
+    public List<Vector2Int> OutputGridPositions { get; private set; }
+
     public int AssignedWorkers => _assignedWorkers;
     public int AssignedTechnicians => _assignedTechnicians;
-    public int RequiredEmployeeSlots => _buildingData != null ? Mathf.Max(0, _buildingData.requiredEmployees) : 0;
-    public int RequiredTechnicianMinimum => _buildingData != null && _buildingData.isProfessional && _buildingData.requiredEmployees > 0 ? 1 : 0;
+    public int RequiredEmployeeSlots => Mathf.Max(0, _buildingData.requiredEmployees);
+    public int RequiredTechnicianMinimum => _buildingData.isProfessional && _buildingData.requiredEmployees > 0 ? 1 : 0;
     public int MaxWorkerSlots => Mathf.Max(0, RequiredEmployeeSlots - RequiredTechnicianMinimum);
     public int MaxTechnicianSlots => RequiredEmployeeSlots;
 
-    public bool IsEmpty => _resourceBuffer.Count == 0;
-    public bool IsFull => _resourceBuffer.Count >= _maxCapacity;
-
-    private void Awake()
+    public void Init(MainRunner runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation)
     {
-        if (_collider == null)
-            _collider = GetComponent<BoxCollider2D>();
-    }
-
-    private void Start()
-    {
-        _mainRunner = FindAnyObjectByType<MainRunner>();
-    }
-
-    public void Init(BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation)
-    {
+        _mainRunner = runner;
         _buildingData = buildingData;
         _origin = origin;
         _size = rotatedSize;
         _rotation = rotation;
-
-        ApplyCapacityFromBuildingData();
-
-        RebuildOutputGridPositions();
+        _maxInputCapacity = Mathf.Max(0, buildingData.maxInputBufferCapacity);
+        _maxOutputCapacity = Mathf.Max(0, buildingData.maxOutputBufferCapacity);
 
         transform.localRotation = Quaternion.Euler(0f, 0f, -rotation * 90f);
 
-        if (_viewObjRenderer != null)
-        {
-            _viewObjRenderer.sprite = buildingData != null ? buildingData.buildingSprite : null;
-            _viewObjRenderer.transform.localRotation = Quaternion.identity;
-            _viewObjRenderer.transform.localScale = new Vector3(rotatedSize.x, rotatedSize.y, 1);
-        }
+        _viewObjRenderer.sprite = buildingData.buildingSprite;
+        _viewObjRenderer.transform.localRotation = Quaternion.identity;
+        _viewObjRenderer.transform.localScale = new Vector3(rotatedSize.x, rotatedSize.y, 1);
+        _collider.size = new Vector2(rotatedSize.x, rotatedSize.y);
+        _collider.offset = Vector2.zero;
 
-        if (_collider != null) { _collider.size = new Vector2(rotatedSize.x, rotatedSize.y); _collider.offset = Vector2.zero; }
-
+        RebuildOutputGridPositions();
         UpdateOutputIndicators();
         RefreshOutgoingResourceIcons();
+
+        if (_selectedResource == null && buildingData is RawMaterialFactoryData raw && raw.DefaultRawResource != null)
+            _selectedResource = raw.DefaultRawResource;
+    }
+
+    private void Update()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (_mainRunner != null && (_mainRunner.IsPlacementMode || _mainRunner.IsRemovalMode)) return;
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(-1)) return;
+        if (_collider == null) return;
+
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0f;
+        if (!_collider.OverlapPoint(mouseWorld)) return;
+
+        UIManager.Instance?.ShowBuildingInfoPopup(this);
+    }
+
+    private void OnDestroy()
+    {
+        ClearOutgoingIconContainer();
     }
 
     /// <summary>
-    /// UI/저장용 스냅샷. 선택한 생산 자원·입력 요구를 반영합니다.
+    /// UI 레시피 그리드용. 선택 레시피 기준 입력/출력 ID 목록을 채웁니다.
     /// </summary>
-    public BuildingState CreateStateSnapshot()
+    public void GetRecipeDisplayData(List<string> inputIds, List<string> outputIds, out string currentResourceId)
     {
-        if (_buildingData == null) return null;
+        inputIds.Clear();
+        outputIds.Clear();
+        currentResourceId = _selectedResource != null ? _selectedResource.id : null;
+        if (_selectedResource == null) return;
 
-        BuildingState state = new BuildingState(_buildingData.id, _origin, _buildingData, _rotation);
-        state.outputProductionIds.Clear();
-        state.inputProductionIds.Clear();
-        state.currentResourceId = null;
-
-        if (_selectedResource == null) return state;
-
-        state.outputProductionIds.Add(_selectedResource.id);
-        state.currentResourceId = _selectedResource.id;
-        if (_selectedResource.requirements == null) return state;
-
-        foreach (ResourceRequirement req in _selectedResource.requirements)
+        if (_selectedResource.requirements != null)
         {
-            if (req == null || req.resource == null) continue;
-            int count = Mathf.Max(1, req.count);
-            for (int i = 0; i < count; i++) state.inputProductionIds.Add(req.resource.id);
+            foreach (ResourceRequirement req in _selectedResource.requirements)
+            {
+                if (req.resource == null) continue;
+                int count = Mathf.Max(1, req.count);
+                for (int i = 0; i < count; i++)
+                    inputIds.Add(req.resource.id);
+            }
         }
+        _selectedResource.AppendBatchOutputIds(outputIds);
+    }
 
-        return state;
+    public bool TrySetSelectedResource(ResourceData data)
+    {
+        if (data == null) return false;
+        if (_buildingData is ProductionBuildingData prod && !IsResourceAllowedForProduction(prod, data))
+            return false;
+        if (_buildingData is RawMaterialFactoryData raw && !IsResourceAllowedForRawFactory(raw, data))
+            return false;
+
+        _selectedResource = data;
+        RefreshOutgoingResourceIcons();
+        return true;
     }
 
     public float GetProductionProgressNormalized()
     {
-        if (_buildingData is ProductionBuildingData prod && prod.ticksPerBatch > 0)
-            return Mathf.Clamp01((float)_productionProgress / prod.ticksPerBatch);
+        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
+            return Mathf.Clamp01(_workProgress);
         return 0f;
     }
 
-    /// <summary>
-    /// 이 건물에 배치된 직원 타입별 인원과 DataManager 직원 효율을 가중 평균한 값을 0~1로 (슬라이더용).
-    /// 배치 인원이 없으면 0.
-    /// </summary>
     public float GetAverageAssignedEfficiencyNormalized(DataManager dataManager)
     {
         if (dataManager == null || _buildingData == null) return 0f;
         int total = _assignedWorkers + _assignedTechnicians;
-        if (total <= 0) return 0f;
+        if (total <= 0)
+            return RequiredEmployeeSlots <= 0 ? 1f : 0f;
 
-        EmployeeEntry workerEntry = dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
-        EmployeeEntry techEntry = dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
-        float effW = workerEntry != null ? workerEntry.state.currentEfficiency : 1f;
-        float effT = techEntry != null ? techEntry.state.currentEfficiency : 1f;
-        return Mathf.Clamp01(((_assignedWorkers * effW + _assignedTechnicians * effT) / total) / 2f);
+        GetGlobalEmployeeEfficienciesNormalized(dataManager, out float effW, out float effT);
+        return Mathf.Clamp01((_assignedWorkers * effW + _assignedTechnicians * effT) / total);
     }
 
-    /// <summary>ThreadInfoPopup과 동일한 할당 규칙으로 인원을 늘리거나 줄입니다.</summary>
+    public float GetWorkProgressDeltaPerTick(DataManager dataManager)
+    {
+        if (dataManager == null) return 0f;
+        if (!(_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)) return 0f;
+
+        int assigned = _assignedWorkers + _assignedTechnicians;
+        int required = RequiredEmployeeSlots;
+
+        if (assigned <= 0)
+            return required <= 0 ? 1f : 0f;
+
+        float staffingFill = required <= 0 ? 1f : Mathf.Clamp01((float)assigned / required);
+        GetGlobalEmployeeEfficienciesNormalized(dataManager, out float effW, out float effT);
+        float effAvg = (_assignedWorkers * effW + _assignedTechnicians * effT) / assigned;
+        return Mathf.Clamp01(staffingFill * effAvg);
+    }
+
+    private static void GetGlobalEmployeeEfficienciesNormalized(DataManager dm, out float effW, out float effT)
+    {
+        effW = 0f;
+        effT = 0f;
+        if (dm == null) return;
+        EmployeeEntry w = dm.Employee.GetEmployeeEntry(EmployeeType.Worker);
+        EmployeeEntry t = dm.Employee.GetEmployeeEntry(EmployeeType.Technician);
+        effW = w != null ? Mathf.Clamp01(w.state.currentEfficiency) : 0f;
+        effT = t != null ? Mathf.Clamp01(t.state.currentEfficiency) : 0f;
+    }
+
     public bool TryApplyEmployeeDelta(EmployeeType type, int delta)
     {
         if (delta == 0) return true;
@@ -197,116 +228,244 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         return false;
     }
 
-    private void Update()
-    {
-        if (!Input.GetMouseButtonDown(0)) return;
-        if (_mainRunner != null && (_mainRunner.IsPlacementMode || _mainRunner.IsRemovalMode)) return;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(-1)) return;
-        if (_collider == null) return;
-
-        Camera cam = Camera.main;
-        if (cam == null) return;
-
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
-        if (!_collider.OverlapPoint(mouseWorld)) return;
-
-        UIManager.Instance?.ShowBuildingInfoPopup(this);
-    }
-
-    private void ApplyCapacityFromBuildingData()
-    {
-        if (_buildingData == null) return;
-
-        switch (_buildingData)
-        {
-            case LoadStationData:
-                _maxCapacity = 1;
-                break;
-            case UnloadStationData unloadData:
-                _maxCapacity = Mathf.Max(1, unloadData.pullPerHour);
-                break;
-            case RawMaterialFactoryData:
-                _maxCapacity = 0;
-                break;
-            case ProductionBuildingData prodData:
-                _maxCapacity = Mathf.Max(1, prodData.inputBufferCapacity);
-                break;
-        }
-    }
-
     public bool TryPush(ResourcePacket packet)
     {
-        if (packet == null || _buildingData is RawMaterialFactoryData || _maxCapacity <= 0 || _resourceBuffer.Count >= _maxCapacity) return false;
-        _resourceBuffer.Enqueue(packet);
-        RefreshOutgoingResourceIcons();
-        return true;
-    }
+        if (packet == null || _buildingData is RawMaterialFactoryData || _buildingData is UnloadStationData) return false;
 
-    public bool TryPeek(out ResourcePacket packet)
-    {
-        if (_resourceBuffer.Count == 0) { packet = null; return false; }
-        packet = _resourceBuffer.Peek();
-        return true;
-    }
-
-    public bool TryPop(out ResourcePacket packet)
-    {
-        if (_resourceBuffer.Count == 0) { packet = null; return false; }
-        packet = _resourceBuffer.Dequeue();
-        RefreshOutgoingResourceIcons();
-        return true;
-    }
-
-    /// <summary>
-    /// 시간 틱(예: 1시간)마다 호출. 자원 창고 연동 및 생산 진행을 처리합니다.
-    /// </summary>
-    public void TickSimulation(DataManager dataManager)
-    {
-        if (_buildingData == null || dataManager == null) return;
-
-        if (_buildingData is RawMaterialFactoryData rawFactory)
-            TickRawMaterialFactory(dataManager, rawFactory);
-        else if (_buildingData is LoadStationData)
-            TickLoadStation(dataManager);
-        else if (_buildingData is UnloadStationData unloadData)
-            TickUnloadStation(dataManager, unloadData);
-        else if (_buildingData is ProductionBuildingData prodData)
-            TickProductionBuilding(prodData);
-
-        RefreshOutgoingResourceIcons();
-    }
-
-    /// <summary>
-    /// 플레이어가 이 건물에서 생산/반출할 자원을 선택합니다. 가공·원자재·하역소에서 사용.
-    /// </summary>
-    public bool TrySetSelectedResource(ResourceData resource)
-    {
-        if (_buildingData is ProductionBuildingData prod)
+        if (_buildingData is LoadStationData || _buildingData is ProductionBuildingData)
         {
-            if (resource != null && !IsResourceAllowedForProduction(prod, resource)) return false;
-            _selectedResource = resource;
-            _productionProgress = 0;
-            RefreshOutgoingResourceIcons();
-            return true;
-        }
-
-        if (_buildingData is RawMaterialFactoryData raw)
-        {
-            if (resource != null && !IsResourceAllowedForRawFactory(raw, resource)) return false;
-            _selectedResource = resource;
-            RefreshOutgoingResourceIcons();
-            return true;
-        }
-
-        if (_buildingData is UnloadStationData)
-        {
-            _selectedResource = resource;
-            RefreshOutgoingResourceIcons();
+            if (_maxInputCapacity <= 0 || _inputBuffer.Count >= _maxInputCapacity) return false;
+            _inputBuffer.Enqueue(packet);
             return true;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 출력(생산·하역) 또는 상역 입력 큐 맨 앞을 이웃에 넣을 수 있을 때만 전달합니다. 실패 시 큐는 그대로입니다.
+    /// </summary>
+    public bool TryForwardTo(IResourceNode destination)
+    {
+        if (destination == null) return false;
+
+        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
+        {
+            if (_outputBuffer.Count == 0) return false;
+            ResourcePacket packet = _outputBuffer.Peek();
+            if (!destination.TryPush(packet)) return false;
+            _outputBuffer.Dequeue();
+            return true;
+        }
+
+        if (_buildingData is LoadStationData)
+        {
+            if (_inputBuffer.Count == 0) return false;
+            ResourcePacket packet = _inputBuffer.Peek();
+            if (!destination.TryPush(packet)) return false;
+            _inputBuffer.Dequeue();
+            return true;
+        }
+
+        return false;
+    }
+
+    public Dictionary<string, int> GetRuntimeInputResourceCounts() => AggregateQueueCounts(_inputBuffer);
+    public Dictionary<string, int> GetRuntimeOutputResourceCounts() => AggregateQueueCounts(_outputBuffer);
+
+    public void TickSimulation(DataManager dataManager)
+    {
+        if (_buildingData is RawMaterialFactoryData rawFactory)
+            TickRawMaterialFactory(dataManager, rawFactory);
+        else if (_buildingData is LoadStationData)
+            TickLoadStation(dataManager);
+        else if (_buildingData is UnloadStationData)
+            TickUnloadStation(dataManager);
+        else if (_buildingData is ProductionBuildingData)
+            TickProductionBuilding(dataManager);
+    }
+
+    private void TickRawMaterialFactory(DataManager dataManager, RawMaterialFactoryData rawFactory)
+    {
+        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
+        if (!IsResourceAllowedForRawFactory(rawFactory, _selectedResource)) return;
+        dataManager.Resource.ModifyResourceCount(_selectedResource.id, 1);
+    }
+
+    private void TickLoadStation(DataManager dataManager)
+    {
+        while (_inputBuffer.Count > 0)
+        {
+            ResourcePacket packet = _inputBuffer.Peek();
+            if (!dataManager.Resource.ModifyResourceCount(packet.Id, packet.Amount)) break;
+            _inputBuffer.Dequeue();
+        }
+    }
+
+    private void TickUnloadStation(DataManager dataManager)
+    {
+        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
+
+        float delta = GetWorkProgressDeltaPerTick(dataManager);
+        if (delta <= 0f) return;
+
+        _workProgress += delta;
+        if (_workProgress > 1f && !CanCompleteUnloadBatch(dataManager)) _workProgress = 1f;
+
+        while (_workProgress >= 1f)
+        {
+            if (!TryCompleteUnloadBatch(dataManager)) break;
+            _workProgress -= 1f;
+        }
+    }
+
+    private bool CanCompleteUnloadBatch(DataManager dataManager)
+    {
+        if (!(_buildingData is UnloadStationData u) || _selectedResource == null) return false;
+        int outCap = u.outputBufferCapacity > 0 ? u.outputBufferCapacity : _maxOutputCapacity;
+        if (outCap > 0 && _outputBuffer.Count >= outCap) return false;
+        ResourceEntry entry = dataManager.Resource.GetResourceEntry(_selectedResource.id);
+        if (entry == null) return false;
+        return entry.state.count >= u.pullPerHour;
+    }
+
+    private bool TryCompleteUnloadBatch(DataManager dataManager)
+    {
+        if (!(_buildingData is UnloadStationData u) || _selectedResource == null) return false;
+        int pull = u.pullPerHour;
+        if (!dataManager.Resource.ModifyResourceCount(_selectedResource.id, -pull)) return false;
+        _outputBuffer.Enqueue(new ResourcePacket(_selectedResource.id, pull));
+        return true;
+    }
+
+    private void TickProductionBuilding(DataManager dataManager)
+    {
+        if (_selectedResource == null) return;
+
+        float delta = GetWorkProgressDeltaPerTick(dataManager);
+        if (delta <= 0f) return;
+
+        _workProgress += delta;
+        if (_workProgress > 1f && !CanCompleteProductionBatch()) _workProgress = 1f;
+
+        while (_workProgress >= 1f)
+        {
+            if (!TryCompleteProductionBatch()) break;
+            _workProgress -= 1f;
+        }
+    }
+
+    private bool CanCompleteProductionBatch()
+    {
+        if (_selectedResource == null) return false;
+
+        Dictionary<string, int> need = GetInputNeedForBatch(_selectedResource);
+        if (need.Count > 0 && !InputBufferSatisfies(need)) return false;
+
+        Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
+        int newPackets = outputs.Count;
+        if (_maxOutputCapacity > 0 && _outputBuffer.Count + newPackets > _maxOutputCapacity) return false;
+
+        return true;
+    }
+
+    private bool TryCompleteProductionBatch()
+    {
+        if (_selectedResource == null) return false;
+
+        Dictionary<string, int> need = GetInputNeedForBatch(_selectedResource);
+        if (need.Count > 0)
+        {
+            if (!InputBufferSatisfies(need)) return false;
+            if (!TryConsumeFromInputBuffer(need)) return false;
+        }
+
+        Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
+        foreach (KeyValuePair<string, int> kvp in outputs)
+        {
+            if (string.IsNullOrEmpty(kvp.Key)) continue;
+            _outputBuffer.Enqueue(new ResourcePacket(kvp.Key, Mathf.Max(1, kvp.Value)));
+        }
+
+        return true;
+    }
+
+    private static Dictionary<string, int> GetInputNeedForBatch(ResourceData recipe)
+    {
+        Dictionary<string, int> need = new Dictionary<string, int>();
+        if (recipe == null) return need;
+        if (recipe.requirements != null)
+        {
+            foreach (ResourceRequirement req in recipe.requirements)
+            {
+                if (req.resource == null) continue;
+                int c = Mathf.Max(1, req.count);
+                if (need.TryGetValue(req.resource.id, out int existing)) need[req.resource.id] = existing + c;
+                else need[req.resource.id] = c;
+            }
+        }
+
+        return need;
+    }
+
+    private bool InputBufferSatisfies(Dictionary<string, int> need)
+    {
+        Dictionary<string, int> have = AggregateQueueCounts(_inputBuffer);
+        foreach (KeyValuePair<string, int> kvp in need)
+        {
+            if (!have.TryGetValue(kvp.Key, out int h) || h < kvp.Value)
+                return false;
+        }
+        return true;
+    }
+
+    private bool TryConsumeFromInputBuffer(Dictionary<string, int> need)
+    {
+        if (!InputBufferSatisfies(need)) return false;
+
+        List<ResourcePacket> snapshot = new List<ResourcePacket>();
+        while (_inputBuffer.Count > 0)
+            snapshot.Add(_inputBuffer.Dequeue());
+
+        List<ResourcePacket> working = new List<ResourcePacket>(snapshot);
+        Dictionary<string, int> remaining = new Dictionary<string, int>(need);
+
+        for (int i = 0; i < working.Count; i++)
+        {
+            ResourcePacket p = working[i];
+            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+
+            if (!remaining.TryGetValue(p.Id, out int rem) || rem <= 0)
+                continue;
+
+            if (p.Amount <= rem)
+            {
+                rem -= p.Amount;
+                remaining[p.Id] = rem;
+                working.RemoveAt(i);
+                i--;
+            }
+            else
+            {
+                working[i] = new ResourcePacket(p.Id, p.Amount - rem);
+                remaining[p.Id] = 0;
+            }
+        }
+
+        foreach (KeyValuePair<string, int> kvp in remaining)
+        {
+            if (kvp.Value > 0)
+            {
+                foreach (ResourcePacket p in snapshot)
+                    _inputBuffer.Enqueue(p);
+                return false;
+            }
+        }
+
+        foreach (ResourcePacket p in working)
+            _inputBuffer.Enqueue(p);
+
+        return true;
     }
 
     private static bool IsResourceAllowedForProduction(ProductionBuildingData prod, ResourceData resource)
@@ -317,7 +476,9 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         if (list != null && list.Count > 0)
         {
             foreach (ResourceData item in list)
+            {
                 if (item != null && item.id == resource.id) return true;
+            }
             return false;
         }
 
@@ -333,128 +494,14 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         if (list != null && list.Count > 0)
         {
             foreach (ResourceData item in list)
+            {
                 if (item != null && item.id == resource.id) return true;
+            }
             return false;
         }
 
         return resource.type == ResourceType.raw;
     }
-
-    private void TickRawMaterialFactory(DataManager dataManager, RawMaterialFactoryData rawFactory)
-    {
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
-        if (!IsResourceAllowedForRawFactory(rawFactory, _selectedResource)) return;
-        dataManager.Resource.ModifyResourceCount(_selectedResource.id, 1);
-    }
-
-    private void TickLoadStation(DataManager dataManager)
-    {
-        while (_resourceBuffer.Count > 0)
-        {
-            if (!TryPeek(out ResourcePacket packet))
-            {
-                break;
-            }
-
-            if (!dataManager.Resource.ModifyResourceCount(packet.Id, packet.Amount))
-            {
-                break;
-            }
-
-            TryPop(out _);
-        }
-    }
-
-    private void TickUnloadStation(DataManager dataManager, UnloadStationData unloadData)
-    {
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
-
-        string resourceId = _selectedResource.id;
-        int pulls = Mathf.Max(0, unloadData.pullPerHour);
-
-        for (int i = 0; i < pulls; i++)
-        {
-            if (!dataManager.Resource.ModifyResourceCount(resourceId, -1))
-            {
-                break;
-            }
-
-            ResourcePacket packet = new ResourcePacket(resourceId, 1);
-            if (!TryPush(packet))
-            {
-                dataManager.Resource.ModifyResourceCount(resourceId, 1);
-                break;
-            }
-        }
-    }
-
-    private void TickProductionBuilding(ProductionBuildingData prodData)
-    {
-        if (prodData.ticksPerBatch <= 0) return;
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;
-        if (!IsResourceAllowedForProduction(prodData, _selectedResource)) return;
-
-        string outputId = _selectedResource.id;
-
-        _productionProgress++;
-
-        if (_productionProgress < prodData.ticksPerBatch) return;
-
-        int need = Mathf.Max(0, prodData.inputResourcesPerBatch);
-        if (_resourceBuffer.Count < need)
-        {
-            _productionProgress = prodData.ticksPerBatch;
-            return;
-        }
-
-        List<ResourcePacket> taken = new List<ResourcePacket>();
-        for (int i = 0; i < need; i++)
-        {
-            if (!TryPop(out ResourcePacket p))
-            {
-                break;
-            }
-
-            taken.Add(p);
-        }
-
-        if (taken.Count < need)
-        {
-            foreach (ResourcePacket p in taken)
-            {
-                TryPush(p);
-            }
-
-            _productionProgress = prodData.ticksPerBatch;
-            return;
-        }
-
-        ResourcePacket outputPacket = new ResourcePacket(outputId, 1);
-        if (!TryPush(outputPacket))
-        {
-            foreach (ResourcePacket p in taken)
-            {
-                TryPush(p);
-            }
-
-            _productionProgress = prodData.ticksPerBatch;
-            return;
-        }
-
-        _productionProgress = 0;
-    }
-
-    /// <summary>
-    /// 건물 → 도로 배분 시 번갈아 출력할 다음 인덱스를 반환하고 증가시킵니다.
-    /// </summary>
-    public void AdvanceOutputRoundRobin()
-    {
-        int count = OutputGridPositions != null ? OutputGridPositions.Count : 0;
-        if (count <= 0) return;
-        _outputRoundRobinIndex = (_outputRoundRobinIndex + 1) % count;
-    }
-
-    public int OutputRoundRobinStartIndex => _outputRoundRobinIndex;
 
     private void RebuildOutputGridPositions()
     {
@@ -463,8 +510,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
 
     private void UpdateOutputIndicators()
     {
-        if (_buildingData == null || _outputIndicatorPrefab == null) return;
-
+        if (_outputIndicatorPrefab == null) return;
         foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
         {
             GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
@@ -473,64 +519,7 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         }
     }
 
-    /// <summary>
-    /// 도로/다음 노드로 나가는 자원: 선택 출력 품목 + (가공/하역) 버퍼에 쌓인 동일 품목 수량.
-    /// 하역장은 버퍼 전체, 원자재 공장은 창고로 나가는 선택 품목 표시. 적재소(Load)는 도로로 안보냄.
-    /// </summary>
-    private Dictionary<string, int> BuildOutgoingResourceCounts()
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-        if (_buildingData == null || _buildingData is LoadStationData)
-            return counts;
-
-        if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id))
-            return counts;
-
-        string outId = _selectedResource.id;
-
-        if (_buildingData is ProductionBuildingData)
-        {
-            foreach (ResourcePacket p in _resourceBuffer)
-            {
-                if (p == null || p.Id != outId) continue;
-                AddResourceCount(counts, p.Id, p.Amount);
-            }
-
-            if (!counts.ContainsKey(outId))
-                counts[outId] = 1;
-            return counts;
-        }
-
-        if (_buildingData is UnloadStationData)
-        {
-            foreach (ResourcePacket p in _resourceBuffer)
-            {
-                if (p == null || string.IsNullOrEmpty(p.Id)) continue;
-                AddResourceCount(counts, p.Id, p.Amount);
-            }
-
-            if (counts.Count == 0)
-                counts[outId] = 1;
-            return counts;
-        }
-
-        if (_buildingData is RawMaterialFactoryData)
-        {
-            counts[outId] = 1;
-            return counts;
-        }
-
-        return counts;
-    }
-
-    private static void AddResourceCount(Dictionary<string, int> counts, string id, int amount)
-    {
-        if (string.IsNullOrEmpty(id) || amount == 0) return;
-        if (counts.TryGetValue(id, out int v)) counts[id] = v + amount;
-        else counts[id] = amount;
-    }
-
-    private void RefreshOutgoingResourceIcons()
+    public void RefreshOutgoingResourceIcons()
     {
         ClearOutgoingIconContainer();
 
@@ -552,6 +541,21 @@ public class BuildingObject : MonoBehaviour, IResourceNode
             counts);
     }
 
+    private Dictionary<string, int> BuildOutgoingResourceCounts()
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+        if (_buildingData == null || _buildingData is LoadStationData)
+            return counts;
+
+        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is RawMaterialFactoryData)
+        {
+            if (_selectedResource == null) return counts;
+            return _selectedResource.GetBatchOutputCounts();
+        }
+
+        return counts;
+    }
+
     private void ClearOutgoingIconContainer()
     {
         if (_outgoingIconContainer == null) return;
@@ -560,8 +564,16 @@ public class BuildingObject : MonoBehaviour, IResourceNode
         _outgoingIconContainer = null;
     }
 
-    private void OnDestroy()
+    private static Dictionary<string, int> AggregateQueueCounts(Queue<ResourcePacket> queue)
     {
-        ClearOutgoingIconContainer();
+        Dictionary<string, int> counts = new Dictionary<string, int>();
+        foreach (ResourcePacket p in queue)
+        {
+            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            if (counts.TryGetValue(p.Id, out int v)) counts[p.Id] = v + p.Amount;
+            else counts[p.Id] = p.Amount;
+        }
+
+        return counts;
     }
 }

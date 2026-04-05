@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,9 +8,7 @@ public class BuildingInfoPopup : PopupBase
 {
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private Image _buildingImage;
     [SerializeField] private Toggle _IsNeededExpertToggle;
-    [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private TextMeshProUGUI _buildCostText;
     [SerializeField] private TextMeshProUGUI _maintenanceText;
 
@@ -32,6 +29,10 @@ public class BuildingInfoPopup : PopupBase
     [SerializeField] private GameObject _technicianSliderContainer;
     [SerializeField] private Slider _technicianSlider;
 
+    [Header("Input Output Resource")]
+    [SerializeField] private Transform _inputResourceContent;
+    [SerializeField] private Transform _outputResourceContent;
+
     [Header("Change Production Btn")]
     [SerializeField] private Button _changeProductionBtn;
     [SerializeField] private Transform _inputGridTransform;
@@ -44,9 +45,12 @@ public class BuildingInfoPopup : PopupBase
     [SerializeField] private TextMeshProUGUI _productionEfficiencyText;
 
     private BuildingData _currentData;
-    private BuildingState _currentState;
     private DataManager _dataManager;
     private BuildingObject _buildingObject;
+
+    private readonly List<string> _recipeInputIds = new List<string>();
+    private readonly List<string> _recipeOutputIds = new List<string>();
+    private string _recipeCurrentResourceId;
 
     public void ShowBuildingInfo(BuildingObject buildingObject)
     {
@@ -60,30 +64,15 @@ public class BuildingInfoPopup : PopupBase
         UnsubscribeTimeEvents();
         _buildingObject = buildingObject;
         _currentData = buildingObject.BuildingData;
-        _currentState = buildingObject.CreateStateSnapshot();
         _dataManager = DataManager.Instance;
 
         if (_dataManager != null && _dataManager.Time != null)
         {
-            _dataManager.Time.OnDayChanged -= OnDayChangedRefresh;
-            _dataManager.Time.OnDayChanged += OnDayChangedRefresh;
+            _dataManager.Time.OnDayChanged -= OnTimeRefreshFromBuilding;
+            _dataManager.Time.OnDayChanged += OnTimeRefreshFromBuilding;
+            _dataManager.Time.OnHourChanged -= OnTimeRefreshFromBuilding;
+            _dataManager.Time.OnHourChanged += OnTimeRefreshFromBuilding;
         }
-
-        UpdateUI();
-        Show();
-    }
-
-    public void ShowBuildingInfo(BuildingData data, BuildingState state)
-    {
-        if (data == null) return;
-
-        base.Init();
-
-        UnsubscribeTimeEvents();
-        _buildingObject = null;
-        _currentData = data;
-        _currentState = state;
-        _dataManager = DataManager.Instance;
 
         UpdateUI();
         Show();
@@ -98,42 +87,31 @@ public class BuildingInfoPopup : PopupBase
     {
         if (_dataManager != null && _dataManager.Time != null)
         {
-            _dataManager.Time.OnDayChanged -= OnDayChangedRefresh;
+            _dataManager.Time.OnDayChanged -= OnTimeRefreshFromBuilding;
+            _dataManager.Time.OnHourChanged -= OnTimeRefreshFromBuilding;
         }
     }
 
-    private void OnDayChangedRefresh()
+    private void OnTimeRefreshFromBuilding()
     {
-        if (!gameObject.activeSelf || _buildingObject == null)
-        {
-            return;
-        }
+        if (!gameObject.activeSelf || _buildingObject == null) return;
 
-        _currentState = _buildingObject.CreateStateSnapshot();
+        RefreshResourceGrids();
         RefreshAllRuntimePanels();
     }
 
     private void UpdateUI()
     {
         _nameText.text = _currentData.id.Localize(LocalizationUtils.TABLE_BUILDING);
-        _descriptionText.text = (_currentData.id + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_BUILDING);
         _buildCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.buildCost)}";
         _maintenanceText.text = $"{ReplaceUtils.FormatNumberWithCommas(_currentData.maintenanceCost)} / day";
         _IsNeededExpertToggle.isOn = _currentData.isProfessional;
 
-        if (_buildingImage != null)
-        {
-            _buildingImage.sprite = _currentData.buildingSprite;
-            _buildingImage.enabled = _currentData.buildingSprite != null;
-        }
-
         UpdateProductionContext();
         RefreshResourceGrids();
-        UpdateFinancialInfo();
         RefreshAllRuntimePanels();
     }
 
-    /// <summary>직원 슬라이더·생산 진행/효율 (메인 건물 오브젝트 연동 시).</summary>
     private void RefreshAllRuntimePanels()
     {
         if (_buildingObject == null || _dataManager == null)
@@ -202,12 +180,14 @@ public class BuildingInfoPopup : PopupBase
         BuildingObject b = _buildingObject;
         float efficiency = b.GetAverageAssignedEfficiencyNormalized(_dataManager);
         float progress = b.GetProductionProgressNormalized();
+        float deltaTick = b.GetWorkProgressDeltaPerTick(_dataManager);
 
         if (_productionEfficiencySlider != null) _productionEfficiencySlider.value = efficiency;
         if (_productionProgressSlider != null) _productionProgressSlider.value = progress;
 
         if (_productionEfficiencyText != null) _productionEfficiencyText.text = $"{Mathf.RoundToInt(efficiency * 100)}%";
-        if (_productionProgressText != null) _productionProgressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
+        if (_productionProgressText != null)
+            _productionProgressText.text = $"{Mathf.RoundToInt(progress * 100)}% (+{deltaTick * 100f:0.#}%/h)";
     }
 
     /// <summary>Worker 슬라이더 (인스펙터 OnValueChanged → ThreadInfoPopup과 동일)</summary>
@@ -221,7 +201,6 @@ public class BuildingInfoPopup : PopupBase
 
         if (_buildingObject.TryApplyEmployeeDelta(EmployeeType.Worker, delta))
         {
-            _currentState = _buildingObject.CreateStateSnapshot();
             UpdateEmployeeStatusFromBuilding();
             UpdateProductionStatusFromBuilding();
         }
@@ -244,7 +223,6 @@ public class BuildingInfoPopup : PopupBase
 
         if (_buildingObject.TryApplyEmployeeDelta(EmployeeType.Technician, delta))
         {
-            _currentState = _buildingObject.CreateStateSnapshot();
             UpdateEmployeeStatusFromBuilding();
             UpdateProductionStatusFromBuilding();
         }
@@ -254,45 +232,6 @@ public class BuildingInfoPopup : PopupBase
                 Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician)),
                 _buildingObject.RequiredEmployeeSlots);
         }
-    }
-
-    private void UpdateFinancialInfo()
-    {
-        if (_currentState == null)
-        {
-            return;
-        }
-
-        long inputCost = 0;
-        long outputPrice = 0;
-
-        if (_currentState.inputProductionIds != null)
-        {
-            foreach (string id in _currentState.inputProductionIds)
-            {
-                ResourceEntry entry = _dataManager.Resource.GetResourceEntry(id);
-                if (entry != null) inputCost += (long)entry.state.currentValue;
-            }
-        }
-
-        if (_currentState.outputProductionIds != null)
-        {
-            foreach (string id in _currentState.outputProductionIds)
-            {
-                ResourceEntry entry = _dataManager.Resource.GetResourceEntry(id);
-                if (entry != null) outputPrice += (long)entry.state.currentValue;
-            }
-        }
-
-        long profit = outputPrice - inputCost;
-
-        //if (_materialPurchaseText) _materialPurchaseText.text = $"{ReplaceUtils.FormatNumberWithCommas(inputCost)}";
-        //if (_productPriceText) _productPriceText.text = $"{ReplaceUtils.FormatNumberWithCommas(outputPrice)}";
-        //if (_expectedCostText)
-        //{
-        //    _expectedCostText.text = $"{ReplaceUtils.FormatNumberWithCommas(profit)}";
-        //    _expectedCostText.color = VisualManager.Instance.GetDeltaColor(profit);
-        //}
     }
 
     private void UpdateProductionContext()
@@ -305,27 +244,42 @@ public class BuildingInfoPopup : PopupBase
         _changeProductionBtn.interactable = isProd || isUnloadStation;
     }
 
+    /// <summary>
+    /// _inputGridTransform / _outputGridTransform: 선택 생산·하역의 레시피(필요 입력 / 산출 품목).
+    /// _inputResourceContent / _outputResourceContent: 메인 건물의 실제 입력·출력 큐.
+    /// </summary>
     private void RefreshResourceGrids()
     {
-        if (_currentState == null)
-        {
-            return;
-        }
+        if (_buildingObject == null) return;
 
-        UpdateResourceGrid(_currentState.inputProductionIds, _inputGridTransform, "Input");
+        _buildingObject.GetRecipeDisplayData(_recipeInputIds, _recipeOutputIds, out _recipeCurrentResourceId);
+        RefreshRecipeGrids();
 
-        if (_currentData.IsUnloadStation)
+        if (_currentData.IsProductionBuilding || _currentData.IsUnloadStation)
         {
-            UpdateResourceGrid(_currentState.outputProductionIds, _outputGridTransform, "Output");
-        }
-        else if (!_currentData.IsProductionBuilding)
-        {
-            UpdateNonProductionOutput();
+            UpdateResourceGridFromCounts(_buildingObject.GetRuntimeInputResourceCounts(), _inputResourceContent);
+            UpdateResourceGridFromCounts(_buildingObject.GetRuntimeOutputResourceCounts(), _outputResourceContent);
         }
         else
-        {
-            UpdateResourceGrid(_currentState.outputProductionIds, _outputGridTransform, "Output");
-        }
+            ClearRuntimeQueueContents();
+    }
+
+    private void RefreshRecipeGrids()
+    {
+        UpdateResourceGrid(_recipeInputIds, _inputGridTransform);
+
+        if (_currentData.IsUnloadStation)
+            UpdateResourceGrid(_recipeOutputIds, _outputGridTransform);
+        else if (!_currentData.IsProductionBuilding)
+            UpdateNonProductionOutput();
+        else
+            UpdateResourceGrid(_recipeOutputIds, _outputGridTransform);
+    }
+
+    private void ClearRuntimeQueueContents()
+    {
+        if (_inputResourceContent != null) GameObjectUtils.ClearChildren(_inputResourceContent);
+        if (_outputResourceContent != null) GameObjectUtils.ClearChildren(_outputResourceContent);
     }
 
     private GameObject GetProductionInfoImagePrefab()
@@ -333,13 +287,21 @@ public class BuildingInfoPopup : PopupBase
         return UIManager.Instance != null ? UIManager.Instance.ProductionInfoImagePrefab : null;
     }
 
-    private void UpdateResourceGrid(List<string> resourceIds, Transform container, string label)
+    private void UpdateResourceGrid(List<string> resourceIds, Transform container)
     {
+        Dictionary<string, int> counts = GameObjectUtils.AggregateResourceCounts(resourceIds);
+        UpdateResourceGridFromCounts(counts, container);
+    }
+
+    private void UpdateResourceGridFromCounts(Dictionary<string, int> counts, Transform container)
+    {
+        if (container == null || _dataManager == null) return;
+
         GameObjectUtils.ClearChildren(container);
         GameObject prefab = GetProductionInfoImagePrefab();
         if (prefab == null) return;
 
-        Dictionary<string, int> counts = GameObjectUtils.AggregateResourceCounts(resourceIds);
+        if (counts == null || counts.Count == 0) return;
 
         foreach (KeyValuePair<string, int> kvp in counts)
         {
@@ -348,9 +310,6 @@ public class BuildingInfoPopup : PopupBase
 
             Instantiate(prefab, container)
                 .GetComponent<ProductionInfoImage>().Init(entry, kvp.Value);
-
-            string reqs = (label == "Output") ? BuildRequirementText(entry.data) : "";
-            string info = $"{label}: {entry.data.displayName}\nAmount: {kvp.Value}\nPrice: {ReplaceUtils.FormatNumber(entry.state.currentValue)}{reqs}";
         }
     }
 
@@ -358,7 +317,7 @@ public class BuildingInfoPopup : PopupBase
     {
         GameObjectUtils.ClearChildren(_outputGridTransform);
 
-        string handlingId = _currentState.currentResourceId;
+        string handlingId = _recipeCurrentResourceId;
         if (string.IsNullOrEmpty(handlingId)) return;
 
         GameObject prefab = GetProductionInfoImagePrefab();
@@ -377,17 +336,10 @@ public class BuildingInfoPopup : PopupBase
         // 하역소인 경우 모든 자원 타입 허용
         if (_currentData.IsUnloadStation)
         {
-            List<ResourceType> allResourceTypes = new List<ResourceType>();
-            foreach (ResourceType type in System.Enum.GetValues(typeof(ResourceType)))
-            {
-                allResourceTypes.Add(type);
-            }
-            
             UIManager.Instance.ShowSelectResourcePopup(
-                allResourceTypes,
+                new List<ResourceType>((ResourceType[])Enum.GetValues(typeof(ResourceType))),
                 OnUnloadStationResourceSelected,
-                null
-            );
+                null);
             return;
         }
 
@@ -408,20 +360,9 @@ public class BuildingInfoPopup : PopupBase
     {
         if (selected == null) return;
 
-        if (_buildingObject != null)
-        {
-            _buildingObject.TrySetSelectedResource(selected.data);
-            _currentState = _buildingObject.CreateStateSnapshot();
-        }
-        else if (_currentState != null)
-        {
-            _currentState.outputProductionIds.Clear();
-            _currentState.outputProductionIds.Add(selected.data.id);
-        }
-        else
-        {
-            return;
-        }
+        if (_buildingObject == null) return;
+
+        _buildingObject.TrySetSelectedResource(selected.data);
 
         UpdateUI();
         RefreshWorldIcons();
@@ -440,25 +381,10 @@ public class BuildingInfoPopup : PopupBase
     {
         if (selected == null) return;
 
-        if (_buildingObject != null)
-        {
-            if (!_buildingObject.TrySetSelectedResource(selected.data))
-            {
-                return;
-            }
+        if (_buildingObject == null) return;
 
-            _currentState = _buildingObject.CreateStateSnapshot();
-        }
-        else if (_currentState != null)
-        {
-            _currentState.outputProductionIds.Clear();
-            _currentState.outputProductionIds.Add(selected.data.id);
-            SyncInputToRequirements(selected.data);
-        }
-        else
-        {
+        if (!_buildingObject.TrySetSelectedResource(selected.data))
             return;
-        }
 
         UpdateUI();
         RefreshWorldIcons();
@@ -466,38 +392,8 @@ public class BuildingInfoPopup : PopupBase
         Close();
     }
 
-    private void SyncInputToRequirements(ResourceData outputData)
-    {
-        _currentState.inputProductionIds.Clear();
-        if (outputData.requirements == null) return;
-
-        foreach (ResourceRequirement req in outputData.requirements)
-        {
-            if (req.resource == null) continue;
-            int count = Mathf.Max(1, req.count);
-            for (int i = 0; i < count; i++)
-                _currentState.inputProductionIds.Add(req.resource.id);
-        }
-    }
-
     private void RefreshWorldIcons()
     {
-        // DesignRunner/Design 씬 제거: 월드 아이콘 새로고침은 추후 메인 건물 시스템 기준으로 재구현
-    }
-
-    private string BuildRequirementText(ResourceData data)
-    {
-        if (data.requirements == null || data.requirements.Count == 0) return "";
-
-        StringBuilder sb = new StringBuilder();
-        sb.Append("\nRequires: ");
-        for (int i = 0; i < data.requirements.Count; i++)
-        {
-            ResourceRequirement req = data.requirements[i];
-            if (req.resource == null) continue;
-            sb.Append($"{req.resource.displayName} x{Mathf.Max(1, req.count)}");
-            if (i < data.requirements.Count - 1) sb.Append(", ");
-        }
-        return sb.ToString();
+        _buildingObject?.RefreshOutgoingResourceIcons();
     }
 }

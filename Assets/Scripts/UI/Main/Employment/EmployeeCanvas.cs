@@ -218,7 +218,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
         _whenFireText.text = $"- {data.firingCost:N0}";
         _totalSalatyText.text = $"{state.totalSalary:N0}";
 
-        float normalizedEfficiency = Mathf.Clamp(state.currentEfficiency, 0f, 2f) / 2f;
+        float normalizedEfficiency = Mathf.Clamp01(state.currentEfficiency);
         _efficiencySlider.value = normalizedEfficiency;
         _efficiencyValueText.text = $"{(state.currentEfficiency * 100f):F1}%";
 

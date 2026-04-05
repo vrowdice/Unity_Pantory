@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 게임 내 건물 데이터를 관리하는 서비스 클래스
 /// BuildingData ScriptableObject를 로드하고 참조를 제공합니다.
-/// 건물의 동적 상태(BuildingState)는 ThreadState에서 관리됩니다.
+/// 씬에 배치된 건물의 동적 상태는 BuildingObject 등 런타임 오브젝트에서 관리합니다.
 /// </summary>
 public class BuildingDataHandler
 {

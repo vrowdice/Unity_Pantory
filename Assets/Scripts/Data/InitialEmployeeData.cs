@@ -55,7 +55,7 @@ public class InitialEmployeeData : ScriptableObject
     public float satisfactionToEfficiencyRatio = 0.01f;
     
     [Tooltip("기본 효율성 (만족도가 0일 때의 효율성)")]
-    [Range(0f, 2f)]
+    [Range(0f, 1f)]
     public float baseEfficiencyFromSatisfaction = 1f;
 
     [Header("Satisfaction Penalty from Unassignment")]
@@ -163,7 +163,7 @@ public class InitialEmployeeData : ScriptableObject
         veryHighSalarySatisfactionChange = Mathf.Clamp(veryHighSalarySatisfactionChange, 0f, 10f);
         
         satisfactionToEfficiencyRatio = Mathf.Clamp(satisfactionToEfficiencyRatio, 0f, 0.1f);
-        baseEfficiencyFromSatisfaction = Mathf.Clamp(baseEfficiencyFromSatisfaction, 0f, 2f);
+        baseEfficiencyFromSatisfaction = Mathf.Clamp(baseEfficiencyFromSatisfaction, 0f, 1f);
         
         baseUnassignmentSatisfactionPenalty = Mathf.Clamp(baseUnassignmentSatisfactionPenalty, -50f, 0f);
         employeeCountSatisfactionPenaltyRatio = Mathf.Clamp(employeeCountSatisfactionPenaltyRatio, 0f, 5f);

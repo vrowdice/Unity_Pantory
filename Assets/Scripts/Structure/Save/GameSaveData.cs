@@ -44,9 +44,6 @@ public class GameSaveData
     // News Data
     public List<NewsState> activeNews = new List<NewsState>();
 
-    // ThreadPlacement Data
-    public List<ThreadPlacementStateSaveData> threadPlacements = new List<ThreadPlacementStateSaveData>();
-
     // Effect Data
     public EffectStateSaveData effects = new EffectStateSaveData();
 }
@@ -124,26 +121,6 @@ public class ResearchStateSaveData
 }
 
 /// <summary>
-/// ThreadPlacement State 저장용 데이터
-/// </summary>
-[Serializable]
-public class ThreadPlacementStateSaveData
-{
-    public Vector2Int gridPosition;
-    public string templateThreadId;
-    public ThreadState runtimeState;
-
-    public ThreadPlacementStateSaveData() { }
-
-    public ThreadPlacementStateSaveData(Vector2Int gridPosition, string templateThreadId, ThreadState runtimeState)
-    {
-        this.gridPosition = gridPosition;
-        this.templateThreadId = templateThreadId;
-        this.runtimeState = runtimeState;
-    }
-}
-
-/// <summary>
 /// Effect State 저장용 데이터
 /// </summary>
 [Serializable]
@@ -181,7 +158,7 @@ public class GlobalEffectStateSaveData
 [Serializable]
 public class InstanceEffectStateSaveData
 {
-    public string instanceKey; // "targetType:instanceId" 형식
+    public string instanceKey;
     public EffectStatType statType;
     public List<EffectState> effects = new List<EffectState>();
 

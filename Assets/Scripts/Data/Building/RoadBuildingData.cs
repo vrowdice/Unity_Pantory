@@ -8,9 +8,5 @@ using UnityEngine;
 public class RoadBuildingData : BuildingData
 {
     public override bool IsRoad => true;
-
-    [Header("Visualization")]
-    [Tooltip("자원 충돌 발생 시 표시할 아이콘 스프라이트")]
-    public Sprite conflictIcon;
 }
 

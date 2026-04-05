@@ -325,25 +325,6 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
-    public BuildingInfoPopup ShowBuildingInfoPopup(BuildingData buildingData, BuildingState buildingState)
-    {
-        BuildingInfoPopup popup = null;
-        if (_managerCanvasTransform != null)
-        {
-            popup = _managerCanvasTransform.GetComponentInChildren<BuildingInfoPopup>(true);
-        }
-
-        if (popup == null)
-        {
-            GameObject obj = Instantiate(_buildingInfoPopupPrefab, _managerCanvasTransform, false);
-            popup = obj.GetComponent<BuildingInfoPopup>();
-        }
-
-        popup.gameObject.SetActive(true);
-        popup.ShowBuildingInfo(buildingData, buildingState);
-        return popup;
-    }
-
     public BuildingInfoPopup ShowBuildingInfoPopup(BuildingObject buildingObject)
     {
         BuildingInfoPopup popup = null;

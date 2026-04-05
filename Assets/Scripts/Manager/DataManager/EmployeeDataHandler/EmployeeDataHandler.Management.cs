@@ -112,7 +112,7 @@ public partial class EmployeeDataHandler
 
         List<EffectState> efficiencyEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency, instanceId);
         float finalEfficiency = EffectUtils.ComputeStatFromEffects(baseEfficiency, efficiencyEffects);
-        entry.state.currentEfficiency = Mathf.Clamp(finalEfficiency, 0f, 2f);
+        entry.state.currentEfficiency = Mathf.Clamp(finalEfficiency, 0f, 1f);
     }
 
     /// <summary>

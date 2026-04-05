@@ -44,21 +44,32 @@ public class RoadObject : MonoBehaviour, IResourceNode
     {
         if (packet == null || _buffer.Count >= _maxCapacity) return false;
         _buffer.Enqueue(packet);
+        packet.BlockRoadForwardThisTick = true;
         RefreshHeldResourceIcons();
         return true;
     }
 
-    public bool TryPeek(out ResourcePacket packet)
+    /// <summary>
+    /// 틱 시작 시 호출: 이미 큐에 있던 패킷만 이번 틱에 도로에서 나갈 수 있게 합니다.
+    /// </summary>
+    public void ResetRoadForwardGatesForQueuedPackets()
     {
-        if (_buffer.Count == 0) { packet = null; return false; }
-        packet = _buffer.Peek();
-        return true;
+        foreach (ResourcePacket p in _buffer)
+        {
+            if (p != null) p.BlockRoadForwardThisTick = false;
+        }
     }
 
-    public bool TryPop(out ResourcePacket packet)
+    /// <summary>
+    /// 맨 앞 패킷을 destination에 넣을 수 있을 때만 전달합니다.
+    /// </summary>
+    public bool TryForwardTo(IResourceNode destination)
     {
-        if (_buffer.Count == 0) { packet = null; return false; }
-        packet = _buffer.Dequeue();
+        if (destination == null || _buffer.Count == 0) return false;
+        ResourcePacket packet = _buffer.Peek();
+        if (packet.BlockRoadForwardThisTick) return false;
+        if (!destination.TryPush(packet)) return false;
+        _buffer.Dequeue();
         RefreshHeldResourceIcons();
         return true;
     }

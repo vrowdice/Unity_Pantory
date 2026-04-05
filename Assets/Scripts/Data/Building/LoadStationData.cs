@@ -7,11 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewLoadStation", menuName = "Game Data/Building Data/Load Station")]
 public class LoadStationData : BuildingData
 {
-    [Header("Station Properties")]
-    [Tooltip("입력 위치 (건물 기준 상대 좌표) - 외부에서 자원을 받아오는 위치")]
-    public Vector2Int inputPosition = new Vector2Int(0, 0);
-    
     public override bool IsLoadStation => true;
-    public override Vector2Int InputPosition => inputPosition;
 }
 

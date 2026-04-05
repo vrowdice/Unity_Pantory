@@ -19,7 +19,7 @@ public class EmployeeEntry
         if (data != null)
         {
             state.currentSatisfaction = data.baseSatisfaction;
-            state.currentEfficiency = Mathf.Clamp(data.baseEfficiency, 0f, 2f);
+            state.currentEfficiency = Mathf.Clamp(data.baseEfficiency, 0f, 1f);
             state.salaryLevel = 2;
         }
     }

@@ -18,7 +18,7 @@ public class EmployeeState
     {
         count = 0;
         currentSatisfaction = 0f;
-        currentEfficiency = 1f;
+        currentEfficiency = 0.5f;
         assignedCount = 0;
         totalSalary = 0;
         salaryLevel = 2;

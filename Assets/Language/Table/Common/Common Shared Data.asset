@@ -528,7 +528,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 18270374867648512
-    m_Key: Auto employee placement
+    m_Key: AutoEmployeePlacement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25352780900614144
+    m_Key: InputResource
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25352948312064000
+    m_Key: OutputResource
     m_Metadata:
       m_Items: []
   m_Metadata:

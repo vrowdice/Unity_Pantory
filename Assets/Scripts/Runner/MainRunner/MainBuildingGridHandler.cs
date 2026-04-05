@@ -8,15 +8,16 @@ using DG.Tweening;
 public class MainBuildingGridHandler
 {
     private readonly MainRunner _runner;
+    private readonly DataManager _dataManager;
 
     private readonly Transform _tileParent;
     private readonly Transform _buildingParent;
     private readonly Transform _roadParent;
 
-    private readonly Dictionary<Vector2Int, BuildingTile> _tileList = new Dictionary<Vector2Int, BuildingTile>();
-    private readonly Dictionary<Vector2Int, GameObject> _buildingObjectList = new Dictionary<Vector2Int, GameObject>();
-    private readonly Dictionary<Vector2Int, GameObject> _roadObjectList = new Dictionary<Vector2Int, GameObject>();
-    private readonly Dictionary<Vector2Int, Vector2Int> _occupiedAsObject = new Dictionary<Vector2Int, Vector2Int>();
+    private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
+    private readonly Dictionary<string, RoadObject> _roadObjDict = new();
+    private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();
+    private readonly Dictionary<Vector2Int, BuildingTile> _tileDict = new();
 
     private const float TileZ = 10f;
     private const float BuildingZ = 9f;
@@ -24,6 +25,7 @@ public class MainBuildingGridHandler
     public MainBuildingGridHandler(MainRunner runner)
     {
         _runner = runner;
+        _dataManager = DataManager.Instance;
 
         GameObject tileParentObj = new GameObject("Tiles");
         tileParentObj.transform.SetParent(runner.transform, worldPositionStays: false);
@@ -56,7 +58,7 @@ public class MainBuildingGridHandler
                 }
 
                 tile.Initialize(p);
-                _tileList[p] = tile;
+                _tileDict[p] = tile;
             }
         }
     }
@@ -65,23 +67,30 @@ public class MainBuildingGridHandler
     {
         ClearAllBuildings();
 
-        foreach (BuildingTile tile in _tileList.Values)
+        foreach (BuildingTile tile in _tileDict.Values)
         {
             if (tile != null) Object.Destroy(tile.gameObject);
         }
-        _tileList.Clear();
+        _tileDict.Clear();
     }
 
     public void ClearAllBuildings()
     {
-        foreach (GameObject building in _buildingObjectList.Values)
+        foreach (BuildingObject building in _buildingObjDict.Values)
         {
-            if (building != null) Object.Destroy(building);
+            if (building != null) Object.Destroy(building.gameObject);
         }
-        _buildingObjectList.Clear();
-        _occupiedAsObject.Clear();
+        _buildingObjDict.Clear();
 
-        foreach (BuildingTile tile in _tileList.Values)
+        foreach (RoadObject road in _roadObjDict.Values)
+        {
+            if (road != null) Object.Destroy(road.gameObject);
+        }
+        _roadObjDict.Clear();
+
+        _occupiedAsObjectDict.Clear();
+
+        foreach (BuildingTile tile in _tileDict.Values)
         {
             tile?.SetOccupied(false);
         }
@@ -121,7 +130,7 @@ public class MainBuildingGridHandler
         {
             for (int dy = 0; dy < size.y; dy++)
             {
-                if (_occupiedAsObject.ContainsKey(new Vector2Int(position.x + dx, position.y + dy)))
+                if (_occupiedAsObjectDict.ContainsKey(new Vector2Int(position.x + dx, position.y + dy)))
                     return false;
             }
         }
@@ -131,25 +140,29 @@ public class MainBuildingGridHandler
     public bool TryPlaceRoad(Vector2Int position, int rotation, out GameObject placed)
     {
         placed = null;
-        if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObject.ContainsKey(position)) return false;
+        if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position)) return false;
 
         GameObject obj = Object.Instantiate(_runner.RoadObjectPrefab, _roadParent);
         obj.name = $"Road_{position.x}_{position.y}";
 
         obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
-        _roadObjectList[position] = obj;
         Vector3 s = obj.transform.localScale;
 
         obj.transform.localScale = Vector3.zero;
         obj.transform.DOScale(s, 0.18f).SetEase(Ease.OutBack).SetUpdate(true).SetLink(obj);
-        _occupiedAsObject[position] = position;
-        if (_tileList.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
 
         RoadObject roadObject = obj.GetComponent<RoadObject>();
-        if (roadObject != null)
+        if (roadObject == null)
         {
-            roadObject.Init(position, rotation);
+            Object.Destroy(obj);
+            return false;
         }
+
+        roadObject.Init(position, rotation);
+        string key = RoadGridKey(position);
+        _roadObjDict[key] = roadObject;
+        _occupiedAsObjectDict[position] = key;
+        if (_tileDict.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
 
         placed = obj;
         return true;
@@ -165,17 +178,14 @@ public class MainBuildingGridHandler
 
         GameObject obj = Object.Instantiate(_runner.BuildingObjectPrefab, _buildingParent);
         obj.name = $"Building_{data.id}_{position.x}_{position.y}";
-
         obj.transform.position = GridToWorldPosition(position, rotatedSize);
 
-        BuildingObject placedComp = obj.GetComponent<BuildingObject>();
-        if (placedComp != null)
-        {
-            placedComp.Init(data, position, rotatedSize, rotation);
-        }
+        BuildingObject building = obj.GetComponent<BuildingObject>();
+        building.Init(_runner, data, position, rotatedSize, rotation);
 
-        RegisterOccupancy(position, rotatedSize);
-        _buildingObjectList[position] = obj;
+        string key = BuildingGridKey(position);
+        RegisterBuildingOccupancy(position, rotatedSize, key);
+        _buildingObjDict[key] = building;
 
         Vector3 s = obj.transform.localScale;
         obj.transform.localScale = Vector3.zero;
@@ -187,106 +197,131 @@ public class MainBuildingGridHandler
 
     public bool TryRemoveAt(Vector2Int anyOccupiedCell)
     {
-        if (!_occupiedAsObject.TryGetValue(anyOccupiedCell, out Vector2Int origin))
-            return false;
+        if (!_occupiedAsObjectDict.TryGetValue(anyOccupiedCell, out string key)) return false;
 
-        if (!_buildingObjectList.TryGetValue(origin, out GameObject obj) || obj == null)
-            return false;
-
-        Vector2Int size = Vector2Int.one;
-        if (obj.TryGetComponent(out BuildingObject placed))
+        if (_roadObjDict.TryGetValue(key, out RoadObject road))
         {
-            size = placed.Size;
-        }
-        else if (obj.TryGetComponent(out BoxCollider2D bc))
-        {
-            size = new Vector2Int(Mathf.RoundToInt(bc.size.x), Mathf.RoundToInt(bc.size.y));
+            Vector2Int pos = road.GridPosition;
+            _occupiedAsObjectDict.Remove(pos);
+            _roadObjDict.Remove(key);
+            if (_tileDict.TryGetValue(pos, out BuildingTile t)) t.SetOccupied(false);
+            Object.Destroy(road.gameObject);
+            return true;
         }
 
-        UnregisterOccupancy(origin, size);
-        _buildingObjectList.Remove(origin);
-        Object.Destroy(obj);
-        return true;
+        if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
+        {
+            Vector2Int origin = building.Origin;
+            Vector2Int size = building.Size;
+            UnregisterOccupancy(origin, size);
+            _buildingObjDict.Remove(key);
+            Object.Destroy(building.gameObject);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 시간 틱마다 건물 시뮬레이션(생산/하역 진행·적재) 후 도로/건물 간 패킷 이동.
+    /// </summary>
+    public void OnMainHourChanged()
+    {
+        if (_dataManager != null)
+        {
+            foreach (BuildingObject building in _buildingObjDict.Values)
+            {
+                if (building == null) continue;
+                building.TickSimulation(_dataManager);
+            }
+        }
+
+        TickResourceFlow();
     }
 
     public void TickResourceFlow()
     {
-        foreach (KeyValuePair<Vector2Int, GameObject> kvp in _roadObjectList)
+        foreach (RoadObject road in _roadObjDict.Values)
         {
-            GameObject obj = kvp.Value;
-            if (obj == null) continue;
-            if (!obj.TryGetComponent(out RoadObject road)) continue;
-            if (road.IsEmpty) continue;
+            road.ResetRoadForwardGatesForQueuedPackets();
+        }
+
+        foreach (RoadObject road in _roadObjDict.Values)
+        {
+            if (road == null || road.IsEmpty) continue;
 
             foreach (Vector2Int outCell in road.OutputGridPositions)
             {
-                GameObject destObj = null;
-
-                if (!_roadObjectList.TryGetValue(outCell, out destObj))
-                {
-                    if (_occupiedAsObject.TryGetValue(outCell, out Vector2Int origin) &&
-                        _buildingObjectList.TryGetValue(origin, out destObj))
-                    {
-
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-
-                if (destObj == null) continue;
-                if (!destObj.TryGetComponent(out IResourceNode destNode)) continue;
-                if (destNode.IsFull) continue;
-                if (!road.TryPeek(out ResourcePacket packet)) continue;
-                if (destNode.TryPush(packet)) road.TryPop(out _);
-
+                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
+                if (ReferenceEquals(road, destNode)) continue;
+                road.TryForwardTo(destNode);
                 break;
             }
         }
 
-        foreach (KeyValuePair<Vector2Int, GameObject> kvp in _buildingObjectList)
+        foreach (BuildingObject building in _buildingObjDict.Values)
         {
-            GameObject obj = kvp.Value;
-            if (obj == null) continue;
-            if (!obj.TryGetComponent(out BuildingObject building)) continue;
-            if (!building.TryPeek(out ResourcePacket packet)) continue;
-
+            if (building == null) continue;
             foreach (Vector2Int outCell in building.OutputGridPositions)
             {
-                if (!_roadObjectList.TryGetValue(outCell, out GameObject roadObj) || roadObj == null) continue;
-                if (!roadObj.TryGetComponent(out IResourceNode roadNode)) continue;
-                if (roadNode.IsFull) continue;
-                if (roadNode.TryPush(packet)) building.TryPop(out _);
+                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
+                if (ReferenceEquals(building, destNode)) continue;
+                building.TryForwardTo(destNode);
                 break;
             }
         }
     }
 
-    private void RegisterOccupancy(Vector2Int position, Vector2Int size)
+    private static string BuildingGridKey(Vector2Int origin)
     {
-        for (int dx = 0; dx < size.x; dx++)
+        return $"b:{origin.x}_{origin.y}";
+    }
+
+    private static string RoadGridKey(Vector2Int pos)
+    {
+        return $"r:{pos.x}_{pos.y}";
+    }
+
+    private bool TryGetResourceNodeAtCell(Vector2Int pos, out IResourceNode node)
+    {
+        node = null;
+        if (!_occupiedAsObjectDict.TryGetValue(pos, out string key)) return false;
+        if (_roadObjDict.TryGetValue(key, out RoadObject road))
         {
-            for (int dy = 0; dy < size.y; dy++)
+            node = road;
+            return true;
+        }
+        if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
+        {
+            node = building;
+            return true;
+        }
+        return false;
+    }
+
+    private void RegisterBuildingOccupancy(Vector2Int origin, Vector2Int size, string instanceKey)
+    {
+        for (int sizeX = 0; sizeX < size.x; sizeX++)
+        {
+            for (int sizeY = 0; sizeY < size.y; sizeY++)
             {
-                Vector2Int p = new Vector2Int(position.x + dx, position.y + dy);
-                _occupiedAsObject[p] = position;
-                if (_tileList.TryGetValue(p, out BuildingTile t)) t.SetOccupied(true);
+                Vector2Int pos = new Vector2Int(origin.x + sizeX, origin.y + sizeY);
+                _occupiedAsObjectDict[pos] = instanceKey;
+                if (_tileDict.TryGetValue(pos, out BuildingTile t)) t.SetOccupied(true);
             }
         }
     }
 
     private void UnregisterOccupancy(Vector2Int position, Vector2Int size)
     {
-        for (int dx = 0; dx < size.x; dx++)
+        for (int sizeX = 0; sizeX < size.x; sizeX++)
         {
-            for (int dy = 0; dy < size.y; dy++)
+            for (int sizey = 0; sizey < size.y; sizey++)
             {
-                Vector2Int p = new Vector2Int(position.x + dx, position.y + dy);
-                _occupiedAsObject.Remove(p);
-                if (_tileList.TryGetValue(p, out BuildingTile t)) t.SetOccupied(false);
+                Vector2Int pos = new Vector2Int(position.x + sizeX, position.y + sizey);
+                _occupiedAsObjectDict.Remove(pos);
+                if (_tileDict.TryGetValue(pos, out BuildingTile t)) t.SetOccupied(false);
             }
         }
     }
 }
-

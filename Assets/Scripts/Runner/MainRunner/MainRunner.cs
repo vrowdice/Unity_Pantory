@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// 메인 씬의 건설(건물 배치) 러너.
@@ -20,21 +19,17 @@ public class MainRunner : RunnerBase
     [SerializeField] private int _gridHeight = 10;
     [SerializeField] private float _cameraZOffset = 11f;
 
-    private DataManager _dataManager;
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
-    private BoxCollider2D _cameraCollider;
 
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
-    private MainResourceHandler _resourceHandler;
 
     public bool IsPlacementMode => _placementHandler.IsPlacementMode;
     public bool IsRemovalMode => _placementHandler.IsRemovalMode;
 
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
-    public MainResourceHandler ResourceHandler => _resourceHandler;
 
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
@@ -72,8 +67,8 @@ public class MainRunner : RunnerBase
         _gridHandler.CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
 
-        DataManager.Time.OnHourChanged -= _gridHandler.TickResourceFlow;
-        DataManager.Time.OnHourChanged += _gridHandler.TickResourceFlow;
+        DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
+        DataManager.Time.OnHourChanged += _gridHandler.OnMainHourChanged;
 
         _mainCanvas.Init(this);
     }
@@ -83,14 +78,12 @@ public class MainRunner : RunnerBase
     /// </summary>
     public void SetCameraCollider()
     {
-        _cameraCollider = GetComponent<BoxCollider2D>();
-        if (_cameraCollider == null)
-        {
-            _cameraCollider = gameObject.AddComponent<BoxCollider2D>();
-        }
+        BoxCollider2D col = GetComponent<BoxCollider2D>();
+        if (col == null)
+            col = gameObject.AddComponent<BoxCollider2D>();
 
-        _cameraCollider.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
-        _cameraCollider.size = new Vector2(_gridWidth, _gridHeight);
+        col.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
+        col.size = new Vector2(_gridWidth, _gridHeight);
 
         if (_mainCameraController != null)
         {
@@ -103,7 +96,7 @@ public class MainRunner : RunnerBase
 
     private void OnDisable()
     {
-        if(_dataManager != null)
-            _dataManager.Time.OnHourChanged -= _gridHandler.TickResourceFlow;
+        if (_gridHandler != null && DataManager.Instance != null)
+            DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
     }
 }

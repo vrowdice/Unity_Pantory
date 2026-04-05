@@ -540,12 +540,6 @@ public class SaveFileSaveLoadHandler
         return JsonUtility.FromJson<NewsState>(json);
     }
 
-    private ThreadState CloneThreadState(ThreadState state)
-    {
-        string json = JsonUtility.ToJson(state);
-        return JsonUtility.FromJson<ThreadState>(json);
-    }
-
     private EffectState CloneEffectState(EffectState state)
     {
         string json = JsonUtility.ToJson(state);
