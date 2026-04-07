@@ -16,15 +16,15 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: dd95d24e58d70574b952610eb5d4f8a4
   m_Entries:
   - m_Id: 7000000000001
-    m_Key: lackofManagers
+    m_Key: lack_of_managers
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000002
-    m_Key: salarySatisfactionEffect
+    m_Key: salary_satisfaction_effect
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000003
-    m_Key: satisfactionEfficiency
+    m_Key: satisfaction_efficiency_effect
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000004
@@ -125,6 +125,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 7000000000028
     m_Key: Effect_Wood_Price_Up_10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000029
+    m_Key: logging_camp_max_placed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000030
+    m_Key: mine_max_placed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000031
+    m_Key: oil_pump_max_placed
     m_Metadata:
       m_Items: []
   m_Metadata:

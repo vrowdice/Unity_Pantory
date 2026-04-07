@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7000000000001
-    m_Localized: lackofManagers
+    m_Localized: Lack of Managers
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000002
@@ -128,6 +128,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 7000000000028
     m_Localized: Wood Log Price Surge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000029
+    m_Localized: Logging Camp Placement Limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000030
+    m_Localized: Mine Placement Limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000031
+    m_Localized: Oil Pump Placement Limit
     m_Metadata:
       m_Items: []
   references:

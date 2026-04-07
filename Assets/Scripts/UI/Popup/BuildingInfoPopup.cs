@@ -190,7 +190,6 @@ public class BuildingInfoPopup : PopupBase
             _productionProgressText.text = $"{Mathf.RoundToInt(progress * 100)}% (+{deltaTick * 100f:0.#}%/h)";
     }
 
-    /// <summary>Worker 슬라이더 (인스펙터 OnValueChanged → ThreadInfoPopup과 동일)</summary>
     public void OnWorkerSliderChanged()
     {
         if (_buildingObject == null || _workerSlider == null || _dataManager == null) return;
@@ -212,7 +211,6 @@ public class BuildingInfoPopup : PopupBase
         }
     }
 
-    /// <summary>Technician 슬라이더</summary>
     public void OnTechnicianSliderChanged()
     {
         if (_buildingObject == null || _technicianSlider == null || _dataManager == null) return;
@@ -238,8 +236,6 @@ public class BuildingInfoPopup : PopupBase
     {
         bool isProd = _currentData.IsProductionBuilding;
         bool isUnloadStation = _currentData.IsUnloadStation;
-        
-        // 생산 건물이거나 하역소인 경우 자원 선택 버튼 활성화
         _changeProductionBtn.gameObject.SetActive(true);
         _changeProductionBtn.interactable = isProd || isUnloadStation;
     }
@@ -251,8 +247,16 @@ public class BuildingInfoPopup : PopupBase
     private void RefreshResourceGrids()
     {
         if (_buildingObject == null) return;
+        if (_currentData.IsLoadStation)
+        {
+            _changeProductionBtn.gameObject.SetActive(false);
+        }
+        else
+        {
+            _changeProductionBtn.gameObject.SetActive(true);
+        }
 
-        _buildingObject.GetRecipeDisplayData(_recipeInputIds, _recipeOutputIds, out _recipeCurrentResourceId);
+            _buildingObject.GetRecipeDisplayData(_recipeInputIds, _recipeOutputIds, out _recipeCurrentResourceId);
         RefreshRecipeGrids();
 
         if (_currentData.IsLoadStation)
@@ -271,7 +275,8 @@ public class BuildingInfoPopup : PopupBase
 
     private void RefreshRecipeGrids()
     {
-        UpdateResourceGrid(_recipeInputIds, _inputGridTransform);
+        if (!_currentData.IsUnloadStation)
+            UpdateResourceGrid(_recipeInputIds, _inputGridTransform);
 
         if (_currentData.IsUnloadStation)
             UpdateResourceGrid(_recipeOutputIds, _outputGridTransform);
@@ -343,7 +348,6 @@ public class BuildingInfoPopup : PopupBase
 
     public void ShowOutputResourceSelection()
     {
-        // 하역소인 경우 모든 자원 타입 허용
         if (_currentData.IsUnloadStation)
         {
             UIManager.Instance.ShowSelectResourcePopup(

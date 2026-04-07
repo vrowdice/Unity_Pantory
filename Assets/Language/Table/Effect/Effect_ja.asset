@@ -19,115 +19,127 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7000000000001
-    m_Localized: "\u30DE\u30CD\u30FC\u30B8\u30E3\u30FC\u4E0D\u8DB3"
+    m_Localized: マネージャー不足
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000002
-    m_Localized: "\u7D66\u4E0E\u30DC\u30FC\u30CA\u30B9"
+    m_Localized: 給与ボーナス
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000003
-    m_Localized: "\u6E80\u8DB3\u5EA6\u52B9\u7387"
+    m_Localized: 満足度効率
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000004
-    m_Localized: "\u98DB\u884C\u6A5F\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 飛行機価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000005
-    m_Localized: "\u30A2\u30EB\u30DF\u30CB\u30A6\u30E0\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: アルミニウム価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000006
-    m_Localized: "\u6B66\u5668\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 武器価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000007
-    m_Localized: "\u4E00\u822C\u8863\u985E\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 一般衣類価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000008
-    m_Localized: "\u81EA\u52D5\u8ECA\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 自動車価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000009
-    m_Localized: "\u77F3\u70AD\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 石炭価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000010
-    m_Localized: "\u9285\u30A4\u30F3\u30B4\u30C3\u30C8\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 銅インゴット価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000011
-    m_Localized: "\u9285\u9271\u77F3\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 銅鉱石価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000012
-    m_Localized: "\u96FB\u5B50\u6A5F\u5668\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 電子機器価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000013
-    m_Localized: "\u30A8\u30F3\u30B8\u30F3\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: エンジン価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000014
-    m_Localized: "\u5E03\u5730\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 布地価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000015
-    m_Localized: "\u91D1\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 金価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000016
-    m_Localized: "\u91CD\u706B\u5668\u4FA1\u683C\u66B4\u843D"
+    m_Localized: 重火器価格暴落
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000017
-    m_Localized: "\u9244\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 鉄価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000018
-    m_Localized: "\u6A5F\u68B0\u90E8\u54C1\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 機械部品価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000019
-    m_Localized: "\u8ECD\u9700\u54C1\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 軍需品価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000020
-    m_Localized: "\u77F3\u6CB9\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 石油価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000021
-    m_Localized: "\u9AD8\u7D1A\u8863\u985E\u4FA1\u683C\u66B4\u843D"
+    m_Localized: 高級衣類価格暴落
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000022
-    m_Localized: "\u9AD8\u7D1A\u5BB6\u5177\u4FA1\u683C\u66B4\u843D"
+    m_Localized: 高級家具価格暴落
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000023
-    m_Localized: "\u7D14\u91D1\u4FA1\u683C\u66B4\u843D"
+    m_Localized: 純金価格暴落
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000024
-    m_Localized: "\u5358\u7D14\u5DE5\u5177\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 単純工具価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000025
-    m_Localized: "\u5C0F\u578B\u6B66\u5668\u4FA1\u683C\u66B4\u843D"
+    m_Localized: 小型武器価格暴落
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000026
-    m_Localized: "\u92FC\u9244\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 鋼鉄価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000027
-    m_Localized: "\u6226\u8ECA\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 戦車価格高騰
     m_Metadata:
       m_Items: []
   - m_Id: 7000000000028
-    m_Localized: "\u4E38\u592A\u4FA1\u683C\u9AD8\u9A30"
+    m_Localized: 丸太価格高騰
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000029
+    m_Localized: 伐採キャンプ設置上限
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000030
+    m_Localized: 鉱山設置上限
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000031
+    m_Localized: 油井ポンプ設置上限
     m_Metadata:
       m_Items: []
   references:

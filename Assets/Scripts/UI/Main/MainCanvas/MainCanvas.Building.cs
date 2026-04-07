@@ -88,6 +88,7 @@ public partial class MainCanvas
         if (!isUnlocked)
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.UnresearchedBuildingBlocksThreadPlacement);
+            DeselectBuilding();
             return;
         }
 
@@ -99,6 +100,7 @@ public partial class MainCanvas
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingPlacedCountLimitReached);
             RefreshBuildingPlacedCountDisplays();
+            DeselectBuilding();
             return;
         }
 

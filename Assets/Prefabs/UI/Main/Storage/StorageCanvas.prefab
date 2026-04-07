@@ -893,14 +893,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tutorialPanelInfo:
-  - id: StorageCanvas1
-    focusGameObject: {fileID: 0}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  - id: StorageCanvas2
-    focusGameObject: {fileID: 22010665357046727}
+  - focusGameObject: {fileID: 22010665357046727}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
@@ -1441,7 +1439,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &1881090571511213304
 CanvasRenderer:
