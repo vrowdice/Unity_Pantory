@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75286c78e7a72ce4e98d0e5a4cf5bfdb, type: 3}
-  m_Name: NewResearch
+  m_Script: {fileID: 11500000, guid: 6b7cb3d62c16d9445a06144f0660d9a7, type: 3}
+  m_Name: search_oil_4
   m_EditorClassIdentifier: 
-  id: 
+  targetType: 4
+  isGlobalEffect: 1
+  id: oil_pump_max_placed
   displayName: 
-  researchType: 1
-  icon: {fileID: 0}
-  description: 
-  isDefaultUnlocked: 0
-  researchPointCost: 0
-  unlockResearchList: []
-  effects: []
+  statType: 8
+  modifierType: 0
+  value: 4
+  durationDays: 0
+  targetId: oil_pump

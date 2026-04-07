@@ -110,6 +110,8 @@ public class SceneLoadManager : Singleton<SceneLoadManager>
         }
 
         yield return StartCoroutine(Fade(0f));
+        
+        DataManager.Instance.Research.ReapplyEffectsFromCompletedResearch();
 
         _isLoading = false;
     }

@@ -127,3 +127,4 @@ Key,Id,English(en),Japanese(ja),Korean(ko)
 "DeleteFailed",864226268024,"Failed to delete save file.","セーブファイルの削除に失敗しました。","세이브 파일 삭제에 실패했습니다."
 "CategoryNameAlreadyExists",864226268025,"A category with this name already exists.","同じ名前のカテゴリーが既に存在します。","이미 존재하는 카테고리 이름입니다."
 "UnresearchedBuildingBlocksThreadPlacement",864226268026,"If you place this unresearched building, this thread cannot be placed in the main scene.","この未研究の建物を配置すると、このスレッドはメインで配置できません。","이 연구 안 된 건물을 설치하면 이 스레드는 메인에서 배치할 수 없습니다."
+"BuildingPlacedCountLimitReached",864226268027,"Cannot build any more of this building.","この建物はこれ以上建設できません。","이 건물은 더 이상 건설할 수 없습니다."

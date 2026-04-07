@@ -100,6 +100,8 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(Effect);
         _dayHandlers.Add(News);
         _dayHandlers.Add(Order);
+
+        Research.ReapplyEffectsFromCompletedResearch();
     }
 
 #if UNITY_EDITOR

@@ -21,14 +21,15 @@ public class SaveLoadBtn : MonoBehaviour
             _saveDataNameText.text = saveFileName;
         }
 
-        if (_isSaveMode)
+        _loadBtn.SetActive(false);
+/*        if (_isSaveMode)
         {
             _loadBtn.SetActive(true);
         }
         else
         {
             _loadBtn.SetActive(false);
-        }
+        }*/
     }
 
     public void OnClick()

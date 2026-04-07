@@ -146,24 +146,26 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     }
 
     /// <summary>
+    /// 현재 완료된 모든 연구의 이펙트를 에셋 정의대로 다시 적용합니다. 세이브 로드·씬 진입 후 연구 상태와 효과를 맞출 때 사용합니다.
+    /// </summary>
+    public void ReapplyEffectsFromCompletedResearch()
+    {
+        foreach (ResearchEntry entry in _researchEntryList.Values)
+        {
+            if (!entry.state.isCompleted || entry.data == null)
+                continue;
+
+            ApplyResearchEffects(entry.data);
+        }
+    }
+
+    /// <summary>
     /// 연구 완료 시 효과를 적용합니다.
     /// ScriptableObject 원본 데이터를 보호하기 위해 복제본을 생성하여 적용합니다.
     /// </summary>
     private void ApplyResearchEffects(ResearchData data)
     {
-        if (data.effects == null || data.effects.Count == 0)
-        {
-            return;
-        }
-
-        foreach (EffectData originalEffect in data.effects)
-        {
-            string instanceId = string.IsNullOrEmpty(originalEffect.targetId) ? null : originalEffect.targetId;
-            if (string.IsNullOrEmpty(instanceId))
-                _dataManager.Effect.ApplyEffect(originalEffect);
-            else
-                _dataManager.Effect.ApplyEffect(originalEffect, float.NaN, instanceId);
-        }
+        _dataManager.Effect.ApplyEffectDefinitions(data?.effects);
     }
 
     /// <summary>

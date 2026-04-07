@@ -150,6 +150,126 @@ MonoBehaviour:
     m_Localized: "\uC0DD\uC0B0 \uD6A8\uC728"
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266010
+    m_Localized: 산림 조사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267010
+    m_Localized: 산림 자원을 탐색하여 벌목 캠프를 더 많이 설치할 수 있게 합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266011
+    m_Localized: 산림 조사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267011
+    m_Localized: 목재 자원 평가를 심화하여 벌목 캠프 설치 한도를 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266012
+    m_Localized: 산림 조사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267012
+    m_Localized: 유역·생산량 조사로 적합한 캠프 부지를 더 확보합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266013
+    m_Localized: 산림 조사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267013
+    m_Localized: 정밀 재고와 접근로 분석으로 지속 가능한 채취 한도를 확장합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266014
+    m_Localized: 산림 조사 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267014
+    m_Localized: 광역 조사망을 완성하여 허용 가능한 벌목 캠프 규모를 최대로 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266015
+    m_Localized: 광물 조사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267015
+    m_Localized: 광맥·매장 조사로 광산을 더 많이 설치할 수 있게 합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266016
+    m_Localized: 광물 조사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267016
+    m_Localized: 시료와 지질 모델을 보강해 광산 설치 한도를 더 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266017
+    m_Localized: 광물 조사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267017
+    m_Localized: 심부 탐사로 채굴 적지를 넓혀 광산 가동 규모를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266018
+    m_Localized: 광물 조사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267018
+    m_Localized: 매장량 추정과 물류 분석으로 병렬 채굴 한도를 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266019
+    m_Localized: 광물 조사 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267019
+    m_Localized: 광역 매장 조사망을 완성해 광산 설치 가능 수를 최대로 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266020
+    m_Localized: 석유 탐사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267020
+    m_Localized: 지표·물리 탐사로 유정 설치 허용 대수를 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266021
+    m_Localized: 석유 탐사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267021
+    m_Localized: 지하 구조 모델을 정교화해 펌프(유정) 배치 한도를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266022
+    m_Localized: 석유 탐사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267022
+    m_Localized: 시추·광역 상관으로 유전 평가를 넓혀 설치 상한을 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266023
+    m_Localized: 석유 탐사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267023
+    m_Localized: 저류층 특성 분석으로 동시 가동 가능 유정 수를 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266024
+    m_Localized: 석유 탐사 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267024
+    m_Localized: 분지 단위 탐사 체계를 완성해 유정 설치 한도를 최대로 올립니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

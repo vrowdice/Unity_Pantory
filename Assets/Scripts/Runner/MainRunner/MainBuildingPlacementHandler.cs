@@ -96,12 +96,23 @@ public class MainBuildingPlacementHandler
 
         Vector2Int origin = _gridHandler.WorldToGridPosition(mouseWorld);
         Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
-        bool canPlace = _gridHandler.CanPlace(origin, size) && _gridHandler.CanPlaceMoreInstances(_selectedBuilding);
+        bool canPlaceByGrid = _gridHandler.CanPlace(origin, size);
+        bool canPlaceByCount = _gridHandler.CanPlaceMoreInstances(_selectedBuilding);
+        bool canPlace = canPlaceByGrid && canPlaceByCount;
 
         UpdatePreview(origin, size, canPlace);
 
-        if (Input.GetMouseButtonDown(0) && canPlace)
+        if (Input.GetMouseButtonDown(0))
         {
+            if (!canPlace)
+            {
+                if (!canPlaceByCount)
+                {
+                    UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingPlacedCountLimitReached);
+                }
+                return;
+            }
+
             if (_selectedBuilding.IsRoad)
             {
                 _gridHandler.TryPlaceRoad(origin, _rotation, out _);

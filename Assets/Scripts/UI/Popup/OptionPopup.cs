@@ -150,6 +150,11 @@ public class OptionPopup : PopupBase
         UIManager.Instance.ShowSaveLoadPopup(true);
     }
 
+    public void OnClickLoad()
+    {
+        UIManager.Instance.ShowSaveLoadPopup(false);
+    }
+
     public void OnClickApply()
     {
         ApplyLocale(_pendingLocaleCode);

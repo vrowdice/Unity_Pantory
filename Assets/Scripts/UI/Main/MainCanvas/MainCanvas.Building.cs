@@ -91,6 +91,17 @@ public partial class MainCanvas
             return;
         }
 
+        if (buildingData != null &&
+            buildingData.usePlacedCountLimit &&
+            _mainRunner != null &&
+            _mainRunner.GridHandler != null &&
+            !_mainRunner.GridHandler.CanPlaceMoreInstances(buildingData))
+        {
+            UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingPlacedCountLimitReached);
+            RefreshBuildingPlacedCountDisplays();
+            return;
+        }
+
         _selectedBuilding = buildingData;
         SetRemovalSwitch(false);
 

@@ -137,6 +137,127 @@ MonoBehaviour:
     m_Localized: Production Efficiency
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266010
+    m_Localized: Forest Survey I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267010
+    m_Localized: Surveys forest resources and raises how many logging camps you can
+      place.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266011
+    m_Localized: Forest Survey II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267011
+    m_Localized: Deeper timber assessment. Further increases logging camp capacity.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266012
+    m_Localized: Forest Survey III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267012
+    m_Localized: Detailed watershed and yield mapping. More sites cleared for camps.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266013
+    m_Localized: Forest Survey IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267013
+    m_Localized: Advanced inventory and access routes. Expands sustainable extraction.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266014
+    m_Localized: Forest Survey V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267014
+    m_Localized: Full regional survey network. Maximizes allowed logging camp footprint.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266015
+    m_Localized: Mineral Survey I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267015
+    m_Localized: Exploration expands how many mines you can place for ore and minerals.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266016
+    m_Localized: Mineral Survey II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267016
+    m_Localized: Better vein models and sampling. Further raises mine placement cap.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266017
+    m_Localized: Mineral Survey III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267017
+    m_Localized: Deeper geology surveys open more viable mine sites on the map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266018
+    m_Localized: Mineral Survey IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267018
+    m_Localized: Integrated reserve estimates and logistics. More parallel operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266019
+    m_Localized: Mineral Survey V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267019
+    m_Localized: Full district-scale mapping. Maximizes how many mines you may run.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266020
+    m_Localized: Oil Survey I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267020
+    m_Localized: Seismic and field work increase allowed oil pump installations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266021
+    m_Localized: Oil Survey II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267021
+    m_Localized: Refined subsurface models unlock more pump deployment slots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266022
+    m_Localized: Oil Survey III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267022
+    m_Localized: Extended appraisal wells and regional correlation. Higher cap.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266023
+    m_Localized: Oil Survey IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267023
+    m_Localized: Advanced reservoir characterization. More concurrent pumps allowed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266024
+    m_Localized: Oil Survey V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267024
+    m_Localized: Basin-wide exploration program. Maximizes oil pump placement limit.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -38,6 +38,25 @@ public class EffectDataHandler : ITimeChangeHandler
     }
 
     /// <summary>
+    /// 연구 등에서 정의된 EffectData 목록을 적용합니다. 동일 id의 기존 런타임 이펙트는 값·잔여일이 덮어써집니다.
+    /// </summary>
+    public void ApplyEffectDefinitions(IEnumerable<EffectData> effects)
+    {
+        if (effects == null) return;
+
+        foreach (EffectData originalEffect in effects)
+        {
+            if (originalEffect == null) continue;
+
+            string instanceId = string.IsNullOrEmpty(originalEffect.targetId) ? null : originalEffect.targetId;
+            if (string.IsNullOrEmpty(instanceId))
+                ApplyEffect(originalEffect);
+            else
+                ApplyEffect(originalEffect, float.NaN, instanceId);
+        }
+    }
+
+    /// <summary>
     /// 전역·인스턴스 모든 이펙트의 지속시간을 감소시키고 만료된 항목을 제거합니다.
     /// </summary>
     public void ReducedEffectDuration(int date)

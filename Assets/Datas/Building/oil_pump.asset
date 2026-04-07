@@ -27,6 +27,8 @@ MonoBehaviour:
   maintenanceCost: 30
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
+  usePlacedCountLimit: 1
+  baseMaxPlacedCount: 0
   maxInputBufferCapacity: 16
   maxOutputBufferCapacity: 16
   allowedResourceTypes: 00000000

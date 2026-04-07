@@ -32,8 +32,11 @@ public class MainBuildingBtn : MonoBehaviour
 
     public void RefreshPlacedCount(MainRunner runner)
     {
-        if (_placedCountText == null || _buildingData == null)
+        if (_placedCountText == null || _buildingData == null || _deactivatedImage.gameObject.activeSelf == true)
+        {
+            _placedCountText.gameObject.SetActive(false);
             return;
+        }
 
         if (!_buildingData.usePlacedCountLimit)
         {
@@ -43,7 +46,7 @@ public class MainBuildingBtn : MonoBehaviour
 
         int current = runner.GridHandler.CountPlacedBuildingsWithId(_buildingData.id);
         int max = DataManager.Instance.Building.GetMaxPlacedCount(_buildingData);
-        _placedCountText.text = $"{current} / {max}";
+        _placedCountText.text = $"{current}/{max}";
         _placedCountText.gameObject.SetActive(true);
     }
     public void OnClick()

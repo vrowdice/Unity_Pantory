@@ -110,6 +110,126 @@ MonoBehaviour:
     m_Localized: "\u751F\u7523\u52B9\u7387"
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266010
+    m_Localized: 森林調査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267010
+    m_Localized: 森林資源の調査により、伐採キャンプの設置上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266011
+    m_Localized: 森林調査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267011
+    m_Localized: 木材評価を深化し、伐採キャンプの設置上限をさらに拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266012
+    m_Localized: 森林調査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267012
+    m_Localized: 水域・収量マッピングで適地を増やし、キャンプ用地を拡保する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266013
+    m_Localized: 森林調査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267013
+    m_Localized: 詳細な資源棚卸とアクセス路解析で、持続的採取の上限を広げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266014
+    m_Localized: 森林調査 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267014
+    m_Localized: 域内調査網を完成させ、伐採キャンプの許容規模を最大まで高める。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266015
+    m_Localized: 鉱物調査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267015
+    m_Localized: 鉱脈と埋蔵の調査により、設置可能な鉱山数の上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266016
+    m_Localized: 鉱物調査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267016
+    m_Localized: 試料と地質モデルを強化し、鉱山の設置上限をさらに拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266017
+    m_Localized: 鉱物調査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267017
+    m_Localized: 深部探査で採掘適地を広げ、鉱山規模の上限を拡張する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266018
+    m_Localized: 鉱物調査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267018
+    m_Localized: 埋蔵量推定と後勤解析により、並列採掘の上限を高める。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266019
+    m_Localized: 鉱物調査 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267019
+    m_Localized: 広域埋蔵調査網を完成させ、鉱山設置可能数を最大まで引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266020
+    m_Localized: 石油探査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267020
+    m_Localized: 地表採取と物理探査で、油井（ポンプ）の設置上限を高める。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266021
+    m_Localized: 石油探査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267021
+    m_Localized: 地下構造モデルの精緻化により、ポンプ配置の上限を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266022
+    m_Localized: 石油探査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267022
+    m_Localized: 試掘と域内対比で油田評価を広げ、設置上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266023
+    m_Localized: 石油探査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267023
+    m_Localized: 貯留層特性の解析により、同時稼働可能なポンプ数の上限を増やす。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266024
+    m_Localized: 石油探査 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267024
+    m_Localized: 盆地規模の探査体制を完成させ、油井設置の上限を最大まで高める。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

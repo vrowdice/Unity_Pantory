@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75286c78e7a72ce4e98d0e5a4cf5bfdb, type: 3}
+  m_Name: search_mine_4
+  m_EditorClassIdentifier: 
+  id: search_mine_4
+  displayName: 
+  researchType: 1
+  icon: {fileID: 21300000, guid: ec25fe544e4460647936b5f977868f8e, type: 3}
+  description: 
+  isDefaultUnlocked: 0
+  researchPointCost: 0
+  unlockResearchList:
+  - {fileID: 11400000, guid: d55edfa260624df44afd78e471d65678, type: 2}
+  effects:
+  - {fileID: 11400000, guid: 0a08315a0e1ea9c4aaf9847f24888a16, type: 2}
