@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -14,6 +15,7 @@ public class MainBuildingGridHandler
     private readonly Transform _buildingParent;
     private readonly Transform _roadParent;
     
+    private readonly Dictionary<string, BuildingObject> _rawResourceBuildingObjDict = new();
     private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
     private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();
@@ -21,6 +23,8 @@ public class MainBuildingGridHandler
 
     private const float TileZ = 10f;
     private const float BuildingZ = 9f;
+
+    public event Action OnBuildingInstanceLayoutChanged;
 
     public MainBuildingGridHandler(MainRunner runner)
     {
@@ -49,7 +53,7 @@ public class MainBuildingGridHandler
             for (int x = 0; x < width; x++)
             {
                 Vector2Int p = new Vector2Int(x, y);
-                GameObject tileObj = Object.Instantiate(_runner.TilePrefab, _tileParent);
+                GameObject tileObj = MonoBehaviour.Instantiate(_runner.TilePrefab, _tileParent);
                 tileObj.transform.localPosition = new Vector3(x, -y, TileZ);
 
                 if (!tileObj.TryGetComponent(out BuildingTile tile))
@@ -69,7 +73,7 @@ public class MainBuildingGridHandler
 
         foreach (BuildingTile tile in _tileDict.Values)
         {
-            if (tile != null) Object.Destroy(tile.gameObject);
+            if (tile != null) MonoBehaviour.Destroy(tile.gameObject);
         }
         _tileDict.Clear();
     }
@@ -78,13 +82,14 @@ public class MainBuildingGridHandler
     {
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
-            if (building != null) Object.Destroy(building.gameObject);
+            if (building != null) MonoBehaviour.Destroy(building.gameObject);
         }
         _buildingObjDict.Clear();
+        _rawResourceBuildingObjDict.Clear();
 
         foreach (RoadObject road in _roadObjDict.Values)
         {
-            if (road != null) Object.Destroy(road.gameObject);
+            if (road != null) MonoBehaviour.Destroy(road.gameObject);
         }
         _roadObjDict.Clear();
 
@@ -137,12 +142,56 @@ public class MainBuildingGridHandler
         return true;
     }
 
+    public int CountPlacedBuildingsWithId(string buildingDataId)
+    {
+        if (string.IsNullOrEmpty(buildingDataId))
+            return 0;
+
+        BuildingData template = _dataManager != null ? _dataManager.Building.GetBuildingData(buildingDataId) : null;
+        if (template is RawMaterialFactoryData)
+        {
+            int n = 0;
+            foreach (BuildingObject building in _rawResourceBuildingObjDict.Values)
+            {
+                if (building == null || building.BuildingData == null)
+                    continue;
+                if (building.BuildingData.id == buildingDataId)
+                    n++;
+            }
+            return n;
+        }
+
+        int m = 0;
+        foreach (BuildingObject building in _buildingObjDict.Values)
+        {
+            if (building == null || building.BuildingData == null)
+                continue;
+            if (building.BuildingData.id == buildingDataId)
+                m++;
+        }
+        return m;
+    }
+
+    public bool CanPlaceMoreInstances(BuildingData data)
+    {
+        if (data == null)
+            return false;
+        if (!data.usePlacedCountLimit)
+            return true;
+
+        int max = _dataManager.Building.GetMaxPlacedCount(data);
+        if (max <= 0)
+            return false;
+
+        return CountPlacedBuildingsWithId(data.id) < max;
+    }
+
     public bool TryPlaceRoad(Vector2Int position, int rotation, out GameObject placed)
     {
         placed = null;
         if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position)) return false;
 
-        GameObject obj = Object.Instantiate(_runner.RoadObjectPrefab, _roadParent);
+        GameObject obj = MonoBehaviour.Instantiate(_runner.RoadObjectPrefab, _roadParent);
         obj.name = $"Road_{position.x}_{position.y}";
 
         obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
@@ -154,7 +203,7 @@ public class MainBuildingGridHandler
         RoadObject roadObject = obj.GetComponent<RoadObject>();
         if (roadObject == null)
         {
-            Object.Destroy(obj);
+            MonoBehaviour.Destroy(obj);
             return false;
         }
 
@@ -172,11 +221,12 @@ public class MainBuildingGridHandler
     {
         placed = null;
         if (data == null || data.buildingSprite == null) return false;
+        if (!CanPlaceMoreInstances(data)) return false;
 
         Vector2Int rotatedSize = GetRotatedSize(data.size, rotation);
         if (!CanPlace(position, rotatedSize)) return false;
 
-        GameObject obj = Object.Instantiate(_runner.BuildingObjectPrefab, _buildingParent);
+        GameObject obj = MonoBehaviour.Instantiate(_runner.BuildingObjectPrefab, _buildingParent);
         obj.name = $"Building_{data.id}_{position.x}_{position.y}";
         obj.transform.position = GridToWorldPosition(position, rotatedSize);
 
@@ -186,12 +236,15 @@ public class MainBuildingGridHandler
         string key = BuildingGridKey(position);
         RegisterBuildingOccupancy(position, rotatedSize, key);
         _buildingObjDict[key] = building;
+        if (data is RawMaterialFactoryData)
+            _rawResourceBuildingObjDict[key] = building;
 
         Vector3 s = obj.transform.localScale;
         obj.transform.localScale = Vector3.zero;
         obj.transform.DOScale(s, 0.18f).SetEase(Ease.OutBack).SetUpdate(true).SetLink(obj);
 
         placed = obj;
+        OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
     }
 
@@ -205,7 +258,7 @@ public class MainBuildingGridHandler
             _occupiedAsObjectDict.Remove(pos);
             _roadObjDict.Remove(key);
             if (_tileDict.TryGetValue(pos, out BuildingTile t)) t.SetOccupied(false);
-            Object.Destroy(road.gameObject);
+            MonoBehaviour.Destroy(road.gameObject);
             return true;
         }
 
@@ -215,7 +268,9 @@ public class MainBuildingGridHandler
             Vector2Int size = building.Size;
             UnregisterOccupancy(origin, size);
             _buildingObjDict.Remove(key);
-            Object.Destroy(building.gameObject);
+            _rawResourceBuildingObjDict.Remove(key);
+            MonoBehaviour.Destroy(building.gameObject);
+            OnBuildingInstanceLayoutChanged?.Invoke();
             return true;
         }
 

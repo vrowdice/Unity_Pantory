@@ -155,7 +155,7 @@ public partial class MainCanvas
                 MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
                 if (btn != null)
                 {
-                    btn.Initialize(this, data, isUnlocked);
+                    btn.Initialize(this, data, isUnlocked, _mainRunner);
                     _buildingBtns.Add(btn);
                 }
             }
@@ -163,6 +163,7 @@ public partial class MainCanvas
 
         UpdateBuildingTypeButtonStates();
         UpdateBuildingButtonStates();
+        RefreshBuildingPlacedCountDisplays();
     }
 
     private void UpdateBuildingTypeButtonStates()
@@ -181,5 +182,20 @@ public partial class MainCanvas
             if (btn == null) continue;
             btn.SetSelected(_selectedBuilding == btn.BuildingData);
         }
+    }
+
+    public void RefreshBuildingPlacedCountDisplays()
+    {
+        for (int i = 0; i < _buildingBtns.Count; i++)
+        {
+            MainBuildingBtn btn = _buildingBtns[i];
+            if (btn != null)
+                btn.RefreshPlacedCount(_mainRunner);
+        }
+    }
+
+    private void HandleBuildingInstanceLayoutChanged()
+    {
+        RefreshBuildingPlacedCountDisplays();
     }
 }

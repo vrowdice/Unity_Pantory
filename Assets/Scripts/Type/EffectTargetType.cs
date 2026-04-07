@@ -4,4 +4,5 @@ public enum EffectTargetType
     Employee,
     Research,
     Resource,
+    Building,
 }

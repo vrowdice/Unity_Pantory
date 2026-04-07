@@ -159,4 +159,25 @@ public class BuildingDataHandler
         }
         return _dataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
     }
+
+    /// <summary>
+    /// usePlacedCountLimit일 때 설치 가능한 최대 개수. 이펙트는 Building 타깃 + Building_MaxPlacedCount, instanceId(또는 targetId)=건물 id 의 Flat만 합산.
+    /// </summary>
+    public int GetMaxPlacedCount(BuildingData data)
+    {
+        if (data == null || !data.usePlacedCountLimit)
+            return int.MaxValue;
+
+        float bonus = 0f;
+        List<EffectState> effects = _dataManager.Effect.GetEffectStatEffects(
+            EffectTargetType.Building, EffectStatType.Building_MaxPlacedCount, data.id);
+        for (int i = 0; i < effects.Count; i++)
+        {
+            EffectState state = effects[i];
+            if (state.modifierType == ModifierType.Flat)
+                bonus += state.value;
+        }
+
+        return Mathf.Max(0, data.baseMaxPlacedCount + Mathf.FloorToInt(bonus));
+    }
 }

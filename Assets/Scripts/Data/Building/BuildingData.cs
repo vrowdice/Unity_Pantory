@@ -24,6 +24,12 @@ public abstract class BuildingData : ScriptableObject
     public Vector2Int size = new Vector2Int(1, 1);
     public ResearchData requiredResearch;
 
+    [Header("Placed count limit")]
+    [Tooltip("true면 baseMaxPlacedCount와 Building_MaxPlacedCount 이펙트(건물 id = EffectData.targetId 또는 Apply instanceId)로 설치 상한")]
+    public bool usePlacedCountLimit = false;
+    [Tooltip("이펙트 Flat 보너스와 합산되는 기본 최대 설치 수(0이면 이펙트만으로 해금)")]
+    public int baseMaxPlacedCount = 0;
+
     public int maxInputBufferCapacity = 16;
     public int maxOutputBufferCapacity = 16;
 

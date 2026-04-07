@@ -48,14 +48,25 @@ public partial class MainCanvas : CanvasBase
         CreateQuickMoveBtns();
 
         InitBuildUi();
+
+        if (_mainRunner != null && _mainRunner.GridHandler != null)
+            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += HandleBuildingInstanceLayoutChanged;
+
         RefreshResourceScrollView();
         UpdateAllMainText();
+    }
+
+    private void OnDestroy()
+    {
+        if (_mainRunner != null && _mainRunner.GridHandler != null)
+            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
     }
 
     override public void UpdateAllMainText()
     {
         UpdateCreditText();
         UpdateResearchText();
+        RefreshBuildingPlacedCountDisplays();
     }
 
     private void OnResourceChanged()

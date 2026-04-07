@@ -96,7 +96,7 @@ public class MainBuildingPlacementHandler
 
         Vector2Int origin = _gridHandler.WorldToGridPosition(mouseWorld);
         Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
-        bool canPlace = _gridHandler.CanPlace(origin, size);
+        bool canPlace = _gridHandler.CanPlace(origin, size) && _gridHandler.CanPlaceMoreInstances(_selectedBuilding);
 
         UpdatePreview(origin, size, canPlace);
 

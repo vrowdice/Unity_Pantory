@@ -8,4 +8,5 @@ public enum EffectStatType
     Resource_Price,
     GameSpeed,
     Revenue,
+    Building_MaxPlacedCount,
 }

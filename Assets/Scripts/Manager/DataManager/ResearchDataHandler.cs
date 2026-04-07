@@ -158,7 +158,11 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
         foreach (EffectData originalEffect in data.effects)
         {
-            _dataManager.Effect.ApplyEffect(originalEffect);
+            string instanceId = string.IsNullOrEmpty(originalEffect.targetId) ? null : originalEffect.targetId;
+            if (string.IsNullOrEmpty(instanceId))
+                _dataManager.Effect.ApplyEffect(originalEffect);
+            else
+                _dataManager.Effect.ApplyEffect(originalEffect, float.NaN, instanceId);
         }
     }
 

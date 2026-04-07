@@ -26,6 +26,8 @@ public class RawMaterialFactoryData : ProductionBuildingData
 
     private void OnValidate()
     {
+        usePlacedCountLimit = true;
+
         allowedResourceTypes ??= new List<ResourceType>();
         allowedResourceTypes.RemoveAll(type => type != ResourceType.raw);
 
