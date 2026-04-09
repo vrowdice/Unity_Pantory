@@ -42,6 +42,10 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private const float PlacePunchStrength = 0.06f;
     private const float RemoveScaleDuration = 0.2f;
 
+    private bool _clickArmed;
+    private Vector3 _mouseDownScreenPos;
+    private const float ClickDragThresholdPixels = 8f;
+
     public BuildingData BuildingData => _buildingData;
     public bool IsRemovalAnimating => _removalAnimating;
     public Vector2Int Origin => _origin;
@@ -123,19 +127,43 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0)) return;
         if (_mainRunner != null && (_mainRunner.IsPlacementMode || _mainRunner.IsRemovalMode)) return;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(-1)) return;
         if (_collider == null) return;
 
-        Camera cam = Camera.main;
-        if (cam == null) return;
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
-        if (!_collider.OverlapPoint(mouseWorld)) return;
+            Camera cam = Camera.main;
+            if (cam == null) return;
 
-        UIManager.Instance?.ShowBuildingInfoPopup(this);
+            Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorld.z = 0f;
+            if (!_collider.OverlapPoint(mouseWorld)) return;
+
+            _clickArmed = true;
+            _mouseDownScreenPos = Input.mousePosition;
+            return;
+        }
+
+        if (Input.GetMouseButtonUp(0) && _clickArmed)
+        {
+            _clickArmed = false;
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+            Vector3 delta = Input.mousePosition - _mouseDownScreenPos;
+            if (delta.sqrMagnitude > ClickDragThresholdPixels * ClickDragThresholdPixels) return;
+
+            Camera cam = Camera.main;
+            if (cam == null) return;
+
+            Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorld.z = 0f;
+            if (!_collider.OverlapPoint(mouseWorld)) return;
+
+            UIManager.Instance?.ShowBuildingInfoPopup(this);
+        }
     }
 
     private void RebuildOutputGridPositions()
@@ -229,8 +257,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     public Dictionary<string, int> GetRuntimeInputResourceCounts() => AggregateQueueCounts(_inputBuffer);
     public Dictionary<string, int> GetRuntimeOutputResourceCounts() => AggregateQueueCounts(_outputBuffer);
 
-    // --- 시뮬레이션: 역할별 partial로 위임 ---
-
     public void TickSimulation(DataManager dataManager)
     {
         switch (_buildingData)
@@ -268,19 +294,17 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
             _workProgress = 0.999f;
     }
 
-    // --- 선택 리소스 / 진행도 (역할별 검증은 partial에서) ---
-
     public bool TrySetSelectedResource(ResourceData data)
     {
         if (data == null) return false;
 
         switch (_buildingData)
         {
-            case ProductionBuildingData prod:
-                if (!IsResourceAllowedForProduction(prod, data)) return false;
-                break;
             case RawMaterialFactoryData raw:
                 if (!IsResourceAllowedForRawFactory(raw, data)) return false;
+                break;
+            case ProductionBuildingData prod:
+                if (!IsResourceAllowedForProduction(prod, data)) return false;
                 break;
         }
 
