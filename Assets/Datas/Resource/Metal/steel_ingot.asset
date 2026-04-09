@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: steel_ingot
   displayName: Steel Ingot
-  baseValue: 200
+  baseValue: 220
   marketSensitivity: 0.2
   meanReversionStrength: 0.6
   maxDailySwing: 0.011

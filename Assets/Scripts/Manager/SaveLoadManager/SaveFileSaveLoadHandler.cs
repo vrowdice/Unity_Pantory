@@ -229,6 +229,13 @@ public class SaveFileSaveLoadHandler
             saveData.effects = CollectEffectStates(dataManager.Effect);
         }
 
+        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        if (mainRunner != null && mainRunner.GridHandler != null)
+        {
+            saveData.placedBuildings = mainRunner.GridHandler.ExportPlacedBuildings();
+            saveData.placedRoads = mainRunner.GridHandler.ExportPlacedRoads();
+        }
+
         return saveData;
     }
 
@@ -442,6 +449,11 @@ public class SaveFileSaveLoadHandler
         if (dataManager.Effect != null && saveData.effects != null)
         {
             ApplyEffectStates(saveData.effects, dataManager.Effect);
+        }
+
+        if (dataManager.PlacedLayout != null)
+        {
+            dataManager.PlacedLayout.SetFromSave(saveData.placedBuildings, saveData.placedRoads);
         }
     }
 

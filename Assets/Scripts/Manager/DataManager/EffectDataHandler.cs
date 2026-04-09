@@ -8,15 +8,11 @@ using UnityEngine;
 /// </summary>
 public class EffectDataHandler : ITimeChangeHandler
 {
-    private readonly DataManager _dataManager;
-    
     private readonly Dictionary<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> _effects = new();
     private readonly Dictionary<string, Dictionary<EffectStatType, List<EffectState>>> _instanceEffects = new();
 
-    public EffectDataHandler(DataManager dataManager)
+    public EffectDataHandler()
     {
-        _dataManager = dataManager;
-
         foreach (EffectTargetType target in System.Enum.GetValues(typeof(EffectTargetType)))
         {
             _effects[target] = new Dictionary<EffectStatType, List<EffectState>>();
@@ -96,6 +92,8 @@ public class EffectDataHandler : ITimeChangeHandler
     /// <param name="instanceId">인스턴스 식별자 (예: EmployeeType.ToString()). null이면 전역</param>
     public void ApplyEffect(EffectData effectData, float value = float.NaN, string instanceId = null)
     {
+        if (effectData == null) return;
+
         EffectState effectState = new EffectState(effectData);
         if (!float.IsNaN(value))
             effectState.value = value;
@@ -131,12 +129,11 @@ public class EffectDataHandler : ITimeChangeHandler
 
     private void ApplyToGlobal(EffectData effectData, EffectState effectState)
     {
-        if (!_effects.ContainsKey(effectData.targetType))
-            _effects[effectData.targetType] = new Dictionary<EffectStatType, List<EffectState>>();
-        if (!_effects[effectData.targetType].ContainsKey(effectData.statType))
-            _effects[effectData.targetType][effectData.statType] = new List<EffectState>();
+        Dictionary<EffectStatType, List<EffectState>> byStat = _effects[effectData.targetType];
+        if (!byStat.ContainsKey(effectData.statType))
+            byStat[effectData.statType] = new List<EffectState>();
 
-        List<EffectState> list = _effects[effectData.targetType][effectData.statType];
+        List<EffectState> list = byStat[effectData.statType];
         for (int i = 0; i < list.Count; i++)
         {
             if (list[i].id == effectState.id)
@@ -154,6 +151,8 @@ public class EffectDataHandler : ITimeChangeHandler
     /// </summary>
     public void RemoveEffect(EffectData effectData, string instanceId = null)
     {
+        if (effectData == null) return;
+
         if (string.IsNullOrEmpty(instanceId))
         {
             RemoveFromGlobal(effectData);
@@ -175,9 +174,8 @@ public class EffectDataHandler : ITimeChangeHandler
 
     private void RemoveFromGlobal(EffectData effectData)
     {
-        if (!_effects.ContainsKey(effectData.targetType) || !_effects[effectData.targetType].ContainsKey(effectData.statType))
-            return;
-        List<EffectState> list = _effects[effectData.targetType][effectData.statType];
+        if (!_effects.TryGetValue(effectData.targetType, out Dictionary<EffectStatType, List<EffectState>> byStat)) return;
+        if (!byStat.TryGetValue(effectData.statType, out List<EffectState> list)) return;
         for (int i = list.Count - 1; i >= 0; i--)
         {
             if (list[i].id == effectData.id)
@@ -193,23 +191,30 @@ public class EffectDataHandler : ITimeChangeHandler
     /// </summary>
     public EffectState GetEffect(EffectData effectData, string instanceId = null)
     {
+        if (effectData == null) return null;
+
         if (!string.IsNullOrEmpty(instanceId))
         {
             string key = GetInstanceKey(effectData.targetType, instanceId);
-            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict) && statDict.TryGetValue(effectData.statType, out List<EffectState> list))
+            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict) &&
+                statDict.TryGetValue(effectData.statType, out List<EffectState> instanceList))
             {
-                foreach (EffectState item in list)
+                foreach (EffectState item in instanceList)
                 {
                     if (item.id == effectData.id) return item;
                 }
             }
         }
-        if (!_effects.ContainsKey(effectData.targetType) || !_effects[effectData.targetType].ContainsKey(effectData.statType))
-            return null;
-        foreach (EffectState item in _effects[effectData.targetType][effectData.statType])
+
+        if (_effects.TryGetValue(effectData.targetType, out Dictionary<EffectStatType, List<EffectState>> globalByStat) &&
+            globalByStat.TryGetValue(effectData.statType, out List<EffectState> globalList))
         {
-            if (item.id == effectData.id) return item;
+            foreach (EffectState item in globalList)
+            {
+                if (item.id == effectData.id) return item;
+            }
         }
+
         return null;
     }
 
@@ -219,12 +224,15 @@ public class EffectDataHandler : ITimeChangeHandler
     public List<EffectState> GetEffectStatEffects(EffectTargetType targetType, EffectStatType statType, string instanceId = null)
     {
         List<EffectState> result = new List<EffectState>();
-        if (_effects.ContainsKey(targetType) && _effects[targetType].ContainsKey(statType))
-            result.AddRange(_effects[targetType][statType]);
+        if (_effects.TryGetValue(targetType, out Dictionary<EffectStatType, List<EffectState>> globalByStat) &&
+            globalByStat.TryGetValue(statType, out List<EffectState> globalList))
+            result.AddRange(globalList);
+
         if (!string.IsNullOrEmpty(instanceId))
         {
             string key = GetInstanceKey(targetType, instanceId);
-            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict) && statDict.TryGetValue(statType, out List<EffectState> list))
+            if (_instanceEffects.TryGetValue(key, out Dictionary<EffectStatType, List<EffectState>> statDict) &&
+                statDict.TryGetValue(statType, out List<EffectState> list))
                 result.AddRange(list);
         }
         return result;

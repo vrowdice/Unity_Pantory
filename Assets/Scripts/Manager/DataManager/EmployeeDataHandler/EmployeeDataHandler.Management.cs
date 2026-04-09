@@ -15,9 +15,7 @@ public partial class EmployeeDataHandler
         if (_initialEmployeeData == null) return 1f;
 
         int managerCount = TryGetEntry(EmployeeType.Manager, out EmployeeEntry managerEntry) ? managerEntry.state.count : 0;
-        int totalEmployees = 0;
-        foreach (EmployeeEntry entry in _employees.Values)
-            totalEmployees += entry.state.count;
+        int totalEmployees = GetTotalEmployeeCount();
 
         int employeesToManage = totalEmployees - managerCount;
         if (employeesToManage <= 0) return 1.0f;
@@ -40,9 +38,7 @@ public partial class EmployeeDataHandler
             return;
 
         currentManagers = TryGetEntry(EmployeeType.Manager, out EmployeeEntry managerEntry) ? managerEntry.state.count : 0;
-        int totalEmployees = 0;
-        foreach (EmployeeEntry entry in _employees.Values)
-            totalEmployees += entry.state.count;
+        int totalEmployees = GetTotalEmployeeCount();
 
         int employeesToManage = totalEmployees - currentManagers;
         if (employeesToManage <= 0)
@@ -70,7 +66,7 @@ public partial class EmployeeDataHandler
                 continue;
             }
 
-            string instanceId = GetInstanceIdForEmployee(entry);
+            string instanceId = GetInstanceIdForEffect(_dataManager.InitialEffectData.satisfactionEfficiencyEffect, entry);
             List<EffectState> satisfactionEffects = _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction, instanceId);
             float totalSatisfactionChange = EffectUtils.ComputeStatFromEffects(0f, satisfactionEffects);
 
@@ -91,8 +87,7 @@ public partial class EmployeeDataHandler
             }
         }
 
-        RefreshAllSalaries();
-
+        RefreshAllSalaries(notifyChanged: false);
         OnEmployeeChanged?.Invoke();
     }
 
@@ -128,9 +123,7 @@ public partial class EmployeeDataHandler
             _dataManager.Effect.RemoveEffect(_dataManager.InitialEffectData.managementDeficitEffect);
             return;
         }
-        else
-        {
-            _dataManager.Effect.ApplyEffect(_dataManager.InitialEffectData.managementDeficitEffect, -satisfactionPenalty);
-        }
+
+        _dataManager.Effect.ApplyEffect(_dataManager.InitialEffectData.managementDeficitEffect, -satisfactionPenalty);
     }
 }

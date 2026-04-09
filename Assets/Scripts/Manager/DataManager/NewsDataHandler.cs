@@ -23,18 +23,15 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public NewsDataHandler(DataManager dataManager, List<NewsData> newsDataList, InitialNewsData initialNewsData)
     {
         _dataManager = dataManager;
-        _newsDataList = newsDataList;
+        _newsDataList = newsDataList ?? new List<NewsData>();
         _initialNewsData = initialNewsData;
         _newsDataDict = new Dictionary<string, NewsData>();
 
-        if (newsDataList != null)
+        foreach (NewsData data in _newsDataList)
         {
-            foreach (NewsData data in newsDataList)
-            {
-                if (data == null || string.IsNullOrEmpty(data.id)) continue;
-                if (_newsDataDict.ContainsKey(data.id)) continue;
-                _newsDataDict[data.id] = data;
-            }
+            if (data == null || string.IsNullOrEmpty(data.id)) continue;
+            if (_newsDataDict.ContainsKey(data.id)) continue;
+            _newsDataDict[data.id] = data;
         }
 
         ResetNewsChance();
@@ -62,10 +59,10 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
     private void GenerateNews()
     {
-        if (_newsDataList == null || _newsDataList.Count == 0) return;
+        if (_newsDataList.Count == 0) return;
 
         List<NewsData> availableNews = _newsDataList
-            .Where(data => !_activeNewsList.Any(active => active.id == data.id))
+            .Where(data => data != null && !_activeNewsList.Any(active => active.id == data.id))
             .ToList();
 
         if (availableNews.Count == 0)
@@ -78,22 +75,23 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
         NewsState newState = new NewsState(selectedData);
         _activeNewsList.Add(newState);
 
-        foreach (EffectData effect in selectedData.effects)
+        if (selectedData.effects != null)
         {
-            float additionalRandom = UnityEngine.Random.Range(-_initialNewsData.maxRandomRange, _initialNewsData.maxRandomRange);
-            float finalValue = effect.value + additionalRandom;
-
-            if (effect.value > 0)
+            foreach (EffectData effect in selectedData.effects)
             {
-                finalValue = Mathf.Max(finalValue, _initialNewsData.minVariationRate);
-            }
-            else if (effect.value < 0)
-            {
-                finalValue = Mathf.Min(finalValue, -_initialNewsData.minVariationRate);
-            }
+                if (effect == null) continue;
 
-            finalValue = Mathf.Clamp(finalValue, _initialNewsData.minResourcePricePer, _initialNewsData.maxResourcePricePer);
-            _dataManager.Effect.ApplyEffect(effect, finalValue, effect.targetId);
+                float additionalRandom = UnityEngine.Random.Range(-_initialNewsData.maxRandomRange, _initialNewsData.maxRandomRange);
+                float finalValue = effect.value + additionalRandom;
+
+                if (effect.value > 0)
+                    finalValue = Mathf.Max(finalValue, _initialNewsData.minVariationRate);
+                else if (effect.value < 0)
+                    finalValue = Mathf.Min(finalValue, -_initialNewsData.minVariationRate);
+
+                finalValue = Mathf.Clamp(finalValue, _initialNewsData.minResourcePricePer, _initialNewsData.maxResourcePricePer);
+                _dataManager.Effect.ApplyEffect(effect, finalValue, effect.targetId);
+            }
         }
 
         OnNewsChanged?.Invoke(newState);
@@ -107,12 +105,7 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
     public NewsData GetNewsData(string newsId)
     {
-        if (_newsDataDict.TryGetValue(newsId, out NewsData data))
-        {
-            return data;
-        }
-
-        return null;
+        return _newsDataDict.TryGetValue(newsId, out NewsData data) ? data : null;
     }
 
     public Dictionary<string, NewsData> GetAllNewsData()
@@ -141,10 +134,11 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
             if (news.remainingDays <= 0)
             {
                 NewsData data = GetNewsData(news.id);
-                if (data != null)
+                if (data?.effects != null)
                 {
                     foreach (EffectData effect in data.effects)
                     {
+                        if (effect == null) continue;
                         _dataManager.Effect.RemoveEffect(effect, effect.targetId);
                     }
                 }

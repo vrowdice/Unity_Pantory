@@ -18,7 +18,7 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
     public MarketActorDataHandler(DataManager dataManager, List<MarketActorData> marketActorDataList, InitialMarketActorData initData)
     {
         _dataManager = dataManager;
-        _actors = marketActorDataList;
+        _actors = marketActorDataList ?? new List<MarketActorData>();
         _initialMarketActorData = initData;
 
         InitDictionary();
@@ -28,9 +28,13 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
     {
         foreach (MarketActorData item in _actors)
         {
-            MarketActorEntry entry = new MarketActorEntry(item);
-
-            _actorDic.Add(item.id, entry);
+            if (item == null || string.IsNullOrEmpty(item.id)) continue;
+            if (_actorDic.ContainsKey(item.id))
+            {
+                Debug.LogWarning($"[MarketActorDataHandler] Duplicate actor id: {item.id}");
+                continue;
+            }
+            _actorDic.Add(item.id, new MarketActorEntry(item));
         }
     }
 

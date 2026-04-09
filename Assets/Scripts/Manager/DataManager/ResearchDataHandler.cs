@@ -30,7 +30,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         _dataManager = dataManager;
         
-        if (researchDataList != null && researchDataList.Count > 0)
+        if (researchDataList != null)
         {
             foreach (ResearchData data in researchDataList)
             {
@@ -134,10 +134,15 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
         _researchPoint -= entry.data.researchPointCost;
         entry.state.isCompleted = true;
         ApplyResearchEffects(entry.data);
-        foreach(ResearchData researchData in entry.data.unlockResearchList)
+        if (entry.data.unlockResearchList != null)
         {
-            _researchEntryList[researchData.id].state.isCompleted = false;
-            _researchEntryList[researchData.id].state.isUnlocked = true;
+            foreach (ResearchData researchData in entry.data.unlockResearchList)
+            {
+                if (researchData == null || string.IsNullOrEmpty(researchData.id)) continue;
+                if (!_researchEntryList.TryGetValue(researchData.id, out ResearchEntry unlocked)) continue;
+                unlocked.state.isCompleted = false;
+                unlocked.state.isUnlocked = true;
+            }
         }
 
         OnResearchPointsChanged?.Invoke();
@@ -183,11 +188,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public ResearchEntry GetResearchEntry(string id)
     {
-        if (_researchEntryList.TryGetValue(id, out ResearchEntry entry))
-        {
-            return entry;
-        }
-        return null;
+        return _researchEntryList.TryGetValue(id, out ResearchEntry entry) ? entry : null;
     }
     
     /// <summary>
@@ -203,11 +204,6 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public bool IsResearchCompleted(string researchId)
     {
-        if (_researchEntryList.TryGetValue(researchId, out ResearchEntry entry))
-        {
-            return entry.state.isCompleted;
-        }
-
-        return false;
+        return _researchEntryList.TryGetValue(researchId, out ResearchEntry entry) && entry.state.isCompleted;
     }
 }

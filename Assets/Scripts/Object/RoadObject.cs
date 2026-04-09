@@ -16,7 +16,11 @@ public class RoadObject : MonoBehaviour, IResourceNode
 
     private GameObject _heldIconContainer;
 
+    private BuildingData _sourceBuildingData;
+
     public List<Vector2Int> OutputGridPositions { get; private set; }
+
+    public BuildingData SourceBuildingData => _sourceBuildingData;
 
     [Header("Resource Buffer")]
     [SerializeField] private int _maxCapacity = 1;
@@ -28,10 +32,11 @@ public class RoadObject : MonoBehaviour, IResourceNode
     public bool IsEmpty => _buffer.Count == 0;
     public bool IsFull => _buffer.Count >= _maxCapacity;
 
-    public void Init(Vector2Int gridPosition, int rotation)
+    public void Init(Vector2Int gridPosition, int rotation, BuildingData sourceBuildingData = null)
     {
         _gridPosition = gridPosition;
         _rotation = rotation % 4;
+        _sourceBuildingData = sourceBuildingData;
 
         transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
 
@@ -136,5 +141,43 @@ public class RoadObject : MonoBehaviour, IResourceNode
     private void OnDestroy()
     {
         ClearHeldIconContainer();
+    }
+
+    public PlacedRoadSaveData ExportSaveData()
+    {
+        PlacedRoadSaveData data = new PlacedRoadSaveData();
+        data.x = _gridPosition.x;
+        data.y = _gridPosition.y;
+        data.rotation = _rotation;
+        data.roadDataId = _sourceBuildingData != null ? _sourceBuildingData.id : null;
+        data.sourceBuildingDataId = _sourceBuildingData != null ? _sourceBuildingData.id : null;
+
+        foreach (ResourcePacket p in _buffer)
+        {
+            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            data.buffer.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount)));
+        }
+
+        return data;
+    }
+
+    public void ImportSaveData(PlacedRoadSaveData saveData)
+    {
+        if (saveData == null) return;
+
+        _buffer.Clear();
+        if (saveData.buffer != null)
+        {
+            for (int i = 0; i < saveData.buffer.Count; i++)
+            {
+                ResourcePacketSaveData s = saveData.buffer[i];
+                if (s == null || string.IsNullOrEmpty(s.id)) continue;
+
+                if (_buffer.Count >= _maxCapacity) break;
+                _buffer.Enqueue(new ResourcePacket(s.id, Mathf.Max(1, s.amount)));
+            }
+        }
+
+        RefreshHeldResourceIcons();
     }
 }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_furniture
   displayName: Basic Furniture
-  baseValue: 300
+  baseValue: 750
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 3
@@ -24,7 +24,7 @@ MonoBehaviour:
     affordable, suitable for everyday use.
   requirements:
   - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
-    count: 4
+    count: 3
   - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
-    count: 2
+    count: 1
   initialAmount: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: car
   displayName: Car
-  baseValue: 6600
+  baseValue: 3000
   marketSensitivity: 0.25
   meanReversionStrength: 0.65
   volatilityMultiplier: 1

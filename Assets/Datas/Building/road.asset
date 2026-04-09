@@ -23,7 +23,7 @@ MonoBehaviour:
   isUnlockedByDefault: 1
   requiredEmployees: 0
   buildCost: 10
-  maintenanceCost: 1
+  maintenanceCost: 0
   size: {x: 1, y: 1}
   requiredResearchId: 
   handlingResource: {fileID: 0}

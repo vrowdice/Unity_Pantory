@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 
 public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
 {
@@ -21,18 +20,15 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public OrderDataHandler(DataManager dataManager, List<OrderData> orderDataList, InitialOrderData initialOrderData)
     {
         _dataManager = dataManager;
-        _orderDataList = orderDataList;
+        _orderDataList = orderDataList ?? new List<OrderData>();
         _initialOrderData = initialOrderData;
         _orderDataDict = new Dictionary<string, OrderData>();
 
-        if (_orderDataList != null)
+        foreach (OrderData data in _orderDataList)
         {
-            foreach (OrderData data in _orderDataList)
-            {
-                if (data == null || string.IsNullOrEmpty(data.id)) continue;
-                if (_orderDataDict.ContainsKey(data.id)) continue;
-                _orderDataDict[data.id] = data;
-            }
+            if (data == null || string.IsNullOrEmpty(data.id)) continue;
+            if (_orderDataDict.ContainsKey(data.id)) continue;
+            _orderDataDict[data.id] = data;
         }
 
         ResetOrderChance();
@@ -164,11 +160,9 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         {
             foreach (OrderState.ResourceRequest request in order.resourceRequestList)
             {
-                if (!_dataManager.Resource.ModifyResourceCount(request.resourceId, -request.requiredCount))
-                {
-                    UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughResources);
-                    return;
-                }
+                if (_dataManager.Resource.ModifyResourceCount(request.resourceId, -request.requiredCount)) continue;
+                UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughResources);
+                return;
             }
 
             _dataManager.Finances.ModifyCredit(order.rewardCredit);
@@ -188,11 +182,7 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public OrderData GetOrderData(string id)
     {
         if (string.IsNullOrEmpty(id)) return null;
-        if (_orderDataDict.TryGetValue(id, out OrderData data))
-        {
-            return data;
-        }
-        return null;
+        return _orderDataDict.TryGetValue(id, out OrderData data) ? data : null;
     }
 
     public Dictionary<string, OrderData> GetAllOrderData()

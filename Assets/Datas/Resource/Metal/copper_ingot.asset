@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: copper_ingot
   displayName: Copper Ingot
-  baseValue: 118
+  baseValue: 130
   marketSensitivity: 0.2
   meanReversionStrength: 0.58
   maxDailySwing: 0.012

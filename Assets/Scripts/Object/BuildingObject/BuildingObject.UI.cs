@@ -26,26 +26,6 @@ public partial class BuildingObject
         _selectedResource.AppendBatchOutputIds(outputIds);
     }
 
-    public bool TrySetSelectedResource(ResourceData data)
-    {
-        if (data == null) return false;
-        if (_buildingData is ProductionBuildingData prod && !IsResourceAllowedForProduction(prod, data))
-            return false;
-        if (_buildingData is RawMaterialFactoryData raw && !IsResourceAllowedForRawFactory(raw, data))
-            return false;
-
-        _selectedResource = data;
-        RefreshOutgoingResourceIcons();
-        return true;
-    }
-
-    public float GetProductionProgressNormalized()
-    {
-        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is LoadStationData)
-            return Mathf.Clamp01(_workProgress);
-        return 0f;
-    }
-
     public void RefreshOutgoingResourceIcons()
     {
         ClearOutgoingIconContainer();

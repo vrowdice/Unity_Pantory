@@ -20,6 +20,8 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     private long _dailyInterest;
     private long _dailyTotal;
 
+    private long _placedBuildingsDailyMaintenance;
+
     private List<long> _monthlyCreditHistory = new List<long>();
     private List<long> _monthlyWealthHistory = new List<long>();
 
@@ -44,7 +46,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         _dataManager = dataManager;
         _initialFinancesData = initData;
-        _credit = _initialFinancesData.initialCredit;
+        _credit = initData != null ? initData.initialCredit : 0L;
     }
 
     public bool ModifyCredit(long credit)
@@ -73,17 +75,43 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         _dailySalary = _dataManager.Employee.CalculateTotalSalary();
         _dailyResource = _dataManager.Resource.TotalCreditChange;
-        // Thread/ThreadPlacement 시스템 제거: 건물 유지비는 추후 '메인 건물 설치 데이터' 기반으로 재구현
-        _dailyMaintenance = 0;
+        _dailyMaintenance = _placedBuildingsDailyMaintenance;
         _dailyInterest = CalculateNegativeInterest();
 
         _dailyTotal = _dailyResource - _dailySalary - _dailyMaintenance - _dailyInterest;
     }
 
+    /// <summary>
+    /// 메인 그리드에 건물/도로가 놓일 때 일일 유지비 합계에 더합니다.
+    /// </summary>
+    public void RegisterPlacedBuildingMaintenance(BuildingData data)
+    {
+        if (data == null || data.maintenanceCost <= 0) return;
+        _placedBuildingsDailyMaintenance += data.maintenanceCost;
+    }
+
+    /// <summary>
+    /// 건물/도로 제거 시 일일 유지비 합계에서 뺍니다.
+    /// </summary>
+    public void UnregisterPlacedBuildingMaintenance(BuildingData data)
+    {
+        if (data == null || data.maintenanceCost <= 0) return;
+        _placedBuildingsDailyMaintenance -= data.maintenanceCost;
+        if (_placedBuildingsDailyMaintenance < 0)
+            _placedBuildingsDailyMaintenance = 0;
+    }
+
+    /// <summary>
+    /// 그리드 전체 삭제 등 일괄 정리 시 유지비 합계를 초기화합니다.
+    /// </summary>
+    public void ClearPlacedBuildingMaintenanceTotal()
+    {
+        _placedBuildingsDailyMaintenance = 0;
+    }
+
     public long CalculateNegativeInterest()
     {
         if (_credit >= 0 || _initialFinancesData == null) return 0;
-        
         return (long)(Mathf.Abs(_credit) * _initialFinancesData.negativeInterestRate);
     }
 

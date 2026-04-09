@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class DataManager : Singleton<DataManager>
@@ -43,6 +42,8 @@ public class DataManager : Singleton<DataManager>
     public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
 
+    public PlacedObjectLayoutDataHandler PlacedLayout { get; private set; }
+
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
     private readonly List<ITimeChangeHandler> _dayHandlers = new List<ITimeChangeHandler>();
 
@@ -76,10 +77,12 @@ public class DataManager : Singleton<DataManager>
         Finances = new FinancesDataHandler(this, _initialFinancesData);
         Employee = new EmployeeDataHandler(this, _employeeDataList, _initialEmployeeData);
         Building = new BuildingDataHandler(this, _buildingDataList);
-        Effect = new EffectDataHandler(this);
+        Effect = new EffectDataHandler();
         Research = new ResearchDataHandler(this, _researchDataList);
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
+
+        PlacedLayout = new PlacedObjectLayoutDataHandler();
 
         _eventHandlers.Clear();
         _eventHandlers.Add(Time);

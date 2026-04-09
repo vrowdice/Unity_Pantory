@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ore
   displayName: Iron Ore
-  baseValue: 24
+  baseValue: 28
   volatilityMultiplier: 0.8
   maxPriceMultiplier: 10
   type: 0
@@ -23,4 +23,4 @@ MonoBehaviour:
   description: The foundation of industry. The primary material for steel and machine
     parts.
   requirements: []
-  initialAmount: 100
+  initialAmount: 80

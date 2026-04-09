@@ -67,10 +67,27 @@ public class MainRunner : RunnerBase
         _gridHandler.CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
 
+        RestorePlacedLayoutIfAny();
+
         DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
         DataManager.Time.OnHourChanged += _gridHandler.OnMainHourChanged;
 
         _mainCanvas.Init(this);
+    }
+
+    private void RestorePlacedLayoutIfAny()
+    {
+        DataManager dataManager = DataManager.Instance;
+        if (dataManager == null || dataManager.PlacedLayout == null || _gridHandler == null) return;
+
+        dataManager.PlacedLayout.Consume(out System.Collections.Generic.List<PlacedBuildingSaveData> buildings,
+            out System.Collections.Generic.List<PlacedRoadSaveData> roads);
+
+        bool hasBuildings = buildings != null && buildings.Count > 0;
+        bool hasRoads = roads != null && roads.Count > 0;
+        if (!hasBuildings && !hasRoads) return;
+
+        _gridHandler.RestoreFromSave(buildings, roads);
     }
 
     /// <summary>

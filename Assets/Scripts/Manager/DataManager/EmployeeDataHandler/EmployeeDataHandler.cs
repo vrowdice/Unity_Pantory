@@ -214,14 +214,6 @@ public partial class EmployeeDataHandler : IDataHandlerEvents, ITimeChangeHandle
     }
 
     /// <summary>
-    /// Employee 타겟 이펙트에 대한 instanceId를 반환합니다. entry가 없으면 null(전역)을 반환합니다.
-    /// </summary>
-    protected string GetInstanceIdForEmployee(EmployeeEntry entry)
-    {
-        return entry != null ? entry.data.type.ToString() : null;
-    }
-
-    /// <summary>
     /// 특정 직원 유형의 현재 급여 레벨을 반환합니다.
     /// </summary>
     /// <param name="type">직원 유형</param>
@@ -231,6 +223,16 @@ public partial class EmployeeDataHandler : IDataHandlerEvents, ITimeChangeHandle
         if (!TryGetEntry(type, out EmployeeEntry entry))
             return -1;
         return entry.state.salaryLevel;
+    }
+
+    protected int GetTotalEmployeeCount()
+    {
+        int total = 0;
+        foreach (EmployeeEntry entry in _employees.Values)
+        {
+            total += entry.state.count;
+        }
+        return total;
     }
 
     /// <summary>
@@ -245,13 +247,14 @@ public partial class EmployeeDataHandler : IDataHandlerEvents, ITimeChangeHandle
     /// <summary>
     /// 모든 직원의 급여를 재계산합니다.
     /// </summary>
-    protected void RefreshAllSalaries()
+    protected void RefreshAllSalaries(bool notifyChanged = true)
     {
         foreach (EmployeeEntry entry in _employees.Values)
         {
             UpdateSalary(entry);
         }
 
-        OnEmployeeChanged?.Invoke();
+        if (notifyChanged)
+            OnEmployeeChanged?.Invoke();
     }
 }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: precision_tools
   displayName: Precision Tools
-  baseValue: 580
+  baseValue: 520
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5
@@ -27,4 +27,4 @@ MonoBehaviour:
     count: 1
   - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
     count: 1
-  initialAmount: 100
+  initialAmount: 10

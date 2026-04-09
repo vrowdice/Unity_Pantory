@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: airplane
   displayName: Fighter Jet
-  baseValue: 13200
+  baseValue: 8000
   marketSensitivity: 0.3
   meanReversionStrength: 0.7
   volatilityMultiplier: 1

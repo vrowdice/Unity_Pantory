@@ -80,6 +80,9 @@ public class MainBuildingGridHandler
 
     public void ClearAllBuildings()
     {
+        if (_dataManager != null && _dataManager.Finances != null)
+            _dataManager.Finances.ClearPlacedBuildingMaintenanceTotal();
+
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
             if (building != null) MonoBehaviour.Destroy(building.gameObject);
@@ -99,6 +102,58 @@ public class MainBuildingGridHandler
         {
             tile?.SetOccupied(false);
         }
+    }
+
+    public List<PlacedBuildingSaveData> ExportPlacedBuildings()
+    {
+        List<PlacedBuildingSaveData> list = new List<PlacedBuildingSaveData>();
+
+        foreach (BuildingObject building in _buildingObjDict.Values)
+        {
+            if (building == null || building.BuildingData == null) continue;
+            if (building.IsRemovalAnimating) continue;
+            list.Add(building.ExportSaveData());
+        }
+
+        return list;
+    }
+
+    public List<PlacedRoadSaveData> ExportPlacedRoads()
+    {
+        List<PlacedRoadSaveData> list = new List<PlacedRoadSaveData>();
+
+        foreach (RoadObject road in _roadObjDict.Values)
+        {
+            if (road == null) continue;
+            list.Add(road.ExportSaveData());
+        }
+
+        return list;
+    }
+
+    public void RestoreFromSave(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
+    {
+        ClearAllBuildings();
+
+        if (roads != null)
+        {
+            for (int i = 0; i < roads.Count; i++)
+            {
+                PlacedRoadSaveData s = roads[i];
+                TryPlaceRoadFromSave(s);
+            }
+        }
+
+        if (buildings != null)
+        {
+            for (int i = 0; i < buildings.Count; i++)
+            {
+                PlacedBuildingSaveData s = buildings[i];
+                TryPlaceBuildingFromSave(s);
+            }
+        }
+
+        OnBuildingInstanceLayoutChanged?.Invoke();
     }
 
     public Vector2Int WorldToGridPosition(Vector3 worldPos)
@@ -186,9 +241,18 @@ public class MainBuildingGridHandler
         return CountPlacedBuildingsWithId(data.id) < max;
     }
 
-    public bool TryPlaceRoad(Vector2Int position, int rotation, out GameObject placed)
+    public bool TryPlaceRoad(BuildingData roadData, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
     {
         placed = null;
+        insufficientCredits = false;
+
+        if (roadData != null && roadData.buildCost > 0 && _dataManager?.Finances != null &&
+            _dataManager.Finances.Credit < roadData.buildCost)
+        {
+            insufficientCredits = true;
+            return false;
+        }
+
         if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position)) return false;
 
         GameObject obj = MonoBehaviour.Instantiate(_runner.RoadObjectPrefab, _roadParent);
@@ -207,21 +271,74 @@ public class MainBuildingGridHandler
             return false;
         }
 
-        roadObject.Init(position, rotation);
+        roadObject.Init(position, rotation, roadData);
         string key = RoadGridKey(position);
         _roadObjDict[key] = roadObject;
         _occupiedAsObjectDict[position] = key;
         if (_tileDict.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
 
+        ApplyPlacementFinances(roadData);
+
         placed = obj;
         return true;
     }
 
-    public bool TryPlaceBuilding(BuildingData data, Vector2Int position, int rotation, out GameObject placed)
+    private bool TryPlaceRoadFromSave(PlacedRoadSaveData saveData)
+    {
+        if (saveData == null) return false;
+
+        Vector2Int position = new Vector2Int(saveData.x, saveData.y);
+        int rotation = saveData.rotation;
+
+        if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position)) return false;
+
+        string roadDataId = !string.IsNullOrEmpty(saveData.roadDataId) ? saveData.roadDataId : "road";
+        BuildingData roadData = _dataManager != null && _dataManager.Building != null
+            ? _dataManager.Building.GetBuildingData(roadDataId)
+            : null;
+
+        GameObject obj = MonoBehaviour.Instantiate(_runner.RoadObjectPrefab, _roadParent);
+        obj.name = $"Road_{position.x}_{position.y}";
+
+        obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
+
+        RoadObject roadObject = obj.GetComponent<RoadObject>();
+        if (roadObject == null)
+        {
+            MonoBehaviour.Destroy(obj);
+            return false;
+        }
+
+        BuildingData sourceBuildingData = roadData;
+        if (!string.IsNullOrEmpty(saveData.sourceBuildingDataId) && _dataManager != null && _dataManager.Building != null)
+            sourceBuildingData = _dataManager.Building.GetBuildingData(saveData.sourceBuildingDataId);
+
+        roadObject.Init(position, rotation, sourceBuildingData);
+        roadObject.ImportSaveData(saveData);
+
+        string key = RoadGridKey(position);
+        _roadObjDict[key] = roadObject;
+        _occupiedAsObjectDict[position] = key;
+        if (_tileDict.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
+
+        if (_dataManager?.Finances != null && roadData != null)
+            _dataManager.Finances.RegisterPlacedBuildingMaintenance(roadData);
+
+        return true;
+    }
+
+    public bool TryPlaceBuilding(BuildingData data, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
     {
         placed = null;
+        insufficientCredits = false;
         if (data == null || data.buildingSprite == null) return false;
         if (!CanPlaceMoreInstances(data)) return false;
+
+        if (data.buildCost > 0 && _dataManager?.Finances != null && _dataManager.Finances.Credit < data.buildCost)
+        {
+            insufficientCredits = true;
+            return false;
+        }
 
         Vector2Int rotatedSize = GetRotatedSize(data.size, rotation);
         if (!CanPlace(position, rotatedSize)) return false;
@@ -231,6 +348,8 @@ public class MainBuildingGridHandler
         obj.transform.position = GridToWorldPosition(position, rotatedSize);
 
         BuildingObject building = obj.GetComponent<BuildingObject>();
+        Vector3 targetLocalScale = obj.transform.localScale;
+        obj.transform.localScale = Vector3.zero;
         building.Init(_runner, data, position, rotatedSize, rotation);
 
         string key = BuildingGridKey(position);
@@ -239,13 +358,65 @@ public class MainBuildingGridHandler
         if (data is RawMaterialFactoryData)
             _rawResourceBuildingObjDict[key] = building;
 
-        Vector3 s = obj.transform.localScale;
-        obj.transform.localScale = Vector3.zero;
-        obj.transform.DOScale(s, 0.18f).SetEase(Ease.OutBack).SetUpdate(true).SetLink(obj);
+        building.PlayPlaceEntranceAnimation(targetLocalScale);
+        GameManager.Instance?.MainCameraController?.ShakeForConstruction();
+
+        ApplyPlacementFinances(data);
 
         placed = obj;
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
+    }
+
+    private bool TryPlaceBuildingFromSave(PlacedBuildingSaveData saveData)
+    {
+        if (saveData == null) return false;
+        if (string.IsNullOrEmpty(saveData.buildingDataId)) return false;
+
+        BuildingData data = _dataManager != null && _dataManager.Building != null
+            ? _dataManager.Building.GetBuildingData(saveData.buildingDataId)
+            : null;
+        if (data == null) return false;
+
+        Vector2Int origin = new Vector2Int(saveData.originX, saveData.originY);
+        int rotation = saveData.rotation;
+
+        Vector2Int rotatedSize = GetRotatedSize(data.size, rotation);
+        if (!CanPlace(origin, rotatedSize)) return false;
+
+        GameObject obj = MonoBehaviour.Instantiate(_runner.BuildingObjectPrefab, _buildingParent);
+        obj.name = $"Building_{data.id}_{origin.x}_{origin.y}";
+        obj.transform.position = GridToWorldPosition(origin, rotatedSize);
+
+        BuildingObject building = obj.GetComponent<BuildingObject>();
+        if (building == null)
+        {
+            MonoBehaviour.Destroy(obj);
+            return false;
+        }
+
+        building.Init(_runner, data, origin, rotatedSize, rotation);
+        building.ImportSaveData(saveData, _dataManager);
+
+        string key = BuildingGridKey(origin);
+        RegisterBuildingOccupancy(origin, rotatedSize, key);
+        _buildingObjDict[key] = building;
+        if (data is RawMaterialFactoryData)
+            _rawResourceBuildingObjDict[key] = building;
+
+        if (_dataManager?.Finances != null)
+            _dataManager.Finances.RegisterPlacedBuildingMaintenance(data);
+
+        return true;
+    }
+
+    private void ApplyPlacementFinances(BuildingData data)
+    {
+        if (_dataManager?.Finances == null || data == null) return;
+
+        if (data.buildCost != 0)
+            _dataManager.Finances.ModifyCredit(-data.buildCost);
+        _dataManager.Finances.RegisterPlacedBuildingMaintenance(data);
     }
 
     public bool TryRemoveAt(Vector2Int anyOccupiedCell)
@@ -258,19 +429,29 @@ public class MainBuildingGridHandler
             _occupiedAsObjectDict.Remove(pos);
             _roadObjDict.Remove(key);
             if (_tileDict.TryGetValue(pos, out BuildingTile t)) t.SetOccupied(false);
+            if (_dataManager?.Finances != null && road.SourceBuildingData != null)
+                _dataManager.Finances.UnregisterPlacedBuildingMaintenance(road.SourceBuildingData);
             MonoBehaviour.Destroy(road.gameObject);
             return true;
         }
 
         if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
         {
+            if (building.IsRemovalAnimating) return false;
+
             Vector2Int origin = building.Origin;
             Vector2Int size = building.Size;
-            UnregisterOccupancy(origin, size);
-            _buildingObjDict.Remove(key);
-            _rawResourceBuildingObjDict.Remove(key);
-            MonoBehaviour.Destroy(building.gameObject);
-            OnBuildingInstanceLayoutChanged?.Invoke();
+            building.PlayRemovalAnimation(() =>
+            {
+                if (building == null) return;
+                if (_dataManager?.Finances != null && building.BuildingData != null)
+                    _dataManager.Finances.UnregisterPlacedBuildingMaintenance(building.BuildingData);
+                UnregisterOccupancy(origin, size);
+                _buildingObjDict.Remove(key);
+                _rawResourceBuildingObjDict.Remove(key);
+                MonoBehaviour.Destroy(building.gameObject);
+                OnBuildingInstanceLayoutChanged?.Invoke();
+            });
             return true;
         }
 
@@ -286,7 +467,7 @@ public class MainBuildingGridHandler
         {
             foreach (BuildingObject building in _buildingObjDict.Values)
             {
-                if (building == null) continue;
+                if (building == null || building.IsRemovalAnimating) continue;
                 building.TickSimulation(_dataManager);
             }
         }
@@ -316,7 +497,7 @@ public class MainBuildingGridHandler
 
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
-            if (building == null) continue;
+            if (building == null || building.IsRemovalAnimating) continue;
             foreach (Vector2Int outCell in building.OutputGridPositions)
             {
                 if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;

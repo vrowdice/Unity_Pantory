@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: machine_parts
   displayName: Machine Parts
-  baseValue: 180
+  baseValue: 220
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5
@@ -25,4 +25,4 @@ MonoBehaviour:
   requirements:
   - resource: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
     count: 2
-  initialAmount: 100
+  initialAmount: 20

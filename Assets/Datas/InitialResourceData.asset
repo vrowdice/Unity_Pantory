@@ -15,3 +15,4 @@ MonoBehaviour:
   volatilityMultiplier: 0.01
   maxChangePriceMultiplier: 1.2
   priceHistoryCapacity: 60
+  transactionFee: 0.08

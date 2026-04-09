@@ -21,18 +21,17 @@ public class BuildingDataHandler
         _dataManager = gameDataManager;
         _buildings = new Dictionary<string, BuildingData>();
         
-        if (buildingDataList != null && buildingDataList.Count > 0)
+        if (buildingDataList == null) return;
+
+        foreach (BuildingData data in buildingDataList)
         {
-            foreach (BuildingData data in buildingDataList)
+            if (data == null || string.IsNullOrEmpty(data.id)) continue;
+            if (_buildings.ContainsKey(data.id))
             {
-                if (data == null || string.IsNullOrEmpty(data.id)) continue;
-                if (_buildings.ContainsKey(data.id))
-                {
-                    Debug.LogWarning($"[BuildingDataHandler] Building type already registered: {data.id}");
-                    continue;
-                }
-                _buildings[data.id] = data;
+                Debug.LogWarning($"[BuildingDataHandler] Building type already registered: {data.id}");
+                continue;
             }
+            _buildings[data.id] = data;
         }
     }
 
@@ -42,15 +41,9 @@ public class BuildingDataHandler
     /// <param name="buildingData">등록할 BuildingData</param>
     public void RegisterBuilding(BuildingData buildingData)
     {
-        if (buildingData == null)
+        if (buildingData == null || string.IsNullOrEmpty(buildingData.id))
         {
-            Debug.LogWarning("[BuildingDataHandler] BuildingData is null.");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(buildingData.id))
-        {
-            Debug.LogWarning("[BuildingDataHandler] BuildingData ID is empty.");
+            Debug.LogWarning("[BuildingDataHandler] Invalid BuildingData (null or empty id).");
             return;
         }
 
@@ -69,10 +62,10 @@ public class BuildingDataHandler
     /// <param name="buildingDataList">등록할 BuildingData 배열</param>
     public void RegisterBuildings(BuildingData[] buildingDataList)
     {
+        if (buildingDataList == null) return;
+
         foreach (BuildingData data in buildingDataList)
-        {
             RegisterBuilding(data);
-        }
     }
 
     /// <summary>
@@ -82,11 +75,8 @@ public class BuildingDataHandler
     /// <returns>BuildingData 또는 null</returns>
     public BuildingData GetBuildingData(string buildingId)
     {
-        if (_buildings.TryGetValue(buildingId, out BuildingData data))
-        {
-            return data;
-        }
-        
+        if (_buildings.TryGetValue(buildingId, out BuildingData data)) return data;
+
         Debug.LogWarning($"[BuildingDataHandler] Unregistered building: {buildingId}");
         return null;
     }
@@ -150,13 +140,8 @@ public class BuildingDataHandler
 
     public bool IsBuildingResearchUnlocked(string buildingId)
     {
-        BuildingData buildingData = GetBuildingData(buildingId);
-        if (buildingData == null)
-            return false;
-        if(buildingData.requiredResearch == null)
-        {
-            return true;
-        }
+        if (!_buildings.TryGetValue(buildingId, out BuildingData buildingData)) return false;
+        if (buildingData.requiredResearch == null) return true;
         return _dataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
     }
 

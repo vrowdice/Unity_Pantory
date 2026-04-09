@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fine_wood
   displayName: Fine Wood
-  baseValue: 40
+  baseValue: 50
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5
@@ -23,6 +23,6 @@ MonoBehaviour:
   description: High-quality wood with a smooth finish and beautiful grain. Selected
     and perfected through meticulous processing.
   requirements:
-  - resource: {fileID: 0}
+  - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
     count: 2
-  initialAmount: 100
+  initialAmount: 30

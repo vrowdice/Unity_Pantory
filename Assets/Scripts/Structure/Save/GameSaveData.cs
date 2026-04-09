@@ -46,6 +46,63 @@ public class GameSaveData
 
     // Effect Data
     public EffectStateSaveData effects = new EffectStateSaveData();
+
+    // Placed Objects (Main building/road layout)
+    public List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
+    public List<PlacedRoadSaveData> placedRoads = new List<PlacedRoadSaveData>();
+}
+
+/// <summary>
+/// ResourcePacket 저장용 데이터
+/// </summary>
+[Serializable]
+public class ResourcePacketSaveData
+{
+    public string id;
+    public int amount;
+
+    public ResourcePacketSaveData() { }
+
+    public ResourcePacketSaveData(string id, int amount)
+    {
+        this.id = id;
+        this.amount = amount;
+    }
+}
+
+/// <summary>
+/// 배치된 BuildingObject 저장용 데이터
+/// </summary>
+[Serializable]
+public class PlacedBuildingSaveData
+{
+    public string buildingDataId;
+    public int originX;
+    public int originY;
+    public int rotation;
+
+    public string selectedResourceId;
+    public float workProgress;
+    public int assignedWorkers;
+    public int assignedTechnicians;
+
+    public List<ResourcePacketSaveData> inputBuffer = new List<ResourcePacketSaveData>();
+    public List<ResourcePacketSaveData> outputBuffer = new List<ResourcePacketSaveData>();
+}
+
+/// <summary>
+/// 배치된 RoadObject 저장용 데이터
+/// </summary>
+[Serializable]
+public class PlacedRoadSaveData
+{
+    public int x;
+    public int y;
+    public int rotation;
+    public string roadDataId;
+    public string sourceBuildingDataId;
+
+    public List<ResourcePacketSaveData> buffer = new List<ResourcePacketSaveData>();
 }
 
 /// <summary>

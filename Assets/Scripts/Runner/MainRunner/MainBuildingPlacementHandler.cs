@@ -115,11 +115,13 @@ public class MainBuildingPlacementHandler
 
             if (_selectedBuilding.IsRoad)
             {
-                _gridHandler.TryPlaceRoad(origin, _rotation, out _);
+                if (!_gridHandler.TryPlaceRoad(_selectedBuilding, origin, _rotation, out _, out bool roadNoMoney) && roadNoMoney)
+                    UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
             }
             else
             {
-                _gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _);
+                if (!_gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _, out bool buildingNoMoney) && buildingNoMoney)
+                    UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
             }
         }
     }

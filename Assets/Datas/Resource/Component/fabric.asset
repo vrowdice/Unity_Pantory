@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fabric
   displayName: Fabric
-  baseValue: 28
+  baseValue: 45
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: premium_furniture
   displayName: Premium Furniture
-  baseValue: 4000
+  baseValue: 1800
   marketSensitivity: 0.25
   meanReversionStrength: 0.62
   volatilityMultiplier: 1

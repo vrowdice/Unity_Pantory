@@ -25,7 +25,7 @@ MonoBehaviour:
   isProfessional: 1
   requiredEmployees: 5
   buildCost: 280
-  maintenanceCost: 12
+  maintenanceCost: 25
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
   allowedResourceTypes: 05000000

@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// 직원 할당 관리 (assignedCount)
@@ -61,11 +60,6 @@ public partial class EmployeeDataHandler
         if (entry.state.assignedCount >= count)
         {
             entry.state.assignedCount -= count;
-            if (entry.state.assignedCount < 0)
-            {
-                entry.state.assignedCount = 0;
-            }
-            
             OnEmployeeChanged?.Invoke();
             return true;
         }

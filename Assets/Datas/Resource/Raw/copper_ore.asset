@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: copper_ore
   displayName: Copper Ore
-  baseValue: 36
+  baseValue: 40
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 0
@@ -22,4 +22,4 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 77230f07dd3f48648ac0d2a6773252b9, type: 3}
   description: Highly conductive metal. Essential for electronic component production.
   requirements: []
-  initialAmount: 0
+  initialAmount: 60

@@ -25,7 +25,7 @@ public partial class EmployeeDataHandler
             long totalFiringCost = entry.data.firingCost * (long)count;
             if (totalFiringCost != 0)
             {
-                _dataManager.Finances.ModifyCredit(-totalFiringCost);
+                _dataManager?.Finances?.ModifyCredit(-totalFiringCost);
             }
 
             int currentTotal = entry.state.count;
@@ -41,11 +41,7 @@ public partial class EmployeeDataHandler
                 if (_initialEmployeeData.enableManagerMitigation &&
                     TryGetEntry(EmployeeType.Manager, out EmployeeEntry managerEntry) && managerEntry.state.count > 0)
                 {
-                    int totalEmployees = 0;
-                    foreach (EmployeeEntry emp in _employees.Values)
-                    {
-                        totalEmployees += emp.state.count;
-                    }
+                    int totalEmployees = GetTotalEmployeeCount();
 
                     if (totalEmployees > 0)
                     {
@@ -73,7 +69,9 @@ public partial class EmployeeDataHandler
                 -100f, 100f
             );
 
-            float crossPenaltyRatio = _initialEmployeeData.crossEmployeeTypeSatisfactionPenaltyRatio;
+            float crossPenaltyRatio = _initialEmployeeData != null
+                ? _initialEmployeeData.crossEmployeeTypeSatisfactionPenaltyRatio
+                : 0f;
 
             foreach (EmployeeEntry otherEntry in _employees.Values)
             {

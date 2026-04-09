@@ -17,6 +17,12 @@ public class MainCameraController : MonoBehaviour
     [Header("Boundary Settings")]
     [SerializeField] private BoxCollider2D _boundaryCollider;
 
+    [Header("Construction feedback (DOTween)")]
+    [SerializeField] private float _constructionShakeDuration = 0.22f;
+    [SerializeField] private Vector3 _constructionShakeStrength = new Vector3(0.12f, 0.12f, 0f);
+    [SerializeField] private int _constructionShakeVibrato = 14;
+    [SerializeField] private float _constructionShakeRandomness = 90f;
+
     public Camera Camera => _camera;
 
     private Camera _camera;
@@ -52,10 +58,25 @@ public class MainCameraController : MonoBehaviour
         _boundaryCollider.size = size;
     }
 
-    public void ShakeCamera()
+    /// <summary>
+    /// 건물 건설 등 짧은 피드백용. XY만 흔들고 Z는 유지(orthographic 2D 기준).
+    /// </summary>
+    public void ShakeForConstruction()
     {
-        transform.DOShakePosition(0.1f, 0.1f, 10, 90, false, true);
+        transform.DOKill(false);
+        transform.DOShakePosition(
+                _constructionShakeDuration,
+                _constructionShakeStrength,
+                _constructionShakeVibrato,
+                _constructionShakeRandomness,
+                false,
+                true,
+                ShakeRandomnessMode.Full)
+            .SetUpdate(UpdateType.Normal, isIndependentUpdate: true)
+            .SetLink(gameObject);
     }
+
+    public void ShakeCamera() => ShakeForConstruction();
 
     private void LateUpdate()
     {

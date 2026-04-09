@@ -24,29 +24,23 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
         _initialResourceData = initialResourceData;
         _resourceDic = new Dictionary<string, ResourceEntry>();
 
-        if (resourceDataList != null && resourceDataList.Count > 0)
+        if (resourceDataList == null) return;
+
+        foreach (ResourceData data in resourceDataList)
         {
-            foreach (ResourceData data in resourceDataList)
+            if (data == null || string.IsNullOrEmpty(data.id)) continue;
+            if (_resourceDic.ContainsKey(data.id))
             {
-                if (data == null || string.IsNullOrEmpty(data.id)) continue;
-                if (_resourceDic.ContainsKey(data.id))
-                {
-                    Debug.LogWarning($"[ResourceDataHandler] Resource already registered: {data.id}");
-                    continue;
-                }
-                _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData.priceHistoryCapacity);
+                Debug.LogWarning($"[ResourceDataHandler] Resource already registered: {data.id}");
+                continue;
             }
+            _resourceDic[data.id] = new ResourceEntry(data, _initialResourceData.priceHistoryCapacity);
         }
     }
 
     public ResourceEntry GetResourceEntry(string resourceId)
     {
-        if (_resourceDic.TryGetValue(resourceId, out ResourceEntry entry))
-        {
-            return entry;
-        }
-
-        return null;
+        return _resourceDic.TryGetValue(resourceId, out ResourceEntry entry) ? entry : null;
     }
 
     public Dictionary<string, ResourceEntry> GetAllResources()
@@ -56,44 +50,22 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
     public void ModifyThreadDelta(string resourceId, int count)
     {
-        ResourceEntry resourceEntry = null;
-        _resourceDic.TryGetValue(resourceId, out resourceEntry);
-
-        if (resourceEntry != null)
-        {
-            resourceEntry.state.threadDeltaCount += count;
-        }
+        if (!_resourceDic.TryGetValue(resourceId, out ResourceEntry resourceEntry)) return;
+        resourceEntry.state.threadDeltaCount += count;
     }
 
     public void ModifyMarketDelta(string resourceId, int count)
     {
-        ResourceEntry resourceEntry = null;
-        _resourceDic.TryGetValue(resourceId, out resourceEntry);
-
-        if (resourceEntry != null)
-        {
-            resourceEntry.state.marketDeltaCount += count;
-        }
+        if (!_resourceDic.TryGetValue(resourceId, out ResourceEntry resourceEntry)) return;
+        resourceEntry.state.marketDeltaCount += count;
     }
 
     public bool ModifyResourceCount(string resourceId, int count)
     {
-        ResourceEntry resourceEntry = null;
-        _resourceDic.TryGetValue(resourceId, out resourceEntry);
-        if (resourceEntry != null)
-        {
-            bool result = resourceEntry.ModifyCount(count);
-            if(result)
-            {
-                OnResourceChanged?.Invoke();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return false;
+        if (!_resourceDic.TryGetValue(resourceId, out ResourceEntry resourceEntry)) return false;
+        if (!resourceEntry.ModifyCount(count)) return false;
+        OnResourceChanged?.Invoke();
+        return true;
     }
 
     /// <summary>
@@ -136,8 +108,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
                 actualSell = marketDelta < 0 ? Math.Min(-marketDelta, availableAfterProduction) : 0;
                 changeCount = threadDelta + (marketDelta > 0 ? marketDelta : -actualSell);
             }
-
-            if (threadDelta > 0) totalCreditChange += (long)threadDelta * GetSalePrice(entry.data.id);
+            
             if (toBuy > 0) totalCreditChange -= (long)toBuy * GetPurchasePrice(entry.data.id);
             if (marketDelta > 0) totalCreditChange -= (long)marketDelta * GetPurchasePrice(entry.data.id);
             else if (actualSell > 0) totalCreditChange += (long)actualSell * GetSalePrice(entry.data.id);

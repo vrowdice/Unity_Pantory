@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 /// <summary>
 /// 그리드에 설치된 건물: 뷰, 입출력 큐, 시간 틱 시뮬, 직원, 클릭 UI.
@@ -34,8 +35,15 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private float _workProgress;
     private int _maxInputCapacity;
     private int _maxOutputCapacity;
+    private bool _removalAnimating;
+
+    private const float PlaceScaleDuration = 0.22f;
+    private const float PlacePunchDuration = 0.12f;
+    private const float PlacePunchStrength = 0.06f;
+    private const float RemoveScaleDuration = 0.2f;
 
     public BuildingData BuildingData => _buildingData;
+    public bool IsRemovalAnimating => _removalAnimating;
     public Vector2Int Origin => _origin;
     public Vector2Int Size => _size;
     public List<Vector2Int> OutputGridPositions { get; private set; }
@@ -71,6 +79,46 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
         if (_selectedResource == null && buildingData is RawMaterialFactoryData raw && raw.DefaultRawResource != null)
             _selectedResource = raw.DefaultRawResource;
+    }
+
+    /// <summary>
+    /// 배치 직후 호출: 로컬 스케일 0에서 target까지 스케일 업 후 살짝 펀치.
+    /// </summary>
+    public void PlayPlaceEntranceAnimation(Vector3 targetLocalScale)
+    {
+        transform.DOKill(false);
+
+        Vector3 t = targetLocalScale;
+        if (t.x == 0f && t.y == 0f && t.z == 0f) t = Vector3.one;
+
+        Sequence seq = DOTween.Sequence();
+        seq.SetLink(gameObject);
+        seq.SetUpdate(true);
+        seq.Append(transform.DOScale(t, PlaceScaleDuration).SetEase(Ease.OutBack));
+        seq.Append(transform.DOPunchScale(Vector3.one * PlacePunchStrength, PlacePunchDuration, 10, 0.35f));
+    }
+
+    /// <summary>
+    /// 제거 시 스케일 다운 후 콜백. 점유 해제·파괴는 콜백에서 처리.
+    /// </summary>
+    public void PlayRemovalAnimation(Action onComplete)
+    {
+        if (_removalAnimating) return;
+
+        _removalAnimating = true;
+        if (_collider != null) _collider.enabled = false;
+
+        transform.DOKill(false);
+
+        transform.DOScale(Vector3.zero, RemoveScaleDuration)
+            .SetEase(Ease.InBack)
+            .SetUpdate(true)
+            .SetLink(gameObject)
+            .OnComplete(() =>
+            {
+                _removalAnimating = false;
+                onComplete?.Invoke();
+            });
     }
 
     private void Update()
@@ -121,6 +169,202 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     private void OnDestroy()
     {
+        transform.DOKill(false);
         ClearOutgoingIconContainer();
+    }
+
+    // --- IResourceNode / 버퍼: 역할별 분기 ---
+
+    public bool TryPush(ResourcePacket packet)
+    {
+        if (packet == null) return false;
+
+        if (_buildingData is RawMaterialFactoryData || _buildingData is UnloadStationData)
+            return false;
+
+        if (_buildingData is LoadStationData || _buildingData is ProductionBuildingData)
+            return TryEnqueueInputPacket(packet);
+
+        return false;
+    }
+
+    public bool TryForwardTo(IResourceNode destination)
+    {
+        if (destination == null) return false;
+
+        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
+            return TryForwardOutputBufferTo(destination);
+
+        if (_buildingData is LoadStationData)
+            return TryForwardInputBufferTo(destination);
+
+        return false;
+    }
+
+    private bool TryEnqueueInputPacket(ResourcePacket packet)
+    {
+        if (_maxInputCapacity <= 0 || _inputBuffer.Count >= _maxInputCapacity) return false;
+        _inputBuffer.Enqueue(packet);
+        return true;
+    }
+
+    private bool TryForwardOutputBufferTo(IResourceNode destination)
+    {
+        if (_outputBuffer.Count == 0) return false;
+        ResourcePacket packet = _outputBuffer.Peek();
+        if (!destination.TryPush(packet)) return false;
+        _outputBuffer.Dequeue();
+        return true;
+    }
+
+    private bool TryForwardInputBufferTo(IResourceNode destination)
+    {
+        if (_inputBuffer.Count == 0) return false;
+        ResourcePacket packet = _inputBuffer.Peek();
+        if (!destination.TryPush(packet)) return false;
+        _inputBuffer.Dequeue();
+        return true;
+    }
+
+    public Dictionary<string, int> GetRuntimeInputResourceCounts() => AggregateQueueCounts(_inputBuffer);
+    public Dictionary<string, int> GetRuntimeOutputResourceCounts() => AggregateQueueCounts(_outputBuffer);
+
+    // --- 시뮬레이션: 역할별 partial로 위임 ---
+
+    public void TickSimulation(DataManager dataManager)
+    {
+        switch (_buildingData)
+        {
+            case RawMaterialFactoryData rawFactory:
+                TickSimulationRawMaterialFactory(dataManager, rawFactory);
+                break;
+            case LoadStationData:
+                TickSimulationLoadStation(dataManager);
+                break;
+            case UnloadStationData:
+                TickSimulationUnloadStation(dataManager);
+                break;
+            case ProductionBuildingData:
+                TickSimulationProduction(dataManager);
+                break;
+        }
+    }
+
+    private void TickStaffedBatchWork(DataManager dataManager, Func<bool> canCompleteBatch, Func<bool> tryCompleteBatch)
+    {
+        float delta = GetWorkProgressDeltaPerTick(dataManager);
+        if (delta <= 0f) return;
+
+        _workProgress += delta;
+        if (_workProgress > 1f && !canCompleteBatch()) _workProgress = 1f;
+
+        while (_workProgress >= 1f)
+        {
+            if (!tryCompleteBatch()) break;
+            _workProgress -= 1f;
+        }
+
+        if (_workProgress >= 1f && !canCompleteBatch())
+            _workProgress = 0.999f;
+    }
+
+    // --- 선택 리소스 / 진행도 (역할별 검증은 partial에서) ---
+
+    public bool TrySetSelectedResource(ResourceData data)
+    {
+        if (data == null) return false;
+
+        switch (_buildingData)
+        {
+            case ProductionBuildingData prod:
+                if (!IsResourceAllowedForProduction(prod, data)) return false;
+                break;
+            case RawMaterialFactoryData raw:
+                if (!IsResourceAllowedForRawFactory(raw, data)) return false;
+                break;
+        }
+
+        _selectedResource = data;
+        RefreshOutgoingResourceIcons();
+        return true;
+    }
+
+    public float GetProductionProgressNormalized()
+    {
+        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is LoadStationData)
+            return Mathf.Clamp01(_workProgress);
+        return 0f;
+    }
+
+    public PlacedBuildingSaveData ExportSaveData()
+    {
+        PlacedBuildingSaveData data = new PlacedBuildingSaveData();
+        data.buildingDataId = _buildingData != null ? _buildingData.id : null;
+        data.originX = _origin.x;
+        data.originY = _origin.y;
+        data.rotation = _rotation;
+
+        data.selectedResourceId = _selectedResource != null ? _selectedResource.id : null;
+        data.workProgress = _workProgress;
+        data.assignedWorkers = _assignedWorkers;
+        data.assignedTechnicians = _assignedTechnicians;
+
+        data.inputBuffer = ExportBuffer(_inputBuffer);
+        data.outputBuffer = ExportBuffer(_outputBuffer);
+
+        return data;
+    }
+
+    public void ImportSaveData(PlacedBuildingSaveData saveData, DataManager dataManager)
+    {
+        if (saveData == null) return;
+
+        _workProgress = Mathf.Clamp01(saveData.workProgress);
+        _assignedWorkers = Mathf.Max(0, saveData.assignedWorkers);
+        _assignedTechnicians = Mathf.Max(0, saveData.assignedTechnicians);
+
+        if (dataManager != null && dataManager.Resource != null && !string.IsNullOrEmpty(saveData.selectedResourceId))
+        {
+            ResourceEntry entry = dataManager.Resource.GetResourceEntry(saveData.selectedResourceId);
+            _selectedResource = entry != null ? entry.data : null;
+        }
+
+        ImportBuffer(_inputBuffer, saveData.inputBuffer, _maxInputCapacity);
+        ImportBuffer(_outputBuffer, saveData.outputBuffer, _maxOutputCapacity);
+
+        RefreshOutgoingResourceIcons();
+    }
+
+    private static List<ResourcePacketSaveData> ExportBuffer(Queue<ResourcePacket> buffer)
+    {
+        List<ResourcePacketSaveData> list = new List<ResourcePacketSaveData>();
+        if (buffer == null) return list;
+
+        foreach (ResourcePacket p in buffer)
+        {
+            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            list.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount)));
+        }
+
+        return list;
+    }
+
+    private static void ImportBuffer(Queue<ResourcePacket> target, List<ResourcePacketSaveData> list, int maxCapacity)
+    {
+        if (target == null) return;
+        target.Clear();
+
+        if (list == null) return;
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (maxCapacity > 0 && target.Count >= maxCapacity) break;
+
+            ResourcePacketSaveData s = list[i];
+            if (s == null || string.IsNullOrEmpty(s.id)) continue;
+
+            int amount = Mathf.Max(1, s.amount);
+            target.Enqueue(new ResourcePacket(s.id, amount));
+        }
     }
 }
