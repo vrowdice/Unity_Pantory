@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: components
   displayName: Component Manufacturing
+  researchType: 0
   icon: {fileID: 21300000, guid: 1e70a9003ec4ad74f99aef642e0864b4, type: 3}
   description: Unlocks the construction of component factories. Enables production
     of machine parts, electronic components, precision tools, and more using refined
@@ -21,6 +22,5 @@ MonoBehaviour:
     materials for advanced buildings and vehicle production.
   isDefaultUnlocked: 0
   researchPointCost: 1400
-  unlockResearchList:
-  - {fileID: 11400000, guid: 11d63bc3f292d9a4b8c4b8b56a89d9c1, type: 2}
+  unlockResearchList: []
   effects: []

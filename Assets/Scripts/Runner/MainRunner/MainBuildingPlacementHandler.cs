@@ -15,12 +15,14 @@ public class MainBuildingPlacementHandler
 
     private bool _placementMode;
     private bool _removalMode;
+    private bool _autoEmployeePlacement;
 
     private GameObject _previewObj;
     private SpriteRenderer _previewRenderer;
 
     public bool IsPlacementMode => _placementMode;
     public bool IsRemovalMode => _removalMode;
+    public bool IsAutoEmployeePlacement => _autoEmployeePlacement;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int Rotation => _rotation;
 
@@ -33,7 +35,6 @@ public class MainBuildingPlacementHandler
 
     public void StartPlacement(BuildingData data)
     {
-        if (data == null) return;
         CancelRemoval();
         _placementMode = true;
         _selectedBuilding = data;
@@ -46,6 +47,11 @@ public class MainBuildingPlacementHandler
         _placementMode = false;
         _selectedBuilding = null;
         DestroyPreview();
+    }
+
+    public void ToggleAutoEmployeePlacement(bool enabled)
+    {
+        _autoEmployeePlacement = enabled;
     }
 
     public void StartRemoval()
@@ -63,16 +69,12 @@ public class MainBuildingPlacementHandler
     {
         if (!_placementMode) return;
         _rotation = clockwise ? (_rotation + 1) % 4 : (_rotation + 3) % 4;
-        if (_previewObj != null)
-        {
-            _previewObj.transform.rotation = Quaternion.Euler(0, 0, -_rotation * 90f);
-        }
+        _previewObj.transform.rotation = Quaternion.Euler(0, 0, -_rotation * 90f);
     }
 
     public void Update(Camera cam)
     {
-        if (cam == null) return;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
         if (_placementMode) UpdatePlacement(cam);
         else if (_removalMode) UpdateRemoval(cam);
@@ -80,8 +82,6 @@ public class MainBuildingPlacementHandler
 
     private void UpdatePlacement(Camera cam)
     {
-        if (_selectedBuilding == null) return;
-
         if (Input.GetKeyDown(KeyCode.Q)) Rotate(false);
         if (Input.GetKeyDown(KeyCode.E)) Rotate(true);
 
@@ -147,7 +147,6 @@ public class MainBuildingPlacementHandler
     private void CreatePreview()
     {
         DestroyPreview();
-        if (_selectedBuilding == null) return;
 
         _previewObj = new GameObject("BuildingPreview");
         _previewObj.transform.SetParent(_runner.transform, worldPositionStays: true);
@@ -163,11 +162,9 @@ public class MainBuildingPlacementHandler
 
     private void UpdatePreview(Vector2Int origin, Vector2Int size, bool canPlace)
     {
-        if (_previewObj == null) return;
-
         _previewObj.transform.position = _gridHandler.GridToWorldPosition(origin, size);
-        Color okColor = VisualManager.Instance != null ? VisualManager.Instance.ValidColor : Color.green;
-        Color noColor = VisualManager.Instance != null ? VisualManager.Instance.InvalidColor : Color.red;
+        Color okColor = VisualManager.Instance.ValidColor;
+        Color noColor = VisualManager.Instance.InvalidColor;
         _previewRenderer.color = canPlace ? new Color(okColor.r, okColor.g, okColor.b, 0.65f) : new Color(noColor.r, noColor.g, noColor.b, 0.65f);
     }
 

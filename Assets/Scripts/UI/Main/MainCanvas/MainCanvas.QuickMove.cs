@@ -11,25 +11,8 @@ public partial class MainCanvas
 
     private void CreateQuickMoveBtns()
     {
-        if (_quickMoveBtnPrefeb == null)
-        {
-            Debug.LogWarning("[MainUiManager] QuickMoveBtn prefab is null.");
-            return;
-        }
-
-        if (_quickMovePanelContent == null)
-        {
-            Debug.LogWarning("[MainUiManager] QuickMovePanel content is null.");
-            return;
-        }
-
         foreach (QuickMoveBtn btn in _quickMoveBtns)
-        {
-            if (btn != null)
-            {
-                GameManager.Instance.PoolingManager.ReturnToPool(btn.gameObject);
-            }
-        }
+            GameManager.Instance.PoolingManager.ReturnToPool(btn.gameObject);
         _quickMoveBtns.Clear();
 
         foreach (MainPanelType panelType in System.Enum.GetValues(typeof(MainPanelType)))
@@ -37,18 +20,9 @@ public partial class MainCanvas
             GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_quickMoveBtnPrefeb);
             btnObj.transform.SetParent(_quickMovePanelContent, false);
 
-            QuickMoveBtn btn = btnObj.GetComponent<QuickMoveBtn>();
-
-            if (btn != null)
-            {
-                btn.Initialize(this, panelType);
-                _quickMoveBtns.Add(btn);
-            }
-            else
-            {
-                Debug.LogError("[MainUiManager] QuickMoveBtn component not found on prefab.");
-                GameManager.Instance.PoolingManager.ReturnToPool(btnObj);
-            }
+            QuickMoveBtn quickBtn = btnObj.GetComponent<QuickMoveBtn>();
+            quickBtn.Initialize(this, panelType);
+            _quickMoveBtns.Add(quickBtn);
         }
     }
 }

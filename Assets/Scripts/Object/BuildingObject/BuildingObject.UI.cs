@@ -10,19 +10,24 @@ public partial class BuildingObject
     {
         inputIds.Clear();
         outputIds.Clear();
-        currentResourceId = _selectedResource != null ? _selectedResource.id : null;
-        if (_selectedResource == null) return;
+        if (_selectedResource == null)
+        {
+            currentResourceId = null;
+            return;
+        }
+
+        currentResourceId = _selectedResource.id;
 
         if (_selectedResource.requirements != null)
         {
             foreach (ResourceRequirement req in _selectedResource.requirements)
             {
-                if (req.resource == null) continue;
                 int count = Mathf.Max(1, req.count);
                 for (int i = 0; i < count; i++)
                     inputIds.Add(req.resource.id);
             }
         }
+
         _selectedResource.AppendBatchOutputIds(outputIds);
     }
 
@@ -30,14 +35,20 @@ public partial class BuildingObject
     {
         ClearOutgoingIconContainer();
 
-        GameManager gameManager = GameManager.Instance;
-        if (gameManager == null || UIManager.Instance == null) return;
+        if (_buildingData is LoadStationData)
+            return;
 
-        Transform worldCanvas = gameManager.GetWorldCanvas();
-        if (worldCanvas == null) return;
+        if (!(_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is RawMaterialFactoryData))
+            return;
 
-        Dictionary<string, int> counts = BuildOutgoingResourceCounts();
-        if (counts == null || counts.Count == 0) return;
+        if (_selectedResource == null)
+            return;
+
+        Dictionary<string, int> counts = _selectedResource.GetBatchOutputCounts();
+        if (counts.Count == 0)
+            return;
+
+        Transform worldCanvas = GameManager.Instance.GetWorldCanvas();
         Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
 
         _outgoingIconContainer = UIManager.Instance.CreateProductionIconContainer(
@@ -48,27 +59,11 @@ public partial class BuildingObject
             counts);
     }
 
-    private Dictionary<string, int> BuildOutgoingResourceCounts()
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-        if (_buildingData == null || _buildingData is LoadStationData)
-            return counts;
-
-        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is RawMaterialFactoryData)
-        {
-            if (_selectedResource == null) return counts;
-            return _selectedResource.GetBatchOutputCounts();
-        }
-
-        return counts;
-    }
-
     private void ClearOutgoingIconContainer()
     {
         if (_outgoingIconContainer == null) return;
-        PoolingManager.Instance?.ClearChildrenToPool(_outgoingIconContainer.transform);
+        GameManager.Instance.PoolingManager.ClearChildrenToPool(_outgoingIconContainer.transform);
         Object.Destroy(_outgoingIconContainer);
         _outgoingIconContainer = null;
     }
 }
-

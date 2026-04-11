@@ -120,15 +120,15 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1297958502235259899}
         m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
-        m_MethodName: RotateBuildingRight
-        m_Mode: 1
+        m_MethodName: RotateBuilding
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
   onPointerDown:
     m_PersistentCalls:
@@ -2981,6 +2981,7 @@ GameObject:
   - component: {fileID: 1944806469244485261}
   - component: {fileID: 7499341975686375436}
   - component: {fileID: 6719949791622022408}
+  - component: {fileID: 6326001647176196567}
   m_Layer: 5
   m_Name: BuildingCategoryScrollView
   m_TagString: Untagged
@@ -3030,7 +3031,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3077,6 +3078,47 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6326001647176196567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646617216873743239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
+  targetImage: {fileID: 7499341975686375436}
+  targetText: {fileID: 0}
+  objectType: 0
+  colorID: Primary (Tint)
+  fontID: Noto
+  useCustomColor: 0
+  overrideAlpha: 0
+  alphaOverride: 1
+  enableInteraction: 0
+  interactableObject: {fileID: 0}
+  disabledColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  normalColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  pressedColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  referencesFoldout: 1
+  settingsFoldout: 1
+  interactionFoldout: 1
 --- !u!1 &1683032685592014725
 GameObject:
   m_ObjectHideFlags: 0
@@ -3686,7 +3728,7 @@ MonoBehaviour:
   styleFoldout: 1
   navigationFoldout: 1
   referencesFoldout: 0
-  eventsFoldout: 0
+  eventsFoldout: 1
   isOn: 0
   invokeAtStart: 0
   handleDuration: 0.2
@@ -3723,7 +3765,19 @@ MonoBehaviour:
   - {fileID: 5926239292390802017}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1297958502235259899}
+        m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
+        m_MethodName: RemovalModeToggle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onSwitchOn:
     m_PersistentCalls:
       m_Calls: []
@@ -11074,6 +11128,7 @@ MonoBehaviour:
   _buildingTypeBtnContent: {fileID: 790790657864453035}
   _buildingBtnPrefab: {fileID: 412398129040250562, guid: ca8cf8656f83546468bec330025d97f7, type: 3}
   _buildingBtnContent: {fileID: 7747889693879375877}
+  _autoEmployeePlacementSwitch: {fileID: 5257570787913362637}
   _removalModeSwitch: {fileID: 6085614814687480489}
   _storageCanvasPrefab: {fileID: 3873413108417295653, guid: 30056fd530b20ab46b220efa4515fd26, type: 3}
   _orderCanvasPrefab: {fileID: 6298053347902593458, guid: 4922c1492c6bfd74e905d25940c2ccd2, type: 3}
@@ -11808,7 +11863,19 @@ MonoBehaviour:
   - {fileID: 7142133362643928815}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1297958502235259899}
+        m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
+        m_MethodName: AutoEmployeePlacementToggle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onSwitchOn:
     m_PersistentCalls:
       m_Calls: []
@@ -12116,7 +12183,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1297958502235259899}
         m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
-        m_MethodName: ShowCreditInfoPopup
+        m_MethodName: ShowCreditTopInfoPopup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12985,7 +13052,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.039215688}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -13018,7 +13085,7 @@ MonoBehaviour:
   targetImage: {fileID: 2053705623256505839}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Primary (Soft)
+  colorID: Primary (Tint)
   fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
@@ -13368,8 +13435,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1297958502235259899}
         m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
-        m_MethodName: RotateBuildingLeft
-        m_Mode: 1
+        m_MethodName: RotateBuilding
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

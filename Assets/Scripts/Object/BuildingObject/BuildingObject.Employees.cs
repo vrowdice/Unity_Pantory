@@ -4,7 +4,6 @@ public partial class BuildingObject
 {
     public float GetAverageAssignedEfficiencyNormalized(DataManager dataManager)
     {
-        if (dataManager == null || _buildingData == null) return 0f;
         int total = _assignedWorkers + _assignedTechnicians;
         if (total <= 0)
             return RequiredEmployeeSlots <= 0 ? 1f : 0f;
@@ -15,7 +14,10 @@ public partial class BuildingObject
 
     public float GetWorkProgressDeltaPerTick(DataManager dataManager)
     {
-        if (dataManager == null || !UsesStaffedBatchSimulation()) return 0f;
+        bool staffedSim = _buildingData is ProductionBuildingData
+            || _buildingData is UnloadStationData
+            || _buildingData is LoadStationData;
+        if (!staffedSim) return 0f;
 
         int assigned = _assignedWorkers + _assignedTechnicians;
         int required = RequiredEmployeeSlots;
@@ -29,29 +31,43 @@ public partial class BuildingObject
         return Mathf.Clamp01(staffingFill * effAvg);
     }
 
-    private bool UsesStaffedBatchSimulation()
+    private static void GetGlobalEmployeeEfficienciesNormalized(DataManager dataManager, out float effW, out float effT)
     {
-        return _buildingData is ProductionBuildingData
-            || _buildingData is UnloadStationData
-            || _buildingData is LoadStationData;
+        EmployeeEntry w = dataManager.Employee.GetEmployeeEntry(EmployeeType.Worker);
+        EmployeeEntry t = dataManager.Employee.GetEmployeeEntry(EmployeeType.Technician);
+        effW = Mathf.Clamp01(w.state.currentEfficiency);
+        effT = Mathf.Clamp01(t.state.currentEfficiency);
     }
 
-    private static void GetGlobalEmployeeEfficienciesNormalized(DataManager dm, out float effW, out float effT)
+    /// <summary>
+    /// 배치 직후 등: 남는 고용 인원 한도 안에서 건물 슬롯을 채웁니다. (세이브 로드는 <see cref="ImportSaveData"/>로 복원)
+    /// </summary>
+    public void TryAutoAssignEmployeesToFill()
     {
-        effW = 0f;
-        effT = 0f;
-        if (dm == null) return;
-        EmployeeEntry w = dm.Employee.GetEmployeeEntry(EmployeeType.Worker);
-        EmployeeEntry t = dm.Employee.GetEmployeeEntry(EmployeeType.Technician);
-        effW = w != null ? Mathf.Clamp01(w.state.currentEfficiency) : 0f;
-        effT = t != null ? Mathf.Clamp01(t.state.currentEfficiency) : 0f;
+        int required = RequiredEmployeeSlots;
+        if (required <= 0) return;
+
+        if (_buildingData.isProfessional)
+        {
+            while (_assignedWorkers + _assignedTechnicians < required)
+            {
+                if (!TryApplyEmployeeDelta(EmployeeType.Technician, 1)) break;
+            }
+            return;
+        }
+
+        while (_assignedWorkers + _assignedTechnicians < required)
+        {
+            if (TryApplyEmployeeDelta(EmployeeType.Worker, 1)) continue;
+            if (TryApplyEmployeeDelta(EmployeeType.Technician, 1)) continue;
+            break;
+        }
     }
 
     public bool TryApplyEmployeeDelta(EmployeeType type, int delta)
     {
         if (delta == 0) return true;
         DataManager dataManager = DataManager.Instance;
-        if (dataManager == null) return false;
 
         int requiredTotal = RequiredEmployeeSlots;
 
@@ -107,4 +123,3 @@ public partial class BuildingObject
         return false;
     }
 }
-

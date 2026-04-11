@@ -9,9 +9,9 @@ public partial class MainCanvas
     [SerializeField] private Transform _buildingTypeBtnContent;
     [SerializeField] private GameObject _buildingBtnPrefab;
     [SerializeField] private Transform _buildingBtnContent;
+    [SerializeField] private Switch _autoEmployeePlacementSwitch;
     [SerializeField] private Switch _removalModeSwitch;
 
-    private bool _ignoreRemovalSwitchCallback;
     private BuildingType _selectedBuildingType = BuildingType.Distribution;
     private BuildingData _selectedBuilding;
 
@@ -20,51 +20,19 @@ public partial class MainCanvas
 
     private void InitBuildUi()
     {
-        BindRemovalModeSwitch();
-
         _buildingTypeBtns.Clear();
-        if (_buildingTypeBtnPrefab != null && _buildingTypeBtnContent != null)
-        {
-            GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
+        GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
 
-            foreach (BuildingType t in EnumUtils.GetAllEnumValues<BuildingType>())
-            {
-                GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
-                btnObj.transform.SetParent(_buildingTypeBtnContent, false);
-                MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
-                if (btn != null)
-                {
-                    btn.Initialize(this, t);
-                    _buildingTypeBtns.Add(btn);
-                }
-            }
+        foreach (BuildingType t in EnumUtils.GetAllEnumValues<BuildingType>())
+        {
+            GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
+            btnObj.transform.SetParent(_buildingTypeBtnContent, false);
+            MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
+            btn.Initialize(this, t);
+            _buildingTypeBtns.Add(btn);
         }
 
         SelectBuildingType(BuildingType.Distribution);
-    }
-
-    private void BindRemovalModeSwitch()
-    {
-        if (_removalModeSwitch == null) return;
-        
-        _removalModeSwitch.onValueChanged.RemoveListener(HandleRemovalSwitchChanged);
-        _removalModeSwitch.onValueChanged.AddListener(HandleRemovalSwitchChanged);
-        SetRemovalSwitch(false);
-    }
-
-    private void HandleRemovalSwitchChanged(bool isOn)
-    {
-        if (_ignoreRemovalSwitchCallback) return;
-
-        ApplyRemovalMode(isOn);
-    }
-
-    private void SetRemovalSwitch(bool isOn)
-    {
-        if (_removalModeSwitch == null) return;
-        _ignoreRemovalSwitchCallback = true;
-        _removalModeSwitch.IsOn = isOn;
-        _ignoreRemovalSwitchCallback = false;
     }
 
     private void ApplyRemovalMode(bool isOn)
@@ -94,8 +62,6 @@ public partial class MainCanvas
 
         if (buildingData != null &&
             buildingData.usePlacedCountLimit &&
-            _mainRunner != null &&
-            _mainRunner.GridHandler != null &&
             !_mainRunner.GridHandler.CanPlaceMoreInstances(buildingData))
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingPlacedCountLimitReached);
@@ -105,12 +71,7 @@ public partial class MainCanvas
         }
 
         _selectedBuilding = buildingData;
-        SetRemovalSwitch(false);
-
-        if (_mainRunner != null && _mainRunner.IsRemovalMode)
-        {
-            _mainRunner.PlacementHandler.CancelRemoval();
-        }
+        _removalModeSwitch.SetValue(false);
 
         if (isSelected)
         {
@@ -118,7 +79,7 @@ public partial class MainCanvas
         }
         else
         {
-            _mainRunner?.StartPlacementMode(buildingData);
+            _mainRunner.StartPlacementMode(buildingData);
         }
 
         UpdateBuildingButtonStates();
@@ -131,47 +92,34 @@ public partial class MainCanvas
         UpdateBuildingButtonStates();
     }
 
-    public void StartRemovalMode()
+    public void AutoEmployeePlacementToggle()
     {
-        SetRemovalSwitch(true);
-        ApplyRemovalMode(true);
-    }
-
-    public void CancelRemovalMode()
-    {
-        SetRemovalSwitch(false);
-        ApplyRemovalMode(false);
+        _mainRunner.PlacementHandler.ToggleAutoEmployeePlacement(_autoEmployeePlacementSwitch.IsOn);
     }
 
     public void RemovalModeToggle()
     {
-        if (_removalModeSwitch != null) SetRemovalSwitch(!_removalModeSwitch.IsOn);
+        ApplyRemovalMode(_removalModeSwitch.IsOn);
     }
 
     public void SelectBuildingType(BuildingType buildingType)
     {
-        if (_buildingBtnContent != null) GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
+        GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
 
         _selectedBuildingType = buildingType;
         List<BuildingData> list = DataManager.Building.GetBuildingDataList(buildingType);
-        if (list != null && _buildingBtnPrefab != null && _buildingBtnContent != null)
+        foreach (BuildingData data in list)
         {
-            foreach (BuildingData data in list)
-            {
-                bool isUnlocked = data.requiredResearch == null
-                    ? true
-                    : (DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault);
+            bool isUnlocked = data.requiredResearch == null
+                ? true
+                : (DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault);
 
-                GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingBtnPrefab);
-                btnObj.transform.SetParent(_buildingBtnContent, false);
-                MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
-                if (btn != null)
-                {
-                    btn.Initialize(this, data, isUnlocked, _mainRunner);
-                    _buildingBtns.Add(btn);
-                }
-            }
+            GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingBtnPrefab);
+            btnObj.transform.SetParent(_buildingBtnContent, false);
+            MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
+            btn.Initialize(this, data, isUnlocked, _mainRunner);
+            _buildingBtns.Add(btn);
         }
 
         UpdateBuildingTypeButtonStates();
@@ -179,32 +127,28 @@ public partial class MainCanvas
         RefreshBuildingPlacedCountDisplays();
     }
 
+    public void RotateBuilding(bool clockwise)
+    {
+        if (_mainRunner.PlacementHandler.IsPlacementMode)
+            _mainRunner.PlacementHandler.Rotate(clockwise);
+    }
+
     private void UpdateBuildingTypeButtonStates()
     {
         foreach (MainBuildingTypeBtn btn in _buildingTypeBtns)
-        {
-            if (btn == null) continue;
             btn.SetFocused(btn.BuildingType == _selectedBuildingType);
-        }
     }
 
     private void UpdateBuildingButtonStates()
     {
         foreach (MainBuildingBtn btn in _buildingBtns)
-        {
-            if (btn == null) continue;
             btn.SetSelected(_selectedBuilding == btn.BuildingData);
-        }
     }
 
     public void RefreshBuildingPlacedCountDisplays()
     {
         for (int i = 0; i < _buildingBtns.Count; i++)
-        {
-            MainBuildingBtn btn = _buildingBtns[i];
-            if (btn != null)
-                btn.RefreshPlacedCount(_mainRunner);
-        }
+            _buildingBtns[i].RefreshPlacedCount(_mainRunner);
     }
 
     private void HandleBuildingInstanceLayoutChanged()

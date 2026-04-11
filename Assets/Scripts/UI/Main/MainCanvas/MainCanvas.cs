@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEditor.Rendering;
 
 public partial class MainCanvas : CanvasBase
 {
@@ -49,8 +48,7 @@ public partial class MainCanvas : CanvasBase
 
         InitBuildUi();
 
-        if (_mainRunner != null && _mainRunner.GridHandler != null)
-            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += HandleBuildingInstanceLayoutChanged;
+        _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += HandleBuildingInstanceLayoutChanged;
 
         RefreshResourceScrollView();
         UpdateAllMainText();
@@ -58,8 +56,7 @@ public partial class MainCanvas : CanvasBase
 
     private void OnDestroy()
     {
-        if (_mainRunner != null && _mainRunner.GridHandler != null)
-            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
+        _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
     }
 
     override public void UpdateAllMainText()
@@ -130,6 +127,11 @@ public partial class MainCanvas : CanvasBase
     public void ShowNewsPopup(NewsState newsState)
     {
         UIManager.Instance.ShowNewsPopup(newsState, this);
+    }
+
+    public void ShowCreditTopInfoPopup()
+    {
+        UIManager.Instance.ShowCreditTopInfoPopup();
     }
 
     public void ShowOptionPanel()

@@ -18,6 +18,6 @@ MonoBehaviour:
   displayName: 
   statType: 8
   modifierType: 0
-  value: 2
+  value: 10
   durationDays: 0
   targetId: mine

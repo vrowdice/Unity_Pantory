@@ -18,6 +18,6 @@ MonoBehaviour:
   displayName: 
   statType: 8
   modifierType: 0
-  value: 4
+  value: 20
   durationDays: 0
   targetId: oil_pump

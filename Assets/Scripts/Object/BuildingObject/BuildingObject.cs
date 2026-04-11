@@ -55,11 +55,11 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     public int AssignedWorkers => _assignedWorkers;
     public int AssignedTechnicians => _assignedTechnicians;
     public int RequiredEmployeeSlots => Mathf.Max(0, _buildingData.requiredEmployees);
-    public int RequiredTechnicianMinimum => _buildingData.isProfessional && _buildingData.requiredEmployees > 0 ? 1 : 0;
-    public int MaxWorkerSlots => Mathf.Max(0, RequiredEmployeeSlots - RequiredTechnicianMinimum);
+    public int MaxWorkerSlots =>
+        _buildingData.isProfessional ? 0 : RequiredEmployeeSlots;
     public int MaxTechnicianSlots => RequiredEmployeeSlots;
 
-    public void Init(MainRunner runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation)
+    public void Init(MainRunner runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
     {
         _mainRunner = runner;
         _buildingData = buildingData;
@@ -83,6 +83,9 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
         if (_selectedResource == null && buildingData is RawMaterialFactoryData raw && raw.DefaultRawResource != null)
             _selectedResource = raw.DefaultRawResource;
+
+        if (isAutoEmployeeAssignment)
+            TryAutoAssignEmployeesToFill();
     }
 
     /// <summary>
@@ -110,7 +113,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         if (_removalAnimating) return;
 
         _removalAnimating = true;
-        if (_collider != null) _collider.enabled = false;
+        _collider.enabled = false;
 
         transform.DOKill(false);
 
@@ -127,17 +130,13 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     private void Update()
     {
-        if (_mainRunner != null && (_mainRunner.IsPlacementMode || _mainRunner.IsRemovalMode)) return;
-        if (_collider == null) return;
+        if (_mainRunner.PlacementHandler.IsPlacementMode || _mainRunner.PlacementHandler.IsRemovalMode) return;
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+            if (EventSystem.current.IsPointerOverGameObject()) return;
 
-            Camera cam = Camera.main;
-            if (cam == null) return;
-
-            Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorld.z = 0f;
             if (!_collider.OverlapPoint(mouseWorld)) return;
 
@@ -150,19 +149,16 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         {
             _clickArmed = false;
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+            if (EventSystem.current.IsPointerOverGameObject()) return;
 
             Vector3 delta = Input.mousePosition - _mouseDownScreenPos;
             if (delta.sqrMagnitude > ClickDragThresholdPixels * ClickDragThresholdPixels) return;
 
-            Camera cam = Camera.main;
-            if (cam == null) return;
-
-            Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorld.z = 0f;
             if (!_collider.OverlapPoint(mouseWorld)) return;
 
-            UIManager.Instance?.ShowBuildingInfoPopup(this);
+            UIManager.Instance.ShowBuildingInfoPopup(this);
         }
     }
 
@@ -173,7 +169,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     private void UpdateOutputIndicators()
     {
-        if (_outputIndicatorPrefab == null || _buildingData is LoadStationData || _buildingData is RawMaterialFactoryData) return;
+        if (_buildingData is LoadStationData || _buildingData is RawMaterialFactoryData) return;
         foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
         {
             GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
@@ -187,7 +183,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         Dictionary<string, int> counts = new Dictionary<string, int>();
         foreach (ResourcePacket p in queue)
         {
-            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            if (string.IsNullOrEmpty(p.Id)) continue;
             if (counts.TryGetValue(p.Id, out int v)) counts[p.Id] = v + p.Amount;
             else counts[p.Id] = p.Amount;
         }
@@ -201,12 +197,8 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         ClearOutgoingIconContainer();
     }
 
-    // --- IResourceNode / 버퍼: 역할별 분기 ---
-
     public bool TryPush(ResourcePacket packet)
     {
-        if (packet == null) return false;
-
         if (_buildingData is RawMaterialFactoryData || _buildingData is UnloadStationData)
             return false;
 
@@ -218,8 +210,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     public bool TryForwardTo(IResourceNode destination)
     {
-        if (destination == null) return false;
-
         if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
             return TryForwardOutputBufferTo(destination);
 
@@ -256,6 +246,77 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     public Dictionary<string, int> GetRuntimeInputResourceCounts() => AggregateQueueCounts(_inputBuffer);
     public Dictionary<string, int> GetRuntimeOutputResourceCounts() => AggregateQueueCounts(_outputBuffer);
+
+    /// <summary>
+    /// 입·출력 큐의 자원을 모두 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 플레이어 보유에 반영합니다. 실패한 패킷은 해당 큐에 다시 넣습니다.
+    /// </summary>
+    public void ReturnAllRuntimeBuffersToDataManager(DataManager dataManager)
+    {
+        List<ResourcePacket> failedInput = new List<ResourcePacket>();
+        while (_inputBuffer.Count > 0)
+        {
+            ResourcePacket p = _inputBuffer.Dequeue();
+            if (string.IsNullOrEmpty(p.Id))
+                continue;
+            if (!dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
+                failedInput.Add(p);
+        }
+
+        foreach (ResourcePacket p in failedInput)
+            _inputBuffer.Enqueue(p);
+
+        List<ResourcePacket> failedOutput = new List<ResourcePacket>();
+        while (_outputBuffer.Count > 0)
+        {
+            ResourcePacket p = _outputBuffer.Dequeue();
+            if (string.IsNullOrEmpty(p.Id))
+                continue;
+            if (!dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
+                failedOutput.Add(p);
+        }
+
+        foreach (ResourcePacket p in failedOutput)
+            _outputBuffer.Enqueue(p);
+    }
+
+    /// <summary>
+    /// 입력 또는 출력 큐에서 지정 id와 일치하는 패킷만 꺼내 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 반영합니다. 순서는 유지합니다.
+    /// </summary>
+    public bool TryReturnBufferResourceToDataManager(DataManager dataManager, string resourceId, bool fromInputBuffer)
+    {
+        if (string.IsNullOrEmpty(resourceId)) return false;
+
+        Queue<ResourcePacket> queue = fromInputBuffer ? _inputBuffer : _outputBuffer;
+        int n = queue.Count;
+        if (n == 0) return false;
+
+        List<ResourcePacket> remaining = new List<ResourcePacket>();
+        bool anyReturned = false;
+
+        for (int i = 0; i < n; i++)
+        {
+            ResourcePacket p = queue.Dequeue();
+            if (string.IsNullOrEmpty(p.Id))
+                continue;
+
+            if (p.Id == resourceId)
+            {
+                if (dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
+                    anyReturned = true;
+                else
+                    remaining.Add(p);
+            }
+            else
+            {
+                remaining.Add(p);
+            }
+        }
+
+        foreach (ResourcePacket p in remaining)
+            queue.Enqueue(p);
+
+        return anyReturned;
+    }
 
     public void TickSimulation(DataManager dataManager)
     {
@@ -296,8 +357,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     public bool TrySetSelectedResource(ResourceData data)
     {
-        if (data == null) return false;
-
         switch (_buildingData)
         {
             case RawMaterialFactoryData raw:
@@ -323,7 +382,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     public PlacedBuildingSaveData ExportSaveData()
     {
         PlacedBuildingSaveData data = new PlacedBuildingSaveData();
-        data.buildingDataId = _buildingData != null ? _buildingData.id : null;
+        data.buildingDataId = _buildingData.id;
         data.originX = _origin.x;
         data.originY = _origin.y;
         data.rotation = _rotation;
@@ -341,17 +400,12 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     public void ImportSaveData(PlacedBuildingSaveData saveData, DataManager dataManager)
     {
-        if (saveData == null) return;
-
         _workProgress = Mathf.Clamp01(saveData.workProgress);
         _assignedWorkers = Mathf.Max(0, saveData.assignedWorkers);
         _assignedTechnicians = Mathf.Max(0, saveData.assignedTechnicians);
 
-        if (dataManager != null && dataManager.Resource != null && !string.IsNullOrEmpty(saveData.selectedResourceId))
-        {
-            ResourceEntry entry = dataManager.Resource.GetResourceEntry(saveData.selectedResourceId);
-            _selectedResource = entry != null ? entry.data : null;
-        }
+        if (!string.IsNullOrEmpty(saveData.selectedResourceId))
+            _selectedResource = dataManager.Resource.GetResourceEntry(saveData.selectedResourceId)?.data;
 
         ImportBuffer(_inputBuffer, saveData.inputBuffer, _maxInputCapacity);
         ImportBuffer(_outputBuffer, saveData.outputBuffer, _maxOutputCapacity);
@@ -362,11 +416,10 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private static List<ResourcePacketSaveData> ExportBuffer(Queue<ResourcePacket> buffer)
     {
         List<ResourcePacketSaveData> list = new List<ResourcePacketSaveData>();
-        if (buffer == null) return list;
 
         foreach (ResourcePacket p in buffer)
         {
-            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            if (string.IsNullOrEmpty(p.Id)) continue;
             list.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount)));
         }
 
@@ -375,7 +428,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     private static void ImportBuffer(Queue<ResourcePacket> target, List<ResourcePacketSaveData> list, int maxCapacity)
     {
-        if (target == null) return;
         target.Clear();
 
         if (list == null) return;
@@ -385,7 +437,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
             if (maxCapacity > 0 && target.Count >= maxCapacity) break;
 
             ResourcePacketSaveData s = list[i];
-            if (s == null || string.IsNullOrEmpty(s.id)) continue;
+            if (string.IsNullOrEmpty(s.id)) continue;
 
             int amount = Mathf.Max(1, s.amount);
             target.Enqueue(new ResourcePacket(s.id, amount));

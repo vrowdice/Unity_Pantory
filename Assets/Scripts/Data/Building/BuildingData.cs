@@ -17,7 +17,9 @@ public abstract class BuildingData : ScriptableObject
     [TextArea(3, 10)]
     public string description;
     public bool isUnlockedByDefault = false;
+    [Tooltip("true면 requiredEmployees 슬롯은 기술자만 배치. false면 노동자·기술자 혼합.")]
     public bool isProfessional = false;
+    [Tooltip("배치 가능한 총 인력 슬롯 수.")]
     public int requiredEmployees = 0;
     public int buildCost;
     public int maintenanceCost;

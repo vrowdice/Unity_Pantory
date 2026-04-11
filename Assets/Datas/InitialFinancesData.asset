@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40ab940af4234342b0d15448aa6cbcf, type: 3}
   m_Name: InitialFinancesData
   m_EditorClassIdentifier: 
-  initialCredit: 10000
+  initialCredit: 50000
   negativeInterestRate: 0.005

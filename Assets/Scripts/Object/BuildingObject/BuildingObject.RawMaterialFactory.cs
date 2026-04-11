@@ -15,26 +15,22 @@ public partial class BuildingObject
 
     private bool CanCompleteRawMaterialFactoryBatch(DataManager dataManager)
     {
-        if (dataManager == null || _selectedResource == null) return false;
         return dataManager.Resource.GetResourceEntry(_selectedResource.id) != null;
     }
 
     private bool TryCompleteRawMaterialFactoryBatch(DataManager dataManager)
     {
-        if (!CanCompleteRawMaterialFactoryBatch(dataManager)) return false;
         return dataManager.Resource.ModifyResourceCount(_selectedResource.id, 1);
     }
 
     private static bool IsResourceAllowedForRawFactory(RawMaterialFactoryData raw, ResourceData resource)
     {
-        if (resource == null || string.IsNullOrEmpty(resource.id)) return false;
-
-        List<ResourceData> list = raw.ProducibleRawResources;
+        List<ResourceData> list = raw.ProducibleResources;
         if (list != null && list.Count > 0)
         {
             foreach (ResourceData item in list)
             {
-                if (item != null && item.id == resource.id) return true;
+                if (item.id == resource.id) return true;
             }
             return false;
         }

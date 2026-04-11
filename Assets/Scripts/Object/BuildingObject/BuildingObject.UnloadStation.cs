@@ -13,17 +13,16 @@ public partial class BuildingObject
 
     private bool CanCompleteUnloadBatch(DataManager dataManager)
     {
-        if (!(_buildingData is UnloadStationData u) || _selectedResource == null) return false;
+        UnloadStationData u = (UnloadStationData)_buildingData;
         int outCap = u.outputBufferCapacity > 0 ? u.outputBufferCapacity : _maxOutputCapacity;
         if (outCap > 0 && _outputBuffer.Count >= outCap) return false;
         ResourceEntry entry = dataManager.Resource.GetResourceEntry(_selectedResource.id);
-        if (entry == null) return false;
         return entry.state.count >= u.pullPerHour;
     }
 
     private bool TryCompleteUnloadBatch(DataManager dataManager)
     {
-        if (!(_buildingData is UnloadStationData u) || _selectedResource == null) return false;
+        UnloadStationData u = (UnloadStationData)_buildingData;
         int pull = u.pullPerHour;
         if (!dataManager.Resource.ModifyResourceCount(_selectedResource.id, -pull)) return false;
         _outputBuffer.Enqueue(new ResourcePacket(_selectedResource.id, pull));

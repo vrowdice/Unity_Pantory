@@ -25,9 +25,6 @@ public class MainRunner : RunnerBase
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
 
-    public bool IsPlacementMode => _placementHandler.IsPlacementMode;
-    public bool IsRemovalMode => _placementHandler.IsRemovalMode;
-
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
 
@@ -39,7 +36,6 @@ public class MainRunner : RunnerBase
 
     public bool StartPlacementMode(BuildingData buildingData)
     {
-        if (_placementHandler == null || buildingData == null) return false;
         _placementHandler.StartPlacement(buildingData);
         return true;
     }
@@ -77,15 +73,11 @@ public class MainRunner : RunnerBase
 
     private void RestorePlacedLayoutIfAny()
     {
-        DataManager dataManager = DataManager.Instance;
-        if (dataManager == null || dataManager.PlacedLayout == null || _gridHandler == null) return;
-
-        dataManager.PlacedLayout.Consume(out System.Collections.Generic.List<PlacedBuildingSaveData> buildings,
+        DataManager.Instance.PlacedLayout.Consume(out System.Collections.Generic.List<PlacedBuildingSaveData> buildings,
             out System.Collections.Generic.List<PlacedRoadSaveData> roads);
 
-        bool hasBuildings = buildings != null && buildings.Count > 0;
-        bool hasRoads = roads != null && roads.Count > 0;
-        if (!hasBuildings && !hasRoads) return;
+        if (buildings.Count == 0 && roads.Count == 0)
+            return;
 
         _gridHandler.RestoreFromSave(buildings, roads);
     }
@@ -102,18 +94,14 @@ public class MainRunner : RunnerBase
         col.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
         col.size = new Vector2(_gridWidth, _gridHeight);
 
-        if (_mainCameraController != null)
-        {
-            Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, -_gridHeight / 2f, 0);
-            Vector2 center = new Vector2(gridWorldCenter.x, gridWorldCenter.y);
-            Vector2 size = new Vector2(_gridWidth, _gridHeight);
-            _mainCameraController.SetBoundary(center, size);
-        }
+        Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, -_gridHeight / 2f, 0);
+        Vector2 center = new Vector2(gridWorldCenter.x, gridWorldCenter.y);
+        Vector2 size = new Vector2(_gridWidth, _gridHeight);
+        _mainCameraController.SetBoundary(center, size);
     }
 
     private void OnDisable()
     {
-        if (_gridHandler != null && DataManager.Instance != null)
-            DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
+        DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
     }
 }

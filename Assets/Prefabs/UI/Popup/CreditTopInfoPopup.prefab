@@ -155,6 +155,7 @@ MonoBehaviour:
   _effectType: 0
   _titleDeltaTextPanelPrefab: {fileID: 9038353978109470789, guid: c062887dcddcedd49a909fb3f106d5a4, type: 3}
   _panelDoAni: {fileID: 4881837346818357967}
+  _popupArea: {fileID: 8659701731923184140}
 --- !u!114 &5963952379452120409
 MonoBehaviour:
   m_ObjectHideFlags: 0

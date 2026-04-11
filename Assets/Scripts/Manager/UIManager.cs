@@ -365,8 +365,19 @@ public class UIManager : Singleton<UIManager>
 
     public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry, int amount)
     {
-        GameObject iconObj = GameManager.Instance.PoolingManager.GetPooledObject(_productionInfoImagePrefab);
-        iconObj.transform.SetParent(parent, false);
+        if (_productionInfoImagePrefab == null || parent == null || resourceEntry == null) return null;
+
+        GameObject iconObj;
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool != null)
+        {
+            iconObj = pool.GetPooledObject(_productionInfoImagePrefab);
+            iconObj.transform.SetParent(parent, false);
+        }
+        else
+        {
+            iconObj = Instantiate(_productionInfoImagePrefab, parent);
+        }
 
         if (iconObj.TryGetComponent(out RectTransform rect))
             rect.localScale = Vector3.one * _productionIconScale;
@@ -379,6 +390,8 @@ public class UIManager : Singleton<UIManager>
 
     public void CreateProductionIcons(Transform parent, Dictionary<string, int> productionCounts)
     {
+        if (parent == null || productionCounts == null) return;
+
         foreach (KeyValuePair<string, int> kvp in productionCounts)
         {
             string resourceId = kvp.Key;
@@ -388,6 +401,23 @@ public class UIManager : Singleton<UIManager>
             if (entry != null)
                 CreateProductionIcon(parent, entry, amount);
         }
+    }
+
+    /// <summary>
+    /// parent 아래 ProductionInfoImage 자식을 풀로 반환한 뒤 productionCounts로 다시 채웁니다.
+    /// </summary>
+    public void RepopulateProductionInfoImages(Transform parent, Dictionary<string, int> productionCounts)
+    {
+        if (parent == null) return;
+
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool != null)
+            pool.ClearChildrenToPool(parent);
+        else
+            GameObjectUtils.ClearChildren(parent);
+
+        if (productionCounts == null || productionCounts.Count == 0) return;
+        CreateProductionIcons(parent, productionCounts);
     }
 
     public ActionBtn CreateActionButton(Transform parent, string label, Action onClick)

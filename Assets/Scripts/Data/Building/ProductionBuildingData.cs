@@ -22,7 +22,7 @@ public class ProductionBuildingData : BuildingData
     public override bool IsProductionBuilding => true;
     public override List<ResourceType> AllowedResourceTypes => allowedResourceTypes;
 
-    private void OnValidate()
+    protected virtual void OnValidate()
     {
         _producibleResources ??= new List<ResourceData>();
         if (allowedResourceTypes != null && allowedResourceTypes.Count > 0)

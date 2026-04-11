@@ -21,63 +21,40 @@ public partial class MainCanvas
     private FinanceCanvas _financeCanvas;
 
     private Dictionary<MainPanelType, MainCanvasPanelBase> _panelDict;
-    private MainPanelType _currentOpenPanelType;
+    private MainPanelType? _currentOpenPanelType;
 
     private void CreateMainPanels()
     {
         if (_storageCanvas != null)
-        {
             return;
-        }
 
-        if (_storageCanvasPrefab != null)
-        {
-            GameObject storageObj = Object.Instantiate(_storageCanvasPrefab);
-            storageObj.name = _storageCanvasPrefab.name;
-            _storageCanvas = storageObj.GetComponent<StorageCanvas>();
-        }
+        GameObject storageObj = Object.Instantiate(_storageCanvasPrefab);
+        storageObj.name = _storageCanvasPrefab.name;
+        _storageCanvas = storageObj.GetComponent<StorageCanvas>();
 
-        if (_orderCanvasPrefab != null)
-        {
-            GameObject orderObj = Object.Instantiate(_orderCanvasPrefab);
-            orderObj.name = _orderCanvasPrefab.name;
-            _orderCanvas = orderObj.GetComponent<OrderCanvas>();
-        }
+        GameObject orderObj = Object.Instantiate(_orderCanvasPrefab);
+        orderObj.name = _orderCanvasPrefab.name;
+        _orderCanvas = orderObj.GetComponent<OrderCanvas>();
 
-        if (_marketCanvasPrefab != null)
-        {
-            GameObject marketObj = Object.Instantiate(_marketCanvasPrefab);
-            marketObj.name = _marketCanvasPrefab.name;
-            _marketCanvas = marketObj.GetComponent<MarketCanvas>();
-        }
+        GameObject marketObj = Object.Instantiate(_marketCanvasPrefab);
+        marketObj.name = _marketCanvasPrefab.name;
+        _marketCanvas = marketObj.GetComponent<MarketCanvas>();
 
-        if (_employmentCanvasPrefab != null)
-        {
-            GameObject employmentObj = Object.Instantiate(_employmentCanvasPrefab);
-            employmentObj.name = _employmentCanvasPrefab.name;
-            _employmentCanvas = employmentObj.GetComponent<EmployeeCanvas>();
-        }
+        GameObject employmentObj = Object.Instantiate(_employmentCanvasPrefab);
+        employmentObj.name = _employmentCanvasPrefab.name;
+        _employmentCanvas = employmentObj.GetComponent<EmployeeCanvas>();
 
-        if (_newsCanvasPrefab != null)
-        {
-            GameObject newsObj = Object.Instantiate(_newsCanvasPrefab);
-            newsObj.name = _newsCanvasPrefab.name;
-            _newsCanvas = newsObj.GetComponent<NewsCanvas>();
-        }
+        GameObject newsObj = Object.Instantiate(_newsCanvasPrefab);
+        newsObj.name = _newsCanvasPrefab.name;
+        _newsCanvas = newsObj.GetComponent<NewsCanvas>();
 
-        if (_researchCanvasPrefab != null)
-        {
-            GameObject researchObj = Object.Instantiate(_researchCanvasPrefab);
-            researchObj.name = _researchCanvasPrefab.name;
-            _researchCanvas = researchObj.GetComponent<ResearchCanvas>();
-        }
+        GameObject researchObj = Object.Instantiate(_researchCanvasPrefab);
+        researchObj.name = _researchCanvasPrefab.name;
+        _researchCanvas = researchObj.GetComponent<ResearchCanvas>();
 
-        if (_financeCanvasPrefab != null)
-        {
-            GameObject financeObj = Object.Instantiate(_financeCanvasPrefab);
-            financeObj.name = _financeCanvasPrefab.name;
-            _financeCanvas = financeObj.GetComponent<FinanceCanvas>();
-        }
+        GameObject financeObj = Object.Instantiate(_financeCanvasPrefab);
+        financeObj.name = _financeCanvasPrefab.name;
+        _financeCanvas = financeObj.GetComponent<FinanceCanvas>();
     }
 
     private void InitializePanelDictionary()
@@ -98,43 +75,26 @@ public partial class MainCanvas
     {
         foreach (KeyValuePair<MainPanelType, MainCanvasPanelBase> kvp in _panelDict)
         {
-            if (kvp.Value != null)
-            {
-                kvp.Value.OnClose();
-                kvp.Value.gameObject.SetActive(false);
-            }
+            kvp.Value.OnClose();
+            kvp.Value.gameObject.SetActive(false);
         }
 
-        _currentOpenPanelType = default(MainPanelType);
+        _currentOpenPanelType = null;
     }
 
     public void OpenPanel(MainPanelType panelType)
     {
-        if (!_panelDict.ContainsKey(panelType))
-        {
-            Debug.LogWarning($"[MainUiManager] Panel type {panelType} not found in dictionary.");
-            return;
-        }
-
         MainCanvasPanelBase panel = _panelDict[panelType];
-
-        if (panel == null)
-        {
-            Debug.LogWarning($"[MainUiManager] Panel {panelType} is null.");
-            return;
-        }
 
         if (_currentOpenPanelType == panelType && panel.gameObject.activeSelf)
         {
             ClosePanelInternal(panelType);
-            _currentOpenPanelType = default(MainPanelType);
+            _currentOpenPanelType = null;
             return;
         }
 
-        if (_panelDict.ContainsKey(_currentOpenPanelType) && _currentOpenPanelType != panelType)
-        {
-            ClosePanelInternal(_currentOpenPanelType);
-        }
+        if (_currentOpenPanelType.HasValue && _currentOpenPanelType.Value != panelType)
+            ClosePanelInternal(_currentOpenPanelType.Value);
 
         panel.Init(this);
         _currentOpenPanelType = panelType;
@@ -142,32 +102,18 @@ public partial class MainCanvas
 
     private void ClosePanelInternal(MainPanelType panelType)
     {
-        if (!_panelDict.ContainsKey(panelType))
-        {
-            return;
-        }
-
-        MainCanvasPanelBase panel = _panelDict[panelType];
-
-        if (panel == null)
-        {
-            return;
-        }
-
-        panel.OnClose();
+        _panelDict[panelType].OnClose();
     }
 
     public void CloseAllPanels()
     {
         foreach (KeyValuePair<MainPanelType, MainCanvasPanelBase> kvp in _panelDict)
-        {
             ClosePanelInternal(kvp.Key);
-        }
     }
 
     public MainPanelType GetCurrentOpenPanelType()
     {
-        return _currentOpenPanelType;
+        return _currentOpenPanelType ?? default;
     }
 
     public bool IsPanelOpen(MainPanelType panelType)

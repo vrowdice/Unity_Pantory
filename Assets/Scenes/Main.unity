@@ -332,6 +332,10 @@ MonoBehaviour:
   _minZoom: 1
   _maxZoom: 20
   _boundaryCollider: {fileID: 0}
+  _constructionShakeDuration: 0.22
+  _constructionShakeStrength: {x: 0.12, y: 0.12, z: 0}
+  _constructionShakeVibrato: 14
+  _constructionShakeRandomness: 90
 --- !u!1 &590199394
 GameObject:
   m_ObjectHideFlags: 0

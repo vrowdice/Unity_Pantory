@@ -11,8 +11,6 @@ public partial class BuildingObject
 
     private bool CanCompleteProductionBatch()
     {
-        if (_selectedResource == null) return false;
-
         Dictionary<string, int> need = GetInputNeedForBatch(_selectedResource);
         if (need.Count > 0 && !InputBufferSatisfies(need)) return false;
 
@@ -25,8 +23,6 @@ public partial class BuildingObject
 
     private bool TryCompleteProductionBatch()
     {
-        if (_selectedResource == null) return false;
-
         Dictionary<string, int> need = GetInputNeedForBatch(_selectedResource);
         if (need.Count > 0)
         {
@@ -36,10 +32,7 @@ public partial class BuildingObject
 
         Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
         foreach (KeyValuePair<string, int> kvp in outputs)
-        {
-            if (string.IsNullOrEmpty(kvp.Key)) continue;
             _outputBuffer.Enqueue(new ResourcePacket(kvp.Key, Mathf.Max(1, kvp.Value)));
-        }
 
         return true;
     }
@@ -47,12 +40,10 @@ public partial class BuildingObject
     private static Dictionary<string, int> GetInputNeedForBatch(ResourceData recipe)
     {
         Dictionary<string, int> need = new Dictionary<string, int>();
-        if (recipe == null) return need;
         if (recipe.requirements != null)
         {
             foreach (ResourceRequirement req in recipe.requirements)
             {
-                if (req.resource == null) continue;
                 int c = Mathf.Max(1, req.count);
                 if (need.TryGetValue(req.resource.id, out int existing)) need[req.resource.id] = existing + c;
                 else need[req.resource.id] = c;
@@ -87,7 +78,7 @@ public partial class BuildingObject
         for (int i = 0; i < working.Count; i++)
         {
             ResourcePacket p = working[i];
-            if (p == null || string.IsNullOrEmpty(p.Id)) continue;
+            if (string.IsNullOrEmpty(p.Id)) continue;
 
             if (!remaining.TryGetValue(p.Id, out int rem) || rem <= 0)
                 continue;
@@ -124,14 +115,12 @@ public partial class BuildingObject
 
     private static bool IsResourceAllowedForProduction(ProductionBuildingData prod, ResourceData resource)
     {
-        if (resource == null || string.IsNullOrEmpty(resource.id)) return false;
-
         List<ResourceData> list = prod.ProducibleResources;
         if (list != null && list.Count > 0)
         {
             foreach (ResourceData item in list)
             {
-                if (item != null && item.id == resource.id) return true;
+                if (item.id == resource.id) return true;
             }
             return false;
         }

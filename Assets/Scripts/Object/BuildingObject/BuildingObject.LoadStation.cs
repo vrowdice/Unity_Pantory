@@ -13,7 +13,8 @@ public partial class BuildingObject
 
     private bool CanCompleteLoadBatch(DataManager dataManager)
     {
-        if (!(_buildingData is LoadStationData l) || dataManager == null || _inputBuffer.Count == 0) return false;
+        if (_inputBuffer.Count == 0) return false;
+        LoadStationData l = (LoadStationData)_buildingData;
         ResourcePacket p = _inputBuffer.Peek();
         int move = Mathf.Min(Mathf.Max(1, l.pushPerHour), p.Amount);
         return dataManager.Resource.GetResourceEntry(p.Id) != null && move > 0;
@@ -21,7 +22,8 @@ public partial class BuildingObject
 
     private bool TryCompleteLoadBatch(DataManager dataManager)
     {
-        if (!(_buildingData is LoadStationData l) || dataManager == null || _inputBuffer.Count == 0) return false;
+        if (_inputBuffer.Count == 0) return false;
+        LoadStationData l = (LoadStationData)_buildingData;
         ResourcePacket p = _inputBuffer.Peek();
         int move = Mathf.Min(Mathf.Max(1, l.pushPerHour), p.Amount);
         if (!dataManager.Resource.ModifyResourceCount(p.Id, move)) return false;
