@@ -9,6 +9,7 @@ public abstract class MainCanvasPanelBase : TutorialBase
 {
     protected GameManager _gameManager;
     protected DataManager _dataManager;
+    protected SoundManager _soundManager;
     protected MainCanvas _uiManager;
     private Action _cachedOnClose;
 
@@ -16,6 +17,9 @@ public abstract class MainCanvasPanelBase : TutorialBase
     [SerializeField] private RectTransform _panelAnimationTarget;
     [SerializeField] private bool _usePanelAnimation = true;
     [SerializeField] private bool _deactivateAfterClose = true;
+
+    [Header("Sound")]
+    [SerializeField] private AudioClip _openPanelSfx;
 
     private PanelDoAni _panelAnimator;
     private bool _isAnimatorCached;
@@ -27,6 +31,7 @@ public abstract class MainCanvasPanelBase : TutorialBase
     {
         _gameManager = GameManager.Instance;
         _dataManager = DataManager.Instance;
+        _soundManager = SoundManager.Instance;
         _uiManager = argUIManager;
 
         if (_cachedOnClose == null) _cachedOnClose = OnClose;
@@ -34,6 +39,10 @@ public abstract class MainCanvasPanelBase : TutorialBase
 
         gameObject.SetActive(true);
 
+        if (_openPanelSfx != null)
+        {
+            _soundManager.PlaySFX(_openPanelSfx);
+        }
         if (TryGetPanelAnimator(out PanelDoAni animator))
         {
             animator.SnapToClosedPosition();

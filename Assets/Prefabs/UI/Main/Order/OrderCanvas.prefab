@@ -3091,6 +3091,7 @@ MonoBehaviour:
   _panelAnimationTarget: {fileID: 7347850829863654944}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
+  _openPanelSfx: {fileID: 8300000, guid: 8feabfd1c23b3344483266caff5d3f78, type: 3}
   _orderActionBtnContentTransform: {fileID: 7091054567568215508}
   _orderMarketActorPopupBtnScrollViewContentTransform: {fileID: 8308918451410604122}
   _orderBtnScrollViewContentTransform: {fileID: 7642394047650125855}

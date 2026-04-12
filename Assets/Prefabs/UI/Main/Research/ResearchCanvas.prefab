@@ -3364,6 +3364,7 @@ MonoBehaviour:
   _panelAnimationTarget: {fileID: 6781512682457709527}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
+  _openPanelSfx: {fileID: 8300000, guid: 7c6e1d5bebc2ba54081e2372bdc8e244, type: 3}
   _researchActionBtnContent: {fileID: 2267995630686906176}
   _researchPointText: {fileID: 2717239052306601656}
   _researcherText: {fileID: 7776389910633335686}

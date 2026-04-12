@@ -2217,6 +2217,7 @@ MonoBehaviour:
   _panelAnimationTarget: {fileID: 5544838127348379799}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
+  _openPanelSfx: {fileID: 8300000, guid: 4cc03aef8c389714ea69d0ab9430a03c, type: 3}
   _creditChart: {fileID: 5500235046995956200}
   _welthChart: {fileID: 7492183427453435259}
   _creditText: {fileID: 1676009087199729694}

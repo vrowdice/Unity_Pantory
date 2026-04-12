@@ -1243,6 +1243,7 @@ MonoBehaviour:
   _panelAnimationTarget: {fileID: 2868592964355534150}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
+  _openPanelSfx: {fileID: 8300000, guid: 94d93cab4332a24488a0a59bca198c97, type: 3}
   _newspaperContentTransform: {fileID: 168368200916410612}
   _newspaperPanelPrefab: {fileID: 4445140793435071234, guid: afd8bb1fb84b85349b6391c9e05e97fe, type: 3}
 --- !u!1 &7432762470693228153
