@@ -85,6 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7900299440224125793}
   - component: {fileID: 93262248009722642}
+  - component: {fileID: 3193325978870782792}
   - component: {fileID: 5351143063547874209}
   m_Layer: 5
   m_Name: BackgroundImage
@@ -120,6 +121,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3103671637166806387}
   m_CullTransparentMesh: 1
+--- !u!114 &3193325978870782792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103671637166806387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f503d8a54a79b428dfbcb4448abeac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: {fileID: 11400000, guid: 62d3d5000dc484241a42d255128f3aa7, type: 2}
+  targetImage: {fileID: 5351143063547874209}
+  targetText: {fileID: 0}
+  objectType: 0
+  colorID: Primary
+  fontID: Noto
+  useCustomColor: 0
+  overrideAlpha: 0
+  alphaOverride: 1
+  enableInteraction: 1
+  interactableObject: {fileID: 1190805690174905668}
+  disabledColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  normalColor:
+    stylerID: Primary
+    color: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor:
+    stylerID: Accent
+    color: {r: 1, g: 1, b: 1, a: 1}
+  pressedColor:
+    stylerID: Accent
+    color: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor:
+    stylerID: Accent
+    color: {r: 1, g: 1, b: 1, a: 1}
+  referencesFoldout: 1
+  settingsFoldout: 1
+  interactionFoldout: 1
 --- !u!114 &5351143063547874209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,7 +182,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 756435972047055940, guid: 42b479237123d094091b1e00e5740621, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -311,7 +353,7 @@ MonoBehaviour:
   referencesFoldout: 1
   eventsFoldout: 1
   enableIcon: 1
-  icon: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 756435972047055940, guid: 42b479237123d094091b1e00e5740621, type: 3}
   iconSize: 30
   enableText: 1
   text: Button
@@ -444,11 +486,11 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 20
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0

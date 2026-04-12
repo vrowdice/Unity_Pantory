@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 756435972047055940, guid: 42b479237123d094091b1e00e5740621, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -97,22 +97,22 @@ MonoBehaviour:
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
-  enableInteraction: 0
-  interactableObject: {fileID: 0}
+  enableInteraction: 1
+  interactableObject: {fileID: 3074883286305642080}
   disabledColor:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Background
+    stylerID: Primary
     color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   highlightedColor:
-    stylerID: Background
+    stylerID: Primary
     color: {r: 0.19607843, g: 0.21176471, b: 0.22745098, a: 1}
   pressedColor:
-    stylerID: Background
+    stylerID: Accent (Soft)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Background
+    stylerID: Accent (Soft)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -193,7 +193,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6534952608037999371
 RectTransform:
   m_ObjectHideFlags: 0
@@ -642,7 +642,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 756435972047055940, guid: 42b479237123d094091b1e00e5740621, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

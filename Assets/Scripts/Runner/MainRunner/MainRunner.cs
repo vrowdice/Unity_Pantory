@@ -102,6 +102,7 @@ public class MainRunner : RunnerBase
 
     private void OnDisable()
     {
-        DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
+        if(DataManager.Instance != null)
+            DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
     }
 }

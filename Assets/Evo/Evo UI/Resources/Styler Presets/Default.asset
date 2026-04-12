@@ -45,6 +45,6 @@ MonoBehaviour:
     fontAsset: {fileID: 11400000, guid: 24fd714bd2f5f9d4da097e2dde975f37, type: 2}
   updateMode: 0
   audioFoldout: 0
-  colorFoldout: 0
+  colorFoldout: 1
   fontFoldout: 1
   settingsFoldout: 0
