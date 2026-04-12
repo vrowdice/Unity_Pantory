@@ -67,7 +67,8 @@ public class SoundManager : Singleton<SoundManager>
                 Action<AudioClip, float> currentAction = currentEvent as Action<AudioClip, float>;
                 if (currentAction != null)
                 {
-                    currentAction += _evoAudioEventHandler;
+                    currentAction = currentAction + _evoAudioEventHandler;
+                    _onPlaySoundEventField.SetValue(null, currentAction);
                 }
                 else
                 {

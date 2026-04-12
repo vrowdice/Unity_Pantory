@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 509094518299881472}
   - component: {fileID: 3915974259390727112}
   - component: {fileID: 1067079835615054061}
+  - component: {fileID: 1686361277677399161}
   m_Layer: 5
   m_Name: WarningPopup
   m_TagString: Untagged
@@ -227,8 +228,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5ddc2801eac5c489504ed00b134f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _warningSound: {fileID: 8300000, guid: 8e8a3ec62ddb9ac4689dca8df4696e99, type: 3}
   _messageText: {fileID: 4880212975976976674}
-  _canvasGroup: {fileID: 0}
+  _canvasGroup: {fileID: 1686361277677399161}
   _fadeInDuration: 0.2
   _displayDuration: 1.5
   _fadeOutDuration: 0.3
@@ -273,3 +275,15 @@ MonoBehaviour:
   referencesFoldout: 1
   settingsFoldout: 1
   interactionFoldout: 1
+--- !u!225 &1686361277677399161
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 509094518299881478}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

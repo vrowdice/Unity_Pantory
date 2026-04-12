@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class QuickMoveBtn : MonoBehaviour
 {
+    [SerializeField] private AudioClip _alartSound;
     [SerializeField] private Image _icon = null;
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private GameObject _alartImage = null;
@@ -34,6 +35,7 @@ public class QuickMoveBtn : MonoBehaviour
     {
         if (newsState != null && !newsState.IsExpired)
         {
+            SoundManager.Instance.PlaySFX(_alartSound);
             SetAlertActive(true);
         }
     }
@@ -42,6 +44,7 @@ public class QuickMoveBtn : MonoBehaviour
     {
         if (orderState != null)
         {
+            SoundManager.Instance.PlaySFX(_alartSound);
             SetAlertActive(true);
         }
     }

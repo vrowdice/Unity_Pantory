@@ -13799,6 +13799,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CloseBtn
       objectReference: {fileID: 0}
+    - target: {fileID: 902401585405520166, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7188360400126237502, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -13829,11 +13833,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8020760892242770251, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 75
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 8020760892242770251, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 75
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 8020760892242770251, guid: 2c6f0b09e5adabf47bb89c8524eabd68, type: 3}
       propertyPath: m_LocalPosition.x

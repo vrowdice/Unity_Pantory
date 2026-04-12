@@ -4,6 +4,8 @@ using DG.Tweening;
 
 public class WarningPopup : MonoBehaviour
 {
+    [SerializeField] private AudioClip _warningSound;
+
     [Header("Content")]
     [SerializeField] private TextMeshProUGUI _messageText;
 
@@ -15,23 +17,6 @@ public class WarningPopup : MonoBehaviour
 
     private Sequence _sequence;
 
-    private void Awake()
-    {
-        if (_canvasGroup == null)
-        {
-            _canvasGroup = GetComponent<CanvasGroup>();
-            if (_canvasGroup == null)
-            {
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-            }
-        }
-    }
-
-    private void OnDestroy()
-    {
-        _sequence?.Kill();
-    }
-
     /// <summary>
     /// 경고 메시지 키로 로컬라이즈 후 표시하고 페이드인 → 표시 → 페이드아웃 후 파괴
     /// </summary>
@@ -41,6 +26,11 @@ public class WarningPopup : MonoBehaviour
         if (_messageText != null)
         {
             _messageText.text = messageKey.Localize(LocalizationUtils.TABLE_COMMON);
+        }
+
+        if(_warningSound != null)
+        {
+            SoundManager.Instance.PlaySFX(_warningSound);
         }
 
         _sequence?.Kill();
@@ -66,5 +56,10 @@ public class WarningPopup : MonoBehaviour
             _canvasGroup.interactable = false;
         }
         Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        _sequence?.Kill();
     }
 }

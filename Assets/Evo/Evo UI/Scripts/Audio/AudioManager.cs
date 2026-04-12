@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -13,6 +14,11 @@ namespace Evo.UI
     {
         // Static Instances
         public static AudioManager instance;
+
+        /// <summary>
+        /// When assigned, <see cref="PlayClip"/> invokes this instead of playing on the built-in AudioSource (e.g. game-wide SFX routing).
+        /// </summary>
+        public static Action<AudioClip, float> OnPlaySoundEvent;
 
         [Header("Audio")]
         public AudioSource audioSource;
@@ -50,6 +56,13 @@ namespace Evo.UI
         public static void PlayClip(AudioClip clip, float volume = 1, bool bypassEffects = true, AudioMixerGroup mixerGroup = null)
         {
             if (clip == null) { return; }
+
+            if (OnPlaySoundEvent != null)
+            {
+                OnPlaySoundEvent.Invoke(clip, volume);
+                return;
+            }
+
             if (instance == null) { CreateInstance(); }
             if (instance.audioSource == null) { instance.audioSource = instance.gameObject.AddComponent<AudioSource>(); }
 
