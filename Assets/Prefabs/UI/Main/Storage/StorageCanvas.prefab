@@ -907,7 +907,6 @@ MonoBehaviour:
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
   _openPanelSfx: {fileID: 8300000, guid: de5f7f0f892b14946ab416ab6fada08a, type: 3}
-  _closePanelSfx: {fileID: 0}
   _storageResourceBtnPrefab: {fileID: 9125953205395620401, guid: 9eb2ae80a66871c4a8eb8eb75397bc9f, type: 3}
   _resourceTypeScrollViewContentTransform: {fileID: 7580050232160570701}
   _resourceScrollViewContentTransform: {fileID: 5140838333140936319}
@@ -1734,8 +1733,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d8d604952020d9a4d9eed9e9920de8af, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1852,7 +1851,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1882,7 +1881,7 @@ MonoBehaviour:
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
-  enableInteraction: 0
+  enableInteraction: 1
   interactableObject: {fileID: 1291831926203514159}
   disabledColor:
     stylerID: 

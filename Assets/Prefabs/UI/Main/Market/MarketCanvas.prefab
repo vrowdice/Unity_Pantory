@@ -5666,7 +5666,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: d8d604952020d9a4d9eed9e9920de8af, type: 3}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -12664,7 +12664,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -12694,7 +12694,7 @@ MonoBehaviour:
   useCustomColor: 0
   overrideAlpha: 0
   alphaOverride: 1
-  enableInteraction: 0
+  enableInteraction: 1
   interactableObject: {fileID: 4645902040973850329}
   disabledColor:
     stylerID: 
@@ -12722,9 +12722,89 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8917866412577917979}
     m_Modifications:
+    - target: {fileID: 1253569359803416978, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: enableInteraction
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1253569359803416978, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: normalColor.stylerID
+      value: Primary
+      objectReference: {fileID: 0}
+    - target: {fileID: 1253569359803416978, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: pressedColor.stylerID
+      value: Accent
+      objectReference: {fileID: 0}
+    - target: {fileID: 1253569359803416978, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: selectedColor.stylerID
+      value: Accent
+      objectReference: {fileID: 0}
+    - target: {fileID: 1253569359803416978, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: highlightedColor.stylerID
+      value: Accent
+      objectReference: {fileID: 0}
+    - target: {fileID: 1400078177328381379, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3611686007415711109, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: enableInteraction
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3611686007415711109, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: normalColor.stylerID
+      value: Primary
+      objectReference: {fileID: 0}
+    - target: {fileID: 3611686007415711109, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: pressedColor.stylerID
+      value: Accent
+      objectReference: {fileID: 0}
+    - target: {fileID: 3611686007415711109, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: selectedColor.stylerID
+      value: Accent
+      objectReference: {fileID: 0}
+    - target: {fileID: 3611686007415711109, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: highlightedColor.stylerID
+      value: Accent
+      objectReference: {fileID: 0}
+    - target: {fileID: 3973009120127751205, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7645007551120747632, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7645007551120747632, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7645007551120747632, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7645007551120747632, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7755600149628101840, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
       propertyPath: m_Name
       value: MarketActorPopupBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 7840627943908959736, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 7840627943908959736, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 7840627943908959736, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7840627943908959736, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7992726022352545574, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
       propertyPath: m_Pivot.x
@@ -12807,7 +12887,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2541660587941756289, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0918b66c3b9c4248a6789d8b9840738, type: 3}
