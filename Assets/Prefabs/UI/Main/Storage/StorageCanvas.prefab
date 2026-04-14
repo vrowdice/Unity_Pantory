@@ -907,7 +907,7 @@ MonoBehaviour:
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
   _openPanelSfx: {fileID: 8300000, guid: de5f7f0f892b14946ab416ab6fada08a, type: 3}
-  _storageResourceBtnPrefab: {fileID: 9125953205395620401, guid: 9eb2ae80a66871c4a8eb8eb75397bc9f, type: 3}
+  _storageResourceBtnPrefab: {fileID: 3785722296724466574, guid: 9eb2ae80a66871c4a8eb8eb75397bc9f, type: 3}
   _resourceTypeScrollViewContentTransform: {fileID: 7580050232160570701}
   _resourceScrollViewContentTransform: {fileID: 5140838333140936319}
 --- !u!1 &4115138432695183766

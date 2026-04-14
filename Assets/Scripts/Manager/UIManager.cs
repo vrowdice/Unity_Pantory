@@ -25,6 +25,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _selectResourcePanelPrefab;
     [SerializeField] private GameObject _saveLoadPopupPrefab;
     [SerializeField] private GameObject _tutorialPopupPrefab;
+    [SerializeField] private GameObject _debugPopupPrefab;
 
     [Header("Main Info Panels")]
     [SerializeField] private GameObject _creditTopInfoPopupPrefab;
@@ -54,6 +55,8 @@ public class UIManager : Singleton<UIManager>
         if (Instance != this) return;
         if (Input.GetKeyDown(KeyCode.Escape))
             TryCloseTopmost();
+        if (Input.GetKeyDown(KeyCode.F12))
+            ShowDebugPopup();
     }
 
     public void PushCloseable(Action onClose)
@@ -242,6 +245,29 @@ public class UIManager : Singleton<UIManager>
 
         panel.gameObject.SetActive(true);
         panel.Init(isSaveMode);
+        return panel;
+    }
+
+    public DebugPopup ShowDebugPopup()
+    {
+        DebugPopup panel = null;
+        if (_managerCanvasTransform != null)
+            panel = _managerCanvasTransform.GetComponentInChildren<DebugPopup>(true);
+
+        if (panel == null)
+        {
+            if (_debugPopupPrefab == null)
+            {
+                Debug.LogWarning("[UIManager] Debug popup prefab is missing.");
+                return null;
+            }
+
+            GameObject panelObj = Instantiate(_debugPopupPrefab, _managerCanvasTransform, false);
+            panel = panelObj.GetComponent<DebugPopup>();
+        }
+
+        panel.gameObject.SetActive(true);
+        panel.Init();
         return panel;
     }
 
