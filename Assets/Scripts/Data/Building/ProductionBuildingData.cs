@@ -18,9 +18,9 @@ public class ProductionBuildingData : BuildingData
     public int ticksPerBatch = 24;
     public int inputResourcesPerBatch = 1;
 
-    public List<ResourceData> ProducibleResources => _producibleResources;
     public override bool IsProductionBuilding => true;
     public override List<ResourceType> AllowedResourceTypes => allowedResourceTypes;
+    public List<ResourceData> ProducibleResources => _producibleResources;
 
     protected virtual void OnValidate()
     {

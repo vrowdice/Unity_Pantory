@@ -36,15 +36,7 @@ public class SelectResourcePopup : PopupBase
         _onResourceSelected = onResourceSelected;
         _producibleResources = producibleResources;
 
-        if (_dataManager == null)
-        {
-            Debug.LogWarning("[SelectResourcePanel] DataManager is null.");
-            return;
-        }
-
         InitializeResourceTypeButtons(resourceTypes);
-
-        // 첫 번째 자원 타입으로 목록 자동 표시
         if (resourceTypes != null && resourceTypes.Count > 0)
         {
             OnResourceTypeClick(resourceTypes[0]);

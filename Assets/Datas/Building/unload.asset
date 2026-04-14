@@ -21,10 +21,16 @@ MonoBehaviour:
     production line and stored. Workers carefully handle completed items for inventory
     management.
   isUnlockedByDefault: 1
+  isProfessional: 0
   requiredEmployees: 2
   buildCost: 100
   maintenanceCost: 5
   size: {x: 1, y: 1}
-  requiredResearchId: 
-  handlingResource: {fileID: 0}
-  outputPosition: {x: 1, y: 0}
+  requiredResearch: {fileID: 0}
+  usePlacedCountLimit: 0
+  baseMaxPlacedCount: 0
+  maxInputBufferCapacity: 16
+  maxOutputBufferCapacity: 16
+  allowedResourceTypes: 00000000010000000200000003000000040000000500000006000000
+  pullPerHour: 1
+  outputBufferCapacity: 16

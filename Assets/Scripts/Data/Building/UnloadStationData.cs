@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -7,9 +8,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewUnloadStation", menuName = "Game Data/Building Data/Unload Station")]
 public class UnloadStationData : BuildingData
 {
+    [Header("Production")]
+    public List<ResourceType> allowedResourceTypes;
+
     [Header("Simulation")]
     public int pullPerHour = 1;
     public int outputBufferCapacity = 16;
 
     public override bool IsUnloadStation => true;
+    public override List<ResourceType> AllowedResourceTypes => allowedResourceTypes;
 }

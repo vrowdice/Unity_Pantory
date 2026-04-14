@@ -35,7 +35,7 @@ public class BuildingInfoPopup : PopupBase
     [SerializeField] private Transform _outputResourceContent;
 
     [Header("Change Production Btn")]
-    [SerializeField] private Button _changeProductionBtn;
+    [SerializeField] private GameObject _changeProductionBtn;
     [SerializeField] private Transform _inputGridTransform;
     [SerializeField] private Transform _outputGridTransform;
 
@@ -221,7 +221,6 @@ public class BuildingInfoPopup : PopupBase
         bool isProd = _currentData.IsProductionBuilding;
         bool isUnloadStation = _currentData.IsUnloadStation;
         _changeProductionBtn.gameObject.SetActive(true);
-        _changeProductionBtn.interactable = isProd || isUnloadStation;
     }
 
     /// <summary>
@@ -295,8 +294,6 @@ public class BuildingInfoPopup : PopupBase
 
     public void ShowOutputResourceSelection()
     {
-        if (_currentData.AllowedResourceTypes == null || _currentData.AllowedResourceTypes.Count == 0) return;
-
         List<ResourceData> producible = GetProducibleList();
         UIManager.Instance.ShowSelectResourcePopup(
             _currentData.AllowedResourceTypes,
