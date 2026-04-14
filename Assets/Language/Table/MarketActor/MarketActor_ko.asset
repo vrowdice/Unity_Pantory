@@ -422,6 +422,14 @@ MonoBehaviour:
       \uD68D\uB4DD\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269041
+    m_Localized: 플레이어 기업
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269141
+    m_Localized: 플레이어가 직접 운영하는 기업.
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226263054
     m_Localized: "\uC815\uBD80"
     m_Metadata:

@@ -22,9 +22,9 @@ MonoBehaviour:
     different product lines based on market demand.
   isUnlockedByDefault: 1
   isProfessional: 0
-  requiredEmployees: 6
+  requiredEmployees: 5
   buildCost: 240
-  maintenanceCost: 22
+  maintenanceCost: 18
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: f60d293f759af1e46a247c69045fc81f, type: 2}
   maxInputBufferCapacity: 16

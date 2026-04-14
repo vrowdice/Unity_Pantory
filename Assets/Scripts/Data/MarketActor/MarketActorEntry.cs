@@ -12,7 +12,10 @@ public class MarketActorEntry
         this.data = data;
 
         state = new MarketActorState();
-        state.wealth = data.baseWealth;
+        if (data != null)
+        {
+            state.wealth = data.baseWealth;
+        }
     }
 }
 

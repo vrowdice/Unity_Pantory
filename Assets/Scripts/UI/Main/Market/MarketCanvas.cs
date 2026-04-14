@@ -19,9 +19,11 @@ public class MarketCanvas : MainCanvasPanelBase
     [SerializeField] private Transform _marketScrollViewContent;
     [SerializeField] private GameObject _marketResourceBtnPrefab;
     [SerializeField] private GameObject _marketTraderBtnPrefab;
+    [SerializeField] private MarketActorData _playerActorData;
 
     private bool _isResourceView = true;
     private List<ActionBtn> _actionButtons = new List<ActionBtn>();
+    private MarketActorEntry _playerMarketActorEntry;
 
     /// <summary>
     /// 마켓 패널 초기화 및 이벤트 구독을 수행합니다.
@@ -256,8 +258,12 @@ public class MarketCanvas : MainCanvasPanelBase
         pool.ClearChildrenToPool(_marketScrollViewContent);
 
         Dictionary<string, MarketActorEntry> traders = _dataManager.MarketActor.GetAllMarketActors();
+        MarketActorEntry playerEntry = GetOrCreatePlayerMarketActorEntry();
+        playerEntry.state.wealth = _dataManager.Finances.Wealth;
+        playerEntry.state.currentChangeWealth = 0;
 
         List<MarketActorEntry> sortedTraders = new List<MarketActorEntry>(traders.Values);
+        sortedTraders.Add(playerEntry);
         sortedTraders.Sort((a, b) => b.state.wealth.CompareTo(a.state.wealth));
 
         foreach (MarketActorEntry entry in sortedTraders)
@@ -267,12 +273,32 @@ public class MarketCanvas : MainCanvasPanelBase
             GameObject btnObj = pool.GetPooledObject(_marketTraderBtnPrefab);
             btnObj.transform.SetParent(_marketScrollViewContent, false);
             MarketTraderBtn traderBtn = btnObj.GetComponent<MarketTraderBtn>();
-            traderBtn.Init(this, entry);
+            bool isPlayerEntry = ReferenceEquals(entry, _playerMarketActorEntry);
+            traderBtn.Init(this, entry, isPlayerEntry);
         }
 
         if (scroll != null)
         {
             scroll.enabled = true;
         }
+    }
+
+    private MarketActorEntry GetOrCreatePlayerMarketActorEntry()
+    {
+        if (_playerMarketActorEntry != null)
+        {
+            return _playerMarketActorEntry;
+        }
+
+        if (_playerActorData == null)
+        {
+            _playerActorData = ScriptableObject.CreateInstance<MarketActorData>();
+            _playerActorData.id = "player_company";
+            _playerActorData.displayName = "Player";
+            _playerActorData.marketActorType = MarketActorType.Company;
+        }
+
+        _playerMarketActorEntry = new MarketActorEntry(_playerActorData);
+        return _playerMarketActorEntry;
     }
 }

@@ -7,7 +7,7 @@ public class DebugPopup : PopupBase
     [SerializeField] private Transform _debugBtnContentTransform;
     [SerializeField] private GameObject _debugBtnPrefab;
 
-    public void Init()
+    public override void Init()
     {
         base.Init();
         BuildDebugButtons();

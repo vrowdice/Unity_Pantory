@@ -18,7 +18,7 @@ public class RawMaterialFactoryData : ProductionBuildingData
     public ResourceData DefaultRawResource =>
         ProducibleResources != null && ProducibleResources.Count > 0 ? ProducibleResources[0] : null;
 
-    private void OnValidate()
+    protected override void OnValidate()
     {
         usePlacedCountLimit = true;
 

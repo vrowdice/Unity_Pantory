@@ -2,6 +2,9 @@
 
 `Assets/Datas` 기준 (코드: `ResourceType`, 자산 YAML). 옛 문서의 ResourceType 숫자·초기 재고·가격은 폐기되었습니다.
 
+**밸런스 전제:** 이 프로젝트는 단기 세션형이 아니라 **기록 50년 이상을 목표로 하는 초장기 템포 게임**입니다.  
+연구·생산·시장 밸런스 해석 시 "초반 체감 속도"와 함께 "수십 년 누적 운영 안정성"을 동시에 기준으로 삼습니다.
+
 ---
 
 ## ResourceType (`Assets/Scripts/Type/ResourceType.cs`)
@@ -25,7 +28,7 @@
 | volatilityMultiplier | 0.01 |
 | maxChangePriceMultiplier | 1.2 |
 | priceHistoryCapacity | 60 |
-| transactionFee | 0.08 |
+| transactionFee | 0.06 |
 
 개별 자원의 `marketSensitivity`, `meanReversionStrength` 등은 **각 `ResourceData` 자산**에만 있는 경우가 많습니다.
 
@@ -54,7 +57,7 @@
 | small_arms | weapon | 950 | 0 | steel_ingot ×2, fine_wood ×1, machine_parts ×1 |
 | basic_clothing | essentials | 170 | 0 | fabric ×3 |
 | basic_furniture | essentials | 750 | 0 | fine_wood ×3, machine_parts ×1 |
-| simple_tools | essentials | 190 | 15 | iron_ingot ×1, fine_wood ×1 |
+| simple_tools | essentials | 230 | 15 | iron_ingot ×1, fine_wood ×1 |
 | premium_clothing | luxuries | 950 | 0 | fabric ×5, pure_gold ×1 |
 | premium_furniture | luxuries | 1800 | 0 | premium_wood ×3, fabric ×2, machine_parts ×4 |
 | electronic_components | component | 340 | 0 | copper_ingot ×1, aluminum_ingot ×1 |
@@ -81,7 +84,7 @@
 | logging_camp | 140 | 15 |
 | road | 10 | 0 |
 | mine | 500 | 35 |
-| light_factory | 240 | 22 |
+| light_factory | 240 | 18 |
 | vehicle_plant | 800 | 70 |
 | unload | 100 | 5 |
 | oil_pump | 600 | 25 |
@@ -105,19 +108,45 @@
 | id | researchPointCost |
 |----|-------------------|
 | factory_basics | 0 |
-| mining | 1000 |
-| smelting | 1200 |
-| components | 1400 |
-| oil_extraction | 2000 |
-| chemical_processing | 2400 |
-| engine_manufacturing | 3000 |
-| heavy_industry | 3600 |
-| military_production | 5000 |
-| vehicle_assembly | 7000 |
+| mining | 700 |
+| smelting | 850 |
+| components | 1000 |
+| oil_extraction | 1500 |
+| chemical_processing | 1800 |
+| engine_manufacturing | 2300 |
+| heavy_industry | 2800 |
+| military_production | 3600 |
+| vehicle_assembly | 5000 |
 
 ### 원자재 탐색 (`RawResourceSearch/`)
 
-`search_*` 계열은 자산상 대부분 **`researchPointCost: 0`** (티어/슬롯 해금용으로 쓰이는 구조로 보임).
+`search_*` 계열은 티어별 점진 해금으로 조정:
+
+| 계열 | tier1 | tier2 | tier3 | tier4 | tier5 |
+|------|-------|-------|-------|-------|-------|
+| forest | 0 | 120 | 260 | 450 | 700 |
+| mine | 0 | 120 | 260 | 450 | 700 |
+| oil | 0 | 120 | 260 | 450 | 700 |
+
+---
+
+## 장기 템포 진행 목표 (50년+ 기준)
+
+아래 표는 수치 고정 규칙이 아니라, 밸런스 검증 시 사용하는 **연 단위 목표 가이드**입니다.
+
+| 구간 | 권장 도달 시점 | 플레이 상태 목표 | 체크 포인트 |
+|------|----------------|------------------|-------------|
+| 초반 정착 | 0~5년 | 벌목/제재/경공업 운영 흑자 전환, `mining`~`components` 진입 | 적자 장기 고착이 아닌지, 연구 선택지가 1개로 고정되지 않는지 |
+| 중반 확장 | 5~15년 | 금속-부품-엔진 라인 구축, `oil_extraction`~`engine_manufacturing` 완료 | 연구-건설-인력 확장이 같은 속도로 따라가는지 |
+| 중후반 전환 | 15~30년 | `heavy_industry`/`military_production` 선택적 진입, 고부가 상품 비중 증가 | 단일 품목 올인보다 포트폴리오 운영이 유리한지 |
+| 장기 체제 | 30~50년+ | `vehicle_assembly` 포함한 고티어 체인 안정화, 이벤트 변동 대응 | 시장 변동(뉴스/오더)에 대응 가능한 현금흐름 유지 여부 |
+
+### 연구 비용 커브 검증 체크리스트
+
+- `UnlockBuilding` 커브는 초반(700~1000), 중반(1500~2800), 후반(3600~5000)으로 단계가 분리되어야 함
+- `RawResourceSearch`는 각 라인 tier1 무료 + tier2~5 점진 상승 구조가 유지되어야 함
+- 특정 티어에서 체감이 급락하면 **연구비 인하보다 RP 생산식(연구원 효율/일일 RP 계산)**을 우선 점검
+- 50년+ 템포 기준에서 "느림"은 허용되지만, **선택 불능(사실상 해금 불가)** 상태는 비정상으로 간주
 
 ---
 
@@ -125,8 +154,8 @@
 
 | id | baseSalary | hiringCost | baseEfficiency |
 |----|------------|------------|----------------|
-| worker | 15 | 100 | 0.5 |
-| technician | 22 | 100 | 0.5 |
+| worker | 13 | 100 | 0.5 |
+| technician | 19 | 100 | 0.5 |
 | researcher | 35 | 100 | 0.5 |
 | manager | 50 | 100 | 0.5 |
 
@@ -182,6 +211,29 @@
 - **Individual/** — 상인, 수집가, 학자 등.
 
 구체 스펙은 각 `MarketActor` 자산이 참조하는 주문·선호 자원을 따릅니다.
+
+### Company 초기 자본금 재조정 메모 (플레이어 경쟁성)
+
+- 플레이어 초기 자금(`InitialFinancesData.initialCredit`)은 `50000`.
+- 일부 Company의 `baseWealth`가 플레이어와 같거나 낮아 초반 경쟁 구도가 약해지는 문제가 있어 하위 구간을 상향 조정.
+- 조정값:
+  - `IronMiningConsortium`: `40000 -> 75000`
+  - `LumberConsortium`: `45000 -> 80000`
+  - `FrontierSawmill`: `50000 -> 85000`
+  - `ArtisanFurnitureWorkshop`: `60000 -> 90000`
+  - `VerdantContinentalExchange`: `65000 -> 95000`
+  - `NorthwindIndustrialUnion`: `70000 -> 100000`
+- 결과적으로 Company 최저 자본금이 플레이어 초기 자금보다 높아져 초반 시장 경쟁 강도를 안정적으로 확보.
+
+### Company 2차 상향 메모 (50년 템포 대응)
+
+- 장기 플레이(50년+) 기준에서 자본 스케일이 작아 성장 체감이 빨리 평탄해지는 문제를 줄이기 위해,
+  Company 전원의 `baseWealth`를 추가로 **1.7배 일괄 상향**.
+- 현재 Company `baseWealth` 범위:
+  - 최소 `136000`
+  - 최대 `340000`
+- 플레이어 초기 자금(`50000`) 대비 Company 하한이 충분히 높아 초반 경쟁 구도가 명확하며,
+  장기 누적 구간에서도 기업 간 규모 차이를 유지하도록 조정.
 
 ---
 

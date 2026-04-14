@@ -19,7 +19,7 @@ MonoBehaviour:
     essential resources across provinces while maintaining strategic reserves for
     imperial operations.
   marketActorType: 1
-  baseWealth: 200000
+  baseWealth: 340000
   baseProductionCount: 80
   comsumeResourceList:
   - {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}

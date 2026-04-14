@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A sprawling federation of logging houses that controls most timber
     exports along the northern frontier.
   marketActorType: 1
-  baseWealth: 45000
+  baseWealth: 136000
   baseProductionCount: 250
   comsumeResourceList:
   - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}

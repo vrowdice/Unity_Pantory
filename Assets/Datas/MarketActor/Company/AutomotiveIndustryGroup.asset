@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A major automotive manufacturer producing cars, trucks, and military
     vehicles for civilian and government markets.
   marketActorType: 1
-  baseWealth: 120000
+  baseWealth: 204000
   baseProductionCount: 80
   comsumeResourceList:
   - {fileID: 11400000, guid: 3fc829e6c43fdc245882ae5c87c6f421, type: 2}

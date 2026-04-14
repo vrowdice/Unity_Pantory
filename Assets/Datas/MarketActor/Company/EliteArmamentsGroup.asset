@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A prestige weapons conglomerate that outfits military units and security
     forces with premium steel, gold, and advanced weaponry.
   marketActorType: 1
-  baseWealth: 150000
+  baseWealth: 255000
   baseProductionCount: 70
   comsumeResourceList:
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

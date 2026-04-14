@@ -20,7 +20,7 @@ MonoBehaviour:
     components, and steel ingots. A prerequisite investment for vehicle production,
     beginning the production of high-value intermediate materials.
   isDefaultUnlocked: 0
-  researchPointCost: 3000
+  researchPointCost: 2300
   unlockResearchList:
   - {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   effects: []

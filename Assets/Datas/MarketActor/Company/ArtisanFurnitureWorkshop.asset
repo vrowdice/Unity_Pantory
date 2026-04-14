@@ -18,7 +18,7 @@ MonoBehaviour:
   description: Master craftsmen who turn premium wood into bespoke furniture and
     architectural elements for luxury estates.
   marketActorType: 1
-  baseWealth: 60000
+  baseWealth: 153000
   baseProductionCount: 100
   comsumeResourceList:
   - {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}

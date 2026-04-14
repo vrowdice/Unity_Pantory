@@ -18,7 +18,7 @@ MonoBehaviour:
   description: An upscale furniture retailer specializing in premium and custom-made
     furniture for affluent clients and luxury estates.
   marketActorType: 1
-  baseWealth: 90000
+  baseWealth: 153000
   baseProductionCount: 90
   comsumeResourceList:
   - {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}

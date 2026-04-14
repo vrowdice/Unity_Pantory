@@ -18,7 +18,7 @@ MonoBehaviour:
   description: Boutique workshop famed for precision-crafted weapons, sourcing only
     the purest metals and fine wood.
   marketActorType: 1
-  baseWealth: 100000
+  baseWealth: 170000
   baseProductionCount: 85
   comsumeResourceList:
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

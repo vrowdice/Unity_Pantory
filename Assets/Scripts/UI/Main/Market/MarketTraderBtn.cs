@@ -5,6 +5,7 @@ using TMPro;
 public class MarketTraderBtn : MonoBehaviour
 {
     [SerializeField] private Image _image = null;
+    [SerializeField] private Image _backgroundImage = null;
     [SerializeField] private TextMeshProUGUI _nameText = null;
     [SerializeField] private TextMeshProUGUI _wealthText = null;
     [SerializeField] private TextMeshProUGUI _currentChangeWealthText = null;
@@ -12,28 +13,28 @@ public class MarketTraderBtn : MonoBehaviour
     private MarketCanvas _marketPanel = null;
     private MarketActorEntry _actorEntry = null;
     private bool _isPlayer = false;
+    private Sprite _defaultSprite = null;
 
-    public void Init(MarketCanvas panel, MarketActorEntry actorEntry)
+    private void Awake()
+    {
+        if (_image != null)
+        {
+            _defaultSprite = _image.sprite;
+        }
+    }
+
+    public void Init(MarketCanvas panel, MarketActorEntry actorEntry, bool isPlayer = false)
     {
         _marketPanel = panel;
         _actorEntry = actorEntry;
-        _isPlayer = false;
+        _isPlayer = isPlayer;
 
-        _image.sprite = _actorEntry.data.icon;
+        if (isPlayer) _backgroundImage.color = VisualManager.Instance.DefaultPanelColor;
+        else _backgroundImage.color = Color.white;
+        _image.sprite = _actorEntry.data.icon != null ? _actorEntry.data.icon : _defaultSprite;
         _nameText.text = _actorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
 
         RefreshAllUI();
-    }
-
-    public void InitPlayer(MarketCanvas panel, int rank = 0)
-    {
-        _marketPanel = panel;
-        _actorEntry = null;
-        _isPlayer = true;
-
-        _nameText.text = "Player";
-        _image.sprite = null;
-        _image.enabled = false;
     }
 
     public void OnClick()

@@ -120,4 +120,48 @@ public partial class MainCanvas
     {
         return _currentOpenPanelType == panelType;
     }
+
+    private void HandlePanelShortcutKeys()
+    {
+        List<MainPanelType> panelTypes = EnumUtils.GetAllEnumValues<MainPanelType>();
+        int maxShortcutCount = Mathf.Min(panelTypes.Count, 9);
+
+        for (int i = 0; i < maxShortcutCount; i++)
+        {
+            if (!IsNumberKeyDown(i + 1))
+            {
+                continue;
+            }
+
+            OpenPanel(panelTypes[i]);
+            break;
+        }
+    }
+
+    private bool IsNumberKeyDown(int number)
+    {
+        switch (number)
+        {
+            case 1:
+                return Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1);
+            case 2:
+                return Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2);
+            case 3:
+                return Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3);
+            case 4:
+                return Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4);
+            case 5:
+                return Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5);
+            case 6:
+                return Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6);
+            case 7:
+                return Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7);
+            case 8:
+                return Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8);
+            case 9:
+                return Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9);
+            default:
+                return false;
+        }
+    }
 }

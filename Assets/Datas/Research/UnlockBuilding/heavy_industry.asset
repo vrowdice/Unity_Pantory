@@ -21,7 +21,7 @@ MonoBehaviour:
     Requires significant investment but targets the premium market to maximize profit
     margins.
   isDefaultUnlocked: 0
-  researchPointCost: 3600
+  researchPointCost: 2800
   unlockResearchList:
   - {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
   - {fileID: 11400000, guid: 11d63bc3f292d9a4b8c4b8b56a89d9c1, type: 2}

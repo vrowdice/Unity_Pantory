@@ -20,6 +20,6 @@ MonoBehaviour:
     construction and maintenance costs, but provides the fundamental raw materials
     for industry.
   isDefaultUnlocked: 0
-  researchPointCost: 1000
+  researchPointCost: 700
   unlockResearchList: []
   effects: []

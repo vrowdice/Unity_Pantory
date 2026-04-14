@@ -20,6 +20,6 @@ MonoBehaviour:
     by combining engines, components, electronic parts, and more. The most complex
     and slowest production chain, but provides the highest profits.
   isDefaultUnlocked: 0
-  researchPointCost: 7000
+  researchPointCost: 5000
   unlockResearchList: []
   effects: []

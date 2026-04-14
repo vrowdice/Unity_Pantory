@@ -330,6 +330,14 @@ MonoBehaviour:
     m_Localized: "\u8ECD\u7528\u5175\u5668\u306E\u79C1\u7684\u53CE\u96C6\u5BB6\u3067\u611B\u597D\u5BB6\u3002\u79C1\u7684\u6B66\u5668\u5EAB\u306E\u305F\u3081\u306B\u5C0F\u706B\u5668\u3001\u91CD\u706B\u5668\u3001\u5F3E\u85AC\u3092\u7D76\u3048\u305A\u7372\u5F97\u3059\u308B\u3002"
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269041
+    m_Localized: プレイヤー企業
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269141
+    m_Localized: プレイヤーが直接運営する企業。
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226263054
     m_Localized: "\u653F\u5E9C"
     m_Metadata:

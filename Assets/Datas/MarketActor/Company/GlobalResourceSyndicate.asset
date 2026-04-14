@@ -18,7 +18,7 @@ MonoBehaviour:
   description: Empire-spanning traders that consolidate precious metals, fine lumber,
     and refined ingots for government and corporate contracts.
   marketActorType: 1
-  baseWealth: 180000
+  baseWealth: 306000
   baseProductionCount: 100
   comsumeResourceList:
   - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}

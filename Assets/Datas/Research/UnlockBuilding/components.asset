@@ -21,6 +21,6 @@ MonoBehaviour:
     metal ingots. Marks the beginning of mid-game production chains, providing essential
     materials for advanced buildings and vehicle production.
   isDefaultUnlocked: 0
-  researchPointCost: 1400
+  researchPointCost: 1000
   unlockResearchList: []
   effects: []

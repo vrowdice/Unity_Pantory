@@ -373,6 +373,14 @@ MonoBehaviour:
       acquiring small arms, heavy arms, and munitions for their private arsenal.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269041
+    m_Localized: Player Company
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269141
+    m_Localized: The company directly managed by the player.
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226263054
     m_Localized: Government
     m_Metadata:

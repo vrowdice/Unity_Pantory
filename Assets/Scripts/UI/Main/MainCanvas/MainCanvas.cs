@@ -16,6 +16,21 @@ public partial class MainCanvas : CanvasBase
 
     private MainRunner _mainRunner;
 
+    private void Update()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        if (UIManager.Instance != null && UIManager.Instance.HasAnyOpenCloseablePanel())
+        {
+            return;
+        }
+
+        HandlePanelShortcutKeys();
+    }
+
     public void Init(MainRunner mainRunner)
     {
         base.Init();

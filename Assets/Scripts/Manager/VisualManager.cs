@@ -9,7 +9,8 @@ public class VisualManager : Singleton<VisualManager>
     public Color LossColor => _lossColor;
     public Color ManagementSufficientColor => _managementSufficientColor;
     public Color ManagementInsufficientColor => _managementInsufficientColor;
-    
+    public Color DefaultPanelColor => _defaultPanelColor;
+
     public Color ThreadPlacementOutlineColor => _threadPlacementOutlineColor;
     public Color ThreadRemovalHighlightColor => _threadRemovalHighlightColor;
     public Color ThreadPreviewValidColor => _threadPreviewValidColor;
@@ -22,7 +23,8 @@ public class VisualManager : Singleton<VisualManager>
     [SerializeField]private Color _lossColor = Color.red;
     [SerializeField]private Color _managementSufficientColor = Color.green;
     [SerializeField]private Color _managementInsufficientColor = Color.red;
-    
+    [SerializeField]private Color _defaultPanelColor = Color.white;
+
     [Header("Thread Colors")]
     [SerializeField]private Color _threadPlacementOutlineColor = new Color(0.2f, 0.8f, 1f, 0.8f);
     [SerializeField]private Color _threadRemovalHighlightColor = new Color(1f, 0.4f, 0.4f, 0.9f);

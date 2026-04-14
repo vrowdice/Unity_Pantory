@@ -18,7 +18,7 @@ MonoBehaviour:
   description: Heavy-industry magnates who churn out tools and alloys for inland
     factories while swallowing iron and timber supplies.
   marketActorType: 1
-  baseWealth: 70000
+  baseWealth: 170000
   baseProductionCount: 130
   comsumeResourceList:
   - {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}

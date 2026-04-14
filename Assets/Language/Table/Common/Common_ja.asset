@@ -531,7 +531,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268027
-    m_Localized: この建物はこれ以上建設できません。
+    m_Localized: "\u3053\u306E\u5EFA\u7269\u306F\u3053\u308C\u4EE5\u4E0A\u5EFA\u8A2D\u3067\u304D\u307E\u305B\u3093\u3002"
     m_Metadata:
       m_Items: []
   - m_Id: 18270374867648512

@@ -18,7 +18,7 @@ MonoBehaviour:
   description: The capital's military workshop, renowned for disciplined output of
     military-grade weapons and equipment for armed forces.
   marketActorType: 1
-  baseWealth: 140000
+  baseWealth: 238000
   baseProductionCount: 75
   comsumeResourceList:
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

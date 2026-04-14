@@ -102,6 +102,14 @@ public class UIManager : Singleton<UIManager>
     }
 
     /// <summary>
+    /// 닫기 스택에 등록된 패널/팝업이 하나 이상 열려있는지 반환합니다.
+    /// </summary>
+    public bool HasAnyOpenCloseablePanel()
+    {
+        return _closeStack.Count > 0;
+    }
+
+    /// <summary>
     /// GameManager에서 매니저 생성 후 호출합니다. ManagerCanvas를 생성합니다.
     /// </summary>
     public void Init()

@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A specialized manufacturer producing precision gears, bolts, and mechanical
     components for industrial machinery and vehicles.
   marketActorType: 1
-  baseWealth: 95000
+  baseWealth: 161500
   baseProductionCount: 110
   comsumeResourceList:
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

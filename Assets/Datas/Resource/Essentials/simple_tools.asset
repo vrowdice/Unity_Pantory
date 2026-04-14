@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: simple_tools
   displayName: Simple Tools
-  baseValue: 190
+  baseValue: 230
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 3

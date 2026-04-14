@@ -543,7 +543,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268027
-    m_Localized: 이 건물은 더 이상 건설할 수 없습니다.
+    m_Localized: "\uC774 \uAC74\uBB3C\uC740 \uB354 \uC774\uC0C1 \uAC74\uC124\uD560
+      \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 18270374867648512

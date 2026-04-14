@@ -319,6 +319,14 @@ MonoBehaviour:
     m_Key: weapon_enthusiast_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269041
+    m_Key: player_company
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269141
+    m_Key: player_company_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226263054
     m_Key: Government
     m_Metadata:

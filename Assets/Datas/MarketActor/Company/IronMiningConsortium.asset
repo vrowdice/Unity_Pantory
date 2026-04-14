@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A cartel of deep-shaft mines that floods the market with cheap ore
     and undercuts rivals with ruthless efficiency.
   marketActorType: 1
-  baseWealth: 40000
+  baseWealth: 127500
   baseProductionCount: 250
   comsumeResourceList:
   - {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}

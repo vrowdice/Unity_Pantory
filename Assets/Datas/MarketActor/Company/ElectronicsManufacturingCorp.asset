@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A major electronics manufacturer producing motors, light bulbs, and
     wiring for industrial and consumer markets.
   marketActorType: 1
-  baseWealth: 100000
+  baseWealth: 170000
   baseProductionCount: 120
   comsumeResourceList:
   - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}

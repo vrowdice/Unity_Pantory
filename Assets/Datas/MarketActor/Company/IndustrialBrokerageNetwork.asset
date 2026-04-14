@@ -18,7 +18,7 @@ MonoBehaviour:
   description: A sophisticated trading network specializing in metals, tools, and
     weapons for industrial and military clients.
   marketActorType: 1
-  baseWealth: 110000
+  baseWealth: 187000
   baseProductionCount: 110
   comsumeResourceList:
   - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
