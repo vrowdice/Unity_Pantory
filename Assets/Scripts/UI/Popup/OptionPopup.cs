@@ -168,7 +168,6 @@ public class OptionPopup : PopupBase
 
     public void OnClickExit()
     {
-        Close();
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 }

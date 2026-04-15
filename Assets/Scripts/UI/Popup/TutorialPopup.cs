@@ -98,8 +98,7 @@ public class TutorialPopup : PopupBase
         }
 
         transform.DOKill();
-        Close();
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 
     private void OnDestroy()

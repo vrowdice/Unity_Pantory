@@ -183,7 +183,6 @@ public class SaveLoadPopup : PopupBase
 
     public void OnClickClose()
     {
-        Close();
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 }

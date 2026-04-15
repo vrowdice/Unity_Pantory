@@ -7,11 +7,14 @@ public class CreditTopInfoPopup : PopupBase
     [SerializeField] private RectTransform _popupArea;
 
     private DataManager _dataManager;
+    private System.Action _cachedHideAction;
+    private bool _isEscRegistered;
 
     public override void Init()
     {
         base.Init();
         _dataManager = DataManager.Instance;
+        _cachedHideAction ??= HideCreditInfo;
 
         _panelDoAni?.SnapToClosedPosition();
         gameObject.SetActive(false);
@@ -24,8 +27,6 @@ public class CreditTopInfoPopup : PopupBase
             _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
             _dataManager.Finances.OnCreditChanged += HandleDayChanged;
         }
-
-        Show();
     }
 
     public void ToggleCreditInfo()
@@ -38,6 +39,7 @@ public class CreditTopInfoPopup : PopupBase
 
     public void ShowCreditInfo()
     {
+        RegisterEscClose();
         UpdateCreditInfo();
         gameObject.SetActive(true);
         _panelDoAni?.OpenPanel();
@@ -45,6 +47,8 @@ public class CreditTopInfoPopup : PopupBase
 
     public void HideCreditInfo()
     {
+        UnregisterEscClose();
+
         if (_panelDoAni != null)
         {
             _panelDoAni.ClosePanel(() => gameObject.SetActive(false));
@@ -53,6 +57,20 @@ public class CreditTopInfoPopup : PopupBase
         {
             gameObject.SetActive(false);
         }
+    }
+
+    private void RegisterEscClose()
+    {
+        if (_isEscRegistered || UIManager.Instance == null || _cachedHideAction == null) return;
+        UIManager.Instance.PushCloseable(_cachedHideAction);
+        _isEscRegistered = true;
+    }
+
+    private void UnregisterEscClose()
+    {
+        if (!_isEscRegistered || UIManager.Instance == null || _cachedHideAction == null) return;
+        UIManager.Instance.RemoveCloseable(_cachedHideAction);
+        _isEscRegistered = false;
     }
 
     private void UpdateCreditInfo()
@@ -102,7 +120,16 @@ public class CreditTopInfoPopup : PopupBase
 
     private void OnDestroy()
     {
-        _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
+        UnregisterEscClose();
+
+        if (_dataManager?.Time != null)
+        {
+            _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        }
+
+        if (_dataManager?.Finances != null)
+        {
+            _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
+        }
     }
 }

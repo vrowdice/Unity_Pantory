@@ -136,7 +136,6 @@ public class SelectResourcePopup : PopupBase
     /// </summary>
     public void ClosePanel()
     {
-        Close();
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 }

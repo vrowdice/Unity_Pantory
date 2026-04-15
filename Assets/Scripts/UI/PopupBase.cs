@@ -22,6 +22,14 @@ public class PopupBase : TutorialBase
     private Action _onShowCompleteCallback = null;
     private Action _cachedClose;
 
+    private void OnDisable()
+    {
+        if (_cachedClose != null && UIManager.Instance != null)
+        {
+            UIManager.Instance.RemoveCloseable(_cachedClose);
+        }
+    }
+
     private void OnDestroy()
     {
         if (_canvasGroup != null)
@@ -51,7 +59,11 @@ public class PopupBase : TutorialBase
     public virtual void Show()
     {
         if (_cachedClose == null) _cachedClose = Close;
-        UIManager.Instance?.PushCloseable(_cachedClose);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.RemoveCloseable(_cachedClose);
+            UIManager.Instance.PushCloseable(_cachedClose);
+        }
         gameObject.SetActive(true);
 
         if (_showCoroutine != null)
@@ -114,6 +126,12 @@ public class PopupBase : TutorialBase
         }
 
         gameObject.SetActive(false);
+    }
+
+    protected void CloseAndDestroy()
+    {
+        Close();
+        Destroy(gameObject);
     }
 
     protected virtual IEnumerator CloseEffectCoroutine()

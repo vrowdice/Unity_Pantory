@@ -51,6 +51,6 @@ public class ConfirmPopup : PopupBase
     /// </summary>
     private void ClosePopup()
     {
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 }

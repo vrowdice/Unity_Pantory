@@ -36,13 +36,13 @@ public class EnterNamePopup : PopupBase
         if (_nameInputField == null)
         {
             Debug.LogWarning("[EnterNamePanel] Name input field is null.");
-            Destroy(gameObject);
+            CloseAndDestroy();
             return;
         }
 
         string enteredName = _nameInputField.text;
         _onConfirm?.Invoke(enteredName);
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 
     /// <summary>
@@ -50,7 +50,6 @@ public class EnterNamePopup : PopupBase
     /// </summary>
     public void OnClickClose()
     {
-        Close();
-        Destroy(gameObject);
+        CloseAndDestroy();
     }
 }

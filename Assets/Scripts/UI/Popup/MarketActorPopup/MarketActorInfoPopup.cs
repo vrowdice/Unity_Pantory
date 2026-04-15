@@ -76,4 +76,15 @@ public class MarketActorInfoPopup : PopupBase
     {
         if (gameObject.activeSelf) RefreshAllUI();
     }
+
+    private void OnDisable()
+    {
+        if (_dataManager?.Time == null) return;
+        _dataManager.Time.OnDayChanged -= OnDayChanged;
+    }
+
+    public void OnClickClose()
+    {
+        Close();
+    }
 }
