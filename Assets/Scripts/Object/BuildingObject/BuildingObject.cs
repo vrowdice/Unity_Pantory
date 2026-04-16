@@ -208,13 +208,10 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         return false;
     }
 
-    public bool TryForwardTo(IResourceNode destination)
+    public bool TryForwardTo(IResourceNode destination, FlowDirection outputDirection)
     {
         if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
-            return TryForwardOutputBufferTo(destination);
-
-        if (_buildingData is LoadStationData)
-            return TryForwardInputBufferTo(destination);
+            return TryForwardOutputBufferTo(destination, outputDirection);
 
         return false;
     }
@@ -226,19 +223,21 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         return true;
     }
 
-    private bool TryForwardOutputBufferTo(IResourceNode destination)
+    private bool TryForwardOutputBufferTo(IResourceNode destination, FlowDirection outputDirection)
     {
         if (_outputBuffer.Count == 0) return false;
         ResourcePacket packet = _outputBuffer.Peek();
+        packet.TravelDirection = outputDirection;
         if (!destination.TryPush(packet)) return false;
         _outputBuffer.Dequeue();
         return true;
     }
 
-    private bool TryForwardInputBufferTo(IResourceNode destination)
+    private bool TryForwardInputBufferTo(IResourceNode destination, FlowDirection outputDirection)
     {
         if (_inputBuffer.Count == 0) return false;
         ResourcePacket packet = _inputBuffer.Peek();
+        packet.TravelDirection = outputDirection;
         if (!destination.TryPush(packet)) return false;
         _inputBuffer.Dequeue();
         return true;
@@ -420,7 +419,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         foreach (ResourcePacket p in buffer)
         {
             if (string.IsNullOrEmpty(p.Id)) continue;
-            list.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount)));
+            list.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount), p.TravelDirection));
         }
 
         return list;
@@ -440,7 +439,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
             if (string.IsNullOrEmpty(s.id)) continue;
 
             int amount = Mathf.Max(1, s.amount);
-            target.Enqueue(new ResourcePacket(s.id, amount));
+            target.Enqueue(new ResourcePacket(s.id, amount, s.direction));
         }
     }
 }

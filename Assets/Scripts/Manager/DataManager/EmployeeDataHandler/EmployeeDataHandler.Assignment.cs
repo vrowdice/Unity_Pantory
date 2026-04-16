@@ -5,8 +5,6 @@ using UnityEngine;
 /// </summary>
 public partial class EmployeeDataHandler
 {
-
-
     /// <summary>
     /// 특정 직원 유형의 할당된 인원 수를 증가시킵니다.
     /// </summary>
@@ -91,6 +89,22 @@ public partial class EmployeeDataHandler
     {
         if (!TryGetEntry(type, out EmployeeEntry entry)) return 0;
         return entry.state.assignedCount;
+    }
+
+    /// <summary>
+    /// 요청 수만큼 할당 인원을 강제로 해제합니다. 실제 해제된 수를 반환합니다.
+    /// </summary>
+    public int UnassignUpTo(EmployeeType type, int count)
+    {
+        if (count <= 0) return 0;
+        if (!TryGetEntry(type, out EmployeeEntry entry)) return 0;
+
+        int removed = Mathf.Min(count, entry.state.assignedCount);
+        if (removed <= 0) return 0;
+
+        entry.state.assignedCount -= removed;
+        OnEmployeeChanged?.Invoke();
+        return removed;
     }
 
     // Thread(생산 라인) 시스템 제거로 동기화 로직 제거

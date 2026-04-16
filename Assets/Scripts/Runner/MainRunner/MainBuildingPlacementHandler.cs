@@ -7,6 +7,9 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class MainBuildingPlacementHandler
 {
+    [SerializeField] private AudioClip _buildSound;
+    [SerializeField] private AudioClip _removalSound;
+
     private readonly MainRunner _runner;
     private readonly MainBuildingGridHandler _gridHandler;
 
@@ -19,10 +22,15 @@ public class MainBuildingPlacementHandler
 
     private GameObject _previewObj;
     private SpriteRenderer _previewRenderer;
+    private bool _isPointerPlacementActive;
+    private Vector2Int _lastPlacedOrigin;
+    private int _lastPlacedRotation;
+    private string _lastPlacedBuildingId;
 
     public bool IsPlacementMode => _placementMode;
     public bool IsRemovalMode => _removalMode;
     public bool IsAutoEmployeePlacement => _autoEmployeePlacement;
+    public bool IsPointerPlacementActive => _isPointerPlacementActive;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int Rotation => _rotation;
 
@@ -39,6 +47,10 @@ public class MainBuildingPlacementHandler
         _placementMode = true;
         _selectedBuilding = data;
         _rotation = 0;
+        _isPointerPlacementActive = false;
+        _lastPlacedOrigin = new Vector2Int(int.MinValue, int.MinValue);
+        _lastPlacedRotation = -1;
+        _lastPlacedBuildingId = null;
         CreatePreview();
     }
 
@@ -46,6 +58,7 @@ public class MainBuildingPlacementHandler
     {
         _placementMode = false;
         _selectedBuilding = null;
+        _isPointerPlacementActive = false;
         DestroyPreview();
     }
 
@@ -112,17 +125,22 @@ public class MainBuildingPlacementHandler
                 }
                 return;
             }
+            _isPointerPlacementActive = true;
+            TryPlaceAtPreview(origin);
+        }
 
-            if (_selectedBuilding.IsRoad)
-            {
-                if (!_gridHandler.TryPlaceRoad(_selectedBuilding, origin, _rotation, out _, out bool roadNoMoney) && roadNoMoney)
-                    UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
-            }
-            else
-            {
-                if (!_gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _, out bool buildingNoMoney) && buildingNoMoney)
-                    UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
-            }
+        if (Input.GetMouseButton(0) && canPlace)
+        {
+            _isPointerPlacementActive = true;
+            TryPlaceAtPreview(origin);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            _isPointerPlacementActive = false;
+            _lastPlacedOrigin = new Vector2Int(int.MinValue, int.MinValue);
+            _lastPlacedRotation = -1;
+            _lastPlacedBuildingId = null;
         }
     }
 
@@ -140,7 +158,10 @@ public class MainBuildingPlacementHandler
 
         if (Input.GetMouseButtonDown(0))
         {
-            _gridHandler.TryRemoveAt(p);
+            if (_gridHandler.TryRemoveAt(p) && _removalSound != null)
+            {
+                _runner.SoundManager?.PlaySFX(_removalSound);
+            }
         }
     }
 
@@ -175,6 +196,48 @@ public class MainBuildingPlacementHandler
             Object.Destroy(_previewObj);
             _previewObj = null;
             _previewRenderer = null;
+        }
+    }
+
+    private void TryPlaceAtPreview(Vector2Int origin)
+    {
+        if (!_isPointerPlacementActive || _selectedBuilding == null)
+            return;
+
+        string buildingId = _selectedBuilding.id;
+        if (_lastPlacedOrigin == origin && _lastPlacedRotation == _rotation && _lastPlacedBuildingId == buildingId)
+            return;
+
+        _lastPlacedOrigin = origin;
+        _lastPlacedRotation = _rotation;
+        _lastPlacedBuildingId = buildingId;
+
+        if (_selectedBuilding.IsRoad)
+        {
+            if (_gridHandler.TryPlaceRoad(_selectedBuilding, origin, _rotation, out _, out bool roadNoMoney))
+            {
+                if (_buildSound != null)
+                {
+                    _runner.SoundManager?.PlaySFX(_buildSound);
+                }
+            }
+            else if (roadNoMoney)
+            {
+                UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
+            }
+            return;
+        }
+
+        if (_gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _, out bool buildingNoMoney))
+        {
+            if (_buildSound != null)
+            {
+                _runner.SoundManager?.PlaySFX(_buildSound);
+            }
+        }
+        else if (buildingNoMoney)
+        {
+            UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
         }
     }
 }

@@ -122,4 +122,27 @@ public partial class BuildingObject
 
         return false;
     }
+
+    public void ReleaseAssignedEmployees()
+    {
+        DataManager dataManager = DataManager.Instance;
+        if (dataManager == null || dataManager.Employee == null)
+        {
+            _assignedWorkers = 0;
+            _assignedTechnicians = 0;
+            return;
+        }
+
+        if (_assignedWorkers > 0)
+        {
+            int removedWorkers = dataManager.Employee.UnassignUpTo(EmployeeType.Worker, _assignedWorkers);
+            _assignedWorkers = Mathf.Max(0, _assignedWorkers - removedWorkers);
+        }
+
+        if (_assignedTechnicians > 0)
+        {
+            int removedTechnicians = dataManager.Employee.UnassignUpTo(EmployeeType.Technician, _assignedTechnicians);
+            _assignedTechnicians = Mathf.Max(0, _assignedTechnicians - removedTechnicians);
+        }
+    }
 }

@@ -191,46 +191,6 @@ MonoBehaviour:
     m_Key: FinenceCanvas4
     m_Metadata:
       m_Items: []
-  - m_Id: 2568369331388416
-    m_Key: DesignCanvas0
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2568866050228224
-    m_Key: DesignCanvas1
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2569802302767104
-    m_Key: DesignCanvas2
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2571217918115840
-    m_Key: DesignCanvas3
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2571541005352960
-    m_Key: DesignCanvas4
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2572921984139264
-    m_Key: DesignCanvas5
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2572931048030208
-    m_Key: DesignCanvas6
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2575685451661312
-    m_Key: DesignCanvas7
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2575868566585344
-    m_Key: DesignCanvas8
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2577984999800832
-    m_Key: New Entry
-    m_Metadata:
-      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

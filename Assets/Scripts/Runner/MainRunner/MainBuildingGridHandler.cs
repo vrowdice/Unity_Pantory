@@ -18,6 +18,8 @@ public class MainBuildingGridHandler
     private readonly Dictionary<string, BuildingObject> _rawResourceBuildingObjDict = new();
     private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
+    private readonly Dictionary<string, DualLaneRoadObject> _dualLaneRoadObjDict = new();
+    private readonly Dictionary<string, int> _buildingOutputRoundRobinIndex = new();
     private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();
     private readonly Dictionary<Vector2Int, BuildingTile> _tileDict = new();
 
@@ -81,13 +83,21 @@ public class MainBuildingGridHandler
         _dataManager.Finances.ClearPlacedBuildingMaintenanceTotal();
 
         foreach (BuildingObject building in _buildingObjDict.Values)
+        {
+            building.ReleaseAssignedEmployees();
             MonoBehaviour.Destroy(building.gameObject);
+        }
         _buildingObjDict.Clear();
         _rawResourceBuildingObjDict.Clear();
+        _buildingOutputRoundRobinIndex.Clear();
 
         foreach (RoadObject road in _roadObjDict.Values)
             MonoBehaviour.Destroy(road.gameObject);
         _roadObjDict.Clear();
+
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+            MonoBehaviour.Destroy(dualRoad.gameObject);
+        _dualLaneRoadObjDict.Clear();
 
         _occupiedAsObjectDict.Clear();
 
@@ -114,6 +124,8 @@ public class MainBuildingGridHandler
 
         foreach (RoadObject road in _roadObjDict.Values)
             list.Add(road.ExportSaveData());
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+            list.Add(dualRoad.ExportSaveData());
 
         return list;
     }
@@ -238,7 +250,10 @@ public class MainBuildingGridHandler
 
         if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position)) return false;
 
-        GameObject obj = MonoBehaviour.Instantiate(_mainRunner.RoadObjectPrefab, _roadParent);
+        bool isDualLaneRoad = IsDualLaneRoadData(roadData);
+        GameObject roadPrefab = isDualLaneRoad ? _mainRunner.DualLaneRoadObjectPrefab : _mainRunner.RoadObjectPrefab;
+        if (roadPrefab == null) return false;
+        GameObject obj = MonoBehaviour.Instantiate(roadPrefab, _roadParent);
         obj.name = $"Road_{position.x}_{position.y}";
 
         obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
@@ -247,10 +262,21 @@ public class MainBuildingGridHandler
         obj.transform.localScale = Vector3.zero;
         obj.transform.DOScale(s, 0.18f).SetEase(Ease.OutBack).SetUpdate(true).SetLink(obj);
 
-        RoadObject roadObject = obj.GetComponent<RoadObject>();
-        roadObject.Init(position, rotation, roadData);
         string key = RoadGridKey(position);
-        _roadObjDict[key] = roadObject;
+        if (isDualLaneRoad)
+        {
+            DualLaneRoadObject dualRoadObject = obj.GetComponent<DualLaneRoadObject>();
+            if (dualRoadObject == null) return false;
+            dualRoadObject.Init(position, rotation, roadData);
+            _dualLaneRoadObjDict[key] = dualRoadObject;
+        }
+        else
+        {
+            RoadObject roadObject = obj.GetComponent<RoadObject>();
+            if (roadObject == null) return false;
+            roadObject.Init(position, rotation, roadData);
+            _roadObjDict[key] = roadObject;
+        }
         _occupiedAsObjectDict[position] = key;
         if (_tileDict.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
 
@@ -272,22 +298,35 @@ public class MainBuildingGridHandler
         string roadDataId = !string.IsNullOrEmpty(saveData.roadDataId) ? saveData.roadDataId : "road";
         BuildingData roadData = _dataManager.Building.GetBuildingData(roadDataId);
 
-        GameObject obj = MonoBehaviour.Instantiate(_mainRunner.RoadObjectPrefab, _roadParent);
-        obj.name = $"Road_{position.x}_{position.y}";
-
-        obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
-
-        RoadObject roadObject = obj.GetComponent<RoadObject>();
-
         BuildingData sourceBuildingData = roadData;
         if (!string.IsNullOrEmpty(saveData.sourceBuildingDataId))
             sourceBuildingData = _dataManager.Building.GetBuildingData(saveData.sourceBuildingDataId);
 
-        roadObject.Init(position, rotation, sourceBuildingData);
-        roadObject.ImportSaveData(saveData);
+        bool isDualLaneRoad = IsDualLaneRoadData(sourceBuildingData);
+        GameObject roadPrefab = isDualLaneRoad ? _mainRunner.DualLaneRoadObjectPrefab : _mainRunner.RoadObjectPrefab;
+        if (roadPrefab == null) return false;
+        GameObject obj = MonoBehaviour.Instantiate(roadPrefab, _roadParent);
+        obj.name = $"Road_{position.x}_{position.y}";
+
+        obj.transform.position = GridToWorldPosition(position, Vector2Int.one);
 
         string key = RoadGridKey(position);
-        _roadObjDict[key] = roadObject;
+        if (isDualLaneRoad)
+        {
+            DualLaneRoadObject dualRoadObject = obj.GetComponent<DualLaneRoadObject>();
+            if (dualRoadObject == null) return false;
+            dualRoadObject.Init(position, rotation, sourceBuildingData);
+            dualRoadObject.ImportSaveData(saveData);
+            _dualLaneRoadObjDict[key] = dualRoadObject;
+        }
+        else
+        {
+            RoadObject roadObject = obj.GetComponent<RoadObject>();
+            if (roadObject == null) return false;
+            roadObject.Init(position, rotation, sourceBuildingData);
+            roadObject.ImportSaveData(saveData);
+            _roadObjDict[key] = roadObject;
+        }
         _occupiedAsObjectDict[position] = key;
         if (_tileDict.TryGetValue(position, out BuildingTile t)) t.SetOccupied(true);
 
@@ -327,6 +366,7 @@ public class MainBuildingGridHandler
         _buildingObjDict[key] = building;
         if (data is RawMaterialFactoryData)
             _rawResourceBuildingObjDict[key] = building;
+        _buildingOutputRoundRobinIndex[key] = 0;
 
         building.PlayPlaceEntranceAnimation(targetLocalScale);
         GameManager.Instance.MainCameraController.ShakeForConstruction();
@@ -365,6 +405,7 @@ public class MainBuildingGridHandler
         _buildingObjDict[key] = building;
         if (data is RawMaterialFactoryData)
             _rawResourceBuildingObjDict[key] = building;
+        _buildingOutputRoundRobinIndex[key] = 0;
 
         ApplyPlacementFinances(data);
 
@@ -396,6 +437,18 @@ public class MainBuildingGridHandler
             return true;
         }
 
+        if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualRoad))
+        {
+            Vector2Int pos = dualRoad.GridPosition;
+            _occupiedAsObjectDict.Remove(pos);
+            _dualLaneRoadObjDict.Remove(key);
+            if (_tileDict.TryGetValue(pos, out BuildingTile t)) t.SetOccupied(false);
+            if (dualRoad.SourceBuildingData != null)
+                _dataManager.Finances.UnregisterPlacedBuildingMaintenance(dualRoad.SourceBuildingData);
+            MonoBehaviour.Destroy(dualRoad.gameObject);
+            return true;
+        }
+
         if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
         {
             if (building.IsRemovalAnimating) return false;
@@ -404,11 +457,13 @@ public class MainBuildingGridHandler
             Vector2Int size = building.Size;
             building.PlayRemovalAnimation(() =>
             {
+                building.ReleaseAssignedEmployees();
                 if (building.BuildingData != null)
                     _dataManager.Finances.UnregisterPlacedBuildingMaintenance(building.BuildingData);
                 UnregisterOccupancy(origin, size);
                 _buildingObjDict.Remove(key);
                 _rawResourceBuildingObjDict.Remove(key);
+                _buildingOutputRoundRobinIndex.Remove(key);
                 MonoBehaviour.Destroy(building.gameObject);
                 OnBuildingInstanceLayoutChanged?.Invoke();
             });
@@ -438,6 +493,10 @@ public class MainBuildingGridHandler
         {
             road.ResetRoadForwardGatesForQueuedPackets();
         }
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+        {
+            dualRoad.ResetRoadForwardGatesForQueuedPackets();
+        }
 
         foreach (RoadObject road in _roadObjDict.Values)
         {
@@ -447,19 +506,54 @@ public class MainBuildingGridHandler
             {
                 if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
                 if (ReferenceEquals(road, destNode)) continue;
-                road.TryForwardTo(destNode);
+                road.TryForwardTo(destNode, DirectionFromDelta(outCell - road.GridPosition));
                 break;
             }
         }
 
-        foreach (BuildingObject building in _buildingObjDict.Values)
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
         {
-            if (building.IsRemovalAnimating) continue;
-            foreach (Vector2Int outCell in building.OutputGridPositions)
+            if (dualRoad.IsEmpty) continue;
+            for (int i = 0; i < dualRoad.OutputGridPositions.Count; i++)
             {
+                Vector2Int outCell = dualRoad.OutputGridPositions[i];
+                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
+                if (ReferenceEquals(dualRoad, destNode)) continue;
+                dualRoad.TryForwardToCell(outCell, destNode);
+            }
+        }
+
+        foreach (KeyValuePair<string, BuildingObject> buildingPair in _buildingObjDict)
+        {
+            string buildingKey = buildingPair.Key;
+            BuildingObject building = buildingPair.Value;
+            if (building.IsRemovalAnimating) continue;
+
+            List<Vector2Int> outputCells = building.OutputGridPositions;
+            if (outputCells == null || outputCells.Count == 0) continue;
+
+            bool useRoundRobin = building.BuildingData is ProductionBuildingData && outputCells.Count > 1;
+            int startIndex = 0;
+            if (useRoundRobin)
+            {
+                _buildingOutputRoundRobinIndex.TryGetValue(buildingKey, out startIndex);
+                startIndex = Mathf.Clamp(startIndex, 0, outputCells.Count - 1);
+            }
+
+            for (int offset = 0; offset < outputCells.Count; offset++)
+            {
+                int outIndex = useRoundRobin
+                    ? (startIndex + offset) % outputCells.Count
+                    : offset;
+                Vector2Int outCell = outputCells[outIndex];
                 if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
                 if (ReferenceEquals(building, destNode)) continue;
-                building.TryForwardTo(destNode);
+
+                if (!building.TryForwardTo(destNode, DirectionFromBuildingOutput(building, outCell)))
+                    continue;
+
+                if (useRoundRobin)
+                    _buildingOutputRoundRobinIndex[buildingKey] = (outIndex + 1) % outputCells.Count;
                 break;
             }
         }
@@ -484,12 +578,46 @@ public class MainBuildingGridHandler
             node = road;
             return true;
         }
+        if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualRoad))
+        {
+            node = dualRoad;
+            return true;
+        }
         if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
         {
             node = building;
             return true;
         }
         return false;
+    }
+
+    private static bool IsDualLaneRoadData(BuildingData roadData)
+    {
+        if (roadData == null) return false;
+        return roadData.id == "splitter" || roadData.id == "tunnel";
+    }
+
+    private static FlowDirection DirectionFromDelta(Vector2Int delta)
+    {
+        if (delta == new Vector2Int(0, -1)) return FlowDirection.Up;
+        if (delta == new Vector2Int(1, 0)) return FlowDirection.Right;
+        if (delta == new Vector2Int(0, 1)) return FlowDirection.Down;
+        if (delta == new Vector2Int(-1, 0)) return FlowDirection.Left;
+        return FlowDirection.None;
+    }
+
+    private static FlowDirection DirectionFromBuildingOutput(BuildingObject building, Vector2Int outCell)
+    {
+        Vector2Int origin = building.Origin;
+        Vector2Int size = building.Size;
+        int maxX = origin.x + size.x - 1;
+        int maxY = origin.y + size.y - 1;
+
+        if (outCell.x < origin.x) return FlowDirection.Left;
+        if (outCell.x > maxX) return FlowDirection.Right;
+        if (outCell.y < origin.y) return FlowDirection.Up;
+        if (outCell.y > maxY) return FlowDirection.Down;
+        return FlowDirection.None;
     }
 
     private void RegisterBuildingOccupancy(Vector2Int origin, Vector2Int size, string instanceKey)

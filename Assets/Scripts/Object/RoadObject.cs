@@ -68,11 +68,12 @@ public class RoadObject : MonoBehaviour, IResourceNode
     /// <summary>
     /// 맨 앞 패킷을 destination에 넣을 수 있을 때만 전달합니다.
     /// </summary>
-    public bool TryForwardTo(IResourceNode destination)
+    public bool TryForwardTo(IResourceNode destination, FlowDirection outputDirection)
     {
         if (destination == null || _buffer.Count == 0) return false;
         ResourcePacket packet = _buffer.Peek();
         if (packet.BlockRoadForwardThisTick) return false;
+        packet.TravelDirection = outputDirection;
         if (!destination.TryPush(packet)) return false;
         _buffer.Dequeue();
         RefreshHeldResourceIcons();
@@ -155,7 +156,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
         foreach (ResourcePacket p in _buffer)
         {
             if (p == null || string.IsNullOrEmpty(p.Id)) continue;
-            data.buffer.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount)));
+            data.buffer.Add(new ResourcePacketSaveData(p.Id, Mathf.Max(1, p.Amount), p.TravelDirection));
         }
 
         return data;
@@ -174,7 +175,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
                 if (s == null || string.IsNullOrEmpty(s.id)) continue;
 
                 if (_buffer.Count >= _maxCapacity) break;
-                _buffer.Enqueue(new ResourcePacket(s.id, Mathf.Max(1, s.amount)));
+                _buffer.Enqueue(new ResourcePacket(s.id, Mathf.Max(1, s.amount), s.direction));
             }
         }
 

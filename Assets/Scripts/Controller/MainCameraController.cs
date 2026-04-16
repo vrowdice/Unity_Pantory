@@ -28,6 +28,7 @@ public class MainCameraController : MonoBehaviour
     private Camera _camera;
     private Vector3 _dragOrigin;
     private bool _isDragging;
+    private MainRunner _mainRunner;
 
     private void Awake() => Init();
 
@@ -87,6 +88,11 @@ public class MainCameraController : MonoBehaviour
     private void HandleInput()
     {
         if (!_isDragEnabled) return;
+        if (IsContinuousPlacementInProgress())
+        {
+            _isDragging = false;
+            return;
+        }
 
         // PC/모바일 통합 입력 감지
         bool inputBegin = Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
@@ -112,6 +118,17 @@ public class MainCameraController : MonoBehaviour
         }
 
         if (inputEnd) _isDragging = false;
+    }
+
+    private bool IsContinuousPlacementInProgress()
+    {
+        if (_mainRunner == null)
+            _mainRunner = FindAnyObjectByType<MainRunner>();
+        if (_mainRunner == null || _mainRunner.PlacementHandler == null)
+            return false;
+        if (!_mainRunner.PlacementHandler.IsPlacementMode)
+            return false;
+        return _mainRunner.PlacementHandler.IsPointerPlacementActive;
     }
 
     private void HandleZoom()

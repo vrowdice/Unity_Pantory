@@ -54,41 +54,47 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5943566155776
-    m_Localized: Now let's talk about threads. It's easy to think of threads as a
-      collection of factories.
+    m_Localized: Logistics is the core of your factory. Build a line by connecting
+      stations and production buildings with roads, then keep every input and output
+      direction aligned so packets can continue moving without delay.
     m_Metadata:
       m_Items: []
   - m_Id: 7203816095744
-    m_Localized: When you create a thread, it uses the resources assigned to it and
-      produces new resources.
+    m_Localized: Basic flow is Unload Station -> Road Network -> Production Building
+      -> Road Network -> Load Station. Unload stations provide source resources,
+      production buildings convert them, and load stations act as sinks that move
+      finished products into storage.
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
-    m_Localized: You can install threads from this panel. Create a thread, select
-      it, then place it.
+    m_Localized: Place buildings and roads from this panel. Select an item, preview
+      rotation on the grid, and click to build. You can also hold placement input
+      for continuous placement to quickly lay long road lines.
     m_Metadata:
       m_Items: []
   - m_Id: 7894026567680
-    m_Localized: When creating a thread, you can also set a category for the thread.
-      The thread will be classified according to that category, and you can filter
-      the thread categories in this panel.
+    m_Localized: Building buttons are grouped by category. Distribution includes
+      roads, splitter, and tunnel. Use splitter to alternate one input into two outputs,
+      and use tunnel to pass vertical and horizontal traffic independently without
+      blocking each other.
     m_Metadata:
       m_Items: []
   - m_Id: 8131256401920
-    m_Localized: Resources are crucial, as your primary goal is to generate them
-      and sell them on the market. You can check your current resource status on
-      this panel.
+    m_Localized: Track resource inventory in this panel. If a line stalls, first
+      check whether upstream materials are available, then verify road direction,
+      building orientation, and whether outputs are connected to valid destinations.
     m_Metadata:
       m_Items: []
   - m_Id: 9056704413696
-    m_Localized: This concludes the main panel description for Pantory. There are
-      tutorials for other panels, so familiarizing yourself with them will help you
-      enjoy the game. We hope you enjoy your time in Pantory! Thank you!
+    m_Localized: Good logistics design means short paths, clear direction, and balanced
+      outputs. Expand gradually, watch for bottlenecks, and use splitter/tunnel strategically
+      to keep throughput stable as your factory grows.
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: This button toggles between thread build mode and thread remove
-      mode.
+    m_Localized: This switch toggles build/remove mode. In remove mode, deleting
+      a building also clears its worker/technician assignments, so review staffing
+      after major layout changes.
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
@@ -175,9 +181,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 37828904239104
-    m_Localized: Employee efficiency depends on their satisfaction, and this efficiency
-      affects the productivity of the thread. Employees' demands also change depending
-      on their satisfaction.
+    m_Localized: Employee efficiency depends on satisfaction, and that efficiency
+      directly affects building work speed and production throughput.
     m_Metadata:
       m_Items: []
   - m_Id: 38302378246144
@@ -187,9 +192,8 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 39086448852992
     m_Localized: Employees are divided into Workers, Technicians, Researchers, and
-      Managers. Workers perform simple tasks within a thread, Technicians perform
-      technical tasks within a thread, Researchers produce RP (Research Points),
-      and Managers are responsible for managing employees.
+      Managers. Workers and Technicians are assigned to buildings, Researchers produce
+      RP, and Managers support organization-wide management.
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768
@@ -235,51 +239,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2566981499109376
     m_Localized: Shows your current credits in a graph.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2568369331388416
-    m_Localized: Hello. This is the design screen. Here, you can design your own
-      threads.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2568866050228224
-    m_Localized: This is where you can control the overall thread. There are buttons
-      for resetting, saving, and loading threads.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2569802302767104
-    m_Localized: Each building has a category. Production buildings have a Production
-      category, and distribution buildings have a Distribution category.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2571217918115840
-    m_Localized: After clicking the category button, the buttons for accessing each
-      building are displayed here. Clicking a button allows you to select it and
-      add it directly to your thread design.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2571541005352960
-    m_Localized: Here you can change the installation direction of the selected building
-      and manage the construction mode and removal mode status.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2572921984139264
-    m_Localized: In design, the "road" is crucial. The efficiency of the threads
-      depends on the design of the road.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2572931048030208
-    m_Localized: When you install a building, there are inputs and outputs, and those
-      must be aligned with the road.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2575685451661312
-    m_Localized: Each input must be connected to another building's output or to
-      an unloading station.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2575868566585344
-    m_Localized: Connect the output to the trading office to complete the thread.
     m_Metadata:
       m_Items: []
   references:

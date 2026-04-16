@@ -60,13 +60,15 @@ public class ResourcePacketSaveData
 {
     public string id;
     public int amount;
+    public FlowDirection direction;
 
     public ResourcePacketSaveData() { }
 
-    public ResourcePacketSaveData(string id, int amount)
+    public ResourcePacketSaveData(string id, int amount, FlowDirection direction = FlowDirection.None)
     {
         this.id = id;
         this.amount = amount;
+        this.direction = direction;
     }
 }
 

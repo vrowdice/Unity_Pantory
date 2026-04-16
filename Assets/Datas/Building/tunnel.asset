@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 350a36b4be1f7f74db8da7b46127e911, type: 3}
+  m_Name: tunnel
+  m_EditorClassIdentifier: 
+  id: tunnel
+  displayName: Tunnel
+  buildingType: 0
+  icon: {fileID: 21300000, guid: a3c469eff3bd1a14f8b12280a7ab2b52, type: 3}
+  buildingSprite: {fileID: 21300000, guid: a3c469eff3bd1a14f8b12280a7ab2b52, type: 3}
+  description: A two-lane pass-through road. Vertical and horizontal traffic are buffered
+    separately and can pass without blocking each other.
+  isUnlockedByDefault: 1
+  requiredEmployees: 0
+  buildCost: 20
+  maintenanceCost: 1
+  size: {x: 1, y: 1}
+  requiredResearchId: 
+  handlingResource: {fileID: 0}
+  conflictIcon: {fileID: 0}

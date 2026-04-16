@@ -183,6 +183,22 @@ MonoBehaviour:
     m_Localized: Raw Production
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270016
+    m_Localized: Splitter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270117
+    m_Localized: Splits incoming resources into two lanes. At base rotation it alternates output to the right and downward lanes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270017
+    m_Localized: Tunnel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270118
+    m_Localized: A two-lane pass-through road. Vertical and horizontal traffic are buffered separately and move without blocking each other.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -199,6 +199,22 @@ MonoBehaviour:
     m_Localized: "\uC6D0\uC790\uC7AC \uC0DD\uC0B0"
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270016
+    m_Localized: 스플리터
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270117
+    m_Localized: 들어온 자원을 두 개의 레인으로 분배하는 장치. 기본 회전에서는 오른쪽과 아래쪽으로 번갈아 출력한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270017
+    m_Localized: 터널
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270118
+    m_Localized: 2레인 통과형 도로. 세로와 가로 흐름을 분리 버퍼링하여 서로 막지 않고 이동시킨다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

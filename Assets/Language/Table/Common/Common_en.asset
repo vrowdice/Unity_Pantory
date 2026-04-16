@@ -450,10 +450,6 @@ MonoBehaviour:
     m_Localized: Failed to delete category.
     m_Metadata:
       m_Items: []
-  - m_Id: 864226268007
-    m_Localized: Please enter a thread name.
-    m_Metadata:
-      m_Items: []
   - m_Id: 864226268008
     m_Localized: Saved successfully.
     m_Metadata:
@@ -461,10 +457,6 @@ MonoBehaviour:
   - m_Id: 864226268009
     m_Localized: This building is locked. Complete the required research to unlock
       it.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 864226268010
-    m_Localized: The thread has been deleted.
     m_Metadata:
       m_Items: []
   - m_Id: 864226268011
@@ -529,8 +521,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268026
-    m_Localized: If you place this unresearched building, this thread cannot be placed
-      in the main scene.
+    m_Localized: This building requires research.
     m_Metadata:
       m_Items: []
   - m_Id: 864226268027

@@ -150,6 +150,22 @@ MonoBehaviour:
     m_Localized: "\u539F\u6750\u6599\u751F\u7523"
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270016
+    m_Localized: スプリッター
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270117
+    m_Localized: 流入した資源を2つのレーンに分配する装置。基本回転では右方向と下方向へ交互に出力する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270017
+    m_Localized: トンネル
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270118
+    m_Localized: 2レーンの通過型道路。縦方向と横方向の交通を別々にバッファし、互いに干渉せず搬送できる。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

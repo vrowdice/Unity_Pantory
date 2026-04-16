@@ -13,6 +13,7 @@ public class MainRunner : RunnerBase
     [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private GameObject _buildingObjectPrefab;
     [SerializeField] private GameObject _roadObjectPrefab;
+    [SerializeField] private GameObject _dualLaneRoadObjectPrefab;
 
     [Header("Grid Settings")]
     [SerializeField] private int _gridWidth = 10;
@@ -33,6 +34,7 @@ public class MainRunner : RunnerBase
     public GameObject TilePrefab => _tilePrefab;
     public GameObject BuildingObjectPrefab => _buildingObjectPrefab;
     public GameObject RoadObjectPrefab => _roadObjectPrefab;
+    public GameObject DualLaneRoadObjectPrefab => _dualLaneRoadObjectPrefab;
 
     public bool StartPlacementMode(BuildingData buildingData)
     {

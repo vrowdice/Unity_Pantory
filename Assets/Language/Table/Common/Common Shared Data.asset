@@ -447,20 +447,12 @@ MonoBehaviour:
     m_Key: FailedToDeleteCategory
     m_Metadata:
       m_Items: []
-  - m_Id: 864226268007
-    m_Key: PleaseEnterThreadName
-    m_Metadata:
-      m_Items: []
   - m_Id: 864226268008
     m_Key: SavedSuccessfully
     m_Metadata:
       m_Items: []
   - m_Id: 864226268009
     m_Key: BuildingLockedResearchRequired
-    m_Metadata:
-      m_Items: []
-  - m_Id: 864226268010
-    m_Key: ThreadDeleted
     m_Metadata:
       m_Items: []
   - m_Id: 864226268011
