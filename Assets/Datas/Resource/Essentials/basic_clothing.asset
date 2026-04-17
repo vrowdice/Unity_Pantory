@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_clothing
   displayName: Basic Clothing
-  baseValue: 170
+  baseValue: 221
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 3

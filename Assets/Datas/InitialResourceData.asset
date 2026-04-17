@@ -14,5 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volatilityMultiplier: 0.01
   maxChangePriceMultiplier: 1.2
+  baseIncreaseProbability: 0.5
+  probabilityOffsetMultiplier: 0.5
+  minIncreaseProbability: 0.1
+  maxIncreaseProbability: 0.9
+  changeAmountRandomMin: 0.8
+  changeAmountRandomMax: 1.2
+  minChangeAmount: 1
   priceHistoryCapacity: 60
-  transactionFee: 0.06
+  transactionFee: 0.03

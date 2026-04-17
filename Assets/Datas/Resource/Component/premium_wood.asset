@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: premium_wood
   displayName: Premium Wood
-  baseValue: 140
+  baseValue: 182
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5

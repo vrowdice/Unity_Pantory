@@ -15,13 +15,13 @@ MonoBehaviour:
   id: splitter
   displayName: Splitter
   buildingType: 0
-  icon: {fileID: 21300000, guid: a3c469eff3bd1a14f8b12280a7ab2b52, type: 3}
-  buildingSprite: {fileID: 21300000, guid: a3c469eff3bd1a14f8b12280a7ab2b52, type: 3}
+  icon: {fileID: 21300000, guid: c1f0798f216f1cf44bd3356ab4bfd427, type: 3}
+  buildingSprite: {fileID: 21300000, guid: c1f0798f216f1cf44bd3356ab4bfd427, type: 3}
   description: Splits incoming resources into two lanes. At base rotation it distributes
     one packet to the right lane and the next packet to the downward lane.
   isUnlockedByDefault: 1
   requiredEmployees: 0
-  buildCost: 18
+  buildCost: 24
   maintenanceCost: 1
   size: {x: 1, y: 1}
   requiredResearchId: 

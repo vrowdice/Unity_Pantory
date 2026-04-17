@@ -19,8 +19,8 @@ MonoBehaviour:
     luxury goods, fine furniture, and precious metals for ceremonies and displays of
     wealth.
   marketActorType: 0
-  baseWealth: 250000
-  baseProductionCount: 40
+  baseWealth: 10000000
+  baseProductionCount: 170
   comsumeResourceList:
   - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}

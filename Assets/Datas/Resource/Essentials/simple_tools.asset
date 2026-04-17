@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: simple_tools
   displayName: Simple Tools
-  baseValue: 230
-  volatilityMultiplier: 1
-  maxPriceMultiplier: 10
+  baseValue: 400
   type: 3
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 278f59ecc97edb54ea060ae524023126, type: 3}
   description: A basic household tool set including hammer, saw, and wrench. Essential
     for everyday repairs and furniture assembly. A consumer staple.
@@ -27,4 +24,6 @@ MonoBehaviour:
     count: 1
   - resource: {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
     count: 1
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 15

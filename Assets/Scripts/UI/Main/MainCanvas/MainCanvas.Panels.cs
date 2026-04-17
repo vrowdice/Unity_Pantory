@@ -128,7 +128,7 @@ public partial class MainCanvas
 
         for (int i = 0; i < maxShortcutCount; i++)
         {
-            if (!IsNumberKeyDown(i + 1))
+            if (!IsFunctionKeyDown(i + 1))
             {
                 continue;
             }
@@ -138,28 +138,28 @@ public partial class MainCanvas
         }
     }
 
-    private bool IsNumberKeyDown(int number)
+    private bool IsFunctionKeyDown(int number)
     {
         switch (number)
         {
             case 1:
-                return Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1);
+                return Input.GetKeyDown(KeyCode.F1);
             case 2:
-                return Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2);
+                return Input.GetKeyDown(KeyCode.F2);
             case 3:
-                return Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3);
+                return Input.GetKeyDown(KeyCode.F3);
             case 4:
-                return Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4);
+                return Input.GetKeyDown(KeyCode.F4);
             case 5:
-                return Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5);
+                return Input.GetKeyDown(KeyCode.F5);
             case 6:
-                return Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6);
+                return Input.GetKeyDown(KeyCode.F6);
             case 7:
-                return Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7);
+                return Input.GetKeyDown(KeyCode.F7);
             case 8:
-                return Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8);
+                return Input.GetKeyDown(KeyCode.F8);
             case 9:
-                return Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9);
+                return Input.GetKeyDown(KeyCode.F9);
             default:
                 return false;
         }

@@ -28,7 +28,7 @@
 | volatilityMultiplier | 0.01 |
 | maxChangePriceMultiplier | 1.2 |
 | priceHistoryCapacity | 60 |
-| transactionFee | 0.06 |
+| transactionFee | 0.05 |
 
 개별 자원의 `marketSensitivity`, `meanReversionStrength` 등은 **각 `ResourceData` 자산**에만 있는 경우가 많습니다.
 
@@ -40,36 +40,36 @@
 
 | id | type | baseValue | initial | recipe |
 |----|------|-----------|---------|--------|
-| aluminum_ore | raw | 60 | 40 | - |
-| coal | raw | 20 | 80 | - |
-| copper_ore | raw | 40 | 60 | - |
-| gold_ore | raw | 160 | 15 | - |
-| iron_ore | raw | 28 | 80 | - |
-| oil | raw | 32 | 50 | - |
-| wood_log | raw | 22 | 200 | - *(primaryOutputPerBatch: 2)* |
-| aluminum_ingot | metal | 190 | 0 | aluminum_ore ×3 |
-| copper_ingot | metal | 130 | 0 | copper_ore ×3 |
-| iron_ingot | metal | 95 | 60 | iron_ore ×3 |
-| pure_gold | metal | 530 | 0 | gold_ore ×3 |
-| steel_ingot | metal | 220 | 0 | iron_ingot ×2 |
-| heavy_arms | weapon | 4500 | 0 | steel_ingot ×10, machine_parts ×5 |
-| munitions | weapon | 320 | 0 | steel_ingot ×1, coal ×1 |
-| small_arms | weapon | 950 | 0 | steel_ingot ×2, fine_wood ×1, machine_parts ×1 |
-| basic_clothing | essentials | 170 | 0 | fabric ×3 |
-| basic_furniture | essentials | 750 | 0 | fine_wood ×3, machine_parts ×1 |
-| simple_tools | essentials | 230 | 15 | iron_ingot ×1, fine_wood ×1 |
-| premium_clothing | luxuries | 950 | 0 | fabric ×5, pure_gold ×1 |
-| premium_furniture | luxuries | 1800 | 0 | premium_wood ×3, fabric ×2, machine_parts ×4 |
-| electronic_components | component | 340 | 0 | copper_ingot ×1, aluminum_ingot ×1 |
-| engine | component | 900 | 0 | machine_parts ×1, electronic_components ×1, steel_ingot ×1 |
-| fabric | component | 45 | 0 | oil ×1 |
-| fine_wood | component | 50 | 30 | wood_log ×2 |
-| machine_parts | component | 220 | 20 | iron_ingot ×2 |
-| precision_tools | component | 520 | 10 | steel_ingot ×1, machine_parts ×1 |
-| premium_wood | component | 140 | 0 | fine_wood ×2 |
-| airplane | vehicle | 8000 | 0 | engine ×2, aluminum_ingot ×10, electronic_components ×5, small_arms ×1 |
-| car | vehicle | 3000 | 0 | engine ×1, steel_ingot ×2, electronic_components ×2, oil ×2, aluminum_ingot ×1 |
-| tank | vehicle | 13500 | 0 | engine ×1, heavy_arms ×1, steel_ingot ×20, machine_parts ×5 |
+| aluminum_ore | raw | 78 | 40 | - |
+| coal | raw | 26 | 80 | - |
+| copper_ore | raw | 52 | 60 | - |
+| gold_ore | raw | 208 | 15 | - |
+| iron_ore | raw | 36 | 80 | - |
+| oil | raw | 42 | 50 | - |
+| wood_log | raw | 29 | 200 | - *(primaryOutputPerBatch: 2)* |
+| aluminum_ingot | metal | 247 | 0 | aluminum_ore ×3 |
+| copper_ingot | metal | 169 | 0 | copper_ore ×3 |
+| iron_ingot | metal | 124 | 60 | iron_ore ×3 |
+| pure_gold | metal | 689 | 0 | gold_ore ×3 |
+| steel_ingot | metal | 286 | 0 | iron_ingot ×2 |
+| heavy_arms | weapon | 5850 | 0 | steel_ingot ×10, machine_parts ×5 |
+| munitions | weapon | 416 | 0 | steel_ingot ×1, coal ×1 |
+| small_arms | weapon | 1235 | 0 | steel_ingot ×2, fine_wood ×1, machine_parts ×1 |
+| basic_clothing | essentials | 221 | 0 | fabric ×3 |
+| basic_furniture | essentials | 975 | 0 | fine_wood ×3, machine_parts ×1 |
+| simple_tools | essentials | 299 | 15 | iron_ingot ×1, fine_wood ×1 |
+| premium_clothing | luxuries | 1235 | 0 | fabric ×5, pure_gold ×1 |
+| premium_furniture | luxuries | 2340 | 0 | premium_wood ×3, fabric ×2, machine_parts ×4 |
+| electronic_components | component | 442 | 0 | copper_ingot ×1, aluminum_ingot ×1 |
+| engine | component | 1170 | 0 | machine_parts ×1, electronic_components ×1, steel_ingot ×1 |
+| fabric | component | 59 | 0 | oil ×1 |
+| fine_wood | component | 65 | 30 | wood_log ×2 |
+| machine_parts | component | 286 | 20 | iron_ingot ×2 |
+| precision_tools | component | 676 | 10 | steel_ingot ×1, machine_parts ×1 |
+| premium_wood | component | 182 | 0 | fine_wood ×2 |
+| airplane | vehicle | 10400 | 0 | engine ×2, aluminum_ingot ×10, electronic_components ×5, small_arms ×1 |
+| car | vehicle | 3900 | 0 | engine ×1, steel_ingot ×2, electronic_components ×2, oil ×2, aluminum_ingot ×1 |
+| tank | vehicle | 17550 | 0 | engine ×1, heavy_arms ×1, steel_ingot ×20, machine_parts ×5 |
 
 **변경 메모:** `fine_wood.asset`의 입력 레시피를 `wood_log ×2`로 정상화했습니다. (이전에는 `resource: {fileID: 0}`로 입력이 무시되어 공짜 생산 가능성이 있었습니다.)
 

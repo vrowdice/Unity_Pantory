@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A wealthy investor funding industrial ventures, purchasing metals,
     components, and tools to support various manufacturing projects and factories.
   marketActorType: 2
-  baseWealth: 170000
-  baseProductionCount: 32
+  baseWealth: 4000000
+  baseProductionCount: 125
   comsumeResourceList:
   - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

@@ -23,7 +23,7 @@ MonoBehaviour:
   isUnlockedByDefault: 0
   isProfessional: 0
   requiredEmployees: 3
-  buildCost: 600
+  buildCost: 740
   maintenanceCost: 25
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}

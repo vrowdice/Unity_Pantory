@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: heavy_arms
   displayName: Heavy Arms
-  baseValue: 4500
+  baseValue: 5850
   marketSensitivity: 0.4
   meanReversionStrength: 0.7
   volatilityMultiplier: 1

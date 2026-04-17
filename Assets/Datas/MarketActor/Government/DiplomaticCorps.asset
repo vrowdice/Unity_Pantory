@@ -19,8 +19,8 @@ MonoBehaviour:
     precious metals for official ceremonies, state visits, and diplomatic gifts to
     foreign dignitaries.
   marketActorType: 0
-  baseWealth: 180000
-  baseProductionCount: 35
+  baseWealth: 6000000
+  baseProductionCount: 140
   comsumeResourceList:
   - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}

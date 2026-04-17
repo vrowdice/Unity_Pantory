@@ -14,19 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: aluminum_ingot
   displayName: Aluminum Ingot
-  baseValue: 190
-  marketSensitivity: 0.19
-  meanReversionStrength: 0.6
-  maxDailySwing: 0.011
-  scarcityWeight: 0.55
-  rarity: 0.65
+  baseValue: 230
   type: 1
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 2ee30a395b3fc874bb636a633969d829, type: 3}
   description: Lightweight aluminum bar with exceptional strength. Used in aircraft,
     vehicles, and modern structures.
   requirements:
   - resource: {fileID: 11400000, guid: c96478f871047914fa5e4676ff47d872, type: 2}
     count: 3
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 0
-

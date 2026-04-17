@@ -18,8 +18,8 @@ MonoBehaviour:
   description: The empire's strategic reserve, accumulating precious metals and
     gold to maintain financial stability and back the imperial currency.
   marketActorType: 0
-  baseWealth: 320000
-  baseProductionCount: 30
+  baseWealth: 16000000
+  baseProductionCount: 240
   comsumeResourceList:
   - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f7, type: 2}

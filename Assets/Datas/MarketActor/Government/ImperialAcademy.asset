@@ -19,8 +19,8 @@ MonoBehaviour:
     electronic components, precision tools, and various materials for scientific
     experiments and studies.
   marketActorType: 0
-  baseWealth: 200000
-  baseProductionCount: 40
+  baseWealth: 7500000
+  baseProductionCount: 160
   comsumeResourceList:
   - {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
   - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}

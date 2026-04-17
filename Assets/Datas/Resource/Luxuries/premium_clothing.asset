@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: premium_clothing
   displayName: Premium Clothing
-  baseValue: 950
+  baseValue: 1235
   marketSensitivity: 0.26
   meanReversionStrength: 0.64
   volatilityMultiplier: 1

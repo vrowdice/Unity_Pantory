@@ -6,10 +6,14 @@ using UnityEngine;
 /// </summary>
 public class MainRunner : RunnerBase
 {
+    [SerializeField] private AudioClip _buildSound;
+    [SerializeField] private AudioClip _removalSound;
+
     [Header("UI Manager")]
     [SerializeField] private MainCanvas _mainCanvas;
 
     [Header("Prefabs")]
+    [SerializeField] private GameObject _previewPrefab;
     [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private GameObject _buildingObjectPrefab;
     [SerializeField] private GameObject _roadObjectPrefab;
@@ -29,8 +33,11 @@ public class MainRunner : RunnerBase
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
 
+    public AudioClip BuildSound => _buildSound;
+    public AudioClip RemovalSound => _removalSound;
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
+    public GameObject PreviewPrefab => _previewPrefab;
     public GameObject TilePrefab => _tilePrefab;
     public GameObject BuildingObjectPrefab => _buildingObjectPrefab;
     public GameObject RoadObjectPrefab => _roadObjectPrefab;

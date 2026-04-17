@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A private collector and enthusiast of military weapons, constantly
     acquiring small arms, heavy arms, and munitions for their private arsenal.
   marketActorType: 2
-  baseWealth: 110000
-  baseProductionCount: 26
+  baseWealth: 2000000
+  baseProductionCount: 75
   comsumeResourceList:
   - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
   - {fileID: 11400000, guid: a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}

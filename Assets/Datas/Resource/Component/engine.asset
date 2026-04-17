@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: engine
   displayName: Engine
-  baseValue: 900
+  baseValue: 1170
   volatilityMultiplier: 1
   maxPriceMultiplier: 10
   type: 5
