@@ -33,6 +33,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _marketActorInfoPopupPrefab;
     [SerializeField] private GameObject _newsPopupPrefab;
     [SerializeField] private GameObject _buildingInfoPopupPrefab;
+    [SerializeField] private GameObject _buildingHelpPopupPrefab;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
@@ -375,6 +376,25 @@ public class UIManager : Singleton<UIManager>
 
         popup.gameObject.SetActive(true);
         popup.ShowBuildingInfo(buildingObject);
+        return popup;
+    }
+
+    public BuildingHelpPopup ShowBuildingHelpPopup(BuildingData buildingData)
+    {
+        BuildingHelpPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<BuildingHelpPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = Instantiate(_buildingHelpPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<BuildingHelpPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.Init(buildingData);
         return popup;
     }
 

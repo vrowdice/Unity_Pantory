@@ -12,7 +12,7 @@ public class PreviewObject : MonoBehaviour
     public void SetBuildingData(BuildingData buildingData)
     {
         _buildingSprite.sprite = buildingData.buildingSprite;
-        _buildingNameText.text = buildingData.displayName;
+        _buildingNameText.text = buildingData.id.Localize(LocalizationUtils.TABLE_BUILDING);
         _buildingPriceText.text = ReplaceUtils.FormatNumberWithCommas(buildingData.buildCost);
     }
 
