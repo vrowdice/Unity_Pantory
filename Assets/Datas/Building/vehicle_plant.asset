@@ -24,7 +24,7 @@ MonoBehaviour:
   requiredEmployees: 12
   buildCost: 29400
   maintenanceCost: 70
-  size: {x: 4, y: 4}
+  size: {x: 5, y: 5}
   requiredResearch: {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   usePlacedCountLimit: 0
   baseMaxPlacedCount: 0

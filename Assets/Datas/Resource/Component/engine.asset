@@ -15,18 +15,17 @@ MonoBehaviour:
   id: engine
   displayName: Engine
   baseValue: 1170
-  volatilityMultiplier: 1
-  maxPriceMultiplier: 10
   type: 5
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: f39c87609eff656408360ec1454d9968, type: 3}
   description: A prime mover engine converting fuel energy into mechanical power.
     Powers machinery, vehicles, and industrial equipment through combustion or steam.
   requirements:
   - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
-    count: 1
+    count: 2
   - resource: {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
     count: 1
   - resource: {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
-    count: 1
+    count: 2
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 0
