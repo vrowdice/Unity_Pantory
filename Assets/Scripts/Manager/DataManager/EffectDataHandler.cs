@@ -279,4 +279,109 @@ public class EffectDataHandler : ITimeChangeHandler
                 return value.ToString("F1");
         }
     }
+
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        saveData.effects = BuildEffectSaveData();
+    }
+
+    public void ApplyFromSave(GameSaveData saveData)
+    {
+        if (saveData?.effects == null)
+        {
+            return;
+        }
+
+        ApplyEffectStateSaveData(saveData.effects);
+    }
+
+    private EffectStateSaveData BuildEffectSaveData()
+    {
+        EffectStateSaveData effectSaveData = new EffectStateSaveData();
+
+        foreach (KeyValuePair<EffectTargetType, Dictionary<EffectStatType, List<EffectState>>> targetPair in _effects)
+        {
+            if (targetPair.Value == null)
+            {
+                continue;
+            }
+
+            foreach (KeyValuePair<EffectStatType, List<EffectState>> statPair in targetPair.Value)
+            {
+                List<EffectState> list = statPair.Value;
+                if (list == null || list.Count == 0)
+                {
+                    continue;
+                }
+
+                effectSaveData.globalEffects.Add(new GlobalEffectStateSaveData(
+                    targetPair.Key,
+                    statPair.Key,
+                    list.Select(CloneEffectState).ToList()));
+            }
+        }
+
+        foreach (KeyValuePair<string, Dictionary<EffectStatType, List<EffectState>>> instancePair in _instanceEffects)
+        {
+            if (instancePair.Value == null)
+            {
+                continue;
+            }
+
+            foreach (KeyValuePair<EffectStatType, List<EffectState>> statPair in instancePair.Value)
+            {
+                List<EffectState> list = statPair.Value;
+                if (list == null || list.Count == 0)
+                {
+                    continue;
+                }
+
+                effectSaveData.instanceEffects.Add(new InstanceEffectStateSaveData(
+                    instancePair.Key,
+                    statPair.Key,
+                    list.Select(CloneEffectState).ToList()));
+            }
+        }
+
+        return effectSaveData;
+    }
+
+    private void ApplyEffectStateSaveData(EffectStateSaveData effectSaveData)
+    {
+        foreach (GlobalEffectStateSaveData globalSave in effectSaveData.globalEffects)
+        {
+            if (!_effects.TryGetValue(globalSave.targetType, out Dictionary<EffectStatType, List<EffectState>> byStat))
+            {
+                byStat = new Dictionary<EffectStatType, List<EffectState>>();
+                _effects[globalSave.targetType] = byStat;
+            }
+
+            List<EffectState> sourceEffects = globalSave.effects ?? new List<EffectState>();
+            byStat[globalSave.statType] = sourceEffects.Select(CloneEffectState).ToList();
+        }
+
+        foreach (InstanceEffectStateSaveData instanceSave in effectSaveData.instanceEffects)
+        {
+            if (!_instanceEffects.TryGetValue(instanceSave.instanceKey,
+                    out Dictionary<EffectStatType, List<EffectState>> byStat))
+            {
+                byStat = new Dictionary<EffectStatType, List<EffectState>>();
+                _instanceEffects[instanceSave.instanceKey] = byStat;
+            }
+
+            List<EffectState> sourceEffects = instanceSave.effects ?? new List<EffectState>();
+            byStat[instanceSave.statType] = sourceEffects.Select(CloneEffectState).ToList();
+        }
+    }
+
+    private static EffectState CloneEffectState(EffectState state)
+    {
+        string json = JsonUtility.ToJson(state);
+        return JsonUtility.FromJson<EffectState>(json);
+    }
 }

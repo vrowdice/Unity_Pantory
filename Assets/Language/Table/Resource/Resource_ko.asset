@@ -19,151 +19,271 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 5866143744
-    m_Localized: "\uC804\uD22C\uAE30"
+    m_Localized: 전투기
     m_Metadata:
       m_Items: []
   - m_Id: 5866143745
-    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD34"
+    m_Localized: 알루미늄 괴
     m_Metadata:
       m_Items: []
   - m_Id: 5866143746
-    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11\uC11D"
+    m_Localized: 알루미늄 광석
     m_Metadata:
       m_Items: []
   - m_Id: 5866143747
-    m_Localized: "\uAE30\uBCF8 \uC758\uB958"
+    m_Localized: 기본 의류
     m_Metadata:
       m_Items: []
   - m_Id: 5866143748
-    m_Localized: "\uAE30\uBCF8 \uAC00\uAD6C"
+    m_Localized: 기본 가구
     m_Metadata:
       m_Items: []
   - m_Id: 5866143749
-    m_Localized: "\uC790\uB3D9\uCC28"
+    m_Localized: 자동차
     m_Metadata:
       m_Items: []
   - m_Id: 5866143750
-    m_Localized: "\uC11D\uD0C4"
+    m_Localized: 석탄
     m_Metadata:
       m_Items: []
   - m_Id: 5866143751
-    m_Localized: "\uB3D9\uAD34"
+    m_Localized: 동괴
     m_Metadata:
       m_Items: []
   - m_Id: 5866143752
-    m_Localized: "\uB3D9\uAD11\uC11D"
+    m_Localized: 동광석
     m_Metadata:
       m_Items: []
   - m_Id: 5866143753
-    m_Localized: "\uC804\uC790 \uBD80\uD488"
+    m_Localized: 전자 부품
     m_Metadata:
       m_Items: []
   - m_Id: 5866143754
-    m_Localized: "\uC5D4\uC9C4"
+    m_Localized: 엔진
     m_Metadata:
       m_Items: []
   - m_Id: 5866143755
-    m_Localized: "\uC9C1\uBB3C"
+    m_Localized: 직물
     m_Metadata:
       m_Items: []
   - m_Id: 5866143756
-    m_Localized: "\uACE0\uAE09 \uBAA9\uC7AC"
+    m_Localized: 고급 목재
     m_Metadata:
       m_Items: []
   - m_Id: 5866143757
-    m_Localized: "\uAE08\uAD11\uC11D"
+    m_Localized: 금광석
     m_Metadata:
       m_Items: []
   - m_Id: 5866143758
-    m_Localized: "\uC911\uD654\uAE30"
+    m_Localized: 중화기
     m_Metadata:
       m_Items: []
   - m_Id: 5866143759
-    m_Localized: "\uCCA0\uAD34"
+    m_Localized: 철괴
     m_Metadata:
       m_Items: []
   - m_Id: 5866143760
-    m_Localized: "\uCCA0\uAD11\uC11D"
+    m_Localized: 철광석
     m_Metadata:
       m_Items: []
   - m_Id: 5866143761
-    m_Localized: "\uAE30\uACC4 \uBD80\uD488"
+    m_Localized: 기계 부품
     m_Metadata:
       m_Items: []
   - m_Id: 5866143762
-    m_Localized: "\uD0C4\uC57D"
+    m_Localized: 탄약
     m_Metadata:
       m_Items: []
   - m_Id: 5866143763
-    m_Localized: "\uC11D\uC720"
+    m_Localized: 석유
     m_Metadata:
       m_Items: []
   - m_Id: 5866143764
-    m_Localized: "\uC815\uBC00 \uB3C4\uAD6C"
+    m_Localized: 정밀 도구
     m_Metadata:
       m_Items: []
   - m_Id: 5866143765
-    m_Localized: "\uACE0\uAE09 \uC758\uB958"
+    m_Localized: 고급 의류
     m_Metadata:
       m_Items: []
   - m_Id: 5866143766
-    m_Localized: "\uACE0\uAE09 \uAC00\uAD6C"
+    m_Localized: 고급 가구
     m_Metadata:
       m_Items: []
   - m_Id: 5866143767
-    m_Localized: "\uD504\uB9AC\uBBF8\uC5C4 \uBAA9\uC7AC"
+    m_Localized: 프리미엄 목재
     m_Metadata:
       m_Items: []
   - m_Id: 5866143768
-    m_Localized: "\uC21C\uAE08"
+    m_Localized: 순금
     m_Metadata:
       m_Items: []
   - m_Id: 5866143769
-    m_Localized: "\uB2E8\uC21C \uB3C4\uAD6C"
+    m_Localized: 단순 도구
     m_Metadata:
       m_Items: []
   - m_Id: 5866143770
-    m_Localized: "\uC18C\uD615 \uD654\uAE30"
+    m_Localized: 소형 화기
     m_Metadata:
       m_Items: []
   - m_Id: 5866143771
-    m_Localized: "\uAC15\uAD34"
+    m_Localized: 강괴
     m_Metadata:
       m_Items: []
   - m_Id: 5866143772
-    m_Localized: "\uC804\uCC28"
+    m_Localized: 전차
     m_Metadata:
       m_Items: []
   - m_Id: 5866143773
-    m_Localized: "\uC6D0\uBAA9"
+    m_Localized: 원목
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143774
+    m_Localized: 회로, 배선, 제어 장치 등을 포함한 첨단 전자 부품. 현대 기계, 차량, 정밀 기기에 필수적이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143775
+    m_Localized: 연료의 에너지를 기계적 동력으로 바꾸는 원동기 엔진. 연소 또는 증기로 기계, 차량, 산업 설비를 구동한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143776
+    m_Localized: 천연 또는 합성 섬유로 짠 직물. 의류, 가구 덮개, 다양한 생활용품에 필수적이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143777
+    m_Localized: 매끄럽고 결이 아름다운 고급 목재. 세심한 가공으로 선별되고 완성된다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143778
+    m_Localized: 볼트, 기어, 구조 부재 등 필수 기계 부품. 모든 기계, 건설, 산업 생산의 기반이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143779
+    m_Localized: 전동 드릴과 정밀 렌치 등 전문가용 강철 공구. 공장 유지보수와 기계 생산에 필수적이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143780
+    m_Localized: 품질과 품위가 남다른 최상급 목재. 걸작과 귀한 물품을 위해 쓰인다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143781
+    m_Localized: 기본 직물로 만든 단순하고 튼튼한 의류. 실용적이며 일상 착용에 편안하다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143782
+    m_Localized: 고급 목재로 만든 단순하고 실용적인 가구. 저렴하며 일상 생활에 적합하다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143783
+    m_Localized: 망치, 톱, 렌치를 포함한 기본 가정용 공구 세트. 일상 수리와 가구 조립에 필수이며 생활 필수품이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143784
+    m_Localized: 좋은 소재와 정교한 재단으로 만든 고품질 의류. 우아함과 격조를 드러낸다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143785
+    m_Localized: 고급 목재와 세부 마감, 우아한 디자인으로 짠 정교한 가구. 사치와 세련된 취향의 상징이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143786
+    m_Localized: 가볍고 강도가 뛰어난 알루미늄 봉. 항공기, 차량, 현대 구조물에 쓰인다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143787
+    m_Localized: 전도성이 뛰어난 정련 동 봉. 현대 전기 시스템의 근간이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143788
+    m_Localized: 원광석에서 제련·가공한 고체 철 봉. 다용도이며 견고해 가공에 적합하다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143789
+    m_Localized: 최고 순도로 정련한 금, 따뜻한 광채를 낸다. 부와 장인 정신의 상징이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143790
+    m_Localized: 고급 제련으로 정련 철에서 단조한 고품질 강철. 순철보다 강하고 오래간다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143791
+    m_Localized: 가볍고 강한 금속. 항공기와 첨단 차량의 소재다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143792
+    m_Localized: 철을 강철로 제련할 때 필요한 연료다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143793
+    m_Localized: 전도성이 높은 금속. 전자 부품 생산에 필수적이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143794
+    m_Localized: 희귀한 귀금속. 사치품의 핵심 소재다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143795
+    m_Localized: 산업의 기초. 강철과 기계 부품의 주원료다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143796
+    m_Localized: 검은 금. 합성 섬유, 플라스틱의 원료이며 전차와 항공기의 연료다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143797
+    m_Localized: 가장 기초적인 자원. 가구, 공구, 초기 섬유(펄프)의 재료다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143798
+    m_Localized: 하늘의 지배자. 알루미늄과 첨단 전자 장비가 필요하며 정밀 산업의 정점이다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143799
+    m_Localized: 현대 공학의 결정체. 평화기에는 부유층의 사치품이지만 전쟁 중에는 민간인이 가난해지며 수요가 급락한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143800
+    m_Localized: 지상전의 왕. 강철과 중포의 결합. 전시 생산 시 매우 많은 강철과 중화기를 소비한다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143801
+    m_Localized: 고가의 전략 무기. 전투의 흐름을 바꿀 수 있는 야포와 대공포. 준비된 제조업체에겐 매우 높은 이윤을 준다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143802
+    m_Localized: 전쟁의 연료. 탄환, 포탄, 폭약은 분쟁이 이어지는 한 끊임없이 소모된다. 전시에는 수요가 사실상 무한에 가까워진다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143803
+    m_Localized: 소총, 권총, 전투용 나이프 등 기본 병사 무기. 징집병에게 필수 장비이며 전쟁 발발 초기에 수요가 폭발한다.
     m_Metadata:
       m_Items: []
   - m_Id: 33351417857
-    m_Localized: "\uC6D0\uC790\uC7AC"
+    m_Localized: 원자재
     m_Metadata:
       m_Items: []
   - m_Id: 864226263045
-    m_Localized: "\uAE08\uC18D"
+    m_Localized: 금속
     m_Metadata:
       m_Items: []
   - m_Id: 864226263046
-    m_Localized: "\uBB34\uAE30"
+    m_Localized: 무기
     m_Metadata:
       m_Items: []
   - m_Id: 864226263047
-    m_Localized: "\uD544\uC218\uD488"
+    m_Localized: 필수품
     m_Metadata:
       m_Items: []
   - m_Id: 864226263048
-    m_Localized: "\uC0AC\uCE58\uD488"
+    m_Localized: 사치품
     m_Metadata:
       m_Items: []
   - m_Id: 864226263049
-    m_Localized: "\uBD80\uD488"
+    m_Localized: 부품
     m_Metadata:
       m_Items: []
   - m_Id: 864226263050
-    m_Localized: "\uCC28\uB7C9"
+    m_Localized: 차량
     m_Metadata:
       m_Items: []
   references:

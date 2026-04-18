@@ -63,6 +63,15 @@ public class EmployeeCanvas : MainCanvasPanelBase
         OnEmployeeTypeClick(EmployeeType.Worker);
     }
 
+    private void OnDisable()
+    {
+        if (_dataManager != null)
+        {
+            _dataManager.Time.OnDayChanged -= HandleDayChanged;
+            _dataManager.Employee.OnEmployeeChanged -= HandleEmployeeChanged;
+        }
+    }
+
     /// <summary>
     /// 직원 수를 delta 값만큼 변경
     /// 양수면 증가, 음수면 감소

@@ -138,6 +138,154 @@ MonoBehaviour:
     m_Localized: Raw Wood
     m_Metadata:
       m_Items: []
+  - m_Id: 5866143774
+    m_Localized: Advanced electronic components including circuits, wiring, and control
+      systems. Essential for modern machinery, vehicles, and sophisticated devices.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143775
+    m_Localized: A prime mover engine converting fuel energy into mechanical power.
+      Powers machinery, vehicles, and industrial equipment through combustion or steam.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143776
+    m_Localized: Woven textile material made from natural or synthetic fibers. Essential
+      for clothing, upholstery, and various household items.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143777
+    m_Localized: High-quality wood with a smooth finish and beautiful grain. Selected
+      and perfected through meticulous processing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143778
+    m_Localized: Essential mechanical components including bolts, gears, and structural
+      elements. The foundation of all machinery, construction, and industrial production.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143779
+    m_Localized: Professional-grade steel tools including power drills and precision
+      wrenches. Essential for factory maintenance and machinery production.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143780
+    m_Localized: Exceptional timber of unmatched quality and elegance. Reserved for
+      masterwork creations and items of great value.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143781
+    m_Localized: Simple, durable clothing made from basic fabric. Practical and comfortable
+      for everyday wear.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143782
+    m_Localized: Simple, functional furniture crafted from fine wood. Practical and
+      affordable, suitable for everyday use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143783
+    m_Localized: A basic household tool set including hammer, saw, and wrench. Essential
+      for everyday repairs and furniture assembly. A consumer staple.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143784
+    m_Localized: High-quality clothing crafted from fine materials with exquisite tailoring.
+      A mark of elegance and sophistication.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143785
+    m_Localized: Exquisite furniture crafted from premium wood with fine details and
+      elegant design. A symbol of luxury and refined taste.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143786
+    m_Localized: Lightweight aluminum bar with exceptional strength. Used in aircraft,
+      vehicles, and modern structures.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143787
+    m_Localized: Refined copper bar with excellent electrical conductivity. The backbone
+      of modern electrical systems.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143788
+    m_Localized: A solid bar of smelted iron, forged from raw ore. Versatile and durable,
+      ready for crafting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143789
+    m_Localized: Refined gold of the highest purity, gleaming with warm radiance. A
+      symbol of wealth and craftsmanship excellence.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143790
+    m_Localized: High-quality steel forged from refined iron through advanced smelting.
+      Stronger and more durable than pure iron.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143791
+    m_Localized: Lightweight and strong metal. Material for aircraft and advanced vehicles.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143792
+    m_Localized: Essential fuel for smelting iron into steel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143793
+    m_Localized: Highly conductive metal. Essential for electronic component production.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143794
+    m_Localized: Rare precious metal. Core material for luxury goods.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143795
+    m_Localized: The foundation of industry. The primary material for steel and machine
+      parts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143796
+    m_Localized: Black gold. Material for synthetic textiles, plastics, and fuel for
+      tanks and aircraft.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143797
+    m_Localized: The most basic resource. Material for furniture, tools, and early
+      textiles (pulp).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143798
+    m_Localized: The ruler of the skies. Requires aluminum and advanced electronic
+      equipment. The pinnacle of precision industry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143799
+    m_Localized: The product of modern engineering. A luxury item for the wealthy during
+      peaceful times. Demand plummets during war as civilians become impoverished.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143800
+    m_Localized: The king of ground warfare. A combination of steel and heavy artillery.
+      Consumes massive amounts of steel and heavy arms during wartime production.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143801
+    m_Localized: High-value strategic weapons. Field artillery and anti-aircraft guns
+      that can change the course of battle. Extremely high profit margin for prepared
+      manufacturers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143802
+    m_Localized: The fuel of war. Bullets, shells, and explosives consumed continuously
+      as long as conflict persists. Demand becomes nearly infinite during wartime.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143803
+    m_Localized: Basic infantry weapons including rifles, pistols, and combat knives.
+      Essential equipment for conscripted soldiers. Demand explodes at the start of
+      war.
+    m_Metadata:
+      m_Items: []
   - m_Id: 33351417857
     m_Localized: Raw Material
     m_Metadata:

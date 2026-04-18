@@ -21,6 +21,6 @@ MonoBehaviour:
     morale and reduces fatigue through efficient management.
   baseEfficiency: 0.5
   baseSatisfaction: 0
-  baseSalary: 50
-  hiringCost: 100
+  baseSalary: 200
+  hiringCost: 500
   firingCost: 10

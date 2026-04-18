@@ -71,7 +71,18 @@ public partial class MainCanvas : CanvasBase
 
     private void OnDestroy()
     {
-        _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
+        if (_mainRunner != null && _mainRunner.GridHandler != null)
+            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
+
+        if (DataManager.Instance != null)
+        {
+            DataManager.Resource.OnResourceChanged -= OnResourceChanged;
+            DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
+            DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
+            DataManager.Time.OnDayChanged -= OnDayChanged;
+            DataManager.Time.OnMonthChanged -= OnMonthChanged;
+            DataManager.Time.OnYearChanged -= OnYearChanged;
+        }
     }
 
     override public void UpdateAllMainText()

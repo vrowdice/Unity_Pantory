@@ -29,6 +29,12 @@ public class StorageCanvas : MainCanvasPanelBase
         RefreshCurrentResourceTypeList();
     }
 
+    private void OnDisable()
+    {
+        if (_dataManager != null)
+            _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
+    }
+
     /// <summary>
     /// 리소스 타입 버튼 초기화
     /// </summary>
@@ -113,6 +119,9 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshCurrentResourceTypeList()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         ScrollRect scroll = _resourceScrollViewContentTransform.GetComponentInParent<ScrollRect>();
         if (scroll != null)
         {

@@ -13,6 +13,7 @@ public class NewsCanvas : MainCanvasPanelBase
     {
         base.Init(argUIManager);
 
+        _dataManager.News.OnNewsChanged -= RefreshNewsList;
         _dataManager.News.OnNewsChanged += RefreshNewsList;
 
         RefreshNewsList();

@@ -47,6 +47,12 @@ public class MarketCanvas : MainCanvasPanelBase
         }
     }
 
+    private void OnDisable()
+    {
+        if (_dataManager != null)
+            _dataManager.Time.OnDayChanged -= HandleDayChanged;
+    }
+
     /// <summary>
     /// 상단 탭 버튼(Resources, Traders)을 생성하고 초기화합니다.
     /// </summary>

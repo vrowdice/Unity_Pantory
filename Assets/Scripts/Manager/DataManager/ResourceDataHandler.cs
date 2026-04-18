@@ -15,6 +15,9 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public event Action OnResourceChanged;
     public long TotalCreditChange { get; private set; }
 
+    /// <summary>한 프레임에 <see cref="ModifyResourceCount"/>가 여러 번 불려도 UI는 한 번만 갱신합니다.</summary>
+    private bool _pendingResourceChangedNotify;
+
     /// <summary>
     /// ResourceService 생성자
     /// </summary>
@@ -64,7 +67,7 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         if (!_resourceDic.TryGetValue(resourceId, out ResourceEntry resourceEntry)) return false;
         if (!resourceEntry.ModifyCount(count)) return false;
-        OnResourceChanged?.Invoke();
+        _pendingResourceChangedNotify = true;
         return true;
     }
 
@@ -77,6 +80,19 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
         ApplyCurrentEventValue();
         ApplyValueChange();
 
+        _pendingResourceChangedNotify = true;
+    }
+
+    /// <summary>
+    /// <see cref="DataManager"/>의 Update/LateUpdate에서 호출합니다.
+    /// 같은 프레임 안에서 자원 변경 알림을 한 번만 보냅니다.
+    /// </summary>
+    public void FlushPendingResourceChangedNotify()
+    {
+        if (!_pendingResourceChangedNotify)
+            return;
+
+        _pendingResourceChangedNotify = false;
         OnResourceChanged?.Invoke();
     }
 
@@ -203,5 +219,6 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void ClearAllSubscriptions()
     {
         OnResourceChanged = null;
+        _pendingResourceChangedNotify = false;
     }
 }

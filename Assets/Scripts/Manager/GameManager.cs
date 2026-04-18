@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -40,6 +41,7 @@ public class GameManager : Singleton<GameManager>
         base.Awake();
 
         if (Instance != this) return;
+        DOTween.SetTweensCapacity(800, 320);
 
         if (_saveLoadManager == null)
         {
@@ -102,7 +104,6 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        UIManager.Instance?.ClearCloseStack();
         _mainCameraController = null;
         _currentRunnerBase = null;
 

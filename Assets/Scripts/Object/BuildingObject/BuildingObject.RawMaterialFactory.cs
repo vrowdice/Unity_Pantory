@@ -65,12 +65,10 @@ public partial class BuildingObject
         group.blocksRaycasts = false;
 
         const float duration = 0.5f;
-
-        Sequence seq = DOTween.Sequence();
-        seq.SetLink(fx);
-        seq.Append(rt.DOMove(endWorld, duration).SetEase(Ease.OutQuad));
-        seq.Join(group.DOFade(0f, duration));
-        seq.OnComplete(() =>
+        
+        Tween moveTween = rt.DOMove(endWorld, duration).SetEase(Ease.OutQuad).SetLink(fx);
+        group.DOFade(0f, duration).SetLink(fx);
+        moveTween.OnComplete(() =>
         {
             if (fx != null)
                 Object.Destroy(fx);

@@ -35,7 +35,4 @@ MonoBehaviour:
   maxSatisfactionPenalty: 1
   enableManagerMitigation: 1
   managerMitigationRatio: 0.5
-  researchPointsPerResearcher: 1
-  managementDeficitEffect: {fileID: 11400000, guid: 38f36e0e5281de147b5dcd19275138ed, type: 2}
-  salarySatisfactionEffect: {fileID: 11400000, guid: 956730e1d872eb34590fbd470a05ce3f, type: 2}
-  satisfactionEfficiencyEffect: {fileID: 11400000, guid: 4c4ccd73c8228ca44af44279578827bf, type: 2}
+  researchPointsPerResearcher: 10

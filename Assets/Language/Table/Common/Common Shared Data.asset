@@ -539,6 +539,10 @@ MonoBehaviour:
     m_Key: ResearchPoint
     m_Metadata:
       m_Items: []
+  - m_Id: 30221782911172608
+    m_Key: NeededForProduction
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -24,11 +25,15 @@ public class MainRunner : RunnerBase
     [SerializeField] private int _gridHeight = 10;
     [SerializeField] private float _cameraZOffset = 11f;
 
+    [Header("Grid Update Interval")]
+    [SerializeField] private float _gridUpdateInterval = 0.1f;
+
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
 
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
+    private Coroutine _tickResourceFlowCoroutine;
 
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
@@ -52,6 +57,37 @@ public class MainRunner : RunnerBase
     private void Update()
     {
         _placementHandler.Update(_mainCamera);
+    }
+
+    /// <summary>
+    /// 자원 이동을 단계별로 나누어 <see cref="_gridUpdateInterval"/>마다 진행합니다.
+    /// </summary>
+    public void RunTickResourceFlowStaggered()
+    {
+        if (_tickResourceFlowCoroutine != null)
+            StopCoroutine(_tickResourceFlowCoroutine);
+        _tickResourceFlowCoroutine = StartCoroutine(TickResourceFlowStaggeredRoutine());
+    }
+
+    private IEnumerator TickResourceFlowStaggeredRoutine()
+    {
+        WaitForSeconds wait = new WaitForSeconds(Mathf.Max(0.0001f, _gridUpdateInterval));
+
+        _gridHandler.TickResourceFlow_RoadResetGates();
+        yield return wait;
+
+        _gridHandler.TickResourceFlow_DualResetGates();
+        yield return wait;
+
+        _gridHandler.TickResourceFlow_RoadForward();
+        yield return wait;
+
+        _gridHandler.TickResourceFlow_DualForward();
+        yield return wait;
+
+        _gridHandler.TickResourceFlow_BuildingForward();
+
+        _tickResourceFlowCoroutine = null;
     }
 
     /// <summary>
@@ -111,7 +147,13 @@ public class MainRunner : RunnerBase
 
     private void OnDisable()
     {
-        if(DataManager.Instance != null)
+        if (DataManager.Instance != null)
             DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
+
+        if (_tickResourceFlowCoroutine != null)
+        {
+            StopCoroutine(_tickResourceFlowCoroutine);
+            _tickResourceFlowCoroutine = null;
+        }
     }
 }

@@ -123,6 +123,33 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
         OnNewsChanged = null;
     }
 
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        foreach (NewsState state in _activeNewsList)
+        {
+            saveData.activeNews.Add(CloneState(state));
+        }
+    }
+
+    public void ApplyFromSave(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        _activeNewsList.Clear();
+        foreach (NewsState state in saveData.activeNews)
+        {
+            _activeNewsList.Add(CloneState(state));
+        }
+    }
+
     public void HandleDayChanged()
     {
         _daysSinceLastNews++;
@@ -147,5 +174,11 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
 
         TryGenerateNews();
+    }
+
+    private static NewsState CloneState(NewsState state)
+    {
+        string json = JsonUtility.ToJson(state);
+        return JsonUtility.FromJson<NewsState>(json);
     }
 }

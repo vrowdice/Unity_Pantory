@@ -135,6 +135,126 @@ MonoBehaviour:
     m_Key: wood_log
     m_Metadata:
       m_Items: []
+  - m_Id: 5866143774
+    m_Key: electronic_components_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143775
+    m_Key: engine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143776
+    m_Key: fabric_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143777
+    m_Key: fine_wood_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143778
+    m_Key: machine_parts_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143779
+    m_Key: precision_tools_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143780
+    m_Key: premium_wood_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143781
+    m_Key: basic_clothing_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143782
+    m_Key: basic_furniture_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143783
+    m_Key: simple_tools_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143784
+    m_Key: premium_clothing_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143785
+    m_Key: premium_furniture_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143786
+    m_Key: aluminum_ingot_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143787
+    m_Key: copper_ingot_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143788
+    m_Key: iron_ingot_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143789
+    m_Key: pure_gold_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143790
+    m_Key: steel_ingot_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143791
+    m_Key: aluminum_ore_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143792
+    m_Key: coal_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143793
+    m_Key: copper_ore_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143794
+    m_Key: gold_ore_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143795
+    m_Key: iron_ore_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143796
+    m_Key: oil_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143797
+    m_Key: wood_log_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143798
+    m_Key: airplane_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143799
+    m_Key: car_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143800
+    m_Key: tank_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143801
+    m_Key: heavy_arms_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143802
+    m_Key: munitions_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143803
+    m_Key: small_arms_Desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 33351417857
     m_Key: raw
     m_Metadata:

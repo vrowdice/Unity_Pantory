@@ -200,6 +200,33 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         OnOrderChanged = null;
     }
 
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        foreach (OrderState state in _activeOrderList)
+        {
+            saveData.activeOrders.Add(CloneState(state));
+        }
+    }
+
+    public void ApplyFromSave(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        _activeOrderList.Clear();
+        foreach (OrderState state in saveData.activeOrders)
+        {
+            _activeOrderList.Add(CloneState(state));
+        }
+    }
+
     public void HandleDayChanged()
     {
         for (int i = _activeOrderList.Count - 1; i >= 0; i--)
@@ -218,5 +245,11 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
 
         TryGenerateOrder();
+    }
+
+    private static OrderState CloneState(OrderState state)
+    {
+        string json = JsonUtility.ToJson(state);
+        return JsonUtility.FromJson<OrderState>(json);
     }
 }

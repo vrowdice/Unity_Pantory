@@ -42,6 +42,8 @@ public class DataManager : Singleton<DataManager>
     public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
 
+    public PlayerDataHandler Player { get; private set; }
+
     public PlacedObjectLayoutDataHandler PlacedLayout { get; private set; }
 
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
@@ -53,6 +55,13 @@ public class DataManager : Singleton<DataManager>
     {
         float deltaTime = UnityEngine.Time.deltaTime;
         Time?.Update(deltaTime);
+        Resource?.FlushPendingResourceChangedNotify();
+    }
+
+    void LateUpdate()
+    {
+        // Time 이후에 실행되는 다른 Update에서 자원이 바뀐 경우까지 같은 프레임에서 한 번 더 반영합니다.
+        Resource?.FlushPendingResourceChangedNotify();
     }
 
     protected override void Awake()
@@ -81,6 +90,8 @@ public class DataManager : Singleton<DataManager>
         Research = new ResearchDataHandler(this, _researchDataList);
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
+
+        Player = new PlayerDataHandler();
 
         PlacedLayout = new PlacedObjectLayoutDataHandler();
 
@@ -163,5 +174,148 @@ public class DataManager : Singleton<DataManager>
     private void HandleMonthChanged()
     {
         Finances.HandleMonthChanged();
+    }
+
+    public void CaptureGameStateTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        if (Time != null)
+        {
+            saveData.year = Time.Year;
+            saveData.month = Time.Month;
+            saveData.day = Time.Day;
+            saveData.currentHour = Time.CurrentHour;
+            saveData.dayProgress = Time.DayProgress;
+            saveData.isPaused = Time.IsPaused;
+            saveData.timeSpeed = Time.TimeSpeed;
+        }
+
+        if (Employee != null)
+        {
+            foreach (KeyValuePair<EmployeeType, EmployeeEntry> kvp in Employee.GetAllEmployees())
+            {
+                saveData.employees.Add(new EmployeeStateSaveData(kvp.Key, CloneState(kvp.Value.state)));
+            }
+        }
+
+        if (Resource != null)
+        {
+            foreach (KeyValuePair<string, ResourceEntry> kvp in Resource.GetAllResources())
+            {
+                saveData.resources.Add(new ResourceStateSaveData(kvp.Key, CloneState(kvp.Value.state)));
+            }
+        }
+
+        if (MarketActor != null)
+        {
+            foreach (KeyValuePair<string, MarketActorEntry> kvp in MarketActor.GetAllMarketActors())
+            {
+                saveData.marketActors.Add(new MarketActorStateSaveData(kvp.Key, CloneState(kvp.Value.state)));
+            }
+        }
+
+        Finances?.CaptureTo(saveData);
+        Research?.CaptureTo(saveData);
+        Order?.CaptureTo(saveData);
+        News?.CaptureTo(saveData);
+        Effect?.CaptureTo(saveData);
+        Player?.CaptureTo(saveData);
+
+        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        if (mainRunner != null && mainRunner.GridHandler != null)
+        {
+            saveData.placedBuildings = mainRunner.GridHandler.ExportPlacedBuildings();
+            saveData.placedRoads = mainRunner.GridHandler.ExportPlacedRoads();
+        }
+    }
+
+    public void ApplyGameStateFrom(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        NormalizeLoadedSaveData(saveData);
+
+        if (Time != null)
+        {
+            Time.SetDate(saveData.year, saveData.month, saveData.day);
+            Time.SetTimeSpeed(saveData.timeSpeed);
+            Time.PauseTime();
+        }
+
+        if (Employee != null)
+        {
+            foreach (EmployeeStateSaveData employeeSave in saveData.employees)
+            {
+                EmployeeEntry entry = Employee.GetEmployeeEntry(employeeSave.type);
+                if (entry != null)
+                {
+                    entry.state = employeeSave.state;
+                }
+            }
+        }
+
+        if (Resource != null)
+        {
+            foreach (ResourceStateSaveData resourceSave in saveData.resources)
+            {
+                ResourceEntry entry = Resource.GetResourceEntry(resourceSave.resourceId);
+                if (entry != null)
+                {
+                    entry.state = resourceSave.state;
+                }
+            }
+        }
+
+        if (MarketActor != null)
+        {
+            foreach (MarketActorStateSaveData actorSave in saveData.marketActors)
+            {
+                MarketActorEntry entry = MarketActor.GetMarketActorEntry(actorSave.actorId);
+                if (entry != null)
+                {
+                    entry.state = actorSave.state;
+                }
+            }
+        }
+
+        Finances?.ApplyFromSave(saveData);
+        Research?.ApplyFromSave(saveData);
+        Order?.ApplyFromSave(saveData);
+        News?.ApplyFromSave(saveData);
+        Effect?.ApplyFromSave(saveData);
+        Player?.ApplyFromSave(saveData);
+
+        PlacedLayout?.SetFromSave(saveData.placedBuildings, saveData.placedRoads);
+    }
+
+    private static void NormalizeLoadedSaveData(GameSaveData data)
+    {
+        data.employees ??= new List<EmployeeStateSaveData>();
+        data.resources ??= new List<ResourceStateSaveData>();
+        data.marketActors ??= new List<MarketActorStateSaveData>();
+        data.monthlyCreditHistory ??= new List<long>();
+        data.monthlyWealthHistory ??= new List<long>();
+        data.researches ??= new List<ResearchStateSaveData>();
+        data.activeOrders ??= new List<OrderState>();
+        data.activeNews ??= new List<NewsState>();
+        data.effects ??= new EffectStateSaveData();
+        data.effects.globalEffects ??= new List<GlobalEffectStateSaveData>();
+        data.effects.instanceEffects ??= new List<InstanceEffectStateSaveData>();
+        data.placedBuildings ??= new List<PlacedBuildingSaveData>();
+        data.placedRoads ??= new List<PlacedRoadSaveData>();
+        data.tutorialAutoShowPending ??= new List<TutorialAutoShowPendingSaveData>();
+    }
+
+    private static T CloneState<T>(T state)
+    {
+        string json = JsonUtility.ToJson(state);
+        return JsonUtility.FromJson<T>(json);
     }
 }

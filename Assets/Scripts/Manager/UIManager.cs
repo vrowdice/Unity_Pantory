@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : Singleton<UIManager>
@@ -34,6 +35,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _newsPopupPrefab;
     [SerializeField] private GameObject _buildingInfoPopupPrefab;
     [SerializeField] private GameObject _buildingHelpPopupPrefab;
+    [SerializeField] private GameObject _resourceHelpPopupPrefab;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
@@ -49,6 +51,17 @@ public class UIManager : Singleton<UIManager>
     {
         base.Awake();
         if (Instance != this) return;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ClearCloseStack();
     }
 
     private void Update()
@@ -395,6 +408,34 @@ public class UIManager : Singleton<UIManager>
 
         popup.gameObject.SetActive(true);
         popup.Init(buildingData);
+        return popup;
+    }
+
+    public ResourceHelpPopup ShowResourceHelpPopup(ResourceData resourceData)
+    {
+        ResourceHelpPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<ResourceHelpPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            if (_resourceHelpPopupPrefab == null)
+            {
+                Debug.LogWarning("[UIManager] Resource help popup prefab is missing.");
+                return null;
+            }
+
+            GameObject obj = Instantiate(_resourceHelpPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<ResourceHelpPopup>();
+        }
+
+        if (popup == null)
+            return null;
+
+        popup.gameObject.SetActive(true);
+        popup.Init(resourceData);
         return popup;
     }
 

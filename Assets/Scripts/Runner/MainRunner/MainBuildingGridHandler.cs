@@ -19,6 +19,7 @@ public class MainBuildingGridHandler
     private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
     private readonly Dictionary<string, DualLaneRoadObject> _dualLaneRoadObjDict = new();
+
     private readonly Dictionary<string, int> _buildingOutputRoundRobinIndex = new();
     private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();
     private readonly Dictionary<Vector2Int, BuildingTile> _tileDict = new();
@@ -406,8 +407,7 @@ public class MainBuildingGridHandler
         if (data is RawMaterialFactoryData)
             _rawResourceBuildingObjDict[key] = building;
         _buildingOutputRoundRobinIndex[key] = 0;
-
-        ApplyPlacementFinances(data);
+        _dataManager.Finances.RegisterPlacedBuildingMaintenance(data);
 
         return true;
     }
@@ -484,20 +484,23 @@ public class MainBuildingGridHandler
             building.TickSimulation(_dataManager);
         }
 
-        TickResourceFlow();
+        _mainRunner.RunTickResourceFlowStaggered();
     }
 
-    public void TickResourceFlow()
+    public void TickResourceFlow_RoadResetGates()
     {
         foreach (RoadObject road in _roadObjDict.Values)
-        {
             road.ResetRoadForwardGatesForQueuedPackets();
-        }
-        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
-        {
-            dualRoad.ResetRoadForwardGatesForQueuedPackets();
-        }
+    }
 
+    public void TickResourceFlow_DualResetGates()
+    {
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+            dualRoad.ResetRoadForwardGatesForQueuedPackets();
+    }
+
+    public void TickResourceFlow_RoadForward()
+    {
         foreach (RoadObject road in _roadObjDict.Values)
         {
             if (road.IsEmpty) continue;
@@ -510,7 +513,10 @@ public class MainBuildingGridHandler
                 break;
             }
         }
+    }
 
+    public void TickResourceFlow_DualForward()
+    {
         foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
         {
             if (dualRoad.IsEmpty) continue;
@@ -522,7 +528,10 @@ public class MainBuildingGridHandler
                 dualRoad.TryForwardToCell(outCell, destNode);
             }
         }
+    }
 
+    public void TickResourceFlow_BuildingForward()
+    {
         foreach (KeyValuePair<string, BuildingObject> buildingPair in _buildingObjDict)
         {
             string buildingKey = buildingPair.Key;

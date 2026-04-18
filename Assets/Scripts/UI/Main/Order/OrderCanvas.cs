@@ -40,6 +40,7 @@ public class OrderCanvas : MainCanvasPanelBase
         RefreshMarketActorButtons();
         RefreshOrderButtons();
 
+        _acceptedOrderSwitch.onValueChanged.RemoveListener(OnAcceptedOrderSwitchChanged);
         _acceptedOrderSwitch.onValueChanged.AddListener(OnAcceptedOrderSwitchChanged);
     }
 
@@ -207,12 +208,18 @@ public class OrderCanvas : MainCanvasPanelBase
 
     private void HandleResourceChanged()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         UpdataUI();
     }
     
     private void OnDisable()
     {
-        if(_dataManager != null)
+        if (_acceptedOrderSwitch != null)
+            _acceptedOrderSwitch.onValueChanged.RemoveListener(OnAcceptedOrderSwitchChanged);
+
+        if (_dataManager != null)
         {
             _dataManager.Order.OnOrderChanged -= HandleOrderUpdated;
             _dataManager.Time.OnDayChanged -= HandleDayChanged;
