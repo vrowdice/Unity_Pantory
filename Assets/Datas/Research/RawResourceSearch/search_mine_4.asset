@@ -18,7 +18,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: ec25fe544e4460647936b5f977868f8e, type: 3}
   description: 
   isDefaultUnlocked: 0
-  researchPointCost: 450
+  researchPointCost: 4500
   unlockResearchList:
   - {fileID: 11400000, guid: d55edfa260624df44afd78e471d65678, type: 2}
   effects:

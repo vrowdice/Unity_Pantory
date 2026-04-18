@@ -142,6 +142,10 @@ MonoBehaviour:
     m_Localized: 油井ポンプ設置上限
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000032
+    m_Localized: 金鉱山設置上限
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

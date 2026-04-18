@@ -20,6 +20,6 @@ MonoBehaviour:
     parts. A national strategic resource, essential for war preparedness and dominating
     the weapons market.
   isDefaultUnlocked: 0
-  researchPointCost: 3600
+  researchPointCost: 9500
   unlockResearchList: []
   effects: []

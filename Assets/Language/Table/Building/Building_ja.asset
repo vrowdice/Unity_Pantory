@@ -166,6 +166,14 @@ MonoBehaviour:
     m_Localized: 2レーンの通過型道路。縦方向と横方向の交通を別々にバッファし、互いに干渉せず搬送できる。
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270018
+    m_Localized: 金鉱山
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270119
+    m_Localized: 金鉱脈を対象にした専用採掘施設。金鉱石を採掘し、製錬や下流工程へ送る。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

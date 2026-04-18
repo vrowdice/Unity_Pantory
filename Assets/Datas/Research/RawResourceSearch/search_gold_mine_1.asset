@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75286c78e7a72ce4e98d0e5a4cf5bfdb, type: 3}
+  m_Name: search_gold_mine_1
+  m_EditorClassIdentifier: 
+  id: search_gold_mine_1
+  displayName: 
+  researchType: 1
+  icon: {fileID: 21300000, guid: 404b3dbc866512a408ffc7ec7da3a791, type: 3}
+  description: 
+  isDefaultUnlocked: 1
+  researchPointCost: 0
+  unlockResearchList:
+  - {fileID: 11400000, guid: 5d968c3ccf8dd2e4b8c8aff97516b86f, type: 2}
+  effects:
+  - {fileID: 11400000, guid: a801bc424cdf99d4bbbf4a3293551cea, type: 2}

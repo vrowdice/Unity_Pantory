@@ -199,6 +199,14 @@ MonoBehaviour:
     m_Localized: A two-lane pass-through road. Vertical and horizontal traffic are buffered separately and move without blocking each other.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270018
+    m_Localized: Gold Mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270119
+    m_Localized: A dedicated mining facility that targets rich gold-bearing ore bodies. Extracts gold ore for refining and downstream manufacturing.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

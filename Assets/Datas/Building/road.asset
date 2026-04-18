@@ -21,10 +21,13 @@ MonoBehaviour:
     line. Essential infrastructure for moving resources and products efficiently
     between facilities.
   isUnlockedByDefault: 1
+  isProfessional: 0
   requiredEmployees: 0
-  buildCost: 10
+  buildCost: 100
   maintenanceCost: 0
   size: {x: 1, y: 1}
-  requiredResearchId: 
-  handlingResource: {fileID: 0}
-  conflictIcon: {fileID: 0}
+  requiredResearch: {fileID: 0}
+  usePlacedCountLimit: 0
+  baseMaxPlacedCount: 0
+  maxInputBufferCapacity: 16
+  maxOutputBufferCapacity: 16

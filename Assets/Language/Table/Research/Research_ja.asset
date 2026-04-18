@@ -230,6 +230,46 @@ MonoBehaviour:
     m_Localized: 盆地規模の探査体制を完成させ、油井設置の上限を最大まで高める。
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266025
+    m_Localized: 金鉱調査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267025
+    m_Localized: 露頭・試料調査で金鉱山の設置上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266026
+    m_Localized: 金鉱調査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267026
+    m_Localized: 試料解析と地質モデルの強化により、設置上限をさらに拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266027
+    m_Localized: 金鉱調査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267027
+    m_Localized: 深部ターゲット探査で金鉱山の同時稼働規模を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266028
+    m_Localized: 金鉱調査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267028
+    m_Localized: 埋蔵量推定と後勤解析により、並列採掘の上限を高める。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266029
+    m_Localized: 金鉱山建設許可
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267029
+    m_Localized: 金鉱脈専用の採掘施設・金鉱山を建設可能にする。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

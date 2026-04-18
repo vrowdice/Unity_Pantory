@@ -21,7 +21,7 @@ MonoBehaviour:
     vehicles, and modern structures.
   requirements:
   - resource: {fileID: 11400000, guid: c96478f871047914fa5e4676ff47d872, type: 2}
-    count: 3
+    count: 2
   recipeOutputs: []
   primaryOutputPerBatch: 1
   initialAmount: 0

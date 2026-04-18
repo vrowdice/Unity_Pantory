@@ -21,7 +21,7 @@ MonoBehaviour:
     ready for crafting.
   requirements:
   - resource: {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
-    count: 3
+    count: 2
   recipeOutputs: []
   primaryOutputPerBatch: 1
   initialAmount: 60

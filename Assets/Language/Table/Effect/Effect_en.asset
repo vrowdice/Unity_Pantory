@@ -142,6 +142,10 @@ MonoBehaviour:
     m_Localized: Oil Pump Placement Limit
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000032
+    m_Localized: Gold Mine Placement Limit
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

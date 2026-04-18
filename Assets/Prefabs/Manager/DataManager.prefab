@@ -57,6 +57,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
   - {fileID: 11400000, guid: 960d5a7248b012544b3d054049188b94, type: 2}
   - {fileID: 11400000, guid: b44af6a86b952fb41ba1ff8bb60738d6, type: 2}
+  - {fileID: 11400000, guid: 7ba558124ef1ef448a988b947cef1ae4, type: 2}
   - {fileID: 11400000, guid: 22f6b00305a71104b841be99e0ddcc99, type: 2}
   - {fileID: 11400000, guid: b64972c612c45a944be1d20721ab921a, type: 2}
   - {fileID: 11400000, guid: 4c05c2345c26a244aa72bbe662f6ae4c, type: 2}
@@ -113,6 +114,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe1f49d52d7351446b1ff771bc4db698, type: 2}
   - {fileID: 11400000, guid: ec7b850c2e96177488fbd40856428587, type: 2}
   - {fileID: 11400000, guid: 6ae825922cec43a4fac9cc7e6d73fcc3, type: 2}
+  - {fileID: 11400000, guid: cf1292b1f5d193d419a9cb4f49e06e0b, type: 2}
+  - {fileID: 11400000, guid: 5d968c3ccf8dd2e4b8c8aff97516b86f, type: 2}
+  - {fileID: 11400000, guid: 02ab231bd58b279449e09163a96bf602, type: 2}
+  - {fileID: 11400000, guid: 20062bc5f237ed2448081868f06dd4ce, type: 2}
   - {fileID: 11400000, guid: baba9be17dede0843bd47e26415cabda, type: 2}
   - {fileID: 11400000, guid: abd9c73f90d7f2c4f9703b117ccf1920, type: 2}
   - {fileID: 11400000, guid: 4b1e8bc905c65a8488f7870bdb6f9f59, type: 2}
@@ -132,6 +137,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6, type: 2}
   - {fileID: 11400000, guid: 230aefe231ae7f14ab0f2549f6e4a51e, type: 2}
   - {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}
+  - {fileID: 11400000, guid: 28fe060323076fc41a2dc609cfa95c66, type: 2}
   - {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   _marketActorDataList:
   - {fileID: 11400000, guid: 5c8f2d1a0b3e49d5a7c8e1f2345678ab, type: 2}

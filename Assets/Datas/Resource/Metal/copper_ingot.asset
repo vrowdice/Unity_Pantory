@@ -21,7 +21,7 @@ MonoBehaviour:
     of modern electrical systems.
   requirements:
   - resource: {fileID: 11400000, guid: 2276c7d486386434fa61b6c05cfe2172, type: 2}
-    count: 3
+    count: 2
   recipeOutputs: []
   primaryOutputPerBatch: 1
   initialAmount: 0
