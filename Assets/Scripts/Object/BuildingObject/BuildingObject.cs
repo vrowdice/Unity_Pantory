@@ -335,14 +335,17 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
                 break;
         }
     }
-
-    private void TickStaffedBatchWork(DataManager dataManager, Func<bool> canCompleteBatch, Func<bool> tryCompleteBatch)
+    
+    private void TickStaffedBatchWork(DataManager dataManager, Func<bool> canCompleteBatch, Func<bool> tryCompleteBatch, Func<bool> canAdvanceProgress = null)
     {
         float delta = GetWorkProgressDeltaPerTick(dataManager);
         if (delta <= 0f) return;
 
-        _workProgress += delta;
-        if (_workProgress > 1f && !canCompleteBatch()) _workProgress = 1f;
+        if (canAdvanceProgress == null || canAdvanceProgress())
+        {
+            _workProgress += delta;
+            if (_workProgress > 1f && !canCompleteBatch()) _workProgress = 1f;
+        }
 
         while (_workProgress >= 1f)
         {

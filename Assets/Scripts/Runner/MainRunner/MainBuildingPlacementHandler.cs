@@ -13,9 +13,9 @@ public class MainBuildingPlacementHandler
     private BuildingData _selectedBuilding;
     private int _rotation;
 
-    private bool _placementMode;
-    private bool _removalMode;
-    private bool _autoEmployeePlacement;
+    private bool _placementMode = false;
+    private bool _removalMode = false;
+    private bool _autoEmployeePlacement = false;
 
     private GameObject _previewObj;
     private PreviewObject _previewObject;
