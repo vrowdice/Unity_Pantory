@@ -20,14 +20,14 @@ MonoBehaviour:
     - rid: 2319839819189715043
   m_TableData:
   - m_Id: 11264212992
-    m_Localized: "\uC548\uB155\uD558\uC138\uC694! \uD32C\uD1A0\uB9AC\uC5D0 \uC624\uC2E0
-      \uAC83\uC744 \uD658\uC601\uD569\uB2C8\uB2E4!"
+    m_Localized: "안녕하세요. 팬토리에 오신 것을 환영합니다. 공장을 짓고 물류를 돌리며 회사를 키우는
+      경영 시뮬레이션이며, 수년에서 수십 년 단위로 운영이 이어지는 전제에 맞춰져 있습니다."
     m_Metadata:
       m_Items:
       - rid: 2319839819189715043
   - m_Id: 438890283008
-    m_Localized: "\uD32C\uD1A0\uB9AC\uB294 \uACF5\uC7A5 \uACBD\uC601 \uC2DC\uBBAC\uB808\uC774\uC158
-      \uAC8C\uC784\uC785\uB2C8\uB2E4."
+    m_Localized: "그리드에 건물과 도로를 배치해 자원이 흐르게 만들고, 저장소·발주·시장으로 현금과
+      재고를 맞추며, 직원과 연구로 생산 능력을 넓혀 가는 게임입니다."
     m_Metadata:
       m_Items: []
   - m_Id: 575934971904
@@ -39,8 +39,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2291514359808
-    m_Localized: "\uC774 \uC601\uC5ED\uC5D0\uB294 \uC9C1\uC6D0\uC758 \uACE0\uC6A9
-      \uD604\uD669, \uBC30\uCE58, \uB9CC\uC871\uB3C4\uAC00 \uD45C\uC2DC\uB429\uB2C8\uB2E4."
+    m_Localized: "상단 이 영역에는 직원 고용 현황, 건물에 배치된 인원, 만족도 요약이
+      나옵니다. 매니저가 부족하면 만족도에 불이익이 들어가고, 그 결과 생산 효율까지
+      이어집니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2320476028928
@@ -52,11 +53,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5943566155776
-    m_Localized: "\uBB3C\uB958\uB294 \uACF5\uC7A5 \uC6B4\uC601\uC758 \uD575\uC2EC\uC785\uB2C8\uB2E4.
-      \uC2A4\uD14C\uC774\uC158\uACFC \uC0DD\uC0B0 \uAC74\uBB3C\uC744 \uB3C4\uB85C\uB85C
-      \uC5F0\uACB0\uD558\uACE0 \uC785\uCD9C\uB825 \uBC29\uD5A5\uC744 \uC815\uD655\uD788
-      \uB9DE\uCDB0\uC57C \uC790\uC6D0 \uD328\uD0B7\uC774 \uB9C9\uD788\uC9C0 \uC54A\uACE0
-      \uD750\uB985\uB2C8\uB2E4."
+    m_Localized: "물류는 공장 운영의 중심입니다. 하역·생산·적재를 도로로 잇고 입출력 방향을 맞춰야
+      자원이 막히지 않고 흐릅니다. 한 구간이 멈추면 상류·하류 전체가 같이 느려지므로 병목을
+      빨리 짚는 것이 중요합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 7203816095744
@@ -64,52 +63,40 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
-    m_Localized: "\uC774 \uD328\uB110\uC5D0\uC11C \uAC74\uBB3C\uACFC \uB3C4\uB85C\uB97C
-      \uBC30\uCE58\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uB300\uC0C1\uC744 \uC120\uD0DD\uD574
-      \uD68C\uC804 \uBBF8\uB9AC\uBCF4\uAE30\uB97C \uD655\uC778\uD55C \uB4A4 \uBC30\uCE58\uD558\uC138\uC694.
-      \uC785\uB825\uC744 \uB204\uB974\uACE0 \uC788\uC73C\uBA74 \uC5F0\uC18D \uBC30\uCE58\uB85C
-      \uAE34 \uB3C4\uB85C\uB97C \uBE60\uB974\uAC8C \uAE54 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "이 패널에서 건물과 도로를 배치합니다. 종류를 고른 뒤 그리드에서 회전을 확인하고
+      놓습니다. 같은 입력을 길게 누르면 긴 도로 줄을 이어 깔 수 있어 초반 레이아웃을 빠르게
+      잡을 수 있습니다. 도로와 스플리터·터널은 건설 비용과 일부는 일일 유지비가 붙습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 7894026567680
-    m_Localized: "\uAC74\uBB3C \uBC84\uD2BC\uC740 \uCE74\uD14C\uACE0\uB9AC\uBCC4\uB85C
-      \uC815\uB9AC\uB418\uC5B4 \uC788\uC2B5\uB2C8\uB2E4. \uC720\uD1B5 \uCE74\uD14C\uACE0\uB9AC\uC5D0\uB294
-      \uC77C\uBC18 \uB3C4\uB85C, \uC2A4\uD50C\uB9AC\uD130, \uD130\uB110\uC774 \uD3EC\uD568\uB429\uB2C8\uB2E4.
-      \uC2A4\uD50C\uB9AC\uD130\uB294 1\uAC1C\uC758 \uC785\uB825\uC744 2\uAC1C\uC758
-      \uCD9C\uB825\uC73C\uB85C \uBC88\uAC08\uC544 \uBD84\uBC30\uD558\uACE0, \uD130\uB110\uC740
-      \uC138\uB85C/\uAC00\uB85C \uD750\uB984\uC744 \uC11C\uB85C \uB9C9\uC9C0 \uC54A\uAC8C
-      \uB3C5\uB9BD\uC801\uC73C\uB85C \uD1B5\uACFC\uC2DC\uD0B5\uB2C8\uB2E4."
+    m_Localized: "건물 버튼은 용도별로 묶여 있습니다. 유통 카테고리에는 일반 도로, 스플리터,
+      터널이 있습니다. 스플리터는 한 입력을 두 출력으로 번갈아 보내고, 터널은 가로·세로 흐름이
+      서로 막지 않게 지나가게 합니다. 채굴장·제련소 등 생산 건물은 연구로 해금한 뒤에만
+      지을 수 있는 경우가 많습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 8131256401920
-    m_Localized: "\uC774 \uD328\uB110\uC5D0\uC11C \uC790\uC6D0 \uC7AC\uACE0\uB97C
-      \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uB77C\uC778\uC774 \uBA48\uCD94\uBA74
-      \uBA3C\uC800 \uC0C1\uB958 \uC790\uC6D0 \uC720\uBB34\uB97C \uD655\uC778\uD558\uACE0,
-      \uB2E4\uC74C\uC73C\uB85C \uB3C4\uB85C \uBC29\uD5A5, \uAC74\uBB3C \uBC29\uD5A5,
-      \uCD9C\uB825 \uC5F0\uACB0 \uB300\uC0C1\uC744 \uC21C\uC11C\uB300\uB85C \uC810\uAC80\uD558\uC138\uC694."
+    m_Localized: "메인 화면에서도 자원 흐름을 가늠할 수 있습니다. 라인이 멈추면 상류 재고와
+      도로 방향·건물 방향·출력 연결을 순서대로 봅니다. 시장 가격은 수요와 뉴스 이벤트 등에
+      따라 흔들리므로, 저장소 재고와 같이 보면 매매 타이밍을 잡기 쉽습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 9056704413696
-    m_Localized: "\uC88B\uC740 \uBB3C\uB958 \uC124\uACC4\uC758 \uAE30\uBCF8\uC740
-      \uC9E7\uC740 \uACBD\uB85C, \uBA85\uD655\uD55C \uBC29\uD5A5, \uADE0\uD615 \uC7A1\uD78C
-      \uCD9C\uB825\uC785\uB2C8\uB2E4. \uACF5\uC7A5\uC744 \uD655\uC7A5\uD560\uC218\uB85D
-      \uBCD1\uBAA9\uC744 \uAD00\uCC30\uD558\uACE0 \uC2A4\uD50C\uB9AC\uD130/\uD130\uB110\uC744
-      \uC804\uB7B5\uC801\uC73C\uB85C \uBC30\uCE58\uD574 \uCC98\uB9AC\uB7C9\uC744
-      \uC548\uC815\uD654\uD558\uC138\uC694."
+    m_Localized: "좋은 물류는 짧은 경로, 분명한 방향, 한 줄에 몰리지 않은 출력으로 요약됩니다.
+      공장을 넓힐수록 병목 위치가 바뀌므로 저장소·발주·시장 패널을 주기적으로 열어 재고와
+      현금이 버티는지 확인하는 습관이 장기 운영에 도움이 됩니다."
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: "\uC774 \uBC84\uD2BC\uC73C\uB85C \uAC74\uC124 \uBAA8\uB4DC\uC640
-      \uC81C\uAC70 \uBAA8\uB4DC\uB97C \uC804\uD658\uD569\uB2C8\uB2E4. \uC81C\uAC70
-      \uBAA8\uB4DC\uC5D0\uC11C \uAC74\uBB3C\uC744 \uCCA0\uAC70\uD558\uBA74 \uC5F0\uACB0\uB41C
-      \uC6CC\uCEE4/\uD14C\uD06C\uB2C8\uC158 \uBC30\uCE58\uB3C4 \uD574\uC81C\uB418\uBBC0\uB85C,
-      \uD070 \uBCC0\uACBD \uD6C4\uC5D0\uB294 \uC778\uB825 \uBC30\uCE58\uB97C \uB2E4\uC2DC
-      \uD655\uC778\uD558\uC138\uC694."
+    m_Localized: "이 스위치로 건설 모드와 제거 모드를 바꿉니다. 제거 모드에서 건물을 치우면
+      그 건물에 붙어 있던 워커·테크니션 배치도 함께 풀리므로, 큰 개편 뒤에는 직원 패널에서
+      배치를 다시 맞춥니다."
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
-    m_Localized: "\uC800\uC7A5\uC18C \uD328\uB110\uC785\uB2C8\uB2E4. \uD604\uC7AC
-      \uBCF4\uC720\uD55C \uC790\uC6D0 \uC7AC\uACE0\uAC00 \uD45C\uC2DC\uB429\uB2C8\uB2E4."
+    m_Localized: "저장소 패널입니다. 지금 보유한 자원 수량이 표시됩니다. 자원은 원자재, 금속,
+      무기, 생필품, 명품, 부품, 차량 등 유형으로 나뉘며, 각 자원은 레시피에 따라 다른 생산
+      건물에서 만들어집니다."
     m_Metadata:
       m_Items: []
   - m_Id: 13340426780672
@@ -125,8 +112,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 18539786682368
-    m_Localized: "\uC5EC\uAE30\uC11C \uBC1C\uC8FC \uCD9C\uCC98\uBCC4\uB85C \uD544\uD130\uB9C1\uD560
-      \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "발주를 정부·기업·개인 거래처 유형별로 걸러 볼 수 있습니다. 전체 보기에서
+      시작해 범위를 좁히면 목록이 읽기 쉬워집니다."
     m_Metadata:
       m_Items: []
   - m_Id: 18834268766208
@@ -134,107 +121,106 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19061579071488
-    m_Localized: "\uD074\uB77C\uC774\uC5B8\uD2B8\uBCC4 \uBAA9\uB85D\uC740 \uC5EC\uAE30
-      \uC788\uC2B5\uB2C8\uB2E4. \uD074\uB77C\uC774\uC5B8\uD2B8\uB97C \uD074\uB9AD\uD558\uBA74
-      \uD574\uB2F9 \uD074\uB77C\uC774\uC5B8\uD2B8\uC6A9 \uBC1C\uC8FC \uBAA9\uB85D\uC774
-      \uD45C\uC2DC\uB429\uB2C8\uB2E4."
+    m_Localized: "거래처별 목록이 이쪽에 있습니다. 이름을 누르면 그 거래처에서 온 발주만 모아
+      볼 수 있습니다. 거래처마다 신뢰와 규모가 다르고, 보상과 요구 자원 구성도 데이터에
+      따라 달라집니다."
     m_Metadata:
       m_Items: []
   - m_Id: 19397370855424
-    m_Localized: "\uC0C8 \uBC1C\uC8FC\uB294 \uC5EC\uAE30\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.
-      \uD074\uB9AD\uD574\uC11C \uC218\uB77D\uD558\uBA74 \uC218\uB77D \uBC1C\uC8FC
-      \uBAA9\uB85D\uC73C\uB85C \uC774\uB3D9\uD569\uB2C8\uB2E4."
+    m_Localized: "아직 수락하지 않은 발주가 여기에 쌓입니다. 수락하면 납품 기한과 요구 수량이
+      잡히고, 완료 시 보상 크레딧이 들어옵니다. 요구량은 회사 자산 규모와 발주 템플릿에
+      따라 정해집니다."
     m_Metadata:
       m_Items: []
   - m_Id: 19716532224000
-    m_Localized: "\uC2DC\uC7A5 \uD328\uB110\uC785\uB2C8\uB2E4. \uC790\uC6D0 \uAC70\uB798\uC640
-      \uACBD\uC7C1\uC0AC \uC815\uBCF4\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "시장 패널입니다. 자원을 사고팔고, 경쟁사 정보를 볼 수 있습니다. 거래에는
+      일정 비율의 수수료가 붙으며, 각 자원마다 시장 민감도와 평균 회귀 같은 값이 따로
+      묶여 있어 가격이 장기적으로도 움직입니다."
     m_Metadata:
       m_Items: []
   - m_Id: 22018345287680
-    m_Localized: "\uC774 \uBC84\uD2BC\uC73C\uB85C \uC790\uC6D0 \uBCF4\uAE30\uC640
-      \uAC70\uB798\uC790(\uACBD\uC7C1\uC0AC) \uBCF4\uAE30\uB97C \uC804\uD658\uD560
-      \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "자원 보기와 거래자 보기를 이 버튼으로 바꿉니다. 자원 보기에서는 호가를
+      조정하고, 거래자 보기에서는 회사·정부·개인 등 시장 행위자의 자본과 성향을 비교합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 22020337582080
-    m_Localized: "\uC790\uC6D0 \uBCF4\uAE30\uC785\uB2C8\uB2E4. \uD604\uC7AC \uC790\uC6D0\uC758
-      \uAD6C\uB9E4\xB7\uD310\uB9E4\uB7C9\uC744 \uC5EC\uAE30\uC11C \uC870\uC808\uD560
-      \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "자원 보기입니다. 구매·판매 호가를 여기서 정합니다. 체결 시 수수료가 빠지므로
+      단가만 보지 말고 실제 들어오고 나가는 크레딧을 함께 생각합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 24215317528576
-    m_Localized: "\uC790\uC6D0 \uC815\uBCF4\uB294 \uC5EC\uAE30\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4."
+    m_Localized: "선택한 자원의 현재가와 보유량, 거래 흐름 요약이 이 영역에 모입니다. 저장소
+      재고와 같이 보면 생산 라인을 늘리거나 줄일지 판단하기 쉽습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 24483870425088
-    m_Localized: "\uC790\uC6D0 \uAC00\uACA9 \uCD94\uC774\uAC00 \uADF8\uB798\uD504\uB85C
-      \uD45C\uC2DC\uB429\uB2C8\uB2E4."
+    m_Localized: "가격이 시간에 따라 어떻게 움직였는지 그래프로 볼 수 있습니다. 최근 구간만
+      모아 두었으므로 장기 추세와 단기 출렁임을 같이 읽는 데 쓰면 됩니다."
     m_Metadata:
       m_Items: []
   - m_Id: 24698149027840
-    m_Localized: "\uAC70\uB798\uC790(\uACBD\uC7C1\uC0AC) \uBCF4\uAE30\uC785\uB2C8\uB2E4.
-      \uAC01 \uAC70\uB798\uC790 \uC815\uBCF4\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "거래자 보기입니다. 기업·정부·개인 행위자마다 자본과 역할이 다릅니다. 장기
+      플레이에서는 이들의 자본 규모도 함께 커지도록 잡혀 있어, 초반에만 싸게 사 두면
+      끝나는 구도가 아닐 수 있습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 36510642880512
-    m_Localized: "\uC9C1\uC6D0\uC744 \uAD00\uB9AC\uD558\uB294 \uD328\uB110\uC785\uB2C8\uB2E4."
+    m_Localized: "직원을 고용·해고하고 급여와 만족도를 다루는 패널입니다. 연구원을 늘리면
+      일일 연구 포인트가 늘어나지만 급여 부담도 같이 커지므로 재무 패널과 같이 보는 것이
+      좋습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 36904429305856
-    m_Localized: "\uD604\uC7AC \uAD00\uB9AC \uB2A5\uB825\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4.
-      \uC9C1\uC6D0 \uC218\uC5D0 \uBE44\uD574 \uC77C\uC815 \uC218\uC758 \uB9E4\uB2C8\uC800\uAC00
-      \uD544\uC694\uD558\uBA70, \uBD80\uC871\uD558\uBA74 \uB9CC\uC871\uB3C4\uAC00
-      \uB5A8\uC5B4\uC9D1\uB2C8\uB2E4."
+    m_Localized: "관리 능력과 직원 수의 비율이 표시됩니다. 직원이 늘면 그에 맞는 매니저가
+      필요하고, 부족하면 만족도에 불이익이 들어갑니다. 연구를 밀기 전에 이 비율이
+      무너지지 않는지 확인합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 37440536854528
-    m_Localized: "\uC9C1\uC6D0 \uB9CC\uC871\uB3C4\uB294 \uC5EC\uB7EC \uC694\uC778\uC5D0
-      \uB530\uB77C \uB2EC\uB77C\uC9D1\uB2C8\uB2E4. \uC5B4\uB5A4 \uC601\uD5A5\uC778\uC9C0\uB294
-      \uC5EC\uAE30\uC11C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "만족도는 급여 외에도 이펙트로 들어오는 보정이 겹칩니다. 목록에서 어떤
+      요인이 얼마나 붙었는지 확인한 뒤, 급여 단계를 올리거나 매니저 비율을 맞추는 식으로
+      조정합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 37828904239104
-    m_Localized: "\uC9C1\uC6D0 \uD6A8\uC728\uC740 \uB9CC\uC871\uB3C4\uC5D0 \uB530\uB77C
-      \uB2EC\uB77C\uC9C0\uBA70, \uC774 \uD6A8\uC728\uC740 \uAC74\uBB3C \uC791\uC5C5
-      \uC18D\uB3C4\uC640 \uC0DD\uC0B0 \uCC98\uB9AC\uB7C9\uC5D0 \uC9C1\uC811 \uC601\uD5A5\uC744
-      \uC90D\uB2C8\uB2E4."
+    m_Localized: "효율은 만족도에서 나오고, 그 값이 건물 작업 속도와 생산 처리량에 곧바로
+      붙습니다. 장기 운영에서는 급여만으로 만족도를 유지하기 어려워질 수 있으니 재무
+      그래프와 같이 보며 투자 우선순위를 정합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 38302378246144
-    m_Localized: "\uB9CC\uC871\uB3C4\uB97C \uC62C\uB9AC\uB294 \uAC00\uC7A5 \uC26C\uC6B4
-      \uBC29\uBC95\uC740 \uC784\uAE08 \uC778\uC0C1\uC785\uB2C8\uB2E4. \uB0AE\uCD94\uBA74
-      \uB9CC\uC871\uB3C4\uAC00 \uB5A8\uC5B4\uC9D1\uB2C8\uB2E4."
+    m_Localized: "급여 단계를 올리는 것이 만족도를 끌어올리는 가장 직관적인 방법입니다.
+      내리면 만족도가 떨어집니다. 급여는 매일 나가는 고정비이므로, 시장·발주로 들어오는
+      현금과 균형을 맞춥니다."
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
-    m_Localized: "\uC9C1\uC6D0\uC740 \uC6CC\uCEE4, \uD14C\uD06C\uB2C8\uC158, \uC5F0\uAD6C\uC6D0,
-      \uB9E4\uB2C8\uC800\uB85C \uB098\uB269\uB2C8\uB2E4. \uC6CC\uCEE4\uC640 \uD14C\uD06C\uB2C8\uC158\uC740
-      \uAC74\uBB3C\uC5D0 \uBC30\uCE58\uB418\uACE0, \uC5F0\uAD6C\uC6D0\uC740 RP\uB97C
-      \uC0DD\uC0B0\uD558\uBA70, \uB9E4\uB2C8\uC800\uB294 \uC804\uCCB4 \uC778\uB825
-      \uAD00\uB9AC\uB97C \uC9C0\uC6D0\uD569\uB2C8\uB2E4."
+    m_Localized: "직종은 워커, 테크니션, 연구원, 매니저로 나뉩니다. 워커와 테크니션은
+      건물에 붙고, 연구원은 연구 포인트를 만들며, 매니저는 인원 대비 관리 비율을 맞추는
+      데 쓰입니다. 연구원은 경제가 받쳐 주면 인원을 단계적으로 늘리는 식으로 스케일합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768
-    m_Localized: "\uC5EC\uAE30\uC11C \uC9C1\uC6D0 \uACE0\uC6A9\xB7\uD574\uACE0\uB97C
-      \uACB0\uC815\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uACE0\uC6A9\xB7\uD574\uACE0\uC5D0\uB294
-      \uD06C\uB808\uB527\uC774 \uB4E4\uACE0, \uD574\uACE0\uD558\uBA74 \uB9CC\uC871\uB3C4\uAC00
-      \uB5A8\uC5B4\uC9D1\uB2C8\uB2E4."
+    m_Localized: "여기서 인원을 늘리거나 줄입니다. 고용과 해고에는 크레딧이 들고, 해고는 해당
+      직종의 만족도를 깎습니다. 한 번에 많이 해고하면 그 직종뿐 아니라 다른 직종에도 불안이
+      퍼질 수 있으니 재배치 전에 미리 계획을 세웁니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2561770013474816
-    m_Localized: "\uC5F0\uAD6C \uD328\uB110\uC785\uB2C8\uB2E4. \uAC74\uBB3C \uD574\uAE08\uACFC
-      \uC0DD\uC0B0\uC131 \uD5A5\uC0C1\uC774 \uAC00\uB2A5\uD574\uC9D1\uB2C8\uB2E4."
+    m_Localized: "연구 패널입니다. 새 건물을 쓰게 만드는 해금 연구와, 산림·광산·유전 등
+      원자재 탐색 단계를 올리는 연구가 있습니다. 탐색 단계가 올라갈수록 비용이 크게
+      뛰어 후반 확장 속도를 조절하는 축이 됩니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2562082698838016
-    m_Localized: "\uC5F0\uAD6C \uD3EC\uC778\uD2B8(RP)\uC640 \uD558\uB8E8 \uD68D\uB4DD\uB7C9\uC774
-      \uC5EC\uAE30 \uD45C\uC2DC\uB429\uB2C8\uB2E4."
+    m_Localized: "연구 포인트와 하루에 모이는 양이 여기 표시됩니다. 연구원 수와 효율에 따라
+      일일 생산량이 바뀌며, 후반 해금일수록 더 많은 포인트가 들어가므로 재무 패널과
+      같이 우선순위를 정합니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2562316594200576
-    m_Localized: "\uC5F0\uAD6C\uC6D0 \uC218\uC640 \uC801\uC6A9 \uC911\uC778 \uD6A8\uACFC\uB97C
-      \uBCFC \uC218 \uC788\uB294 \uD328\uB110\uC785\uB2C8\uB2E4."
+    m_Localized: "연구원 수와 지금 걸려 있는 이펙트를 볼 수 있습니다. 배치 한도나 생산
+      보너스처럼 숫자로 바로 안 보이는 보정도 이펙트 데이터에 묶여 있는 경우가 많습니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2562738453102592
@@ -242,26 +228,30 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2563160425250816
-    m_Localized: "\uC7AC\uBB34 \uD328\uB110\uC785\uB2C8\uB2E4. \uD68C\uC0AC \uC131\uC7A5
-      \uCD94\uC774\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "재무 패널입니다. 월간 성장률·이익·기업 가치·크레딧 추이를 한눈에 봅니다.
+      초반 적자가 길게 고정되지 않는지, 연구와 건설·인력 확장이 현금 흐름을 따라가는지
+      점검하는 용도로 쓰면 됩니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2564533472608256
-    m_Localized: "\uD604\uC7AC \uC6D4\uAC04 \uC131\uC7A5\uB960\uC744 \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "월간 성장률입니다. 연구·건물·인력 투자가 회사 가치에 어떻게 반영되는지
+      거칠게나마 짚어 보는 지표로 쓰면 됩니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2565297930649600
-    m_Localized: "\uD604\uC7AC \uC6D4\uAC04 \uC774\uC775\uC744 \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "월간 이익입니다. 시장 수수료와 급여·건설비를 감안해 흑자 전환이 언제쯤
+      오는지 보려면 발주 보상과 저장소 재고를 같이 봅니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2566859943985152
-    m_Localized: "\uD604\uC7AC \uAE30\uC5C5 \uAC00\uCE58\uB97C \uADF8\uB798\uD504\uB85C
-      \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "기업 가치 추이입니다. 장기 플레이에서 자산이 쌓일수록 시장 행위자들의
+      자본도 함께 커지도록 잡혀 있어, 그래프가 평평해지면 다음 확장 축을 바꿀 타이밍인지
+      점검해 봅니다."
     m_Metadata:
       m_Items: []
   - m_Id: 2566981499109376
-    m_Localized: "\uD604\uC7AC \uD06C\uB808\uB527\uC744 \uADF8\uB798\uD504\uB85C
-      \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "크레딧 추이입니다. 초기 자금은 한정되어 있으니, 연구 비용과 건설비를
+      한꺼번에 몰아쓰지 않도록 그래프의 기울기를 자주 확인합니다."
     m_Metadata:
       m_Items: []
   references:

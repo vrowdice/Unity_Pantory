@@ -6,6 +6,7 @@ public class TitleCanvas : CanvasBase
     {
         base.Init();
 
+        // 언어·볼륨 전체: TitleRunner.Init 에서 TryLoadUserSettingsAndApply. 이후 씬 전환 시 볼륨만 SoundManager 가 갱신합니다.
         UpdateAllMainText();
     }
 

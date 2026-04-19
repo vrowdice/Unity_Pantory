@@ -68,7 +68,17 @@ public class UIManager : Singleton<UIManager>
     {
         if (Instance != this) return;
         if (Input.GetKeyDown(KeyCode.Escape))
-            TryCloseTopmost();
+        {
+            if (HasAnyOpenCloseablePanel())
+            {
+                TryCloseTopmost();
+            }
+            else if (_optionPanelPrefab != null)
+            {
+                ShowOptionPopup();
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.F12))
             ShowDebugPopup();
     }

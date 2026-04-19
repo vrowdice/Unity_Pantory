@@ -28,7 +28,7 @@
 | volatilityMultiplier | 0.01 |
 | maxChangePriceMultiplier | 1.2 |
 | priceHistoryCapacity | 60 |
-| transactionFee | 0.05 |
+| transactionFee | 0.03 |
 
 개별 자원의 `marketSensitivity`, `meanReversionStrength` 등은 **각 `ResourceData` 자산**에만 있는 경우가 많습니다.
 

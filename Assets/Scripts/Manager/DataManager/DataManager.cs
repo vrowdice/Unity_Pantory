@@ -174,6 +174,12 @@ public class DataManager : Singleton<DataManager>
     private void HandleMonthChanged()
     {
         Finances.HandleMonthChanged();
+
+        SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
+        if (saveLoadManager != null)
+        {
+            saveLoadManager.PerformAutoSave(this);
+        }
     }
 
     public void CaptureGameStateTo(GameSaveData saveData)
