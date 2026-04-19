@@ -21,11 +21,11 @@ public partial class MainCanvas
     private void InitBuildUi()
     {
         _buildingTypeBtns.Clear();
-        GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
+        GameManager.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
 
         foreach (BuildingType t in EnumUtils.GetAllEnumValues<BuildingType>())
         {
-            GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
+            GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
             btnObj.transform.SetParent(_buildingTypeBtnContent, false);
             MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
             btn.Initialize(this, t);
@@ -55,7 +55,7 @@ public partial class MainCanvas
     {
         if (!isUnlocked)
         {
-            UIManager.Instance.ShowWarningPopup(WarningMessage.UnresearchedBuildingBlocksThreadPlacement);
+            UIManager.ShowWarningPopup(WarningMessage.UnresearchedBuildingBlocksThreadPlacement);
             DeselectBuilding();
             return;
         }
@@ -64,7 +64,7 @@ public partial class MainCanvas
             buildingData.usePlacedCountLimit &&
             !_mainRunner.GridHandler.CanPlaceMoreInstances(buildingData))
         {
-            UIManager.Instance.ShowWarningPopup(WarningMessage.BuildingPlacedCountLimitReached);
+            UIManager.ShowWarningPopup(WarningMessage.BuildingPlacedCountLimitReached);
             RefreshBuildingPlacedCountDisplays();
             DeselectBuilding();
             return;
@@ -104,7 +104,7 @@ public partial class MainCanvas
 
     public void SelectBuildingType(BuildingType buildingType)
     {
-        GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
+        GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
 
         _selectedBuildingType = buildingType;
@@ -115,7 +115,7 @@ public partial class MainCanvas
                 ? true
                 : (DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault);
 
-            GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_buildingBtnPrefab);
+            GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
             btnObj.transform.SetParent(_buildingBtnContent, false);
             MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
             btn.Initialize(this, data, isUnlocked, _mainRunner);

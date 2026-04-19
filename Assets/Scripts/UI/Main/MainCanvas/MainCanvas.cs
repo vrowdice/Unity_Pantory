@@ -23,7 +23,7 @@ public partial class MainCanvas : CanvasBase
             return;
         }
 
-        if (UIManager.Instance != null && UIManager.Instance.HasAnyOpenCloseablePanel())
+        if (UIManager != null && UIManager.HasAnyOpenCloseablePanel())
         {
             return;
         }
@@ -54,7 +54,10 @@ public partial class MainCanvas : CanvasBase
         DataManager.Time.OnYearChanged += OnYearChanged;
 
         _infoDatePanel.Init(DataManager);
-        _topInfoPanel.Init(DataManager);
+        _topInfoPanel.Init(DataManager, this.VisualManager);
+
+        TimePlayPanel timePlayPanel = GetComponentInChildren<TimePlayPanel>(true);
+        timePlayPanel?.Init(DataManager, GameManager);
 
         CreateMainPanels();
         InitializePanelDictionary();
@@ -74,7 +77,7 @@ public partial class MainCanvas : CanvasBase
         if (_mainRunner != null && _mainRunner.GridHandler != null)
             _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
 
-        if (DataManager.Instance != null)
+        if (DataManager != null)
         {
             DataManager.Resource.OnResourceChanged -= OnResourceChanged;
             DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
@@ -100,8 +103,6 @@ public partial class MainCanvas : CanvasBase
 
     private void UpdateCreditText()
     {
-        VisualManager visualManager = VisualManager.Instance;
-
         long resourceAmount = DataManager.Finances.Credit;
         _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
         long deltaCredit = DataManager.Finances.DailyTotal;
@@ -113,13 +114,11 @@ public partial class MainCanvas : CanvasBase
 
         string sign = deltaCredit > 0 ? " +" : " ";
         _deltaCreditText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaCredit)}";
-        _deltaCreditText.color = visualManager.GetDeltaColor(deltaCredit);
+        _deltaCreditText.color = this.VisualManager.GetDeltaColor(deltaCredit);
     }
 
     private void UpdateResearchText()
     {
-        VisualManager visualManager = VisualManager.Instance;
-
         long researchPoints = DataManager.Research.ResearchPoint;
         _researchText.text = ReplaceUtils.FormatNumberWithCommas(researchPoints);
         long deltaResearch = DataManager.Research.CalculateDailyRPProduction();
@@ -131,7 +130,7 @@ public partial class MainCanvas : CanvasBase
 
         string sign = deltaResearch > 0 ? " + " : " ";
         _deltaResearchText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
-        _deltaResearchText.color = visualManager.GetDeltaColor(deltaResearch);
+        _deltaResearchText.color = this.VisualManager.GetDeltaColor(deltaResearch);
     }
 
     private void OnMonthChanged()
@@ -152,16 +151,16 @@ public partial class MainCanvas : CanvasBase
 
     public void ShowNewsPopup(NewsState newsState)
     {
-        UIManager.Instance.ShowNewsPopup(newsState, this);
+        UIManager.ShowNewsPopup(newsState, this);
     }
 
     public void ShowCreditTopInfoPopup()
     {
-        UIManager.Instance.ShowCreditTopInfoPopup();
+        UIManager.ShowCreditTopInfoPopup();
     }
 
     public void ShowOptionPanel()
     {
-        UIManager.Instance.ShowOptionPopup();
+        UIManager.ShowOptionPopup();
     }
 }

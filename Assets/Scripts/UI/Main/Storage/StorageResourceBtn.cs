@@ -24,6 +24,6 @@ public class StorageResourceBtn : MonoBehaviour
     public void OnClick()
     {
         if (_resourceEntry == null || _resourceEntry.data == null) return;
-        UIManager.Instance?.ShowResourceHelpPopup(_resourceEntry.data);
+        _storagePanel.PanelUIManager?.ShowResourceHelpPopup(_resourceEntry.data);
     }
 }

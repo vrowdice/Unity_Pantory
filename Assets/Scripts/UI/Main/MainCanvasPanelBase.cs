@@ -10,8 +10,16 @@ public abstract class MainCanvasPanelBase : TutorialBase
     protected GameManager _gameManager;
     protected DataManager _dataManager;
     protected SoundManager _soundManager;
+    protected VisualManager _visualManager;
+    protected UIManager _panelUIManager;
     protected MainCanvas _uiManager;
     private Action _cachedOnClose;
+
+    /// <summary>메인 캔버스. 서브 컴포넌트에서 DataManager 등에 접근할 때 사용합니다.</summary>
+    public MainCanvas Host => _uiManager;
+
+    /// <summary>Init(MainCanvas) 이후 유효합니다.</summary>
+    public UIManager PanelUIManager => _panelUIManager;
 
     [Header("Animation")]
     [SerializeField] private RectTransform _panelAnimationTarget;
@@ -29,13 +37,15 @@ public abstract class MainCanvasPanelBase : TutorialBase
     /// </summary>
     public virtual void Init(MainCanvas argUIManager)
     {
-        _gameManager = GameManager.Instance;
-        _dataManager = DataManager.Instance;
-        _soundManager = SoundManager.Instance;
+        _gameManager = argUIManager.GameManager;
+        _dataManager = argUIManager.DataManager;
+        _soundManager = argUIManager.SoundManager;
+        _visualManager = argUIManager.VisualManager;
+        _panelUIManager = argUIManager.UIManager;
         _uiManager = argUIManager;
 
         if (_cachedOnClose == null) _cachedOnClose = OnClose;
-        UIManager.Instance?.PushCloseable(_cachedOnClose);
+        _panelUIManager?.PushCloseable(_cachedOnClose);
 
         gameObject.SetActive(true);
 
@@ -55,8 +65,8 @@ public abstract class MainCanvasPanelBase : TutorialBase
     /// </summary>
     public void OnClose()
     {
-        if (_cachedOnClose != null && UIManager.Instance != null)
-            UIManager.Instance.RemoveCloseable(_cachedOnClose);
+        if (_cachedOnClose != null && _panelUIManager != null)
+            _panelUIManager.RemoveCloseable(_cachedOnClose);
 
         if (!gameObject.activeSelf)
         {

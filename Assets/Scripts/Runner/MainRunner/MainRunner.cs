@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -97,7 +98,7 @@ public class MainRunner : RunnerBase
     {
         base.Init();
 
-        _mainCamera = Camera.main;
+        _mainCamera = MainCamera;
         _mainCameraController = GameManager.MainCameraController;
 
         _gridHandler = new MainBuildingGridHandler(this);
@@ -118,13 +119,23 @@ public class MainRunner : RunnerBase
 
     private void RestorePlacedLayoutIfAny()
     {
-        DataManager.Instance.PlacedLayout.Consume(out System.Collections.Generic.List<PlacedBuildingSaveData> buildings,
-            out System.Collections.Generic.List<PlacedRoadSaveData> roads);
+        DataManager.PlacedLayout.Consume(out List<PlacedBuildingSaveData> buildings,
+            out List<PlacedRoadSaveData> roads);
 
         if (buildings.Count == 0 && roads.Count == 0)
             return;
 
         _gridHandler.RestoreFromSave(buildings, roads);
+    }
+
+    /// <summary>
+    /// 현재 그리드 배치를 DataManager.PlacedLayout 에 반영합니다.
+    /// </summary>
+    public void FlushPlacedLayoutToDataManager()
+    {
+        DataManager.PlacedLayout.SetFromSave(
+            _gridHandler.ExportPlacedBuildings(),
+            _gridHandler.ExportPlacedRoads());
     }
 
     /// <summary>
@@ -147,8 +158,7 @@ public class MainRunner : RunnerBase
 
     private void OnDisable()
     {
-        if (DataManager.Instance != null)
-            DataManager.Instance.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
+        DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
 
         if (_tickResourceFlowCoroutine != null)
         {

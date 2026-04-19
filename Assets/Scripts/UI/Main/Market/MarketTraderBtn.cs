@@ -29,7 +29,7 @@ public class MarketTraderBtn : MonoBehaviour
         _actorEntry = actorEntry;
         _isPlayer = isPlayer;
 
-        if (isPlayer) _backgroundImage.color = VisualManager.Instance.DefaultPanelColor;
+        if (isPlayer) _backgroundImage.color = _marketPanel.Host.VisualManager.DefaultPanelColor;
         else _backgroundImage.color = Color.white;
         _image.sprite = _actorEntry.data.icon != null ? _actorEntry.data.icon : _defaultSprite;
         _nameText.text = _actorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
@@ -61,7 +61,7 @@ public class MarketTraderBtn : MonoBehaviour
         string changeText = change == 0 ? "0" : $"{sign}{ReplaceUtils.FormatNumberWithCommas(change)}";
 
         _currentChangeWealthText.text = changeText;
-        _currentChangeWealthText.color = VisualManager.Instance.GetDeltaColor(change);
+        _currentChangeWealthText.color = _marketPanel.Host.VisualManager.GetDeltaColor(change);
     }
 }
 

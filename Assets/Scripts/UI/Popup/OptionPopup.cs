@@ -162,6 +162,12 @@ public class OptionPopup : PopupBase
         SoundManager.Instance.SetSFXVolume(_pendingSFXVolume);
         SoundManager.Instance.SaveSettings();
 
+        if (SceneLoadManager.Instance != null && SceneLoadManager.Instance.CurrentSceneName == "Main")
+        {
+            MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+            mainRunner?.FlushPlacedLayoutToDataManager();
+        }
+
         SceneLoadManager.Instance.ReloadScene();
         OnClickExit();
     }

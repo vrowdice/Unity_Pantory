@@ -17,7 +17,7 @@ public partial class MainCanvas
 
         _resourceBtns.Clear();
 
-        PoolingManager pool = GameManager.Instance.PoolingManager;
+        PoolingManager pool = GameManager.PoolingManager;
         pool.ClearChildrenToPool(_resouceScrollViewContent);
 
         Dictionary<string, ResourceEntry> resources = DataManager.Resource.GetAllResources();

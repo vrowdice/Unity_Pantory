@@ -133,7 +133,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
     /// </summary>
     private void SetupEmployeeRoleButtons()
     {
-        if (UIManager.Instance?.ActionBtnPrefab == null || EmployeeActionBtnContent == null)
+        if (_panelUIManager?.ActionBtnPrefab == null || EmployeeActionBtnContent == null)
         {
             return;
         }
@@ -160,7 +160,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
         List<EmployeeType> roles = EnumUtils.GetAllEnumValues<EmployeeType>();
         foreach (EmployeeType role in roles)
         {
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(EmployeeActionBtnContent, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
@@ -275,15 +275,15 @@ public class EmployeeCanvas : MainCanvasPanelBase
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
 
-            if (VisualManager.Instance != null)
+            if (_visualManager != null)
             {
                 if (requiredManagers <= 0 || currentManagers >= requiredManagers)
                 {
-                    _managementFillImage.color = VisualManager.Instance.ManagementSufficientColor;
+                    _managementFillImage.color = _visualManager.ManagementSufficientColor;
                 }
                 else
                 {
-                    _managementFillImage.color = VisualManager.Instance.ManagementInsufficientColor;
+                    _managementFillImage.color = _visualManager.ManagementInsufficientColor;
                 }
             }
         }
@@ -344,7 +344,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
     /// </summary>
     private void UpdateEfficiencyEffectStatus()
     {
-        PoolingManager.Instance.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
+        _gameManager.PoolingManager.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
 
@@ -357,7 +357,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
             {
                 if (effectState == null) continue;
 
-                UIManager.Instance.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
+                _panelUIManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
             }
         }
     }
@@ -367,7 +367,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
     /// </summary>
     private void UpdateSatisfactionEffectStatus()
     {
-        PoolingManager.Instance.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
+        _gameManager.PoolingManager.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
         string instanceId = _selectedEmployeeType.ToString();
@@ -377,7 +377,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
         {
             if (effectState == null) continue;
 
-            UIManager.Instance.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectState);
+            _panelUIManager.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectState);
         }
     }
 
@@ -388,12 +388,12 @@ public class EmployeeCanvas : MainCanvasPanelBase
     {
         if (_efficiencyStatusScrollViewContentTransform != null)
         {
-            PoolingManager.Instance.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
+            _gameManager.PoolingManager.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
         }
 
         if (_satisfactionStatusScrollViewContentTransform != null)
         {
-            PoolingManager.Instance.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
+            _gameManager.PoolingManager.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
         }
     }
 

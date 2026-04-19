@@ -12,12 +12,12 @@ public partial class MainCanvas
     private void CreateQuickMoveBtns()
     {
         foreach (QuickMoveBtn btn in _quickMoveBtns)
-            GameManager.Instance.PoolingManager.ReturnToPool(btn.gameObject);
+            GameManager.PoolingManager.ReturnToPool(btn.gameObject);
         _quickMoveBtns.Clear();
 
         foreach (MainPanelType panelType in System.Enum.GetValues(typeof(MainPanelType)))
         {
-            GameObject btnObj = GameManager.Instance.PoolingManager.GetPooledObject(_quickMoveBtnPrefeb);
+            GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_quickMoveBtnPrefeb);
             btnObj.transform.SetParent(_quickMovePanelContent, false);
 
             QuickMoveBtn quickBtn = btnObj.GetComponent<QuickMoveBtn>();

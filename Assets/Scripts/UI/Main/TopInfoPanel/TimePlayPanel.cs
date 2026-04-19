@@ -9,14 +9,15 @@ public class TimePlayPanel : MonoBehaviour
     [SerializeField] private GameObject _speedBtnPrefab;
 
     private DataManager _dataManager;
+    private GameManager _gameManager;
     private bool _isTimePaused = true;
     private List<SpeedBtn> _speedBtnList = new List<SpeedBtn>();
     private SpeedBtn _lastUsedSpeedBtn;
 
-    private void Start()
+    public void Init(DataManager dataManager, GameManager gameManager)
     {
-        _dataManager = DataManager.Instance;
-
+        _dataManager = dataManager;
+        _gameManager = gameManager;
         BuildSpeedButtons();
     }
 
@@ -45,10 +46,15 @@ public class TimePlayPanel : MonoBehaviour
 
     private void BuildSpeedButtons()
     {
+        if (_gameManager == null || _speedBtnPrefab == null || _speedBtnContentTransform == null)
+        {
+            return;
+        }
+
         for (int i = 0; i < _btnSpeedGenList.Count; i++)
         {
             float speed = _btnSpeedGenList[i];
-            GameObject go = GameManager.Instance.PoolingManager.GetPooledObject(_speedBtnPrefab);
+            GameObject go = _gameManager.PoolingManager.GetPooledObject(_speedBtnPrefab);
             go.transform.SetParent(_speedBtnContentTransform, false);
             SpeedBtn btn = go.GetComponent<SpeedBtn>();
             int index = i;

@@ -58,7 +58,7 @@ public class MarketCanvas : MainCanvasPanelBase
     /// </summary>
     private void SetupActionButtons()
     {
-        if (UIManager.Instance?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
+        if (_panelUIManager?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
         {
             return;
         }
@@ -85,7 +85,7 @@ public class MarketCanvas : MainCanvasPanelBase
         List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
         foreach (MarketPanelType panelType in panelTypes)
         {
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_marketActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)

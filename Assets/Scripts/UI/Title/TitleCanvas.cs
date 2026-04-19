@@ -12,17 +12,17 @@ public class TitleCanvas : CanvasBase
 
     public void GoToMainScene()
     {
-        SceneLoadManager.Instance.LoadScene("Main");
+        SceneLoader.LoadScene("Main");
     }
 
     public void ShowSaveLoadPopup()
     {
-        UIManager.Instance.ShowSaveLoadPopup(false);
+        UIManager.ShowSaveLoadPopup(false);
     }
 
     public void ShowOptionPopup()
     {
-        UIManager.Instance.ShowOptionPopup();
+        UIManager.ShowOptionPopup();
     }
 
     public void ExitGame()

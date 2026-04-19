@@ -74,7 +74,7 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void CreateCategoryButton(ResourceType? type, string label)
     {
-        GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+        GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
         btnObj.transform.SetParent(_resourceTypeScrollViewContentTransform, false);
         ActionBtn btn = btnObj.GetComponent<ActionBtn>();
         

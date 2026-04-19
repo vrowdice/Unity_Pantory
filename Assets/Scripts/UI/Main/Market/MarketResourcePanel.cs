@@ -35,7 +35,7 @@ public class MarketResourcePanel : MonoBehaviour
     /// <param name="marketPanel">부모 마켓 패널 참조</param>
     public void Init(MarketCanvas marketPanel)
     {
-        _dataManager = DataManager.Instance;
+        _dataManager = marketPanel.Host.DataManager;
         _marketPanel = marketPanel;
 
         if (_selectedResourceEntry == null)
@@ -114,7 +114,7 @@ public class MarketResourcePanel : MonoBehaviour
             priceText += $" ({deltaSymbol}{state.currentChangeValue:N0})";
         }
         _resourcePriceText.text = priceText;
-        _resourcePriceText.color = VisualManager.Instance.GetDeltaColor(state.currentChangeValue);
+        _resourcePriceText.color = _marketPanel.Host.VisualManager.GetDeltaColor(state.currentChangeValue);
 
         long purchasePrice = _dataManager.Resource.GetPurchasePrice(_selectedResourceId);
         long salePrice = _dataManager.Resource.GetSalePrice(_selectedResourceId);

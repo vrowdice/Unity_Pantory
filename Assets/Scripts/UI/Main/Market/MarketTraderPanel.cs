@@ -24,7 +24,7 @@ public class MarketTraderPanel : MonoBehaviour
 
     public void Init(MarketCanvas marketPanel)
     {
-        _dataManager = DataManager.Instance;
+        _dataManager = marketPanel.Host.DataManager;
         _marketPanel = marketPanel;
 
         if (_selectedActor == null)
@@ -62,7 +62,7 @@ public class MarketTraderPanel : MonoBehaviour
 
         string deltaSymbol = state.currentChangeWealth > 0 ? "+" : "";
         _wealthText.text = $"{ReplaceUtils.FormatNumber(state.wealth)} {deltaSymbol}{ReplaceUtils.FormatNumber(state.currentChangeWealth)}";
-        _wealthText.color = VisualManager.Instance.GetDeltaColor(state.currentChangeWealth);
+        _wealthText.color = _marketPanel.Host.VisualManager.GetDeltaColor(state.currentChangeWealth);
         _trustText.text = $"{state.trust}";
     }
 
@@ -71,10 +71,11 @@ public class MarketTraderPanel : MonoBehaviour
     /// </summary>
     private void RefreshResourcesIcon()
     {
-        if (PoolingManager.Instance != null)
+        PoolingManager pool = _marketPanel.Host.GameManager.PoolingManager;
+        if (pool != null)
         {
-            PoolingManager.Instance.ClearChildrenToPool(_consumeResourceContentTransform);
-            PoolingManager.Instance.ClearChildrenToPool(_provideResourceContentTransform);
+            pool.ClearChildrenToPool(_consumeResourceContentTransform);
+            pool.ClearChildrenToPool(_provideResourceContentTransform);
         }
         else
         {
@@ -84,19 +85,19 @@ public class MarketTraderPanel : MonoBehaviour
 
         if (_selectedActor == null || _selectedActor.data.productionResourceList == null) return;
 
-        GameManager gameManager = GameManager.Instance;
+        UIManager uiManager = _marketPanel.Host.UIManager;
 
         foreach (ResourceData resourceData in _selectedActor.data.comsumeResourceList)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
             int productionCount = (int)_selectedActor.data.baseProductionCount;
-            UIManager.Instance.CreateProductionIcon(_consumeResourceContentTransform, resourceEntry, productionCount);
+            uiManager.CreateProductionIcon(_consumeResourceContentTransform, resourceEntry, productionCount);
         }
         foreach (ResourceData resourceData in _selectedActor.data.productionResourceList)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
             int productionCount = (int)_selectedActor.data.baseProductionCount;
-            UIManager.Instance.CreateProductionIcon(_provideResourceContentTransform, resourceEntry, productionCount);
+            uiManager.CreateProductionIcon(_provideResourceContentTransform, resourceEntry, productionCount);
         }
     }
 }

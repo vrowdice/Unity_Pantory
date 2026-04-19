@@ -71,7 +71,7 @@ public class OrderCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_orderActionBtnContentTransform);
         _filterButtonList.Clear();
 
-        GameObject allBtnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+        GameObject allBtnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
         allBtnObj.transform.SetParent(_orderActionBtnContentTransform, false);
         ActionBtn allBtn = allBtnObj.GetComponent<ActionBtn>();
         allBtn.Init(LocalizationUtils.Localize("All"), () => {
@@ -82,7 +82,7 @@ public class OrderCanvas : MainCanvasPanelBase
 
         foreach (MarketActorType actorType in EnumUtils.GetAllEnumValues<MarketActorType>())
         {
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_orderActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             MarketActorType capturedType = actorType;
