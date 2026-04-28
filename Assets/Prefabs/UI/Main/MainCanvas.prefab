@@ -2614,7 +2614,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -190, y: 0.000061035156}
+  m_AnchoredPosition: {x: -190, y: 0.00024414062}
   m_SizeDelta: {x: 190, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3125783419564302356
@@ -11083,6 +11083,9 @@ MonoBehaviour:
   _buildingTypeBtnContent: {fileID: 790790657864453035}
   _buildingBtnPrefab: {fileID: 412398129040250562, guid: ca8cf8656f83546468bec330025d97f7, type: 3}
   _buildingBtnContent: {fileID: 7747889693879375877}
+  _blueprintTypeBtnPrefab: {fileID: 5843711190326734755, guid: 3daa29f785ad60d4db200a2d37f94884, type: 3}
+  _blueprintAddBtnPrefab: {fileID: 412398129040250562, guid: 5cb327f3e84b4db4f93534c77bedef3b, type: 3}
+  _blueprintSavedEntryPrefab: {fileID: 412398129040250562, guid: 217efe202fa5fad4aacf64f8dc2d67d1, type: 3}
   _autoEmployeePlacementSwitch: {fileID: 5257570787913362637}
   _removalModeSwitch: {fileID: 6085614814687480489}
   _storageCanvasPrefab: {fileID: 3873413108417295653, guid: 30056fd530b20ab46b220efa4515fd26, type: 3}

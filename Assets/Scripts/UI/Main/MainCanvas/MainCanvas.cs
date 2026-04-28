@@ -66,7 +66,7 @@ public partial class MainCanvas : CanvasBase
 
         InitBuildUi();
 
-        _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += HandleBuildingInstanceLayoutChanged;
+        _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += RefreshBuildingPlacedCountDisplays;
 
         RefreshResourceScrollView();
         UpdateAllMainText();
@@ -75,7 +75,7 @@ public partial class MainCanvas : CanvasBase
     private void OnDestroy()
     {
         if (_mainRunner != null && _mainRunner.GridHandler != null)
-            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= HandleBuildingInstanceLayoutChanged;
+            _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= RefreshBuildingPlacedCountDisplays;
 
         if (DataManager != null)
         {

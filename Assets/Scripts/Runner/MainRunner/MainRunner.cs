@@ -34,11 +34,8 @@ public class MainRunner : RunnerBase
 
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
-<<<<<<< HEAD
     private MainBlueprintHandler _blueprintHandler;
-=======
     private Coroutine _tickResourceFlowCoroutine;
->>>>>>> 87c34b1aad1411eabc32b8fba2f2ee99382d3339
 
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;

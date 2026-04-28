@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainBlueprintBtn : MonoBehaviour
+public class MainBlueprintTypeBtn : MonoBehaviour
 {
     [SerializeField] private Image _focusedImage = null;
 
@@ -15,5 +15,10 @@ public class MainBlueprintBtn : MonoBehaviour
     public void OnClick()
     {
         _mainCanvas?.OnMainBlueprintBtnClicked();
+    }
+
+    public void SetFocused(bool isFocused)
+    {
+        if (_focusedImage != null) _focusedImage.gameObject.SetActive(isFocused);
     }
 }

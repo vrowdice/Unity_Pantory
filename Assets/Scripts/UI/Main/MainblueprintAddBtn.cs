@@ -14,7 +14,7 @@ public class MainBlueprintAddBtn : MonoBehaviour
 
     public void OnClick()
     {
-        _mainCanvas?.ToggleBlueprintMode(_isSelected);
+        _mainCanvas?.ToggleBlueprintMode();
     }
 
     public void SetSelected(bool isSelected)

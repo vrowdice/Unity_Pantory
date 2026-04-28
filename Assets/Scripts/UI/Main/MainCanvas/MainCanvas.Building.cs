@@ -24,21 +24,25 @@ public partial class MainCanvas
     private readonly List<MainBuildingTypeBtn> _buildingTypeBtns = new List<MainBuildingTypeBtn>();
     private readonly List<MainBuildingBtn> _buildingBtns = new List<MainBuildingBtn>();
 
+    private MainBlueprintTypeBtn _mainBlueprintTypeBtn;
     private MainBlueprintAddBtn _blueprintAddBtn;
+    private bool _isBlueprintPanelOpen;
 
     private void InitBuildUi()
     {
         _buildingTypeBtns.Clear();
         GameManager.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
 
-        foreach (BuildingType t in EnumUtils.GetAllEnumValues<BuildingType>())
+        foreach (BuildingType buildingType in EnumUtils.GetAllEnumValues<BuildingType>())
         {
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
             btnObj.transform.SetParent(_buildingTypeBtnContent, false);
             MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
-            btn.Initialize(this, t);
+            btn.Init(this, buildingType);
             _buildingTypeBtns.Add(btn);
         }
+
+        EnsureMainBlueprintTypeButtonInContent();
 
         SelectBuildingType(BuildingType.Distribution);
     }
@@ -47,6 +51,9 @@ public partial class MainCanvas
     {
         if (isOn)
         {
+            if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
+                _mainRunner.SetBlueprintMode(false);
+            _isBlueprintPanelOpen = false;
             _selectedBuilding = null;
             _mainRunner.PlacementHandler.CancelPlacement();
             _mainRunner.PlacementHandler.StartRemoval();
@@ -78,6 +85,9 @@ public partial class MainCanvas
             return;
         }
 
+        if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
+            _mainRunner.SetBlueprintMode(false);
+        _isBlueprintPanelOpen = false;
         _selectedBuilding = buildingData;
         _removalModeSwitch.SetValue(false);
 
@@ -112,6 +122,9 @@ public partial class MainCanvas
 
     public void SelectBuildingType(BuildingType buildingType)
     {
+        if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
+            _mainRunner.SetBlueprintMode(false);
+        _isBlueprintPanelOpen = false;
         GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
         _blueprintAddBtn = null;
@@ -134,21 +147,20 @@ public partial class MainCanvas
         UpdateBuildingTypeButtonStates();
         UpdateBuildingButtonStates();
         RefreshBuildingPlacedCountDisplays();
-
-        EnsureMainBlueprintButtonInContent();
     }
 
-    private void EnsureMainBlueprintButtonInContent()
+    private void EnsureMainBlueprintTypeButtonInContent()
     {
-        GameObject blueprintBtnObj = Instantiate(_blueprintTypeBtnPrefab, _buildingBtnContent);
-        MainBlueprintBtn blueprintBtn = blueprintBtnObj.GetComponent<MainBlueprintBtn>();
+        GameObject blueprintBtnObj = Instantiate(_blueprintTypeBtnPrefab, _buildingTypeBtnContent);
+        MainBlueprintTypeBtn blueprintBtn = blueprintBtnObj.GetComponent<MainBlueprintTypeBtn>();
         blueprintBtn.Init(this);
+
+        _mainBlueprintTypeBtn = blueprintBtn;
     }
 
     public void SyncBlueprintAddButtonSelected(bool isBlueprintMode)
     {
-        if (_blueprintAddBtn != null)
-            _blueprintAddBtn.SetSelected(isBlueprintMode);
+        RefreshBlueprintUi();
     }
 
     public void AddBlueprintSavedEntryBeforeAddButton(List<PlacedBuildingSaveData> buildings)
@@ -156,6 +168,10 @@ public partial class MainCanvas
         if (buildings == null || buildings.Count == 0 || _blueprintSavedEntryPrefab == null)
             return;
 
+        if (!_isBlueprintPanelOpen)
+            return;
+
+        EnsureBlueprintAddButton();
         GameObject entryObj = Instantiate(_blueprintSavedEntryPrefab, _buildingBtnContent);
         MainBlueprintSavedBtn btn = entryObj.GetComponent<MainBlueprintSavedBtn>();
         if (btn != null)
@@ -167,31 +183,33 @@ public partial class MainCanvas
 
     public void OnMainBlueprintBtnClicked()
     {
-        if (_blueprintAddBtn == null)
-        {
-            GameObject addObj = Instantiate(_blueprintAddBtnPrefab, _buildingBtnContent);
-            _blueprintAddBtn = addObj.GetComponent<MainBlueprintAddBtn>();
-            _blueprintAddBtn.Init(this);
-            _blueprintAddBtn.SetSelected(_mainRunner.BlueprintHandler.IsBlueprintMode);
-        }
-        else
-        {
-            bool nextActive = !_blueprintAddBtn.gameObject.activeSelf;
-            _blueprintAddBtn.gameObject.SetActive(nextActive);
-        }
+        if (_isBlueprintPanelOpen)
+            return;
+
+        GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
+        _buildingBtns.Clear();
+        _blueprintAddBtn = null;
+
+        _isBlueprintPanelOpen = true;
+        _selectedBuilding = null;
+        _mainRunner.PlacementHandler.CancelPlacement();
+
+        RefreshBlueprintUi();
+        UpdateBuildingButtonStates();
     }
 
-    public void ToggleBlueprintMode(bool addBtnShowsAsSelected)
+    public void ToggleBlueprintMode()
     {
-        if (addBtnShowsAsSelected)
-            _mainRunner.SetBlueprintMode(false);
-        else
+        bool nextActive = !_mainRunner.BlueprintHandler.IsBlueprintMode;
+        if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode != nextActive)
+            _mainRunner.SetBlueprintMode(nextActive);
+        _isBlueprintPanelOpen = true;
+        if (nextActive)
         {
-            DeselectBuilding();
-            _removalModeSwitch.SetValue(false);
-            _mainRunner.SetBlueprintMode(true);
+            _selectedBuilding = null;
+            _mainRunner.PlacementHandler.CancelPlacement();
         }
-
+        RefreshBlueprintUi();
         UpdateBuildingButtonStates();
     }
 
@@ -205,6 +223,43 @@ public partial class MainCanvas
     {
         foreach (MainBuildingTypeBtn btn in _buildingTypeBtns)
             btn.SetFocused(btn.BuildingType == _selectedBuildingType);
+
+        _mainBlueprintTypeBtn.SetFocused(false);
+        _isBlueprintPanelOpen = false;
+    }
+
+    private void EnsureBlueprintAddButton()
+    {
+        if (_blueprintAddBtn != null) return;
+        GameObject addObj = Instantiate(_blueprintAddBtnPrefab, _buildingBtnContent);
+        _blueprintAddBtn = addObj.GetComponent<MainBlueprintAddBtn>();
+        _blueprintAddBtn.Init(this);
+    }
+
+    private void RefreshBlueprintUi()
+    {
+        bool isBlueprintMode = _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode;
+
+        if (_isBlueprintPanelOpen)
+        {
+            foreach (MainBuildingTypeBtn btn in _buildingTypeBtns)
+                btn.SetFocused(false);
+            _mainBlueprintTypeBtn.SetFocused(true);
+
+            EnsureBlueprintAddButton();
+            if (_blueprintAddBtn != null)
+            {
+                _blueprintAddBtn.gameObject.SetActive(true);
+                _blueprintAddBtn.SetSelected(isBlueprintMode);
+            }
+        }
+        else
+        {
+            UpdateBuildingTypeButtonStates();
+            _mainBlueprintTypeBtn.SetFocused(false);
+            if (_blueprintAddBtn != null)
+                _blueprintAddBtn.gameObject.SetActive(false);
+        }
     }
 
     private void UpdateBuildingButtonStates()
@@ -217,10 +272,5 @@ public partial class MainCanvas
     {
         for (int i = 0; i < _buildingBtns.Count; i++)
             _buildingBtns[i].RefreshPlacedCount(_mainRunner);
-    }
-
-    private void HandleBuildingInstanceLayoutChanged()
-    {
-        RefreshBuildingPlacedCountDisplays();
     }
 }

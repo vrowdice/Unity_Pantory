@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainBlueprintSavedBtn : MonoBehaviour
 {
+    [SerializeField] private Image _focusedImage = null;
     [SerializeField] private TextMeshProUGUI _label;
 
     private List<PlacedBuildingSaveData> _buildings;

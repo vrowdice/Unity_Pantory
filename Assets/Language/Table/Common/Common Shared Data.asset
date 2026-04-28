@@ -543,6 +543,10 @@ MonoBehaviour:
     m_Key: NeededForProduction
     m_Metadata:
       m_Items: []
+  - m_Id: 33831438216740864
+    m_Key: Blueprint
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

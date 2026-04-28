@@ -548,6 +548,10 @@ MonoBehaviour:
     m_Localized: Needed for production
     m_Metadata:
       m_Items: []
+  - m_Id: 33831438216740864
+    m_Localized: Blueprint
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
