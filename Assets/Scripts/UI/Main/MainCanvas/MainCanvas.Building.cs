@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Evo.UI;
 
 public partial class MainCanvas
@@ -9,6 +10,11 @@ public partial class MainCanvas
     [SerializeField] private Transform _buildingTypeBtnContent;
     [SerializeField] private GameObject _buildingBtnPrefab;
     [SerializeField] private Transform _buildingBtnContent;
+    
+    [FormerlySerializedAs("_blueprintBtnPrefab")]
+    [SerializeField] private GameObject _blueprintTypeBtnPrefab;
+    [SerializeField] private GameObject _blueprintAddBtnPrefab;
+    [SerializeField] private GameObject _blueprintSavedEntryPrefab;
     [SerializeField] private Switch _autoEmployeePlacementSwitch;
     [SerializeField] private Switch _removalModeSwitch;
 
@@ -17,6 +23,8 @@ public partial class MainCanvas
 
     private readonly List<MainBuildingTypeBtn> _buildingTypeBtns = new List<MainBuildingTypeBtn>();
     private readonly List<MainBuildingBtn> _buildingBtns = new List<MainBuildingBtn>();
+
+    private MainBlueprintAddBtn _blueprintAddBtn;
 
     private void InitBuildUi()
     {
@@ -106,6 +114,7 @@ public partial class MainCanvas
     {
         GameManager.Instance.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
+        _blueprintAddBtn = null;
 
         _selectedBuildingType = buildingType;
         List<BuildingData> list = DataManager.Building.GetBuildingDataList(buildingType);
@@ -125,6 +134,65 @@ public partial class MainCanvas
         UpdateBuildingTypeButtonStates();
         UpdateBuildingButtonStates();
         RefreshBuildingPlacedCountDisplays();
+
+        EnsureMainBlueprintButtonInContent();
+    }
+
+    private void EnsureMainBlueprintButtonInContent()
+    {
+        GameObject blueprintBtnObj = Instantiate(_blueprintTypeBtnPrefab, _buildingBtnContent);
+        MainBlueprintBtn blueprintBtn = blueprintBtnObj.GetComponent<MainBlueprintBtn>();
+        blueprintBtn.Init(this);
+    }
+
+    public void SyncBlueprintAddButtonSelected(bool isBlueprintMode)
+    {
+        if (_blueprintAddBtn != null)
+            _blueprintAddBtn.SetSelected(isBlueprintMode);
+    }
+
+    public void AddBlueprintSavedEntryBeforeAddButton(List<PlacedBuildingSaveData> buildings)
+    {
+        if (buildings == null || buildings.Count == 0 || _blueprintSavedEntryPrefab == null)
+            return;
+
+        GameObject entryObj = Instantiate(_blueprintSavedEntryPrefab, _buildingBtnContent);
+        MainBlueprintSavedBtn btn = entryObj.GetComponent<MainBlueprintSavedBtn>();
+        if (btn != null)
+            btn.Initialize(buildings);
+
+        if (_blueprintAddBtn != null)
+            entryObj.transform.SetSiblingIndex(_blueprintAddBtn.transform.GetSiblingIndex());
+    }
+
+    public void OnMainBlueprintBtnClicked()
+    {
+        if (_blueprintAddBtn == null)
+        {
+            GameObject addObj = Instantiate(_blueprintAddBtnPrefab, _buildingBtnContent);
+            _blueprintAddBtn = addObj.GetComponent<MainBlueprintAddBtn>();
+            _blueprintAddBtn.Init(this);
+            _blueprintAddBtn.SetSelected(_mainRunner.BlueprintHandler.IsBlueprintMode);
+        }
+        else
+        {
+            bool nextActive = !_blueprintAddBtn.gameObject.activeSelf;
+            _blueprintAddBtn.gameObject.SetActive(nextActive);
+        }
+    }
+
+    public void ToggleBlueprintMode(bool addBtnShowsAsSelected)
+    {
+        if (addBtnShowsAsSelected)
+            _mainRunner.SetBlueprintMode(false);
+        else
+        {
+            DeselectBuilding();
+            _removalModeSwitch.SetValue(false);
+            _mainRunner.SetBlueprintMode(true);
+        }
+
+        UpdateBuildingButtonStates();
     }
 
     public void RotateBuilding(bool clockwise)

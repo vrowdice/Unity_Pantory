@@ -130,6 +130,36 @@ public class MainBuildingGridHandler
         return list;
     }
 
+    public List<PlacedBuildingSaveData> ExportBuildingsIntersectingGridRect(Vector2Int cellMin, Vector2Int cellMax)
+    {
+        int gx0 = Mathf.Min(cellMin.x, cellMax.x);
+        int gy0 = Mathf.Min(cellMin.y, cellMax.y);
+        int gx1 = Mathf.Max(cellMin.x, cellMax.x);
+        int gy1 = Mathf.Max(cellMin.y, cellMax.y);
+
+        gx0 = Mathf.Clamp(gx0, 0, _mainRunner.GridWidth - 1);
+        gx1 = Mathf.Clamp(gx1, 0, _mainRunner.GridWidth - 1);
+        gy0 = Mathf.Clamp(gy0, 0, _mainRunner.GridHeight - 1);
+        gy1 = Mathf.Clamp(gy1, 0, _mainRunner.GridHeight - 1);
+
+        List<PlacedBuildingSaveData> list = new List<PlacedBuildingSaveData>();
+
+        foreach (BuildingObject building in _buildingObjDict.Values)
+        {
+            if (building.IsRemovalAnimating) continue;
+
+            Vector2Int o = building.Origin;
+            Vector2Int s = building.Size;
+            int bx1 = o.x + s.x - 1;
+            int by1 = o.y + s.y - 1;
+
+            if (o.x <= gx1 && bx1 >= gx0 && o.y <= gy1 && by1 >= gy0)
+                list.Add(building.ExportSaveData());
+        }
+
+        return list;
+    }
+
     public void RestoreFromSave(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
     {
         ClearAllBuildings();

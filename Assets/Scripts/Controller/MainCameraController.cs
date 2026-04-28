@@ -124,7 +124,11 @@ public class MainCameraController : MonoBehaviour
     {
         if (_mainRunner == null)
             _mainRunner = FindAnyObjectByType<MainRunner>();
-        if (_mainRunner == null || _mainRunner.PlacementHandler == null)
+        if (_mainRunner == null)
+            return false;
+        if (_mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlockingCameraDrag)
+            return true;
+        if (_mainRunner.PlacementHandler == null)
             return false;
         if (!_mainRunner.PlacementHandler.IsPlacementMode)
             return false;

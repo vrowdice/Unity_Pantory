@@ -25,9 +25,12 @@ public class MainRunner : RunnerBase
 
     private MainBuildingGridHandler _gridHandler;
     private MainBuildingPlacementHandler _placementHandler;
+    private MainBlueprintHandler _blueprintHandler;
 
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
+    public MainBlueprintHandler BlueprintHandler => _blueprintHandler;
+    public MainCanvas MainCanvas => _mainCanvas;
 
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
@@ -42,9 +45,16 @@ public class MainRunner : RunnerBase
         return true;
     }
 
+    public void SetBlueprintMode(bool active)
+    {
+        _blueprintHandler.SetBlueprintMode(active);
+        _mainCanvas?.SyncBlueprintAddButtonSelected(active);
+    }
+
     private void Update()
     {
         _placementHandler.Update(_mainCamera);
+        _blueprintHandler.Update(_mainCamera);
     }
 
     /// <summary>
@@ -59,6 +69,7 @@ public class MainRunner : RunnerBase
 
         _gridHandler = new MainBuildingGridHandler(this);
         _placementHandler = new MainBuildingPlacementHandler(this);
+        _blueprintHandler = new MainBlueprintHandler(this);
 
         transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, _cameraZOffset);
 

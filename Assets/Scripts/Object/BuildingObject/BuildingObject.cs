@@ -130,7 +130,8 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     private void Update()
     {
-        if (_mainRunner.PlacementHandler.IsPlacementMode || _mainRunner.PlacementHandler.IsRemovalMode) return;
+        if (_mainRunner.PlacementHandler.IsPlacementMode || _mainRunner.PlacementHandler.IsRemovalMode ||
+            _mainRunner.BlueprintHandler.IsBlueprintMode) return;
 
         if (Input.GetMouseButtonDown(0))
         {
