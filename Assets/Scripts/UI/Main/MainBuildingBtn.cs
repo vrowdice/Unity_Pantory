@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Evo.UI;
 using TMPro;
 
 public class MainBuildingBtn : MonoBehaviour
@@ -7,6 +8,7 @@ public class MainBuildingBtn : MonoBehaviour
     [SerializeField] private Image _image = null;
     [SerializeField] private Image _focusedImage = null;
     [SerializeField] private Image _deactivatedImage = null;
+    [SerializeField] private Evo.UI.Button _buildingHelpButton = null;
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private TextMeshProUGUI _placedCountText = null;
 
@@ -26,6 +28,12 @@ public class MainBuildingBtn : MonoBehaviour
         if (_text != null) _text.text = buildingData.id.Localize(LocalizationUtils.TABLE_BUILDING);
         if (_image != null) _image.sprite = buildingData.icon;
         if (_deactivatedImage != null) _deactivatedImage.gameObject.SetActive(!isUnlocked);
+
+        if (_buildingHelpButton != null)
+        {
+            _buildingHelpButton.onClick.RemoveListener(OnClickBuildingHelp);
+            _buildingHelpButton.onClick.AddListener(OnClickBuildingHelp);
+        }
 
         RefreshPlacedCount(runner);
     }
@@ -52,6 +60,12 @@ public class MainBuildingBtn : MonoBehaviour
     public void OnClick()
     {
         _host?.SelectBuilding(_buildingData, _isSelected, _isUnlocked);
+    }
+
+    private void OnClickBuildingHelp()
+    {
+        if (_buildingData == null) return;
+        UIManager.Instance?.ShowBuildingHelpPopup(_buildingData);
     }
 
     public void SetSelected(bool isFocused)

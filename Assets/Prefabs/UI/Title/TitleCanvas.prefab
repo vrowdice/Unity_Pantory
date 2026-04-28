@@ -169,15 +169,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -185,7 +185,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &822756018023420212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,16 +213,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.19607843, g: 0.21176471, b: 0.22745098, a: 1}
   pressedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -452,7 +452,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 100}
+  m_SizeDelta: {x: 400, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3662667058780646922
 MonoBehaviour:
@@ -568,11 +568,11 @@ MonoBehaviour:
   onSubmit:
     m_PersistentCalls:
       m_Calls: []
-  settingsFoldout: 0
-  styleFoldout: 0
-  navigationFoldout: 0
-  referencesFoldout: 0
-  eventsFoldout: 1
+  settingsFoldout: 1
+  styleFoldout: 1
+  navigationFoldout: 1
+  referencesFoldout: 1
+  eventsFoldout: 0
   enableIcon: 0
   icon: {fileID: 21300000, guid: bd4197e75ec71d24e95e8ed88e58762c, type: 3}
   iconSize: 22
@@ -814,8 +814,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1033,20 +1033,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2395683137264531222}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 0.60784316}
+  m_Color: {r: 0.9490197, g: 0.8745099, b: 0.69803923, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -685688965, guid: 42b479237123d094091b1e00e5740621, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1055,7 +1055,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &1151907918146633069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1071,10 +1071,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Top: 50
+    m_Bottom: 50
   m_ChildAlignment: 4
-  m_Spacing: 0
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -1098,10 +1098,10 @@ MonoBehaviour:
   targetImage: {fileID: 3134066482048097017}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Background (Tint)
+  colorID: Basic
   fontID: Noto
   useCustomColor: 0
-  overrideAlpha: 0
+  overrideAlpha: 1
   alphaOverride: 1
   enableInteraction: 0
   interactableObject: {fileID: 0}
@@ -1141,7 +1141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6605022950216254161
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1182,15 +1182,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1198,7 +1198,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &897679684941761955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,16 +1226,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0, g: 0, b: 0, a: 0}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 1, g: 1, b: 1, a: 0.05882353}
   pressedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -1258,7 +1258,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2199129716334402720
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1299,15 +1299,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1315,7 +1315,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &5360129618850498800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1343,16 +1343,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0, g: 0, b: 0, a: 0}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 1, g: 1, b: 1, a: 0.05882353}
   pressedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -1391,10 +1391,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3678050497674056055}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 72.87, y: -50}
-  m_SizeDelta: {x: 85.740005, y: 70}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7857333056707884216
 CanvasRenderer:
@@ -1465,7 +1465,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 84eafa975c3919745a06ff6386417a05, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1570,8 +1570,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1707,10 +1707,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2169106090958823591}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 56.332504, y: -50}
-  m_SizeDelta: {x: 52.66501, y: 70}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &245335091304523411
 CanvasRenderer:
@@ -1781,7 +1781,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: d6175a21c35fc2847b6862477c12d68a, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1886,8 +1886,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2007,7 +2007,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4666714025950060368
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2048,15 +2048,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2064,7 +2064,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &6731019131567367239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2092,16 +2092,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0, g: 0, b: 0, a: 0}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 1, g: 1, b: 1, a: 0.05882353}
   pressedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -2140,10 +2140,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3057020371401031095}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 53.012497, y: -50}
-  m_SizeDelta: {x: 46.024994, y: 70}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6046322346348614775
 CanvasRenderer:
@@ -2214,7 +2214,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: bd4197e75ec71d24e95e8ed88e58762c, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2262,7 +2262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3312685934538453684
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2303,15 +2303,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2319,7 +2319,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &7690065964979124778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2347,16 +2347,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0, g: 0, b: 0, a: 0}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 1, g: 1, b: 1, a: 0.05882353}
   pressedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -2453,7 +2453,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -450, y: 0}
+  m_AnchoredPosition: {x: -450, y: 150}
   m_SizeDelta: {x: 700, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6683043423980733555
@@ -2609,7 +2609,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 100}
+  m_SizeDelta: {x: 400, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6723627135796346369
 MonoBehaviour:
@@ -2814,10 +2814,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 943905763177593408}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50.7275, y: -50}
-  m_SizeDelta: {x: 41.455, y: 70}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2678430950261860003
 CanvasRenderer:
@@ -2888,7 +2888,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: a3871bb9da6c4ae408b03b7244bd80db, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3131,15 +3131,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3147,7 +3147,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &3664462233119049357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3175,16 +3175,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.19607843, g: 0.21176471, b: 0.22745098, a: 1}
   pressedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -3248,15 +3248,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3264,7 +3264,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &5577055651840129799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3292,16 +3292,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.19607843, g: 0.21176471, b: 0.22745098, a: 1}
   pressedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -3381,8 +3381,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3660,15 +3660,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4595570721398598937, guid: 42b479237123d094091b1e00e5740621, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 1331115341, guid: 42b479237123d094091b1e00e5740621, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3676,7 +3676,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.75
+  m_PixelsPerUnitMultiplier: 0.1
 --- !u!114 &966208557921539298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3704,16 +3704,16 @@ MonoBehaviour:
     stylerID: 
     color: {r: 0, g: 0, b: 0, a: 0}
   normalColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   highlightedColor:
-    stylerID: Primary
+    stylerID: Background
     color: {r: 0.19607843, g: 0.21176471, b: 0.22745098, a: 1}
   pressedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   selectedColor:
-    stylerID: Primary (Tint)
+    stylerID: Background (Tint)
     color: {r: 1, g: 1, b: 1, a: 1}
   referencesFoldout: 1
   settingsFoldout: 1
@@ -3756,7 +3756,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 100}
+  m_SizeDelta: {x: 400, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7972488507924056144
 MonoBehaviour:
@@ -4185,7 +4185,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 100}
+  m_SizeDelta: {x: 400, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7463703830448195945
 MonoBehaviour:
@@ -4304,7 +4304,7 @@ MonoBehaviour:
   settingsFoldout: 0
   styleFoldout: 0
   navigationFoldout: 0
-  referencesFoldout: 0
+  referencesFoldout: 1
   eventsFoldout: 1
   enableIcon: 0
   icon: {fileID: 21300000, guid: a3871bb9da6c4ae408b03b7244bd80db, type: 3}

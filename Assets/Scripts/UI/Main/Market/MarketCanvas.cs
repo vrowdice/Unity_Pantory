@@ -47,12 +47,18 @@ public class MarketCanvas : MainCanvasPanelBase
         }
     }
 
+    private void OnDisable()
+    {
+        if (_dataManager != null)
+            _dataManager.Time.OnDayChanged -= HandleDayChanged;
+    }
+
     /// <summary>
     /// 상단 탭 버튼(Resources, Traders)을 생성하고 초기화합니다.
     /// </summary>
     private void SetupActionButtons()
     {
-        if (UIManager.Instance?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
+        if (_panelUIManager?.ActionBtnPrefab == null || _marketActionBtnContentTransform == null)
         {
             return;
         }
@@ -79,7 +85,7 @@ public class MarketCanvas : MainCanvasPanelBase
         List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
         foreach (MarketPanelType panelType in panelTypes)
         {
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_marketActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)

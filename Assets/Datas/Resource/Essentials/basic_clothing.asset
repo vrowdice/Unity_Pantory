@@ -14,15 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: basic_clothing
   displayName: Basic Clothing
-  baseValue: 170
-  volatilityMultiplier: 1
-  maxPriceMultiplier: 10
+  baseValue: 321
   type: 3
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: d27166c7e4ced4b479f453d5c397583b, type: 3}
   description: Simple, durable clothing made from basic fabric. Practical and comfortable
     for everyday wear.
   requirements:
   - resource: {fileID: 11400000, guid: e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9, type: 2}
     count: 3
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 0

@@ -14,7 +14,7 @@ public class NewspaperPanel : MonoBehaviour
 
     public void Init(NewsState newsState, NewsCanvas newsPanel)
     {
-        _dataManager = DataManager.Instance;
+        _dataManager = newsPanel.Host.DataManager;
         _newsPanel = newsPanel;
 
         NewsData newsData = _dataManager.News.GetNewsData(newsState.id);

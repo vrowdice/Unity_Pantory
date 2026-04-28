@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : Singleton<SoundManager>
 {
@@ -19,9 +20,6 @@ public class SoundManager : Singleton<SoundManager>
     private float _bgmVolume = 0.5f;
     private float _sfxVolume = 1.0f;
     
-    private const string PREFS_BGM_VOLUME = "BGM_Volume";
-    private const string PREFS_SFX_VOLUME = "SFX_Volume";
-
     private static System.Type _audioManagerType;
     private static FieldInfo _onPlaySoundEventField;
     private Action<AudioClip, float> _evoAudioEventHandler;
@@ -34,11 +32,22 @@ public class SoundManager : Singleton<SoundManager>
         
         InitPool();
         SubscribeToEvoAudioManager();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDestroy()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         UnsubscribeFromEvoAudioManager();
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SaveLoadManager saveLoad = SaveLoadManager.Instance;
+        if (saveLoad != null)
+        {
+            saveLoad.TryApplyUserSettingsVolumesToSound();
+        }
     }
 
     private void SubscribeToEvoAudioManager()
@@ -126,18 +135,18 @@ public class SoundManager : Singleton<SoundManager>
     
     private void LoadVolumeSettings()
     {
-        _bgmVolume = PlayerPrefs.GetFloat(PREFS_BGM_VOLUME, 0.5f);
-        _sfxVolume = PlayerPrefs.GetFloat(PREFS_SFX_VOLUME, 1.0f);
-        
+        _bgmVolume = 0.5f;
+        _sfxVolume = 1f;
         ApplyBGMVolume();
         ApplySFXVolume();
     }
-    
-    private void SaveVolumeSettings()
+
+    public void ApplyVolumesFromUserSettings(float bgmVolume, float sfxVolume)
     {
-        PlayerPrefs.SetFloat(PREFS_BGM_VOLUME, _bgmVolume);
-        PlayerPrefs.SetFloat(PREFS_SFX_VOLUME, _sfxVolume);
-        PlayerPrefs.Save();
+        _bgmVolume = Mathf.Clamp01(bgmVolume);
+        _sfxVolume = Mathf.Clamp01(sfxVolume);
+        ApplyBGMVolume();
+        ApplySFXVolume();
     }
     
     private void ApplyBGMVolume()
@@ -261,6 +270,10 @@ public class SoundManager : Singleton<SoundManager>
     
     public void SaveSettings()
     {
-        SaveVolumeSettings();
+        SaveLoadManager saveLoad = SaveLoadManager.Instance;
+        if (saveLoad != null)
+        {
+            saveLoad.SaveUserSettingsFromCurrentState();
+        }
     }
 }

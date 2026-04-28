@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A prestigious noble family maintaining their ancestral estate, requiring
     fine furniture, luxury goods, and premium materials for their opulent lifestyle.
   marketActorType: 2
-  baseWealth: 180000
-  baseProductionCount: 25
+  baseWealth: 4500000
+  baseProductionCount: 110
   comsumeResourceList:
   - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}

@@ -29,13 +29,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 575934971904
-    m_Localized: First, let me explain how to play the game. You can view the tutorial
-      at any time by clicking the question mark button in each window.
+    m_Localized: First, a quick overview of the UI. You can reopen this help anytime
+      with the (?) button on each main panel.
     m_Metadata:
       m_Items: []
   - m_Id: 1678642659328
-    m_Localized: You can see where your capital is going with the Credits and Research
-      Points buttons in the top left.
+    m_Localized: Credits and Research Points are shown at the top left; tap there
+      for details.
     m_Metadata:
       m_Items: []
   - m_Id: 2291514359808
@@ -44,13 +44,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2320476028928
-    m_Localized: This container has the clock, time adjustment, tutorial, and settings
-      buttons.
+    m_Localized: This strip shows the in-game date and clock, plus buttons to reopen
+      the tutorial or open settings.
     m_Metadata:
       m_Items: []
   - m_Id: 2777508364288
-    m_Localized: This is where the buttons for quickly switching between each important
-      panel are located.
+    m_Localized: Use these icons to jump between Storage, Orders, Market, Staff, Research,
+      News, and Finance. You can also press F1 through F9 for the same shortcuts.
     m_Metadata:
       m_Items: []
   - m_Id: 5943566155776
@@ -60,10 +60,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7203816095744
-    m_Localized: Basic flow is Unload Station -> Road Network -> Production Building
-      -> Road Network -> Load Station. Unload stations provide source resources,
-      production buildings convert them, and load stations act as sinks that move
-      finished products into storage.
+    m_Localized: Typical flow is Unload → roads → production buildings → roads →
+      Load. Unload pulls raw materials in, factories process them, and Load sends
+      finished goods toward storage.
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
@@ -103,19 +102,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 13340426780672
-    m_Localized: Resources have categories corresponding to each resource, and you
-      can filter resources by category in the resource panel.
+    m_Localized: Every resource belongs to a category; use the filters here to narrow
+      the list.
     m_Metadata:
       m_Items: []
   - m_Id: 17836750028800
-    m_Localized: This is the order panel. Each group requests resources from you,
-      and you accept the requests and submit the resources.
+    m_Localized: This is the Orders panel. Clients request materials; accept a contract,
+      then deliver the listed resources before the deadline.
     m_Metadata:
       m_Items: []
   - m_Id: 17928651423744
-    m_Localized: Each order comes from the Market, Company, and Government, and the
-      size of the order tends to increase in that order. The size of the order may
-      also vary depending on your company's Wealth.
+    m_Localized: Clients belong to three types—Government, Company, and Individual.
+      Higher Wealth unlocks access to Government and Company jobs, and requested
+      quantities scale with your Wealth as well.
     m_Metadata:
       m_Items: []
   - m_Id: 18539786682368
@@ -123,8 +122,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 18834268766208
-    m_Localized: If you accept an order, you can view the accepted orders through
-      this toggle.
+    m_Localized: Use this switch to move between new requests and contracts you have
+      already accepted.
     m_Metadata:
       m_Items: []
   - m_Id: 19061579071488
@@ -216,8 +215,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2562738453102592
-    m_Localized: This is the research tree. Completed research is highlighted, and
-      the next connected research becomes available to unlock.
+    m_Localized: This is the research tree. Finished nodes are tinted, and the next
+      linked projects unlock once their prerequisites are met.
     m_Metadata:
       m_Items: []
   - m_Id: 2563160425250816

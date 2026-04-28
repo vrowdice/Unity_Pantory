@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class RunnerBase : MonoBehaviour
@@ -18,16 +19,34 @@ public class RunnerBase : MonoBehaviour
     public virtual void Init()
     {
         GameManager = GameManager.Instance;
+        if (GameManager == null)
+        {
+            Debug.LogError("[RunnerBase] GameManager.Instance is null.");
+            throw new InvalidOperationException("GameManager.Instance is null.");
+        }
+
         DataManager = DataManager.Instance;
+        if (DataManager == null)
+        {
+            Debug.LogError("[RunnerBase] DataManager.Instance is null.");
+            throw new InvalidOperationException("DataManager.Instance is null.");
+        }
+
         SoundManager = SoundManager.Instance;
+        if (SoundManager == null)
+        {
+            Debug.LogError("[RunnerBase] SoundManager.Instance is null.");
+            throw new InvalidOperationException("SoundManager.Instance is null.");
+        }
+
         MainCamera = Camera.main;
 
-        if(_canvasBase == null)
+        if (_canvasBase == null)
         {
             _canvasBase = FindAnyObjectByType<CanvasBase>();
         }
 
-        if(_bgmSource != null)
+        if (_bgmSource != null)
         {
             SoundManager.PlayBGM(_bgmSource);
         }

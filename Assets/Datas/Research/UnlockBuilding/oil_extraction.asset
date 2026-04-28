@@ -20,7 +20,7 @@ MonoBehaviour:
     Requires very high maintenance costs, but forms the foundation of chemical industry
     and fuel production.
   isDefaultUnlocked: 0
-  researchPointCost: 1500
+  researchPointCost: 3200
   unlockResearchList:
   - {fileID: 11400000, guid: 83b8f7012fcac67439b4d0d15ceb7691, type: 2}
   effects: []

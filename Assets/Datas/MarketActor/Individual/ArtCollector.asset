@@ -18,8 +18,8 @@ MonoBehaviour:
   description: An avid collector of fine art and craftsmanship, seeking premium furniture,
     luxury clothing, and fine wood for their extensive collection.
   marketActorType: 2
-  baseWealth: 140000
-  baseProductionCount: 24
+  baseWealth: 2600000
+  baseProductionCount: 90
   comsumeResourceList:
   - {fileID: 11400000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 2}
   - {fileID: 11400000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 2}

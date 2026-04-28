@@ -28,7 +28,7 @@
 | volatilityMultiplier | 0.01 |
 | maxChangePriceMultiplier | 1.2 |
 | priceHistoryCapacity | 60 |
-| transactionFee | 0.06 |
+| transactionFee | 0.03 |
 
 개별 자원의 `marketSensitivity`, `meanReversionStrength` 등은 **각 `ResourceData` 자산**에만 있는 경우가 많습니다.
 
@@ -40,62 +40,65 @@
 
 | id | type | baseValue | initial | recipe |
 |----|------|-----------|---------|--------|
-| aluminum_ore | raw | 60 | 40 | - |
-| coal | raw | 20 | 80 | - |
-| copper_ore | raw | 40 | 60 | - |
-| gold_ore | raw | 160 | 15 | - |
-| iron_ore | raw | 28 | 80 | - |
-| oil | raw | 32 | 50 | - |
-| wood_log | raw | 22 | 200 | - *(primaryOutputPerBatch: 2)* |
-| aluminum_ingot | metal | 190 | 0 | aluminum_ore ×3 |
-| copper_ingot | metal | 130 | 0 | copper_ore ×3 |
-| iron_ingot | metal | 95 | 60 | iron_ore ×3 |
-| pure_gold | metal | 530 | 0 | gold_ore ×3 |
-| steel_ingot | metal | 220 | 0 | iron_ingot ×2 |
-| heavy_arms | weapon | 4500 | 0 | steel_ingot ×10, machine_parts ×5 |
-| munitions | weapon | 320 | 0 | steel_ingot ×1, coal ×1 |
-| small_arms | weapon | 950 | 0 | steel_ingot ×2, fine_wood ×1, machine_parts ×1 |
-| basic_clothing | essentials | 170 | 0 | fabric ×3 |
-| basic_furniture | essentials | 750 | 0 | fine_wood ×3, machine_parts ×1 |
-| simple_tools | essentials | 230 | 15 | iron_ingot ×1, fine_wood ×1 |
-| premium_clothing | luxuries | 950 | 0 | fabric ×5, pure_gold ×1 |
-| premium_furniture | luxuries | 1800 | 0 | premium_wood ×3, fabric ×2, machine_parts ×4 |
-| electronic_components | component | 340 | 0 | copper_ingot ×1, aluminum_ingot ×1 |
-| engine | component | 900 | 0 | machine_parts ×1, electronic_components ×1, steel_ingot ×1 |
-| fabric | component | 45 | 0 | oil ×1 |
-| fine_wood | component | 50 | 30 | wood_log ×2 |
-| machine_parts | component | 220 | 20 | iron_ingot ×2 |
-| precision_tools | component | 520 | 10 | steel_ingot ×1, machine_parts ×1 |
-| premium_wood | component | 140 | 0 | fine_wood ×2 |
-| airplane | vehicle | 8000 | 0 | engine ×2, aluminum_ingot ×10, electronic_components ×5, small_arms ×1 |
-| car | vehicle | 3000 | 0 | engine ×1, steel_ingot ×2, electronic_components ×2, oil ×2, aluminum_ingot ×1 |
-| tank | vehicle | 13500 | 0 | engine ×1, heavy_arms ×1, steel_ingot ×20, machine_parts ×5 |
+| aluminum_ore | raw | 78 | 40 | - |
+| coal | raw | 26 | 80 | - |
+| copper_ore | raw | 52 | 60 | - |
+| gold_ore | raw | 208 | 15 | - |
+| iron_ore | raw | 36 | 80 | - |
+| oil | raw | 42 | 50 | - |
+| wood_log | raw | 29 | 200 | - *(primaryOutputPerBatch: 2)* |
+| aluminum_ingot | metal | 247 | 0 | aluminum_ore ×3 |
+| copper_ingot | metal | 169 | 0 | copper_ore ×3 |
+| iron_ingot | metal | 124 | 60 | iron_ore ×3 |
+| pure_gold | metal | 689 | 0 | gold_ore ×3 |
+| steel_ingot | metal | 286 | 0 | iron_ingot ×2 |
+| heavy_arms | weapon | 5850 | 0 | steel_ingot ×10, machine_parts ×5 |
+| munitions | weapon | 416 | 0 | steel_ingot ×1, coal ×1 |
+| small_arms | weapon | 1235 | 0 | steel_ingot ×2, fine_wood ×1, machine_parts ×1 |
+| basic_clothing | essentials | 221 | 0 | fabric ×3 |
+| basic_furniture | essentials | 975 | 0 | fine_wood ×3, machine_parts ×1 |
+| simple_tools | essentials | 299 | 15 | iron_ingot ×1, fine_wood ×1 |
+| premium_clothing | luxuries | 1235 | 0 | fabric ×5, pure_gold ×1 |
+| premium_furniture | luxuries | 2340 | 0 | premium_wood ×3, fabric ×2, machine_parts ×4 |
+| electronic_components | component | 442 | 0 | copper_ingot ×1, aluminum_ingot ×1 |
+| engine | component | 1170 | 0 | machine_parts ×1, electronic_components ×1, steel_ingot ×1 |
+| fabric | component | 59 | 0 | oil ×1 |
+| fine_wood | component | 65 | 30 | wood_log ×2 |
+| machine_parts | component | 286 | 20 | iron_ingot ×2 |
+| precision_tools | component | 676 | 10 | steel_ingot ×1, machine_parts ×1 |
+| premium_wood | component | 182 | 0 | fine_wood ×2 |
+| airplane | vehicle | 10400 | 0 | engine ×2, aluminum_ingot ×10, electronic_components ×5, small_arms ×1 |
+| car | vehicle | 3900 | 0 | engine ×1, steel_ingot ×2, electronic_components ×2, oil ×2, aluminum_ingot ×1 |
+| tank | vehicle | 17550 | 0 | engine ×1, heavy_arms ×1, steel_ingot ×20, machine_parts ×5 |
 
 **변경 메모:** `fine_wood.asset`의 입력 레시피를 `wood_log ×2`로 정상화했습니다. (이전에는 `resource: {fileID: 0}`로 입력이 무시되어 공짜 생산 가능성이 있었습니다.)
 
 ---
 
-## 건물 (`Assets/Datas/Building`, 15종)
+## 건물 (`Assets/Datas/Building`, 18종)
 
 파일 `weapon_plant.asset`의 **`id`는 `military_plant`** (파일명과 불일치).
 
 | id | buildCost | maintenanceCost /일 |
 |----|-----------|---------------------|
-| logging_camp | 140 | 15 |
-| road | 10 | 0 |
-| mine | 500 | 35 |
-| light_factory | 240 | 18 |
-| vehicle_plant | 800 | 70 |
-| unload | 100 | 5 |
-| oil_pump | 600 | 25 |
-| engine_plant | 450 | 30 |
-| component_plant | 280 | 25 |
-| military_plant | 450 | 35 |
-| heavy_factory | 500 | 40 |
-| sawmill | 180 | 15 |
-| chemical_plant | 250 | 18 |
-| smelter | 200 | 18 |
-| load | 100 | 5 |
+| chemical_plant | 9600 | 18 |
+| component_plant | 10800 | 25 |
+| engine_plant | 16800 | 30 |
+| gold_mine | 23400 | 48 |
+| heavy_factory | 18600 | 40 |
+| light_factory | 9000 | 18 |
+| load | 3900 | 5 |
+| logging_camp | 5400 | 15 |
+| mine | 18600 | 35 |
+| military_plant | 16800 | 35 |
+| oil_pump | 22200 | 25 |
+| road | 300 | 0 |
+| sawmill | 6900 | 15 |
+| smelter | 7800 | 18 |
+| splitter | 750 | 1 |
+| tunnel | 900 | 1 |
+| unload | 3900 | 5 |
+| vehicle_plant | 29400 | 70 |
 
 배치 상한·수급 보너스 등은 건물 데이터가 아닌 **`Effect`**(예: RawResourceSearch, `Building_MaxPlacedCount`)와 연구 완료 상태에 묶인 경우가 많습니다.
 
@@ -103,30 +106,38 @@
 
 ## 연구 (`Assets/Datas/Research`)
 
+**연구 인력 스케일 전제:** 연구원은 시스템상 **재화가 있으면 고용을 반복해 늘릴 수 있음** (상한은 경제·급여·만족도 등으로 사실상 제한).  
+밸런스·일수 추정은 “고정 N명”이 아니라 **그 시점 현금흐름이 감당하는 연구원 수 → 일일 RP**가 선형으로 커진다는 전제로 잡는다. 연구비는 대략 `(목표 해금 일수) × (그때 기대 일일 RP)`로 역산해 맞추는 편이 안전하다.
+
+**초반 유치 가정(플레이 검증):** 초반에도 연구원 **약 30~50명** 정도는 경제적으로 유지 가능한 구간이 있다.  
+`researchPointsPerResearcher = 1`, 효율을 대략 `0.5~1.0`으로 두면 일일 RP는 대략 **15~50** 수준 → 예: `mining`(1400 RP)은 대략 **28~93일** 규모로 읽을 수 있다 (`ResearchDataHandler.CalculateDailyRPProduction` 기준).
+
 ### 건물 언락 (`UnlockBuilding/`)
 
 | id | researchPointCost |
 |----|-------------------|
 | factory_basics | 0 |
-| mining | 700 |
-| smelting | 850 |
-| components | 1000 |
-| oil_extraction | 1500 |
-| chemical_processing | 1800 |
-| engine_manufacturing | 2300 |
-| heavy_industry | 2800 |
-| military_production | 3600 |
-| vehicle_assembly | 5000 |
+| mining | 1400 |
+| smelting | 1700 |
+| components | 2000 |
+| oil_extraction | 3200 |
+| chemical_processing | 4000 |
+| engine_manufacturing | 5500 |
+| heavy_industry | 7000 |
+| military_production | 9500 |
+| vehicle_assembly | 15000 |
+| unlock_gold_mine | 1500 |
 
 ### 원자재 탐색 (`RawResourceSearch/`)
 
-`search_*` 계열은 티어별 점진 해금으로 조정:
+`search_*` 계열: 직전 커브 대비 **tier2~3은 약 3배**, **tier4~5는 3배보다 더 올려** 후반 편차를 크게 준다 (forest/mine/oil 동일 티어 비용).
 
 | 계열 | tier1 | tier2 | tier3 | tier4 | tier5 |
 |------|-------|-------|-------|-------|-------|
-| forest | 0 | 120 | 260 | 450 | 700 |
-| mine | 0 | 120 | 260 | 450 | 700 |
-| oil | 0 | 120 | 260 | 450 | 700 |
+| forest | 0 | 720 | 1620 | 4500 | 12000 |
+| mine | 0 | 720 | 1620 | 4500 | 12000 |
+| oil | 0 | 720 | 1620 | 4500 | 12000 |
+| gold_mine | 0 | 1000 | 2200 | 8000 | — |
 
 ---
 
@@ -143,9 +154,9 @@
 
 ### 연구 비용 커브 검증 체크리스트
 
-- `UnlockBuilding` 커브는 초반(700~1000), 중반(1500~2800), 후반(3600~5000)으로 단계가 분리되어야 함
+- `UnlockBuilding` 커브는 초반(1400~2000), 중반(3200~7000), 후반(9500~15000)으로 단계가 분리되어야 함
 - `RawResourceSearch`는 각 라인 tier1 무료 + tier2~5 점진 상승 구조가 유지되어야 함
-- 특정 티어에서 체감이 급락하면 **연구비 인하보다 RP 생산식(연구원 효율/일일 RP 계산)**을 우선 점검
+- 특정 티어에서 체감이 급락하면 **연구비 인하보다 RP 생산식(연구원 효율/일일 RP 계산·정수 버림)과 고용·급여 곡선**을 우선 점검 (연구원은 재화로 스케일 가능)
 - 50년+ 템포 기준에서 "느림"은 허용되지만, **선택 불능(사실상 해금 불가)** 상태는 비정상으로 간주
 
 ---

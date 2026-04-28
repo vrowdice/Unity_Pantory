@@ -47,9 +47,23 @@ public class GameSaveData
     // Effect Data
     public EffectStateSaveData effects = new EffectStateSaveData();
 
+    // Player (tutorial auto-show pending by owner object name, JsonUtility는 Dictionary 미지원)
+    public List<TutorialAutoShowPendingSaveData> tutorialAutoShowPending = new List<TutorialAutoShowPendingSaveData>();
+
     // Placed Objects (Main building/road layout)
     public List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
     public List<PlacedRoadSaveData> placedRoads = new List<PlacedRoadSaveData>();
+}
+
+/// <summary>
+/// 튜토리얼 자동 표시 여부 (TutorialBase 오브젝트 이름 기준).
+/// pendingAutoShow == true: 아직 끝까지 보지 않았거나 자동 표시 대기, false: 완료 후 자동 표시 안 함.
+/// </summary>
+[Serializable]
+public class TutorialAutoShowPendingSaveData
+{
+    public string ownerGameObjectName;
+    public bool pendingAutoShow;
 }
 
 /// <summary>

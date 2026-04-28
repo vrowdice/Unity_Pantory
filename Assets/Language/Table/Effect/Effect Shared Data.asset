@@ -139,6 +139,10 @@ MonoBehaviour:
     m_Key: oil_pump_max_placed
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000032
+    m_Key: gold_mine_max_placed
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

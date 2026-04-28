@@ -26,10 +26,12 @@ public class EmployeeTopInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _managerSatisfactionText;
 
     private DataManager _dataManager;
+    private VisualManager _visualManager;
 
-    public void Init(DataManager dataManager)
+    public void Init(DataManager dataManager, VisualManager visualManager)
     {
         _dataManager = dataManager;
+        _visualManager = visualManager;
 
         if (_dataManager == null)
         {
@@ -112,17 +114,15 @@ public class EmployeeTopInfoPanel : MonoBehaviour
         {
             _dataManager.Employee.GetManagementInfo(out int currentManagers, out int requiredManagers);
             
-            if (VisualManager.Instance != null)
+            if (_visualManager != null)
             {
                 if (requiredManagers <= 0 || currentManagers >= requiredManagers)
                 {
-                    // 충분함: VisualManager에서 색상 가져오기
-                    _managementFillImage.color = VisualManager.Instance.ManagementSufficientColor;
+                    _managementFillImage.color = _visualManager.ManagementSufficientColor;
                 }
                 else
                 {
-                    // 부족함: VisualManager에서 색상 가져오기
-                    _managementFillImage.color = VisualManager.Instance.ManagementInsufficientColor;
+                    _managementFillImage.color = _visualManager.ManagementInsufficientColor;
                 }
             }
             else

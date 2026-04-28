@@ -14,13 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: oil
   displayName: Oil
-  baseValue: 32
-  volatilityMultiplier: 1.5
-  maxPriceMultiplier: 10
+  baseValue: 30
   type: 0
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: da9e73387f0ab3644bf0dbe9ebd100ce, type: 3}
   description: Black gold. Material for synthetic textiles, plastics, and fuel for
     tanks and aircraft.
   requirements: []
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 50

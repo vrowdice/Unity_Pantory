@@ -60,7 +60,7 @@ public class FinanceCanvas : MainCanvasPanelBase
         long currentProfit = finances.Credit - lastMonthCredit;
 
         _monthlyProfitText.text = ReplaceUtils.FormatNumberWithCommas(currentProfit);
-        _monthlyProfitText.color = VisualManager.Instance.GetDeltaColor(currentProfit);
+        _monthlyProfitText.color = _visualManager.GetDeltaColor(currentProfit);
 
         long lastMonthWealth = finances.MonthlyWealthHistory.LastOrDefault();
         long wealthChange = finances.Wealth - lastMonthWealth;
@@ -72,7 +72,7 @@ public class FinanceCanvas : MainCanvasPanelBase
         }
 
         _monthlyGrowthRateText.text = $"{growthRate:F2}%";
-        _monthlyGrowthRateText.color = VisualManager.Instance.GetDeltaColor(growthRate);
+        _monthlyGrowthRateText.color = _visualManager.GetDeltaColor(growthRate);
     }
 
     private void UpdateCharts()

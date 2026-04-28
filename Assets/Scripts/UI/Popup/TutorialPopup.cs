@@ -98,6 +98,7 @@ public class TutorialPopup : PopupBase
         }
 
         transform.DOKill();
+        DataManager.Instance?.Player?.MarkTutorialSequenceFinishedForOwner(_gameObjectName);
         CloseAndDestroy();
     }
 

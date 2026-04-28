@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A powerful trade association pooling resources to purchase various
     goods for distribution across trade routes and markets.
   marketActorType: 2
-  baseWealth: 160000
-  baseProductionCount: 35
+  baseWealth: 3400000
+  baseProductionCount: 115
   comsumeResourceList:
   - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

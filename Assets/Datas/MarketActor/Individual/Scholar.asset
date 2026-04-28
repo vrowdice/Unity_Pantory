@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A learned academic conducting research, requiring electronic components,
     precision tools, and basic materials for experiments and scholarly work.
   marketActorType: 2
-  baseWealth: 80000
-  baseProductionCount: 22
+  baseWealth: 1200000
+  baseProductionCount: 55
   comsumeResourceList:
   - {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
   - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}

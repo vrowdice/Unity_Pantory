@@ -270,6 +270,46 @@ MonoBehaviour:
     m_Localized: 분지 단위 탐사 체계를 완성해 유정 설치 한도를 최대로 올립니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266025
+    m_Localized: 금광 조사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267025
+    m_Localized: 금맥·노출 조사로 금광 설치 한도를 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266026
+    m_Localized: 금광 조사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267026
+    m_Localized: 시료와 지질 모델을 보강해 금광 설치 한도를 더 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266027
+    m_Localized: 금광 조사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267027
+    m_Localized: 심부 매장 조사로 금광 가동 규모를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266028
+    m_Localized: 금광 조사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267028
+    m_Localized: 매장량 추정과 물류 분석으로 병렬 채굴 한도를 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266029
+    m_Localized: 금광 건설 허가
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267029
+    m_Localized: 금맥 전용 채굴 시설인 금광을 건설할 수 있게 합니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

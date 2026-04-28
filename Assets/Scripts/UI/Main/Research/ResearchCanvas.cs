@@ -69,7 +69,7 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     private void SetupResearchTypeButtons()
     {
-        if (UIManager.Instance?.ActionBtnPrefab == null || _researchActionBtnContent == null)
+        if (_panelUIManager?.ActionBtnPrefab == null || _researchActionBtnContent == null)
         {
             return;
         }
@@ -96,7 +96,7 @@ public class ResearchCanvas : MainCanvasPanelBase
 
         foreach (ResearchType researchType in EnumUtils.GetAllEnumValues<ResearchType>())
         {
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_researchActionBtnContent, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
@@ -193,7 +193,7 @@ public class ResearchCanvas : MainCanvasPanelBase
             _buttonMap.Add(data.id, btnObj.GetComponent<RectTransform>());
 
             ResearchBtn script = btnObj.GetComponent<ResearchBtn>();
-            script.Init(entry);
+            script.Init(entry, this);
         }
 
         if (data.unlockResearchList == null)
@@ -258,8 +258,7 @@ public class ResearchCanvas : MainCanvasPanelBase
         long researchPoints = _dataManager.Research.ResearchPoint;
         long deltaResearch = _dataManager.Research.CalculateDailyRPProduction();
         _researchPointText.text = $"{ReplaceUtils.FormatNumberWithCommas(researchPoints)} +{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
-        VisualManager visualManager = VisualManager.Instance;
-        _researchPointText.color = visualManager.GetDeltaColor(deltaResearch);
+        _researchPointText.color = _visualManager.GetDeltaColor(deltaResearch);
         _researcherText.text = _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Researcher).ToString();
     }
 

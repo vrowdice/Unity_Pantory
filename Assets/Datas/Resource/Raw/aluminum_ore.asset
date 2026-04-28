@@ -14,12 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: aluminum_ore
   displayName: Aluminum Ore
-  baseValue: 60
-  volatilityMultiplier: 1.1
-  maxPriceMultiplier: 10
+  baseValue: 70
   type: 0
-  nextStage: {fileID: 11400000, guid: d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0, type: 2}
   icon: {fileID: 21300000, guid: 31ea3ce6dfcb5d04988666ef59c0331b, type: 3}
   description: Lightweight and strong metal. Material for aircraft and advanced vehicles.
   requirements: []
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 40

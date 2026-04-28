@@ -227,6 +227,46 @@ MonoBehaviour:
     m_Key: search_oil_5_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266025
+    m_Key: search_gold_mine_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267025
+    m_Key: search_gold_mine_1_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266026
+    m_Key: search_gold_mine_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267026
+    m_Key: search_gold_mine_2_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266027
+    m_Key: search_gold_mine_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267027
+    m_Key: search_gold_mine_3_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266028
+    m_Key: search_gold_mine_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267028
+    m_Key: search_gold_mine_4_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266029
+    m_Key: unlock_gold_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267029
+    m_Key: unlock_gold_mine_Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

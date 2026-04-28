@@ -29,6 +29,12 @@ public class StorageCanvas : MainCanvasPanelBase
         RefreshCurrentResourceTypeList();
     }
 
+    private void OnDisable()
+    {
+        if (_dataManager != null)
+            _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
+    }
+
     /// <summary>
     /// 리소스 타입 버튼 초기화
     /// </summary>
@@ -68,7 +74,7 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void CreateCategoryButton(ResourceType? type, string label)
     {
-        GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+        GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
         btnObj.transform.SetParent(_resourceTypeScrollViewContentTransform, false);
         ActionBtn btn = btnObj.GetComponent<ActionBtn>();
         
@@ -113,6 +119,9 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshCurrentResourceTypeList()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         ScrollRect scroll = _resourceScrollViewContentTransform.GetComponentInParent<ScrollRect>();
         if (scroll != null)
         {

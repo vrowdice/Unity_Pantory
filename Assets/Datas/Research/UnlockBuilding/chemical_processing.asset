@@ -20,6 +20,6 @@ MonoBehaviour:
     and complement to lumber mills, reducing wood dependency through petroleum-based
     fabric production.
   isDefaultUnlocked: 0
-  researchPointCost: 1800
+  researchPointCost: 4000
   unlockResearchList: []
   effects: []

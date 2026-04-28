@@ -57,6 +57,8 @@ MonoBehaviour:
   _marketActorInfoPopupPrefab: {fileID: 7666810672625045054, guid: 0cb468b0d2132834a821944f98e6ea1b, type: 3}
   _newsPopupPrefab: {fileID: 327056185864102878, guid: 4aa7c27e2f4ef744fa8b1e4db441b548, type: 3}
   _buildingInfoPopupPrefab: {fileID: 6163961443899142450, guid: df24f486dc67cd3408253465675208e3, type: 3}
+  _buildingHelpPopupPrefab: {fileID: 6163961443899142450, guid: 3c796d09395c0194e9e6b5fa130a9f51, type: 3}
+  _resourceHelpPopupPrefab: {fileID: 6163961443899142450, guid: 8492d47fceb381d449ccc73f1e5b0c6a, type: 3}
   _productionInfoImagePrefab: {fileID: 5771970779451289389, guid: d4720c548accef4458b69d7fed340c43, type: 3}
   _gridSortContentPrefab: {fileID: 9210800356017659960, guid: 4f082e6a291457548b44223e7a304a2c, type: 3}
   _textPairPanelPrefab: {fileID: 5195975711048486128, guid: 2af1b22cca5536341a68e8ab542df466, type: 3}

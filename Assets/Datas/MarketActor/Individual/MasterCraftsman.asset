@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A renowned artisan specializing in fine craftsmanship, constantly
     sourcing premium wood, precision tools, and quality materials for custom creations.
   marketActorType: 2
-  baseWealth: 100000
-  baseProductionCount: 28
+  baseWealth: 1800000
+  baseProductionCount: 70
   comsumeResourceList:
   - {fileID: 11400000, guid: f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8, type: 2}
   - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}

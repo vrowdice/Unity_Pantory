@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A disciplined foundry house that converts premium ore into dependable
     steel for the nation's military and construction industries.
   marketActorType: 1
-  baseWealth: 153000
-  baseProductionCount: 140
+  baseWealth: 2400000
+  baseProductionCount: 115
   comsumeResourceList:
   - {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
   - {fileID: 11400000, guid: b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6, type: 2}

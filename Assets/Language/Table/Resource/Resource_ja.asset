@@ -19,151 +19,271 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 5866143744
-    m_Localized: "\u6226\u95D8\u6A5F"
+    m_Localized: 戦闘機
     m_Metadata:
       m_Items: []
   - m_Id: 5866143745
-    m_Localized: "\u30A2\u30EB\u30DF\u30CB\u30A6\u30E0\u30A4\u30F3\u30B4\u30C3\u30C8"
+    m_Localized: アルミニウムインゴット
     m_Metadata:
       m_Items: []
   - m_Id: 5866143746
-    m_Localized: "\u30A2\u30EB\u30DF\u30CB\u30A6\u30E0\u9271\u77F3"
+    m_Localized: アルミニウム鉱石
     m_Metadata:
       m_Items: []
   - m_Id: 5866143747
-    m_Localized: "\u57FA\u672C\u8863\u6599"
+    m_Localized: 基本衣料
     m_Metadata:
       m_Items: []
   - m_Id: 5866143748
-    m_Localized: "\u57FA\u672C\u5BB6\u5177"
+    m_Localized: 基本家具
     m_Metadata:
       m_Items: []
   - m_Id: 5866143749
-    m_Localized: "\u81EA\u52D5\u8ECA"
+    m_Localized: 自動車
     m_Metadata:
       m_Items: []
   - m_Id: 5866143750
-    m_Localized: "\u77F3\u70AD"
+    m_Localized: 石炭
     m_Metadata:
       m_Items: []
   - m_Id: 5866143751
-    m_Localized: "\u9285\u30A4\u30F3\u30B4\u30C3\u30C8"
+    m_Localized: 銅インゴット
     m_Metadata:
       m_Items: []
   - m_Id: 5866143752
-    m_Localized: "\u9285\u9271\u77F3"
+    m_Localized: 銅鉱石
     m_Metadata:
       m_Items: []
   - m_Id: 5866143753
-    m_Localized: "\u96FB\u5B50\u90E8\u54C1"
+    m_Localized: 電子部品
     m_Metadata:
       m_Items: []
   - m_Id: 5866143754
-    m_Localized: "\u30A8\u30F3\u30B8\u30F3"
+    m_Localized: エンジン
     m_Metadata:
       m_Items: []
   - m_Id: 5866143755
-    m_Localized: "\u5E03\u5730"
+    m_Localized: 布地
     m_Metadata:
       m_Items: []
   - m_Id: 5866143756
-    m_Localized: "\u4E0A\u8CEA\u6728\u6750"
+    m_Localized: 上質木材
     m_Metadata:
       m_Items: []
   - m_Id: 5866143757
-    m_Localized: "\u91D1\u9271\u77F3"
+    m_Localized: 金鉱石
     m_Metadata:
       m_Items: []
   - m_Id: 5866143758
-    m_Localized: "\u91CD\u706B\u5668"
+    m_Localized: 重火器
     m_Metadata:
       m_Items: []
   - m_Id: 5866143759
-    m_Localized: "\u9244\u30A4\u30F3\u30B4\u30C3\u30C8"
+    m_Localized: 鉄インゴット
     m_Metadata:
       m_Items: []
   - m_Id: 5866143760
-    m_Localized: "\u9244\u9271\u77F3"
+    m_Localized: 鉄鉱石
     m_Metadata:
       m_Items: []
   - m_Id: 5866143761
-    m_Localized: "\u6A5F\u68B0\u90E8\u54C1"
+    m_Localized: 機械部品
     m_Metadata:
       m_Items: []
   - m_Id: 5866143762
-    m_Localized: "\u5F3E\u85AC"
+    m_Localized: 弾薬
     m_Metadata:
       m_Items: []
   - m_Id: 5866143763
-    m_Localized: "\u77F3\u6CB9"
+    m_Localized: 石油
     m_Metadata:
       m_Items: []
   - m_Id: 5866143764
-    m_Localized: "\u7CBE\u5BC6\u5DE5\u5177"
+    m_Localized: 精密工具
     m_Metadata:
       m_Items: []
   - m_Id: 5866143765
-    m_Localized: "\u9AD8\u7D1A\u8863\u6599"
+    m_Localized: 高級衣料
     m_Metadata:
       m_Items: []
   - m_Id: 5866143766
-    m_Localized: "\u9AD8\u7D1A\u5BB6\u5177"
+    m_Localized: 高級家具
     m_Metadata:
       m_Items: []
   - m_Id: 5866143767
-    m_Localized: "\u9AD8\u7D1A\u6728\u6750"
+    m_Localized: 高級木材
     m_Metadata:
       m_Items: []
   - m_Id: 5866143768
-    m_Localized: "\u7D14\u91D1"
+    m_Localized: 純金
     m_Metadata:
       m_Items: []
   - m_Id: 5866143769
-    m_Localized: "\u7C21\u6613\u5DE5\u5177"
+    m_Localized: 簡易工具
     m_Metadata:
       m_Items: []
   - m_Id: 5866143770
-    m_Localized: "\u5C0F\u706B\u5668"
+    m_Localized: 小火器
     m_Metadata:
       m_Items: []
   - m_Id: 5866143771
-    m_Localized: "\u92FC\u30A4\u30F3\u30B4\u30C3\u30C8"
+    m_Localized: 鋼インゴット
     m_Metadata:
       m_Items: []
   - m_Id: 5866143772
-    m_Localized: "\u6226\u8ECA"
+    m_Localized: 戦車
     m_Metadata:
       m_Items: []
   - m_Id: 5866143773
-    m_Localized: "\u539F\u6728"
+    m_Localized: 原木
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143774
+    m_Localized: 回路、配線、制御システムなどを含む高度な電子部品。現代の機械、車両、精密機器に欠かせない。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143775
+    m_Localized: 燃料のエネルギーを機械的動力に変える原動機エンジン。燃焼または蒸気で機械、車両、産業設備を駆動する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143776
+    m_Localized: 天然または合成繊維で織った布地。衣服、家具の張地、各種生活用品に欠かせない。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143777
+    m_Localized: 滑らかな仕上げと美しい木目を持つ良質な木材。丁寧な加工で選抜・完成される。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143778
+    m_Localized: ボルト、ギア、構造部材などの基本的な機械部品。あらゆる機械、建設、工業生産の基礎となる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143779
+    m_Localized: 電動ドリルや精密レンチなどのプロ用鋼製工具。工場の保守と機械生産に欠かせない。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143780
+    m_Localized: 品質と品格に優れた最高級の材木。傑作や価値ある品のために用いられる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143781
+    m_Localized: 基本的な布地で作ったシンプルで丈夫な衣服。実用的で日常着として快適。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143782
+    m_Localized: 良質な木材で作ったシンプルで実用的な家具。手頃で日常生活に適している。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143783
+    m_Localized: ハンマー、のこぎり、レンチを含む基本的な家庭用工具セット。日常の修理や家具組立に必須の必需品。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143784
+    m_Localized: 良い素材と精巧な裁断で仕立てた高級衣料。優雅さと品位を示す。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143785
+    m_Localized: 高級木材と細部の作り、洗練されたデザインの美しい家具。贅沢と洗練された趣味の象徴。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143786
+    m_Localized: 軽量で強度に優れたアルミニウムの棒材。航空機、車両、現代建築に用いられる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143787
+    m_Localized: 電気伝導性に優れた精錬された銅の棒材。現代の電気システムの要となる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143788
+    m_Localized: 原石から製錬・加工した固体の鉄の棒材。用途が広く頑丈で加工に適する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143789
+    m_Localized: 最高純度に精錬された金、暖かな輝きを放つ。富と職人の技巧の象徴である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143790
+    m_Localized: 高度な製錬で精錬鉄から鍛造した高品質の鋼材。純鉄より強く長持ちする。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143791
+    m_Localized: 軽くて強い金属。航空機や先進車両の材料である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143792
+    m_Localized: 鉄を鋼へ製錬するときに必要な燃料。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143793
+    m_Localized: 伝導性の高い金属。電子部品生産に不可欠である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143794
+    m_Localized: 希少な貴金属。贅沢品の核となる材料である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143795
+    m_Localized: 産業の基盤。鋼材と機械部品の主原料である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143796
+    m_Localized: 黒い金。合成繊維やプラスチックの原料であり、戦車や航空機の燃料となる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143797
+    m_Localized: 最も基本的な資源。家具、工具、初期の繊維（パルプ）の材料である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143798
+    m_Localized: 天空の支配者。アルミニウムと高度な電子装備を要し、精密産業の頂点である。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143799
+    m_Localized: 近代工学の結晶。平時は富裕層の贅沢品だが、戦時は市民が貧しくなり需要が急落する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143800
+    m_Localized: 地上戦の王。鋼鉄と重砲の組み合わせ。戦時生産では大量の鋼材と重火器を消費する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143801
+    m_Localized: 高価な戦略兵器。戦いの流れを変えうる野砲と対空砲。準備した製造業者には極めて高い利益をもたらす。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143802
+    m_Localized: 戦争の燃料。弾丸、砲弾、爆薬は紛争が続く限り絶えず消費される。戦時の需要はほぼ無限に近い。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5866143803
+    m_Localized: 小銃、拳銃、戦闘ナイフなどの基本的な歩兵兵器。徴兵兵にとって必須装備で、戦争勃発直後に需要が爆発する。
     m_Metadata:
       m_Items: []
   - m_Id: 33351417857
-    m_Localized: "\u539F\u6750\u6599"
+    m_Localized: 原材料
     m_Metadata:
       m_Items: []
   - m_Id: 864226263045
-    m_Localized: "\u91D1\u5C5E"
+    m_Localized: 金属
     m_Metadata:
       m_Items: []
   - m_Id: 864226263046
-    m_Localized: "\u6B66\u5668"
+    m_Localized: 武器
     m_Metadata:
       m_Items: []
   - m_Id: 864226263047
-    m_Localized: "\u5FC5\u9700\u54C1"
+    m_Localized: 必需品
     m_Metadata:
       m_Items: []
   - m_Id: 864226263048
-    m_Localized: "\u8D05\u6CA2\u54C1"
+    m_Localized: 贅沢品
     m_Metadata:
       m_Items: []
   - m_Id: 864226263049
-    m_Localized: "\u90E8\u54C1"
+    m_Localized: 部品
     m_Metadata:
       m_Items: []
   - m_Id: 864226263050
-    m_Localized: "\u8ECA\u4E21"
+    m_Localized: 車両
     m_Metadata:
       m_Items: []
   references:

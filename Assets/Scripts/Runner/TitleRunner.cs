@@ -8,6 +8,7 @@ public class TitleRunner : RunnerBase
     {
         base.Init();
 
+        SaveLoadManager.Instance?.TryLoadUserSettingsAndApply();
         _titleCanvas.Init(this);
     }
 }

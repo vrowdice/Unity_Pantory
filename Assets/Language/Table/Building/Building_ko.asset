@@ -215,6 +215,14 @@ MonoBehaviour:
     m_Localized: 2레인 통과형 도로. 세로와 가로 흐름을 분리 버퍼링하여 서로 막지 않고 이동시킨다.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270018
+    m_Localized: 금광
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270119
+    m_Localized: 금맥을 대상으로 한 전용 채굴 시설. 금광석을 채굴해 정제·가공 공정에 투입한다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

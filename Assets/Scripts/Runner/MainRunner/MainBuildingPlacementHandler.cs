@@ -7,21 +7,18 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class MainBuildingPlacementHandler
 {
-    [SerializeField] private AudioClip _buildSound;
-    [SerializeField] private AudioClip _removalSound;
-
     private readonly MainRunner _runner;
     private readonly MainBuildingGridHandler _gridHandler;
 
     private BuildingData _selectedBuilding;
     private int _rotation;
 
-    private bool _placementMode;
-    private bool _removalMode;
-    private bool _autoEmployeePlacement;
+    private bool _placementMode = false;
+    private bool _removalMode = false;
+    private bool _autoEmployeePlacement = false;
 
     private GameObject _previewObj;
-    private SpriteRenderer _previewRenderer;
+    private PreviewObject _previewObject;
     private bool _isPointerPlacementActive;
     private Vector2Int _lastPlacedOrigin;
     private int _lastPlacedRotation;
@@ -82,7 +79,10 @@ public class MainBuildingPlacementHandler
     {
         if (!_placementMode) return;
         _rotation = clockwise ? (_rotation + 1) % 4 : (_rotation + 3) % 4;
-        _previewObj.transform.rotation = Quaternion.Euler(0, 0, -_rotation * 90f);
+        if (_previewObject != null)
+        {
+            _previewObject.SetPreviewRotation(_rotation);
+        }
     }
 
     public void Update(Camera cam)
@@ -158,9 +158,9 @@ public class MainBuildingPlacementHandler
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (_gridHandler.TryRemoveAt(p) && _removalSound != null)
+            if (_gridHandler.TryRemoveAt(p) && _runner.RemovalSound != null)
             {
-                _runner.SoundManager?.PlaySFX(_removalSound);
+                _runner.SoundManager?.PlaySFX(_runner.RemovalSound);
             }
         }
     }
@@ -169,24 +169,28 @@ public class MainBuildingPlacementHandler
     {
         DestroyPreview();
 
-        _previewObj = new GameObject("BuildingPreview");
+        _previewObj = MonoBehaviour.Instantiate(_runner.PreviewPrefab);
         _previewObj.transform.SetParent(_runner.transform, worldPositionStays: true);
 
-        _previewRenderer = _previewObj.AddComponent<SpriteRenderer>();
-        _previewRenderer.transform.localScale = new Vector3(_selectedBuilding.size.x, _selectedBuilding.size.y, 1);
-        _previewRenderer.sprite = _selectedBuilding.buildingSprite;
-        _previewRenderer.sortingOrder = 1000;
-        _previewRenderer.color = new Color(1f, 1f, 1f, 0.65f);
+        _previewObject = _previewObj.GetComponent<PreviewObject>();
+        if (_previewObject == null)
+        {
+            Debug.LogError("[MainBuildingPlacementHandler] Preview prefab is missing PreviewObject component.");
+            return;
+        }
 
-        _previewObj.transform.rotation = Quaternion.Euler(0, 0, -_rotation * 90f);
+        _previewObject.SetBuildingData(_selectedBuilding);
+        _previewObject.SetPreviewScale(_selectedBuilding.size);
+        _previewObject.SetPlacementState(true);
+        _previewObject.SetPreviewRotation(_rotation);
     }
 
     private void UpdatePreview(Vector2Int origin, Vector2Int size, bool canPlace)
     {
+        if (_previewObj == null || _previewObject == null) return;
+
         _previewObj.transform.position = _gridHandler.GridToWorldPosition(origin, size);
-        Color okColor = VisualManager.Instance.ValidColor;
-        Color noColor = VisualManager.Instance.InvalidColor;
-        _previewRenderer.color = canPlace ? new Color(okColor.r, okColor.g, okColor.b, 0.65f) : new Color(noColor.r, noColor.g, noColor.b, 0.65f);
+        _previewObject.SetPlacementState(canPlace);
     }
 
     private void DestroyPreview()
@@ -195,7 +199,7 @@ public class MainBuildingPlacementHandler
         {
             Object.Destroy(_previewObj);
             _previewObj = null;
-            _previewRenderer = null;
+            _previewObject = null;
         }
     }
 
@@ -216,9 +220,9 @@ public class MainBuildingPlacementHandler
         {
             if (_gridHandler.TryPlaceRoad(_selectedBuilding, origin, _rotation, out _, out bool roadNoMoney))
             {
-                if (_buildSound != null)
+                if (_runner.BuildSound != null)
                 {
-                    _runner.SoundManager?.PlaySFX(_buildSound);
+                    _runner.SoundManager?.PlaySFX(_runner.BuildSound);
                 }
             }
             else if (roadNoMoney)
@@ -230,9 +234,9 @@ public class MainBuildingPlacementHandler
 
         if (_gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _, out bool buildingNoMoney))
         {
-            if (_buildSound != null)
+            if (_runner.BuildSound != null)
             {
-                _runner.SoundManager?.PlaySFX(_buildSound);
+                _runner.SoundManager?.PlaySFX(_runner.BuildSound);
             }
         }
         else if (buildingNoMoney)

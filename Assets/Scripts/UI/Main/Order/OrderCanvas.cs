@@ -40,6 +40,7 @@ public class OrderCanvas : MainCanvasPanelBase
         RefreshMarketActorButtons();
         RefreshOrderButtons();
 
+        _acceptedOrderSwitch.onValueChanged.RemoveListener(OnAcceptedOrderSwitchChanged);
         _acceptedOrderSwitch.onValueChanged.AddListener(OnAcceptedOrderSwitchChanged);
     }
 
@@ -70,7 +71,7 @@ public class OrderCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_orderActionBtnContentTransform);
         _filterButtonList.Clear();
 
-        GameObject allBtnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+        GameObject allBtnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
         allBtnObj.transform.SetParent(_orderActionBtnContentTransform, false);
         ActionBtn allBtn = allBtnObj.GetComponent<ActionBtn>();
         allBtn.Init(LocalizationUtils.Localize("All"), () => {
@@ -81,7 +82,7 @@ public class OrderCanvas : MainCanvasPanelBase
 
         foreach (MarketActorType actorType in EnumUtils.GetAllEnumValues<MarketActorType>())
         {
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(UIManager.Instance.ActionBtnPrefab);
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_orderActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             MarketActorType capturedType = actorType;
@@ -207,12 +208,18 @@ public class OrderCanvas : MainCanvasPanelBase
 
     private void HandleResourceChanged()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         UpdataUI();
     }
     
     private void OnDisable()
     {
-        if(_dataManager != null)
+        if (_acceptedOrderSwitch != null)
+            _acceptedOrderSwitch.onValueChanged.RemoveListener(OnAcceptedOrderSwitchChanged);
+
+        if (_dataManager != null)
         {
             _dataManager.Order.OnOrderChanged -= HandleOrderUpdated;
             _dataManager.Time.OnDayChanged -= HandleDayChanged;

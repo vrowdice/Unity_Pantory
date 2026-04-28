@@ -6,7 +6,15 @@ public partial class BuildingObject
     private void TickSimulationProduction(DataManager dataManager)
     {
         if (_selectedResource == null) return;
-        TickStaffedBatchWork(dataManager, CanCompleteProductionBatch, TryCompleteProductionBatch);
+        TickStaffedBatchWork(dataManager, CanCompleteProductionBatch, TryCompleteProductionBatch, CanAdvanceProductionProgress);
+    }
+    
+    private bool CanAdvanceProductionProgress()
+    {
+        Dictionary<string, int> need = GetInputNeedForBatch(_selectedResource);
+        if (need.Count == 0)
+            return true;
+        return InputBufferSatisfies(need);
     }
 
     private bool CanCompleteProductionBatch()

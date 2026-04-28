@@ -58,7 +58,7 @@ public class SaveLoadPopup : PopupBase
 
         _saveLoadBtns.Clear();
 
-        List<string> saveFiles = SaveLoadManager.Instance.SaveFile.GetSaveFileList();
+        List<string> saveFiles = SaveLoadManager.Instance.GetSaveFileList();
 
         foreach (string fileName in saveFiles)
         {
@@ -85,7 +85,7 @@ public class SaveLoadPopup : PopupBase
             return;
         }
 
-        if (SaveLoadManager.Instance.SaveFile.HasSaveFile(fileName))
+        if (SaveLoadManager.Instance.HasSaveFile(fileName))
         {
             UIManager.Instance.ShowConfirmPopup(ConfirmMessage.OverwriteConfirm, () => DoSaveSavefile(fileName));
             return;
@@ -96,7 +96,7 @@ public class SaveLoadPopup : PopupBase
 
     private void DoSaveSavefile(string fileName)
     {
-        bool success = SaveLoadManager.Instance.SaveFile.SaveSavefile(fileName, DataManager.Instance);
+        bool success = SaveLoadManager.Instance.SaveSavefile(fileName, DataManager.Instance);
         if (success)
         {
             RefreshSaveFileList();
@@ -117,7 +117,7 @@ public class SaveLoadPopup : PopupBase
             return;
         }
 
-        if (!SaveLoadManager.Instance.SaveFile.HasSaveFile(fileName))
+        if (!SaveLoadManager.Instance.HasSaveFile(fileName))
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.SaveFileNotFound);
             return;
@@ -125,10 +125,11 @@ public class SaveLoadPopup : PopupBase
 
         UIManager.Instance.ShowConfirmPopup(ConfirmMessage.LoadConfirm, () =>
         {
-            bool success = SaveLoadManager.Instance.SaveFile.LoadSaveFile(fileName, DataManager.Instance);
+            bool success = SaveLoadManager.Instance.LoadSaveFile(fileName, DataManager.Instance);
             if (success)
             {
                 SceneLoadManager.Instance.LoadScene("Main");
+                Destroy(gameObject);
                 UIManager.Instance.CloseAllPopups();
             }
             else
@@ -146,15 +147,15 @@ public class SaveLoadPopup : PopupBase
             return;
         }
 
-        if (SaveLoadManager.Instance == null || SaveLoadManager.Instance.SaveFile == null)
+        if (SaveLoadManager.Instance == null)
         {
-            Debug.LogError("[SaveLoadPopup] SaveLoadManager or SaveFile handler is null.");
+            Debug.LogError("[SaveLoadPopup] SaveLoadManager is null.");
             return;
         }
 
         UIManager.Instance.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
         {
-            bool success = SaveLoadManager.Instance.SaveFile.DeleteSaveFile(fileName);
+            bool success = SaveLoadManager.Instance.DeleteSaveFile(fileName);
             if (success)
             {
                 RefreshSaveFileList();

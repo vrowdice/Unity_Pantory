@@ -10,10 +10,12 @@ public class ResearchBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text;
 
     private ResearchEntry _researchEntry;
+    private ResearchCanvas _researchCanvas;
 
-    public void Init(ResearchEntry researchEntry)
+    public void Init(ResearchEntry researchEntry, ResearchCanvas researchCanvas)
     {
         _researchEntry = researchEntry;
+        _researchCanvas = researchCanvas;
 
         _image.sprite = researchEntry.data.icon;
         _text.text = researchEntry.data.id.Localize(LocalizationUtils.TABLE_RESEARCH);
@@ -31,6 +33,6 @@ public class ResearchBtn : MonoBehaviour
 
     public void OnClick()
     {
-        UIManager.Instance.ShowResearchInfoPopup(_researchEntry);
+        _researchCanvas.PanelUIManager.ShowResearchInfoPopup(_researchEntry);
     }
 }

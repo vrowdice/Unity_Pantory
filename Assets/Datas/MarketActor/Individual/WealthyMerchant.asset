@@ -18,8 +18,8 @@ MonoBehaviour:
   description: A prosperous merchant with extensive trade networks, purchasing various
     resources for personal ventures and investments across the empire.
   marketActorType: 2
-  baseWealth: 150000
-  baseProductionCount: 30
+  baseWealth: 3000000
+  baseProductionCount: 100
   comsumeResourceList:
   - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}

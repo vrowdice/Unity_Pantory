@@ -206,4 +206,51 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         return _researchEntryList.TryGetValue(researchId, out ResearchEntry entry) && entry.state.isCompleted;
     }
+
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        saveData.researchPoint = _researchPoint;
+        saveData.isAutoPatentMode = _isAutoPatentMode;
+        foreach (ResearchEntry entry in GetAllResearchEntries())
+        {
+            if (entry?.data == null || string.IsNullOrEmpty(entry.data.id))
+            {
+                continue;
+            }
+
+            saveData.researches.Add(new ResearchStateSaveData(entry.data.id, CloneState(entry.state)));
+        }
+    }
+
+    public void ApplyFromSave(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        _researchPoint = saveData.researchPoint;
+        _isAutoPatentMode = saveData.isAutoPatentMode;
+
+        foreach (ResearchStateSaveData researchSave in saveData.researches)
+        {
+            if (_researchEntryList.TryGetValue(researchSave.researchId, out ResearchEntry entry))
+            {
+                entry.state = researchSave.state;
+            }
+        }
+
+        RefreshUnlockedResearchStates();
+    }
+
+    private static ResearchState CloneState(ResearchState state)
+    {
+        string json = JsonUtility.ToJson(state);
+        return JsonUtility.FromJson<ResearchState>(json);
+    }
 }

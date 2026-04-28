@@ -23,6 +23,7 @@ public class StorageResourceBtn : MonoBehaviour
 
     public void OnClick()
     {
-        Debug.Log("OnClick");
+        if (_resourceEntry == null || _resourceEntry.data == null) return;
+        _storagePanel.PanelUIManager?.ShowResourceHelpPopup(_resourceEntry.data);
     }
 }

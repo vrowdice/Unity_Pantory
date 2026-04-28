@@ -120,7 +120,6 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
         long currentCredit = _credit;
         long inventoryValue = _dataManager.Resource.GetAllResources().Values
             .Sum(entry => entry.state.count * entry.state.currentValue);
-        // Thread/ThreadPlacement 시스템 제거: 자산가치는 추후 '메인 건물 설치 데이터' 기반으로 재구현
         long assetValue = 0;
 
         return currentCredit + inventoryValue + assetValue;
@@ -132,5 +131,31 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void ClearAllSubscriptions()
     {
         OnCreditChanged = null;
+    }
+
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        saveData.credit = _credit;
+        saveData.wealth = _wealth;
+        saveData.monthlyCreditHistory = new List<long>(_monthlyCreditHistory);
+        saveData.monthlyWealthHistory = new List<long>(_monthlyWealthHistory);
+    }
+
+    public void ApplyFromSave(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            return;
+        }
+
+        _credit = saveData.credit;
+        _wealth = saveData.wealth;
+        _monthlyCreditHistory = new List<long>(saveData.monthlyCreditHistory ?? new List<long>());
+        _monthlyWealthHistory = new List<long>(saveData.monthlyWealthHistory ?? new List<long>());
     }
 }

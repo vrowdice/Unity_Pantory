@@ -18,8 +18,8 @@ MonoBehaviour:
   description: Elite security force protecting the capital, requiring small arms,
     munitions, and vehicles for patrols and security operations.
   marketActorType: 0
-  baseWealth: 240000
-  baseProductionCount: 42
+  baseWealth: 9000000
+  baseProductionCount: 180
   comsumeResourceList:
   - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
   - {fileID: 11400000, guid: c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7, type: 2}

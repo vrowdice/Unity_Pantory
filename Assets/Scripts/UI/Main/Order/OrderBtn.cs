@@ -23,13 +23,15 @@ public class OrderBtn : MonoBehaviour
     private OrderData _orderData;
     private MarketActorEntry _marketActorEntry;
     private DataManager _dataManager;
+    private GameManager _gameManager;
 
     private List<OrderRequireResourceItemPanel> _resourceItemPanels = new List<OrderRequireResourceItemPanel>();
 
     public void Init(OrderState orderState, MainCanvas mainCanvas)
     {
         _orderState = orderState;
-        _dataManager = DataManager.Instance;
+        _dataManager = mainCanvas.DataManager;
+        _gameManager = mainCanvas.GameManager;
 
         _orderData = _dataManager.Order.GetOrderData(orderState.id);
         _marketActorEntry = _dataManager.MarketActor.GetMarketActorEntry(_orderData.senderActorData.id);
@@ -78,7 +80,7 @@ public class OrderBtn : MonoBehaviour
             _resourceItemPanels.RemoveAt(lastIndex);
             if (panelToReturn != null)
             {
-                GameManager.Instance.PoolingManager.ReturnToPool(panelToReturn.gameObject);
+                _gameManager.PoolingManager.ReturnToPool(panelToReturn.gameObject);
             }
         }
 
@@ -90,7 +92,7 @@ public class OrderBtn : MonoBehaviour
 
             if (i >= _resourceItemPanels.Count)
             {
-                GameObject itemObj = GameManager.Instance.PoolingManager.GetPooledObject(_orderRequireResourceItemPrefab);
+                GameObject itemObj = _gameManager.PoolingManager.GetPooledObject(_orderRequireResourceItemPrefab);
                 itemObj.transform.SetParent(_RequireResrouceScrollViewContent, false);
                 OrderRequireResourceItemPanel newPanel = itemObj.GetComponent<OrderRequireResourceItemPanel>();
                 if (newPanel != null)

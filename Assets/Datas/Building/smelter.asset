@@ -21,18 +21,21 @@ MonoBehaviour:
     Processes iron ore, copper ore, aluminum ore, and gold ore into their respective
     ingots. Essential for metalworking industries.
   isUnlockedByDefault: 0
+  isProfessional: 0
   requiredEmployees: 4
-  buildCost: 200
+  buildCost: 7800
   maintenanceCost: 18
   size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 236a53e9ad9317e4b9354c5a6dab41df, type: 2}
-  handlingResource: {fileID: 0}
+  usePlacedCountLimit: 0
+  baseMaxPlacedCount: 0
+  maxInputBufferCapacity: 16
+  maxOutputBufferCapacity: 16
   allowedResourceTypes: 01000000
   _producibleResources:
   - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
   - {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
-  inputPosition: {x: -1, y: 1}
-  outputPosition: {x: 2, y: 1}
-  baseProductionRate: 1
-  processingTime: 1.2
+  - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  ticksPerBatch: 24
+  inputResourcesPerBatch: 1

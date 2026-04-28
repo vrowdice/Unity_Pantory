@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 20, y: -20}
+  m_AnchoredPosition: {x: 25, y: -20}
   m_SizeDelta: {x: 40, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &777068956352842900
@@ -348,6 +348,7 @@ MonoBehaviour:
   _image: {fileID: 3752710505855117348}
   _focusedImage: {fileID: 8650751563559075721}
   _deactivatedImage: {fileID: 4322468000598999485}
+  _buildingHelpButton: {fileID: 122785629242384023}
   _text: {fileID: 7004948416702380180}
   _placedCountText: {fileID: 7224475878900149849}
 --- !u!1 &755953208468883075
@@ -749,7 +750,7 @@ GameObject:
   - component: {fileID: 4513259135058947420}
   - component: {fileID: 122785629242384023}
   m_Layer: 5
-  m_Name: BuildingInfoBtn
+  m_Name: BuildingHelpBtn
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: a7ef4f3c4cec36e47bb7c50ca1eaef17, type: 3}
   m_NavMeshLayer: 0
@@ -772,7 +773,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -20, y: -20}
+  m_AnchoredPosition: {x: -25, y: -25}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &122785629242384023
@@ -852,19 +853,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ToggleBtn, Assembly-CSharp
-        m_MethodName: OnClickToggleBtn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -952,7 +941,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 20, y: -20}
+  m_AnchoredPosition: {x: 25, y: -25}
   m_SizeDelta: {x: 25, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2557812212564538707

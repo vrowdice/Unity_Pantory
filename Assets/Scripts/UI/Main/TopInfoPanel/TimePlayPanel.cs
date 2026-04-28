@@ -9,14 +9,15 @@ public class TimePlayPanel : MonoBehaviour
     [SerializeField] private GameObject _speedBtnPrefab;
 
     private DataManager _dataManager;
+    private GameManager _gameManager;
     private bool _isTimePaused = true;
     private List<SpeedBtn> _speedBtnList = new List<SpeedBtn>();
     private SpeedBtn _lastUsedSpeedBtn;
 
-    private void Start()
+    public void Init(DataManager dataManager, GameManager gameManager)
     {
-        _dataManager = DataManager.Instance;
-
+        _dataManager = dataManager;
+        _gameManager = gameManager;
         BuildSpeedButtons();
     }
 
@@ -24,16 +25,36 @@ public class TimePlayPanel : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(_lastUsedSpeedBtn != null) _lastUsedSpeedBtn.OnClick();
+            SpeedBtn targetBtn = _lastUsedSpeedBtn ?? (_speedBtnList.Count > 0 ? _speedBtnList[0] : null);
+            if (targetBtn != null)
+            {
+                targetBtn.OnClick();
+            }
+        }
+
+        for (int i = 0; i < _speedBtnList.Count && i < 9; i++)
+        {
+            if (!IsNumberKeyDown(i + 1))
+            {
+                continue;
+            }
+
+            _speedBtnList[i].OnClick();
+            break;
         }
     }
 
     private void BuildSpeedButtons()
     {
+        if (_gameManager == null || _speedBtnPrefab == null || _speedBtnContentTransform == null)
+        {
+            return;
+        }
+
         for (int i = 0; i < _btnSpeedGenList.Count; i++)
         {
             float speed = _btnSpeedGenList[i];
-            GameObject go = GameManager.Instance.PoolingManager.GetPooledObject(_speedBtnPrefab);
+            GameObject go = _gameManager.PoolingManager.GetPooledObject(_speedBtnPrefab);
             go.transform.SetParent(_speedBtnContentTransform, false);
             SpeedBtn btn = go.GetComponent<SpeedBtn>();
             int index = i;
@@ -60,5 +81,32 @@ public class TimePlayPanel : MonoBehaviour
         btn.SetSigPanelVisible(true);
 
         _lastUsedSpeedBtn = btn;
+    }
+
+    private bool IsNumberKeyDown(int number)
+    {
+        switch (number)
+        {
+            case 1:
+                return Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1);
+            case 2:
+                return Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2);
+            case 3:
+                return Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3);
+            case 4:
+                return Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4);
+            case 5:
+                return Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5);
+            case 6:
+                return Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6);
+            case 7:
+                return Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7);
+            case 8:
+                return Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8);
+            case 9:
+                return Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9);
+            default:
+                return false;
+        }
     }
 }

@@ -18,8 +18,8 @@ MonoBehaviour:
   description: Cooperative furnaces that refine mountains of ore into ingots, keeping
     city forges supplied year-round.
   marketActorType: 1
-  baseWealth: 136000
-  baseProductionCount: 160
+  baseWealth: 1800000
+  baseProductionCount: 120
   comsumeResourceList:
   - {fileID: 11400000, guid: 8f664f3c8d5bd5643b9edb76207ce1f1, type: 2}
   - {fileID: 11400000, guid: 2276c7d486386434fa61b6c05cfe2172, type: 2}

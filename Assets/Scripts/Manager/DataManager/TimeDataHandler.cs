@@ -85,6 +85,8 @@ public class TimeDataHandler : IDataHandlerEvents
             Month = 0;
             AdvanceYear();
         }
+
+        // 구독처: DataManager — 월말 재정 처리 및 SaveLoadManager 오토세이브 등
         OnMonthChanged?.Invoke();
     }
 

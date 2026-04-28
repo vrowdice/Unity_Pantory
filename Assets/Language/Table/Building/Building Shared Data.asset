@@ -163,6 +163,14 @@ MonoBehaviour:
     m_Key: tunnel_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 864226270018
+    m_Key: gold_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270119
+    m_Key: gold_mine_Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

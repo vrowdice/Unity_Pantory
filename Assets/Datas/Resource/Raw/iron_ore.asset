@@ -14,13 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: iron_ore
   displayName: Iron Ore
-  baseValue: 28
-  volatilityMultiplier: 0.8
-  maxPriceMultiplier: 10
+  baseValue: 30
   type: 0
-  nextStage: {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
   icon: {fileID: 21300000, guid: 52f061358b1c6294e8f542ed23a26f4e, type: 3}
   description: The foundation of industry. The primary material for steel and machine
     parts.
   requirements: []
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 80

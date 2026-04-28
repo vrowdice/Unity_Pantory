@@ -14,12 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: coal
   displayName: Coal
-  baseValue: 20
-  volatilityMultiplier: 0.9
-  maxPriceMultiplier: 10
+  baseValue: 25
   type: 0
-  nextStage: {fileID: 0}
   icon: {fileID: 21300000, guid: 23d075deef489014db11dc344c6a67e9, type: 3}
   description: Essential fuel for smelting iron into steel.
   requirements: []
+  recipeOutputs: []
+  primaryOutputPerBatch: 1
   initialAmount: 80
