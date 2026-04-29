@@ -23,6 +23,9 @@ public class TimePlayPanel : MonoBehaviour
 
     private void Update()
     {
+        if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput())
+            return;
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SpeedBtn targetBtn = _lastUsedSpeedBtn ?? (_speedBtnList.Count > 0 ? _speedBtnList[0] : null);

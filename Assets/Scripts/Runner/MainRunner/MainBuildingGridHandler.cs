@@ -161,6 +161,37 @@ public class MainBuildingGridHandler
         return list;
     }
 
+    public List<PlacedRoadSaveData> ExportRoadsIntersectingGridRect(Vector2Int cellMin, Vector2Int cellMax)
+    {
+        int gx0 = Mathf.Min(cellMin.x, cellMax.x);
+        int gy0 = Mathf.Min(cellMin.y, cellMax.y);
+        int gx1 = Mathf.Max(cellMin.x, cellMax.x);
+        int gy1 = Mathf.Max(cellMin.y, cellMax.y);
+
+        gx0 = Mathf.Clamp(gx0, 0, _mainRunner.GridWidth - 1);
+        gx1 = Mathf.Clamp(gx1, 0, _mainRunner.GridWidth - 1);
+        gy0 = Mathf.Clamp(gy0, 0, _mainRunner.GridHeight - 1);
+        gy1 = Mathf.Clamp(gy1, 0, _mainRunner.GridHeight - 1);
+
+        List<PlacedRoadSaveData> list = new List<PlacedRoadSaveData>();
+
+        foreach (RoadObject road in _roadObjDict.Values)
+        {
+            Vector2Int p = road.GridPosition;
+            if (p.x >= gx0 && p.x <= gx1 && p.y >= gy0 && p.y <= gy1)
+                list.Add(road.ExportSaveData());
+        }
+
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+        {
+            Vector2Int p = dualRoad.GridPosition;
+            if (p.x >= gx0 && p.x <= gx1 && p.y >= gy0 && p.y <= gy1)
+                list.Add(dualRoad.ExportSaveData());
+        }
+
+        return list;
+    }
+
     public void RestoreFromSave(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
     {
         ClearAllBuildings();

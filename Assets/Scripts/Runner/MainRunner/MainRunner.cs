@@ -16,6 +16,7 @@ public class MainRunner : RunnerBase
 
     [Header("Prefabs")]
     [SerializeField] private GameObject _previewPrefab;
+    [SerializeField] private GameObject _blueprintPreviewPrefab;
     [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private GameObject _buildingObjectPrefab;
     [SerializeField] private GameObject _roadObjectPrefab;
@@ -47,6 +48,7 @@ public class MainRunner : RunnerBase
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
     public GameObject PreviewPrefab => _previewPrefab;
+    public GameObject BlueprintPreviewPrefab => _blueprintPreviewPrefab;
     public GameObject TilePrefab => _tilePrefab;
     public GameObject BuildingObjectPrefab => _buildingObjectPrefab;
     public GameObject RoadObjectPrefab => _roadObjectPrefab;
@@ -55,6 +57,12 @@ public class MainRunner : RunnerBase
     public bool StartPlacementMode(BuildingData buildingData)
     {
         _placementHandler.StartPlacement(buildingData);
+        return true;
+    }
+
+    public bool StartBlueprintPlacementMode(string blueprintName, List<PlacedBuildingSaveData> blueprintBuildings, List<PlacedRoadSaveData> blueprintRoads)
+    {
+        _placementHandler.StartBlueprintPlacement(blueprintName, blueprintBuildings, blueprintRoads);
         return true;
     }
 

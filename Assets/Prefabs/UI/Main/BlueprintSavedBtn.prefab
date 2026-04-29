@@ -128,9 +128,9 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 412398129040250562}
-        m_TargetAssemblyTypeName: BuildingBtn, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: -524476461033109379}
+        m_TargetAssemblyTypeName: MainBlueprintSavedBtn, Assembly-CSharp
+        m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

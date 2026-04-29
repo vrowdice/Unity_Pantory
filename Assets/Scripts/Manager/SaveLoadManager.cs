@@ -78,7 +78,7 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
         }
     }
 
-    private bool TryReadUserSettingsFile(out UserSettingsSaveData data)
+    public static bool TryReadUserSettingsFile(out UserSettingsSaveData data)
     {
         data = null;
         string filePath = GetUserSettingsFilePath();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Evo.UI;
@@ -27,6 +28,7 @@ public partial class MainCanvas
     private MainBlueprintTypeBtn _mainBlueprintTypeBtn;
     private MainBlueprintAddBtn _blueprintAddBtn;
     private bool _isBlueprintPanelOpen;
+    private string _activeBlueprintLayoutKey;
 
     private void InitBuildUi()
     {
@@ -147,6 +149,8 @@ public partial class MainCanvas
         UpdateBuildingTypeButtonStates();
         UpdateBuildingButtonStates();
         RefreshBuildingPlacedCountDisplays();
+
+        _mainBlueprintTypeBtn.SetFocused(false);
     }
 
     private void EnsureMainBlueprintTypeButtonInContent()
@@ -163,22 +167,30 @@ public partial class MainCanvas
         RefreshBlueprintUi();
     }
 
-    public void AddBlueprintSavedEntryBeforeAddButton(List<PlacedBuildingSaveData> buildings)
+    public void AddBlueprintSavedEntryBeforeAddButton(string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
     {
-        if (buildings == null || buildings.Count == 0 || _blueprintSavedEntryPrefab == null)
+        bool hasBuildings = buildings != null && buildings.Count > 0;
+        bool hasRoads = roads != null && roads.Count > 0;
+        if ((!hasBuildings && !hasRoads) || _blueprintSavedEntryPrefab == null)
             return;
 
         if (!_isBlueprintPanelOpen)
             return;
 
-        EnsureBlueprintAddButton();
-        GameObject entryObj = Instantiate(_blueprintSavedEntryPrefab, _buildingBtnContent);
-        MainBlueprintSavedBtn btn = entryObj.GetComponent<MainBlueprintSavedBtn>();
-        if (btn != null)
-            btn.Initialize(buildings);
+        if (DataManager != null && DataManager.BlueprintLayout != null)
+            DataManager.BlueprintLayout.Add(blueprintName, buildings, roads);
 
-        if (_blueprintAddBtn != null)
-            entryObj.transform.SetSiblingIndex(_blueprintAddBtn.transform.GetSiblingIndex());
+        EnsureBlueprintAddButton();
+        CreateBlueprintSavedEntryUi(blueprintName, buildings, roads);
+    }
+
+    public void RequestSaveBlueprintEntry(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
+    {
+        UIManager.Instance.ShowEnterNamePopup((string enteredName) =>
+        {
+            string blueprintName = string.IsNullOrWhiteSpace(enteredName) ? "Blueprint" : enteredName.Trim();
+            AddBlueprintSavedEntryBeforeAddButton(blueprintName, buildings, roads);
+        });
     }
 
     public void OnMainBlueprintBtnClicked()
@@ -223,9 +235,6 @@ public partial class MainCanvas
     {
         foreach (MainBuildingTypeBtn btn in _buildingTypeBtns)
             btn.SetFocused(btn.BuildingType == _selectedBuildingType);
-
-        _mainBlueprintTypeBtn.SetFocused(false);
-        _isBlueprintPanelOpen = false;
     }
 
     private void EnsureBlueprintAddButton()
@@ -236,9 +245,89 @@ public partial class MainCanvas
         _blueprintAddBtn.Init(this);
     }
 
+    private static string BuildBlueprintLayoutKey(string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(blueprintName).Append('|');
+        if (buildings != null)
+        {
+            for (int i = 0; i < buildings.Count; i++)
+            {
+                PlacedBuildingSaveData b = buildings[i];
+                if (b == null) continue;
+                sb.Append("b:")
+                    .Append(b.buildingDataId).Append(':')
+                    .Append(b.originX).Append(':')
+                    .Append(b.originY).Append(':')
+                    .Append(b.rotation).Append(';');
+            }
+        }
+
+        sb.Append('|');
+        if (roads != null)
+        {
+            for (int i = 0; i < roads.Count; i++)
+            {
+                PlacedRoadSaveData r = roads[i];
+                if (r == null) continue;
+                sb.Append("r:")
+                    .Append(r.sourceBuildingDataId).Append(':')
+                    .Append(r.roadDataId).Append(':')
+                    .Append(r.x).Append(':')
+                    .Append(r.y).Append(':')
+                    .Append(r.rotation).Append(';');
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private void CreateBlueprintSavedEntryUi(string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
+    {
+        GameObject entryObj = Instantiate(_blueprintSavedEntryPrefab, _buildingBtnContent);
+        MainBlueprintSavedBtn btn = entryObj.GetComponent<MainBlueprintSavedBtn>();
+        string layoutKey = BuildBlueprintLayoutKey(blueprintName, buildings, roads);
+        bool isSelected = _mainRunner != null &&
+                          _mainRunner.PlacementHandler != null &&
+                          _mainRunner.PlacementHandler.IsBlueprintPlacementMode &&
+                          _activeBlueprintLayoutKey == layoutKey;
+        if (btn != null)
+            btn.Initialize(this, layoutKey, blueprintName, buildings, roads, isSelected);
+
+        if (_blueprintAddBtn != null)
+            entryObj.transform.SetSiblingIndex(_blueprintAddBtn.transform.GetSiblingIndex());
+    }
+
+    private void RebuildBlueprintSavedEntriesFromData()
+    {
+        GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
+
+        _buildingBtns.Clear();
+        _blueprintAddBtn = null;
+        EnsureBlueprintAddButton();
+
+        if (DataManager == null || DataManager.BlueprintLayout == null)
+            return;
+
+        IReadOnlyList<BlueprintLayoutSaveData> layouts = DataManager.BlueprintLayout.GetAll();
+        for (int i = 0; i < layouts.Count; i++)
+        {
+            BlueprintLayoutSaveData layout = layouts[i];
+            bool hasBuildings = layout != null && layout.buildings != null && layout.buildings.Count > 0;
+            bool hasRoads = layout != null && layout.roads != null && layout.roads.Count > 0;
+            if (!hasBuildings && !hasRoads)
+                continue;
+
+            CreateBlueprintSavedEntryUi(layout.blueprintName, layout.buildings, layout.roads);
+        }
+    }
+
     private void RefreshBlueprintUi()
     {
         bool isBlueprintMode = _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode;
+        bool isBlueprintPlacementMode = _mainRunner.PlacementHandler != null && _mainRunner.PlacementHandler.IsBlueprintPlacementMode;
+        if (!isBlueprintPlacementMode)
+            _activeBlueprintLayoutKey = null;
 
         if (_isBlueprintPanelOpen)
         {
@@ -246,7 +335,7 @@ public partial class MainCanvas
                 btn.SetFocused(false);
             _mainBlueprintTypeBtn.SetFocused(true);
 
-            EnsureBlueprintAddButton();
+            RebuildBlueprintSavedEntriesFromData();
             if (_blueprintAddBtn != null)
             {
                 _blueprintAddBtn.gameObject.SetActive(true);
@@ -272,5 +361,78 @@ public partial class MainCanvas
     {
         for (int i = 0; i < _buildingBtns.Count; i++)
             _buildingBtns[i].RefreshPlacedCount(_mainRunner);
+    }
+
+    public void ToggleSavedBlueprintPlacement(string layoutKey, string blueprintName, List<PlacedBuildingSaveData> blueprintBuildings, List<PlacedRoadSaveData> blueprintRoads)
+    {
+        bool hasBuildings = blueprintBuildings != null && blueprintBuildings.Count > 0;
+        bool hasRoads = blueprintRoads != null && blueprintRoads.Count > 0;
+        if (!hasBuildings && !hasRoads)
+            return;
+
+        bool isAlreadyActive = _mainRunner != null &&
+                               _mainRunner.PlacementHandler != null &&
+                               _mainRunner.PlacementHandler.IsBlueprintPlacementMode &&
+                               _activeBlueprintLayoutKey == layoutKey;
+        if (isAlreadyActive)
+        {
+            _mainRunner.PlacementHandler.CancelBlueprintPlacement();
+            _activeBlueprintLayoutKey = null;
+            RefreshBlueprintUi();
+            return;
+        }
+
+        if (_mainRunner != null && _mainRunner.PlacementHandler != null && _mainRunner.PlacementHandler.IsRemovalMode)
+        {
+            UIManager.Instance.ShowConfirmPopup(ConfirmMessage.DeleteConfirm, () =>
+            {
+                RemoveSavedBlueprintLayout(layoutKey);
+            });
+            return;
+        }
+
+        StartSavedBlueprintPlacement(layoutKey, blueprintName, blueprintBuildings, blueprintRoads);
+    }
+
+    private void StartSavedBlueprintPlacement(string layoutKey, string blueprintName, List<PlacedBuildingSaveData> blueprintBuildings, List<PlacedRoadSaveData> blueprintRoads)
+    {
+        if (_mainRunner == null || _mainRunner.PlacementHandler == null)
+            return;
+
+        if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
+            _mainRunner.SetBlueprintMode(false);
+
+        _selectedBuilding = null;
+        _mainRunner.PlacementHandler.CancelRemoval();
+        _mainRunner.StartBlueprintPlacementMode(blueprintName, blueprintBuildings, blueprintRoads);
+        _activeBlueprintLayoutKey = layoutKey;
+        RefreshBlueprintUi();
+        UpdateBuildingButtonStates();
+    }
+
+    private void RemoveSavedBlueprintLayout(string layoutKey)
+    {
+        if (DataManager == null || DataManager.BlueprintLayout == null)
+            return;
+
+        IReadOnlyList<BlueprintLayoutSaveData> layouts = DataManager.BlueprintLayout.GetAll();
+        for (int i = 0; i < layouts.Count; i++)
+        {
+            BlueprintLayoutSaveData layout = layouts[i];
+            if (layout == null) continue;
+
+            string key = BuildBlueprintLayoutKey(layout.blueprintName, layout.buildings, layout.roads);
+            if (key != layoutKey) continue;
+
+            DataManager.BlueprintLayout.RemoveAt(i);
+            if (_activeBlueprintLayoutKey == layoutKey)
+            {
+                _mainRunner.PlacementHandler.CancelBlueprintPlacement();
+                _activeBlueprintLayoutKey = null;
+            }
+
+            RebuildBlueprintSavedEntriesFromData();
+            return;
+        }
     }
 }

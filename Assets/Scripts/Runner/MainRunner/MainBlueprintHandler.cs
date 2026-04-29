@@ -40,6 +40,7 @@ public class MainBlueprintHandler
     public void Update(Camera cam)
     {
         if (!_isBlueprintMode || cam == null) return;
+        if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput()) return;
 
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
         {
@@ -110,12 +111,13 @@ public class MainBlueprintHandler
         ExpandCell(new Vector3(minX, maxY, 0f));
 
         List<PlacedBuildingSaveData> captured = grid.ExportBuildingsIntersectingGridRect(cellMin, cellMax);
-        if (captured.Count == 0)
+        List<PlacedRoadSaveData> capturedRoads = grid.ExportRoadsIntersectingGridRect(cellMin, cellMax);
+        if (captured.Count == 0 && capturedRoads.Count == 0)
             return;
 
         MainCanvas canvas = _runner.MainCanvas;
         if (canvas != null)
-            canvas.AddBlueprintSavedEntryBeforeAddButton(captured);
+            canvas.RequestSaveBlueprintEntry(captured, capturedRoads);
     }
 
     private void EnsureSelectionVisual()

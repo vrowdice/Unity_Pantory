@@ -123,6 +123,9 @@ public partial class MainCanvas
 
     private void HandlePanelShortcutKeys()
     {
+        if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput())
+            return;
+
         List<MainPanelType> panelTypes = EnumUtils.GetAllEnumValues<MainPanelType>();
         int maxShortcutCount = Mathf.Min(panelTypes.Count, 9);
 

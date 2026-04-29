@@ -53,6 +53,9 @@ public class GameSaveData
     // Placed Objects (Main building/road layout)
     public List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
     public List<PlacedRoadSaveData> placedRoads = new List<PlacedRoadSaveData>();
+
+    // Blueprint presets captured in main scene.
+    public List<BlueprintLayoutSaveData> blueprintLayouts = new List<BlueprintLayoutSaveData>();
 }
 
 /// <summary>
@@ -84,6 +87,17 @@ public class ResourcePacketSaveData
         this.amount = amount;
         this.direction = direction;
     }
+}
+
+/// <summary>
+/// 배치된 BuildingObject 저장용 데이터
+/// </summary>
+[Serializable]
+public class BlueprintLayoutSaveData
+{
+    public string blueprintName;
+    public List<PlacedBuildingSaveData> buildings = new List<PlacedBuildingSaveData>();
+    public List<PlacedRoadSaveData> roads = new List<PlacedRoadSaveData>();
 }
 
 /// <summary>

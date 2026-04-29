@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using TMPro;
 
 public class UIManager : Singleton<UIManager>
 {
@@ -67,6 +69,8 @@ public class UIManager : Singleton<UIManager>
     private void Update()
     {
         if (Instance != this) return;
+        if (IsTypingInTextInput()) return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (HasAnyOpenCloseablePanel())
@@ -131,6 +135,21 @@ public class UIManager : Singleton<UIManager>
     public bool HasAnyOpenCloseablePanel()
     {
         return _closeStack.Count > 0;
+    }
+
+    public bool IsTypingInTextInput()
+    {
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem == null || eventSystem.currentSelectedGameObject == null)
+            return false;
+
+        if (eventSystem.currentSelectedGameObject.GetComponent<TMP_InputField>() != null)
+            return true;
+
+        if (eventSystem.currentSelectedGameObject.GetComponent<InputField>() != null)
+            return true;
+
+        return false;
     }
 
     /// <summary>

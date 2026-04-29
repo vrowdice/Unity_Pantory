@@ -45,6 +45,7 @@ public class DataManager : Singleton<DataManager>
     public PlayerDataHandler Player { get; private set; }
 
     public PlacedObjectLayoutDataHandler PlacedLayout { get; private set; }
+    public BlueprintLayoutDataHandler BlueprintLayout { get; private set; }
 
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
     private readonly List<ITimeChangeHandler> _dayHandlers = new List<ITimeChangeHandler>();
@@ -94,6 +95,7 @@ public class DataManager : Singleton<DataManager>
         Player = new PlayerDataHandler();
 
         PlacedLayout = new PlacedObjectLayoutDataHandler();
+        BlueprintLayout = new BlueprintLayoutDataHandler();
 
         _eventHandlers.Clear();
         _eventHandlers.Add(Time);
@@ -237,6 +239,9 @@ public class DataManager : Singleton<DataManager>
             saveData.placedBuildings = mainRunner.GridHandler.ExportPlacedBuildings();
             saveData.placedRoads = mainRunner.GridHandler.ExportPlacedRoads();
         }
+
+        if (BlueprintLayout != null)
+            saveData.blueprintLayouts = BlueprintLayout.ExportSaveData();
     }
 
     public void ApplyGameStateFrom(GameSaveData saveData)
@@ -299,6 +304,7 @@ public class DataManager : Singleton<DataManager>
         Player?.ApplyFromSave(saveData);
 
         PlacedLayout?.SetFromSave(saveData.placedBuildings, saveData.placedRoads);
+        BlueprintLayout?.SetFromSave(saveData.blueprintLayouts);
     }
 
     private static void NormalizeLoadedSaveData(GameSaveData data)
@@ -316,6 +322,7 @@ public class DataManager : Singleton<DataManager>
         data.effects.instanceEffects ??= new List<InstanceEffectStateSaveData>();
         data.placedBuildings ??= new List<PlacedBuildingSaveData>();
         data.placedRoads ??= new List<PlacedRoadSaveData>();
+        data.blueprintLayouts ??= new List<BlueprintLayoutSaveData>();
         data.tutorialAutoShowPending ??= new List<TutorialAutoShowPendingSaveData>();
     }
 

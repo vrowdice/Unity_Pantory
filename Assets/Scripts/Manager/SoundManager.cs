@@ -43,10 +43,15 @@ public class SoundManager : Singleton<SoundManager>
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        SaveLoadManager saveLoad = SaveLoadManager.Instance;
-        if (saveLoad != null)
+        SoundManager soundManager = Instance;
+        if (soundManager == null)
         {
-            saveLoad.TryApplyUserSettingsVolumesToSound();
+            return;
+        }
+
+        if (SaveLoadManager.TryReadUserSettingsFile(out UserSettingsSaveData data))
+        {
+            soundManager.ApplyVolumesFromUserSettings(data.bgmVolume, data.sfxVolume);
         }
     }
 
@@ -135,8 +140,17 @@ public class SoundManager : Singleton<SoundManager>
     
     private void LoadVolumeSettings()
     {
-        _bgmVolume = 0.5f;
-        _sfxVolume = 1f;
+        if (SaveLoadManager.TryReadUserSettingsFile(out UserSettingsSaveData data))
+        {
+            _bgmVolume = Mathf.Clamp01(data.bgmVolume);
+            _sfxVolume = Mathf.Clamp01(data.sfxVolume);
+        }
+        else
+        {
+            _bgmVolume = 0.5f;
+            _sfxVolume = 1f;
+        }
+
         ApplyBGMVolume();
         ApplySFXVolume();
     }
@@ -236,13 +250,13 @@ public class SoundManager : Singleton<SoundManager>
         source.Play();
     }
 
-    public void PlayBGM(AudioClip clip, float volume = 0.5f)
+    public void PlayBGM(AudioClip clip, float volume = 1.0f)
     {
         if (_bgmSource.clip == clip) return;
 
         _bgmSource.Stop();
         _bgmSource.clip = clip;
-        _bgmSource.volume = volume * _bgmVolume;
+        _bgmSource.volume = _bgmVolume;
         _bgmSource.Play();
     }
     
