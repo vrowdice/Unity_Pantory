@@ -13,6 +13,7 @@ public partial class MainCanvas : CanvasBase
 
     [SerializeField] private DateTopInfoPanel _infoDatePanel;
     [SerializeField] private TopInfoPanel _topInfoPanel;
+    [SerializeField] private NewsFlowContainer _newsFlowContainer;
 
     private MainRunner _mainRunner;
 
@@ -53,8 +54,9 @@ public partial class MainCanvas : CanvasBase
         DataManager.Time.OnMonthChanged += OnMonthChanged;
         DataManager.Time.OnYearChanged += OnYearChanged;
 
-        _infoDatePanel.Init(DataManager);
-        _topInfoPanel.Init(DataManager, this.VisualManager);
+        _infoDatePanel.Init();
+        _topInfoPanel.Init();
+        _newsFlowContainer.Init();
 
         TimePlayPanel timePlayPanel = GetComponentInChildren<TimePlayPanel>(true);
         timePlayPanel?.Init(DataManager, GameManager);

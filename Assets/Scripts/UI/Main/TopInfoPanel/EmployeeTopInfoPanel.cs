@@ -28,10 +28,10 @@ public class EmployeeTopInfoPanel : MonoBehaviour
     private DataManager _dataManager;
     private VisualManager _visualManager;
 
-    public void Init(DataManager dataManager, VisualManager visualManager)
+    public void Init()
     {
-        _dataManager = dataManager;
-        _visualManager = visualManager;
+        _dataManager = DataManager.Instance;
+        _visualManager = VisualManager.Instance;
 
         if (_dataManager == null)
         {
@@ -45,10 +45,7 @@ public class EmployeeTopInfoPanel : MonoBehaviour
             return;
         }
 
-        // Subscribe to employee changed event
         _dataManager.Employee.OnEmployeeChanged += UpdateAllEmployeeInfo;
-
-        // Initial update
         UpdateAllEmployeeInfo();
     }
 

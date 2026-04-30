@@ -11,9 +11,9 @@ public class DateTopInfoPanel : MonoBehaviour
 
     private DataManager _dataManager;
 
-    public void Init(DataManager dataManager)
+    public void Init()
     {
-        _dataManager = dataManager;
+        _dataManager = DataManager.Instance;
 
         if (_dataManager == null)
         {
