@@ -41,6 +41,7 @@ public class DataManager : Singleton<DataManager>
     public ResearchDataHandler Research { get; private set; }
     public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
+    public MainEventDataHandler MainEvent { get; private set; }
 
     public PlayerDataHandler Player { get; private set; }
 
@@ -61,7 +62,6 @@ public class DataManager : Singleton<DataManager>
 
     void LateUpdate()
     {
-        // Time 이후에 실행되는 다른 Update에서 자원이 바뀐 경우까지 같은 프레임에서 한 번 더 반영합니다.
         Resource?.FlushPendingResourceChangedNotify();
     }
 
@@ -91,6 +91,7 @@ public class DataManager : Singleton<DataManager>
         Research = new ResearchDataHandler(this, _researchDataList);
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
+        MainEvent = new MainEventDataHandler(this);
 
         Player = new PlayerDataHandler();
 
@@ -116,6 +117,7 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(Effect);
         _dayHandlers.Add(News);
         _dayHandlers.Add(Order);
+        _dayHandlers.Add(MainEvent);
 
         Research.ReapplyEffectsFromCompletedResearch();
     }
@@ -230,6 +232,7 @@ public class DataManager : Singleton<DataManager>
         Research?.CaptureTo(saveData);
         Order?.CaptureTo(saveData);
         News?.CaptureTo(saveData);
+        MainEvent?.CaptureTo(saveData);
         Effect?.CaptureTo(saveData);
         Player?.CaptureTo(saveData);
 
@@ -300,6 +303,7 @@ public class DataManager : Singleton<DataManager>
         Research?.ApplyFromSave(saveData);
         Order?.ApplyFromSave(saveData);
         News?.ApplyFromSave(saveData);
+        MainEvent?.ApplyFromSave(saveData);
         Effect?.ApplyFromSave(saveData);
         Player?.ApplyFromSave(saveData);
 

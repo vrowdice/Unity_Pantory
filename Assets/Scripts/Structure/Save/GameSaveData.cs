@@ -44,6 +44,9 @@ public class GameSaveData
     // News Data
     public List<NewsState> activeNews = new List<NewsState>();
 
+    // Main event (연합/전쟁/자동화 등)
+    public MainEventType mainEventType;
+
     // Effect Data
     public EffectStateSaveData effects = new EffectStateSaveData();
 
