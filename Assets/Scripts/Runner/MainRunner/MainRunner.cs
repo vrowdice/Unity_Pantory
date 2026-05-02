@@ -10,6 +10,10 @@ public class MainRunner : RunnerBase
 {
     [SerializeField] private AudioClip _buildSound;
     [SerializeField] private AudioClip _removalSound;
+    [SerializeField] private GameObject _buildEffectPrefab;
+    [SerializeField] private GameObject _removalEffectPrefab;
+    [SerializeField] private float _buildEffectZ = 8.5f;
+    [SerializeField] private float _removalEffectZ = 8.5f;
 
     [Header("UI Manager")]
     [SerializeField] private MainCanvas _mainCanvas;
@@ -45,6 +49,10 @@ public class MainRunner : RunnerBase
 
     public AudioClip BuildSound => _buildSound;
     public AudioClip RemovalSound => _removalSound;
+    public GameObject BuildEffectPrefab => _buildEffectPrefab;
+    public GameObject RemovalEffectPrefab => _removalEffectPrefab;
+    public float BuildEffectZ => _buildEffectZ;
+    public float RemovalEffectZ => _removalEffectZ;
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
     public GameObject PreviewPrefab => _previewPrefab;

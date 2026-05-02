@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a24cf2f4fb4ef3ad8d2c22ec2a8f3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _viewObjRenderer: {fileID: 6224605308098508104}
   _gridPosition: {x: 0, y: 0}
   _rotation: 0
   _maxCapacityPerLane: 1

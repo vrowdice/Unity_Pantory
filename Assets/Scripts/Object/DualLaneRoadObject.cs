@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 {
+    [SerializeField] private SpriteRenderer _viewObjRenderer;
     [SerializeField] private Vector2Int _gridPosition;
     [SerializeField] private int _rotation;
     [SerializeField] private int _maxCapacityPerLane = 8;
@@ -29,6 +30,8 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
         RebuildOutputGridPositions();
         RefreshHeldResourceIcons();
+
+        _viewObjRenderer.sprite = _sourceBuildingData.buildingSprite;
     }
 
     public bool TryPush(ResourcePacket packet)

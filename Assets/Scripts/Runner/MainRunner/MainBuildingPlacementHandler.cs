@@ -266,9 +266,14 @@ public class MainBuildingPlacementHandler
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (_gridHandler.TryRemoveAt(p) && _runner.RemovalSound != null)
+            bool removed = _gridHandler.TryRemoveAt(p);
+            if (removed && _runner.RemovalSound != null)
             {
                 _runner.SoundManager?.PlaySFX(_runner.RemovalSound);
+            }
+            if (removed)
+            {
+                PlayRemovalEffectAt(p);
             }
         }
     }
@@ -332,6 +337,7 @@ public class MainBuildingPlacementHandler
                 {
                     _runner.SoundManager?.PlaySFX(_runner.BuildSound);
                 }
+                PlayBuildEffectAt(origin, Vector2Int.one);
             }
             else if (roadNoMoney)
             {
@@ -346,6 +352,8 @@ public class MainBuildingPlacementHandler
             {
                 _runner.SoundManager?.PlaySFX(_runner.BuildSound);
             }
+            Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
+            PlayBuildEffectAt(origin, size);
         }
         else if (buildingNoMoney)
         {
@@ -420,6 +428,8 @@ public class MainBuildingPlacementHandler
                     UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
                 return false;
             }
+            Vector2Int size = MainBuildingGridHandler.GetRotatedSize(data.size, rotation);
+            PlayBuildEffectAt(origin, size);
         }
 
         for (int i = 0; i < _selectedBlueprintRoads.Count; i++)
@@ -436,12 +446,33 @@ public class MainBuildingPlacementHandler
                     UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
                 return false;
             }
+            PlayBuildEffectAt(position, Vector2Int.one);
         }
 
         if (_runner.BuildSound != null)
             _runner.SoundManager?.PlaySFX(_runner.BuildSound);
 
         return true;
+    }
+
+    private void PlayBuildEffectAt(Vector2Int origin, Vector2Int size)
+    {
+        if (_runner.BuildEffectPrefab == null)
+            return;
+
+        Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, size);
+        effectPosition.z = _runner.BuildEffectZ;
+        Object.Instantiate(_runner.BuildEffectPrefab, effectPosition, Quaternion.identity, _runner.transform);
+    }
+
+    private void PlayRemovalEffectAt(Vector2Int origin)
+    {
+        if (_runner.RemovalEffectPrefab == null)
+            return;
+        
+        Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, Vector2Int.one);
+        effectPosition.z = _runner.RemovalEffectZ;
+        Object.Instantiate(_runner.RemovalEffectPrefab, effectPosition, Quaternion.identity, _runner.transform);
     }
 
     private Vector2Int GetBlueprintPlacementOrigin(Vector2Int anchor, PlacedBuildingSaveData saveData)
