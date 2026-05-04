@@ -38,6 +38,9 @@ public class GameSaveData
     public bool isAutoPatentMode;
     public List<ResearchStateSaveData> researches = new List<ResearchStateSaveData>();
 
+    // Factory policy (공장 정책 토글 상태)
+    public List<PolicyStateSaveData> factoryPolicies = new List<PolicyStateSaveData>();
+
     // Order Data
     public List<OrderState> activeOrders = new List<OrderState>();
 
@@ -206,6 +209,24 @@ public class ResearchStateSaveData
     public ResearchStateSaveData(string researchId, ResearchState state)
     {
         this.researchId = researchId;
+        this.state = state;
+    }
+}
+
+/// <summary>
+/// 공장 정책(PolicyData) 활성 상태 저장용 데이터
+/// </summary>
+[Serializable]
+public class PolicyStateSaveData
+{
+    public string policyId;
+    public PolicyState state;
+
+    public PolicyStateSaveData() { }
+
+    public PolicyStateSaveData(string policyId, PolicyState state)
+    {
+        this.policyId = policyId;
         this.state = state;
     }
 }

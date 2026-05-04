@@ -60,14 +60,16 @@ MonoBehaviour:
   - String: Storage
     Sprite: {fileID: 21300000, guid: ccd0735e6b0cadc41876c74ed997bbed, type: 3}
   - String: Market
-    Sprite: {fileID: 21300000, guid: fe81cfff8bf5d174dacc45039e9b7266, type: 3}
+    Sprite: {fileID: 21300000, guid: 30d417b3fff72b04ca1d072329b00f5f, type: 3}
   - String: Employment
     Sprite: {fileID: 21300000, guid: 077d119fb6559ac40871c5eeaa82fad7, type: 3}
+  - String: Policy
+    Sprite: {fileID: 21300000, guid: f54878c204a75084a9f872f0416901bc, type: 3}
   - String: Research
-    Sprite: {fileID: 21300000, guid: 4dc52ecd8e171e34c98c6d78f175fcbf, type: 3}
+    Sprite: {fileID: 21300000, guid: 8297303d6c952fc4a8e1cc7856c32217, type: 3}
   - String: News
     Sprite: {fileID: 21300000, guid: 76f6c2e3017651d4e82d6f4185ba8fc3, type: 3}
   - String: Order
     Sprite: {fileID: 21300000, guid: 7465d6a539315d541a99f02bab65d915, type: 3}
   - String: Finance
-    Sprite: {fileID: 21300000, guid: fe81cfff8bf5d174dacc45039e9b7266, type: 3}
+    Sprite: {fileID: 21300000, guid: 6f231d28d7574374db1106fa73ed2e77, type: 3}

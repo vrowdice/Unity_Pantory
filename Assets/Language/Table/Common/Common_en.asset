@@ -552,6 +552,10 @@ MonoBehaviour:
     m_Localized: Blueprint
     m_Metadata:
       m_Items: []
+  - m_Id: 35934793659465728
+    m_Localized: Policy
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

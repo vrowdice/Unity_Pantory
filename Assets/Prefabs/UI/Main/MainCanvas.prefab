@@ -2617,7 +2617,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -190, y: 0.00039672852}
+  m_AnchoredPosition: {x: -190, y: 0.00024414062}
   m_SizeDelta: {x: 190, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3125783419564302356
@@ -12213,6 +12213,7 @@ MonoBehaviour:
   _orderCanvasPrefab: {fileID: 6298053347902593458, guid: 4922c1492c6bfd74e905d25940c2ccd2, type: 3}
   _marketCanvasPrefab: {fileID: 4348083378959238153, guid: d79de820966302849b1946f890c89388, type: 3}
   _employmentCanvasPrefab: {fileID: 6227641040661825204, guid: dfa8f56bf4e422e458e09f4cbb4ffca5, type: 3}
+  _policyCanvasPrefab: {fileID: 6333051514348184066, guid: b934963f48acdc34fb4b597a848c3fdf, type: 3}
   _newsCanvasPrefab: {fileID: 6572344294995928050, guid: c5b05d190fb475c4ea30bc3f21187b2e, type: 3}
   _researchCanvasPrefab: {fileID: 7580730937239458178, guid: e760c77103f6fb54b94e6a5db1778817, type: 3}
   _financeCanvasPrefab: {fileID: 6333051514348184066, guid: 3ba3b235a00b5be45a7a643116f3e020, type: 3}

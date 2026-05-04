@@ -15,6 +15,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialEffectData _initialEffectData;
     [SerializeField] private InitialOrderData _initialOrderData;
     [SerializeField] private InitialNewsData _initialNewsData;
+    [SerializeField] private InitialPolicyData _initialFactoryPolicyData;
 
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
@@ -24,12 +25,14 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private List<MarketActorData> _marketActorDataList = new List<MarketActorData>();
     [SerializeField] private List<OrderData> _orderDataList = new List<OrderData>();
     [SerializeField] private List<NewsData> _newsDataList = new List<NewsData>();
+    [SerializeField] private List<PolicyData> _policyDataList = new List<PolicyData>();
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
     public InitialResearchData InitialResearchData => _initialResearchData;
     public InitialEffectData InitialEffectData => _initialEffectData;
     public InitialOrderData InitialOrderData => _initialOrderData;
+    public InitialPolicyData InitialFactoryPolicyData => _initialFactoryPolicyData;
 
     public TimeDataHandler Time { get; private set; }
     public ResourceDataHandler Resource { get; private set; }
@@ -41,6 +44,7 @@ public class DataManager : Singleton<DataManager>
     public ResearchDataHandler Research { get; private set; }
     public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
+    public PolicyDataHandler FactoryPolicy { get; private set; }
     public MainEventDataHandler MainEvent { get; private set; }
 
     public PlayerDataHandler Player { get; private set; }
@@ -91,6 +95,7 @@ public class DataManager : Singleton<DataManager>
         Research = new ResearchDataHandler(this, _researchDataList);
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
+        FactoryPolicy = new PolicyDataHandler(this, _policyDataList, _initialFactoryPolicyData);
         MainEvent = new MainEventDataHandler(this);
 
         Player = new PlayerDataHandler();
@@ -107,6 +112,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(MarketActor);
         _eventHandlers.Add(News);
         _eventHandlers.Add(Order);
+        _eventHandlers.Add(FactoryPolicy);
 
         _dayHandlers.Clear();
         _dayHandlers.Add(Resource);
@@ -120,6 +126,7 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(MainEvent);
 
         Research.ReapplyEffectsFromCompletedResearch();
+        FactoryPolicy.ReapplyEffectsFromActivePolicies();
     }
 
 #if UNITY_EDITOR
@@ -133,6 +140,7 @@ public class DataManager : Singleton<DataManager>
         AutoLoadToList(_marketActorDataList);
         AutoLoadToList(_orderDataList);
         AutoLoadToList(_newsDataList);
+        AutoLoadToList(_policyDataList);
 
         UnityEditor.EditorUtility.SetDirty(this);
         Debug.Log("[DataManager] All data auto-loaded to lists.");
@@ -230,6 +238,7 @@ public class DataManager : Singleton<DataManager>
 
         Finances?.CaptureTo(saveData);
         Research?.CaptureTo(saveData);
+        FactoryPolicy?.CaptureTo(saveData);
         Order?.CaptureTo(saveData);
         News?.CaptureTo(saveData);
         MainEvent?.CaptureTo(saveData);
@@ -305,6 +314,7 @@ public class DataManager : Singleton<DataManager>
         News?.ApplyFromSave(saveData);
         MainEvent?.ApplyFromSave(saveData);
         Effect?.ApplyFromSave(saveData);
+        FactoryPolicy?.ApplyFromSave(saveData);
         Player?.ApplyFromSave(saveData);
 
         PlacedLayout?.SetFromSave(saveData.placedBuildings, saveData.placedRoads);
@@ -319,6 +329,7 @@ public class DataManager : Singleton<DataManager>
         data.monthlyCreditHistory ??= new List<long>();
         data.monthlyWealthHistory ??= new List<long>();
         data.researches ??= new List<ResearchStateSaveData>();
+        data.factoryPolicies ??= new List<PolicyStateSaveData>();
         data.activeOrders ??= new List<OrderState>();
         data.activeNews ??= new List<NewsState>();
         data.effects ??= new EffectStateSaveData();

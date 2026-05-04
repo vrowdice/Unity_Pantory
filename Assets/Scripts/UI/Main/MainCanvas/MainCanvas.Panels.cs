@@ -8,6 +8,7 @@ public partial class MainCanvas
     [SerializeField] private GameObject _orderCanvasPrefab;
     [SerializeField] private GameObject _marketCanvasPrefab;
     [SerializeField] private GameObject _employmentCanvasPrefab;
+    [SerializeField] private GameObject _policyCanvasPrefab;
     [SerializeField] private GameObject _newsCanvasPrefab;
     [SerializeField] private GameObject _researchCanvasPrefab;
     [SerializeField] private GameObject _financeCanvasPrefab;
@@ -16,6 +17,7 @@ public partial class MainCanvas
     private OrderCanvas _orderCanvas;
     private MarketCanvas _marketCanvas;
     private EmployeeCanvas _employmentCanvas;
+    private PolicyCanvas _policyCanvas;
     private NewsCanvas _newsCanvas;
     private ResearchCanvas _researchCanvas;
     private FinanceCanvas _financeCanvas;
@@ -44,6 +46,10 @@ public partial class MainCanvas
         employmentObj.name = _employmentCanvasPrefab.name;
         _employmentCanvas = employmentObj.GetComponent<EmployeeCanvas>();
 
+        GameObject policyObj = Object.Instantiate(_policyCanvasPrefab);
+        policyObj.name = _policyCanvasPrefab.name;
+        _policyCanvas = policyObj.GetComponent<PolicyCanvas>();
+
         GameObject newsObj = Object.Instantiate(_newsCanvasPrefab);
         newsObj.name = _newsCanvasPrefab.name;
         _newsCanvas = newsObj.GetComponent<NewsCanvas>();
@@ -65,6 +71,7 @@ public partial class MainCanvas
             { MainPanelType.Order, _orderCanvas },
             { MainPanelType.Market, _marketCanvas },
             { MainPanelType.Employment, _employmentCanvas },
+            { MainPanelType.Policy, _policyCanvas },
             { MainPanelType.Research, _researchCanvas },
             { MainPanelType.News, _newsCanvas },
             { MainPanelType.Finance, _financeCanvas }

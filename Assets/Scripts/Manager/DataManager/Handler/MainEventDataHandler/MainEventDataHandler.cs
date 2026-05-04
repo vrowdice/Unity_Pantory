@@ -5,13 +5,13 @@ public class MainEventDataHandler : ITimeChangeHandler
     private MainEventType _currentEventType;
     private IMainEventStateModule _activeStateModule;
 
+    public MainEventType CurrentEventType => _currentEventType;
+
     public MainEventDataHandler(DataManager dataManager)
     {
         _dataManager = dataManager;
         SetMainEventType(MainEventType.Union);
     }
-
-    public MainEventType CurrentEventType => _currentEventType;
 
     /// <summary>
     /// 메인 이벤트 타입을 바꾸고, 타입이 바뀐 경우에만 해당 스테이트 모듈을 새로 만든다.

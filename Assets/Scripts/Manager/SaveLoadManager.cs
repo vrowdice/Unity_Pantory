@@ -8,7 +8,8 @@ using UnityEngine.Localization.Settings;
 /// <summary>
 /// 게임 데이터 저장/로드를 처리하는 매니저 클래스.
 /// JSON 본문은 GameSaveData이며, DataManager.CaptureGameStateTo / ApplyGameStateFrom 에서
-/// 튜토리얼 진행(PlayerDataHandler, tutorialAutoShowPending)을 포함한 전체 상태를 채우거나 복원합니다.
+/// 튜토리얼 진행(PlayerDataHandler, tutorialAutoShowPending), 공장 정책(factoryPolicies) 등
+/// 전체 상태를 채우거나 복원합니다.
 /// 사용자 볼륨·언어 등은 persistentDataPath 의 단일 GameUserSettings.json 으로 별도 관리합니다.
 /// </summary>
 public class SaveLoadManager : Singleton<SaveLoadManager>

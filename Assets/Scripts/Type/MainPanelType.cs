@@ -4,6 +4,7 @@ public enum MainPanelType
     Order,
     Market,
     Employment,
+    Policy,
     Research,
     News,
     Finance

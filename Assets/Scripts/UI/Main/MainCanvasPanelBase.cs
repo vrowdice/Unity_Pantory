@@ -15,10 +15,7 @@ public abstract class MainCanvasPanelBase : TutorialBase
     protected MainCanvas _uiManager;
     private Action _cachedOnClose;
 
-    /// <summary>메인 캔버스. 서브 컴포넌트에서 DataManager 등에 접근할 때 사용합니다.</summary>
     public MainCanvas Host => _uiManager;
-
-    /// <summary>Init(MainCanvas) 이후 유효합니다.</summary>
     public UIManager PanelUIManager => _panelUIManager;
 
     [Header("Animation")]
