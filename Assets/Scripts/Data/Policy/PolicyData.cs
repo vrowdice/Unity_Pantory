@@ -13,6 +13,10 @@ public class PolicyData : ScriptableObject
     [Tooltip("신규 게임에서 이 정책을 켠 상태로 시작할지")]
     public bool isActiveByDefault;
 
+    [Header("Daily credit cost")]
+    [Tooltip("하루마다 소모되는 크레딧(0 이상). 수입·지급은 없음")]
+    public long dailyCreditCost;
+
     [Header("Effects")]
     public List<EffectData> effects = new List<EffectData>();
 }

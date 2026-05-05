@@ -146,6 +146,22 @@ MonoBehaviour:
     m_Localized: Gold Mine Placement Limit
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000033
+    m_Localized: Iron Ingot Price Support (Policy)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000034
+    m_Localized: Technician Line Efficiency (Policy)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000035
+    m_Localized: Worker Line Efficiency (Policy)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000036
+    m_Localized: Worker Satisfaction Pressure (Policy)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Policy_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: 3dd7d882bda9098459736c106666c3d3, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7200000000001
+    m_Localized: 鉄鋼調達補助
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001001
+    m_Localized: 国策による調達支援で、鉄インゴットの市場価格への圧力が緩みます。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000000002
+    m_Localized: 時間外労働パイロット
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001002
+    m_Localized: 生産ラインの作業員効率は上がりつつ、日々の満足度変化にはやや不利になり得ます。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000000003
+    m_Localized: テクニシャン技能育成プログラム
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001003
+    m_Localized: 研修補助により生産ライン上のテクニシャンの効率が向上します。
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

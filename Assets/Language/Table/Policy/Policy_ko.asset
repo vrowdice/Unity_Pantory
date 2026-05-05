@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Policy_ko
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: 3dd7d882bda9098459736c106666c3d3, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7200000000001
+    m_Localized: 철괴 조달 지원
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001001
+    m_Localized: 정책 유지 중 철괴 자원 시세 압력이 완화됩니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000000002
+    m_Localized: 연장 근무 시범
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001002
+    m_Localized: 노동자 라인 효율은 높아지지만, 매일 만족도 변화에 부정적인 영향이 있을 수 있습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000000003
+    m_Localized: 기능사(테크니션) 육성 프로그램
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001003
+    m_Localized: 교육 지원으로 테크니션의 라인 효율이 올라갑니다.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

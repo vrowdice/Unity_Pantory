@@ -70,6 +70,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97f289a721f66a348b404bb71f2b34c5
+    m_Address: Policy_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9aabd209fcac5964bad31fb1be1c7bdc
     m_Address: Common_ko
     m_ReadOnly: 1

@@ -15,7 +15,6 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public event Action OnResourceChanged;
     public long TotalCreditChange { get; private set; }
 
-    /// <summary>한 프레임에 <see cref="ModifyResourceCount"/>가 여러 번 불려도 UI는 한 번만 갱신합니다.</summary>
     private bool _pendingResourceChangedNotify;
 
     /// <summary>

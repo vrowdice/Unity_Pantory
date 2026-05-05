@@ -2,45 +2,46 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 정책(PolicyData) 목록과 활성 상태를 관리하는 핸들러.
+/// </summary>
 public class PolicyDataHandler : IDataHandlerEvents
 {
     private const string PolicyEffectInstancePrefix = "FactoryPolicy:";
 
     private readonly DataManager _dataManager;
-    private readonly InitialPolicyData _initialFactoryPolicyData;
-    private readonly Dictionary<string, PolicyEntry> _policies = new Dictionary<string, PolicyEntry>();
+    private readonly InitialPolicyData _initialPolicyData;
 
-    public event Action OnFactoryRegulationChanged;
+    private readonly List<PolicyData> _policyDataList = new List<PolicyData>();
+    private readonly Dictionary<string, PolicyEntry> _policyEntries = new Dictionary<string, PolicyEntry>();
 
-    public PolicyDataHandler(DataManager dataManager, List<PolicyData> policyDataList, InitialPolicyData initialData)
+    public event Action OnPolicyChanged;
+
+    public PolicyDataHandler(DataManager dataManager, List<PolicyData> policyDataList, InitialPolicyData initialPolicyData)
     {
         _dataManager = dataManager;
-        _initialFactoryPolicyData = initialData;
+        _initialPolicyData = initialPolicyData;
+        _policyDataList = policyDataList ?? new List<PolicyData>();
 
-        if (_initialFactoryPolicyData == null)
+        if (_initialPolicyData == null)
         {
-            Debug.LogWarning("[FactoryPolicyDataHandler] InitialPolicyData is not assigned.");
+            Debug.LogWarning("[PolicyDataHandler] InitialPolicyData is not assigned.");
         }
 
-        if (policyDataList == null)
-        {
-            return;
-        }
-
-        foreach (PolicyData data in policyDataList)
+        foreach (PolicyData data in _policyDataList)
         {
             if (data == null || string.IsNullOrEmpty(data.id))
             {
                 continue;
             }
 
-            if (_policies.ContainsKey(data.id))
+            if (_policyEntries.ContainsKey(data.id))
             {
-                Debug.LogWarning($"[FactoryPolicyDataHandler] Duplicate policy ID: {data.id}");
+                Debug.LogWarning($"[PolicyDataHandler] Duplicate policy ID: {data.id}");
                 continue;
             }
 
-            PolicyEntry entry = new PolicyEntry
+            _policyEntries[data.id] = new PolicyEntry
             {
                 data = data,
                 state = new PolicyState
@@ -48,25 +49,49 @@ public class PolicyDataHandler : IDataHandlerEvents
                     isActive = data.isActiveByDefault
                 }
             };
-            _policies.Add(data.id, entry);
         }
+    }
+
+    /// <summary>
+    /// 활성 정책의 일일 크레딧 소모 합입니다. Finances 일일 정산에서 차감합니다.
+    /// </summary>
+    public long CalculateDailyPolicyCost()
+    {
+        long totalCost = 0;
+        foreach (PolicyEntry entry in _policyEntries.Values)
+        {
+            if (entry?.data == null || !entry.state.isActive)
+            {
+                continue;
+            }
+
+            totalCost += entry.data.dailyCreditCost;
+        }
+
+        return totalCost;
+    }
+
+    public PolicyData GetPolicyData(string policyId)
+    {
+        PolicyEntry entry = GetPolicyEntry(policyId);
+        return entry?.data;
     }
 
     public PolicyEntry GetPolicyEntry(string policyId)
     {
-        return _policies.TryGetValue(policyId, out PolicyEntry entry) ? entry : null;
+        return _policyEntries.TryGetValue(policyId, out PolicyEntry entry) ? entry : null;
     }
 
     public Dictionary<string, PolicyEntry> GetAllPolicyEntries()
     {
-        return new Dictionary<string, PolicyEntry>(_policies);
+        return new Dictionary<string, PolicyEntry>(_policyEntries);
     }
 
     public bool TrySetPolicyActive(string policyId, bool active)
     {
-        if (!_policies.TryGetValue(policyId, out PolicyEntry entry) || entry.data == null)
+        if (!_policyEntries.TryGetValue(policyId, out PolicyEntry entry) || entry.data == null)
         {
-            Debug.LogWarning($"[FactoryPolicyDataHandler] Unknown policy id: {policyId}");
+            Debug.LogWarning($"[PolicyDataHandler] Unknown policy id: {policyId}");
             return false;
         }
 
@@ -85,7 +110,7 @@ public class PolicyDataHandler : IDataHandlerEvents
             RemovePolicyEffects(entry.data);
         }
 
-        OnFactoryRegulationChanged?.Invoke();
+        OnPolicyChanged?.Invoke();
         return true;
     }
 
@@ -94,7 +119,7 @@ public class PolicyDataHandler : IDataHandlerEvents
     /// </summary>
     public void ReapplyEffectsFromActivePolicies()
     {
-        foreach (PolicyEntry entry in _policies.Values)
+        foreach (PolicyEntry entry in _policyEntries.Values)
         {
             if (entry?.data == null || !entry.state.isActive)
             {
@@ -110,7 +135,7 @@ public class PolicyDataHandler : IDataHandlerEvents
     /// </summary>
     public void SyncEffectsFromState()
     {
-        foreach (PolicyEntry entry in _policies.Values)
+        foreach (PolicyEntry entry in _policyEntries.Values)
         {
             if (entry?.data == null)
             {
@@ -120,7 +145,7 @@ public class PolicyDataHandler : IDataHandlerEvents
             RemovePolicyEffects(entry.data);
         }
 
-        foreach (PolicyEntry entry in _policies.Values)
+        foreach (PolicyEntry entry in _policyEntries.Values)
         {
             if (entry?.data == null || !entry.state.isActive)
             {
@@ -181,7 +206,7 @@ public class PolicyDataHandler : IDataHandlerEvents
 
     public void ClearAllSubscriptions()
     {
-        OnFactoryRegulationChanged = null;
+        OnPolicyChanged = null;
     }
 
     public void CaptureTo(GameSaveData saveData)
@@ -191,7 +216,7 @@ public class PolicyDataHandler : IDataHandlerEvents
             return;
         }
 
-        foreach (PolicyEntry entry in _policies.Values)
+        foreach (PolicyEntry entry in _policyEntries.Values)
         {
             if (entry?.data == null || string.IsNullOrEmpty(entry.data.id))
             {
@@ -211,14 +236,14 @@ public class PolicyDataHandler : IDataHandlerEvents
 
         foreach (PolicyStateSaveData policySave in saveData.factoryPolicies)
         {
-            if (_policies.TryGetValue(policySave.policyId, out PolicyEntry entry))
+            if (_policyEntries.TryGetValue(policySave.policyId, out PolicyEntry entry))
             {
                 entry.state = policySave.state;
             }
         }
 
         SyncEffectsFromState();
-        OnFactoryRegulationChanged?.Invoke();
+        OnPolicyChanged?.Invoke();
     }
 
     private static PolicyState CloneState(PolicyState state)

@@ -12,6 +12,7 @@ public static class LocalizationUtils
     public const string TABLE_MARKET_ACTOR = "MarketActor";
     public const string TABLE_NEWS = "News";
     public const string TABLE_ORDER = "Order";
+    public const string TABLE_POLICY = "Policy";
     public const string TABLE_RESEARCH = "Research";
     public const string TABLE_RESOURCE = "Resource";
     public const string TABLE_TUTORIAL = "Tutorial";

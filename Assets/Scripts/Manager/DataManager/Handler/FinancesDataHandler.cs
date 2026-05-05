@@ -17,6 +17,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     private long _dailySalary;
     private long _dailyResource;
     private long _dailyMaintenance;
+    private long _dailyPolicyCost;
     private long _dailyInterest;
     private long _dailyTotal;
 
@@ -37,6 +38,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public long DailyResource => _dailyResource;
     public long DailyMaintenance => _dailyMaintenance;
     public long DailyInterest => _dailyInterest;
+    public long DailyPolicyCost => _dailyPolicyCost;
     public long DailyTotal => _dailyTotal;
 
     /// <summary>
@@ -76,9 +78,10 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler
         _dailySalary = _dataManager.Employee.CalculateTotalSalary();
         _dailyResource = _dataManager.Resource.TotalCreditChange;
         _dailyMaintenance = _placedBuildingsDailyMaintenance;
+        _dailyPolicyCost = _dataManager.Policy != null ? _dataManager.Policy.CalculateDailyPolicyCost() : 0L;
         _dailyInterest = CalculateNegativeInterest();
 
-        _dailyTotal = _dailyResource - _dailySalary - _dailyMaintenance - _dailyInterest;
+        _dailyTotal = _dailyResource - _dailySalary - _dailyMaintenance - _dailyPolicyCost - _dailyInterest;
     }
 
     /// <summary>

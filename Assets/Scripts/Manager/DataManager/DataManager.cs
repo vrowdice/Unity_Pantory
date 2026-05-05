@@ -44,7 +44,7 @@ public class DataManager : Singleton<DataManager>
     public ResearchDataHandler Research { get; private set; }
     public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
-    public PolicyDataHandler FactoryPolicy { get; private set; }
+    public PolicyDataHandler Policy { get; private set; }
     public MainEventDataHandler MainEvent { get; private set; }
 
     public PlayerDataHandler Player { get; private set; }
@@ -95,7 +95,7 @@ public class DataManager : Singleton<DataManager>
         Research = new ResearchDataHandler(this, _researchDataList);
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
-        FactoryPolicy = new PolicyDataHandler(this, _policyDataList, _initialFactoryPolicyData);
+        Policy = new PolicyDataHandler(this, _policyDataList, _initialFactoryPolicyData);
         MainEvent = new MainEventDataHandler(this);
 
         Player = new PlayerDataHandler();
@@ -112,7 +112,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(MarketActor);
         _eventHandlers.Add(News);
         _eventHandlers.Add(Order);
-        _eventHandlers.Add(FactoryPolicy);
+        _eventHandlers.Add(Policy);
 
         _dayHandlers.Clear();
         _dayHandlers.Add(Resource);
@@ -126,10 +126,12 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(MainEvent);
 
         Research.ReapplyEffectsFromCompletedResearch();
-        FactoryPolicy.ReapplyEffectsFromActivePolicies();
+        Policy.ReapplyEffectsFromActivePolicies();
     }
 
 #if UNITY_EDITOR
+    private const string PolicyDataSearchFolder = "Assets/Datas/Policy";
+
     [ContextMenu("Auto Load All Data to Lists")]
     private void AutoLoadAllDataToLists()
     {
@@ -140,17 +142,32 @@ public class DataManager : Singleton<DataManager>
         AutoLoadToList(_marketActorDataList);
         AutoLoadToList(_orderDataList);
         AutoLoadToList(_newsDataList);
-        AutoLoadToList(_policyDataList);
+        AutoLoadPolicyDataList();
 
         UnityEditor.EditorUtility.SetDirty(this);
         Debug.Log("[DataManager] All data auto-loaded to lists.");
     }
 
-    private void AutoLoadToList<T>(List<T> list) where T : UnityEngine.Object
+    [ContextMenu("Auto Load Policy Data List")]
+    private void AutoLoadPolicyDataListContextMenu()
+    {
+        AutoLoadPolicyDataList();
+        UnityEditor.EditorUtility.SetDirty(this);
+    }
+
+    private void AutoLoadPolicyDataList()
+    {
+        AutoLoadToList(_policyDataList, PolicyDataSearchFolder);
+    }
+
+    private void AutoLoadToList<T>(List<T> list, string searchInFolder = null) where T : UnityEngine.Object
     {
         list.Clear();
         string typeName = typeof(T).Name;
-        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:" + typeName);
+        string filter = "t:" + typeName;
+        string[] guids = string.IsNullOrEmpty(searchInFolder)
+            ? UnityEditor.AssetDatabase.FindAssets(filter)
+            : UnityEditor.AssetDatabase.FindAssets(filter, new[] { searchInFolder });
         foreach (string guid in guids)
         {
             string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
@@ -158,7 +175,7 @@ public class DataManager : Singleton<DataManager>
             if (data != null && !list.Contains(data))
                 list.Add(data);
         }
-        Debug.Log($"[DataManager] Loaded {list.Count} {typeName} to list.");
+        Debug.Log($"[DataManager] Loaded {list.Count} {typeName} to list{(searchInFolder != null ? $" ({searchInFolder})" : "")}.");
     }
 #endif
 
@@ -238,7 +255,7 @@ public class DataManager : Singleton<DataManager>
 
         Finances?.CaptureTo(saveData);
         Research?.CaptureTo(saveData);
-        FactoryPolicy?.CaptureTo(saveData);
+        Policy?.CaptureTo(saveData);
         Order?.CaptureTo(saveData);
         News?.CaptureTo(saveData);
         MainEvent?.CaptureTo(saveData);
@@ -314,7 +331,7 @@ public class DataManager : Singleton<DataManager>
         News?.ApplyFromSave(saveData);
         MainEvent?.ApplyFromSave(saveData);
         Effect?.ApplyFromSave(saveData);
-        FactoryPolicy?.ApplyFromSave(saveData);
+        Policy?.ApplyFromSave(saveData);
         Player?.ApplyFromSave(saveData);
 
         PlacedLayout?.SetFromSave(saveData.placedBuildings, saveData.placedRoads);

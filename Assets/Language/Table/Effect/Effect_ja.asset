@@ -146,6 +146,22 @@ MonoBehaviour:
     m_Localized: 金鉱山設置上限
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000033
+    m_Localized: 鉄インゴット価格支援（政策）
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000034
+    m_Localized: ラインテクニシャン効率（政策）
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000035
+    m_Localized: ラインワーカー効率（政策）
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000036
+    m_Localized: 労働者満足度への逆風（政策）
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

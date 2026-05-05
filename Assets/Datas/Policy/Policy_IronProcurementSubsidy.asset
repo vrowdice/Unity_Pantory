@@ -17,6 +17,7 @@ MonoBehaviour:
   description: State-supported purchasing softens iron ingot market price (PercentAdd
     on Resource_Price for iron_ingot).
   icon: {fileID: 0}
-  isActiveByDefault: 1
+  isActiveByDefault: 0
+  dailyCreditCost: 1000
   effects:
   - {fileID: 11400000, guid: 7a8b9c0d1e2f3456a7b8c9d0e1f2a3b3, type: 2}

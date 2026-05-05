@@ -146,6 +146,22 @@ MonoBehaviour:
     m_Localized: 금광 설치 제한
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000033
+    m_Localized: 철괴 시세 완화 (정책)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000034
+    m_Localized: 라인 테크니션 효율 (정책)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000035
+    m_Localized: 라인 노동자 효율 (정책)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000036
+    m_Localized: 노동자 만족도 하향 (정책)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

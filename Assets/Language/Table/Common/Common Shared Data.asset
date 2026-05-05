@@ -551,6 +551,14 @@ MonoBehaviour:
     m_Key: Policy
     m_Metadata:
       m_Items: []
+  - m_Id: 36223671347855360
+    m_Key: DailyConsumption
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36239221390196736
+    m_Key: DailyCreditConsumption
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

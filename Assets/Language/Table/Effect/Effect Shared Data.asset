@@ -143,6 +143,22 @@ MonoBehaviour:
     m_Key: gold_mine_max_placed
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000033
+    m_Key: policy_effect_iron_ingot_price_subsidy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000034
+    m_Key: policy_effect_technician_efficiency_up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000035
+    m_Key: policy_effect_worker_efficiency_up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000036
+    m_Key: policy_effect_worker_satisfaction_penalty
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

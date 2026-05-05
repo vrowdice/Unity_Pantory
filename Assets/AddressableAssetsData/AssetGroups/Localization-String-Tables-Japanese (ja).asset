@@ -64,6 +64,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ja
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7aad9617834c51144844bce714153d0c
+    m_Address: Policy_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9c652bcd9ef40d8448a285619e200a99
     m_Address: Employee_ja
     m_ReadOnly: 1

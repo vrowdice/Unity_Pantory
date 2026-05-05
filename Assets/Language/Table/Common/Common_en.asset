@@ -556,6 +556,14 @@ MonoBehaviour:
     m_Localized: Policy
     m_Metadata:
       m_Items: []
+  - m_Id: 36223671347855360
+    m_Localized: Daily Consumption
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36239221390196736
+    m_Localized: Daily Credit Consumption
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

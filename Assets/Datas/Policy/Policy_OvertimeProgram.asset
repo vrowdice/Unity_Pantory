@@ -18,6 +18,7 @@ MonoBehaviour:
     is slightly negative.
   icon: {fileID: 0}
   isActiveByDefault: 0
+  dailyCreditCost: 1000
   effects:
   - {fileID: 11400000, guid: 7a8b9c0d1e2f3456a7b8c9d0e1f2a3b1, type: 2}
   - {fileID: 11400000, guid: 7a8b9c0d1e2f3456a7b8c9d0e1f2a3b2, type: 2}
