@@ -523,6 +523,10 @@ MonoBehaviour:
     m_Key: BuildingPlacedCountLimitReached
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268028
+    m_Key: PolicyChangeLocked
+    m_Metadata:
+      m_Items: []
   - m_Id: 18270374867648512
     m_Key: AutoEmployeePlacement
     m_Metadata:
@@ -557,6 +561,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 36239221390196736
     m_Key: DailyCreditConsumption
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37775686809042944
+    m_Key: RemainingMonths
     m_Metadata:
       m_Items: []
   m_Metadata:

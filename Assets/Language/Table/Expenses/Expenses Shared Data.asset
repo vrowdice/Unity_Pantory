@@ -31,6 +31,10 @@ MonoBehaviour:
     m_Key: Negative Interest
     m_Metadata:
       m_Items: []
+  - m_Id: 1138651185153
+    m_Key: Policy Cost
+    m_Metadata:
+      m_Items: []
   - m_Id: 1138651185152
     m_Key: Daily Change
     m_Metadata:

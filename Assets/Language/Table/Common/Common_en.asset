@@ -528,6 +528,10 @@ MonoBehaviour:
     m_Localized: Cannot build any more of this building.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268028
+    m_Localized: This policy cannot be changed yet.
+    m_Metadata:
+      m_Items: []
   - m_Id: 18270374867648512
     m_Localized: Automated employee placement
     m_Metadata:
@@ -562,6 +566,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 36239221390196736
     m_Localized: Daily Credit Consumption
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37775686809042944
+    m_Localized: Remaining Months
     m_Metadata:
       m_Items: []
   references:

@@ -117,9 +117,26 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     /// </summary>
     public long CalculateDailyRPProduction()
     {
+        if (_dataManager?.Employee == null || _dataManager.InitialEmployeeData == null)
+        {
+            return 0;
+        }
+
         EmployeeEntry employee = _dataManager.Employee.GetEmployeeEntry(EmployeeType.Researcher);
-        long totalRP = (long)(employee.state.count * _dataManager.InitialEmployeeData.researchPointsPerResearcher * employee.state.currentEfficiency);
-        return totalRP;
+        if (employee?.state == null)
+        {
+            return 0;
+        }
+
+        float baseRp = employee.state.count * _dataManager.InitialEmployeeData.researchPointsPerResearcher *
+                       employee.state.currentEfficiency;
+
+        List<EffectState> researchBonusEffects = _dataManager.Effect != null
+            ? _dataManager.Effect.GetEffectStatEffects(EffectTargetType.Research, EffectStatType.Research_RPProduction)
+            : null;
+
+        float finalRp = EffectUtils.ComputeStatFromEffects(baseRp, researchBonusEffects);
+        return (long)Mathf.Max(0f, finalRp);
     }
 
     /// <summary>
@@ -246,6 +263,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
 
         RefreshUnlockedResearchStates();
+        ReapplyEffectsFromCompletedResearch();
     }
 
     private static ResearchState CloneState(ResearchState state)

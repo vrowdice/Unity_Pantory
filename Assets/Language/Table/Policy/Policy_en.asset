@@ -45,6 +45,15 @@ MonoBehaviour:
       lines.
     m_Metadata:
       m_Items: []
+  - m_Id: 7200000000004
+    m_Localized: Research Grant Program
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001004
+    m_Localized: Provides funding to expand daily research point production while the
+      policy is active.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

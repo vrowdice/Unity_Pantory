@@ -526,6 +526,10 @@ MonoBehaviour:
     m_Localized: "\u3053\u306E\u5EFA\u7269\u306F\u3053\u308C\u4EE5\u4E0A\u5EFA\u8A2D\u3067\u304D\u307E\u305B\u3093\u3002"
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268028
+    m_Localized: この政策はまだ変更できません。
+    m_Metadata:
+      m_Items: []
   - m_Id: 18270374867648512
     m_Localized: "\u5F93\u696D\u54E1\u306E\u81EA\u52D5\u914D\u7F6E"
     m_Metadata:
@@ -560,6 +564,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 36239221390196736
     m_Localized: "\u6BCE\u65E5\u306E\u30AF\u30EC\u30B8\u30C3\u30C8\u6D88\u8CBB\u91CF"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37775686809042944
+    m_Localized: "\u6B8B\u308A\u306E\u6708"
     m_Metadata:
       m_Items: []
   references:

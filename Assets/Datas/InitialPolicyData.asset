@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9831fe9ada5e8f54ab711eefc15053ef, type: 3}
   m_Name: InitialPolicyData
   m_EditorClassIdentifier: 
+  PolicyExpirationMonths: 3
+  useWealthBasedDailyPolicyCostMultiplier: 1
+  policyCostWealthDivisor: 1000000
+  policyCostMultiplierMin: 1
+  policyCostMultiplierMax: 20

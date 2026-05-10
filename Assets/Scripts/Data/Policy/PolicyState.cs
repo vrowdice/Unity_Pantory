@@ -5,4 +5,5 @@ using UnityEngine;
 public class PolicyState
 {
     public bool isActive;
+    public int remainingMonths;
 }

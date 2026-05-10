@@ -42,6 +42,14 @@ MonoBehaviour:
     m_Localized: 교육 지원으로 테크니션의 라인 효율이 올라갑니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 7200000000004
+    m_Localized: 연구 지원금 프로그램
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001004
+    m_Localized: 정책 유지 중 매일 생산되는 연구력이 증가합니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

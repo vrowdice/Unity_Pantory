@@ -31,4 +31,5 @@ public static class WarningMessage
     public const string DeleteFailed = "DeleteFailed";
     public const string CategoryNameAlreadyExists = "CategoryNameAlreadyExists";
     public const string BuildingPlacedCountLimitReached = "BuildingPlacedCountLimitReached";
+    public const string PolicyChangeLocked = "PolicyChangeLocked";
 }

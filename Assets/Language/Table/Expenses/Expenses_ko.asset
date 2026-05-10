@@ -34,6 +34,10 @@ MonoBehaviour:
     m_Localized: "\uB9C8\uC774\uB108\uC2A4 \uC774\uC790"
     m_Metadata:
       m_Items: []
+  - m_Id: 1138651185153
+    m_Localized: 정책 유지비
+    m_Metadata:
+      m_Items: []
   - m_Id: 1138651185152
     m_Localized: "\uC77C\uC77C \uBCC0\uB3D9"
     m_Metadata:

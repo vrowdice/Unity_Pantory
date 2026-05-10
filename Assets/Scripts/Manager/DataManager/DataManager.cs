@@ -203,6 +203,7 @@ public class DataManager : Singleton<DataManager>
     private void HandleMonthChanged()
     {
         Finances.HandleMonthChanged();
+        Policy?.HandleMonthChanged();
 
         SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
         if (saveLoadManager != null)

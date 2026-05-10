@@ -19,6 +19,8 @@ public class ResearchCanvas : MainCanvasPanelBase
     [SerializeField] private Transform _researchBtnContainerContentTransform;
 
     [SerializeField] private GameObject _linePrefab;
+    
+    [SerializeField] private Transform _researchEffectScrollViewContentTransform;
 
     private Transform _lineParent;
     private List<Transform> _researchBtnContainerList = new List<Transform>();
@@ -49,11 +51,13 @@ public class ResearchCanvas : MainCanvasPanelBase
         }
 
         UpdateAllText();
+        UpdateResearchEffectStatus();
     }
 
     public void ResearchChanged()
     {
         UpdateAllText();
+        UpdateResearchEffectStatus();
         UpdateResearchScrollView();
     }
 
@@ -260,6 +264,32 @@ public class ResearchCanvas : MainCanvasPanelBase
         _researchPointText.text = $"{ReplaceUtils.FormatNumberWithCommas(researchPoints)} +{ReplaceUtils.FormatNumberWithCommas(deltaResearch)}";
         _researchPointText.color = _visualManager.GetDeltaColor(deltaResearch);
         _researcherText.text = _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Researcher).ToString();
+    }
+
+    private void UpdateResearchEffectStatus()
+    {
+        if (_researchEffectScrollViewContentTransform == null)
+        {
+            return;
+        }
+
+        _gameManager.PoolingManager.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
+
+        if (_dataManager?.Effect == null)
+        {
+            return;
+        }
+
+        List<EffectState> effects = _dataManager.Effect.GetEffectStatEffects(
+            EffectTargetType.Research,
+            EffectStatType.Research_RPProduction
+        );
+
+        foreach (EffectState effectState in effects)
+        {
+            if (effectState == null) continue;
+            _panelUIManager.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, effectState);
+        }
     }
 
     private void OnDisable()

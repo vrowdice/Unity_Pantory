@@ -34,6 +34,10 @@ MonoBehaviour:
     m_Localized: Negative Interest
     m_Metadata:
       m_Items: []
+  - m_Id: 1138651185153
+    m_Localized: Policy Cost
+    m_Metadata:
+      m_Items: []
   - m_Id: 1138651185152
     m_Localized: Daily Change
     m_Metadata:

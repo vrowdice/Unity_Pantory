@@ -57,6 +57,7 @@ public class PolicyDataHandler : IDataHandlerEvents
     /// </summary>
     public long CalculateDailyPolicyCost()
     {
+        float multiplier = GetDailyPolicyCostMultiplier();
         long totalCost = 0;
         foreach (PolicyEntry entry in _policyEntries.Values)
         {
@@ -65,10 +66,64 @@ public class PolicyDataHandler : IDataHandlerEvents
                 continue;
             }
 
-            totalCost += entry.data.dailyCreditCost;
+            if (entry.data.dailyCreditCost <= 0)
+            {
+                continue;
+            }
+
+            double scaled = entry.data.dailyCreditCost * (double)multiplier;
+            long scaledCost = (long)Math.Round(scaled, MidpointRounding.AwayFromZero);
+            if (scaledCost > 0)
+            {
+                totalCost += scaledCost;
+            }
         }
 
         return totalCost;
+    }
+
+    public long CalculateScaledDailyPolicyCost(long baseDailyCost)
+    {
+        if (baseDailyCost <= 0)
+        {
+            return 0;
+        }
+
+        float multiplier = GetDailyPolicyCostMultiplier();
+        double scaled = baseDailyCost * (double)multiplier;
+        long scaledCost = (long)Math.Round(scaled, MidpointRounding.AwayFromZero);
+        return Math.Max(0L, scaledCost);
+    }
+
+    private float GetDailyPolicyCostMultiplier()
+    {
+        if (_initialPolicyData == null || !_initialPolicyData.useWealthBasedDailyPolicyCostMultiplier)
+        {
+            return 1f;
+        }
+
+        long wealth = _dataManager?.Finances != null ? _dataManager.Finances.Wealth : 0L;
+        long divisor = _initialPolicyData.policyCostWealthDivisor;
+        if (divisor <= 0)
+        {
+            return 1f;
+        }
+
+        float raw = wealth <= 0 ? 0f : (float)((double)wealth / divisor);
+        float min = _initialPolicyData.policyCostMultiplierMin;
+        float max = _initialPolicyData.policyCostMultiplierMax;
+
+        float clamped = Mathf.Max(0f, raw);
+        if (max > 0f)
+        {
+            clamped = Mathf.Clamp(clamped, min, max);
+        }
+        else
+        {
+            clamped = Mathf.Max(min, clamped);
+        }
+
+        return clamped;
     }
 
     public PolicyData GetPolicyData(string policyId)
@@ -95,12 +150,18 @@ public class PolicyDataHandler : IDataHandlerEvents
             return false;
         }
 
+        if (entry.state != null && entry.state.remainingMonths > 0)
+        {
+            return false;
+        }
+
         if (entry.state.isActive == active)
         {
             return true;
         }
 
         entry.state.isActive = active;
+        entry.state.remainingMonths = GetPolicyExpirationMonths();
         if (active)
         {
             ApplyPolicyEffects(entry.data);
@@ -112,6 +173,38 @@ public class PolicyDataHandler : IDataHandlerEvents
 
         OnPolicyChanged?.Invoke();
         return true;
+    }
+
+    public void HandleMonthChanged()
+    {
+        bool changed = false;
+        foreach (PolicyEntry entry in _policyEntries.Values)
+        {
+            if (entry?.state == null)
+            {
+                continue;
+            }
+
+            if (entry.state.remainingMonths > 0)
+            {
+                entry.state.remainingMonths--;
+                if (entry.state.remainingMonths < 0)
+                {
+                    entry.state.remainingMonths = 0;
+                }
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            OnPolicyChanged?.Invoke();
+        }
+    }
+
+    private int GetPolicyExpirationMonths()
+    {
+        return _initialPolicyData != null ? Mathf.Max(0, _initialPolicyData.PolicyExpirationMonths) : 0;
     }
 
     /// <summary>
@@ -196,6 +289,13 @@ public class PolicyDataHandler : IDataHandlerEvents
 
     private static string ResolvePolicyEffectInstanceId(EffectData effect, string policyId)
     {
+        // Global effects must be applied globally (instanceId=null),
+        // otherwise they end up in instance-effects bucket and won't affect global calculations.
+        if (effect.isGlobalEffect)
+        {
+            return null;
+        }
+
         if (!string.IsNullOrEmpty(effect.targetId))
         {
             return effect.targetId;

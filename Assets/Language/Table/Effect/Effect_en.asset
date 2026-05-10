@@ -162,6 +162,14 @@ MonoBehaviour:
     m_Localized: Worker Satisfaction Pressure (Policy)
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000037
+    m_Localized: RP Production Bonus (Research)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000038
+    m_Localized: RP Production Bonus (Policy)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

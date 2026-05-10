@@ -162,6 +162,14 @@ MonoBehaviour:
     m_Localized: 労働者満足度への逆風（政策）
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000037
+    m_Localized: 研究ポイント生産ボーナス（研究）
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000038
+    m_Localized: 研究ポイント生産ボーナス（政策）
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

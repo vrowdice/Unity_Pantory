@@ -537,6 +537,10 @@ MonoBehaviour:
       \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268028
+    m_Localized: 이 정책은 아직 변경할 수 없습니다.
+    m_Metadata:
+      m_Items: []
   - m_Id: 18270374867648512
     m_Localized: "\uC9C1\uC6D0 \uC790\uB3D9 \uBC30\uCE58"
     m_Metadata:
@@ -571,6 +575,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 36239221390196736
     m_Localized: "\uC77C\uC77C \uD06C\uB808\uB527 \uC18C\uBE44\uB7C9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37775686809042944
+    m_Localized: "\uB0A8\uC740 \uAC1C\uC6D4"
     m_Metadata:
       m_Items: []
   references:

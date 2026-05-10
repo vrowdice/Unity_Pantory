@@ -9,4 +9,5 @@ public enum EffectStatType
     GameSpeed,
     Revenue,
     Building_MaxPlacedCount,
+    Research_RPProduction,
 }
