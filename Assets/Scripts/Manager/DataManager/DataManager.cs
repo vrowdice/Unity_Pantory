@@ -16,6 +16,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialOrderData _initialOrderData;
     [SerializeField] private InitialNewsData _initialNewsData;
     [SerializeField] private InitialPolicyData _initialFactoryPolicyData;
+    [SerializeField] private InitialMainEventData _initialMainEventData;
 
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
@@ -33,6 +34,7 @@ public class DataManager : Singleton<DataManager>
     public InitialEffectData InitialEffectData => _initialEffectData;
     public InitialOrderData InitialOrderData => _initialOrderData;
     public InitialPolicyData InitialFactoryPolicyData => _initialFactoryPolicyData;
+    public InitialMainEventData InitialMainEventData => _initialMainEventData;
 
     public TimeDataHandler Time { get; private set; }
     public ResourceDataHandler Resource { get; private set; }
@@ -96,7 +98,7 @@ public class DataManager : Singleton<DataManager>
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
         Policy = new PolicyDataHandler(this, _policyDataList, _initialFactoryPolicyData);
-        MainEvent = new MainEventDataHandler(this);
+        MainEvent = new MainEventDataHandler(this, _initialMainEventData);
 
         Player = new PlayerDataHandler();
 
@@ -113,6 +115,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(News);
         _eventHandlers.Add(Order);
         _eventHandlers.Add(Policy);
+        _eventHandlers.Add(MainEvent);
 
         _dayHandlers.Clear();
         _dayHandlers.Add(Resource);
@@ -192,6 +195,8 @@ public class DataManager : Singleton<DataManager>
         Time.OnDayChanged += HandleDayChanged;
         Time.OnMonthChanged -= HandleMonthChanged;
         Time.OnMonthChanged += HandleMonthChanged;
+
+        MainEvent?.SubscribeCrossHandlerEvents();
     }
 
     private void HandleDayChanged()

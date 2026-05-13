@@ -225,7 +225,10 @@ public partial class EmployeeDataHandler : IDataHandlerEvents, ITimeChangeHandle
         return entry.state.salaryLevel;
     }
 
-    protected int GetTotalEmployeeCount()
+    /// <summary>
+    /// 등록된 모든 직원 유형의 인원 수 합계.
+    /// </summary>
+    public int GetTotalEmployeeCount()
     {
         int total = 0;
         foreach (EmployeeEntry entry in _employees.Values)

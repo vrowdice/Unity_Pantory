@@ -383,10 +383,10 @@ MonoBehaviour:
   _bgmSource: {fileID: 8300000, guid: b810c43e0d348974f9b33db9410c95c1, type: 3}
   _buildSound: {fileID: 8300000, guid: 56510fb20c790eb4b939eb4a00019263, type: 3}
   _removalSound: {fileID: 8300000, guid: 74e33e764c07cb247a5d3e959d2de807, type: 3}
-  _buildEffectPrefab: {fileID: 3107651079518618519, guid: 34f7eebdfb6b4a6419dc701f33f07c83, type: 3}
-  _removalEffectPrefab: {fileID: 3107651079518618519, guid: 34f7eebdfb6b4a6419dc701f33f07c83, type: 3}
-  _buildEffectZ: -10
-  _removalEffectZ: -10
+  _buildParticlePrefab: {fileID: 7056582079549602100, guid: f1b4ca3a0d754514b9bf8bf88d9cfe71, type: 3}
+  _removalParticlePrefab: {fileID: 0}
+  _buildEffectZ: 0
+  _removalEffectZ: 0
   _mainCanvas: {fileID: 789901298}
   _previewPrefab: {fileID: 5812946505932702459, guid: d98818edac571cb4db322fed99d802e4, type: 3}
   _blueprintPreviewPrefab: {fileID: 5812946505932702459, guid: 4c9a77042d86cd648a4adb67e6b01b87, type: 3}
@@ -1015,6 +1015,10 @@ PrefabInstance:
     - target: {fileID: 4809472614883818563, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5125560840458634942, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
+      propertyPath: m_fontSize
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5792593746420108247, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_SizeDelta.y

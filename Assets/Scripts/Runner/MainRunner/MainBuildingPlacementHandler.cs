@@ -457,22 +457,22 @@ public class MainBuildingPlacementHandler
 
     private void PlayBuildEffectAt(Vector2Int origin, Vector2Int size)
     {
-        if (_runner.BuildEffectPrefab == null)
+        if (_runner.BuildParticlePrefab == null)
             return;
 
         Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, size);
         effectPosition.z = _runner.BuildEffectZ;
-        Object.Instantiate(_runner.BuildEffectPrefab, effectPosition, Quaternion.identity, _runner.transform);
+        Object.Instantiate(_runner.BuildParticlePrefab, effectPosition, Quaternion.identity);
     }
 
     private void PlayRemovalEffectAt(Vector2Int origin)
     {
-        if (_runner.RemovalEffectPrefab == null)
+        if (_runner.RemovalParticlePrefab == null)
             return;
         
         Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, Vector2Int.one);
         effectPosition.z = _runner.RemovalEffectZ;
-        Object.Instantiate(_runner.RemovalEffectPrefab, effectPosition, Quaternion.identity, _runner.transform);
+        Object.Instantiate(_runner.RemovalParticlePrefab, effectPosition, Quaternion.identity);
     }
 
     private Vector2Int GetBlueprintPlacementOrigin(Vector2Int anchor, PlacedBuildingSaveData saveData)

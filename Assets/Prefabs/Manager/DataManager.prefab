@@ -54,6 +54,7 @@ MonoBehaviour:
   _initialOrderData: {fileID: 11400000, guid: ebc4c0f8ef9deb64caa72cc60c2e8149, type: 2}
   _initialNewsData: {fileID: 11400000, guid: 33e35dd8173cb3d4392188c5063b9b15, type: 2}
   _initialFactoryPolicyData: {fileID: 11400000, guid: a64187738165d1747b5a010137d710c1, type: 2}
+  _initialMainEventData: {fileID: 11400000, guid: e9d5c3b7a1f64e2d8b0c4a6f3e5d7b9a, type: 2}
   _buildingDataList:
   - {fileID: 11400000, guid: 802d5cba87b0a7341a7425265ad7b115, type: 2}
   - {fileID: 11400000, guid: 960d5a7248b012544b3d054049188b94, type: 2}

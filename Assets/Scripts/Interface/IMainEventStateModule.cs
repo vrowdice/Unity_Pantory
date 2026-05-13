@@ -3,5 +3,8 @@
 /// </summary>
 public interface IMainEventStateModule
 {
+    bool IsComplete { get; }
+    int ActiveTime { get; }
+
     void OnDayChanged();
 }
