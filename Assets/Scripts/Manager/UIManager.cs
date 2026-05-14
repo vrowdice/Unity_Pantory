@@ -379,6 +379,36 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
+    public NewsPopup ShowMainEventAnnouncementPopup(InitialMainEventModuleData moduleData, MainCanvas mainCanvas)
+    {
+        if (moduleData == null || !moduleData.HasAnnouncementConfigured())
+        {
+            return null;
+        }
+
+        NewsPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<NewsPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            if (_newsPopupPrefab == null)
+            {
+                Debug.LogWarning("[UIManager] News popup prefab is missing.");
+                return null;
+            }
+
+            GameObject obj = Instantiate(_newsPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<NewsPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.InitMainEventAnnouncement(moduleData, mainCanvas);
+        return popup;
+    }
+
     public CreditTopInfoPopup ShowCreditTopInfoPopup()
     {
         CreditTopInfoPopup popup = null;

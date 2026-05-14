@@ -1,7 +1,11 @@
+using UnityEngine;
+
 public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
 {
     private readonly DataManager _dataManager;
-    private readonly InitialMainEventData _initialMainEventData;
+    private readonly InitialUnionMainEventData _initialUnionMainEventData;
+    private readonly InitialWarMainEventData _initialWarMainEventData;
+    private readonly InitialAutomationMainEventData _initialAutomationMainEventData;
 
     private MainEventType _currentEventType;
     private IMainEventStateModule _activeStateModule;
@@ -18,10 +22,16 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
     public bool IsCurrentMainEventComplete =>
         _activeStateModule != null && _activeStateModule.IsComplete;
 
-    public MainEventDataHandler(DataManager dataManager, InitialMainEventData initialMainEventData)
+    public MainEventDataHandler(
+        DataManager dataManager,
+        InitialUnionMainEventData initialUnionMainEventData,
+        InitialWarMainEventData initialWarMainEventData,
+        InitialAutomationMainEventData initialAutomationMainEventData)
     {
         _dataManager = dataManager;
-        _initialMainEventData = initialMainEventData;
+        _initialUnionMainEventData = initialUnionMainEventData;
+        _initialWarMainEventData = initialWarMainEventData;
+        _initialAutomationMainEventData = initialAutomationMainEventData;
         SubscribeCrossHandlerEvents();
         SetMainEventType(MainEventType.None);
     }
@@ -57,7 +67,7 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
     /// 메인 이벤트 타입을 바꾸고, 타입이 바뀐 경우에만 해당 스테이트 모듈을 새로 만든다.
     /// 같은 타입이면 기존 모듈을 유지한다. 세이브 복원은 <see cref="ApplyFromSave"/>에서 모듈에 직접 반영한다.
     /// </summary>
-    public void SetMainEventType(MainEventType mainEventType)
+    public void SetMainEventType(MainEventType mainEventType, bool showStartAnnouncement = true)
     {
         if (_currentEventType == mainEventType)
         {
@@ -67,20 +77,21 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
             }
         }
 
+        MainEventType previousType = _currentEventType;
         _currentEventType = mainEventType;
 
         switch (mainEventType)
         {
             case MainEventType.Union:
-                _unionStateModule = new UnionStateModule(_initialMainEventData, _dataManager);
+                _unionStateModule = new UnionStateModule(_initialUnionMainEventData, _dataManager);
                 _activeStateModule = _unionStateModule;
                 break;
             case MainEventType.War:
-                _warStateModule = new WarStateModule();
+                _warStateModule = new WarStateModule(_initialWarMainEventData);
                 _activeStateModule = _warStateModule;
                 break;
             case MainEventType.Automation:
-                _automationStateModule = new AutomationStateModule();
+                _automationStateModule = new AutomationStateModule(_initialAutomationMainEventData);
                 _activeStateModule = _automationStateModule;
                 break;
             case MainEventType.None:
@@ -88,6 +99,51 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
                 _activeStateModule = null;
                 break;
         }
+
+        if (showStartAnnouncement
+            && mainEventType != MainEventType.None
+            && previousType != mainEventType)
+        {
+            TryShowMainEventStartAnnouncement(mainEventType);
+        }
+    }
+
+    private void TryShowMainEventStartAnnouncement(MainEventType mainEventType)
+    {
+        InitialMainEventModuleData moduleData = null;
+        switch (mainEventType)
+        {
+            case MainEventType.Union:
+                moduleData = _initialUnionMainEventData;
+                break;
+            case MainEventType.War:
+                moduleData = _initialWarMainEventData;
+                break;
+            case MainEventType.Automation:
+                moduleData = _initialAutomationMainEventData;
+                break;
+            default:
+                return;
+        }
+
+        if (moduleData == null || !moduleData.HasAnnouncementConfigured())
+        {
+            return;
+        }
+
+        UIManager uiManager = UIManager.Instance;
+        if (uiManager == null)
+        {
+            return;
+        }
+
+        MainCanvas mainCanvas = Object.FindAnyObjectByType<MainCanvas>();
+        if (mainCanvas == null)
+        {
+            return;
+        }
+
+        uiManager.ShowMainEventAnnouncementPopup(moduleData, mainCanvas);
     }
 
     public void HandleDayChanged()
@@ -121,9 +177,9 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
 
     private int GetUnionEmployeeCountToStart()
     {
-        if (_initialMainEventData != null)
+        if (_initialUnionMainEventData != null)
         {
-            return _initialMainEventData.unionEmployeeCountToStart;
+            return _initialUnionMainEventData.unionEmployeeCountToStart;
         }
 
         return 500;
@@ -152,7 +208,7 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
             return;
         }
 
-        SetMainEventType(saveData.mainEventType);
+        SetMainEventType(saveData.mainEventType, showStartAnnouncement: false);
         switch (saveData.mainEventType)
         {
             case MainEventType.Union:

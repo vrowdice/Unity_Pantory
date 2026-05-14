@@ -16,7 +16,9 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialOrderData _initialOrderData;
     [SerializeField] private InitialNewsData _initialNewsData;
     [SerializeField] private InitialPolicyData _initialFactoryPolicyData;
-    [SerializeField] private InitialMainEventData _initialMainEventData;
+    [SerializeField] private InitialUnionMainEventData _initialUnionMainEventData;
+    [SerializeField] private InitialWarMainEventData _initialWarMainEventData;
+    [SerializeField] private InitialAutomationMainEventData _initialAutomationMainEventData;
 
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
@@ -34,7 +36,9 @@ public class DataManager : Singleton<DataManager>
     public InitialEffectData InitialEffectData => _initialEffectData;
     public InitialOrderData InitialOrderData => _initialOrderData;
     public InitialPolicyData InitialFactoryPolicyData => _initialFactoryPolicyData;
-    public InitialMainEventData InitialMainEventData => _initialMainEventData;
+    public InitialUnionMainEventData InitialUnionMainEventData => _initialUnionMainEventData;
+    public InitialWarMainEventData InitialWarMainEventData => _initialWarMainEventData;
+    public InitialAutomationMainEventData InitialAutomationMainEventData => _initialAutomationMainEventData;
 
     public TimeDataHandler Time { get; private set; }
     public ResourceDataHandler Resource { get; private set; }
@@ -98,7 +102,11 @@ public class DataManager : Singleton<DataManager>
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
         Policy = new PolicyDataHandler(this, _policyDataList, _initialFactoryPolicyData);
-        MainEvent = new MainEventDataHandler(this, _initialMainEventData);
+        MainEvent = new MainEventDataHandler(
+            this,
+            _initialUnionMainEventData,
+            _initialWarMainEventData,
+            _initialAutomationMainEventData);
 
         Player = new PlayerDataHandler();
 

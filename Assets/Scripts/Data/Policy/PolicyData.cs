@@ -17,6 +17,11 @@ public class PolicyData : ScriptableObject
     [Tooltip("하루마다 소모되는 크레딧(0 이상). 수입·지급은 없음")]
     public long dailyCreditCost;
 
+    [Header("Modification lock")]
+    [Tooltip("정책 ON/OFF를 바꾼 뒤, 다시 바꿀 수 없게 유지되는 개월 수. 0이면 InitialPolicyData.PolicyExpirationMonths를 사용")]
+    [Min(0)]
+    public int modificationLockMonths;
+
     [Header("Effects")]
     public List<EffectData> effects = new List<EffectData>();
 }

@@ -541,6 +541,10 @@ MonoBehaviour:
     m_Localized: 이 정책은 아직 변경할 수 없습니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 864226268029
+    m_Localized: 다음 변경 후 {0}개월 동안 고정
+    m_Metadata:
+      m_Items: []
   - m_Id: 18270374867648512
     m_Localized: "\uC9C1\uC6D0 \uC790\uB3D9 \uBC30\uCE58"
     m_Metadata:

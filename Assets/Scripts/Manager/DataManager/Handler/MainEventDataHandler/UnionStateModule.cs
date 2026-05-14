@@ -1,19 +1,18 @@
 /// <summary>
-/// 연합 메인 이벤트. 직원 수·비용은 <see cref="InitialMainEventData"/>에서 읽는다. <see cref="ActiveTime"/>은 기록용.
+/// 연합 메인 이벤트. 직원 수·비용은 <see cref="InitialUnionMainEventData"/>에서 읽는다. <see cref="ActiveTime"/>은 기록용.
 /// </summary>
 public class UnionStateModule : IMainEventStateModule
 {
-    private readonly InitialMainEventData _init;
+    private readonly InitialUnionMainEventData _init;
     private readonly DataManager _dataManager;
 
     private int _activeTime;
     private bool _isComplete;
 
     public bool IsComplete => _isComplete;
-
     public int ActiveTime => _activeTime;
 
-    public UnionStateModule(InitialMainEventData init, DataManager dataManager)
+    public UnionStateModule(InitialUnionMainEventData init, DataManager dataManager)
     {
         _init = init;
         _dataManager = dataManager;

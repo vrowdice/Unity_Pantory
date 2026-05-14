@@ -167,6 +167,10 @@ MonoBehaviour:
     m_Key: policy_effect_research_rp_production_bonus
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000039
+    m_Key: policy_effect_employee_welfare_satisfaction
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

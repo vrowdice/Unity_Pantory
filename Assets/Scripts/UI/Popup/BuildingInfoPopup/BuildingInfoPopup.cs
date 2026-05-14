@@ -49,6 +49,12 @@ public class BuildingInfoPopup : PopupBase
     private DataManager _dataManager;
     private BuildingObject _buildingObject;
 
+    /// <summary>
+    /// UI Slider의 min/max/value를 코드로 바꿀 때 onValueChanged가 호출되는 경우가 있어,
+    /// 그때는 직원 할당 콜백을 무시합니다.
+    /// </summary>
+    private bool _suppressEmployeeSliderCallbacks;
+
     private readonly List<string> _recipeInputIds = new List<string>();
     private readonly List<string> _recipeOutputIds = new List<string>();
     private string _recipeCurrentResourceId;
@@ -151,12 +157,25 @@ public class BuildingInfoPopup : PopupBase
 
         int maxWorkerSlots = b.MaxWorkerSlots;
         int maxTechSlots = b.MaxTechnicianSlots;
-        UpdateSliderState(_workerSlider, currentWorkers, availWorkers, maxWorkerSlots);
-        UpdateSliderState(_technicianSlider, currentTechs, availTechs, maxTechSlots);
+        _suppressEmployeeSliderCallbacks = true;
+        try
+        {
+            UpdateSliderState(_workerSlider, currentWorkers, availWorkers, maxWorkerSlots);
+            UpdateSliderState(_technicianSlider, currentTechs, availTechs, maxTechSlots);
+        }
+        finally
+        {
+            _suppressEmployeeSliderCallbacks = false;
+        }
     }
 
     private static void UpdateSliderState(Slider slider, int currentAssigned, int availableGlobal, int maxRequired)
     {
+        if (slider == null)
+        {
+            return;
+        }
+
         int logicMax = Mathf.Min(maxRequired, currentAssigned + availableGlobal);
         int clamped = Mathf.Clamp(currentAssigned, 0, logicMax);
         slider.minValue = 0;
@@ -180,6 +199,11 @@ public class BuildingInfoPopup : PopupBase
 
     public void OnWorkerSliderChanged()
     {
+        if (_suppressEmployeeSliderCallbacks || _buildingObject == null)
+        {
+            return;
+        }
+
         int targetCount = Mathf.RoundToInt(_workerSlider.value);
         int delta = targetCount - _buildingObject.AssignedWorkers;
         if (delta == 0) return;
@@ -191,14 +215,27 @@ public class BuildingInfoPopup : PopupBase
         }
         else
         {
-            UpdateSliderState(_workerSlider, _buildingObject.AssignedWorkers,
-                Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker)),
-                _buildingObject.MaxWorkerSlots);
+            _suppressEmployeeSliderCallbacks = true;
+            try
+            {
+                UpdateSliderState(_workerSlider, _buildingObject.AssignedWorkers,
+                    Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Worker)),
+                    _buildingObject.MaxWorkerSlots);
+            }
+            finally
+            {
+                _suppressEmployeeSliderCallbacks = false;
+            }
         }
     }
 
     public void OnTechnicianSliderChanged()
     {
+        if (_suppressEmployeeSliderCallbacks || _buildingObject == null)
+        {
+            return;
+        }
+
         int targetCount = Mathf.RoundToInt(_technicianSlider.value);
         int delta = targetCount - _buildingObject.AssignedTechnicians;
         if (delta == 0) return;
@@ -210,9 +247,17 @@ public class BuildingInfoPopup : PopupBase
         }
         else
         {
-            UpdateSliderState(_technicianSlider, _buildingObject.AssignedTechnicians,
-                Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician)),
-                _buildingObject.MaxTechnicianSlots);
+            _suppressEmployeeSliderCallbacks = true;
+            try
+            {
+                UpdateSliderState(_technicianSlider, _buildingObject.AssignedTechnicians,
+                    Mathf.Max(0, _dataManager.Employee.GetAvailableEmployeeCount(EmployeeType.Technician)),
+                    _buildingObject.MaxTechnicianSlots);
+            }
+            finally
+            {
+                _suppressEmployeeSliderCallbacks = false;
+            }
         }
     }
 

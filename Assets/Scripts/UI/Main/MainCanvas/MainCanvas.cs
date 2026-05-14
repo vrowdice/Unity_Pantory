@@ -156,6 +156,11 @@ public partial class MainCanvas : CanvasBase
         UIManager.ShowNewsPopup(newsState, this);
     }
 
+    public void ShowMainEventAnnouncement(InitialMainEventModuleData moduleData)
+    {
+        UIManager.ShowMainEventAnnouncementPopup(moduleData, this);
+    }
+
     public void ShowCreditTopInfoPopup()
     {
         UIManager.ShowCreditTopInfoPopup();

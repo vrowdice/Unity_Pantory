@@ -170,6 +170,10 @@ MonoBehaviour:
     m_Localized: 研究ポイント生産ボーナス（政策）
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000039
+    m_Localized: 満足度/日（福利政策）
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

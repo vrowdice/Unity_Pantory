@@ -27,3 +27,4 @@ Key,Id,English(en),Japanese(ja),Korean(ko)
 "Effect_Steel_Price_Up_25",7000000000026,"Steel Price Surge","鋼鉄価格高騰","강철 가격 폭등"
 "Effect_Tank_Price_Up_10",7000000000027,"Tank Price Surge","戦車価格高騰","탱크 가격 폭등"
 "Effect_Wood_Price_Up_10",7000000000028,"Wood Log Price Surge","丸太価格高騰","통나무 가격 폭등"
+"policy_effect_employee_welfare_satisfaction",7000000000039,"Daily satisfaction (welfare)","満足度/日（福利）","만족도/일 (복지)"

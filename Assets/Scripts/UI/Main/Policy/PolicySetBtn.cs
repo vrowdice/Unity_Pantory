@@ -1,6 +1,7 @@
-using UnityEngine;
 using Evo.UI;
 using TMPro;
+using UnityEngine;
+
 public class PolicySetBtn : MonoBehaviour
 {
     [SerializeField] private Switch _switch;
@@ -8,15 +9,20 @@ public class PolicySetBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _remainingMonthsText;
     [SerializeField] private TextMeshProUGUI _dailyCostText;
     [SerializeField] private Transform _effectContentTransform;
+
     private DataManager _dataManager;
     private PolicyEntry _policyEntry;
+    private Button _rowButton;
+
     public void Init(PolicyEntry policyEntry)
     {
         _dataManager = DataManager.Instance;
         _policyEntry = policyEntry;
+        _rowButton = GetComponent<Button>();
         RefreshUI();
         DisplayEffects();
     }
+
     public void OnClick()
     {
         bool changed = _dataManager.Policy.TrySetPolicyActive(_policyEntry.data.id, !_policyEntry.state.isActive);
@@ -26,6 +32,7 @@ public class PolicySetBtn : MonoBehaviour
             {
                 UIManager.Instance.ShowWarningPopup(WarningMessage.PolicyChangeLocked);
             }
+
             RefreshUI();
             return;
         }
@@ -40,6 +47,15 @@ public class PolicySetBtn : MonoBehaviour
             return;
         }
 
+        int remainingMonths = _policyEntry.state.remainingMonths;
+        int lockMonths = _dataManager.Policy.GetModificationLockMonths(_policyEntry.data);
+        bool changeLocked = remainingMonths > 0;
+        _rowButton?.SetInteractable(!changeLocked);
+        if (_switch != null)
+        {
+            _switch.SetInteractable(!changeLocked);
+        }
+
         _switch.SetValue(_policyEntry.state.isActive);
         _policyTitleText.text = _policyEntry.data.id.Localize(LocalizationUtils.TABLE_POLICY);
 
@@ -48,16 +64,28 @@ public class PolicySetBtn : MonoBehaviour
 
         if (_remainingMonthsText != null)
         {
-            int remaining = _policyEntry.state.remainingMonths;
-            _remainingMonthsText.text = remaining > 0 ? remaining.ToString() : string.Empty;
+            if (changeLocked)
+            {
+                _remainingMonthsText.text = remainingMonths.ToString();
+            }
+            else if (lockMonths > 0)
+            {
+                _remainingMonthsText.text = "PolicyLockAfterNextToggle".LocalizeFormat(LocalizationUtils.TABLE_COMMON, lockMonths);
+            }
+            else
+            {
+                _remainingMonthsText.text = string.Empty;
+            }
         }
     }
+
     private void DisplayEffects()
     {
         if (_effectContentTransform == null || _policyEntry?.data?.effects == null)
         {
             return;
         }
+
         PoolingManager pool = PoolingManager.Instance;
         UIManager uiManager = UIManager.Instance;
         pool.ClearChildrenToPool(_effectContentTransform);
@@ -67,6 +95,7 @@ public class PolicySetBtn : MonoBehaviour
             {
                 continue;
             }
+
             uiManager.CreateEffectTextPairPanel(_effectContentTransform, new EffectState(effect));
         }
     }

@@ -52,6 +52,12 @@ MonoBehaviour:
     - Locale-ko
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b42bcece4b171a4eb214c118ea4192b
+    m_Address: MainEvent_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 89164e0a0690b934399c98e5e609b4f9
     m_Address: Order_ko
     m_ReadOnly: 1

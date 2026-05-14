@@ -161,7 +161,7 @@ public class PolicyDataHandler : IDataHandlerEvents
         }
 
         entry.state.isActive = active;
-        entry.state.remainingMonths = GetPolicyExpirationMonths();
+        entry.state.remainingMonths = GetModificationLockMonths(entry.data);
         if (active)
         {
             ApplyPolicyEffects(entry.data);
@@ -202,8 +202,16 @@ public class PolicyDataHandler : IDataHandlerEvents
         }
     }
 
-    private int GetPolicyExpirationMonths()
+    /// <summary>
+    /// 정책을 토글한 뒤 적용되는 수정 불가 개월 수. PolicyData.modificationLockMonths가 0이면 InitialPolicyData 값을 씁니다.
+    /// </summary>
+    public int GetModificationLockMonths(PolicyData data)
     {
+        if (data != null && data.modificationLockMonths > 0)
+        {
+            return data.modificationLockMonths;
+        }
+
         return _initialPolicyData != null ? Mathf.Max(0, _initialPolicyData.PolicyExpirationMonths) : 0;
     }
 

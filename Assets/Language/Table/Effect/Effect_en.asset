@@ -170,6 +170,10 @@ MonoBehaviour:
     m_Localized: RP Production Bonus (Policy)
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000039
+    m_Localized: Daily Satisfaction (Welfare Policy)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -90,11 +90,19 @@ public class EffectDataHandler : ITimeChangeHandler
     /// <param name="effectData">이펙트 데이터</param>
     /// <param name="value">값 (미지정 시 effectData.value 사용)</param>
     /// <param name="instanceId">인스턴스 식별자 (예: EmployeeType.ToString()). null이면 전역</param>
-    public void ApplyEffect(EffectData effectData, float value = float.NaN, string instanceId = null)
+    /// <param name="runtimeEffectIdOverride">
+    /// 런타임에서만 쓰는 이펙트 id. 여러 출처가 같은 EffectData.id를 쓸 때(예: 뉴스) 슬롯이 덮이지 않도록 구분합니다.
+    /// </param>
+    public void ApplyEffect(EffectData effectData, float value = float.NaN, string instanceId = null, string runtimeEffectIdOverride = null)
     {
         if (effectData == null) return;
 
         EffectState effectState = new EffectState(effectData);
+        if (!string.IsNullOrEmpty(runtimeEffectIdOverride))
+        {
+            effectState.id = runtimeEffectIdOverride;
+        }
+
         if (!float.IsNaN(value))
             effectState.value = value;
 
@@ -149,13 +157,16 @@ public class EffectDataHandler : ITimeChangeHandler
     /// <summary>
     /// 이펙트 제거. instanceId가 null이면 전역에서, 아니면 해당 인스턴스에서 제거합니다.
     /// </summary>
-    public void RemoveEffect(EffectData effectData, string instanceId = null)
+    /// <param name="runtimeEffectIdOverride">적용 시와 동일한 런타임 id(뉴스 등). null이면 effectData.id로 매칭합니다.</param>
+    public void RemoveEffect(EffectData effectData, string instanceId = null, string runtimeEffectIdOverride = null)
     {
         if (effectData == null) return;
 
+        string idToMatch = string.IsNullOrEmpty(runtimeEffectIdOverride) ? effectData.id : runtimeEffectIdOverride;
+
         if (string.IsNullOrEmpty(instanceId))
         {
-            RemoveFromGlobal(effectData);
+            RemoveFromGlobal(effectData.targetType, effectData.statType, idToMatch);
             return;
         }
         string key = GetInstanceKey(effectData.targetType, instanceId);
@@ -164,7 +175,7 @@ public class EffectDataHandler : ITimeChangeHandler
         List<EffectState> list = _instanceEffects[key][effectData.statType];
         for (int i = list.Count - 1; i >= 0; i--)
         {
-            if (list[i].id == effectData.id)
+            if (list[i].id == idToMatch)
             {
                 list.RemoveAt(i);
                 return;
@@ -172,13 +183,18 @@ public class EffectDataHandler : ITimeChangeHandler
         }
     }
 
-    private void RemoveFromGlobal(EffectData effectData)
+    private void RemoveFromGlobal(EffectTargetType targetType, EffectStatType statType, string effectStateId)
     {
-        if (!_effects.TryGetValue(effectData.targetType, out Dictionary<EffectStatType, List<EffectState>> byStat)) return;
-        if (!byStat.TryGetValue(effectData.statType, out List<EffectState> list)) return;
+        if (string.IsNullOrEmpty(effectStateId))
+        {
+            return;
+        }
+
+        if (!_effects.TryGetValue(targetType, out Dictionary<EffectStatType, List<EffectState>> byStat)) return;
+        if (!byStat.TryGetValue(statType, out List<EffectState> list)) return;
         for (int i = list.Count - 1; i >= 0; i--)
         {
-            if (list[i].id == effectData.id)
+            if (list[i].id == effectStateId)
             {
                 list.RemoveAt(i);
                 return;

@@ -10,6 +10,7 @@ public static class LocalizationUtils
     public const string TABLE_EMPLOYEE = "Employee";
     public const string TABLE_EXPENSES = "Expenses";
     public const string TABLE_MARKET_ACTOR = "MarketActor";
+    public const string TABLE_MAIN_EVENT = "MainEvent";
     public const string TABLE_NEWS = "News";
     public const string TABLE_ORDER = "Order";
     public const string TABLE_POLICY = "Policy";

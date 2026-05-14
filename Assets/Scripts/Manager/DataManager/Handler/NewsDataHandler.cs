@@ -77,8 +77,9 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
 
         if (selectedData.effects != null)
         {
-            foreach (EffectData effect in selectedData.effects)
+            for (int ei = 0; ei < selectedData.effects.Count; ei++)
             {
+                EffectData effect = selectedData.effects[ei];
                 if (effect == null) continue;
 
                 float additionalRandom = UnityEngine.Random.Range(-_initialNewsData.maxRandomRange, _initialNewsData.maxRandomRange);
@@ -90,7 +91,9 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
                     finalValue = Mathf.Min(finalValue, -_initialNewsData.minVariationRate);
 
                 finalValue = Mathf.Clamp(finalValue, _initialNewsData.minResourcePricePer, _initialNewsData.maxResourcePricePer);
-                _dataManager.Effect.ApplyEffect(effect, finalValue, effect.targetId);
+                string instanceId = ResolveNewsEffectInstanceId(effect);
+                string runtimeEffectId = BuildNewsEffectRuntimeId(newState.id, effect.id, ei);
+                _dataManager.Effect.ApplyEffect(effect, finalValue, instanceId, runtimeEffectId);
             }
         }
 
@@ -163,10 +166,13 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
                 NewsData data = GetNewsData(news.id);
                 if (data?.effects != null)
                 {
-                    foreach (EffectData effect in data.effects)
+                    for (int ei = 0; ei < data.effects.Count; ei++)
                     {
+                        EffectData effect = data.effects[ei];
                         if (effect == null) continue;
-                        _dataManager.Effect.RemoveEffect(effect, effect.targetId);
+                        string instanceId = ResolveNewsEffectInstanceId(effect);
+                        string runtimeEffectId = BuildNewsEffectRuntimeId(news.id, effect.id, ei);
+                        _dataManager.Effect.RemoveEffect(effect, instanceId, runtimeEffectId);
                     }
                 }
                 _activeNewsList.RemoveAt(i);
@@ -180,5 +186,31 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler
     {
         string json = JsonUtility.ToJson(state);
         return JsonUtility.FromJson<NewsState>(json);
+    }
+
+    /// <summary>
+    /// 뉴스 이펙트 적용/해제 시 EffectDataHandler와 동일한 인스턴스 키를 씁니다 (전역 이펙트는 null).
+    /// </summary>
+    private static string ResolveNewsEffectInstanceId(EffectData effect)
+    {
+        if (effect == null)
+        {
+            return null;
+        }
+
+        if (effect.isGlobalEffect)
+        {
+            return null;
+        }
+
+        return string.IsNullOrEmpty(effect.targetId) ? null : effect.targetId;
+    }
+
+    /// <summary>
+    /// 서로 다른 뉴스가 같은 EffectData 에셋(동일 template id)을 쓸 때 슬롯이 덮이거나, 한쪽만 끝나도 전부 지워지지 않도록 런타임 id를 분리합니다.
+    /// </summary>
+    private static string BuildNewsEffectRuntimeId(string activeNewsId, string templateEffectId, int effectIndexInNews)
+    {
+        return $"News::{activeNewsId}::{templateEffectId}::{effectIndexInNews}";
     }
 }

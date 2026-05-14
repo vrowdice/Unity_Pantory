@@ -50,6 +50,14 @@ MonoBehaviour:
     m_Localized: 정책 유지 중 매일 생산되는 연구력이 증가합니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 7200000000005
+    m_Localized: 직원 복지 프로그램
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001005
+    m_Localized: 구내식당·통근·건강 지원 등으로 정책 유지 중 모든 직원의 일일 만족도가 조금씩 오릅니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

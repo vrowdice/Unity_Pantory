@@ -54,6 +54,15 @@ MonoBehaviour:
       policy is active.
     m_Metadata:
       m_Items: []
+  - m_Id: 7200000000005
+    m_Localized: Employee Welfare Program
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001005
+    m_Localized: Cafeteria, commute, and wellness benefits add a small daily satisfaction
+      gain for all staff while the policy is active.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

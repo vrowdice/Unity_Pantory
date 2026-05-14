@@ -128,3 +128,4 @@ Key,Id,English(en),Japanese(ja),Korean(ko)
 "CategoryNameAlreadyExists",864226268025,"A category with this name already exists.","同じ名前のカテゴリーが既に存在します。","이미 존재하는 카테고리 이름입니다."
 "UnresearchedBuildingBlocksThreadPlacement",864226268026,"If you place this unresearched building, this thread cannot be placed in the main scene.","この未研究の建物を配置すると、このスレッドはメインで配置できません。","이 연구 안 된 건물을 설치하면 이 스레드는 메인에서 배치할 수 없습니다."
 "BuildingPlacedCountLimitReached",864226268027,"Cannot build any more of this building.","この建物はこれ以上建設できません。","이 건물은 더 이상 건설할 수 없습니다."
+"PolicyLockAfterNextToggle",864226268029,"After next change: {0} mo. lock","変更後{0}ヶ月は固定","다음 변경 후 {0}개월 동안 고정"

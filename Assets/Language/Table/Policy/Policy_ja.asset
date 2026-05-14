@@ -50,6 +50,14 @@ MonoBehaviour:
     m_Localized: 政策が有効な間、日々の研究ポイント生産量が増加します。
     m_Metadata:
       m_Items: []
+  - m_Id: 7200000000005
+    m_Localized: 従業員福祉プログラム
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001005
+    m_Localized: 食堂・通勤・健康支援などにより、政策が有効な間、全従業員の日々の満足度がわずかに上昇します。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

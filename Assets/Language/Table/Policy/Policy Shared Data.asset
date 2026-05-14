@@ -47,6 +47,14 @@ MonoBehaviour:
     m_Key: policy_research_grant_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7200000000005
+    m_Key: policy_employee_welfare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7200000001005
+    m_Key: policy_employee_welfare_Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

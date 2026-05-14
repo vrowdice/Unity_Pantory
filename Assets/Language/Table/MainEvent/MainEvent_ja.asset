@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MainEvent_ja
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ja
+  m_SharedData: {fileID: 11400000, guid: 074d4667c5b0cd34fbfd9ac5787afa5c, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7300000000001
+    m_Localized: 労働組合の動き
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001001
+    m_Localized: 従業員代表による組織化が進んでいます。紛争が収束するまで、毎日のクレジット支出に影響が出る場合があります。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000002
+    m_Localized: 戦時動員
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001002
+    m_Localized: 供給混乱と優先調達により、資材調達と納期が不安定になっています。コストとリードタイムに注意してください。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000003
+    m_Localized: 自動化プログラム
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001003
+    m_Localized: 経営陣が大規模な自動化投資を承認しました。今後の四半期で生産性・保全負荷・人員計画が大きく変わる見込みです。
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

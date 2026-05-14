@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MainEvent_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 074d4667c5b0cd34fbfd9ac5787afa5c, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7300000000001
+    m_Localized: Labor Union Drive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001001
+    m_Localized: Worker representatives are organizing across shifts. Daily credit
+      deductions may apply until the dispute is settled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000002
+    m_Localized: Wartime Mobilization
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001002
+    m_Localized: Supply shocks and priority requisitions are squeezing procurement
+      and delivery windows. Expect volatile costs and tighter lead times.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000003
+    m_Localized: Automation Program
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001003
+    m_Localized: The board has approved a major automation push. Retooling will reshape
+      throughput, maintenance load, and staffing plans over the coming quarters.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
