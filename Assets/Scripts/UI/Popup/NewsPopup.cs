@@ -41,21 +41,10 @@ public class NewsPopup : PopupBase
 
         _dataManager = DataManager.Instance;
 
-        string table = moduleData != null
-            ? moduleData.ResolveAnnouncementLocalizationTable()
-            : LocalizationUtils.TABLE_MAIN_EVENT;
-
-        if (moduleData == null || string.IsNullOrWhiteSpace(moduleData.announcementLocalizationKey))
-        {
-            _titleText.text = string.Empty;
-            _descriptionText.text = string.Empty;
-        }
-        else
-        {
-            string key = moduleData.announcementLocalizationKey;
-            _titleText.text = key.Localize(table);
-            _descriptionText.text = (key + LocalizationUtils.KEY_SUFFIX_DESC).Localize(table);
-        }
+        string table = LocalizationUtils.TABLE_MAIN_EVENT;
+        string key = moduleData.announcementLocalizationKey;
+        _titleText.text = key.Localize(table);
+        _descriptionText.text = (key + LocalizationUtils.KEY_SUFFIX_DESC).Localize(table);
 
         _iconImage.sprite = moduleData != null ? moduleData.announcementIcon : null;
 

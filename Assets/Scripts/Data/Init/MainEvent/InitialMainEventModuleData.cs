@@ -11,19 +11,6 @@ public abstract class InitialMainEventModuleData : ScriptableObject
 
     public Sprite announcementIcon;
 
-    [Tooltip("비어 있으면 MainEvent 테이블")]
-    public string announcementLocalizationTable = "";
-
-    public string ResolveAnnouncementLocalizationTable()
-    {
-        if (string.IsNullOrWhiteSpace(announcementLocalizationTable))
-        {
-            return LocalizationUtils.TABLE_MAIN_EVENT;
-        }
-
-        return announcementLocalizationTable;
-    }
-
     public bool HasAnnouncementConfigured()
     {
         return !string.IsNullOrWhiteSpace(announcementLocalizationKey)

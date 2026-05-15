@@ -8,6 +8,9 @@ public class PopupBase : TutorialBase
     [SerializeField] private RectTransform _animationTarget;
     [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.FadeInFadeOut;
 
+    [Header("Sound")]
+    [SerializeField] private AudioClip _openPopupSfx;
+
     public const float DISPLAY_TIME = 0.6f;
     public const float MOVE_DURATION = 0.5f;
     public const float PUNCH_SCALE_DURATION = 1f;
@@ -85,6 +88,11 @@ public class PopupBase : TutorialBase
 
     public virtual IEnumerator ShowEffectCoroutine()
     {
+        if (_openPopupSfx != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(_openPopupSfx);
+        }
+
         switch (_effectType)
         {
             case BasePanelEffectType.TYPE.FadeInFadeOut:
