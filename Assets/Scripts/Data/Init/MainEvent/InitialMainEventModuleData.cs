@@ -5,15 +5,12 @@ using UnityEngine;
 /// </summary>
 public abstract class InitialMainEventModuleData : ScriptableObject
 {
-    [Header("시작 알림 (NewsPopup)")]
+    public int eventOverDate;
+
+    [Header("NewsPopup")]
     [Tooltip("MainEvent 테이블 제목 키. 본문은 동일 키 + _Desc.")]
     public string announcementLocalizationKey;
 
     public Sprite announcementIcon;
-
-    public bool HasAnnouncementConfigured()
-    {
-        return !string.IsNullOrWhiteSpace(announcementLocalizationKey)
-            || announcementIcon != null;
-    }
+    public AudioClip openNewsAudio;
 }

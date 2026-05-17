@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_weapon_enthusiast_small_arms
+  m_EditorClassIdentifier: 
+  id: order_weapon_enthusiast_small_arms
+  displayName: Small Arms Supply Contract
+  senderActorData: {fileID: 11400000, guid: f127c385d5e8a594480fac734447ea2f, type: 2}
+  marketActorType: 2
+  durationDays: 10
+  rewardTrust: 20
+  scaleFactor: 0.12
+  potentialResources:
+  - {fileID: 11400000, guid: d0cb749aab0cce9438cd2743a2f74156, type: 2}
+  priceMultiplier: 1.25

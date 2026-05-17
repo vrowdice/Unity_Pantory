@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_verdant_continental_exchange_oil
+  m_EditorClassIdentifier: 
+  id: order_verdant_continental_exchange_multi
+  displayName: Timber & Arms Supply Contract
+  senderActorData: {fileID: 11400000, guid: 73bba9a45f77316458d9641f6e1e8ea0, type: 2}
+  marketActorType: 1
+  durationDays: 10
+  rewardTrust: 21
+  scaleFactor: 0.125
+  potentialResources:
+  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+  - {fileID: 11400000, guid: f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7, type: 2}
+  priceMultiplier: 1.27

@@ -11,14 +11,8 @@ public class UIManager : Singleton<UIManager>
     private readonly List<Action> _closeStack = new List<Action>();
 
     private Transform _managerCanvasTransform;
-
-    public Transform ManagerCanvasTransform => _managerCanvasTransform;
-    public GameObject ProductionInfoImagePrefab => _productionInfoImagePrefab;
-    public GameObject TextPairPanelPrefab => _textPairPanelPrefab;
-    public GameObject ActionBtnPrefab => _actionBtnPrefab;
-    public GameObject GridSortContentPrefab => _gridSortContentPrefab;
-    public GameObject EffectTextPairPanelPrefab => _effectTextPairPanelPrefab;
-    public float ProductionIconScale => _productionIconScale;
+    private MainCanvas _mainCanvas;
+    private RectTransform _creditTopInfoToggleRect;
 
     [Header("Common Panel")]
     [SerializeField] private GameObject _optionPanelPrefab;
@@ -35,6 +29,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _researchInfoPopupPrefab;
     [SerializeField] private GameObject _marketActorInfoPopupPrefab;
     [SerializeField] private GameObject _newsPopupPrefab;
+    [SerializeField] private GameObject _unionPopupPrefab;
     [SerializeField] private GameObject _buildingInfoPopupPrefab;
     [SerializeField] private GameObject _buildingHelpPopupPrefab;
     [SerializeField] private GameObject _resourceHelpPopupPrefab;
@@ -48,6 +43,10 @@ public class UIManager : Singleton<UIManager>
 
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
+
+    const int ActionBtnInitialPoolCount = 8;
+
+    public GameObject ActionBtnPrefab => _actionBtnPrefab;
 
     protected override void Awake()
     {
@@ -64,6 +63,7 @@ public class UIManager : Singleton<UIManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ClearCloseStack();
+        _mainCanvas = null;
     }
 
     private void Update()
@@ -158,6 +158,17 @@ public class UIManager : Singleton<UIManager>
     public void Init()
     {
         CreateManagerCanvas();
+        EnsureActionBtnPool();
+    }
+
+    void EnsureActionBtnPool()
+    {
+        if (_actionBtnPrefab == null) return;
+
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool == null) return;
+
+        pool.CreatePool(_actionBtnPrefab, ActionBtnInitialPoolCount);
     }
 
     /// <summary>
@@ -170,6 +181,16 @@ public class UIManager : Singleton<UIManager>
         if (managerCanvas != null)
             managerCanvas.worldCamera = Camera.main;
     }
+
+    /// <summary>
+    /// 메인 씬 로드 후 MainCanvas를 한 번 찾아 캐시합니다. 팝업 표시 시 인자로 넘기지 않습니다.
+    /// </summary>
+    public void RefreshMainCanvas()
+    {
+        _mainCanvas = UnityEngine.Object.FindAnyObjectByType<MainCanvas>();
+    }
+
+    public MainCanvas MainCanvas => _mainCanvas;
 
     private void CreateManagerCanvas()
     {
@@ -341,7 +362,7 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
-    public MarketActorInfoPopup ShowMarketActorInfoPopup(MarketActorEntry marketActorEntry, MainCanvas mainCanvas)
+    public MarketActorInfoPopup ShowMarketActorInfoPopup(MarketActorEntry marketActorEntry)
     {
         MarketActorInfoPopup popup = null;
         if (_managerCanvasTransform != null)
@@ -356,11 +377,11 @@ public class UIManager : Singleton<UIManager>
         }
 
         popup.gameObject.SetActive(true);
-        popup.Init(marketActorEntry, mainCanvas);
+        popup.Init(marketActorEntry);
         return popup;
     }
 
-    public NewsPopup ShowNewsPopup(NewsState newsState, MainCanvas mainCanvas)
+    public NewsPopup ShowNewsPopup(NewsState newsState)
     {
         NewsPopup popup = null;
         if (_managerCanvasTransform != null)
@@ -375,13 +396,37 @@ public class UIManager : Singleton<UIManager>
         }
 
         popup.gameObject.SetActive(true);
-        popup.Init(newsState, mainCanvas);
+        popup.Init(newsState);
         return popup;
     }
 
-    public NewsPopup ShowMainEventAnnouncementPopup(InitialMainEventModuleData moduleData, MainCanvas mainCanvas)
+    public UnionPopup ShowUnionPopup()
     {
-        if (moduleData == null || !moduleData.HasAnnouncementConfigured())
+        UnionPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<UnionPopup>(true);
+        }
+
+        if (popup == null && _unionPopupPrefab != null)
+        {
+            GameObject obj = Instantiate(_unionPopupPrefab, _managerCanvasTransform, false);
+            popup = obj.GetComponent<UnionPopup>();
+        }
+
+        if (popup == null)
+        {
+            Debug.LogWarning("[UIManager] Union popup prefab is missing.");
+            return null;
+        }
+
+        popup.Init();
+        return popup;
+    }
+
+    public NewsPopup ShowMainEventAnnouncementPopup(InitialMainEventModuleData moduleData)
+    {
+        if (moduleData == null)
         {
             return null;
         }
@@ -405,11 +450,29 @@ public class UIManager : Singleton<UIManager>
         }
 
         popup.gameObject.SetActive(true);
-        popup.InitMainEventAnnouncement(moduleData, mainCanvas);
+        popup.InitMainEventAnnouncement(moduleData);
         return popup;
     }
 
-    public CreditTopInfoPopup ShowCreditTopInfoPopup()
+    public void SetCreditTopInfoToggleRect(RectTransform toggleButtonRect)
+    {
+        _creditTopInfoToggleRect = toggleButtonRect;
+        ApplyCreditTopInfoToggleRect();
+    }
+
+    public CreditTopInfoPopup ToggleCreditTopInfoPopup()
+    {
+        CreditTopInfoPopup popup = GetOrCreateCreditTopInfoPopup();
+        if (popup == null)
+        {
+            return null;
+        }
+
+        popup.ToggleCreditInfo();
+        return popup;
+    }
+
+    private CreditTopInfoPopup GetOrCreateCreditTopInfoPopup()
     {
         CreditTopInfoPopup popup = null;
         if (_managerCanvasTransform != null)
@@ -421,15 +484,32 @@ public class UIManager : Singleton<UIManager>
         {
             GameObject obj = Instantiate(_creditTopInfoPopupPrefab, _managerCanvasTransform, false);
             popup = obj.GetComponent<CreditTopInfoPopup>();
+            popup?.Init();
         }
 
-        if (popup != null)
-        {
-            popup.Init();
-            popup.gameObject.SetActive(true);
-            popup.ShowCreditInfo();
-        }
+        ApplyCreditTopInfoToggleRect(popup);
         return popup;
+    }
+
+    private void ApplyCreditTopInfoToggleRect()
+    {
+        if (_managerCanvasTransform == null)
+        {
+            return;
+        }
+
+        CreditTopInfoPopup popup = _managerCanvasTransform.GetComponentInChildren<CreditTopInfoPopup>(true);
+        ApplyCreditTopInfoToggleRect(popup);
+    }
+
+    private void ApplyCreditTopInfoToggleRect(CreditTopInfoPopup popup)
+    {
+        if (popup == null || _creditTopInfoToggleRect == null)
+        {
+            return;
+        }
+
+        popup.SetToggleButtonRect(_creditTopInfoToggleRect);
     }
 
     public BuildingInfoPopup ShowBuildingInfoPopup(BuildingObject buildingObject)
@@ -576,7 +656,20 @@ public class UIManager : Singleton<UIManager>
 
     public ActionBtn CreateActionButton(Transform parent, string label, Action onClick)
     {
-        GameObject btnObj = Instantiate(_actionBtnPrefab, parent);
+        if (_actionBtnPrefab == null || parent == null) return null;
+
+        GameObject btnObj;
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool != null)
+        {
+            btnObj = pool.GetPooledObject(_actionBtnPrefab);
+            btnObj.transform.SetParent(parent, false);
+        }
+        else
+        {
+            btnObj = Instantiate(_actionBtnPrefab, parent);
+        }
+
         ActionBtn btn = btnObj.GetComponent<ActionBtn>();
         if (btn != null)
             btn.Init(label, onClick);

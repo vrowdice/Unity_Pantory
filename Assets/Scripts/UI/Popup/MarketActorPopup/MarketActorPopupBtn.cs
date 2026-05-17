@@ -30,6 +30,6 @@ public class MarketActorPopupBtn : MonoBehaviour
     {
         if (_marketActorEntry == null) return;
 
-        UIManager.Instance.ShowMarketActorInfoPopup(_marketActorEntry, null);
+        UIManager.Instance.ShowMarketActorInfoPopup(_marketActorEntry);
     }
 }

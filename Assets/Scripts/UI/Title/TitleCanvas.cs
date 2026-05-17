@@ -12,7 +12,7 @@ public class TitleCanvas : CanvasBase
 
     public void GoToMainScene()
     {
-        SceneLoader.LoadScene("Main");
+        SceneLoadManager.LoadScene("Main");
     }
 
     public void ShowSaveLoadPopup()

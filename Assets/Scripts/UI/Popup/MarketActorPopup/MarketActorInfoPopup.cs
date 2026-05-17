@@ -16,15 +16,13 @@ public class MarketActorInfoPopup : PopupBase
     [SerializeField] private GameObject _typeOfOrderScrollViewItemTextPrefab;
 
     private MarketActorEntry _currentMarketActorEntry;
-    private MainCanvas _mainUiManager;
     private DataManager _dataManager;
 
-    public void Init(MarketActorEntry marketActorEntry, MainCanvas mainUiManager)
+    public void Init(MarketActorEntry marketActorEntry)
     {
         base.Init();
 
         _currentMarketActorEntry = marketActorEntry;
-        _mainUiManager = mainUiManager;
         _dataManager = DataManager.Instance;
 
         _dataManager.Time.OnDayChanged -= OnDayChanged;

@@ -9,6 +9,8 @@ public class CreditTopInfoPopup : PopupBase
     private DataManager _dataManager;
     private System.Action _cachedHideAction;
     private bool _isEscRegistered;
+    private bool _isCreditInfoVisible;
+    private RectTransform _toggleButtonRect;
 
     public override void Init()
     {
@@ -16,6 +18,7 @@ public class CreditTopInfoPopup : PopupBase
         _dataManager = DataManager.Instance;
         _cachedHideAction ??= HideCreditInfo;
 
+        _isCreditInfoVisible = false;
         _panelDoAni?.SnapToClosedPosition();
         gameObject.SetActive(false);
 
@@ -29,16 +32,26 @@ public class CreditTopInfoPopup : PopupBase
         }
     }
 
+    public void SetToggleButtonRect(RectTransform toggleButtonRect)
+    {
+        _toggleButtonRect = toggleButtonRect;
+    }
+
     public void ToggleCreditInfo()
     {
-        bool isOpen = _panelDoAni != null ? _panelDoAni.IsOpen : gameObject.activeSelf;
-
-        if (isOpen) HideCreditInfo();
-        else ShowCreditInfo();
+        if (_isCreditInfoVisible)
+        {
+            HideCreditInfo();
+        }
+        else
+        {
+            ShowCreditInfo();
+        }
     }
 
     public void ShowCreditInfo()
     {
+        _isCreditInfoVisible = true;
         RegisterEscClose();
         UpdateCreditInfo();
         gameObject.SetActive(true);
@@ -47,6 +60,12 @@ public class CreditTopInfoPopup : PopupBase
 
     public void HideCreditInfo()
     {
+        if (!_isCreditInfoVisible && !gameObject.activeSelf)
+        {
+            return;
+        }
+
+        _isCreditInfoVisible = false;
         UnregisterEscClose();
 
         if (_panelDoAni != null)
@@ -97,7 +116,7 @@ public class CreditTopInfoPopup : PopupBase
 
     private void HandleDayChanged()
     {
-        if (gameObject.activeInHierarchy)
+        if (_isCreditInfoVisible && gameObject.activeInHierarchy)
         {
             UpdateCreditInfo();
         }
@@ -105,18 +124,55 @@ public class CreditTopInfoPopup : PopupBase
 
     private void Update()
     {
-        if (!gameObject.activeInHierarchy) return;
-        bool isOpen = _panelDoAni != null ? _panelDoAni.IsOpen : true;
-        if (!isOpen) return;
-
-        if (Input.GetMouseButtonDown(0))
+        if (!_isCreditInfoVisible || !gameObject.activeInHierarchy)
         {
-            RectTransform rect = _popupArea != null ? _popupArea : transform as RectTransform;
-            if (rect != null && !RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition, null))
-            {
-                HideCreditInfo();
-            }
+            return;
         }
+
+        if (!Input.GetMouseButtonDown(0))
+        {
+            return;
+        }
+
+        if (IsPointerOverToggleButton())
+        {
+            return;
+        }
+
+        RectTransform rect = _popupArea != null ? _popupArea : transform as RectTransform;
+        if (rect != null && !RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition, GetUiCamera(rect)))
+        {
+            HideCreditInfo();
+        }
+    }
+
+    private bool IsPointerOverToggleButton()
+    {
+        if (_toggleButtonRect == null)
+        {
+            return false;
+        }
+
+        return RectTransformUtility.RectangleContainsScreenPoint(
+            _toggleButtonRect,
+            Input.mousePosition,
+            GetUiCamera(_toggleButtonRect));
+    }
+
+    private static Camera GetUiCamera(RectTransform rectTransform)
+    {
+        if (rectTransform == null)
+        {
+            return null;
+        }
+
+        Canvas canvas = rectTransform.GetComponentInParent<Canvas>();
+        if (canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+        {
+            return null;
+        }
+
+        return canvas.worldCamera;
     }
 
     private void OnDestroy()

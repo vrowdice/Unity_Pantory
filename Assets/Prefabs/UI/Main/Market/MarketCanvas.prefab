@@ -6324,7 +6324,7 @@ MonoBehaviour:
   _panelAnimationTarget: {fileID: 1057055313589436191}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
-  _openPanelSfx: {fileID: 8300000, guid: ac6d22616d0871c4c84999a2ac395a43, type: 3}
+  _openPanelSfx: {fileID: 8300000, guid: ca1b327f16bf68c48aa4ef6ac64f3e20, type: 3}
   _marketActionBtnContentTransform: {fileID: 8662417582455416508}
   _resourcePanel: {fileID: 7350080560393423467}
   _traderPanel: {fileID: 1169212548226510050}

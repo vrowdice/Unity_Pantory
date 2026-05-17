@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf5fd318b76df64cae4a3b6f03d5fd5, type: 3}
+  m_Name: InitialEmployeeData
+  m_EditorClassIdentifier: 
+  veryLowSalaryMultiplier: 0.5
+  lowSalaryMultiplier: 0.75
+  normalSalaryMultiplier: 1
+  highSalaryMultiplier: 1.25
+  veryHighSalaryMultiplier: 1.5
+  veryLowSalarySatisfactionChange: -0.5
+  lowSalarySatisfactionChange: -0.1
+  normalSalarySatisfactionChange: 0
+  highSalarySatisfactionChange: 0.1
+  veryHighSalarySatisfactionChange: 0.5
+  satisfactionToEfficiencyRatio: 0.005
+  baseEfficiencyFromSatisfaction: 1
+  baseUnassignmentSatisfactionPenalty: -5
+  employeeCountSatisfactionPenaltyRatio: 0.1
+  maxUnassignmentSatisfactionPenalty: -30
+  maxFirePanic: 100
+  minFireSatisfactionPenalty: 0.5
+  crossEmployeeTypeSatisfactionPenaltyRatio: 0.3
+  managerCoverage: 20
+  maxEfficiencyPenalty: 0.1
+  maxSatisfactionPenalty: 1
+  enableManagerMitigation: 1
+  managerMitigationRatio: 0.5
+  researchPointsPerResearcher: 10

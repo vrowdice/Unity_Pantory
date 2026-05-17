@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1af18d5a9edb4f35b7fe389f0d0e25fb, type: 3}
+  m_Name: gold_mine
+  m_EditorClassIdentifier: 
+  id: gold_mine
+  displayName: Gold Mine
+  buildingType: 2
+  icon: {fileID: 21300000, guid: aa8d00e27ccab1849bedc4f246204afe, type: 3}
+  buildingSprite: {fileID: 21300000, guid: aa8d00e27ccab1849bedc4f246204afe, type: 3}
+  description: A specialized shaft focused on gold ore extraction. High capital and
+    upkeep; limited surface footprint compared to a full multi-ore mine.
+  isUnlockedByDefault: 0
+  isProfessional: 0
+  requiredEmployees: 8
+  buildCost: 23400
+  maintenanceCost: 48
+  size: {x: 2, y: 2}
+  requiredResearch: {fileID: 11400000, guid: 28fe060323076fc41a2dc609cfa95c66, type: 2}
+  usePlacedCountLimit: 1
+  baseMaxPlacedCount: 0
+  maxInputBufferCapacity: 16
+  maxOutputBufferCapacity: 16
+  allowedResourceTypes: 00000000
+  _producibleResources:
+  - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f7, type: 2}
+  ticksPerBatch: 24
+  inputResourcesPerBatch: 1
+  _producibleRawResources: []

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_imperial_academy_electronic_components
+  m_EditorClassIdentifier: 
+  id: order_imperial_academy_multi
+  displayName: Research Materials Supply Contract
+  senderActorData: {fileID: 11400000, guid: 0f7ac3fe1ff28e24e828ebec307fa9a5, type: 2}
+  marketActorType: 0
+  durationDays: 15
+  rewardTrust: 35
+  scaleFactor: 0.22
+  potentialResources:
+  - {fileID: 11400000, guid: 59dac904826a2084c97d2143ead269f9, type: 2}
+  - {fileID: 11400000, guid: b00e05738ec7a2a4f87658a22d3a3cbb, type: 2}
+  - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
+  priceMultiplier: 1.42

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6726067281efb1c4a8c311c60c9c248f, type: 3}
+  m_Name: order_industrial_brokerage_network_machine_parts
+  m_EditorClassIdentifier: 
+  id: order_industrial_brokerage_network_multi
+  displayName: Metal & Tools Supply Contract
+  senderActorData: {fileID: 11400000, guid: 5b3c5e20d1c24ab4cbf87bcfbafd86a4, type: 2}
+  marketActorType: 1
+  durationDays: 11
+  rewardTrust: 23
+  scaleFactor: 0.14
+  potentialResources:
+  - {fileID: 11400000, guid: e3f4c5d6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
+  priceMultiplier: 1.3

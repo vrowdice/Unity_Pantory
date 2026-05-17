@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05b7e53b838fe644bcfb2e1b1044159, type: 3}
+  m_Name: InitialMarketActorData
+  m_EditorClassIdentifier: 
+  businessSuccessMin: 0.99
+  businessSuccessMax: 1.02
+  costVariationMin: 0.9
+  costVariationMax: 1.1
+  maxDailyNetProfit: 500000
+  profitLimitMultiplier: 0.5

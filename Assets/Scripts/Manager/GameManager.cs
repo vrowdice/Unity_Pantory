@@ -140,6 +140,7 @@ public class GameManager : Singleton<GameManager>
         }
 
         UIManager.Instance?.RefreshCamera();
+        UIManager.Instance?.RefreshMainCanvas();
     }
 
     /// <summary>

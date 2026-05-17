@@ -6,10 +6,9 @@ public class CanvasBase : TutorialBase
     public DataManager DataManager { get; private set; }
     public UIManager UIManager { get; private set; }
     public SoundManager SoundManager { get; private set; }
-    public SceneLoadManager SceneLoader { get; private set; }
+    public SceneLoadManager SceneLoadManager { get; private set; }
     public VisualManager VisualManager { get; private set; }
     public Transform CanvasTrans { get; private set; }
-    public GameObject ProductionInfoImage { get; private set; }
 
     public virtual void Init()
     {
@@ -17,11 +16,10 @@ public class CanvasBase : TutorialBase
         DataManager = DataManager.Instance;
         UIManager = UIManager.Instance;
         SoundManager = SoundManager.Instance;
-        SceneLoader = SceneLoadManager.Instance;
+        SceneLoadManager = SceneLoadManager.Instance;
         VisualManager = VisualManager.Instance;
 
         CanvasTrans = transform;
-        ProductionInfoImage = UIManager.ProductionInfoImagePrefab;
     }
 
     public virtual void UpdateAllMainText()

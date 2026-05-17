@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65adb9f9ef092244a8f42acf50d90c4f, type: 3}
+  m_Name: InitialResourceData
+  m_EditorClassIdentifier: 
+  volatilityMultiplier: 0.01
+  maxChangePriceMultiplier: 1.2
+  baseIncreaseProbability: 0.5
+  probabilityOffsetMultiplier: 0.5
+  minIncreaseProbability: 0.1
+  maxIncreaseProbability: 0.9
+  changeAmountRandomMin: 0.8
+  changeAmountRandomMax: 1.2
+  minChangeAmount: 1
+  priceHistoryCapacity: 60
+  transactionFee: 0.03
