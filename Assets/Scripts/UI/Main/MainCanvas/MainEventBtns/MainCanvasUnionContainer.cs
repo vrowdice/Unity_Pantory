@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using TMPro;
 
 public class MainCanvasUnionContainer : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _unionMoodText;
+    [FormerlySerializedAs("_unionMoodText")]
+    [SerializeField] private TextMeshProUGUI _unionCohesionProgressText;
+    [SerializeField] private TextMeshProUGUI _remainDateText;
 
     private DataManager _dataManager;
 
@@ -18,21 +21,12 @@ public class MainCanvasUnionContainer : MonoBehaviour
         UnionStateModule module = _dataManager?.MainEvent?.UnionModule;
         if (module == null)
         {
-            RefreshMoodText(0);
+            gameObject.SetActive(false);
             return;
         }
-
-        RefreshMoodText(Mathf.RoundToInt(module.UnionMood));
-    }
-
-    public void RefreshMoodText(int mood)
-    {
-        if (_unionMoodText == null)
-        {
-            return;
-        }
-
-        _unionMoodText.text = $"{mood}%";
+        
+        _unionCohesionProgressText.text = $"{module.UnionCohesionProgress}%";
+        _remainDateText.text = $"{module.RemainingDays}";
     }
 
     public void OnClick()

@@ -37,6 +37,23 @@ public class PolicyCanvas : MainCanvasPanelBase
         }
     }
 
+    private void RefreshPolicySetBtns()
+    {
+        if (_policySetBtnScrollViewContentTransform == null)
+        {
+            return;
+        }
+
+        foreach (Transform child in _policySetBtnScrollViewContentTransform)
+        {
+            PolicySetBtn policySetBtn = child.GetComponent<PolicySetBtn>();
+            if (policySetBtn != null)
+            {
+                policySetBtn.RefreshUI();
+            }
+        }
+    }
+
     public void DisplayPolicyEffect()
     {
         if (_policyEffectScrollViewContentTransform == null || _dataManager?.Policy == null)
@@ -72,13 +89,13 @@ public class PolicyCanvas : MainCanvasPanelBase
 
     private void HandlePolicyChanged()
     {
-        DisplayPolicySetBtns();
+        RefreshPolicySetBtns();
         DisplayPolicyEffect();
     }
 
     private void HandleMonthChanged()
     {
-        DisplayPolicySetBtns();
+        RefreshPolicySetBtns();
     }
 
     private void OnDisable()

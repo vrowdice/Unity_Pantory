@@ -12,13 +12,11 @@ public class PolicySetBtn : MonoBehaviour
 
     private DataManager _dataManager;
     private PolicyEntry _policyEntry;
-    private Button _rowButton;
 
     public void Init(PolicyEntry policyEntry)
     {
         _dataManager = DataManager.Instance;
         _policyEntry = policyEntry;
-        _rowButton = GetComponent<Button>();
         RefreshUI();
         DisplayEffects();
     }
@@ -50,13 +48,11 @@ public class PolicySetBtn : MonoBehaviour
         int remainingMonths = _policyEntry.state.remainingMonths;
         int lockMonths = _dataManager.Policy.GetModificationLockMonths(_policyEntry.data);
         bool changeLocked = remainingMonths > 0;
-        _rowButton?.SetInteractable(!changeLocked);
+
         if (_switch != null)
         {
-            _switch.SetInteractable(!changeLocked);
+            _switch.SetValue(_policyEntry.state.isActive, false);
         }
-
-        _switch.SetValue(_policyEntry.state.isActive);
         _policyTitleText.text = _policyEntry.data.id.Localize(LocalizationUtils.TABLE_POLICY);
 
         long scaledDailyCost = _dataManager.Policy.CalculateScaledDailyPolicyCost(_policyEntry.data.dailyCreditCost);

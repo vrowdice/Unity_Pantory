@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
 {   
@@ -23,8 +22,6 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
     public event Action<MainEventType> OnMainEventTypeChanged;
 
     public UnionStateModule UnionModule => _unionStateModule;
-    public WarStateModule WarModule => _warStateModule;
-    public AutomationStateModule AutomationModule => _automationStateModule;
 
     public MainEventDataHandler(
         DataManager dataManager,
@@ -138,19 +135,25 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
         saveData.mainEventType = _currentEventType;
         saveData.mainEventIsComplete = IsCurrentMainEventComplete;
         saveData.mainEventUnionChapterEnded = _unionChapterEnded;
-        saveData.mainEventUnionDaysActive = 0;
-        saveData.mainEventUnionRemainingDays = -1;
-        saveData.mainEventUnionMood = 0f;
 
         if (_currentEventType == MainEventType.Union && _unionStateModule != null)
         {
             saveData.mainEventUnionRemainingDays = _unionStateModule.RemainingDays;
-            saveData.mainEventUnionMood = _unionStateModule.UnionMood;
+            saveData.mainEventUnionCohesionProgress = _unionStateModule.UnionCohesionProgress;
             saveData.mainEventIsComplete = _unionStateModule.IsComplete;
+            saveData.mainEventDaysActive = 0;
         }
         else if (_activeStateModule != null && _currentEventType != MainEventType.None)
         {
-            saveData.mainEventUnionDaysActive = _activeStateModule.ActiveTime;
+            saveData.mainEventUnionRemainingDays = -1;
+            saveData.mainEventUnionCohesionProgress = 0f;
+            saveData.mainEventDaysActive = _activeStateModule.ActiveTime;
+        }
+        else
+        {
+            saveData.mainEventUnionRemainingDays = -1;
+            saveData.mainEventUnionCohesionProgress = 0f;
+            saveData.mainEventDaysActive = 0;
         }
     }
 
@@ -164,13 +167,16 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
         _unionChapterEnded = saveData.mainEventUnionChapterEnded;
         SetMainEventType(saveData.mainEventType, showStartAnnouncement: false);
 
-        if (_currentEventType == MainEventType.Union)
+        if (_currentEventType == MainEventType.Union && _unionStateModule != null)
         {
-            RestoreUnionFromSave(saveData);
+            _unionStateModule.RestoreUnionState(
+                saveData.mainEventUnionRemainingDays,
+                saveData.mainEventUnionCohesionProgress,
+                saveData.mainEventIsComplete);
         }
         else
         {
-            RestoreActiveModuleFromSave(saveData.mainEventUnionDaysActive, saveData.mainEventIsComplete);
+            _activeStateModule?.RestoreFromSave(saveData.mainEventDaysActive, saveData.mainEventIsComplete);
         }
 
         if (_activeStateModule != null && _activeStateModule.IsComplete)
@@ -197,64 +203,18 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
         }
     }
 
-    private MainEventStateModuleBase GetStoredModule(MainEventType mainEventType)
-    {
-        switch (mainEventType)
-        {
-            case MainEventType.Union: return _unionStateModule;
-            case MainEventType.War: return _warStateModule;
-            case MainEventType.Automation: return _automationStateModule;
-            default: return null;
-        }
-    }
-
-    private void RestoreActiveModuleFromSave(int daysActive, bool isComplete)
-    {
-        MainEventStateModuleBase module = GetStoredModule(_currentEventType);
-        if (module == null) return;
-        module.RestoreFromSave(daysActive, isComplete);
-    }
-
-    private void RestoreUnionFromSave(GameSaveData saveData)
-    {
-        if (_unionStateModule == null || saveData == null)
-        {
-            return;
-        }
-
-        int remaining = saveData.mainEventUnionRemainingDays;
-        bool isComplete = saveData.mainEventIsComplete;
-        float mood = saveData.mainEventUnionMood;
-
-        if (!isComplete && saveData.mainEventUnionDaysActive > 0 && remaining <= 0)
-        {
-            int total = _unionStateModule.GetChapterDurationDays();
-            remaining = total > 0 ? Mathf.Max(0, total - saveData.mainEventUnionDaysActive) : -1;
-        }
-        else if (!isComplete && remaining == 0 && saveData.mainEventUnionDaysActive == 0 && mood == 0f)
-        {
-            remaining = _unionStateModule.RemainingDays;
-        }
-
-        _unionStateModule.RestoreUnionState(remaining, mood, isComplete);
-    }
-
-    private InitialMainEventModuleData GetInitialData(MainEventType mainEventType)
-    {
-        switch (mainEventType)
-        {
-            case MainEventType.Union: return _initialUnionMainEventData;
-            case MainEventType.War: return _initialWarMainEventData;
-            case MainEventType.Automation: return _initialAutomationMainEventData;
-            default: return null;
-        }
-    }
-
     private void HandleEmployeeRosterChanged() => TryActivateUnionFromEmployeeCount();
 
     private void TryShowMainEventStartAnnouncement(MainEventType mainEventType)
     {
-        InitialMainEventModuleData moduleData = GetInitialData(mainEventType);
+        InitialMainEventModuleData moduleData = mainEventType switch
+        {
+            MainEventType.Union => _initialUnionMainEventData,
+            MainEventType.War => _initialWarMainEventData,
+            MainEventType.Automation => _initialAutomationMainEventData,
+            _ => null
+        };
+
         if (moduleData == null) return;
 
         UIManager.Instance.ShowMainEventAnnouncementPopup(moduleData);

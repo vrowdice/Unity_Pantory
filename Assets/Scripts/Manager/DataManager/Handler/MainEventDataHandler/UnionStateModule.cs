@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 연합 메인 이벤트. 기한은 <see cref="RemainingDays"/>만 사용하며, 직원 만족도 가중 평균이 <see cref="UnionMood"/>다.
+/// 연합 메인 이벤트. 기한은 <see cref="RemainingDays"/>만 사용하며,
+/// 직원 만족도 가중 평균이 <see cref="UnionCohesionProgress"/>(노조 결합 진행도)다.
 /// </summary>
 public class UnionStateModule : MainEventStateModuleBase
 {
@@ -10,12 +11,10 @@ public class UnionStateModule : MainEventStateModuleBase
     private readonly DataManager _dataManager;
 
     private int _remainingDays = -1;
-    private float _unionMood;
-
-    /// <summary>남은 일수. -1이면 기한 없음.</summary>
+    private float _unionCohesionProgress;
+    
     public int RemainingDays => _remainingDays;
-
-    public float UnionMood => _unionMood;
+    public float UnionCohesionProgress => _unionCohesionProgress;
 
     public UnionStateModule(InitialUnionMainEventData init, MainEventDataHandler mainEventDataHandler) : base(init, mainEventDataHandler)
     {
@@ -23,20 +22,18 @@ public class UnionStateModule : MainEventStateModuleBase
         _dataManager = mainEventDataHandler.DataManager;
     }
 
-    public int GetChapterDurationDays() => GetDurationDays();
-
     public void InitializeForNewChapter()
     {
         int total = GetDurationDays();
         _remainingDays = total > 0 ? total : -1;
-        RecalculateUnionMood();
+        RecalculateUnionCohesionProgress();
         SetComplete(false);
     }
 
-    public void RestoreUnionState(int remainingDays, float unionMood, bool isComplete)
+    public void RestoreUnionState(int remainingDays, float unionCohesionProgress, bool isComplete)
     {
         _remainingDays = remainingDays;
-        _unionMood = unionMood;
+        _unionCohesionProgress = unionCohesionProgress;
         SetComplete(isComplete);
     }
 
@@ -48,7 +45,7 @@ public class UnionStateModule : MainEventStateModuleBase
         }
 
         OnDailyTick();
-        RecalculateUnionMood();
+        RecalculateUnionCohesionProgress();
 
         if (_remainingDays < 0)
         {
@@ -78,11 +75,11 @@ public class UnionStateModule : MainEventStateModuleBase
         return _unionInit.unionDaysToComplete > 0 ? _unionInit.unionDaysToComplete : 0;
     }
 
-    private void RecalculateUnionMood()
+    private void RecalculateUnionCohesionProgress()
     {
         if (_dataManager?.Employee == null)
         {
-            _unionMood = 0f;
+            _unionCohesionProgress = 0f;
             return;
         }
 
@@ -102,6 +99,6 @@ public class UnionStateModule : MainEventStateModuleBase
             weightedSum += entry.state.currentSatisfaction * count;
         }
 
-        _unionMood = totalCount > 0 ? weightedSum / totalCount : 0f;
+        _unionCohesionProgress = totalCount > 0 ? weightedSum / totalCount : 0f;
     }
 }

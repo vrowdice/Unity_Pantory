@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 using TMPro;
 
 public class UnionPopup : PopupBase
@@ -7,7 +8,8 @@ public class UnionPopup : PopupBase
     [SerializeField] private Image _iconImage;
     [SerializeField] private Transform _effectScrollViewContextTransform;
     [SerializeField] private TextMeshProUGUI _remainDayText;
-    [SerializeField] private TextMeshProUGUI _moodText;
+    [FormerlySerializedAs("_moodText")]
+    [SerializeField] private TextMeshProUGUI _cohesionProgressText;
 
     private DataManager _dataManager;
 
@@ -46,9 +48,9 @@ public class UnionPopup : PopupBase
             _remainDayText.text = remaining >= 0 ? remaining.ToString() : "-";
         }
 
-        if (_moodText != null)
+        if (_cohesionProgressText != null)
         {
-            _moodText.text = $"{Mathf.RoundToInt(module.UnionMood)}%";
+            _cohesionProgressText.text = $"{Mathf.RoundToInt(module.UnionCohesionProgress)}%";
         }
 
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
