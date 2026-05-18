@@ -527,11 +527,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268028
-    m_Localized: この政策はまだ変更できません。
+    m_Localized: "\u3053\u306E\u653F\u7B56\u306F\u307E\u3060\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002"
     m_Metadata:
       m_Items: []
   - m_Id: 864226268029
-    m_Localized: 次の変更後{0}ヶ月は固定です。
+    m_Localized: "\u6B21\u306E\u5909\u66F4\u5F8C{0}\u30F6\u6708\u306F\u56FA\u5B9A\u3067\u3059\u3002"
     m_Metadata:
       m_Items: []
   - m_Id: 18270374867648512
@@ -572,6 +572,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 37775686809042944
     m_Localized: "\u6B8B\u308A\u306E\u6708"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41002840027971584
+    m_Localized: "\u52B4\u50CD\u7D44\u5408"
     m_Metadata:
       m_Items: []
   references:

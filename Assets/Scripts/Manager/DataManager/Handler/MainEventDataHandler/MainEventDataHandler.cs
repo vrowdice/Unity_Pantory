@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
 {   
@@ -20,6 +21,10 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
     public bool IsCurrentMainEventComplete =>
         _activeStateModule != null && _activeStateModule.IsComplete;
     public event Action<MainEventType> OnMainEventTypeChanged;
+
+    public UnionStateModule UnionModule => _unionStateModule;
+    public WarStateModule WarModule => _warStateModule;
+    public AutomationStateModule AutomationModule => _automationStateModule;
 
     public MainEventDataHandler(
         DataManager dataManager,
@@ -134,7 +139,16 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
         saveData.mainEventIsComplete = IsCurrentMainEventComplete;
         saveData.mainEventUnionChapterEnded = _unionChapterEnded;
         saveData.mainEventUnionDaysActive = 0;
-        if (_activeStateModule != null && _currentEventType != MainEventType.None)
+        saveData.mainEventUnionRemainingDays = -1;
+        saveData.mainEventUnionMood = 0f;
+
+        if (_currentEventType == MainEventType.Union && _unionStateModule != null)
+        {
+            saveData.mainEventUnionRemainingDays = _unionStateModule.RemainingDays;
+            saveData.mainEventUnionMood = _unionStateModule.UnionMood;
+            saveData.mainEventIsComplete = _unionStateModule.IsComplete;
+        }
+        else if (_activeStateModule != null && _currentEventType != MainEventType.None)
         {
             saveData.mainEventUnionDaysActive = _activeStateModule.ActiveTime;
         }
@@ -149,7 +163,15 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
 
         _unionChapterEnded = saveData.mainEventUnionChapterEnded;
         SetMainEventType(saveData.mainEventType, showStartAnnouncement: false);
-        RestoreActiveModuleFromSave(saveData.mainEventUnionDaysActive, saveData.mainEventIsComplete);
+
+        if (_currentEventType == MainEventType.Union)
+        {
+            RestoreUnionFromSave(saveData);
+        }
+        else
+        {
+            RestoreActiveModuleFromSave(saveData.mainEventUnionDaysActive, saveData.mainEventIsComplete);
+        }
 
         if (_activeStateModule != null && _activeStateModule.IsComplete)
         {
@@ -163,7 +185,9 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
         switch (mainEventType)
         {
             case MainEventType.Union:
-                return _unionStateModule = new UnionStateModule(_initialUnionMainEventData, this);
+                _unionStateModule = new UnionStateModule(_initialUnionMainEventData, this);
+                _unionStateModule.InitializeForNewChapter();
+                return _unionStateModule;
             case MainEventType.War:
                 return _warStateModule = new WarStateModule(_initialWarMainEventData, this);
             case MainEventType.Automation:
@@ -189,6 +213,30 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
         MainEventStateModuleBase module = GetStoredModule(_currentEventType);
         if (module == null) return;
         module.RestoreFromSave(daysActive, isComplete);
+    }
+
+    private void RestoreUnionFromSave(GameSaveData saveData)
+    {
+        if (_unionStateModule == null || saveData == null)
+        {
+            return;
+        }
+
+        int remaining = saveData.mainEventUnionRemainingDays;
+        bool isComplete = saveData.mainEventIsComplete;
+        float mood = saveData.mainEventUnionMood;
+
+        if (!isComplete && saveData.mainEventUnionDaysActive > 0 && remaining <= 0)
+        {
+            int total = _unionStateModule.GetChapterDurationDays();
+            remaining = total > 0 ? Mathf.Max(0, total - saveData.mainEventUnionDaysActive) : -1;
+        }
+        else if (!isComplete && remaining == 0 && saveData.mainEventUnionDaysActive == 0 && mood == 0f)
+        {
+            remaining = _unionStateModule.RemainingDays;
+        }
+
+        _unionStateModule.RestoreUnionState(remaining, mood, isComplete);
     }
 
     private InitialMainEventModuleData GetInitialData(MainEventType mainEventType)

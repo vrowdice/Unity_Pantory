@@ -4,86 +4,58 @@ using TMPro;
 
 public class UnionPopup : PopupBase
 {
-    [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private Image _iconImage;
     [SerializeField] private Transform _effectScrollViewContextTransform;
-    [SerializeField] private TextMeshProUGUI _descriptionText;
+    [SerializeField] private TextMeshProUGUI _remainDayText;
     [SerializeField] private TextMeshProUGUI _moodText;
 
     private DataManager _dataManager;
 
-    public void Init()
+    public override void Init()
     {
         base.Init();
         _dataManager = DataManager.Instance;
+
+        if (_dataManager?.MainEvent?.UnionModule == null
+            || _dataManager.MainEvent.CurrentEventType != MainEventType.Union)
+        {
+            return;
+        }
+
         RefreshUI();
         Show();
     }
 
     public void RefreshUI()
     {
-        InitialUnionMainEventData unionData = _dataManager?.InitialUnionMainEventData;
-        if (unionData != null)
+        UnionStateModule module = _dataManager?.MainEvent?.UnionModule;
+        if (module == null)
         {
-            string table = LocalizationUtils.TABLE_MAIN_EVENT;
-            string key = unionData.announcementLocalizationKey;
-            if (_titleText != null)
-            {
-                _titleText.text = key.Localize(table);
-            }
+            return;
+        }
 
-            if (_descriptionText != null)
-            {
-                _descriptionText.text = (key + LocalizationUtils.KEY_SUFFIX_DESC).Localize(table);
-            }
+        InitialUnionMainEventData unionData = _dataManager.InitialUnionMainEventData;
+        if (_iconImage != null && unionData != null && unionData.announcementIcon != null)
+        {
+            _iconImage.sprite = unionData.announcementIcon;
+        }
 
-            if (_iconImage != null && unionData.announcementIcon != null)
-            {
-                _iconImage.sprite = unionData.announcementIcon;
-            }
+        if (_remainDayText != null)
+        {
+            int remaining = module.RemainingDays;
+            _remainDayText.text = remaining >= 0 ? remaining.ToString() : "-";
         }
 
         if (_moodText != null)
         {
-            _moodText.text = $"{GetUnionMoodPercent()}%";
+            _moodText.text = $"{Mathf.RoundToInt(module.UnionMood)}%";
         }
 
-        if (_effectScrollViewContextTransform != null && PoolingManager.Instance != null)
-        {
-            PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
-        }
+        PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
     }
 
     public void OnClickCloseBtn()
     {
         Close();
-    }
-
-    private int GetUnionMoodPercent()
-    {
-        if (_dataManager?.Employee == null)
-        {
-            return 0;
-        }
-
-        int totalCount = 0;
-        float weightedSatisfactionSum = 0f;
-        foreach (EmployeeEntry entry in _dataManager.Employee.GetAllEmployees().Values)
-        {
-            if (entry?.data == null || entry.state.count <= 0)
-            {
-                continue;
-            }
-
-            totalCount += entry.state.count;
-            weightedSatisfactionSum += entry.state.currentSatisfaction * entry.state.count;
-        }
-
-        if (totalCount <= 0)
-        {
-            return 0;
-        }
-
-        return Mathf.RoundToInt(Mathf.Clamp(weightedSatisfactionSum / totalCount, 0f, 100f));
     }
 }

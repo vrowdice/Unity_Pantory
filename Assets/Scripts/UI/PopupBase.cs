@@ -35,6 +35,12 @@ public class PopupBase : TutorialBase
 
     private void OnDestroy()
     {
+        Transform target = GetAnimationTarget();
+        if (target != null)
+        {
+            target.DOKill();
+        }
+
         if (_canvasGroup != null)
         {
             _canvasGroup.DOKill();
@@ -44,6 +50,35 @@ public class PopupBase : TutorialBase
     private Transform GetAnimationTarget()
     {
         return _animationTarget != null ? _animationTarget : transform;
+    }
+
+    private Vector3 GetOriginalScale()
+    {
+        Transform target = GetAnimationTarget();
+        _originalScale ??= target.localScale;
+        return _originalScale.Value;
+    }
+
+    private bool UsesAnimatedClose()
+    {
+        return _effectType == BasePanelEffectType.TYPE.FadeInFadeOut
+            || _effectType == BasePanelEffectType.TYPE.ScaleInScaleOut;
+    }
+
+    private Tween ConfigureTween(Tween tween)
+    {
+        return tween.SetUpdate(true).SetLink(GetAnimationTarget().gameObject);
+    }
+
+    private void KillActiveTweens()
+    {
+        Transform target = GetAnimationTarget();
+        target.DOKill();
+
+        if (_canvasGroup != null)
+        {
+            _canvasGroup.DOKill();
+        }
     }
 
     public virtual void Init()
@@ -93,16 +128,27 @@ public class PopupBase : TutorialBase
             SoundManager.Instance.PlaySFX(_openPopupSfx);
         }
 
+        KillActiveTweens();
+        Transform target = GetAnimationTarget();
+
         switch (_effectType)
         {
             case BasePanelEffectType.TYPE.FadeInFadeOut:
                 if (_canvasGroup != null)
                 {
                     _canvasGroup.alpha = 0f;
-                    Tween fadeTween = _canvasGroup.DOFade(1f, INOUT_DURATION).SetUpdate(true).SetLink(GetAnimationTarget().gameObject);
+                    Tween fadeTween = ConfigureTween(_canvasGroup.DOFade(1f, INOUT_DURATION));
                     yield return fadeTween.WaitForCompletion();
                 }
                 break;
+
+            case BasePanelEffectType.TYPE.ScaleInScaleOut:
+                Vector3 originalScale = GetOriginalScale();
+                target.localScale = Vector3.zero;
+                Tween scaleTween = ConfigureTween(target.DOScale(originalScale, INOUT_DURATION).SetEase(Ease.OutBack));
+                yield return scaleTween.WaitForCompletion();
+                break;
+
             default:
                 break;
         }
@@ -125,7 +171,7 @@ public class PopupBase : TutorialBase
             _showCoroutine = null;
         }
 
-        if (_effectType == BasePanelEffectType.TYPE.FadeInFadeOut && gameObject.activeInHierarchy)
+        if (UsesAnimatedClose() && gameObject.activeInHierarchy)
         {
             if (_closeCoroutine != null)
                 StopCoroutine(_closeCoroutine);
@@ -144,10 +190,26 @@ public class PopupBase : TutorialBase
 
     protected virtual IEnumerator CloseEffectCoroutine()
     {
-        if (_canvasGroup != null)
+        KillActiveTweens();
+        Transform target = GetAnimationTarget();
+
+        switch (_effectType)
         {
-            Tween fadeTween = _canvasGroup.DOFade(0f, INOUT_DURATION).SetUpdate(true).SetLink(GetAnimationTarget().gameObject);
-            yield return fadeTween.WaitForCompletion();
+            case BasePanelEffectType.TYPE.FadeInFadeOut:
+                if (_canvasGroup != null)
+                {
+                    Tween fadeTween = ConfigureTween(_canvasGroup.DOFade(0f, INOUT_DURATION));
+                    yield return fadeTween.WaitForCompletion();
+                }
+                break;
+
+            case BasePanelEffectType.TYPE.ScaleInScaleOut:
+                Tween scaleTween = ConfigureTween(target.DOScale(Vector3.zero, INOUT_DURATION).SetEase(Ease.InBack));
+                yield return scaleTween.WaitForCompletion();
+                break;
+
+            default:
+                break;
         }
 
         _closeCoroutine = null;

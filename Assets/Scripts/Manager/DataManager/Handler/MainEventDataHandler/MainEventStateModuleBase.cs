@@ -25,7 +25,7 @@ public abstract class MainEventStateModuleBase
         _isComplete = isComplete;
     }
 
-    public void OnDayChanged()
+    public virtual void OnDayChanged()
     {
         if (_isComplete)
         {
@@ -59,5 +59,10 @@ public abstract class MainEventStateModuleBase
     {
         if (_isComplete) return;
         _isComplete = true;
+    }
+
+    protected void SetComplete(bool isComplete)
+    {
+        _isComplete = isComplete;
     }
 }

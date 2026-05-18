@@ -10,7 +10,19 @@ public class MainCanvasUnionContainer : MonoBehaviour
     public void Init(MainCanvas mainCanvas)
     {
         _dataManager = mainCanvas.DataManager;
-        RefreshMoodText(0);
+        RefreshFromModule();
+    }
+
+    public void RefreshFromModule()
+    {
+        UnionStateModule module = _dataManager?.MainEvent?.UnionModule;
+        if (module == null)
+        {
+            RefreshMoodText(0);
+            return;
+        }
+
+        RefreshMoodText(Mathf.RoundToInt(module.UnionMood));
     }
 
     public void RefreshMoodText(int mood)

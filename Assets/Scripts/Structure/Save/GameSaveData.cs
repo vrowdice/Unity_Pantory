@@ -50,8 +50,12 @@ public class GameSaveData
     // Main event (연합/전쟁/자동화 등)
     public MainEventType mainEventType;
     public bool mainEventIsComplete;
-    /// <summary>현재 <see cref="mainEventType"/> 이벤트의 경과 일수(<see cref="MainEventStateModuleBase.ActiveTime"/>).</summary>
+    /// <summary>전쟁·자동화 등 연합 외 이벤트의 경과 일수(<see cref="MainEventStateModuleBase.ActiveTime"/>).</summary>
     public int mainEventUnionDaysActive;
+    /// <summary>연합 챕터 남은 일수. -1이면 기한 없음.</summary>
+    public int mainEventUnionRemainingDays = -1;
+    /// <summary>연합 분위기(직원 만족도 가중 평균).</summary>
+    public float mainEventUnionMood;
     /// <summary>연합 챕터를 한 번 종료했으면 true (직원 수로 재시작 방지).</summary>
     public bool mainEventUnionChapterEnded;
 

@@ -538,11 +538,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268028
-    m_Localized: 이 정책은 아직 변경할 수 없습니다.
+    m_Localized: "\uC774 \uC815\uCC45\uC740 \uC544\uC9C1 \uBCC0\uACBD\uD560 \uC218
+      \uC5C6\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226268029
-    m_Localized: 다음 변경 후 {0}개월 동안 고정
+    m_Localized: "\uB2E4\uC74C \uBCC0\uACBD \uD6C4 {0}\uAC1C\uC6D4 \uB3D9\uC548 \uACE0\uC815"
     m_Metadata:
       m_Items: []
   - m_Id: 18270374867648512
@@ -583,6 +584,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 37775686809042944
     m_Localized: "\uB0A8\uC740 \uAC1C\uC6D4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41002840027971584
+    m_Localized: "\uB178\uB3D9\uC870\uD569"
     m_Metadata:
       m_Items: []
   references:
