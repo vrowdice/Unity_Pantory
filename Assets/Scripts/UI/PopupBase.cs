@@ -25,8 +25,15 @@ public class PopupBase : TutorialBase
     private Action _onShowCompleteCallback = null;
     private Action _cachedClose;
 
+    protected DataManager _dataManager;
+    private bool _isDayEventSubscribed;
+    private bool _isHourEventSubscribed;
+
     private void OnDisable()
     {
+        UnsubscribeDayEvents();
+        UnsubscribeHourEvents();
+
         if (_cachedClose != null && UIManager.Instance != null)
         {
             UIManager.Instance.RemoveCloseable(_cachedClose);
@@ -91,7 +98,69 @@ public class PopupBase : TutorialBase
             _canvasGroup = target.gameObject.AddComponent<CanvasGroup>();
         }
 
+        SetDataManager(DataManager.Instance);
+        SubscribeDayEvents();
+
         gameObject.SetActive(true);
+    }
+
+    protected void SetDataManager(DataManager dataManager)
+    {
+        _dataManager = dataManager ?? DataManager.Instance;
+    }
+
+    protected void SubscribeDayEvents()
+    {
+        if (_isDayEventSubscribed || _dataManager?.Time == null)
+        {
+            return;
+        }
+
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        _dataManager.Time.OnDayChanged += HandleDayChanged;
+        _isDayEventSubscribed = true;
+    }
+
+    protected void UnsubscribeDayEvents()
+    {
+        if (!_isDayEventSubscribed || _dataManager?.Time == null)
+        {
+            return;
+        }
+
+        _dataManager.Time.OnDayChanged -= HandleDayChanged;
+        _isDayEventSubscribed = false;
+    }
+
+    protected void SubscribeHourEvents()
+    {
+        if (_isHourEventSubscribed || _dataManager?.Time == null)
+        {
+            return;
+        }
+
+        _dataManager.Time.OnHourChanged -= HandleHourChanged;
+        _dataManager.Time.OnHourChanged += HandleHourChanged;
+        _isHourEventSubscribed = true;
+    }
+
+    protected void UnsubscribeHourEvents()
+    {
+        if (!_isHourEventSubscribed || _dataManager?.Time == null)
+        {
+            return;
+        }
+
+        _dataManager.Time.OnHourChanged -= HandleHourChanged;
+        _isHourEventSubscribed = false;
+    }
+
+    protected virtual void HandleDayChanged()
+    {
+    }
+
+    protected virtual void HandleHourChanged()
+    {
     }
 
     public virtual void Show()

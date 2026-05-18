@@ -46,7 +46,6 @@ public class BuildingInfoPopup : PopupBase
     [SerializeField] private TextMeshProUGUI _productionEfficiencyText;
 
     private BuildingData _currentData;
-    private DataManager _dataManager;
     private BuildingObject _buildingObject;
 
     /// <summary>
@@ -68,35 +67,22 @@ public class BuildingInfoPopup : PopupBase
 
         base.Init();
 
-        UnsubscribeTimeEvents();
         _buildingObject = buildingObject;
         _currentData = buildingObject.BuildingData;
-        _dataManager = DataManager.Instance;
-
-        if (_dataManager != null && _dataManager.Time != null)
-        {
-            _dataManager.Time.OnDayChanged -= OnTimeRefreshFromBuilding;
-            _dataManager.Time.OnDayChanged += OnTimeRefreshFromBuilding;
-            _dataManager.Time.OnHourChanged -= OnTimeRefreshFromBuilding;
-            _dataManager.Time.OnHourChanged += OnTimeRefreshFromBuilding;
-        }
+        SubscribeHourEvents();
 
         UpdateUI();
         Show();
     }
 
-    private void OnDisable()
+    protected override void HandleDayChanged()
     {
-        UnsubscribeTimeEvents();
+        OnTimeRefreshFromBuilding();
     }
 
-    private void UnsubscribeTimeEvents()
+    protected override void HandleHourChanged()
     {
-        if (_dataManager != null && _dataManager.Time != null)
-        {
-            _dataManager.Time.OnDayChanged -= OnTimeRefreshFromBuilding;
-            _dataManager.Time.OnHourChanged -= OnTimeRefreshFromBuilding;
-        }
+        OnTimeRefreshFromBuilding();
     }
 
     private void OnTimeRefreshFromBuilding()

@@ -9,13 +9,9 @@ public class NewsPopup : PopupBase
     [SerializeField] Transform _effectScrollViewContextTransform;
     [SerializeField] TextMeshProUGUI _descriptionText;
 
-    DataManager _dataManager;
-
     public void Init(NewsState newsState)
     {
         base.Init();
-
-        _dataManager = DataManager.Instance;
 
         NewsData newsData = _dataManager.News.GetNewsData(newsState.id);
 

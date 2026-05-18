@@ -16,17 +16,12 @@ public class MarketActorInfoPopup : PopupBase
     [SerializeField] private GameObject _typeOfOrderScrollViewItemTextPrefab;
 
     private MarketActorEntry _currentMarketActorEntry;
-    private DataManager _dataManager;
 
     public void Init(MarketActorEntry marketActorEntry)
     {
         base.Init();
 
         _currentMarketActorEntry = marketActorEntry;
-        _dataManager = DataManager.Instance;
-
-        _dataManager.Time.OnDayChanged -= OnDayChanged;
-        _dataManager.Time.OnDayChanged += OnDayChanged;
 
         RefreshAllUI();
 
@@ -70,15 +65,12 @@ public class MarketActorInfoPopup : PopupBase
         }
     }
 
-    public void OnDayChanged()
+    protected override void HandleDayChanged()
     {
-        if (gameObject.activeSelf) RefreshAllUI();
-    }
-
-    private void OnDisable()
-    {
-        if (_dataManager?.Time == null) return;
-        _dataManager.Time.OnDayChanged -= OnDayChanged;
+        if (gameObject.activeSelf)
+        {
+            RefreshAllUI();
+        }
     }
 
     public void OnClickClose()

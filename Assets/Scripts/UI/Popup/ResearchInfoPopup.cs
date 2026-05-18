@@ -13,7 +13,6 @@ public class ResearchInfoPopup : PopupBase
 
     private ResearchEntry _currentResearchEntry;
     private MainCanvas _mainUiManager;
-    private DataManager _dataManager;
 
     private GameManager _gameManager;
 
@@ -22,26 +21,19 @@ public class ResearchInfoPopup : PopupBase
         base.Init();
         
         _gameManager = GameManager.Instance;
-        _dataManager = DataManager.Instance;
         _currentResearchEntry = researchEntry;
-
-        _dataManager.Time.OnDayChanged -= OnDayChanged;
-        _dataManager.Time.OnDayChanged += OnDayChanged;
 
         RefreshAllUI();
 
         Show();
     }
 
-    private void OnDisable()
+    protected override void HandleDayChanged()
     {
-        if (_dataManager?.Time == null) return;
-        _dataManager.Time.OnDayChanged -= OnDayChanged;
-    }
-
-    private void OnDayChanged()
-    {
-        if (gameObject.activeSelf) RefreshAllUI();
+        if (gameObject.activeSelf)
+        {
+            RefreshAllUI();
+        }
     }
 
     public void RefreshAllUI()

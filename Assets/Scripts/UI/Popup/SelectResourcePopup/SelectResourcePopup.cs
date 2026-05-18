@@ -15,7 +15,6 @@ public class SelectResourcePopup : PopupBase
     [SerializeField] private Transform _resourceTypeScrollViewContentTransform;
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
-    private DataManager _dataManager;
     private List<ResourceType> _resourceTypes;
     private Action<ResourceEntry> _onResourceSelected;
     private List<ResourceData> _producibleResources;
@@ -30,8 +29,8 @@ public class SelectResourcePopup : PopupBase
     public void Init(DataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
         base.Init();
-        
-        _dataManager = gameDataManager;
+
+        SetDataManager(gameDataManager);
         _resourceTypes = resourceTypes;
         _onResourceSelected = onResourceSelected;
         _producibleResources = producibleResources;

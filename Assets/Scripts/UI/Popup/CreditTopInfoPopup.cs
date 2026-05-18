@@ -6,7 +6,6 @@ public class CreditTopInfoPopup : PopupBase
     [SerializeField] private PanelDoAni _panelDoAni;
     [SerializeField] private RectTransform _popupArea;
 
-    private DataManager _dataManager;
     private System.Action _cachedHideAction;
     private bool _isEscRegistered;
     private bool _isCreditInfoVisible;
@@ -15,20 +14,16 @@ public class CreditTopInfoPopup : PopupBase
     public override void Init()
     {
         base.Init();
-        _dataManager = DataManager.Instance;
         _cachedHideAction ??= HideCreditInfo;
 
         _isCreditInfoVisible = false;
         _panelDoAni?.SnapToClosedPosition();
         gameObject.SetActive(false);
 
-        if (_dataManager?.Time != null)
+        if (_dataManager?.Finances != null)
         {
-            _dataManager.Time.OnDayChanged -= HandleDayChanged;
-            _dataManager.Time.OnDayChanged += HandleDayChanged;
-
-            _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
-            _dataManager.Finances.OnCreditChanged += HandleDayChanged;
+            _dataManager.Finances.OnCreditChanged -= HandleCreditChanged;
+            _dataManager.Finances.OnCreditChanged += HandleCreditChanged;
         }
     }
 
@@ -114,7 +109,17 @@ public class CreditTopInfoPopup : PopupBase
         panelObj.GetComponent<TitleDeltaTextPanel>().Init(title, value);
     }
 
-    private void HandleDayChanged()
+    protected override void HandleDayChanged()
+    {
+        RefreshCreditInfoIfVisible();
+    }
+
+    private void HandleCreditChanged()
+    {
+        RefreshCreditInfoIfVisible();
+    }
+
+    private void RefreshCreditInfoIfVisible()
     {
         if (_isCreditInfoVisible && gameObject.activeInHierarchy)
         {
@@ -179,14 +184,9 @@ public class CreditTopInfoPopup : PopupBase
     {
         UnregisterEscClose();
 
-        if (_dataManager?.Time != null)
-        {
-            _dataManager.Time.OnDayChanged -= HandleDayChanged;
-        }
-
         if (_dataManager?.Finances != null)
         {
-            _dataManager.Finances.OnCreditChanged -= HandleDayChanged;
+            _dataManager.Finances.OnCreditChanged -= HandleCreditChanged;
         }
     }
 }
