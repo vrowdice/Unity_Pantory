@@ -5,9 +5,14 @@ using UnityEngine;
 public class PolicyData : ScriptableObject
 {
     [Header("Basic Info")]
+    [Tooltip("정책 고유 ID")]
     public string id;
+    [Tooltip("정책 이름(UI 표시)")]
     public string displayName;
-    [TextArea] public string description;
+    [TextArea]
+    [Tooltip("정책 설명")]
+    public string description;
+    [Tooltip("정책 목록 아이콘")]
     public Sprite icon;
 
     [Tooltip("신규 게임에서 이 정책을 켠 상태로 시작할지")]
@@ -23,5 +28,6 @@ public class PolicyData : ScriptableObject
     public int modificationLockMonths;
 
     [Header("Effects")]
+    [Tooltip("정책 활성화 시 적용되는 이펙트 목록")]
     public List<EffectData> effects = new List<EffectData>();
 }

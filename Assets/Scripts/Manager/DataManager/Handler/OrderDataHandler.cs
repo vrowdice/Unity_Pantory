@@ -165,8 +165,11 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
                 return;
             }
 
+            OrderData orderData = GetOrderData(order.id);
+            int rewardTrust = orderData != null ? orderData.rewardTrust : 0;
+
             _dataManager.Finances.ModifyCredit(order.rewardCredit);
-            _dataManager.MarketActor.ModifyMarketActorTrust(order.senderActorId, order.rewardTrust);
+            _dataManager.MarketActor.ModifyMarketActorTrust(order.senderActorId, rewardTrust);
 
             _activeOrderList.Remove(order);
         }
@@ -235,9 +238,11 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
             order.durationDays--;
             if (order.durationDays <= 0)
             {
-                if(order.isAccepted)
+                if (order.isAccepted)
                 {
-                    _dataManager.MarketActor.ModifyMarketActorTrust(order.senderActorId, -order.rewardTrust / 2);
+                    OrderData orderData = GetOrderData(order.id);
+                    int rewardTrust = orderData != null ? orderData.rewardTrust : 0;
+                    _dataManager.MarketActor.ModifyMarketActorTrust(order.senderActorId, -rewardTrust / 2);
                 }
 
                 _activeOrderList.RemoveAt(i);

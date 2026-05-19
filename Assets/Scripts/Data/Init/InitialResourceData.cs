@@ -53,6 +53,7 @@ public class InitialResourceData : ScriptableObject
 
     [Header("Anti-Exploit Settings")]
     [Range(0f, 0.5f)]
+    [Tooltip("자원 거래 시 부과되는 수수료 비율(0.05 = 5%)")]
     public float transactionFee = 0.05f;
 }
 

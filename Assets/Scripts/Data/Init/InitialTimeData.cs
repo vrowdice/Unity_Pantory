@@ -17,7 +17,7 @@ public class InitialTimeData : ScriptableObject
     [Tooltip("한 달당 일수")]
     public int daysPerMonth = 20;
     [Range(1, 24)]
-    [Tooltip("한 해당 월수")]
+    [Tooltip("1년의 월 수")]
     public int monthsPerYear = 12;
     [Range(0, 999)]
     [Tooltip("시작 연도")]

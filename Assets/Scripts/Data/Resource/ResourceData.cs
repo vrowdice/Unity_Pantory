@@ -4,15 +4,23 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewResourceData", menuName = "Game Data/Resource Data")]
 public class ResourceData : ScriptableObject
 {
+    [Tooltip("자원 고유 ID. 이펙트·레시피·저장 데이터에서 참조")]
     public string id;
+    [Tooltip("UI에 표시할 자원 이름")]
     public string displayName;
 
+    [Tooltip("시장·거래 기준 가격(크레딧)")]
     public long baseValue = 10;
 
+    [Tooltip("자원 카테고리(원자재·금속·무기 등)")]
     public ResourceType type;
+    [Tooltip("인벤토리·시장 UI 아이콘")]
     public Sprite icon;
-    [TextArea(3, 10)] public string description;
+    [TextArea(3, 10)]
+    [Tooltip("자원 설명")]
+    public string description;
 
+    [Tooltip("생산 배치 1회당 필요한 입력 자원·개수")]
     public List<ResourceRequirement> requirements = new List<ResourceRequirement>();
 
     [Header("Recipe outputs (per batch)")]
@@ -22,6 +30,7 @@ public class ResourceData : ScriptableObject
     [Tooltip("recipeOutputs가 비어 있을 때 배치당 주 산출 개수")]
     public int primaryOutputPerBatch = 1;
 
+    [Tooltip("신규 게임 시작 시 플레이어가 보유하는 수량")]
     public int initialAmount;
 
     /// <summary>

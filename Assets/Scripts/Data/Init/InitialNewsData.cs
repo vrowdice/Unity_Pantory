@@ -4,7 +4,9 @@ using UnityEngine;
 public class InitialNewsData : ScriptableObject
 {
     [Header("Basic Settings")]
+    [Tooltip("동시에 표시·유지할 수 있는 뉴스 최대 개수")]
     public int maxNewsItems = 5;
+    [Tooltip("매일 새 뉴스가 발생할 기본 확률(0.1 = 10%)")]
     public float baseNewsChance = 0.1f;
 
     [Header("Probability Correction (Pity System)")]

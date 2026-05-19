@@ -2,19 +2,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 연합 메인 이벤트. 기한은 <see cref="RemainingDays"/>만 사용하며,
-/// 직원 만족도 가중 평균이 <see cref="UnionCohesionProgress"/>(노조 결합 진행도)다.
+/// 연합 메인 이벤트. <see cref="UnionCohesionProgress"/>는 만족도에 따라 매일 점진적으로만 증가하며 0~100으로 유지됩니다.
 /// </summary>
 public class UnionStateModule : MainEventStateModuleBase
 {
+    private const float MinCohesionProgress = 0f;
+    private const float MaxCohesionProgress = 100f;
+
     private readonly InitialUnionMainEventData _unionInit;
     private readonly DataManager _dataManager;
 
     private int _remainingDays = -1;
     private float _unionCohesionProgress;
-    
+
     public int RemainingDays => _remainingDays;
     public float UnionCohesionProgress => _unionCohesionProgress;
+
+    public List<UnionRequestState> GetActiveUnionRequests()
+    {
+        if (_dataManager?.UnionRequest == null)
+        {
+            return new List<UnionRequestState>();
+        }
+
+        return _dataManager.UnionRequest.GetActiveUnionRequestList();
+    }
+
+    public bool TryFulfillUnionRequest(UnionRequestState request)
+    {
+        return _dataManager?.UnionRequest != null && _dataManager.UnionRequest.TryFulfillUnionRequest(request);
+    }
 
     public UnionStateModule(InitialUnionMainEventData init, MainEventDataHandler mainEventDataHandler) : base(init, mainEventDataHandler)
     {
@@ -26,15 +43,26 @@ public class UnionStateModule : MainEventStateModuleBase
     {
         int total = GetDurationDays();
         _remainingDays = total > 0 ? total : -1;
-        RecalculateUnionCohesionProgress();
+        _unionCohesionProgress = MinCohesionProgress;
         SetComplete(false);
+        _dataManager?.UnionRequest?.ResetForNewUnionChapter();
     }
 
     public void RestoreUnionState(int remainingDays, float unionCohesionProgress, bool isComplete)
     {
         _remainingDays = remainingDays;
-        _unionCohesionProgress = unionCohesionProgress;
+        _unionCohesionProgress = ClampCohesionProgress(unionCohesionProgress);
         SetComplete(isComplete);
+    }
+
+    public void AddCohesionProgress(float amount)
+    {
+        if (amount <= 0f || IsComplete)
+        {
+            return;
+        }
+
+        _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress + amount);
     }
 
     public override void OnDayChanged()
@@ -45,7 +73,8 @@ public class UnionStateModule : MainEventStateModuleBase
         }
 
         OnDailyTick();
-        RecalculateUnionCohesionProgress();
+        _dataManager?.UnionRequest?.HandleUnionDayChanged();
+        ApplyDailyCohesionProgressFromSatisfaction();
 
         if (_remainingDays < 0)
         {
@@ -75,12 +104,39 @@ public class UnionStateModule : MainEventStateModuleBase
         return _unionInit.unionDaysToComplete > 0 ? _unionInit.unionDaysToComplete : 0;
     }
 
-    private void RecalculateUnionCohesionProgress()
+    private void ApplyDailyCohesionProgressFromSatisfaction()
+    {
+        if (_unionInit == null || _unionCohesionProgress >= MaxCohesionProgress)
+        {
+            return;
+        }
+
+        float averageSatisfaction = CalculateWeightedAverageSatisfaction();
+        float satisfactionAboveBaseline = averageSatisfaction - _unionInit.cohesionSatisfactionBaseline;
+        if (satisfactionAboveBaseline <= 0f)
+        {
+            return;
+        }
+
+        float dailyGain = satisfactionAboveBaseline * _unionInit.cohesionProgressPerSatisfactionPointPerDay;
+        if (_unionInit.maxCohesionProgressGainPerDay > 0f)
+        {
+            dailyGain = Mathf.Min(dailyGain, _unionInit.maxCohesionProgressGainPerDay);
+        }
+
+        if (dailyGain <= 0f)
+        {
+            return;
+        }
+
+        _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress + dailyGain);
+    }
+
+    private float CalculateWeightedAverageSatisfaction()
     {
         if (_dataManager?.Employee == null)
         {
-            _unionCohesionProgress = 0f;
-            return;
+            return 0f;
         }
 
         Dictionary<EmployeeType, EmployeeEntry> employees = _dataManager.Employee.GetAllEmployees();
@@ -99,6 +155,11 @@ public class UnionStateModule : MainEventStateModuleBase
             weightedSum += entry.state.currentSatisfaction * count;
         }
 
-        _unionCohesionProgress = totalCount > 0 ? weightedSum / totalCount : 0f;
+        return totalCount > 0 ? weightedSum / totalCount : 0f;
+    }
+
+    private static float ClampCohesionProgress(float progress)
+    {
+        return Mathf.Clamp(progress, MinCohesionProgress, MaxCohesionProgress);
     }
 }

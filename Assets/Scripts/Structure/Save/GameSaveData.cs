@@ -59,6 +59,11 @@ public class GameSaveData
     /// <summary>연합 챕터를 한 번 종료했으면 true (직원 수로 재시작 방지).</summary>
     public bool mainEventUnionChapterEnded;
 
+    // Union Request Data
+    public List<UnionRequestState> activeUnionRequests = new List<UnionRequestState>();
+    public int unionRequestDaysSinceLast;
+    public float unionRequestCurrentChance;
+
     // Effect Data
     public EffectStateSaveData effects = new EffectStateSaveData();
 

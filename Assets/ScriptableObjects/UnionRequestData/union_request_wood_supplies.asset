@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d890193a156fc824bb9f266c65b796d7, type: 3}
+  m_Name: union_request_wood_supplies
+  m_EditorClassIdentifier: 
+  id: union_request_wood_supplies
+  description: Union requests wood supplies for break-room renovations.
+  requireCredit: 0
+  creditScaleFactor: 1
+  requireResourceRequirementList:
+  - resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
+    count: 50
+  resourceScaleFactor: 0.03
+  requirePolicyList: []
+  rewardCohesion: 5

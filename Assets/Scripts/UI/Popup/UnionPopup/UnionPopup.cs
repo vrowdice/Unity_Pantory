@@ -53,7 +53,16 @@ public class UnionPopup : PopupBase
         _iconImage.sprite = unionData.announcementIcon;
 
         _remainDayText.text = remaining >= 0 ? remaining.ToString() : "-";
-        _cohesionProgressText.text = $"{Mathf.RoundToInt(module.UnionCohesionProgress)}%";
+
+        float cohesionProgress = Mathf.Clamp(module.UnionCohesionProgress, 0f, 100f);
+        if (_cohesionSlider != null)
+        {
+            _cohesionSlider.minValue = 0f;
+            _cohesionSlider.maxValue = 100f;
+            _cohesionSlider.value = cohesionProgress;
+        }
+
+        _cohesionProgressText.text = $"{Mathf.RoundToInt(cohesionProgress)}%";
 
         PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
 

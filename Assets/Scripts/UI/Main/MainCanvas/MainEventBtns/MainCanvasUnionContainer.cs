@@ -25,7 +25,8 @@ public class MainCanvasUnionContainer : MonoBehaviour
             return;
         }
         
-        _unionCohesionProgressText.text = $"{Mathf.RoundToInt(module.UnionCohesionProgress)}%";
+        float cohesionProgress = Mathf.Clamp(module.UnionCohesionProgress, 0f, 100f);
+        _unionCohesionProgressText.text = $"{Mathf.RoundToInt(cohesionProgress)}%";
         _remainDateText.text = $"{module.RemainingDays}";
     }
 

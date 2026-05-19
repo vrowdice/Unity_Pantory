@@ -8,7 +8,9 @@ using UnityEngine;
 [Serializable]
 public class EmployeeEntry
 {
+    [Tooltip("직군 ScriptableObject")]
     public EmployeeData data;
+    [Tooltip("현재 인원·만족도·급여 등 런타임 상태")]
     public EmployeeState state;
 
     public EmployeeEntry(EmployeeData data)

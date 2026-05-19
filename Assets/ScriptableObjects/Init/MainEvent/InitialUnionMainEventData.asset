@@ -16,5 +16,14 @@ MonoBehaviour:
   announcementIcon: {fileID: 21300000, guid: 50cd4ec9ed786164aa98a47e4e616280, type: 3}
   openNewsAudio: {fileID: 8300000, guid: 1a042150e91d449449eccc09f2a03389, type: 3}
   unionEmployeeCountToStart: 500
-  unionDaysToComplete: 14
+  unionDaysToComplete: 720
   unionDailyCreditCost: 200
+  cohesionSatisfactionBaseline: 0
+  cohesionProgressPerSatisfactionPointPerDay: 0.05
+  maxCohesionProgressGainPerDay: 2
+  maxActiveUnionRequests: 3
+  baseUnionRequestChance: 0.02
+  unionRequestChanceIncrement: 0.01
+  guaranteedUnionRequestDay: 60
+  minUnionRequestDeadlineDays: 30
+  maxUnionRequestDeadlineDays: 90

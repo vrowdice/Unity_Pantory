@@ -9,13 +9,17 @@ using System.Collections.Generic;
 public class ProductionBuildingData : BuildingData
 {
     [Header("Production")]
+    [Tooltip("이 건물이 다룰 수 있는 자원 카테고리 목록")]
     public List<ResourceType> allowedResourceTypes;
     
     [Header("Producible Resources")]
+    [Tooltip("실제로 생산·가공할 수 있는 자원 데이터 목록(allowedResourceTypes와 일치해야 함)")]
     public List<ResourceData> _producibleResources = new List<ResourceData>();
 
     [Header("Simulation")]
+    [Tooltip("배치 1회 완료까지 걸리는 시뮬레이션 틱 수")]
     public int ticksPerBatch = 24;
+    [Tooltip("배치당 소모되는 입력 자원 개수(레시피 requirements 기준)")]
     public int inputResourcesPerBatch = 1;
 
     public override bool IsProductionBuilding => true;
@@ -43,4 +47,3 @@ public class ProductionBuildingData : BuildingData
         }
     }
 }
-

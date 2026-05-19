@@ -9,7 +9,9 @@ using UnityEngine;
 [Serializable]
 public class ResourceEntry
 {
+    [Tooltip("자원 ScriptableObject")]
     public ResourceData data;
+    [Tooltip("보유량·가격 등 런타임 상태")]
     public ResourceState state;
 
     public ResourceEntry(ResourceData data, int priceHistoryCapacity = 60)

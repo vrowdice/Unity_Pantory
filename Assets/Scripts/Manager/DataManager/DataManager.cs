@@ -29,6 +29,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private List<OrderData> _orderDataList = new List<OrderData>();
     [SerializeField] private List<NewsData> _newsDataList = new List<NewsData>();
     [SerializeField] private List<PolicyData> _policyDataList = new List<PolicyData>();
+    [SerializeField] private List<UnionRequestData> _unionRequestDataList = new List<UnionRequestData>();
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
@@ -52,6 +53,7 @@ public class DataManager : Singleton<DataManager>
     public NewsDataHandler News { get; private set; }
     public PolicyDataHandler Policy { get; private set; }
     public MainEventDataHandler MainEvent { get; private set; }
+    public UnionRequestDataHandler UnionRequest { get; private set; }
 
     public PlayerDataHandler Player { get; private set; }
 
@@ -102,6 +104,7 @@ public class DataManager : Singleton<DataManager>
         Order = new OrderDataHandler(this, _orderDataList, _initialOrderData);
         News = new NewsDataHandler(this, _newsDataList, _initialNewsData);
         Policy = new PolicyDataHandler(this, _policyDataList, _initialFactoryPolicyData);
+        UnionRequest = new UnionRequestDataHandler(this, _unionRequestDataList, _initialUnionMainEventData);
         MainEvent = new MainEventDataHandler(
             this,
             _initialUnionMainEventData,
@@ -123,6 +126,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(News);
         _eventHandlers.Add(Order);
         _eventHandlers.Add(Policy);
+        _eventHandlers.Add(UnionRequest);
         _eventHandlers.Add(MainEvent);
 
         _dayHandlers.Clear();
@@ -142,6 +146,7 @@ public class DataManager : Singleton<DataManager>
 
 #if UNITY_EDITOR
     private const string PolicyDataSearchFolder = "Assets/Datas/Policy";
+    private const string UnionRequestDataSearchFolder = "Assets/ScriptableObjects/UnionRequestData";
 
     [ContextMenu("Auto Load All Data to Lists")]
     private void AutoLoadAllDataToLists()
@@ -153,6 +158,7 @@ public class DataManager : Singleton<DataManager>
         AutoLoadToList(_marketActorDataList);
         AutoLoadToList(_orderDataList);
         AutoLoadToList(_newsDataList);
+        AutoLoadToList(_unionRequestDataList, UnionRequestDataSearchFolder);
         AutoLoadPolicyDataList();
 
         UnityEditor.EditorUtility.SetDirty(this);
@@ -273,6 +279,7 @@ public class DataManager : Singleton<DataManager>
         Order?.CaptureTo(saveData);
         News?.CaptureTo(saveData);
         MainEvent?.CaptureTo(saveData);
+        UnionRequest?.CaptureTo(saveData);
         Effect?.CaptureTo(saveData);
         Player?.CaptureTo(saveData);
 
@@ -344,6 +351,7 @@ public class DataManager : Singleton<DataManager>
         Order?.ApplyFromSave(saveData);
         News?.ApplyFromSave(saveData);
         MainEvent?.ApplyFromSave(saveData);
+        UnionRequest?.ApplyFromSave(saveData);
         Effect?.ApplyFromSave(saveData);
         Policy?.ApplyFromSave(saveData);
         Player?.ApplyFromSave(saveData);
@@ -363,6 +371,7 @@ public class DataManager : Singleton<DataManager>
         data.factoryPolicies ??= new List<PolicyStateSaveData>();
         data.activeOrders ??= new List<OrderState>();
         data.activeNews ??= new List<NewsState>();
+        data.activeUnionRequests ??= new List<UnionRequestState>();
         data.effects ??= new EffectStateSaveData();
         data.effects.globalEffects ??= new List<GlobalEffectStateSaveData>();
         data.effects.instanceEffects ??= new List<InstanceEffectStateSaveData>();
