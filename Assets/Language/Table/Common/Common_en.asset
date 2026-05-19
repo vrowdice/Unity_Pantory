@@ -580,6 +580,10 @@ MonoBehaviour:
     m_Localized: "Union\t"
     m_Metadata:
       m_Items: []
+  - m_Id: 41273842398789632
+    m_Localized: Remaining Date
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

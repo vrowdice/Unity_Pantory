@@ -218,7 +218,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
         EmployeeData data = entry.data;
         EmployeeState state = entry.state;
 
-        _employeeImage.sprite = data.Image;
+        _employeeImage.sprite = data.image;
         _employeeIconImage.sprite = data.icon;
         _titleText.text = data.type.Localize(LocalizationUtils.TABLE_EMPLOYEE);
         _descriptionText.text = (data.type.ToString() + LocalizationUtils.KEY_SUFFIX_DESC).Localize(LocalizationUtils.TABLE_EMPLOYEE);

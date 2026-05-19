@@ -13,10 +13,10 @@ public class MainCanvasUnionContainer : MonoBehaviour
     public void Init(MainCanvas mainCanvas)
     {
         _dataManager = mainCanvas.DataManager;
-        RefreshFromModule();
+        RefreshUI();
     }
 
-    public void RefreshFromModule()
+    public void RefreshUI()
     {
         UnionStateModule module = _dataManager?.MainEvent?.UnionModule;
         if (module == null)
@@ -25,7 +25,7 @@ public class MainCanvasUnionContainer : MonoBehaviour
             return;
         }
         
-        _unionCohesionProgressText.text = $"{module.UnionCohesionProgress}%";
+        _unionCohesionProgressText.text = $"{Mathf.RoundToInt(module.UnionCohesionProgress)}%";
         _remainDateText.text = $"{module.RemainingDays}";
     }
 

@@ -11,7 +11,7 @@ public class EmployeeData : ScriptableObject
     public string displayName;
     public EmployeeType type;
     public Sprite icon;
-    public Sprite Image;
+    public Sprite image;
     [TextArea(3, 10)]
     public string description;
 
