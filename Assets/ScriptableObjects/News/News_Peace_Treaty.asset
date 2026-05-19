@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Peace_Treaty
   displayName: Global Peace Treaty
-  description: Historic peace accords have been signed, drastically reducing military
-    budgets worldwide.
+  description: Historic peace treaties are cutting military budgets worldwide. Small
+    arms, heavy arms, munitions, battle tanks, and fighter jets are falling in price.
   icon: {fileID: 21300000, guid: 680cc434b4dbd3f438fa0970ae8b9e91, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000023, type: 2}

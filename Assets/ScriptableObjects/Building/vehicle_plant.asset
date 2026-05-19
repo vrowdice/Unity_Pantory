@@ -17,8 +17,9 @@ MonoBehaviour:
   buildingType: 1
   icon: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
   buildingSprite: {fileID: 21300000, guid: b60227ee925df9e4989b97c05afaad78, type: 3}
-  description: A massive industrial facility for assembling vehicles. Requires extensive
-    components, electronics, and materials to produce cars, airplanes, and tanks.
+  description: A vehicle assembly plant. Produces cars, fighter jets, and battle tanks
+    using engines, steel, electronics, aluminum, oil, and weapons depending on the
+    design.
   isUnlockedByDefault: 0
   isProfessional: 1
   requiredEmployees: 12

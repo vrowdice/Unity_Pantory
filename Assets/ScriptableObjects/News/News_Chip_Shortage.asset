@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Chip_Shortage
   displayName: "Global Chip Shortage"
-  description: "Supply chain disruptions halted semiconductor production, driving up component prices."
+  description: Supply chain disruptions have halted semiconductor output. Electronic
+    components, precision tools, and machine parts are rising in price.
   icon: {fileID: 21300000, guid: 36c88920bf10def4b991dea0f5378165, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000003, type: 2}

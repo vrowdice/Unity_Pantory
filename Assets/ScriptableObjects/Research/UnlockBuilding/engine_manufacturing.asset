@@ -15,10 +15,8 @@ MonoBehaviour:
   id: engine_manufacturing
   displayName: Engine Manufacturing
   icon: {fileID: 21300000, guid: f39c87609eff656408360ec1454d9968, type: 3}
-  description: Unlocks the construction of engine factories. Enables production of
-    high-performance internal combustion engines by combining machine parts, electronic
-    components, and steel ingots. A prerequisite investment for vehicle production,
-    beginning the production of high-value intermediate materials.
+  description: Unlocks engine factories. Produces engines from machine parts, electronic
+    components, and steel ingots. Prerequisite for vehicle assembly.
   isDefaultUnlocked: 0
   researchPointCost: 5500
   unlockResearchList:

@@ -15,8 +15,8 @@ MonoBehaviour:
   id: News_Auto_Surge
   displayName: Auto Industry Surge
   isBreakingNews: 0
-  description: Technological advances and subsidies have triggered a boom in car
-    manufacturing.
+  description: Technological advances and subsidies are fueling an auto boom. Prices
+    are up for cars, engines, steel and iron ingots, aluminum, and crude oil.
   icon: {fileID: 21300000, guid: 13d6382c7bcfac149a1a8870bf1b17d6, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000009, type: 2}

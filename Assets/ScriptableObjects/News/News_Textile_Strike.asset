@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Textile_Strike
   displayName: Textile Workers Strike
-  description: Massive strikes in textile factories have paralyzed clothing production
-    globally.
+  description: Massive textile strikes have paralyzed factories. Fabric, basic clothing,
+    and premium clothing prices are rising.
   icon: {fileID: 21300000, guid: a6b4b6abb0f093f409c3916630332a99, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000011, type: 2}

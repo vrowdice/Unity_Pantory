@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Oil_Shock
   displayName: Oil Price Shock
-  description: Geopolitical tensions in major oil-producing regions have slashed
-    output, causing prices to spike.
+  description: Geopolitical conflicts in oil-producing regions have slashed output.
+    Crude oil and coal prices are spiking.
   icon: {fileID: 21300000, guid: da9e73387f0ab3644bf0dbe9ebd100ce, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000001, type: 2}

@@ -17,9 +17,8 @@ MonoBehaviour:
   buildingType: 1
   icon: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
   buildingSprite: {fileID: 21300000, guid: 09cb1f91f0ddde54a99f12bf0c57c315, type: 3}
-  description: A specialized facility for manufacturing high-performance internal
-    combustion engines. Produces engines from machine parts, electronic components,
-    and steel ingots. Essential prerequisite for vehicle production.
+  description: An engine factory. Consumes machine parts, electronic components, and
+    steel ingots to produce engines. A prerequisite for vehicle assembly.
   isUnlockedByDefault: 0
   isProfessional: 1
   requiredEmployees: 5

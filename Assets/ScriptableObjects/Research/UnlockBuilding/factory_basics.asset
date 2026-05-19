@@ -15,7 +15,8 @@ MonoBehaviour:
   id: factory_basics
   displayName: Factory Basics
   icon: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
-  description: We conduct basic research to run the factory.
+  description: Foundation research for factory operations. Unlocks the Light Factory
+    and Load station. Also opens research paths for mining, smelting, and oil extraction.
   isDefaultUnlocked: 1
   researchPointCost: 0
   unlockResearchList:

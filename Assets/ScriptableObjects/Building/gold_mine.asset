@@ -17,8 +17,8 @@ MonoBehaviour:
   buildingType: 2
   icon: {fileID: 21300000, guid: aa8d00e27ccab1849bedc4f246204afe, type: 3}
   buildingSprite: {fileID: 21300000, guid: aa8d00e27ccab1849bedc4f246204afe, type: 3}
-  description: A specialized shaft focused on gold ore extraction. High capital and
-    upkeep; limited surface footprint compared to a full multi-ore mine.
+  description: A dedicated gold mine. Extracts gold ore only for smelting into pure
+    gold. Higher cost than a general mine; placement may be limited.
   isUnlockedByDefault: 0
   isProfessional: 0
   requiredEmployees: 8

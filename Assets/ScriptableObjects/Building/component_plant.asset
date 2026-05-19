@@ -17,16 +17,15 @@ MonoBehaviour:
   buildingType: 1
   icon: {fileID: 21300000, guid: 1e70a9003ec4ad74f99aef642e0864b4, type: 3}
   buildingSprite: {fileID: 21300000, guid: 1e70a9003ec4ad74f99aef642e0864b4, type: 3}
-  description: A precision manufacturing facility for producing mechanical components,
-    electronic components, and precision tools. Produces machine parts, electronic
-    components, and precision tools from refined metals. Essential for advanced production
-    chains.
+  description: A precision parts factory. Produces machine parts from iron ingots,
+    electronic components from copper and aluminum ingots, and precision tools from
+    steel ingots and machine parts. Essential for advanced production chains.
   isUnlockedByDefault: 0
   isProfessional: 1
   requiredEmployees: 5
   buildCost: 10800
   maintenanceCost: 25
-  size: {x: 3, y: 3}
+  size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: 8fe69ab6354a43c4b8574627601a9928, type: 2}
   usePlacedCountLimit: 0
   baseMaxPlacedCount: 0

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Steel_Tariffs
   displayName: "Steel Tariffs Imposed"
-  description: "New import tariffs on heavy metals and trade restrictions have caused domestic steel prices to surge."
+  description: Heavy tariffs on imported metals have disrupted trade. Steel ingots,
+    iron ingots, and iron ore prices are surging.
   icon: {fileID: 21300000, guid: 6b300843b3920da4ba20f8ef4008edf7, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000004, type: 2}

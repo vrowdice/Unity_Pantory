@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: News_Mining_Collapse
   displayName: Mining Shaft Collapse
-  description: A catastrophic failure in the world's largest copper mine has halted
-    operations indefinitely.
+  description: Catastrophic mine failures have halted extraction. Coal, iron ore,
+    copper ore and ingots, aluminum ore, and gold ore prices are surging.
   icon: {fileID: 21300000, guid: 77230f07dd3f48648ac0d2a6773252b9, type: 3}
   effects:
   - {fileID: 11400000, guid: e1000000000000000000000000000020, type: 2}

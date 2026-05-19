@@ -16,10 +16,9 @@ MonoBehaviour:
   displayName: Heavy Industry
   researchType: 0
   icon: {fileID: 21300000, guid: 13d6382c7bcfac149a1a8870bf1b17d6, type: 3}
-  description: Unlocks the construction of heavy factories. Enables production of
-    precision tools and premium products using advanced steel and cutting-edge components.
-    Requires significant investment but targets the premium market to maximize profit
-    margins.
+  description: Unlocks heavy factories. Produces premium clothing from fabric and gold
+    ore, and premium furniture from premium wood, fabric, and machine parts. High
+    investment for luxury markets.
   isDefaultUnlocked: 0
   researchPointCost: 7000
   unlockResearchList:

@@ -15,10 +15,8 @@ MonoBehaviour:
   id: military_production
   displayName: Military Production
   icon: {fileID: 21300000, guid: 48989bb88d0da3b44ae90d5dd1eafe8c, type: 3}
-  description: Unlocks the construction of military factories. Enables production
-    of small arms, heavy weapons, ammunition, and more using steel ingots and machine
-    parts. A national strategic resource, essential for war preparedness and dominating
-    the weapons market.
+  description: Unlocks military factories. Produces small arms, heavy arms, and munitions
+    using steel, machine parts, fine wood, and coal depending on the product.
   isDefaultUnlocked: 0
   researchPointCost: 9500
   unlockResearchList: []

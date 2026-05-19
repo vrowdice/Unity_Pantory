@@ -15,10 +15,9 @@ MonoBehaviour:
   id: oil_extraction
   displayName: Oil Extraction
   icon: {fileID: 21300000, guid: da9e73387f0ab3644bf0dbe9ebd100ce, type: 3}
-  description: Unlocks the construction of oil pumps. Enables extraction of crude
-    oil from underground reserves. Marks the beginning of strategic resource self-sufficiency.
-    Requires very high maintenance costs, but forms the foundation of chemical industry
-    and fuel production.
+  description: Unlocks oil pumps. Extracts crude oil underground. Very high upkeep;
+    foundation for chemical plants and fuel-using production. Completing this research
+    unlocks chemical processing research.
   isDefaultUnlocked: 0
   researchPointCost: 3200
   unlockResearchList:

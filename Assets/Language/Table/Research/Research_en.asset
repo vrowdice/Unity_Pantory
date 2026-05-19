@@ -59,70 +59,60 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267001
-    m_Localized: Unlocks the construction of component factories. Enables production
-      of machine parts, electronic components, precision tools, and more using refined
-      metal ingots. Marks the beginning of mid-game production chains, providing
-      essential materials for advanced buildings and vehicle production.
+    m_Localized: Unlocks component factories. Produces machine parts from iron ingots,
+      electronic components from copper and aluminum ingots, and precision tools
+      from steel ingots and machine parts. Core mid-game production for vehicles and
+      advanced industry.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267002
-    m_Localized: Unlocks the construction of mines. Enables self-sufficiency in essential
-      minerals including iron ore, coal, copper, gold, and aluminum. Requires high
-      construction and maintenance costs, but provides the fundamental raw materials
-      for industry.
+    m_Localized: Unlocks general mines. Extracts iron ore, coal, copper ore, and aluminum
+      ore. Does not produce gold ore—research Gold Mine Construction separately.
+      High build and upkeep costs.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267003
-    m_Localized: Unlocks the construction of chemical plants. Enables processing
-      of crude oil into synthetic fabrics and chemical products. Serves as an alternative
-      and complement to lumber mills, reducing wood dependency through petroleum-based
-      fabric production.
+    m_Localized: Unlocks chemical plants. Consumes crude oil to produce fabric, complementing
+      sawmill wood chains and reducing reliance on timber alone.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267004
-    m_Localized: Unlocks the construction of heavy factories. Enables production
-      of precision tools and premium products using advanced steel and cutting-edge
-      components. Requires significant investment but targets the premium market
-      to maximize profit margins.
+    m_Localized: Unlocks heavy factories. Produces premium clothing from fabric and
+      gold ore, and premium furniture from premium wood, fabric, and machine parts.
+      High investment for luxury markets.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267005
-    m_Localized: Unlocks the construction of oil pumps. Enables extraction of crude
-      oil from underground reserves. Marks the beginning of strategic resource self-sufficiency.
-      Requires very high maintenance costs, but forms the foundation of chemical
-      industry and fuel production.
+    m_Localized: Unlocks oil pumps. Extracts crude oil underground. Very high upkeep;
+      foundation for chemical plants and fuel-using production. Completing this
+      research unlocks chemical processing research.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267006
-    m_Localized: Unlocks the construction of smelters. Enables processing of raw
-      ores mined from mines into refined metal ingots. Produces iron ingots, copper
-      ingots, aluminum ingots, and more, providing essential intermediate materials
-      for the metal industry.
+    m_Localized: Unlocks smelters. Converts iron, copper, and aluminum ores into ingots
+      and gold ore into pure gold. Essential for metal and electronics chains.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267007
-    m_Localized: Unlocks the construction of engine factories. Enables production
-      of high-performance internal combustion engines by combining machine parts,
-      electronic components, and steel ingots. A prerequisite investment for vehicle
-      production, beginning the production of high-value intermediate materials.
+    m_Localized: Unlocks engine factories. Produces engines from machine parts, electronic
+      components, and steel ingots. Prerequisite for vehicle assembly.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267008
-    m_Localized: Unlocks the construction of military factories. Enables production
-      of small arms, heavy weapons, ammunition, and more using steel ingots and machine
-      parts. A national strategic resource, essential for war preparedness and dominating
-      the weapons market.
+    m_Localized: Unlocks military factories. Produces small arms, heavy arms, and munitions
+      using steel, machine parts, fine wood, and coal depending on the product.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267009
-    m_Localized: Unlocks the construction of vehicle assembly plants. Enables production
-      of the highest-value final products including cars, fighter planes, and tanks
-      by combining engines, components, electronic parts, and more. The most complex
-      and slowest production chain, but provides the highest profits.
+    m_Localized: Unlocks vehicle assembly plants. Produces cars, fighter jets, and
+      battle tanks from engines, steel, electronics, aluminum, oil, and weapons.
+      Highest-value but most complex chain.
     m_Metadata:
       m_Items: []
   - m_Id: 10166970572226560
-    m_Localized: We conduct basic research to run the factory.
+    m_Localized: Foundation research for factory operations. Unlocks the Light Factory
+      and Load station. Also opens research paths for mining, smelting, and oil
+      extraction.
     m_Metadata:
       m_Items: []
   - m_Id: 22606259738263552
@@ -295,7 +285,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267029
-    m_Localized: Unlocks construction of the dedicated gold mine facility.
+    m_Localized: Unlocks dedicated gold mines. Extracts gold ore only for smelting
+      into pure gold. Requires prior mining research.
     m_Metadata:
       m_Items: []
   references:

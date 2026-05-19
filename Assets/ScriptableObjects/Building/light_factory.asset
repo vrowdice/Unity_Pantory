@@ -17,15 +17,15 @@ MonoBehaviour:
   buildingType: 1
   icon: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
   buildingSprite: {fileID: 21300000, guid: f86665a0314735f40b5a02ae5859dd4b, type: 3}
-  description: A versatile light industry facility that produces consumer goods including
-    furniture, clothing, and simple tools. Flexible production allows switching between
-    different product lines based on market demand.
+  description: A light consumer-goods factory. Produces basic furniture from fine wood
+    and machine parts, basic clothing from fabric, and simple tools from iron ingots
+    and fine wood. Switch product lines to match demand.
   isUnlockedByDefault: 1
   isProfessional: 0
   requiredEmployees: 5
   buildCost: 9000
   maintenanceCost: 18
-  size: {x: 3, y: 3}
+  size: {x: 2, y: 2}
   requiredResearch: {fileID: 11400000, guid: f60d293f759af1e46a247c69045fc81f, type: 2}
   usePlacedCountLimit: 0
   baseMaxPlacedCount: 0

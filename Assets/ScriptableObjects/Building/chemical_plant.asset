@@ -17,9 +17,8 @@ MonoBehaviour:
   buildingType: 1
   icon: {fileID: 21300000, guid: 9fe7b4b202fb8c3409751ee59db406b6, type: 3}
   buildingSprite: {fileID: 21300000, guid: 9fe7b4b202fb8c3409751ee59db406b6, type: 3}
-  description: A chemical processing facility that transforms crude oil into fabric
-    and other synthetic materials. Produces fabric from oil, enabling textile production
-    without relying solely on wood.
+  description: A chemical processing facility. Consumes crude oil to produce fabric,
+    enabling textile production without relying solely on wood.
   isUnlockedByDefault: 0
   isProfessional: 0
   requiredEmployees: 4

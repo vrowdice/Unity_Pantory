@@ -17,14 +17,14 @@ MonoBehaviour:
   buildingType: 1
   icon: {fileID: 21300000, guid: b9dca41e3d54514499f16447cac3cab3, type: 3}
   buildingSprite: {fileID: 21300000, guid: b9dca41e3d54514499f16447cac3cab3, type: 3}
-  description: A military-grade manufacturing facility for producing weapons and
-    munitions. Produces small arms, heavy arms, and munitions from steel ingots and
-    machine parts. Essential for wartime production with high demand during conflicts.
+  description: A military factory. Produces small arms from steel, fine wood, and machine
+    parts; heavy arms from steel and machine parts; and munitions from steel and coal.
+    High demand during wartime.
   isUnlockedByDefault: 0
   requiredEmployees: 6
   buildCost: 16800
   maintenanceCost: 35
-  size: {x: 2, y: 2}
+  size: {x: 3, y: 3}
   requiredResearch: {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
   handlingResource: {fileID: 0}
   allowedResourceTypes: 02000000

@@ -16,10 +16,9 @@ MonoBehaviour:
   displayName: Mining
   researchType: 0
   icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
-  description: Unlocks the construction of mines. Enables self-sufficiency in essential
-    minerals including iron ore, coal, copper, gold, and aluminum. Requires high
-    construction and maintenance costs, but provides the fundamental raw materials
-    for industry.
+  description: Unlocks general mines. Extracts iron ore, coal, copper ore, and aluminum
+    ore. Does not produce gold ore—research Gold Mine Construction separately. High
+    build and upkeep costs.
   isDefaultUnlocked: 0
   researchPointCost: 1400
   unlockResearchList:
