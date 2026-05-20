@@ -106,7 +106,5 @@ public partial class EmployeeDataHandler
         OnEmployeeChanged?.Invoke();
         return removed;
     }
-
-    // Thread(생산 라인) 시스템 제거로 동기화 로직 제거
 }
 

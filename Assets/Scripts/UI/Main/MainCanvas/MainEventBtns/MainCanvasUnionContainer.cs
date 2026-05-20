@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using TMPro;
 
 public class MainCanvasUnionContainer : MonoBehaviour
 {
-    [FormerlySerializedAs("_unionMoodText")]
     [SerializeField] private TextMeshProUGUI _unionCohesionProgressText;
     [SerializeField] private TextMeshProUGUI _remainDateText;
 

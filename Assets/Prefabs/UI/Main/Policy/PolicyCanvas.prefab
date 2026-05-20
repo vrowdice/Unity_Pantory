@@ -1909,7 +1909,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a83707576315834aa4cf0345471159a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tutorialPanelInfo: []
+  _tutorialPanelInfo:
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 2185765736086508840}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
+  - focusGameObject: {fileID: 550848929220732754}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls: []
+    tutorialPanelPosition: {x: 0, y: 0}
   _panelAnimationTarget: {fileID: 5544838127348379799}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1

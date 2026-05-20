@@ -139,4 +139,29 @@ public static class GameObjectUtils
 
         return counts;
     }
+
+    private const string CloneSuffix = " (Clone)";
+
+    /// <summary>
+    /// Instantiate 시 붙는 " (Clone)" 접미사를 제거하거나, prefab이 있으면 prefab 이름으로 맞춥니다.
+    /// 튜토리얼 키(오브젝트 이름 + 인덱스) 등에 사용됩니다.
+    /// </summary>
+    public static void ApplyPrefabInstanceName(GameObject instance, GameObject prefab = null)
+    {
+        if (instance == null)
+        {
+            return;
+        }
+
+        if (prefab != null)
+        {
+            instance.name = prefab.name;
+            return;
+        }
+
+        while (instance.name.Contains(CloneSuffix))
+        {
+            instance.name = instance.name.Replace(CloneSuffix, string.Empty);
+        }
+    }
 }

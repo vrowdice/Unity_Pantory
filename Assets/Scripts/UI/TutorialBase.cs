@@ -5,6 +5,11 @@ public class TutorialBase : MonoBehaviour
 {
     [SerializeField] private List<TutorialData> _tutorialPanelInfo = new List<TutorialData>();
 
+    protected virtual void Awake()
+    {
+        GameObjectUtils.ApplyPrefabInstanceName(gameObject);
+    }
+
     protected virtual void Start()
     {
         TryAutoStartTutorialIfPending();

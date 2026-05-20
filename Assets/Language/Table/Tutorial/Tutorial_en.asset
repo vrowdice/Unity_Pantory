@@ -112,28 +112,23 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17928651423744
-    m_Localized: Clients belong to three types—Government, Company, and Individual.
-      Higher Wealth unlocks access to Government and Company jobs, and requested
-      quantities scale with your Wealth as well.
+    m_Localized: Filter by client type—Market, Company, then Government. Orders usually
+      grow larger in that order, and your company Wealth can scale them further.
     m_Metadata:
       m_Items: []
   - m_Id: 18539786682368
-    m_Localized: You can filter where each order came from here.
+    m_Localized: Toggle this switch to show only accepted orders you are currently
+      fulfilling.
     m_Metadata:
       m_Items: []
   - m_Id: 18834268766208
-    m_Localized: Use this switch to move between new requests and contracts you have
-      already accepted.
+    m_Localized: Pick a client in this list to see their available contracts on the
+      right.
     m_Metadata:
       m_Items: []
   - m_Id: 19061579071488
-    m_Localized: A list of clients by client category can be found here. Clicking
-      on a client will display a list of orders available to that client.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 19397370855424
-    m_Localized: New orders appear here. Click to accept an order and it will move
-      to your accepted orders list.
+    m_Localized: New contracts appear here. Click one to accept it, then deliver the
+      listed resources before time runs out.
     m_Metadata:
       m_Items: []
   - m_Id: 19716532224000
@@ -190,9 +185,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
-    m_Localized: Employees are divided into Workers, Technicians, Researchers, and
-      Managers. Workers and Technicians are assigned to buildings, Researchers produce
-      RP, and Managers support organization-wide management.
+    m_Localized: Four roles—Workers and Technicians run threads, Researchers generate
+      Research Points (RP), and Managers keep the workforce covered so satisfaction
+      does not drop.
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768
@@ -238,6 +233,72 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2566981499109376
     m_Localized: Shows your current credits in a graph.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000000
+    m_Localized: This panel tracks the Labor Union chapter. While it runs, overall workforce
+      satisfaction drives how much Union Cohesion rises or falls each day, and the
+      union may issue demands you can fulfill for extra cohesion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000001
+    m_Localized: The event icon and number show how many days remain in this chapter.
+      When the counter reaches zero, the union phase ends.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000002
+    m_Localized: These bars preview tomorrow's daily cohesion change from weighted workforce
+      satisfaction. The left bar fills left to right for gains above the baseline;
+      the right bar fills right to left for losses below it. The label shows the
+      exact percent per day.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000003
+    m_Localized: Union Cohesion is the main score for this event, from 0% to 100%. It
+      shifts automatically each day from the satisfaction preview above. Reaching
+      100% completes the chapter.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000004
+    m_Localized: Each employee role's satisfaction is shown here. Pay levels on the
+      Staff panel, avoiding mass layoffs, and completing union requests are the main
+      ways to move the daily bars and this cohesion meter.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000005
+    m_Localized: Active union requests are listed here. Each has one requirement—credits,
+      resources, or a policy—and a deadline in days. When the requirement is met,
+      the row highlights; tap it to complete the request and claim the cohesion reward.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578100000000000
+    m_Localized: This is the Policy panel. Toggle workplace rules that apply ongoing
+      effects to production, costs, and employee satisfaction.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578100000000001
+    m_Localized: Each policy can be switched on or off. Some cost credits or RP to
+      activate and may run for a limited number of months—read the details before committing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578100000000002
+    m_Localized: Active policies and their effects are summarized here. Use this list
+      to see which bonuses and penalties are currently shaping your factory.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578200000000000
+    m_Localized: This is the News panel. Headlines appear as events unfold—market shifts,
+      main-event chapters, and other story beats that can change how you should play.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578200000000001
+    m_Localized: Scroll through active stories here. New articles are added when triggers
+      fire; older items drop off as they expire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578200000000002
+    m_Localized: Open a headline to read the full article. Many stories hint at price
+      moves, union pressure, or research opportunities—check back after big changes.
     m_Metadata:
       m_Items: []
   references:

@@ -45,6 +45,30 @@ MonoBehaviour:
       throughput, maintenance load, and staffing plans over the coming quarters.
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000004
+    m_Localized: Collective Bonus Demand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001004
+    m_Localized: Workers demand a one-time collective bonus payment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000005
+    m_Localized: Overtime Pilot Program
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001005
+    m_Localized: Union negotiators insist on adopting the overtime pilot program.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000006
+    m_Localized: Wood Supply Request
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001006
+    m_Localized: Union requests wood supplies for break-room renovations.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

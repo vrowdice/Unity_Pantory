@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 [Serializable]
 public class UnionRequestState
@@ -9,15 +8,9 @@ public class UnionRequestState
     public bool isFulfilled;
 
     public long requireCredit;
-    public List<ResourceRequirementState> resourceRequirements = new List<ResourceRequirementState>();
-    public List<string> requiredPolicyIds = new List<string>();
-
-    [Serializable]
-    public class ResourceRequirementState
-    {
-        public string resourceId;
-        public int count;
-    }
+    public string requireResourceId = string.Empty;
+    public int requireResourceCount;
+    public string requiredPolicyId = string.Empty;
 
     public UnionRequestState() { }
 

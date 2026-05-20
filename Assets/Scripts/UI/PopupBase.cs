@@ -90,6 +90,8 @@ public class PopupBase : TutorialBase
 
     public virtual void Init()
     {
+        GameObjectUtils.ApplyPrefabInstanceName(gameObject);
+
         Transform target = GetAnimationTarget();
         _originalScale ??= target.localScale;
         _canvasGroup = target.GetComponent<CanvasGroup>();

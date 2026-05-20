@@ -42,6 +42,30 @@ MonoBehaviour:
     m_Localized: 경영진이 대규모 자동화 투자를 승인했습니다. 향후 분기 동안 생산성·정비 부담·인력 계획이 크게 달라질 수 있습니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000004
+    m_Localized: 집단 성과금 요구
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001004
+    m_Localized: 노동자들이 일회성 집단 성과금 지급을 요구하고 있습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000005
+    m_Localized: 초과 근무 시범 제도
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001005
+    m_Localized: 노조 협상단이 초과 근무 시범 프로그램 도입을 요구하고 있습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000006
+    m_Localized: 목재 보급 요청
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001006
+    m_Localized: 노조가 휴게실 리모델링을 위한 목재 보급을 요청했습니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

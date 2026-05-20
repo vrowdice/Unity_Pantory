@@ -99,10 +99,6 @@ MonoBehaviour:
     m_Key: OrderCanvas4
     m_Metadata:
       m_Items: []
-  - m_Id: 19397370855424
-    m_Key: OrderCanvas5
-    m_Metadata:
-      m_Items: []
   - m_Id: 19716532224000
     m_Key: MarketCanvas0
     m_Metadata:
@@ -189,6 +185,54 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2566981499109376
     m_Key: FinenceCanvas4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000000
+    m_Key: UnionPopup0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000001
+    m_Key: UnionPopup1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000002
+    m_Key: UnionPopup2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000003
+    m_Key: UnionPopup3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000004
+    m_Key: UnionPopup4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578000000000005
+    m_Key: UnionPopup5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578100000000000
+    m_Key: PolicyCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578100000000001
+    m_Key: PolicyCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578100000000002
+    m_Key: PolicyCanvas2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578200000000000
+    m_Key: NewsCanvas0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578200000000001
+    m_Key: NewsCanvas1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578200000000002
+    m_Key: NewsCanvas2
     m_Metadata:
       m_Items: []
   m_Metadata:

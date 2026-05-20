@@ -42,6 +42,30 @@ MonoBehaviour:
     m_Localized: 経営陣が大規模な自動化投資を承認しました。今後の四半期で生産性・保全負荷・人員計画が大きく変わる見込みです。
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000004
+    m_Localized: 一時金支給の要求
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001004
+    m_Localized: 労働者が一時的な共同ボーナスの支払いを要求しています。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000005
+    m_Localized: 残業パイロット制度
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001005
+    m_Localized: 労働組合は残業パイロット・プログラムの導入を強く求めています。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000006
+    m_Localized: 木材供給の要請
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001006
+    m_Localized: 労働組合は休憩室改修のための木材供給を求めています。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

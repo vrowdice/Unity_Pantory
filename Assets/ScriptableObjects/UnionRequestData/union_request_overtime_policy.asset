@@ -16,8 +16,9 @@ MonoBehaviour:
   description: Union negotiators insist on adopting the overtime pilot program.
   requireCredit: 0
   creditScaleFactor: 1
-  requireResourceRequirementList: []
+  requireResource:
+    resource: {fileID: 0}
+    count: 0
   resourceScaleFactor: 0.05
-  requirePolicyList:
-  - {fileID: 11400000, guid: 6c5d4e3f2a1b0987c6d5e4f3a2b1c0d1, type: 2}
+  requirePolicy: {fileID: 11400000, guid: 6c5d4e3f2a1b0987c6d5e4f3a2b1c0d1, type: 2}
   rewardCohesion: 10

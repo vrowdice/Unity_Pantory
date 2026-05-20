@@ -584,6 +584,26 @@ MonoBehaviour:
     m_Localized: Remaining Date
     m_Metadata:
       m_Items: []
+  - m_Id: 41766449674862592
+    m_Localized: Union Cohesion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41771642739113984
+    m_Localized: Request
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41778382603960320
+    m_Localized: Daily Cohesion Change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41792706554773504
+    m_Localized: Complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41800596468416512
+    m_Localized: Reward Cohesion
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

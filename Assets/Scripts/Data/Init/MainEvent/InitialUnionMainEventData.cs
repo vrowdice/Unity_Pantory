@@ -15,16 +15,24 @@ public class InitialUnionMainEventData : InitialMainEventModuleData
     public long unionDailyCreditCost;
 
     [Header("Cohesion Progress")]
-    [Tooltip("가중 평균 만족도가 이 값 미만이면 결합도가 오르지 않음")]
+    [Tooltip("가중 평균 만족도(Workforce Satisfaction) 기준선. 이보다 높으면 결합도 증가, 낮으면 감소")]
     public float cohesionSatisfactionBaseline;
 
-    [Tooltip("기준 만족도 대비 1포인트당 하루에 증가하는 결합도(%)")]
+    [Tooltip("기준 만족도보다 1포인트 높을 때 하루에 증가하는 결합도(%)")]
     [Min(0f)]
     public float cohesionProgressPerSatisfactionPointPerDay = 0.05f;
 
     [Tooltip("만족도로 인한 하루 최대 결합도 증가량(%)")]
     [Min(0f)]
     public float maxCohesionProgressGainPerDay = 2f;
+
+    [Tooltip("기준 만족도보다 1포인트 낮을 때 하루에 감소하는 결합도(%)")]
+    [Min(0f)]
+    public float cohesionLossPerSatisfactionPointBelowBaselinePerDay = 0.08f;
+
+    [Tooltip("만족도로 인한 하루 최대 결합도 감소량(%)")]
+    [Min(0f)]
+    public float maxCohesionProgressLossPerDay = 3f;
 
     [Header("Union Request Generation")]
     [Tooltip("동시에 활성화될 수 있는 노조 요구 최대 개수")]

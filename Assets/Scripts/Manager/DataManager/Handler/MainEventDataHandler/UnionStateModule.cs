@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 연합 메인 이벤트. <see cref="UnionCohesionProgress"/>는 만족도에 따라 매일 점진적으로만 증가하며 0~100으로 유지됩니다.
+/// 연합 메인 이벤트. <see cref="UnionCohesionProgress"/>는 종합 만족도에 따라 매일 변하며 0~100으로 유지됩니다.
 /// </summary>
 public class UnionStateModule : MainEventStateModuleBase
 {
@@ -31,6 +31,71 @@ public class UnionStateModule : MainEventStateModuleBase
     public bool TryFulfillUnionRequest(UnionRequestState request)
     {
         return _dataManager?.UnionRequest != null && _dataManager.UnionRequest.TryFulfillUnionRequest(request);
+    }
+
+    public float GetWorkforceSatisfaction()
+    {
+        return _dataManager?.Employee?.GetWeightedAverageSatisfaction() ?? 0f;
+    }
+
+    /// <summary>
+    /// 현재 종합 만족도 기준, 다음 일일 틱에서 적용될 결합도 증가량(%). 기준 이하이면 0.
+    /// </summary>
+    public float GetDailyCohesionGainFromWorkforceSatisfaction()
+    {
+        if (_unionInit == null || _unionCohesionProgress >= MaxCohesionProgress)
+        {
+            return 0f;
+        }
+
+        float deltaFromBaseline = GetWorkforceSatisfaction() - _unionInit.cohesionSatisfactionBaseline;
+        if (deltaFromBaseline <= 0f)
+        {
+            return 0f;
+        }
+
+        float dailyGain = deltaFromBaseline * _unionInit.cohesionProgressPerSatisfactionPointPerDay;
+        if (_unionInit.maxCohesionProgressGainPerDay > 0f)
+        {
+            dailyGain = Mathf.Min(dailyGain, _unionInit.maxCohesionProgressGainPerDay);
+        }
+
+        return Mathf.Max(0f, dailyGain);
+    }
+
+    /// <summary>
+    /// 현재 종합 만족도 기준, 다음 일일 틱에서 적용될 결합도 감소량(%). 기준 이상이면 0.
+    /// </summary>
+    public float GetDailyCohesionLossFromWorkforceSatisfaction()
+    {
+        if (_unionInit == null || _unionCohesionProgress <= MinCohesionProgress)
+        {
+            return 0f;
+        }
+
+        float deltaFromBaseline = GetWorkforceSatisfaction() - _unionInit.cohesionSatisfactionBaseline;
+        if (deltaFromBaseline >= 0f)
+        {
+            return 0f;
+        }
+
+        float dailyLoss = -deltaFromBaseline * _unionInit.cohesionLossPerSatisfactionPointBelowBaselinePerDay;
+        if (_unionInit.maxCohesionProgressLossPerDay > 0f)
+        {
+            dailyLoss = Mathf.Min(dailyLoss, _unionInit.maxCohesionProgressLossPerDay);
+        }
+
+        return Mathf.Max(0f, dailyLoss);
+    }
+
+    public float GetMaxDailyCohesionGainFromWorkforceSatisfaction()
+    {
+        return _unionInit != null ? _unionInit.maxCohesionProgressGainPerDay : 0f;
+    }
+
+    public float GetMaxDailyCohesionLossFromWorkforceSatisfaction()
+    {
+        return _unionInit != null ? _unionInit.maxCohesionProgressLossPerDay : 0f;
     }
 
     public UnionStateModule(InitialUnionMainEventData init, MainEventDataHandler mainEventDataHandler) : base(init, mainEventDataHandler)
@@ -74,7 +139,7 @@ public class UnionStateModule : MainEventStateModuleBase
 
         OnDailyTick();
         _dataManager?.UnionRequest?.HandleUnionDayChanged();
-        ApplyDailyCohesionProgressFromSatisfaction();
+        ApplyDailyCohesionProgressFromWorkforceSatisfaction();
 
         if (_remainingDays < 0)
         {
@@ -104,58 +169,20 @@ public class UnionStateModule : MainEventStateModuleBase
         return _unionInit.unionDaysToComplete > 0 ? _unionInit.unionDaysToComplete : 0;
     }
 
-    private void ApplyDailyCohesionProgressFromSatisfaction()
+    private void ApplyDailyCohesionProgressFromWorkforceSatisfaction()
     {
-        if (_unionInit == null || _unionCohesionProgress >= MaxCohesionProgress)
+        float dailyGain = GetDailyCohesionGainFromWorkforceSatisfaction();
+        if (dailyGain > 0f)
         {
+            _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress + dailyGain);
             return;
         }
 
-        float averageSatisfaction = CalculateWeightedAverageSatisfaction();
-        float satisfactionAboveBaseline = averageSatisfaction - _unionInit.cohesionSatisfactionBaseline;
-        if (satisfactionAboveBaseline <= 0f)
+        float dailyLoss = GetDailyCohesionLossFromWorkforceSatisfaction();
+        if (dailyLoss > 0f)
         {
-            return;
+            _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress - dailyLoss);
         }
-
-        float dailyGain = satisfactionAboveBaseline * _unionInit.cohesionProgressPerSatisfactionPointPerDay;
-        if (_unionInit.maxCohesionProgressGainPerDay > 0f)
-        {
-            dailyGain = Mathf.Min(dailyGain, _unionInit.maxCohesionProgressGainPerDay);
-        }
-
-        if (dailyGain <= 0f)
-        {
-            return;
-        }
-
-        _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress + dailyGain);
-    }
-
-    private float CalculateWeightedAverageSatisfaction()
-    {
-        if (_dataManager?.Employee == null)
-        {
-            return 0f;
-        }
-
-        Dictionary<EmployeeType, EmployeeEntry> employees = _dataManager.Employee.GetAllEmployees();
-        int totalCount = 0;
-        float weightedSum = 0f;
-
-        foreach (EmployeeEntry entry in employees.Values)
-        {
-            if (entry?.state == null || entry.state.count <= 0)
-            {
-                continue;
-            }
-
-            int count = entry.state.count;
-            totalCount += count;
-            weightedSum += entry.state.currentSatisfaction * count;
-        }
-
-        return totalCount > 0 ? weightedSum / totalCount : 0f;
     }
 
     private static float ClampCohesionProgress(float progress)

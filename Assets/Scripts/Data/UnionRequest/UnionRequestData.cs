@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewUnionRequestData", menuName = "Game Data/Union Request Data")]
@@ -9,9 +8,11 @@ public class UnionRequestData : ScriptableObject
 
     public long requireCredit;
     public float creditScaleFactor = 1f;
-    public List<ResourceRequirement> requireResourceRequirementList;
+
+    public ResourceRequirement requireResource;
     public float resourceScaleFactor = 0.05f;
-    public List<PolicyData> requirePolicyList;
+
+    public PolicyData requirePolicy;
 
     public int rewardCohesion;
 }

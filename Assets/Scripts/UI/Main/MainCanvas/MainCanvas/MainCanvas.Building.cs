@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Evo.UI;
 
 public partial class MainCanvas
@@ -12,7 +11,6 @@ public partial class MainCanvas
     [SerializeField] private GameObject _buildingBtnPrefab;
     [SerializeField] private Transform _buildingBtnContent;
     
-    [FormerlySerializedAs("_blueprintBtnPrefab")]
     [SerializeField] private GameObject _blueprintTypeBtnPrefab;
     [SerializeField] private GameObject _blueprintAddBtnPrefab;
     [SerializeField] private GameObject _blueprintSavedEntryPrefab;

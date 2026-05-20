@@ -210,6 +210,13 @@ public class UIManager : Singleton<UIManager>
         DontDestroyOnLoad(canvasObj);
     }
 
+    private GameObject InstantiatePopupPrefab(GameObject prefab)
+    {
+        GameObject instance = Instantiate(prefab, _managerCanvasTransform, false);
+        GameObjectUtils.ApplyPrefabInstanceName(instance, prefab);
+        return instance;
+    }
+
     public void ShowWarningPopup(string messageKey)
     {
         GameObject warningPanelObj = GameManager.Instance.PoolingManager.GetPooledObject(_warningPanelPrefab);
@@ -227,7 +234,7 @@ public class UIManager : Singleton<UIManager>
 
         if (panel == null)
         {
-            GameObject selectResourcePanelObj = Instantiate(_selectResourcePanelPrefab, _managerCanvasTransform, false);
+            GameObject selectResourcePanelObj = InstantiatePopupPrefab(_selectResourcePanelPrefab);
             panel = selectResourcePanelObj.GetComponent<SelectResourcePopup>();
         }
 
@@ -238,7 +245,7 @@ public class UIManager : Singleton<UIManager>
 
     public ConfirmPopup ShowConfirmPopup(string messageKey, Action onConfirm)
     {
-        GameObject panelObj = Instantiate(_confirmPanelPrefab, _managerCanvasTransform, false);
+        GameObject panelObj = InstantiatePopupPrefab(_confirmPanelPrefab);
         ConfirmPopup panel = panelObj.GetComponent<ConfirmPopup>();
         panel.Init(messageKey, onConfirm);
         return panel;
@@ -254,7 +261,7 @@ public class UIManager : Singleton<UIManager>
 
         if (panel == null)
         {
-            GameObject panelObj = Instantiate(_enterNamePanelPrefab, _managerCanvasTransform, false);
+            GameObject panelObj = InstantiatePopupPrefab(_enterNamePanelPrefab);
             panel = panelObj.GetComponent<EnterNamePopup>();
         }
 
@@ -273,7 +280,7 @@ public class UIManager : Singleton<UIManager>
 
         if (panel == null)
         {
-            GameObject panelObj = Instantiate(_optionPanelPrefab, _managerCanvasTransform, false);
+            GameObject panelObj = InstantiatePopupPrefab(_optionPanelPrefab);
             panel = panelObj.GetComponent<OptionPopup>();
         }
 
@@ -292,7 +299,7 @@ public class UIManager : Singleton<UIManager>
 
         if (panel == null)
         {
-            GameObject panelObj = Instantiate(_tutorialPopupPrefab, _managerCanvasTransform, false);
+            GameObject panelObj = InstantiatePopupPrefab(_tutorialPopupPrefab);
             panel = panelObj.GetComponent<TutorialPopup>();
         }
 
@@ -311,7 +318,7 @@ public class UIManager : Singleton<UIManager>
 
         if (panel == null)
         {
-            GameObject panelObj = Instantiate(_saveLoadPopupPrefab, _managerCanvasTransform, false);
+            GameObject panelObj = InstantiatePopupPrefab(_saveLoadPopupPrefab);
             panel = panelObj.GetComponent<SaveLoadPopup>();
         }
 
@@ -334,7 +341,7 @@ public class UIManager : Singleton<UIManager>
                 return null;
             }
 
-            GameObject panelObj = Instantiate(_debugPopupPrefab, _managerCanvasTransform, false);
+            GameObject panelObj = InstantiatePopupPrefab(_debugPopupPrefab);
             panel = panelObj.GetComponent<DebugPopup>();
         }
 
@@ -353,7 +360,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null)
         {
-            GameObject obj = Instantiate(_researchInfoPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_researchInfoPopupPrefab);
             popup = obj.GetComponent<ResearchInfoPopup>();
         }
 
@@ -372,7 +379,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null)
         {
-            GameObject obj = Instantiate(_marketActorInfoPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_marketActorInfoPopupPrefab);
             popup = obj.GetComponent<MarketActorInfoPopup>();
         }
 
@@ -391,7 +398,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null)
         {
-            GameObject obj = Instantiate(_newsPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_newsPopupPrefab);
             popup = obj.GetComponent<NewsPopup>();
         }
 
@@ -410,7 +417,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null && _unionPopupPrefab != null)
         {
-            GameObject obj = Instantiate(_unionPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_unionPopupPrefab);
             popup = obj.GetComponent<UnionPopup>();
         }
 
@@ -445,7 +452,7 @@ public class UIManager : Singleton<UIManager>
                 return null;
             }
 
-            GameObject obj = Instantiate(_newsPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_newsPopupPrefab);
             popup = obj.GetComponent<NewsPopup>();
         }
 
@@ -482,7 +489,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null && _creditTopInfoPopupPrefab != null)
         {
-            GameObject obj = Instantiate(_creditTopInfoPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_creditTopInfoPopupPrefab);
             popup = obj.GetComponent<CreditTopInfoPopup>();
             popup?.Init();
         }
@@ -522,7 +529,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null)
         {
-            GameObject obj = Instantiate(_buildingInfoPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_buildingInfoPopupPrefab);
             popup = obj.GetComponent<BuildingInfoPopup>();
         }
 
@@ -541,7 +548,7 @@ public class UIManager : Singleton<UIManager>
 
         if (popup == null)
         {
-            GameObject obj = Instantiate(_buildingHelpPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_buildingHelpPopupPrefab);
             popup = obj.GetComponent<BuildingHelpPopup>();
         }
 
@@ -566,7 +573,7 @@ public class UIManager : Singleton<UIManager>
                 return null;
             }
 
-            GameObject obj = Instantiate(_resourceHelpPopupPrefab, _managerCanvasTransform, false);
+            GameObject obj = InstantiatePopupPrefab(_resourceHelpPopupPrefab);
             popup = obj.GetComponent<ResourceHelpPopup>();
         }
 

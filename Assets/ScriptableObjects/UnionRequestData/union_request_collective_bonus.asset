@@ -16,7 +16,9 @@ MonoBehaviour:
   description: Workers demand a one-time collective bonus payment.
   requireCredit: 50000
   creditScaleFactor: 1
-  requireResourceRequirementList: []
+  requireResource:
+    resource: {fileID: 0}
+    count: 0
   resourceScaleFactor: 0.05
-  requirePolicyList: []
+  requirePolicy: {fileID: 0}
   rewardCohesion: 8

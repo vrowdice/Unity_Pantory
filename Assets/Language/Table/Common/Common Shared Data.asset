@@ -579,6 +579,26 @@ MonoBehaviour:
     m_Key: RemainingDate
     m_Metadata:
       m_Items: []
+  - m_Id: 41766449674862592
+    m_Key: UnionCohesion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41771642739113984
+    m_Key: Request
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41778382603960320
+    m_Key: DailyCohesionChange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41792706554773504
+    m_Key: Complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41800596468416512
+    m_Key: RewardCohesion
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

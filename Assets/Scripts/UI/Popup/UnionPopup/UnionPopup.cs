@@ -9,13 +9,25 @@ public class UnionPopup : PopupBase
     [SerializeField] private Transform _employeeInfoContainerContentTransform;
 
     [SerializeField] private Image _iconImage;
-    [SerializeField] private Slider _cohesionSlider;
-    [SerializeField] private TextMeshProUGUI _cohesionProgressText;
-    [SerializeField] private Transform _effectScrollViewContextTransform;
+
+    [SerializeField] private Slider _dailyCohesionChangeDecreseSlider;
+    [SerializeField] private Slider _dailyCohesionChangeIncreaseSlider;
+    [SerializeField] private TextMeshProUGUI _dailyCohesionChangeText;
+
+    [SerializeField] private Slider _unionCohesionSlider;
+    [SerializeField] private TextMeshProUGUI _unionCohesionText;
+
+    [SerializeField] private Transform _requestScrollViewContentransform;
+    [SerializeField] private GameObject _requestBtnPrefab;
     [SerializeField] private TextMeshProUGUI _remainDayText;
 
     private List<UnionPopupEmployeeInfoContainer> _employeeInfoContainerList = new();
-
+    private List<UnionPopupRequestBtn> _requestBtnList = new();
+    private bool _isEmployeeEventSubscribed;
+    private bool _isUnionRequestEventSubscribed;
+    private bool _isResourceEventSubscribed;
+    private bool _isCreditEventSubscribed;
+    private bool _isPolicyEventSubscribed;
 
     public override void Init()
     {
@@ -26,8 +38,15 @@ public class UnionPopup : PopupBase
             return;
         }
 
+        SubscribeUnionPopupEvents();
         RefreshUI();
         Show();
+    }
+
+    public override void Close()
+    {
+        UnsubscribeUnionPopupEvents();
+        base.Close();
     }
 
     protected override void HandleDayChanged()
@@ -38,13 +57,99 @@ public class UnionPopup : PopupBase
         }
     }
 
+    private void SubscribeUnionPopupEvents()
+    {
+        if (_dataManager?.Employee != null && !_isEmployeeEventSubscribed)
+        {
+            _dataManager.Employee.OnEmployeeChanged -= HandleUnionPopupDataChanged;
+            _dataManager.Employee.OnEmployeeChanged += HandleUnionPopupDataChanged;
+            _isEmployeeEventSubscribed = true;
+        }
+
+        if (_dataManager?.UnionRequest != null && !_isUnionRequestEventSubscribed)
+        {
+            _dataManager.UnionRequest.OnUnionRequestChanged -= HandleUnionPopupDataChanged;
+            _dataManager.UnionRequest.OnUnionRequestChanged += HandleUnionPopupDataChanged;
+            _isUnionRequestEventSubscribed = true;
+        }
+
+        if (_dataManager?.Resource != null && !_isResourceEventSubscribed)
+        {
+            _dataManager.Resource.OnResourceChanged -= HandleUnionPopupDataChanged;
+            _dataManager.Resource.OnResourceChanged += HandleUnionPopupDataChanged;
+            _isResourceEventSubscribed = true;
+        }
+
+        if (_dataManager?.Finances != null && !_isCreditEventSubscribed)
+        {
+            _dataManager.Finances.OnCreditChanged -= HandleUnionPopupDataChanged;
+            _dataManager.Finances.OnCreditChanged += HandleUnionPopupDataChanged;
+            _isCreditEventSubscribed = true;
+        }
+
+        if (_dataManager?.Policy != null && !_isPolicyEventSubscribed)
+        {
+            _dataManager.Policy.OnPolicyChanged -= HandleUnionPopupDataChanged;
+            _dataManager.Policy.OnPolicyChanged += HandleUnionPopupDataChanged;
+            _isPolicyEventSubscribed = true;
+        }
+    }
+
+    private void UnsubscribeUnionPopupEvents()
+    {
+        if (_isEmployeeEventSubscribed && _dataManager?.Employee != null)
+        {
+            _dataManager.Employee.OnEmployeeChanged -= HandleUnionPopupDataChanged;
+            _isEmployeeEventSubscribed = false;
+        }
+
+        if (_isUnionRequestEventSubscribed && _dataManager?.UnionRequest != null)
+        {
+            _dataManager.UnionRequest.OnUnionRequestChanged -= HandleUnionPopupDataChanged;
+            _isUnionRequestEventSubscribed = false;
+        }
+
+        if (_isResourceEventSubscribed && _dataManager?.Resource != null)
+        {
+            _dataManager.Resource.OnResourceChanged -= HandleUnionPopupDataChanged;
+            _isResourceEventSubscribed = false;
+        }
+
+        if (_isCreditEventSubscribed && _dataManager?.Finances != null)
+        {
+            _dataManager.Finances.OnCreditChanged -= HandleUnionPopupDataChanged;
+            _isCreditEventSubscribed = false;
+        }
+
+        if (_isPolicyEventSubscribed && _dataManager?.Policy != null)
+        {
+            _dataManager.Policy.OnPolicyChanged -= HandleUnionPopupDataChanged;
+            _isPolicyEventSubscribed = false;
+        }
+    }
+
+    private void HandleUnionPopupDataChanged()
+    {
+        if (!gameObject.activeSelf)
+        {
+            return;
+        }
+
+        RefreshUI();
+    }
+
+    private void HandleUnionPopupDataChanged(UnionRequestState request)
+    {
+        HandleUnionPopupDataChanged();
+    }
+
     public void RefreshUI()
     {
         UnionStateModule module = _dataManager?.MainEvent?.UnionModule;
         if (module == null) return;
 
         int remaining = module.RemainingDays;
-        if(remaining <= 0)
+        if (remaining <= 0)
         {
             Close();
         }
@@ -54,19 +159,11 @@ public class UnionPopup : PopupBase
 
         _remainDayText.text = remaining >= 0 ? remaining.ToString() : "-";
 
-        float cohesionProgress = Mathf.Clamp(module.UnionCohesionProgress, 0f, 100f);
-        if (_cohesionSlider != null)
-        {
-            _cohesionSlider.minValue = 0f;
-            _cohesionSlider.maxValue = 100f;
-            _cohesionSlider.value = cohesionProgress;
-        }
+        RefreshDailyCohesionChangeUI(module);
+        RefreshUnionCohesionUI(module);
+        RefreshUnionRequestListUI(module);
 
-        _cohesionProgressText.text = $"{Mathf.RoundToInt(cohesionProgress)}%";
-
-        PoolingManager.Instance.ClearChildrenToPool(_effectScrollViewContextTransform);
-
-        if(_employeeInfoContainerList.Count != 4)
+        if (_employeeInfoContainerList.Count != 4)
         {
             GameObjectUtils.ClearChildren(_employeeInfoContainerContentTransform);
             _employeeInfoContainerList.Clear();
@@ -74,10 +171,10 @@ public class UnionPopup : PopupBase
             Dictionary<EmployeeType, EmployeeEntry> employeeEntries = _dataManager.Employee.GetAllEmployees();
             foreach (EmployeeEntry employeeEntry in employeeEntries.Values)
             {
-                GameObject _containerObj = Instantiate(_employeeInfoContainerPrefab, _employeeInfoContainerContentTransform);
-                UnionPopupEmployeeInfoContainer _container = _containerObj.GetComponent<UnionPopupEmployeeInfoContainer>();
-                _container.Init(employeeEntry);
-                _employeeInfoContainerList.Add(_container);
+                GameObject containerObj = Instantiate(_employeeInfoContainerPrefab, _employeeInfoContainerContentTransform);
+                UnionPopupEmployeeInfoContainer container = containerObj.GetComponent<UnionPopupEmployeeInfoContainer>();
+                container.Init(employeeEntry);
+                _employeeInfoContainerList.Add(container);
             }
         }
         else
@@ -86,6 +183,108 @@ public class UnionPopup : PopupBase
             {
                 container.RefreshUI();
             }
+        }
+    }
+
+    private void RefreshDailyCohesionChangeUI(UnionStateModule module)
+    {
+        float dailyGain = module.GetDailyCohesionGainFromWorkforceSatisfaction();
+        float dailyLoss = module.GetDailyCohesionLossFromWorkforceSatisfaction();
+        float maxDailyGain = module.GetMaxDailyCohesionGainFromWorkforceSatisfaction();
+        float maxDailyLoss = module.GetMaxDailyCohesionLossFromWorkforceSatisfaction();
+
+        float increaseValue = dailyGain > 0f && maxDailyGain > 0f
+            ? Mathf.Clamp01(dailyGain / maxDailyGain)
+            : 0f;
+        float decreaseValue = dailyLoss > 0f && maxDailyLoss > 0f
+            ? Mathf.Clamp01(dailyLoss / maxDailyLoss)
+            : 0f;
+
+        if (_dailyCohesionChangeIncreaseSlider != null)
+        {
+            _dailyCohesionChangeIncreaseSlider.minValue = 0f;
+            _dailyCohesionChangeIncreaseSlider.maxValue = 1f;
+            _dailyCohesionChangeIncreaseSlider.value = increaseValue;
+        }
+
+        if (_dailyCohesionChangeDecreseSlider != null)
+        {
+            _dailyCohesionChangeDecreseSlider.minValue = 0f;
+            _dailyCohesionChangeDecreseSlider.maxValue = 1f;
+            _dailyCohesionChangeDecreseSlider.value = decreaseValue;
+        }
+
+        if (_dailyCohesionChangeText != null)
+        {
+            if (dailyGain > 0f)
+            {
+                _dailyCohesionChangeText.text = $"+{dailyGain:F1}%/day";
+            }
+            else if (dailyLoss > 0f)
+            {
+                _dailyCohesionChangeText.text = $"-{dailyLoss:F1}%/day";
+            }
+            else
+            {
+                _dailyCohesionChangeText.text = "0%/day";
+            }
+        }
+    }
+
+    private void RefreshUnionRequestListUI(UnionStateModule module)
+    {
+        if (_requestBtnPrefab == null || _requestScrollViewContentransform == null)
+        {
+            return;
+        }
+
+        List<UnionRequestState> activeRequests = module.GetActiveUnionRequests();
+
+        while (_requestBtnList.Count < activeRequests.Count)
+        {
+            UnionPopupRequestBtn requestBtn;
+            if (_requestBtnList.Count == 0)
+            {
+                requestBtn = _requestBtnPrefab.GetComponent<UnionPopupRequestBtn>();
+            }
+            else
+            {
+                GameObject btnObj = Instantiate(_requestBtnPrefab, _requestScrollViewContentransform);
+                requestBtn = btnObj.GetComponent<UnionPopupRequestBtn>();
+            }
+
+            _requestBtnList.Add(requestBtn);
+        }
+
+        for (int i = 0; i < _requestBtnList.Count; i++)
+        {
+            UnionPopupRequestBtn requestBtn = _requestBtnList[i];
+            if (i < activeRequests.Count)
+            {
+                requestBtn.gameObject.SetActive(true);
+                requestBtn.Init(activeRequests[i], _dataManager, this);
+            }
+            else
+            {
+                requestBtn.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void RefreshUnionCohesionUI(UnionStateModule module)
+    {
+        float cohesionProgress = Mathf.Clamp(module.UnionCohesionProgress, 0f, 100f);
+
+        if (_unionCohesionSlider != null)
+        {
+            _unionCohesionSlider.minValue = 0f;
+            _unionCohesionSlider.maxValue = 100f;
+            _unionCohesionSlider.value = cohesionProgress;
+        }
+
+        if (_unionCohesionText != null)
+        {
+            _unionCohesionText.text = $"{Mathf.RoundToInt(cohesionProgress)}%";
         }
     }
 

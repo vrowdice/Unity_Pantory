@@ -21,6 +21,8 @@ MonoBehaviour:
   cohesionSatisfactionBaseline: 0
   cohesionProgressPerSatisfactionPointPerDay: 0.05
   maxCohesionProgressGainPerDay: 2
+  cohesionLossPerSatisfactionPointBelowBaselinePerDay: 0.08
+  maxCohesionProgressLossPerDay: 3
   maxActiveUnionRequests: 3
   baseUnionRequestChance: 0.02
   unionRequestChanceIncrement: 0.01

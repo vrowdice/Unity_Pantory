@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// 원자재(ResourceType.raw)만을 생산하는 공장 데이터 ScriptableObject입니다.
@@ -9,9 +8,6 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "NewRawMaterialFactory", menuName = "Game Data/Building Data/Raw Material Factory")]
 public class RawMaterialFactoryData : ProductionBuildingData
 {
-    [SerializeField, HideInInspector, FormerlySerializedAs("_producibleRawResources")]
-    private List<ResourceData> _legacyProducibleRawResources;
-
     /// <summary>
     /// 기본 원자재(첫 번째 항목)를 반환합니다. 없으면 null.
     /// </summary>
@@ -30,8 +26,6 @@ public class RawMaterialFactoryData : ProductionBuildingData
             allowedResourceTypes.Add(ResourceType.raw);
         }
 
-        MigrateLegacyProducibleRawIntoSharedList();
-
         _producibleResources ??= new List<ResourceData>();
         for (int i = _producibleResources.Count - 1; i >= 0; i--)
         {
@@ -48,20 +42,5 @@ public class RawMaterialFactoryData : ProductionBuildingData
         }
 
         base.OnValidate();
-    }
-
-    private void MigrateLegacyProducibleRawIntoSharedList()
-    {
-        if (_legacyProducibleRawResources == null || _legacyProducibleRawResources.Count == 0) return;
-
-        _producibleResources ??= new List<ResourceData>();
-        foreach (ResourceData data in _legacyProducibleRawResources)
-        {
-            if (data == null) continue;
-            if (!_producibleResources.Contains(data))
-                _producibleResources.Add(data);
-        }
-
-        _legacyProducibleRawResources.Clear();
     }
 }

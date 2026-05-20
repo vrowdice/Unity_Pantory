@@ -39,6 +39,30 @@ MonoBehaviour:
     m_Key: main_event_automation_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000004
+    m_Key: union_request_collective_bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001004
+    m_Key: union_request_collective_bonus_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000005
+    m_Key: union_request_overtime_policy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001005
+    m_Key: union_request_overtime_policy_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000006
+    m_Key: union_request_wood_supplies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001006
+    m_Key: union_request_wood_supplies_Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

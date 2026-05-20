@@ -33,5 +33,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
   ticksPerBatch: 24
   inputResourcesPerBatch: 1
-  _producibleRawResources:
-  - {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
