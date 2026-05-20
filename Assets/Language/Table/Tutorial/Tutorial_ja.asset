@@ -57,11 +57,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
-    m_Localized: "\u3053\u306E\u30D1\u30CD\u30EB\u304B\u3089\u5EFA\u7269\u3068\u9053\u8DEF\u3092\u914D\u7F6E\u3067\u304D\u307E\u3059\u3002\u9078\u629E\u5F8C\u306B\u30B0\u30EA\u30C3\u30C9\u4E0A\u3067\u56DE\u8EE2\u3092\u78BA\u8A8D\u3057\u3066\u914D\u7F6E\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5165\u529B\u3092\u62BC\u3057\u7D9A\u3051\u308B\u3068\u9023\u7D9A\u914D\u7F6E\u3082\u53EF\u80FD\u3067\u3059\u3002"
+    m_Localized: "建物ボタンはカテゴリごとに分かれています。流通には道路・スプリッター・トンネルがあります。生産建物の多くは研究で解放されます。ブループリントタブで配置を保存し、後からまとめて配置できます。"
     m_Metadata:
       m_Items: []
   - m_Id: 7894026567680
-    m_Localized: "\u5EFA\u7269\u30DC\u30BF\u30F3\u306F\u30AB\u30C6\u30B4\u30EA\u3054\u3068\u306B\u5206\u304B\u308C\u3066\u3044\u307E\u3059\u3002\u6D41\u901A\u30AB\u30C6\u30B4\u30EA\u306B\u306F\u9053\u8DEF\u3001\u30B9\u30D7\u30EA\u30C3\u30BF\u30FC\u3001\u30C8\u30F3\u30CD\u30EB\u304C\u3042\u308A\u307E\u3059\u3002\u30B9\u30D7\u30EA\u30C3\u30BF\u30FC\u306F1\u5165\u529B\u30922\u51FA\u529B\u3078\u4EA4\u4E92\u306B\u5206\u914D\u3057\u3001\u30C8\u30F3\u30CD\u30EB\u306F\u7E26\u6A2A\u306E\u6D41\u308C\u3092\u72EC\u7ACB\u3057\u3066\u901A\u904E\u3055\u305B\u307E\u3059\u3002"
+    m_Localized: "この一覧から建物と道路を選び、グリッド上で回転を確認して配置します。入力を押し続けると道路を連続配置できます。"
     m_Metadata:
       m_Items: []
   - m_Id: 8131256401920
@@ -73,7 +73,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: "\u3053\u306E\u30DC\u30BF\u30F3\u3067\u5EFA\u8A2D\u30E2\u30FC\u30C9\u3068\u64A4\u53BB\u30E2\u30FC\u30C9\u3092\u5207\u308A\u66FF\u3048\u307E\u3059\u3002\u64A4\u53BB\u3057\u305F\u5EFA\u7269\u306B\u7D10\u3065\u304F\u30EF\u30FC\u30AB\u30FC/\u30C6\u30AF\u30CB\u30B7\u30E3\u30F3\u914D\u5C5E\u306F\u89E3\u9664\u3055\u308C\u308B\u305F\u3081\u3001\u5927\u898F\u6A21\u6539\u4FEE\u5F8C\u306F\u4EBA\u54E1\u914D\u7F6E\u3092\u898B\u76F4\u3057\u3066\u304F\u3060\u3055\u3044\u3002"
+    m_Localized: "ここで撤去モードの切り替え、建物の回転、配置時の自動従業員割り当てができます。撤去するとその建物の配置も解除されるため、大規模な変更後は人員を見直してください。"
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
@@ -149,7 +149,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
-    m_Localized: "役割は4つ。ワーカーとテクニシャンはスレッド、研究者はRP、マネージャーは管理不足のペナルティを防ぎます。"
+    m_Localized: "役割は4つ。ワーカーとテクニシャンは建物に配置、研究者はRP、マネージャーは管理不足のペナルティを防ぎます。"
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768

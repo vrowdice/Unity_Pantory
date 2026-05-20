@@ -93,7 +93,7 @@ public class CreditTopInfoPopup : PopupBase
 
         CreatePanelIfValid(LocalizationUtils.Localize("Employee Salary", "Expenses"), -_dataManager.Finances.DailySalary);
         CreatePanelIfValid(LocalizationUtils.Localize("Resource Changes", "Expenses"), _dataManager.Finances.DailyResource);
-        CreatePanelIfValid(LocalizationUtils.Localize("Thread Maintenance Cost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
+        CreatePanelIfValid(LocalizationUtils.Localize("Building Maintenance Cost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
         CreatePanelIfValid(LocalizationUtils.Localize("Policy Cost", "Expenses"), -_dataManager.Finances.DailyPolicyCost);
         CreatePanelIfValid(LocalizationUtils.Localize("Negative Interest", "Expenses"), -_dataManager.Finances.DailyInterest);
 

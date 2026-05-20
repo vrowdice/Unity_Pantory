@@ -66,16 +66,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
-    m_Localized: Place buildings and roads from this panel. Select an item, preview
-      rotation on the grid, and click to build. You can also hold placement input
-      for continuous placement to quickly lay long road lines.
+    m_Localized: Building buttons are grouped by category. Distribution includes
+      roads, splitter, and tunnel. Many production buildings unlock through research.
+      Use the Blueprint tab to save layouts and place them again later.
     m_Metadata:
       m_Items: []
   - m_Id: 7894026567680
-    m_Localized: Building buttons are grouped by category. Distribution includes
-      roads, splitter, and tunnel. Use splitter to alternate one input into two outputs,
-      and use tunnel to pass vertical and horizontal traffic independently without
-      blocking each other.
+    m_Localized: Place buildings and roads from this panel. Select an item, preview
+      rotation on the grid, and click to build. Hold placement input to lay long
+      road lines quickly.
     m_Metadata:
       m_Items: []
   - m_Id: 8131256401920
@@ -91,9 +90,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: This switch toggles build/remove mode. In remove mode, deleting
-      a building also clears its worker/technician assignments, so review staffing
-      after major layout changes.
+    m_Localized: This panel toggles remove mode, rotates the selected building, and
+      can auto-assign workers when you place production buildings. Removing a building
+      clears its worker assignments—recheck staffing after big layout changes.
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
@@ -185,9 +184,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
-    m_Localized: Four roles—Workers and Technicians run threads, Researchers generate
-      Research Points (RP), and Managers keep the workforce covered so satisfaction
-      does not drop.
+    m_Localized: Four roles—Workers and Technicians staff buildings on the grid,
+      Researchers generate Research Points (RP), and Managers keep the workforce
+      covered so satisfaction does not drop.
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768

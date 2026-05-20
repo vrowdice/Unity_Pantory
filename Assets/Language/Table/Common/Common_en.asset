@@ -464,8 +464,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268012
-    m_Localized: Cannot place thread. One or more buildings in this thread are not
-      researched yet.
+    m_Localized: Cannot place this blueprint. One or more buildings are not researched
+      yet.
     m_Metadata:
       m_Items: []
   - m_Id: 864226268013
@@ -518,10 +518,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226268025
     m_Localized: A category with this name already exists.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 864226268026
-    m_Localized: This building requires research.
     m_Metadata:
       m_Items: []
   - m_Id: 864226268027

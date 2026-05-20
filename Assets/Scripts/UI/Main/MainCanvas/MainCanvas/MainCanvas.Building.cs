@@ -70,7 +70,7 @@ public partial class MainCanvas
     {
         if (!isUnlocked)
         {
-            UIManager.ShowWarningPopup(WarningMessage.UnresearchedBuildingBlocksThreadPlacement);
+            UIManager.ShowWarningPopup(WarningMessage.BuildingLockedResearchRequired);
             DeselectBuilding();
             return;
         }

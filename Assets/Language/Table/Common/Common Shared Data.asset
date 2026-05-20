@@ -460,7 +460,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226268012
-    m_Key: ThreadContainsLockedBuildings
+    m_Key: BlueprintContainsUnresearchedBuildings
     m_Metadata:
       m_Items: []
   - m_Id: 864226268013
@@ -513,10 +513,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226268025
     m_Key: CategoryNameAlreadyExists
-    m_Metadata:
-      m_Items: []
-  - m_Id: 864226268026
-    m_Key: UnresearchedBuildingBlocksThreadPlacement
     m_Metadata:
       m_Items: []
   - m_Id: 864226268027

@@ -10,13 +10,12 @@ public static class WarningMessage
     public const string FailedToRenameCategory = "FailedToRenameCategory";
     public const string DeleteCategoryConfirm = "DeleteCategoryConfirm";
     public const string FailedToDeleteCategory = "FailedToDeleteCategory";
-    public const string PleaseEnterThreadName = "PleaseEnterThreadName";
+    public const string PleaseEnterBlueprintName = "PleaseEnterBlueprintName";
     public const string SavedSuccessfully = "SavedSuccessfully";
     public const string BuildingLockedResearchRequired = "BuildingLockedResearchRequired";
-    public const string ThreadDeleted = "ThreadDeleted";
+    public const string BlueprintDeleted = "BlueprintDeleted";
     public const string BuildingLocked = "BuildingLocked";
-    public const string UnresearchedBuildingBlocksThreadPlacement = "UnresearchedBuildingBlocksThreadPlacement";
-    public const string ThreadContainsLockedBuildings = "ThreadContainsLockedBuildings";
+    public const string BlueprintContainsUnresearchedBuildings = "BlueprintContainsUnresearchedBuildings";
     public const string NotEnoughResources = "NotEnoughResources";
     public const string NotEnoughCredits = "NotEnoughCredits";
     public const string SaveFileNameEmpty = "SaveFileNameEmpty";
