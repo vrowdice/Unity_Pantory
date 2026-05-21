@@ -47,6 +47,32 @@ public partial class MainCanvas
         SelectBuildingType(BuildingType.Distribution);
     }
 
+    private bool IsBuildingUnlocked(BuildingData data)
+    {
+        if (data == null)
+            return false;
+
+        if (data.requiredResearch == null)
+            return true;
+
+        return DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault;
+    }
+
+    private void RefreshBuildUiOnResearchCompleted()
+    {
+        if (_isBlueprintPanelOpen)
+            return;
+
+        for (int i = 0; i < _buildingBtns.Count; i++)
+        {
+            MainBuildingBtn btn = _buildingBtns[i];
+            if (btn == null || btn.BuildingData == null)
+                continue;
+
+            btn.RefreshUnlockState(IsBuildingUnlocked(btn.BuildingData), _mainRunner);
+        }
+    }
+
     private void ApplyRemovalMode(bool isOn)
     {
         if (isOn)
@@ -133,9 +159,7 @@ public partial class MainCanvas
         List<BuildingData> list = DataManager.Building.GetBuildingDataList(buildingType);
         foreach (BuildingData data in list)
         {
-            bool isUnlocked = data.requiredResearch == null
-                ? true
-                : (DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault);
+            bool isUnlocked = IsBuildingUnlocked(data);
 
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
             btnObj.transform.SetParent(_buildingBtnContent, false);
@@ -432,5 +456,44 @@ public partial class MainCanvas
             RebuildBlueprintSavedEntriesFromData();
             return;
         }
+    }
+
+    public bool TryCancelActiveBuildMode()
+    {
+        if (_mainRunner == null)
+            return false;
+
+        if (_mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
+        {
+            _mainRunner.SetBlueprintMode(false);
+            return true;
+        }
+
+        MainBuildingPlacementHandler placementHandler = _mainRunner.PlacementHandler;
+        if (placementHandler == null)
+            return false;
+
+        if (placementHandler.IsBlueprintPlacementMode)
+        {
+            placementHandler.CancelBlueprintPlacement();
+            _activeBlueprintLayoutKey = null;
+            RefreshBlueprintUi();
+            return true;
+        }
+
+        if (placementHandler.IsRemovalMode)
+        {
+            _removalModeSwitch.SetValue(false);
+            ApplyRemovalMode(false);
+            return true;
+        }
+
+        if (placementHandler.IsPlacementMode)
+        {
+            DeselectBuilding();
+            return true;
+        }
+
+        return false;
     }
 }

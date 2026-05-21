@@ -16,6 +16,7 @@ public class SafeAreaEdgeInset : MonoBehaviour
 
     [SerializeField] private Edge _edge = Edge.Bottom;
     [SerializeField] private float _extraPadding;
+    [SerializeField] private bool _onlyOnMobilePlatform;
 
     private RectTransform _rectTransform;
     private Vector2 _baseAnchoredPosition;
@@ -61,6 +62,12 @@ public class SafeAreaEdgeInset : MonoBehaviour
     {
         if (!_hasBasePosition || _rectTransform == null)
             return;
+
+        if (_onlyOnMobilePlatform && !Application.isMobilePlatform)
+        {
+            _rectTransform.anchoredPosition = _baseAnchoredPosition;
+            return;
+        }
 
         Vector2Int screenSize = new Vector2Int(Screen.width, Screen.height);
         if (!force && _lastSafeArea == Screen.safeArea && _lastScreenSize == screenSize)

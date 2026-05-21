@@ -32,7 +32,6 @@ public partial class MainCanvas : CanvasBase
         }
 
         HandlePanelShortcutKeys();
-        UpdateMobileUi();
     }
 
     public void Init(MainRunner mainRunner)
@@ -44,6 +43,7 @@ public partial class MainCanvas : CanvasBase
         DataManager.Resource.OnResourceChanged -= OnResourceChanged;
         DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
+        DataManager.OnResearchCompleted -= OnResearchCompleted;
 
         DataManager.Time.OnDayChanged -= OnDayChanged;
         DataManager.Time.OnMonthChanged -= OnMonthChanged;
@@ -52,6 +52,7 @@ public partial class MainCanvas : CanvasBase
         DataManager.Resource.OnResourceChanged += OnResourceChanged;
         DataManager.Finances.OnCreditChanged += UpdateAllMainText;
         DataManager.Research.OnResearchPointsChanged += UpdateAllMainText;
+        DataManager.OnResearchCompleted += OnResearchCompleted;
 
         DataManager.MainEvent.OnMainEventTypeChanged += OnMainEventTypeChanged;
 
@@ -85,7 +86,6 @@ public partial class MainCanvas : CanvasBase
         CreateQuickMoveBtns();
 
         InitBuildUi();
-        InitMobileUi();
 
         _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += RefreshBuildingPlacedCountDisplays;
 
@@ -103,6 +103,7 @@ public partial class MainCanvas : CanvasBase
             DataManager.Resource.OnResourceChanged -= OnResourceChanged;
             DataManager.Finances.OnCreditChanged -= UpdateAllMainText;
             DataManager.Research.OnResearchPointsChanged -= UpdateAllMainText;
+            DataManager.OnResearchCompleted -= OnResearchCompleted;
             DataManager.MainEvent.OnMainEventTypeChanged -= OnMainEventTypeChanged;
             DataManager.Time.OnDayChanged -= OnDayChanged;
             DataManager.Time.OnMonthChanged -= OnMonthChanged;
@@ -121,6 +122,11 @@ public partial class MainCanvas : CanvasBase
     {
         RefreshResourceScrollView();
         UpdateAllMainText();
+    }
+
+    private void OnResearchCompleted(string researchId)
+    {
+        RefreshBuildUiOnResearchCompleted();
     }
 
     private void OnMainEventTypeChanged(MainEventType mainEventType)

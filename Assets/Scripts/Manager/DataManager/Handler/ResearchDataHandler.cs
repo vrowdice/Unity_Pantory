@@ -17,6 +17,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public bool IsAutoPatentMode => _isAutoPatentMode;
 
     public event Action OnResearchPointsChanged;
+    public event Action<string> OnResearchCompleted;
 
     /// <summary>
     /// 모든 이벤트 구독을 초기화합니다.
@@ -24,6 +25,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
     public void ClearAllSubscriptions()
     {
         OnResearchPointsChanged = null;
+        OnResearchCompleted = null;
     }
 
     public ResearchDataHandler(DataManager dataManager, List<ResearchData> researchDataList = null)
@@ -163,6 +165,7 @@ public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
         }
 
         OnResearchPointsChanged?.Invoke();
+        OnResearchCompleted?.Invoke(researchId);
 
         return true;
     }
