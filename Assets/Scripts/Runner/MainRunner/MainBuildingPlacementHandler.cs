@@ -160,8 +160,6 @@ public class MainBuildingPlacementHandler
         if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput())
             return;
 
-        if (PointerInput.IsPointerOverUi()) return;
-
         if (_placementMode) UpdatePlacement(cam);
         else if (_blueprintPlacementMode) UpdateBlueprintPlacement(cam);
         else if (_removalMode) UpdateRemoval(cam);
@@ -178,8 +176,7 @@ public class MainBuildingPlacementHandler
         if (PointerInput.IsMultiTouch)
             return;
 
-        Vector3 pointerWorld = cam.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
-        pointerWorld.z = 0f;
+        Vector3 pointerWorld = PointerInput.ScreenToWorldOnPlane(cam, PointerInput.PrimaryScreenPosition);
         Vector2Int anchor = _gridHandler.WorldToGridPosition(pointerWorld);
 
         bool hasAnyInsufficientCredits;
@@ -187,7 +184,7 @@ public class MainBuildingPlacementHandler
         bool canPlaceBlueprint = CanPlaceBlueprintAt(anchor, out hasAnyInsufficientCredits, out hasAnyCountLimit);
         UpdateBlueprintPreviews(anchor, canPlaceBlueprint);
 
-        if (!PointerInput.GetPrimaryPointerDown())
+        if (!PointerInput.GetPrimaryPointerDown() || PointerInput.IsPointerOverUi())
             return;
 
         if (!canPlaceBlueprint)
@@ -217,8 +214,7 @@ public class MainBuildingPlacementHandler
         if (PointerInput.IsMultiTouch)
             return;
 
-        Vector3 pointerWorld = cam.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
-        pointerWorld.z = 0f;
+        Vector3 pointerWorld = PointerInput.ScreenToWorldOnPlane(cam, PointerInput.PrimaryScreenPosition);
 
         Vector2Int origin = _gridHandler.WorldToGridPosition(pointerWorld);
         Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
@@ -230,6 +226,9 @@ public class MainBuildingPlacementHandler
 
         if (PointerInput.GetPrimaryPointerDown())
         {
+            if (PointerInput.IsPointerOverUi())
+                return;
+
             if (!canPlace)
             {
                 if (!canPlaceByCount)
@@ -242,9 +241,8 @@ public class MainBuildingPlacementHandler
             TryPlaceAtPreview(origin);
         }
 
-        if (PointerInput.GetPrimaryPointerHeld() && canPlace)
+        if (PointerInput.GetPrimaryPointerHeld() && _isPointerPlacementActive && canPlace)
         {
-            _isPointerPlacementActive = true;
             TryPlaceAtPreview(origin);
         }
 
@@ -268,12 +266,14 @@ public class MainBuildingPlacementHandler
         if (PointerInput.IsMultiTouch)
             return;
 
-        Vector3 pointerWorld = cam.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
-        pointerWorld.z = 0f;
+        Vector3 pointerWorld = PointerInput.ScreenToWorldOnPlane(cam, PointerInput.PrimaryScreenPosition);
         Vector2Int p = _gridHandler.WorldToGridPosition(pointerWorld);
 
         if (PointerInput.GetPrimaryPointerDown())
         {
+            if (PointerInput.IsPointerOverUi())
+                return;
+
             bool removed = _gridHandler.TryRemoveAt(p);
             if (removed && _runner.RemovalSound != null)
             {

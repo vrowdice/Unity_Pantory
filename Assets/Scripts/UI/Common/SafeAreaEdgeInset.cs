@@ -20,22 +20,24 @@ public class SafeAreaEdgeInset : MonoBehaviour
     private RectTransform _rectTransform;
     private Vector2 _baseAnchoredPosition;
     private bool _hasBasePosition;
+    private Rect _lastSafeArea;
+    private Vector2Int _lastScreenSize;
 
     private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
         CacheBasePosition();
-        ApplyInset();
+        ApplyInsetIfNeeded(force: true);
     }
 
     private void OnEnable()
     {
-        ApplyInset();
+        ApplyInsetIfNeeded(force: true);
     }
 
     private void Update()
     {
-        ApplyInset();
+        ApplyInsetIfNeeded(force: false);
     }
 
     public void Configure(Edge edge, float extraPadding = 0f)
@@ -43,7 +45,7 @@ public class SafeAreaEdgeInset : MonoBehaviour
         _edge = edge;
         _extraPadding = extraPadding;
         CacheBasePosition();
-        ApplyInset();
+        ApplyInsetIfNeeded(force: true);
     }
 
     private void CacheBasePosition()
@@ -55,32 +57,58 @@ public class SafeAreaEdgeInset : MonoBehaviour
         _hasBasePosition = true;
     }
 
-    private void ApplyInset()
+    private void ApplyInsetIfNeeded(bool force)
     {
         if (!_hasBasePosition || _rectTransform == null)
             return;
 
-        Rect safeArea = Screen.safeArea;
-        float inset = _extraPadding;
+        Vector2Int screenSize = new Vector2Int(Screen.width, Screen.height);
+        if (!force && _lastSafeArea == Screen.safeArea && _lastScreenSize == screenSize)
+            return;
 
+        _lastSafeArea = Screen.safeArea;
+        _lastScreenSize = screenSize;
+
+        float safeInset = GetSafeAreaInset();
+        if (safeInset <= 0f && _extraPadding <= 0f)
+        {
+            _rectTransform.anchoredPosition = _baseAnchoredPosition;
+            return;
+        }
+
+        float inset = safeInset + _extraPadding;
         switch (_edge)
         {
             case Edge.Bottom:
-                inset += safeArea.y;
                 _rectTransform.anchoredPosition = _baseAnchoredPosition + new Vector2(0f, inset);
                 break;
             case Edge.Top:
-                inset += Screen.height - safeArea.yMax;
                 _rectTransform.anchoredPosition = _baseAnchoredPosition + new Vector2(0f, -inset);
                 break;
             case Edge.Left:
-                inset += safeArea.x;
                 _rectTransform.anchoredPosition = _baseAnchoredPosition + new Vector2(inset, 0f);
                 break;
             case Edge.Right:
-                inset += Screen.width - safeArea.xMax;
                 _rectTransform.anchoredPosition = _baseAnchoredPosition + new Vector2(-inset, 0f);
                 break;
+        }
+    }
+
+    private float GetSafeAreaInset()
+    {
+        Rect safeArea = Screen.safeArea;
+        switch (_edge)
+        {
+            case Edge.Bottom:
+                return safeArea.y;
+            case Edge.Top:
+                return Screen.height - safeArea.yMax;
+            case Edge.Left:
+                return safeArea.x;
+            case Edge.Right:
+                return Screen.width - safeArea.xMax;
+            default:
+                return 0f;
         }
     }
 }

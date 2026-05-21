@@ -140,8 +140,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         {
             if (PointerInput.IsPointerOverUi()) return;
 
-            Vector3 pointerWorld = Camera.main.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
-            pointerWorld.z = 0f;
+            Vector3 pointerWorld = PointerInput.ScreenToWorldOnPlane(Camera.main, PointerInput.PrimaryScreenPosition);
             if (!_collider.OverlapPoint(pointerWorld)) return;
 
             _clickArmed = true;
@@ -158,8 +157,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
             Vector2 delta = PointerInput.PrimaryScreenPosition - _pointerDownScreenPos;
             if (delta.sqrMagnitude > ClickDragThresholdPixels * ClickDragThresholdPixels) return;
 
-            Vector3 pointerWorld = Camera.main.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
-            pointerWorld.z = 0f;
+            Vector3 pointerWorld = PointerInput.ScreenToWorldOnPlane(Camera.main, PointerInput.PrimaryScreenPosition);
             if (!_collider.OverlapPoint(pointerWorld)) return;
 
             UIManager.Instance.ShowBuildingInfoPopup(this);

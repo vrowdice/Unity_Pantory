@@ -93,4 +93,12 @@ public static class PointerInput
         Vector3 viewPos = camera.ScreenToViewportPoint(screenPosition);
         return viewPos.x >= 0f && viewPos.x <= 1f && viewPos.y >= 0f && viewPos.y <= 1f;
     }
+
+    public static Vector3 ScreenToWorldOnPlane(Camera camera, Vector2 screenPosition, float planeZ = 0f)
+    {
+        Vector3 screenPoint = new Vector3(screenPosition.x, screenPosition.y, 0f);
+        Vector3 world = camera.ScreenToWorldPoint(screenPoint);
+        world.z = planeZ;
+        return world;
+    }
 }

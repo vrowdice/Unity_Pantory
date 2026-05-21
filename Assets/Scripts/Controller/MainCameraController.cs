@@ -62,6 +62,8 @@ public class MainCameraController : MonoBehaviour
 
         _boundaryCollider.transform.position = new Vector3(center.x, center.y, 0);
         _boundaryCollider.size = size;
+
+        transform.position = ClampToBoundary(transform.position);
     }
 
     /// <summary>
@@ -94,6 +96,9 @@ public class MainCameraController : MonoBehaviour
 
     private void HandleKeyboardMove()
     {
+        if (Application.isMobilePlatform)
+            return;
+
         if (!_isKeyboardMoveEnabled)
             return;
 
@@ -182,7 +187,7 @@ public class MainCameraController : MonoBehaviour
 
     private void HandlePinchZoom()
     {
-        if (Input.touchCount < 2 || PointerInput.IsPointerOverUi())
+        if (Input.touchCount < 2)
             return;
 
         Touch touch0 = Input.GetTouch(0);
@@ -218,19 +223,9 @@ public class MainCameraController : MonoBehaviour
         if (_boundaryCollider == null) return targetPos;
 
         Bounds bounds = _boundaryCollider.bounds;
-        float halfHeight = _camera.orthographicSize;
-        float halfWidth = halfHeight * _camera.aspect;
 
-        float minX = bounds.min.x + halfWidth;
-        float maxX = bounds.max.x - halfWidth;
-        float minY = bounds.min.y + halfHeight;
-        float maxY = bounds.max.y - halfHeight;
-
-        float centerX = bounds.center.x;
-        float centerY = bounds.center.y;
-
-        targetPos.x = minX > maxX ? centerX : Mathf.Clamp(targetPos.x, minX, maxX);
-        targetPos.y = minY > maxY ? centerY : Mathf.Clamp(targetPos.y, minY, maxY);
+        targetPos.x = Mathf.Clamp(targetPos.x, bounds.min.x, bounds.max.x);
+        targetPos.y = Mathf.Clamp(targetPos.y, bounds.min.y, bounds.max.y);
         targetPos.z = transform.position.z;
 
         return targetPos;

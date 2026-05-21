@@ -79,10 +79,7 @@ public class MainBlueprintHandler
 
     private static Vector3 ScreenToWorldOnPlane(Camera camera, Vector2 screenPosition)
     {
-        Vector3 screenPoint = new Vector3(screenPosition.x, screenPosition.y, 0f);
-        Vector3 w = camera.ScreenToWorldPoint(screenPoint);
-        w.z = 0f;
-        return w;
+        return PointerInput.ScreenToWorldOnPlane(camera, screenPosition);
     }
 
     private void TryCommitSelection(Vector3 worldA, Vector3 worldB)

@@ -134,6 +134,9 @@ public class CreditTopInfoPopup : PopupBase
             return;
         }
 
+        if (PointerInput.IsMultiTouch)
+            return;
+
         if (!PointerInput.GetPrimaryPointerDown())
         {
             return;

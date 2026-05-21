@@ -7,7 +7,6 @@ public partial class MainCanvas
     [Header("Mobile")]
     [SerializeField] private RectTransform _buildingControlContainer;
     [SerializeField] private GameObject _buildModeCancelBtn;
-    [SerializeField] private GameObject _rotateBtnContainer;
 
     private bool _mobileUiInitialized;
 
@@ -17,10 +16,14 @@ public partial class MainCanvas
             return;
 
         _mobileUiInitialized = true;
-        EnsureRotateButtonContainerReference();
-        EnsureBuildModeCancelButton();
-        ApplyMobileSafeAreaInsets();
-        RefreshBuildModeControlVisibility();
+
+        if (Application.isMobilePlatform)
+        {
+            EnsureBuildModeCancelButton();
+            ApplyMobileSafeAreaInsets();
+        }
+
+        RefreshBuildModeCancelVisibility();
     }
 
     public bool TryCancelActiveBuildMode()
@@ -31,7 +34,7 @@ public partial class MainCanvas
         if (_mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
         {
             _mainRunner.SetBlueprintMode(false);
-            RefreshBuildModeControlVisibility();
+            RefreshBuildModeCancelVisibility();
             return true;
         }
 
@@ -44,7 +47,7 @@ public partial class MainCanvas
             placementHandler.CancelBlueprintPlacement();
             _activeBlueprintLayoutKey = null;
             RefreshBlueprintUi();
-            RefreshBuildModeControlVisibility();
+            RefreshBuildModeCancelVisibility();
             return true;
         }
 
@@ -52,14 +55,14 @@ public partial class MainCanvas
         {
             _removalModeSwitch.SetValue(false);
             ApplyRemovalMode(false);
-            RefreshBuildModeControlVisibility();
+            RefreshBuildModeCancelVisibility();
             return true;
         }
 
         if (placementHandler.IsPlacementMode)
         {
             DeselectBuilding();
-            RefreshBuildModeControlVisibility();
+            RefreshBuildModeCancelVisibility();
             return true;
         }
 
@@ -73,18 +76,15 @@ public partial class MainCanvas
 
     private void UpdateMobileUi()
     {
-        RefreshBuildModeControlVisibility();
-    }
+        if (!Application.isMobilePlatform)
+            return;
 
-    private void RefreshBuildModeControlVisibility()
-    {
         RefreshBuildModeCancelVisibility();
-        RefreshRotateButtonVisibility();
     }
 
     private void RefreshBuildModeCancelVisibility()
     {
-        if (_buildModeCancelBtn == null)
+        if (!Application.isMobilePlatform || _buildModeCancelBtn == null)
             return;
 
         bool shouldShow = IsAnyBuildModeActive();
@@ -107,39 +107,6 @@ public partial class MainCanvas
         return placementHandler.IsPlacementMode
                || placementHandler.IsBlueprintPlacementMode
                || placementHandler.IsRemovalMode;
-    }
-
-    private bool IsBuildingPlacementModeActive()
-    {
-        if (_mainRunner?.PlacementHandler == null)
-            return false;
-
-        return _mainRunner.PlacementHandler.IsPlacementMode;
-    }
-
-    private void RefreshRotateButtonVisibility()
-    {
-        EnsureRotateButtonContainerReference();
-        if (_rotateBtnContainer == null)
-            return;
-
-        bool shouldShow = IsBuildingPlacementModeActive();
-        if (_rotateBtnContainer.activeSelf != shouldShow)
-            _rotateBtnContainer.SetActive(shouldShow);
-    }
-
-    private void EnsureRotateButtonContainerReference()
-    {
-        if (_rotateBtnContainer != null)
-            return;
-
-        Transform controlContainer = GetBuildingControlContainer();
-        if (controlContainer == null)
-            return;
-
-        Transform rotateContainer = FindChildRecursive(controlContainer, "RotateBtnContainer");
-        if (rotateContainer != null)
-            _rotateBtnContainer = rotateContainer.gameObject;
     }
 
     private void EnsureBuildModeCancelButton()
@@ -179,6 +146,9 @@ public partial class MainCanvas
 
     private void ApplyMobileSafeAreaInsets()
     {
+        if (!Application.isMobilePlatform)
+            return;
+
         ApplySafeAreaInset(GetBuildingControlContainer(), SafeAreaEdgeInset.Edge.Bottom, 8f);
         ApplySafeAreaInset(transform.Find("TopInfoContainer"), SafeAreaEdgeInset.Edge.Top, 4f);
         ApplySafeAreaInset(transform.Find("QuickMoveContainer"), SafeAreaEdgeInset.Edge.Left, 4f);
