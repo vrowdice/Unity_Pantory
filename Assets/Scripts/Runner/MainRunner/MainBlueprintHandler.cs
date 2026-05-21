@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class MainBlueprintHandler
 {
@@ -42,32 +41,35 @@ public class MainBlueprintHandler
         if (!_isBlueprintMode || cam == null) return;
         if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput()) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
+        if (PointerInput.WasCancelPressed())
         {
             _runner.SetBlueprintMode(false);
             return;
         }
 
-        bool pointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        if (PointerInput.IsMultiTouch)
+            return;
 
-        if (Input.GetMouseButtonDown(0) && !pointerOverUi)
+        bool pointerOverUi = PointerInput.IsPointerOverUi();
+
+        if (PointerInput.GetPrimaryPointerDown() && !pointerOverUi)
         {
             _pointerDownForSelection = true;
-            _selectionWorldStart = ScreenToWorldOnPlane(cam, Input.mousePosition);
+            _selectionWorldStart = ScreenToWorldOnPlane(cam, PointerInput.PrimaryScreenPosition);
             EnsureSelectionVisual();
         }
 
         if (_pointerDownForSelection)
         {
-            if (Input.GetMouseButton(0))
+            if (PointerInput.GetPrimaryPointerHeld())
             {
-                Vector3 current = ScreenToWorldOnPlane(cam, Input.mousePosition);
+                Vector3 current = ScreenToWorldOnPlane(cam, PointerInput.PrimaryScreenPosition);
                 UpdateSelectionVisual(_selectionWorldStart, current);
             }
 
-            if (Input.GetMouseButtonUp(0))
+            if (PointerInput.GetPrimaryPointerUp())
             {
-                Vector3 end = ScreenToWorldOnPlane(cam, Input.mousePosition);
+                Vector3 end = ScreenToWorldOnPlane(cam, PointerInput.PrimaryScreenPosition);
                 _pointerDownForSelection = false;
                 DestroySelectionVisual();
                 TryCommitSelection(_selectionWorldStart, end);
@@ -75,9 +77,10 @@ public class MainBlueprintHandler
         }
     }
 
-    private static Vector3 ScreenToWorldOnPlane(Camera camera, Vector3 screenPosition)
+    private static Vector3 ScreenToWorldOnPlane(Camera camera, Vector2 screenPosition)
     {
-        Vector3 w = camera.ScreenToWorldPoint(screenPosition);
+        Vector3 screenPoint = new Vector3(screenPosition.x, screenPosition.y, 0f);
+        Vector3 w = camera.ScreenToWorldPoint(screenPoint);
         w.z = 0f;
         return w;
     }

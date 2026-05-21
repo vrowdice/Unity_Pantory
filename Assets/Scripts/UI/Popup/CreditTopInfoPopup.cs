@@ -134,7 +134,7 @@ public class CreditTopInfoPopup : PopupBase
             return;
         }
 
-        if (!Input.GetMouseButtonDown(0))
+        if (!PointerInput.GetPrimaryPointerDown())
         {
             return;
         }
@@ -145,7 +145,7 @@ public class CreditTopInfoPopup : PopupBase
         }
 
         RectTransform rect = _popupArea != null ? _popupArea : transform as RectTransform;
-        if (rect != null && !RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition, GetUiCamera(rect)))
+        if (rect != null && !RectTransformUtility.RectangleContainsScreenPoint(rect, PointerInput.PrimaryScreenPosition, GetUiCamera(rect)))
         {
             HideCreditInfo();
         }
@@ -160,7 +160,7 @@ public class CreditTopInfoPopup : PopupBase
 
         return RectTransformUtility.RectangleContainsScreenPoint(
             _toggleButtonRect,
-            Input.mousePosition,
+            PointerInput.PrimaryScreenPosition,
             GetUiCamera(_toggleButtonRect));
     }
 

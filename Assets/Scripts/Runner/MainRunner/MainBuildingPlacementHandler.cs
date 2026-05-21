@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// 메인에서 건물 프리뷰/회전/설치/제거 모드를 처리합니다.
@@ -161,7 +160,7 @@ public class MainBuildingPlacementHandler
         if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput())
             return;
 
-        if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (PointerInput.IsPointerOverUi()) return;
 
         if (_placementMode) UpdatePlacement(cam);
         else if (_blueprintPlacementMode) UpdateBlueprintPlacement(cam);
@@ -170,22 +169,25 @@ public class MainBuildingPlacementHandler
 
     private void UpdateBlueprintPlacement(Camera cam)
     {
-        if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        if (PointerInput.WasCancelPressed())
         {
             CancelBlueprintPlacement();
             return;
         }
 
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
-        Vector2Int anchor = _gridHandler.WorldToGridPosition(mouseWorld);
+        if (PointerInput.IsMultiTouch)
+            return;
+
+        Vector3 pointerWorld = cam.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
+        pointerWorld.z = 0f;
+        Vector2Int anchor = _gridHandler.WorldToGridPosition(pointerWorld);
 
         bool hasAnyInsufficientCredits;
         bool hasAnyCountLimit;
         bool canPlaceBlueprint = CanPlaceBlueprintAt(anchor, out hasAnyInsufficientCredits, out hasAnyCountLimit);
         UpdateBlueprintPreviews(anchor, canPlaceBlueprint);
 
-        if (!Input.GetMouseButtonDown(0))
+        if (!PointerInput.GetPrimaryPointerDown())
             return;
 
         if (!canPlaceBlueprint)
@@ -206,16 +208,19 @@ public class MainBuildingPlacementHandler
         if (Input.GetKeyDown(KeyCode.Q)) Rotate(false);
         if (Input.GetKeyDown(KeyCode.E)) Rotate(true);
 
-        if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        if (PointerInput.WasCancelPressed())
         {
             CancelPlacement();
             return;
         }
 
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
+        if (PointerInput.IsMultiTouch)
+            return;
 
-        Vector2Int origin = _gridHandler.WorldToGridPosition(mouseWorld);
+        Vector3 pointerWorld = cam.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
+        pointerWorld.z = 0f;
+
+        Vector2Int origin = _gridHandler.WorldToGridPosition(pointerWorld);
         Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
         bool canPlaceByGrid = _gridHandler.CanPlace(origin, size);
         bool canPlaceByCount = _gridHandler.CanPlaceMoreInstances(_selectedBuilding);
@@ -223,7 +228,7 @@ public class MainBuildingPlacementHandler
 
         UpdatePreview(origin, size, canPlace);
 
-        if (Input.GetMouseButtonDown(0))
+        if (PointerInput.GetPrimaryPointerDown())
         {
             if (!canPlace)
             {
@@ -237,13 +242,13 @@ public class MainBuildingPlacementHandler
             TryPlaceAtPreview(origin);
         }
 
-        if (Input.GetMouseButton(0) && canPlace)
+        if (PointerInput.GetPrimaryPointerHeld() && canPlace)
         {
             _isPointerPlacementActive = true;
             TryPlaceAtPreview(origin);
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (PointerInput.GetPrimaryPointerUp())
         {
             _isPointerPlacementActive = false;
             _lastPlacedOrigin = new Vector2Int(int.MinValue, int.MinValue);
@@ -254,17 +259,20 @@ public class MainBuildingPlacementHandler
 
     private void UpdateRemoval(Camera cam)
     {
-        if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        if (PointerInput.WasCancelPressed())
         {
             CancelRemoval();
             return;
         }
 
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
-        Vector2Int p = _gridHandler.WorldToGridPosition(mouseWorld);
+        if (PointerInput.IsMultiTouch)
+            return;
 
-        if (Input.GetMouseButtonDown(0))
+        Vector3 pointerWorld = cam.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
+        pointerWorld.z = 0f;
+        Vector2Int p = _gridHandler.WorldToGridPosition(pointerWorld);
+
+        if (PointerInput.GetPrimaryPointerDown())
         {
             bool removed = _gridHandler.TryRemoveAt(p);
             if (removed && _runner.RemovalSound != null)

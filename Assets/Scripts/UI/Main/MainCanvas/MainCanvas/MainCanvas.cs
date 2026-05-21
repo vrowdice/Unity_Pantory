@@ -32,6 +32,7 @@ public partial class MainCanvas : CanvasBase
         }
 
         HandlePanelShortcutKeys();
+        UpdateMobileUi();
     }
 
     public void Init(MainRunner mainRunner)
@@ -84,6 +85,7 @@ public partial class MainCanvas : CanvasBase
         CreateQuickMoveBtns();
 
         InitBuildUi();
+        InitMobileUi();
 
         _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += RefreshBuildingPlacedCountDisplays;
 

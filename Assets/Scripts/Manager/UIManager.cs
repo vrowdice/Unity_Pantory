@@ -77,6 +77,9 @@ public class UIManager : Singleton<UIManager>
             {
                 TryCloseTopmost();
             }
+            else if (TryCancelMainBuildMode())
+            {
+            }
             else if (_optionPanelPrefab != null)
             {
                 ShowOptionPopup();
@@ -191,6 +194,14 @@ public class UIManager : Singleton<UIManager>
     }
 
     public MainCanvas MainCanvas => _mainCanvas;
+
+    private bool TryCancelMainBuildMode()
+    {
+        if (_mainCanvas == null)
+            _mainCanvas = UnityEngine.Object.FindAnyObjectByType<MainCanvas>();
+
+        return _mainCanvas != null && _mainCanvas.TryCancelActiveBuildMode();
+    }
 
     private void CreateManagerCanvas()
     {

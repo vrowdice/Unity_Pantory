@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using DG.Tweening;
 
 /// <summary>
@@ -43,7 +42,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private const float RemoveScaleDuration = 0.2f;
 
     private bool _clickArmed;
-    private Vector3 _mouseDownScreenPos;
+    private Vector2 _pointerDownScreenPos;
     private const float ClickDragThresholdPixels = 8f;
 
     public BuildingData BuildingData => _buildingData;
@@ -131,33 +130,37 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private void Update()
     {
         if (_mainRunner.PlacementHandler.IsPlacementMode || _mainRunner.PlacementHandler.IsRemovalMode ||
+            _mainRunner.PlacementHandler.IsBlueprintPlacementMode ||
             _mainRunner.BlueprintHandler.IsBlueprintMode) return;
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (PointerInput.IsMultiTouch)
+            return;
 
-            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorld.z = 0f;
-            if (!_collider.OverlapPoint(mouseWorld)) return;
+        if (PointerInput.GetPrimaryPointerDown())
+        {
+            if (PointerInput.IsPointerOverUi()) return;
+
+            Vector3 pointerWorld = Camera.main.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
+            pointerWorld.z = 0f;
+            if (!_collider.OverlapPoint(pointerWorld)) return;
 
             _clickArmed = true;
-            _mouseDownScreenPos = Input.mousePosition;
+            _pointerDownScreenPos = PointerInput.PrimaryScreenPosition;
             return;
         }
 
-        if (Input.GetMouseButtonUp(0) && _clickArmed)
+        if (PointerInput.GetPrimaryPointerUp() && _clickArmed)
         {
             _clickArmed = false;
 
-            if (EventSystem.current.IsPointerOverGameObject()) return;
+            if (PointerInput.IsPointerOverUi()) return;
 
-            Vector3 delta = Input.mousePosition - _mouseDownScreenPos;
+            Vector2 delta = PointerInput.PrimaryScreenPosition - _pointerDownScreenPos;
             if (delta.sqrMagnitude > ClickDragThresholdPixels * ClickDragThresholdPixels) return;
 
-            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorld.z = 0f;
-            if (!_collider.OverlapPoint(mouseWorld)) return;
+            Vector3 pointerWorld = Camera.main.ScreenToWorldPoint(PointerInput.PrimaryScreenPosition);
+            pointerWorld.z = 0f;
+            if (!_collider.OverlapPoint(pointerWorld)) return;
 
             UIManager.Instance.ShowBuildingInfoPopup(this);
         }

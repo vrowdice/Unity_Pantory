@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using DG.Tweening;
 
 [RequireComponent(typeof(Camera))]
@@ -9,8 +8,14 @@ public class MainCameraController : MonoBehaviour
     [SerializeField] private float _dragSpeed = 1f;
     [SerializeField] private bool _isDragEnabled = true;
 
+    [Header("Keyboard Settings (PC)")]
+    [SerializeField] private bool _isKeyboardMoveEnabled = true;
+    [SerializeField] private float _keyboardMoveSpeed = 8f;
+    [SerializeField] private float _keyboardZoomReference = 10f;
+
     [Header("Zoom Settings")]
     [SerializeField] private float _zoomSpeed = 5f;
+    [SerializeField] private float _pinchZoomSpeed = 0.01f;
     [SerializeField] private float _minZoom = 2f;
     [SerializeField] private float _maxZoom = 20f;
 
@@ -81,43 +86,74 @@ public class MainCameraController : MonoBehaviour
 
     private void LateUpdate()
     {
+        HandlePinchZoom();
+        HandleKeyboardMove();
         HandleInput();
-        HandleZoom();
+        HandleScrollZoom();
+    }
+
+    private void HandleKeyboardMove()
+    {
+        if (!_isKeyboardMoveEnabled)
+            return;
+
+        if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput())
+            return;
+
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f))
+            return;
+
+        Vector3 move = new Vector3(horizontal, vertical, 0f);
+        if (move.sqrMagnitude > 1f)
+            move.Normalize();
+
+        transform.position = ClampToBoundary(
+            transform.position + move * (GetKeyboardMoveSpeed() * Time.deltaTime));
+    }
+
+    private float GetKeyboardMoveSpeed()
+    {
+        float zoomReference = Mathf.Max(0.001f, _keyboardZoomReference);
+        return _keyboardMoveSpeed * (_camera.orthographicSize / zoomReference);
     }
 
     private void HandleInput()
     {
         if (!_isDragEnabled) return;
+        if (PointerInput.IsMultiTouch)
+        {
+            _isDragging = false;
+            return;
+        }
+
         if (IsContinuousPlacementInProgress())
         {
             _isDragging = false;
             return;
         }
 
-        // PC/모바일 통합 입력 감지
-        bool inputBegin = Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
-        bool inputMove = Input.GetMouseButton(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved);
-        bool inputEnd = Input.GetMouseButtonUp(0) || (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled));
+        Vector3 currentInputPos = PointerInput.PrimaryScreenPosition;
 
-        Vector3 currentInputPos = Input.touchCount > 0 ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
-
-        if (inputBegin)
+        if (PointerInput.GetPrimaryPointerDown())
         {
-            if (IsPointerOverUI()) return;
+            if (PointerInput.IsPointerOverUi()) return;
             _dragOrigin = _camera.ScreenToWorldPoint(currentInputPos);
             _isDragging = true;
         }
 
-        if (_isDragging && inputMove)
+        if (_isDragging && PointerInput.GetPrimaryPointerHeld())
         {
             Vector3 currentWorldPos = _camera.ScreenToWorldPoint(currentInputPos);
             Vector3 direction = _dragOrigin - currentWorldPos;
 
             transform.position = ClampToBoundary(transform.position + direction * _dragSpeed);
-            _dragOrigin = _camera.ScreenToWorldPoint(currentInputPos); // 드래그 원점 실시간 갱신으로 부드럽게 이동
+            _dragOrigin = _camera.ScreenToWorldPoint(currentInputPos);
         }
 
-        if (inputEnd) _isDragging = false;
+        if (PointerInput.GetPrimaryPointerUp())
+            _isDragging = false;
     }
 
     private bool IsContinuousPlacementInProgress()
@@ -135,17 +171,44 @@ public class MainCameraController : MonoBehaviour
         return _mainRunner.PlacementHandler.IsPointerPlacementActive;
     }
 
-    private void HandleZoom()
+    private void HandleScrollZoom()
     {
         float scroll = Input.mouseScrollDelta.y;
-        if (Mathf.Abs(scroll) < 0.01f || IsPointerOverUI() || !IsMouseInViewport()) return;
+        if (Mathf.Abs(scroll) < 0.01f || PointerInput.IsPointerOverUi()) return;
+        if (!PointerInput.IsScreenPositionInViewport(_camera, PointerInput.PrimaryScreenPosition)) return;
 
-        Vector3 mouseBefore = _camera.ScreenToWorldPoint(Input.mousePosition);
+        ApplyZoomAtScreenPoint(scroll * _zoomSpeed, PointerInput.PrimaryScreenPosition);
+    }
 
-        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - (scroll * _zoomSpeed), _minZoom, _maxZoom);
+    private void HandlePinchZoom()
+    {
+        if (Input.touchCount < 2 || PointerInput.IsPointerOverUi())
+            return;
 
-        Vector3 mouseAfter = _camera.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 offset = mouseBefore - mouseAfter;
+        Touch touch0 = Input.GetTouch(0);
+        Touch touch1 = Input.GetTouch(1);
+
+        Vector2 prevPos0 = touch0.position - touch0.deltaPosition;
+        Vector2 prevPos1 = touch1.position - touch1.deltaPosition;
+        float previousDistance = (prevPos0 - prevPos1).magnitude;
+        float currentDistance = (touch0.position - touch1.position).magnitude;
+        float pinchDelta = currentDistance - previousDistance;
+
+        if (Mathf.Abs(pinchDelta) < 0.01f)
+            return;
+
+        Vector2 pinchCenter = (touch0.position + touch1.position) * 0.5f;
+        ApplyZoomAtScreenPoint(-pinchDelta * _pinchZoomSpeed, pinchCenter);
+    }
+
+    private void ApplyZoomAtScreenPoint(float orthoSizeDelta, Vector2 screenPoint)
+    {
+        Vector3 worldBefore = _camera.ScreenToWorldPoint(screenPoint);
+
+        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - orthoSizeDelta, _minZoom, _maxZoom);
+
+        Vector3 worldAfter = _camera.ScreenToWorldPoint(screenPoint);
+        Vector3 offset = worldBefore - worldAfter;
 
         transform.position = ClampToBoundary(transform.position + offset);
     }
@@ -155,20 +218,22 @@ public class MainCameraController : MonoBehaviour
         if (_boundaryCollider == null) return targetPos;
 
         Bounds bounds = _boundaryCollider.bounds;
+        float halfHeight = _camera.orthographicSize;
+        float halfWidth = halfHeight * _camera.aspect;
 
-        // 유저 의도: 카메라 중심점만 Collider 영역 내로 제한
-        targetPos.x = Mathf.Clamp(targetPos.x, bounds.min.x, bounds.max.x);
-        targetPos.y = Mathf.Clamp(targetPos.y, bounds.min.y, bounds.max.y);
+        float minX = bounds.min.x + halfWidth;
+        float maxX = bounds.max.x - halfWidth;
+        float minY = bounds.min.y + halfHeight;
+        float maxY = bounds.max.y - halfHeight;
+
+        float centerX = bounds.center.x;
+        float centerY = bounds.center.y;
+
+        targetPos.x = minX > maxX ? centerX : Mathf.Clamp(targetPos.x, minX, maxX);
+        targetPos.y = minY > maxY ? centerY : Mathf.Clamp(targetPos.y, minY, maxY);
         targetPos.z = transform.position.z;
 
         return targetPos;
     }
 
-    private bool IsPointerOverUI() => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-
-    private bool IsMouseInViewport()
-    {
-        Vector3 viewPos = _camera.ScreenToViewportPoint(Input.mousePosition);
-        return viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1;
-    }
 }
