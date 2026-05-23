@@ -73,5 +73,14 @@ public class MainBuildingBtn : MonoBehaviour
         _isSelected = isFocused;
         if (_focusedImage != null) _focusedImage.gameObject.SetActive(isFocused);
     }
+
+    public void RefreshUnlockState(bool isUnlocked, MainRunner runner)
+    {
+        _isUnlocked = isUnlocked;
+        if (_deactivatedImage != null)
+            _deactivatedImage.gameObject.SetActive(!isUnlocked);
+
+        RefreshPlacedCount(runner);
+    }
 }
 

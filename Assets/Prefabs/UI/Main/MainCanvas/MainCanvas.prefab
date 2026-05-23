@@ -947,6 +947,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7477119635691914075}
   - component: {fileID: 5543390825650741669}
+  - component: {fileID: 8827364519283746101}
   m_Layer: 5
   m_Name: BuildingControllContainer
   m_TagString: Untagged
@@ -994,6 +995,21 @@ MonoBehaviour:
   extraPadding: 0
   playOnEnable: 0
   isOpen: 1
+--- !u!114 &8827364519283746101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303883378260087303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8572296f6ca2548bd37b8fc282802d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _edge: 1
+  _extraPadding: 8
+  _onlyOnMobilePlatform: 1
 --- !u!1 &390975705115111028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1117,6 +1133,7 @@ GameObject:
   - component: {fileID: 6672127250214656058}
   - component: {fileID: 633965836522010908}
   - component: {fileID: 6369852330402246540}
+  - component: {fileID: 8827364519283746102}
   m_Layer: 5
   m_Name: QuickMoveContainer
   m_TagString: Untagged
@@ -1242,6 +1259,21 @@ MonoBehaviour:
   extraPadding: 0
   playOnEnable: 0
   isOpen: 1
+--- !u!114 &8827364519283746102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532382176933728163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8572296f6ca2548bd37b8fc282802d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _edge: 2
+  _extraPadding: 4
+  _onlyOnMobilePlatform: 1
 --- !u!1 &565602057836214827
 GameObject:
   m_ObjectHideFlags: 0
@@ -7595,6 +7627,7 @@ GameObject:
   - component: {fileID: 5426290598656630551}
   - component: {fileID: 509187851088354047}
   - component: {fileID: 2851215756797902493}
+  - component: {fileID: 8827364519283746103}
   m_Layer: 5
   m_Name: TopInfoContainer
   m_TagString: Untagged
@@ -7717,6 +7750,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _employeeTopInfoPanel: {fileID: 4312771540451990778}
   _dateTopInfoPanel: {fileID: 5746231852346789846}
+--- !u!114 &8827364519283746103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3802275159702192022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8572296f6ca2548bd37b8fc282802d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _edge: 0
+  _extraPadding: 4
+  _onlyOnMobilePlatform: 1
 --- !u!1 &3818838340944989374
 GameObject:
   m_ObjectHideFlags: 0
@@ -14133,8 +14181,6 @@ MonoBehaviour:
   _blueprintSavedEntryPrefab: {fileID: 412398129040250562, guid: 217efe202fa5fad4aacf64f8dc2d67d1, type: 3}
   _autoEmployeePlacementSwitch: {fileID: 5257570787913362637}
   _removalModeSwitch: {fileID: 6085614814687480489}
-  _buildingControlContainer: {fileID: 0}
-  _buildModeCancelBtn: {fileID: 0}
   _storageCanvasPrefab: {fileID: 3873413108417295653, guid: 30056fd530b20ab46b220efa4515fd26, type: 3}
   _orderCanvasPrefab: {fileID: 6298053347902593458, guid: 4922c1492c6bfd74e905d25940c2ccd2, type: 3}
   _marketCanvasPrefab: {fileID: 4348083378959238153, guid: d79de820966302849b1946f890c89388, type: 3}

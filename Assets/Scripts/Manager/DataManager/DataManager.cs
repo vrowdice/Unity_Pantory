@@ -49,6 +49,21 @@ public class DataManager : Singleton<DataManager>
     public BuildingDataHandler Building { get; private set; }
     public EffectDataHandler Effect { get; private set; }
     public ResearchDataHandler Research { get; private set; }
+
+    /// <summary>연구 완료 시 발행됩니다. 인자는 완료된 연구 ID입니다.</summary>
+    public event Action<string> OnResearchCompleted
+    {
+        add
+        {
+            if (Research != null)
+                Research.OnResearchCompleted += value;
+        }
+        remove
+        {
+            if (Research != null)
+                Research.OnResearchCompleted -= value;
+        }
+    }
     public OrderDataHandler Order { get; private set; }
     public NewsDataHandler News { get; private set; }
     public PolicyDataHandler Policy { get; private set; }
