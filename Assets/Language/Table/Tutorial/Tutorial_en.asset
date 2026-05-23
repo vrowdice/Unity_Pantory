@@ -49,8 +49,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2777508364288
-    m_Localized: Use these icons to jump between Storage, Orders, Market, Staff, Research,
-      News, and Finance. You can also press F1 through F9 for the same shortcuts.
+    m_Localized: Use these icons to jump between Storage, Orders, Market, Staff,
+      Research, News, and Finance. You can also press F1 through F9 for the same
+      shortcuts.
     m_Metadata:
       m_Items: []
   - m_Id: 5943566155776
@@ -60,9 +61,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7203816095744
-    m_Localized: Typical flow is Unload → roads → production buildings → roads →
-      Load. Unload pulls raw materials in, factories process them, and Load sends
-      finished goods toward storage.
+    m_Localized: "Typical flow is Unload \u2192 roads \u2192 production buildings
+      \u2192 roads \u2192 Load. Unload pulls raw materials in, factories process
+      them, and Load sends finished goods toward storage."
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
@@ -90,9 +91,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: This panel toggles remove mode, rotates the selected building, and
-      can auto-assign workers when you place production buildings. Removing a building
-      clears its worker assignments—recheck staffing after big layout changes.
+    m_Localized: "This panel toggles remove mode, rotates the selected building,
+      and can auto-assign workers when you place production buildings. Removing a
+      building clears its worker assignments\u2014recheck staffing after big layout
+      changes."
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
@@ -111,8 +113,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17928651423744
-    m_Localized: Filter by client type—Market, Company, then Government. Orders usually
-      grow larger in that order, and your company Wealth can scale them further.
+    m_Localized: "Filter by client type\u2014Market, Company, then Government. Orders
+      usually grow larger in that order, and your company Wealth can scale them further."
     m_Metadata:
       m_Items: []
   - m_Id: 18539786682368
@@ -126,8 +128,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19061579071488
-    m_Localized: New contracts appear here. Click one to accept it, then deliver the
-      listed resources before time runs out.
+    m_Localized: New contracts appear here. Click one to accept it, then deliver
+      the listed resources before time runs out.
     m_Metadata:
       m_Items: []
   - m_Id: 19716532224000
@@ -184,9 +186,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
-    m_Localized: Four roles—Workers and Technicians staff buildings on the grid,
-      Researchers generate Research Points (RP), and Managers keep the workforce
-      covered so satisfaction does not drop.
+    m_Localized: "Four roles\u2014Workers and Technicians staff buildings on the
+      grid, Researchers generate Research Points (RP), and Managers keep the workforce
+      covered so satisfaction does not drop."
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768
@@ -235,9 +237,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000000
-    m_Localized: This panel tracks the Labor Union chapter. While it runs, overall workforce
-      satisfaction drives how much Union Cohesion rises or falls each day, and the
-      union may issue demands you can fulfill for extra cohesion.
+    m_Localized: This panel tracks the Labor Union chapter. While it runs, overall
+      workforce satisfaction drives how much Union Cohesion rises or falls each day,
+      and the union may issue demands you can fulfill for extra cohesion.
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000001
@@ -246,15 +248,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000002
-    m_Localized: These bars preview tomorrow's daily cohesion change from weighted workforce
-      satisfaction. The left bar fills left to right for gains above the baseline;
-      the right bar fills right to left for losses below it. The label shows the
-      exact percent per day.
+    m_Localized: These bars preview tomorrow's daily cohesion change from weighted
+      workforce satisfaction. The left bar fills left to right for gains above the
+      baseline; the right bar fills right to left for losses below it. The label
+      shows the exact percent per day.
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000003
-    m_Localized: Union Cohesion is the main score for this event, from 0% to 100%. It
-      shifts automatically each day from the satisfaction preview above. Reaching
+    m_Localized: Union Cohesion is the main score for this event, from 0% to 100%.
+      It shifts automatically each day from the satisfaction preview above. Reaching
       100% completes the chapter.
     m_Metadata:
       m_Items: []
@@ -265,9 +267,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000005
-    m_Localized: Active union requests are listed here. Each has one requirement—credits,
-      resources, or a policy—and a deadline in days. When the requirement is met,
-      the row highlights; tap it to complete the request and claim the cohesion reward.
+    m_Localized: "Active union requests are listed here. Each has one requirement\u2014credits,
+      resources, or a policy\u2014and a deadline in days. When the requirement is
+      met, the row highlights; tap it to complete the request and claim the cohesion
+      reward."
     m_Metadata:
       m_Items: []
   - m_Id: 2578100000000000
@@ -276,28 +279,31 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578100000000001
-    m_Localized: Each policy can be switched on or off. Some cost credits or RP to
-      activate and may run for a limited number of months—read the details before committing.
+    m_Localized: "Each policy can be switched on or off. Some cost credits or RP
+      to activate and may run for a limited number of months\u2014read the details
+      before committing."
     m_Metadata:
       m_Items: []
   - m_Id: 2578100000000002
-    m_Localized: Active policies and their effects are summarized here. Use this list
-      to see which bonuses and penalties are currently shaping your factory.
+    m_Localized: Active policies and their effects are summarized here. Use this
+      list to see which bonuses and penalties are currently shaping your factory.
     m_Metadata:
       m_Items: []
   - m_Id: 2578200000000000
-    m_Localized: This is the News panel. Headlines appear as events unfold—market shifts,
-      main-event chapters, and other story beats that can change how you should play.
+    m_Localized: "This is the News panel. Headlines appear as events unfold\u2014market
+      shifts, main-event chapters, and other story beats that can change how you
+      should play."
     m_Metadata:
       m_Items: []
   - m_Id: 2578200000000001
-    m_Localized: Scroll through active stories here. New articles are added when triggers
-      fire; older items drop off as they expire.
+    m_Localized: Scroll through active stories here. New articles are added when
+      triggers fire; older items drop off as they expire.
     m_Metadata:
       m_Items: []
   - m_Id: 2578200000000002
-    m_Localized: Open a headline to read the full article. Many stories hint at price
-      moves, union pressure, or research opportunities—check back after big changes.
+    m_Localized: "Open a headline to read the full article. Many stories hint at
+      price moves, union pressure, or research opportunities\u2014check back after
+      big changes."
     m_Metadata:
       m_Items: []
   references:

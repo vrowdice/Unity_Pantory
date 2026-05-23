@@ -1240,7 +1240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tutorialPanelInfo:
-  - focusGameObject: {fileID: 3129970334443037248}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []

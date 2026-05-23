@@ -13350,8 +13350,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
-    m_Right: 10
+    m_Left: 5
+    m_Right: 5
     m_Top: 5
     m_Bottom: 5
   m_ChildAlignment: 4
@@ -16824,7 +16824,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 190, y: 0}
+  m_SizeDelta: {x: 180, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5419457158825934666
 MonoBehaviour:
@@ -17652,7 +17652,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 0}
+  m_SizeDelta: {x: 340, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2713263077062992976
 MonoBehaviour:
@@ -17692,6 +17692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e600bc93738844db9455e5c9aada70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playPauseBtnPrefab: {fileID: 3587097561290709413, guid: a8b9c0d1e2f304152637485960f1a2b3, type: 3}
   _btnSpeedGenList:
   - 1
   - 2

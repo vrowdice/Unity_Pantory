@@ -91,8 +91,6 @@ public class BlueprintLayoutDataHandler
             dst.rotation = src.rotation;
             dst.selectedResourceId = src.selectedResourceId;
             dst.workProgress = src.workProgress;
-            dst.assignedWorkers = src.assignedWorkers;
-            dst.assignedTechnicians = src.assignedTechnicians;
             dst.inputBuffer = ClonePacketList(src.inputBuffer);
             dst.outputBuffer = ClonePacketList(src.outputBuffer);
             clone.Add(dst);

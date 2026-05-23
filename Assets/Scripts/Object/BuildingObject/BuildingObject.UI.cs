@@ -44,6 +44,9 @@ public partial class BuildingObject
         if (_selectedResource == null)
             return;
 
+        if (!ResourceFlowFx.IsWorldPointVisible(transform.position))
+            return;
+
         Dictionary<string, int> counts = _selectedResource.GetBatchOutputCounts();
         if (counts.Count == 0)
             return;

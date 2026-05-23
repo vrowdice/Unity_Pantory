@@ -51,6 +51,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
         _buffer.Enqueue(packet);
         packet.BlockRoadForwardThisTick = true;
         RefreshHeldResourceIcons();
+        ResourceFlowFx.TryPulseHeldIconContainer(_heldIconContainer, transform.position);
         return true;
     }
 
@@ -115,6 +116,9 @@ public class RoadObject : MonoBehaviour, IResourceNode
     private void RefreshHeldResourceIcons()
     {
         ClearHeldIconContainer();
+
+        if (!ResourceFlowFx.IsWorldPointVisible(transform.position))
+            return;
 
         GameManager gameManager = GameManager.Instance;
         Transform worldCanvas = gameManager.GetWorldCanvas();

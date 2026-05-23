@@ -48,6 +48,7 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
             targetLane.Enqueue(packet);
             packet.BlockRoadForwardThisTick = true;
             RefreshHeldResourceIcons();
+            ResourceFlowFx.TryPulseHeldIconContainer(_heldIconContainer, transform.position);
             return true;
         }
 
@@ -74,6 +75,7 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 
         packet.BlockRoadForwardThisTick = true;
         RefreshHeldResourceIcons();
+        ResourceFlowFx.TryPulseHeldIconContainer(_heldIconContainer, transform.position);
         return true;
     }
 
@@ -168,23 +170,24 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         OutputGridPositions.Add(_gridPosition + new Vector2Int(-1, 0));
     }
 
-    private static bool TryForwardLane(Queue<ResourcePacket> lane, IResourceNode destination, FlowDirection outputDirection)
+    private bool TryForwardLaneAndRefresh(Queue<ResourcePacket> lane, IResourceNode destination, FlowDirection outputDirection)
     {
         if (lane.Count == 0) return false;
         ResourcePacket packet = lane.Peek();
         if (packet == null || packet.BlockRoadForwardThisTick) return false;
         if (packet.TravelDirection != FlowDirection.None && packet.TravelDirection != outputDirection) return false;
+
         packet.TravelDirection = outputDirection;
         if (!destination.TryPush(packet)) return false;
-        lane.Dequeue();
-        return true;
-    }
 
-    private bool TryForwardLaneAndRefresh(Queue<ResourcePacket> lane, IResourceNode destination, FlowDirection outputDirection)
-    {
-        bool moved = TryForwardLane(lane, destination, outputDirection);
-        if (moved) RefreshHeldResourceIcons();
-        return moved;
+        lane.Dequeue();
+
+        bool destIsRoad = destination is RoadObject || destination is DualLaneRoadObject;
+        if (!destIsRoad)
+            ResourceFlowFx.TryPlayNodeTransit(packet.Id, this, destination);
+
+        RefreshHeldResourceIcons();
+        return true;
     }
 
     private Dictionary<string, int> BuildHeldResourceCounts()
@@ -208,6 +211,9 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
     private void RefreshHeldResourceIcons()
     {
         ClearHeldIconContainer();
+
+        if (!ResourceFlowFx.IsWorldPointVisible(transform.position))
+            return;
 
         GameManager gameManager = GameManager.Instance;
         Transform worldCanvas = gameManager.GetWorldCanvas();

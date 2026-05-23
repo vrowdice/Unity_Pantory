@@ -430,9 +430,11 @@ public class MainBuildingGridHandler
         Vector3 targetLocalScale = obj.transform.localScale;
         obj.transform.localScale = Vector3.zero;
         building.Init(_mainRunner, data, origin, rotatedSize, rotation);
+        saveData.assignedWorkers = 0;
+        saveData.assignedTechnicians = 0;
         building.ImportSaveData(saveData, _dataManager);
 
-        if (autoEmployeeAssignment && building.AssignedWorkers + building.AssignedTechnicians <= 0)
+        if (autoEmployeeAssignment)
             building.TryAutoAssignEmployeesToFill();
 
         string key = BuildingGridKey(origin);

@@ -26,6 +26,7 @@ public partial class BuildingObject
         int pull = u.pullPerHour;
         if (!dataManager.Resource.ModifyResourceCount(_selectedResource.id, -pull)) return false;
         _outputBuffer.Enqueue(new ResourcePacket(_selectedResource.id, pull));
+        ResourceFlowFx.TryPlayFromWarehouse(_selectedResource, transform.position);
         return true;
     }
 }

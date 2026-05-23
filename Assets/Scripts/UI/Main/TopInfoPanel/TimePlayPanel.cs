@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TimePlayPanel : MonoBehaviour
 {
+    [SerializeField] private GameObject _playPauseBtnPrefab;
     [SerializeField] private List<float> _btnSpeedGenList;
     [SerializeField] private Transform _speedBtnContentTransform;
     [SerializeField] private GameObject _speedBtnPrefab;
@@ -11,6 +11,7 @@ public class TimePlayPanel : MonoBehaviour
     private DataManager _dataManager;
     private GameManager _gameManager;
     private bool _isTimePaused = true;
+    private PlayPauseBtn _playPauseBtn;
     private List<SpeedBtn> _speedBtnList = new List<SpeedBtn>();
     private SpeedBtn _lastUsedSpeedBtn;
 
@@ -18,7 +19,9 @@ public class TimePlayPanel : MonoBehaviour
     {
         _dataManager = dataManager;
         _gameManager = gameManager;
+        BuildPlayPauseButton();
         BuildSpeedButtons();
+        RefreshUiState();
     }
 
     private void Update()
@@ -28,11 +31,7 @@ public class TimePlayPanel : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            SpeedBtn targetBtn = _lastUsedSpeedBtn ?? (_speedBtnList.Count > 0 ? _speedBtnList[0] : null);
-            if (targetBtn != null)
-            {
-                targetBtn.OnClick();
-            }
+            TogglePlayPause();
         }
 
         for (int i = 0; i < _speedBtnList.Count && i < 9; i++)
@@ -42,9 +41,23 @@ public class TimePlayPanel : MonoBehaviour
                 continue;
             }
 
-            _speedBtnList[i].OnClick();
+            OnSpeedBtnClicked(_speedBtnList[i]);
             break;
         }
+    }
+
+    private void BuildPlayPauseButton()
+    {
+        if (_gameManager == null || _playPauseBtnPrefab == null || _speedBtnContentTransform == null)
+        {
+            return;
+        }
+
+        GameObject go = _gameManager.PoolingManager.GetPooledObject(_playPauseBtnPrefab);
+        go.transform.SetParent(_speedBtnContentTransform, false);
+        go.transform.SetAsFirstSibling();
+        _playPauseBtn = go.GetComponent<PlayPauseBtn>();
+        _playPauseBtn.Init(TogglePlayPause);
     }
 
     private void BuildSpeedButtons()
@@ -66,24 +79,63 @@ public class TimePlayPanel : MonoBehaviour
         }
     }
 
-    private void OnSpeedBtnClicked(SpeedBtn btn)
+    private void TogglePlayPause()
     {
-        foreach (SpeedBtn speedBtn in _speedBtnList)
-            speedBtn.SetSigPanelVisible(false);
-
-        if(_lastUsedSpeedBtn == btn && !_isTimePaused)
+        if (_isTimePaused)
         {
-            _isTimePaused = true;
-            _dataManager.Time.SetTimeSpeed(0);
-            _lastUsedSpeedBtn = btn;
+            Play();
+        }
+        else
+        {
+            Pause();
+        }
+    }
+
+    private void Play()
+    {
+        SpeedBtn targetBtn = _lastUsedSpeedBtn ?? (_speedBtnList.Count > 0 ? _speedBtnList[0] : null);
+        if (targetBtn == null || _dataManager == null)
+        {
             return;
         }
 
         _isTimePaused = false;
-        _dataManager.Time.SetTimeSpeed(btn.Speed);
-        btn.SetSigPanelVisible(true);
+        _lastUsedSpeedBtn = targetBtn;
+        _dataManager.Time.SetTimeSpeed(targetBtn.Speed);
+        RefreshUiState();
+    }
 
+    private void Pause()
+    {
+        if (_dataManager == null)
+        {
+            return;
+        }
+
+        _isTimePaused = true;
+        _dataManager.Time.SetTimeSpeed(0);
+        RefreshUiState();
+    }
+
+    private void OnSpeedBtnClicked(SpeedBtn btn)
+    {
         _lastUsedSpeedBtn = btn;
+        _isTimePaused = false;
+        _dataManager.Time.SetTimeSpeed(btn.Speed);
+        RefreshUiState();
+    }
+
+    private void RefreshUiState()
+    {
+        if (_playPauseBtn != null)
+        {
+            _playPauseBtn.SetPausedVisual(_isTimePaused);
+        }
+
+        foreach (SpeedBtn speedBtn in _speedBtnList)
+        {
+            speedBtn.SetSigPanelVisible(!_isTimePaused && speedBtn == _lastUsedSpeedBtn);
+        }
     }
 
     private bool IsNumberKeyDown(int number)

@@ -494,8 +494,6 @@ public class MainBuildingPlacementHandler
         dst.originY = origin.y;
         dst.rotation = src.rotation;
         dst.selectedResourceId = src.selectedResourceId;
-        dst.assignedWorkers = src.assignedWorkers;
-        dst.assignedTechnicians = src.assignedTechnicians;
         return dst;
     }
 

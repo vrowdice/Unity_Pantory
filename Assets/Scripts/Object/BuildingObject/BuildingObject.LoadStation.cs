@@ -28,6 +28,7 @@ public partial class BuildingObject
         int move = Mathf.Min(Mathf.Max(1, l.pushPerHour), p.Amount);
         if (!dataManager.Resource.ModifyResourceCount(p.Id, move)) return false;
         ConsumeFromInputFront(move);
+        ResourceFlowFx.TryPlayToWarehouse(p.Id, transform.position);
         return true;
     }
 

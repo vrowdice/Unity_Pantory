@@ -231,6 +231,9 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         ResourcePacket packet = _outputBuffer.Peek();
         packet.TravelDirection = outputDirection;
         if (!destination.TryPush(packet)) return false;
+        bool destIsRoad = destination is RoadObject || destination is DualLaneRoadObject;
+        if (!(_buildingData is UnloadStationData) && !destIsRoad)
+            ResourceFlowFx.TryPlayNodeTransit(packet.Id, this, destination);
         _outputBuffer.Dequeue();
         return true;
     }

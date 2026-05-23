@@ -75,4 +75,11 @@ crashlytics-build.properties
 .env
 .env.local
 Api.env
+Api.env.meta
+
+# Addressables platform build output (auto-generated, empty folders)
+/[Aa]ssets/[Aa]ddressableAssetsData/[Aa]ndroid/
+/[Aa]ssets/[Aa]ddressableAssetsData/[Aa]ndroid.meta
+/[Aa]ssets/[Aa]ddressableAssetsData/[Ww]indows/
+/[Aa]ssets/[Aa]ddressableAssetsData/[Ww]indows.meta
 출처: https://i-believe-in-me.tistory.com/148 [Do you believe in you?:티스토리]
