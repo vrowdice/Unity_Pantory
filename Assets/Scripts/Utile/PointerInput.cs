@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,6 +7,8 @@ using UnityEngine.EventSystems;
 /// </summary>
 public static class PointerInput
 {
+    private static readonly List<RaycastResult> UiRaycastResults = new List<RaycastResult>();
+
     public static bool IsMultiTouch => Input.touchCount >= 2;
 
     public static Vector2 PrimaryScreenPosition
@@ -80,9 +83,24 @@ public static class PointerInput
             return false;
 
         if (Input.touchCount > 0)
-            return EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+        {
+            Touch touch = Input.GetTouch(0);
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                return true;
+
+            return RaycastUiAtScreenPosition(touch.position);
+        }
 
         return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private static bool RaycastUiAtScreenPosition(Vector2 screenPosition)
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = screenPosition;
+        UiRaycastResults.Clear();
+        EventSystem.current.RaycastAll(eventData, UiRaycastResults);
+        return UiRaycastResults.Count > 0;
     }
 
     public static bool IsScreenPositionInViewport(Camera camera, Vector2 screenPosition)

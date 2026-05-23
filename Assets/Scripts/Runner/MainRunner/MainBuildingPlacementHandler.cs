@@ -160,6 +160,9 @@ public class MainBuildingPlacementHandler
         if (UIManager.Instance != null && UIManager.Instance.IsTypingInTextInput())
             return;
 
+        if (PointerInput.IsPointerOverUi())
+            return;
+
         if (_placementMode) UpdatePlacement(cam);
         else if (_blueprintPlacementMode) UpdateBlueprintPlacement(cam);
         else if (_removalMode) UpdateRemoval(cam);
