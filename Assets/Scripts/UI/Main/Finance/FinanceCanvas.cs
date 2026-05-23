@@ -25,6 +25,8 @@ public class FinanceCanvas : MainCanvasPanelBase
         _dataManager.Time.OnDayChanged += UpdateDailyUI;
         _dataManager.Time.OnMonthChanged -= UpdateMonthlyUI;
         _dataManager.Time.OnMonthChanged += UpdateMonthlyUI;
+        _dataManager.Finances.OnBankruptcyCountdownChanged -= HandleBankruptcyCountdownChanged;
+        _dataManager.Finances.OnBankruptcyCountdownChanged += HandleBankruptcyCountdownChanged;
 
         UpdateDailyUI();
         UpdateMonthlyUI();
@@ -36,7 +38,16 @@ public class FinanceCanvas : MainCanvasPanelBase
         {
             _dataManager.Time.OnDayChanged -= UpdateDailyUI;
             _dataManager.Time.OnMonthChanged -= UpdateMonthlyUI;
+            if (_dataManager.Finances != null)
+            {
+                _dataManager.Finances.OnBankruptcyCountdownChanged -= HandleBankruptcyCountdownChanged;
+            }
         }
+    }
+
+    private void HandleBankruptcyCountdownChanged(int monthsRemaining)
+    {
+        UpdateTexts();
     }
 
     private void UpdateDailyUI()
@@ -54,7 +65,7 @@ public class FinanceCanvas : MainCanvasPanelBase
         FinancesDataHandler finances = _dataManager.Finances;
 
         _creditText.text = ReplaceUtils.FormatNumberWithCommas(finances.Credit);
-        _wealthText.text = ReplaceUtils.FormatNumberWithCommas(finances.Wealth);
+        _wealthText.text = BuildWealthDisplayText(finances);
 
         long lastMonthCredit = finances.MonthlyCreditHistory.LastOrDefault();
         long currentProfit = finances.Credit - lastMonthCredit;
@@ -73,6 +84,17 @@ public class FinanceCanvas : MainCanvasPanelBase
 
         _monthlyGrowthRateText.text = $"{growthRate:F2}%";
         _monthlyGrowthRateText.color = _visualManager.GetDeltaColor(growthRate);
+    }
+
+    private static string BuildWealthDisplayText(FinancesDataHandler finances)
+    {
+        string wealthText = ReplaceUtils.FormatNumberWithCommas(finances.Wealth);
+        if (!finances.IsBankruptcyCountdownActive)
+        {
+            return wealthText;
+        }
+
+        return $"{wealthText}\n<color=#FF6B6B>Bankruptcy: {finances.BankruptcyMonthsRemaining}M</color>";
     }
 
     private void UpdateCharts()

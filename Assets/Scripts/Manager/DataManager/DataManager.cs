@@ -77,6 +77,9 @@ public class DataManager : Singleton<DataManager>
 
     private readonly List<IDataHandlerEvents> _eventHandlers = new List<IDataHandlerEvents>();
     private readonly List<ITimeChangeHandler> _dayHandlers = new List<ITimeChangeHandler>();
+    private readonly List<IMonthChangeHandler> _monthHandlers = new List<IMonthChangeHandler>();
+    private readonly List<IGameSaveHandler> _saveHandlers = new List<IGameSaveHandler>();
+    private readonly List<ICrossHandlerEvents> _crossHandlerEvents = new List<ICrossHandlerEvents>();
 
     private bool _servicesInitialized;
 
@@ -155,8 +158,40 @@ public class DataManager : Singleton<DataManager>
         _dayHandlers.Add(Order);
         _dayHandlers.Add(MainEvent);
 
+        _monthHandlers.Clear();
+        _monthHandlers.Add(Finances);
+        _monthHandlers.Add(Policy);
+
+        _saveHandlers.Clear();
+        _saveHandlers.Add(Finances);
+        _saveHandlers.Add(Research);
+        _saveHandlers.Add(Order);
+        _saveHandlers.Add(News);
+        _saveHandlers.Add(MainEvent);
+        _saveHandlers.Add(UnionRequest);
+        _saveHandlers.Add(Effect);
+        _saveHandlers.Add(Policy);
+        _saveHandlers.Add(Player);
+
+        _crossHandlerEvents.Clear();
+        _crossHandlerEvents.Add(MainEvent);
+
         Research.ReapplyEffectsFromCompletedResearch();
         Policy.ReapplyEffectsFromActivePolicies();
+    }
+
+    /// <summary>
+    /// Initial 데이터 기준으로 모든 핸들러 상태를 재생성합니다. 타이틀 새 게임 시 호출.
+    /// </summary>
+    public void ResetToNewGame()
+    {
+        if (Instance != this)
+        {
+            return;
+        }
+
+        InitializeServices();
+        ClearAllEventSubscriptions();
     }
 
 #if UNITY_EDITOR
@@ -225,7 +260,8 @@ public class DataManager : Singleton<DataManager>
         Time.OnMonthChanged -= HandleMonthChanged;
         Time.OnMonthChanged += HandleMonthChanged;
 
-        MainEvent?.SubscribeCrossHandlerEvents();
+        foreach (ICrossHandlerEvents handler in _crossHandlerEvents)
+            handler.SubscribeCrossHandlerEvents();
     }
 
     private void HandleDayChanged()
@@ -236,14 +272,12 @@ public class DataManager : Singleton<DataManager>
 
     private void HandleMonthChanged()
     {
-        Finances.HandleMonthChanged();
-        Policy?.HandleMonthChanged();
+        foreach (IMonthChangeHandler handler in _monthHandlers)
+            handler.HandleMonthChanged();
 
         SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
         if (saveLoadManager != null)
-        {
             saveLoadManager.PerformAutoSave(this);
-        }
     }
 
     public void CaptureGameStateTo(GameSaveData saveData)
@@ -288,15 +322,8 @@ public class DataManager : Singleton<DataManager>
             }
         }
 
-        Finances?.CaptureTo(saveData);
-        Research?.CaptureTo(saveData);
-        Policy?.CaptureTo(saveData);
-        Order?.CaptureTo(saveData);
-        News?.CaptureTo(saveData);
-        MainEvent?.CaptureTo(saveData);
-        UnionRequest?.CaptureTo(saveData);
-        Effect?.CaptureTo(saveData);
-        Player?.CaptureTo(saveData);
+        foreach (IGameSaveHandler handler in _saveHandlers)
+            handler.CaptureTo(saveData);
 
         MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
         if (mainRunner != null && mainRunner.GridHandler != null)
@@ -361,15 +388,8 @@ public class DataManager : Singleton<DataManager>
             }
         }
 
-        Finances?.ApplyFromSave(saveData);
-        Research?.ApplyFromSave(saveData);
-        Order?.ApplyFromSave(saveData);
-        News?.ApplyFromSave(saveData);
-        MainEvent?.ApplyFromSave(saveData);
-        UnionRequest?.ApplyFromSave(saveData);
-        Effect?.ApplyFromSave(saveData);
-        Policy?.ApplyFromSave(saveData);
-        Player?.ApplyFromSave(saveData);
+        foreach (IGameSaveHandler handler in _saveHandlers)
+            handler.ApplyFromSave(saveData);
 
         PlacedLayout?.SetFromSave(saveData.placedBuildings, saveData.placedRoads);
         BlueprintLayout?.SetFromSave(saveData.blueprintLayouts);

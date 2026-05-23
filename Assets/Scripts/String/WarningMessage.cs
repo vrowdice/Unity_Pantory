@@ -31,4 +31,7 @@ public static class WarningMessage
     public const string CategoryNameAlreadyExists = "CategoryNameAlreadyExists";
     public const string BuildingPlacedCountLimitReached = "BuildingPlacedCountLimitReached";
     public const string PolicyChangeLocked = "PolicyChangeLocked";
+    public const string BankruptcyCountdownStarted = "BankruptcyCountdownStarted";
+    public const string BankruptcyCountdownTick = "BankruptcyCountdownTick";
+    public const string BankruptcyGameOver = "BankruptcyGameOver";
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 노조 요구(UnionRequestData) 템플릿과 연합 위기 중 활성 요구 인스턴스를 관리합니다.
 /// </summary>
-public class UnionRequestDataHandler : IDataHandlerEvents
+public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
 {
     private readonly DataManager _dataManager;
     private readonly InitialUnionMainEventData _initialUnionMainEventData;

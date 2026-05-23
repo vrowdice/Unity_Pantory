@@ -281,7 +281,8 @@ public partial class MainCanvas
                     .Append(b.buildingDataId).Append(':')
                     .Append(b.originX).Append(':')
                     .Append(b.originY).Append(':')
-                    .Append(b.rotation).Append(';');
+                    .Append(b.rotation).Append(':')
+                    .Append(b.selectedResourceId ?? string.Empty).Append(';');
             }
         }
 

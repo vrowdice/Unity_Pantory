@@ -398,6 +398,59 @@ public class MainBuildingGridHandler
         return true;
     }
 
+    public bool TryPlaceBuildingFromBlueprintSave(PlacedBuildingSaveData saveData, bool autoEmployeeAssignment, out bool insufficientCredits)
+    {
+        insufficientCredits = false;
+        if (saveData == null || string.IsNullOrEmpty(saveData.buildingDataId))
+            return false;
+
+        BuildingData data = _dataManager.Building.GetBuildingData(saveData.buildingDataId);
+        if (data == null || data.buildingSprite == null)
+            return false;
+        if (!CanPlaceMoreInstances(data))
+            return false;
+
+        if (data.buildCost > 0 && _dataManager.Finances.Credit < data.buildCost)
+        {
+            insufficientCredits = true;
+            return false;
+        }
+
+        Vector2Int origin = new Vector2Int(saveData.originX, saveData.originY);
+        int rotation = saveData.rotation;
+        Vector2Int rotatedSize = GetRotatedSize(data.size, rotation);
+        if (!CanPlace(origin, rotatedSize))
+            return false;
+
+        GameObject obj = MonoBehaviour.Instantiate(_mainRunner.BuildingObjectPrefab, _buildingParent);
+        obj.name = $"Building_{data.id}_{origin.x}_{origin.y}";
+        obj.transform.position = GridToWorldPosition(origin, rotatedSize);
+
+        BuildingObject building = obj.GetComponent<BuildingObject>();
+        Vector3 targetLocalScale = obj.transform.localScale;
+        obj.transform.localScale = Vector3.zero;
+        building.Init(_mainRunner, data, origin, rotatedSize, rotation);
+        building.ImportSaveData(saveData, _dataManager);
+
+        if (autoEmployeeAssignment && building.AssignedWorkers + building.AssignedTechnicians <= 0)
+            building.TryAutoAssignEmployeesToFill();
+
+        string key = BuildingGridKey(origin);
+        RegisterBuildingOccupancy(origin, rotatedSize, key);
+        _buildingObjDict[key] = building;
+        if (data is RawMaterialFactoryData)
+            _rawResourceBuildingObjDict[key] = building;
+        _buildingOutputRoundRobinIndex[key] = 0;
+
+        building.PlayPlaceEntranceAnimation(targetLocalScale);
+        GameManager.Instance.MainCameraController.ShakeForConstruction();
+
+        ApplyPlacementFinances(data);
+
+        OnBuildingInstanceLayoutChanged?.Invoke();
+        return true;
+    }
+
     public bool TryPlaceBuilding(BuildingData data, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
     {
         placed = null;

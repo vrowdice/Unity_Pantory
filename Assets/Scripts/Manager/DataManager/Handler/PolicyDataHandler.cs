@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 정책(PolicyData) 목록과 활성 상태를 관리하는 핸들러.
 /// </summary>
-public class PolicyDataHandler : IDataHandlerEvents
+public class PolicyDataHandler : IDataHandlerEvents, IMonthChangeHandler, IGameSaveHandler
 {
     private const string PolicyEffectInstancePrefix = "FactoryPolicy:";
 

@@ -12,6 +12,7 @@ public class TitleCanvas : CanvasBase
 
     public void GoToMainScene()
     {
+        SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
         SceneLoadManager.LoadScene("Main");
     }
 

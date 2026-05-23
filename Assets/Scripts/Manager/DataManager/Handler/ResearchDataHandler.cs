@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 연구 데이터를 관리하고 연구력(RP) 생산, 연구 해금, 효과 적용을 담당하는 핸들러
 /// </summary>
-public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler
+public class ResearchDataHandler : IDataHandlerEvents, ITimeChangeHandler, IGameSaveHandler
 {
     private readonly DataManager _dataManager;
     private Dictionary<string, ResearchEntry> _researchEntryList = new();

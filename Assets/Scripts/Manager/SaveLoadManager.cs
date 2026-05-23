@@ -157,6 +157,21 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
         }
     }
 
+    /// <summary>
+    /// 세이브 없이 새 게임을 시작합니다. DataManager 상태와 오토세이브를 초기화합니다.
+    /// </summary>
+    public void StartNewGame(DataManager dataManager)
+    {
+        if (dataManager == null)
+        {
+            Debug.LogError($"{LogPrefix} StartNewGame: DataManager is null.");
+            return;
+        }
+
+        dataManager.ResetToNewGame();
+        DeleteAllAutoSaveFiles();
+    }
+
     public bool SaveSavefile(string fileName, DataManager dataManager)
     {
         if (!TryValidateFileOperation(fileName, dataManager, out string validationError))

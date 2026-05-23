@@ -36,5 +36,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 921878fc1a3912149ba79e7a6b361ccb, type: 2}
   - {fileID: 11400000, guid: d0a96869e5da07e43bc66b301be3bba5, type: 2}
   - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: 3d195f2f5dacb394097096dc0bac8b68, type: 2}
   ticksPerBatch: 24
   inputResourcesPerBatch: 1

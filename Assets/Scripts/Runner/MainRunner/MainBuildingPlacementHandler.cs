@@ -432,14 +432,14 @@ public class MainBuildingPlacementHandler
                 return false;
 
             Vector2Int origin = GetBlueprintPlacementOrigin(anchor, saveData);
-            int rotation = saveData.rotation;
-            if (!_gridHandler.TryPlaceBuilding(data, origin, rotation, out _, out bool buildingNoMoney))
+            PlacedBuildingSaveData placementSave = CreateBlueprintPlacementSaveData(saveData, origin);
+            if (!_gridHandler.TryPlaceBuildingFromBlueprintSave(placementSave, _autoEmployeePlacement, out bool buildingNoMoney))
             {
                 if (buildingNoMoney)
                     UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
                 return false;
             }
-            Vector2Int size = MainBuildingGridHandler.GetRotatedSize(data.size, rotation);
+            Vector2Int size = MainBuildingGridHandler.GetRotatedSize(data.size, saveData.rotation);
             PlayBuildEffectAt(origin, size);
         }
 
@@ -484,6 +484,19 @@ public class MainBuildingPlacementHandler
         Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, Vector2Int.one);
         effectPosition.z = _runner.RemovalEffectZ;
         Object.Instantiate(_runner.RemovalParticlePrefab, effectPosition, Quaternion.identity);
+    }
+
+    private static PlacedBuildingSaveData CreateBlueprintPlacementSaveData(PlacedBuildingSaveData src, Vector2Int origin)
+    {
+        PlacedBuildingSaveData dst = new PlacedBuildingSaveData();
+        dst.buildingDataId = src.buildingDataId;
+        dst.originX = origin.x;
+        dst.originY = origin.y;
+        dst.rotation = src.rotation;
+        dst.selectedResourceId = src.selectedResourceId;
+        dst.assignedWorkers = src.assignedWorkers;
+        dst.assignedTechnicians = src.assignedTechnicians;
+        return dst;
     }
 
     private Vector2Int GetBlueprintPlacementOrigin(Vector2Int anchor, PlacedBuildingSaveData saveData)

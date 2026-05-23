@@ -1,6 +1,6 @@
 using System;
 
-public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents
+public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents, ICrossHandlerEvents, IGameSaveHandler
 {   
     private readonly DataManager _dataManager;
     private readonly InitialUnionMainEventData _initialUnionMainEventData;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler
+public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler, IGameSaveHandler
 {
     private readonly DataManager _dataManager;
     private readonly InitialOrderData _initialOrderData;

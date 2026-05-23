@@ -4,7 +4,7 @@ using System.Collections.Generic;
 /// 플레이어 공통 런타임 상태(튜토리얼 진행 등). GameSaveData.tutorialAutoShowPending 과 동기화.
 /// 튜토리얼: 키 = TutorialBase가 붙은 오브젝트 이름, 값 = true면 자동 표시 대기, false면 이미 한 번 끝까지 본 상태.
 /// </summary>
-public class PlayerDataHandler
+public class PlayerDataHandler : IGameSaveHandler
 {
     private readonly Dictionary<string, bool> _tutorialAutoShowPendingByOwnerName = new Dictionary<string, bool>();
 
