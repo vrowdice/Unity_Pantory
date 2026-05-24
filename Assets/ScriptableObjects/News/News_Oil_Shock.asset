@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca006f621cc08ec44babd927d75d3803, type: 3}
-  m_Name: News_Oil_Shock
+  m_Name: news_oil_shock
   m_EditorClassIdentifier: 
-  id: News_Oil_Shock
+  id: news_oil_shock
   displayName: Oil Price Shock
   description: Geopolitical conflicts in oil-producing regions have slashed output.
     Crude oil and coal prices are spiking.

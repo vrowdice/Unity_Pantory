@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca006f621cc08ec44babd927d75d3803, type: 3}
-  m_Name: News_Luxury_Ban
+  m_Name: news_luxury_ban
   m_EditorClassIdentifier: 
-  id: News_Luxury_Ban
+  id: news_luxury_ban
   displayName: Luxury Goods Prohibition
   description: New sumptuary laws ban luxury sales in major markets. Premium clothing,
     premium furniture, and pure gold prices are falling.

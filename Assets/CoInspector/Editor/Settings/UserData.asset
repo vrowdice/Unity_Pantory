@@ -1,0 +1,317 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0d4c446e80a32c438a7ffd1c57696e2, type: 3}
+  m_Name: UserData
+  m_EditorClassIdentifier: 
+  recycleUnlockedTabs: 0
+  generalScrollSensitivity: 1
+  userInstalls:
+  - 1.7.0
+  tabPreviewExpanded: 0
+  softWheelScrolling: 1
+  middleScrollMode: 1
+  newTabIfLocked: 0
+  rootPath: Assets/CoInspector
+  showHistory: 1
+  showTabName: 1
+  showTabTree: 1
+  showFilterBar: 1
+  hideEmptyComponents: 0
+  showInstallMessage: 0
+  showSceneToolsMessage: 1
+  softSelection: 1
+  showCollapseTool: 1
+  showHierarchyButton: 1
+  showInspectorButton: 1
+  showFocusButton: 1
+  showSelectButton: 1
+  showMaximizeButton: 0
+  assetPreviewExpanded: 1
+  showLastClicked: 1
+  showMostClicked: 1
+  showIcons: 1
+  richNames: 1
+  showScrollBar: 1
+  showAdditionalOptions: 1
+  rememberSessions: 1
+  useThumbKeys: 1
+  ignoreFolders: 1
+  collapsePrefabComponents: 1
+  openPrefabsInNewTab: 1
+  showTextAssetPreviews: 1
+  showAssetLabels: 0
+  autoFocus: 0
+  assetInspection: 1
+  componentCulling: 1
+  reuseTabs: 0
+  overrideSceneTools: 0
+  sessionsMode: 1
+  tabCompactMode: 1
+  doubleClickMode: 1
+  scrollSpeedX: 2
+  scrollSpeedY: 2
+  scrollDirectionX: 1
+  scrollDirectionY: 1
+  generalScrollSpeed: 18
+  sessions:
+  - tracker:
+      mostClicked:
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 26
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/QuickMoveContainer[0]/QuickMovePanelContent[0]"}'
+        count: 4
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/BuildingControllContainer[0]/ControllPanel[0]/RotateBtnContainer[0]/RotateBuildingLeftBtn[0]"}'
+        count: 3
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/TabCloseBtn[0]"}'
+        count: 3
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]"}'
+        count: 3
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/BuildingControllContainer[0]/ControllPanel[0]/RotateBtnContainer[0]"}'
+        count: 2
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/Viewport[0]/Content[0]"}'
+        count: 2
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/Scrollbar
+          Vertical[0]"}'
+        count: 2
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/QuickMoveContainer[0]"}'
+        count: 2
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/BuildingControllContainer[0]/ControllPanel[0]/RemovalModeSwitch[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      recentlyClicked:
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/QuickMoveContainer[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/Scrollbar
+          Vertical[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/TabCloseBtn[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/Viewport[0]/Content[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/ResouceScrollVIew[0]/MainEventBtns[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/BuildingControllContainer[0]/ControllPanel[0]/RotateBtnContainer[0]/RotateBuildingLeftBtn[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/BuildingControllContainer[0]/ControllPanel[0]/RotateBtnContainer[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/BuildingControllContainer[0]/ControllPanel[0]/RemovalModeSwitch[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      mostClickedContents: []
+      recentlyClickedContents: []
+    sceneGUID: 8c9cfa26abfee488c85f1582747f6a02
+    sceneName: Main
+    lastSaveTimePrint: 01:54 AM (May 25, 2026)
+    gracePeriod: 3
+    activeIndex: 0
+    checkingToLoad: 0
+    assetsCollapsed: 0
+    lockedAsset: 0
+    maximizedAssetView: 0
+    showImportSettings: 0
+    suggestedHeight: 0
+    userAssetViewSize: -1
+    previewHeight: 0
+    scrollPosition: {x: 0, y: 0}
+    toolbarScrollPosition: {x: 0, y: 0}
+    rawUserHeight: 0
+    lastValidTabWidth: 93
+    alreadyCalculatedHeight: 0
+    lastKnownHeight: 1
+    tabs:
+    - path: '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+      paths: []
+      tabWidth: 90
+      name: MainCanvas
+      icon: {fileID: 7853449062886713960, guid: 0000000000000000d000000000000000, type: 0}
+      shortName: MainCanvas
+      filterString: 
+      newTab: 0
+      scrollPosition: 0
+      isSelected: 0
+      allCollapsed: 0
+      runtimeFoldouts: 
+      runtimeMultiComponents: []
+      tabTextContent:
+        m_Text: MainCanvas
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+        m_TextWithWhitespace: "MainCanvas\u200B"
+      multiEditMode: 0
+      locked: 0
+      hasPreview: 0
+      previewHeight: 13
+      debug: 0
+      filtering: 0
+      prefab: 0
+      multiFoldout: 1
+      target: {fileID: 0}
+      targets: []
+      linkedPrefabs: []
+      trackMultiTarget: {fileID: 0}
+      serializedTransform:
+        owner: {fileID: 0}
+        localPosition: {x: 0, y: 0, z: 0}
+        localRotation: {x: 0, y: 0, z: 0, w: 0}
+        localScale: {x: 0, y: 0, z: 0}
+        originalPosition: {x: 0, y: 0, z: 0}
+        originalRotation: {x: 0, y: 0, z: 0, w: 0}
+        originalLocalScale: {x: 0, y: 0, z: 0}
+        anchorMin: {x: 0, y: 0}
+        anchorMax: {x: 0, y: 0}
+        anchoredPosition: {x: 0, y: 0}
+        sizeDelta: {x: 0, y: 0}
+        pivot: {x: 0, y: 0}
+        originalAnchorMin: {x: 0, y: 0}
+        originalAnchorMax: {x: 0, y: 0}
+        originalAnchoredPosition: {x: 0, y: 0}
+        originalSizeDelta: {x: 0, y: 0}
+        originalPivot: {x: 0, y: 0}
+        isRectTransform: 0
+        appliedTransform: 0
+        undidTransform: 0
+        autoSave: 0
+      serializedTransforms: []
+      savePlayModeTransform: 0
+      index: 0
+      historyPosition: 0
+      componentMaps:
+      - index: 0
+        component: {fileID: 0}
+        missingComponentID: -1
+        foldout: 1
+        focusAfter: 0
+        awaitingScroll: 0
+        hidden: 0
+        componentName: recttransform
+        niceComponentName: rect transform
+      - index: 0
+        component: {fileID: 0}
+        missingComponentID: -1
+        foldout: 1
+        focusAfter: 0
+        awaitingScroll: 0
+        hidden: 0
+        componentName: canvas
+        niceComponentName: canvas
+      - index: 0
+        component: {fileID: 0}
+        missingComponentID: -1
+        foldout: 1
+        focusAfter: 0
+        awaitingScroll: 0
+        hidden: 0
+        componentName: canvasscaler
+        niceComponentName: canvas scaler
+      - index: 0
+        component: {fileID: 0}
+        missingComponentID: -1
+        foldout: 1
+        focusAfter: 0
+        awaitingScroll: 0
+        hidden: 0
+        componentName: graphicraycaster
+        niceComponentName: graphic raycaster
+      - index: 0
+        component: {fileID: 0}
+        missingComponentID: -1
+        foldout: 1
+        focusAfter: 0
+        awaitingScroll: 0
+        hidden: 0
+        componentName: maincanvas
+        niceComponentName: main canvas
+      historyPaths:
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        prefab: 0
+      owner: {fileID: 0}
+    closedTabs: []
+    playModeTransforms: []
+    historyAssets:
+    - assetGUIDs:
+      - dfa8f56bf4e422e458e09f4cbb4ffca5
+    - assetGUIDs:
+      - d79de820966302849b1946f890c89388
+    - assetGUIDs:
+      - cd49b637dd67d3c439ff15317e1b1212
+    targetObject: {fileID: 0}
+    targetObjects: []
+    lastSelectedAsset: 
+    lastClickedTab: 0
+    previousTab: 1
+  tipsShown: 01000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000
+  playModeStartScene:
+    m_Handle: 0
+  enteringPlayMode: 0

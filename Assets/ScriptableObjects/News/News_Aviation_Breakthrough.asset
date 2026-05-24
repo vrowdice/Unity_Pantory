@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca006f621cc08ec44babd927d75d3803, type: 3}
-  m_Name: News_Aviation_Breakthrough
+  m_Name: news_aviation_breakthrough
   m_EditorClassIdentifier: 
-  id: News_Aviation_Breakthrough
+  id: news_aviation_breakthrough
   displayName: Aviation Breakthrough
   isBreakingNews: 0
   description: Revolutionary aerospace designs are revitalizing the market. Fighter

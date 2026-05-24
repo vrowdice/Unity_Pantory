@@ -22,11 +22,11 @@ public class ResearchCanvas : MainCanvasPanelBase
     
     [SerializeField] private Transform _researchEffectScrollViewContentTransform;
 
-    private Transform _lineParent;
+    private RectTransform _lineParent;
     private List<Transform> _researchBtnContainerList = new List<Transform>();
     private Dictionary<string, RectTransform> _buttonMap = new Dictionary<string, RectTransform>();
     private List<ActionBtn> _researchTypeButtons = new List<ActionBtn>();
-    private ResearchType _selectedResearchType = ResearchType.UnlockBuilding;
+    private ResearchType _selectedResearchType = ResearchType.unlock_building;
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -135,9 +135,15 @@ public class ResearchCanvas : MainCanvasPanelBase
     public void UpdateResearchScrollView()
     {
         _gameManager.PoolingManager.ClearChildrenToPool(_researchBtnContainerContentTransform);
-        GameObject lineParentObj = new GameObject("LineParent");
-        lineParentObj.transform.SetParent(_researchBtnContainerContentTransform, false);
-        _lineParent = lineParentObj.transform;
+        GameObject lineParentObj = new GameObject("LineParent", typeof(RectTransform));
+        RectTransform lineParentRect = lineParentObj.GetComponent<RectTransform>();
+        lineParentRect.SetParent(_researchBtnContainerContentTransform, false);
+        lineParentRect.anchorMin = Vector2.zero;
+        lineParentRect.anchorMax = Vector2.one;
+        lineParentRect.offsetMin = Vector2.zero;
+        lineParentRect.offsetMax = Vector2.zero;
+        lineParentRect.SetAsFirstSibling();
+        _lineParent = lineParentRect;
         _researchBtnContainerList.Clear();
         _buttonMap.Clear();
 
@@ -248,13 +254,23 @@ public class ResearchCanvas : MainCanvasPanelBase
         lineObj.transform.SetParent(_lineParent, false);
         RectTransform lineRect = lineObj.GetComponent<RectTransform>();
 
-        Vector3 startPos = start.position;
-        Vector3 endPos = end.position;
-        Vector3 diff = endPos - startPos;
+        Vector2 localStart = _lineParent.InverseTransformPoint(start.position);
+        Vector2 localEnd = _lineParent.InverseTransformPoint(end.position);
+        Vector2 diff = localEnd - localStart;
+        float distance = diff.magnitude;
 
-        lineRect.position = startPos + (diff * 0.5f);
-        lineRect.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg);
-        lineRect.sizeDelta = new Vector2(diff.magnitude, 5f);
+        if (distance < 0.01f)
+        {
+            return;
+        }
+
+        float lineHeight = lineRect.sizeDelta.y;
+        lineRect.pivot = new Vector2(0.5f, 0.5f);
+        lineRect.anchorMin = new Vector2(0.5f, 0.5f);
+        lineRect.anchorMax = new Vector2(0.5f, 0.5f);
+        lineRect.anchoredPosition = localStart + diff * 0.5f;
+        lineRect.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg);
+        lineRect.sizeDelta = new Vector2(distance, lineHeight);
     }
 
     private void UpdateAllText()

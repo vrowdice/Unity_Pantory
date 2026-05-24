@@ -117,7 +117,7 @@ public class UnionStateModule : MainEventStateModuleBase
     {
         _remainingDays = remainingDays;
         _unionCohesionProgress = ClampCohesionProgress(unionCohesionProgress);
-        SetComplete(isComplete);
+        SetComplete(isComplete || _unionCohesionProgress >= MaxCohesionProgress);
     }
 
     public void AddCohesionProgress(float amount)
@@ -128,6 +128,7 @@ public class UnionStateModule : MainEventStateModuleBase
         }
 
         _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress + amount);
+        TryCompleteFromCohesionProgress();
     }
 
     public override void OnDayChanged()
@@ -175,6 +176,7 @@ public class UnionStateModule : MainEventStateModuleBase
         if (dailyGain > 0f)
         {
             _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress + dailyGain);
+            TryCompleteFromCohesionProgress();
             return;
         }
 
@@ -183,6 +185,17 @@ public class UnionStateModule : MainEventStateModuleBase
         {
             _unionCohesionProgress = ClampCohesionProgress(_unionCohesionProgress - dailyLoss);
         }
+    }
+
+    private void TryCompleteFromCohesionProgress()
+    {
+        if (_unionCohesionProgress < MaxCohesionProgress)
+        {
+            return;
+        }
+
+        MarkComplete();
+        MainEventDataHandler.TryCompleteCurrentMainEvent();
     }
 
     private static float ClampCohesionProgress(float progress)

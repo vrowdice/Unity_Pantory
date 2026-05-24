@@ -91,13 +91,13 @@ public class CreditTopInfoPopup : PopupBase
     {
         GameObjectUtils.ClearChildren(transform);
 
-        CreatePanelIfValid(LocalizationUtils.Localize("Employee Salary", "Expenses"), -_dataManager.Finances.DailySalary);
-        CreatePanelIfValid(LocalizationUtils.Localize("Resource Changes", "Expenses"), _dataManager.Finances.DailyResource);
-        CreatePanelIfValid(LocalizationUtils.Localize("Building Maintenance Cost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
-        CreatePanelIfValid(LocalizationUtils.Localize("Policy Cost", "Expenses"), -_dataManager.Finances.DailyPolicyCost);
-        CreatePanelIfValid(LocalizationUtils.Localize("Negative Interest", "Expenses"), -_dataManager.Finances.DailyInterest);
+        CreatePanelIfValid(LocalizationUtils.Localize("EmployeeSalary", "Expenses"), -_dataManager.Finances.DailySalary);
+        CreatePanelIfValid(LocalizationUtils.Localize("ResourceChanges", "Expenses"), _dataManager.Finances.DailyResource);
+        CreatePanelIfValid(LocalizationUtils.Localize("BuildingMaintenanceCost", "Expenses"), -_dataManager.Finances.DailyMaintenance);
+        CreatePanelIfValid(LocalizationUtils.Localize("PolicyCost", "Expenses"), -_dataManager.Finances.DailyPolicyCost);
+        CreatePanelIfValid(LocalizationUtils.Localize("NegativeInterest", "Expenses"), -_dataManager.Finances.DailyInterest);
 
-        CreatePanelIfValid(LocalizationUtils.Localize("Daily Change", "Expenses"), _dataManager.Finances.DailyTotal, true);
+        CreatePanelIfValid(LocalizationUtils.Localize("DailyChange", "Expenses"), _dataManager.Finances.DailyTotal, true);
     }
 
     private void CreatePanelIfValid(string title, long value, bool forceShow = false)

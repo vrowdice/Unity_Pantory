@@ -95,13 +95,21 @@ public class MainEventDataHandler : ITimeChangeHandler, IDataHandlerEvents, ICro
         }
 
         _activeStateModule.OnDayChanged();
+        TryCompleteCurrentMainEvent();
+    }
 
-        if (!_activeStateModule.IsComplete || _currentEventType == MainEventType.None)
+    public void TryCompleteCurrentMainEvent()
+    {
+        if (_activeStateModule == null || !_activeStateModule.IsComplete || _currentEventType == MainEventType.None)
         {
             return;
         }
 
-        if (_currentEventType == MainEventType.Union) _unionChapterEnded = true;
+        if (_currentEventType == MainEventType.Union)
+        {
+            _unionChapterEnded = true;
+        }
+
         SetMainEventType(MainEventType.None, showStartAnnouncement: false);
     }
 

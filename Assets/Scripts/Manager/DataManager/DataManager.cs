@@ -344,6 +344,7 @@ public class DataManager : Singleton<DataManager>
         }
 
         NormalizeLoadedSaveData(saveData);
+        LegacyIdMigration.MigrateSaveData(saveData);
 
         if (Time != null)
         {

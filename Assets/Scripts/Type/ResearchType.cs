@@ -1,6 +1,6 @@
 public enum ResearchType
 {
-    UnlockBuilding,
-    RawResourceSearch,
-    ProductionEfficiency
+    unlock_building,
+    raw_resource_search,
+    production_efficiency
 }

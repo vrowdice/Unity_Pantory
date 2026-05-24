@@ -1,0 +1,78 @@
+{
+  "version": "1.7.0",
+  "date": "2026-01-08",
+  "entries": [
+    {
+      "section": "new",
+      "title": "Unity 6000.3 Support",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "new",
+      "title": "Custom Asset Tracker for precise detection of asset creation, deletion, and modification",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "new",
+      "title": "\"Open Prefab\" options now target the selected relative child inside nested Prefab instances",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "new",
+      "title": "Option to reuse the closest unlocked Tab when the active one is locked\n(Settings Window -> If the Active Tab is Locked -> Reuse closest unlocked Tab)",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "new",
+      "title": "Extended VRCFury compatibility",
+      "description": "",
+      "important": false
+    },
+    {
+      "section": "changed",
+      "title": "\"Frame targets on Tab switch\" now works when creating new tabs",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "changed",
+      "title": "\"Open Prefab in Scene/Isolation\" now opens the closest parent Prefab instead of the root",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "fixed",
+      "title": "Prefab instances not refreshing immediately when changing the linked Prefab Asset on the Tab header",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "fixed",
+      "title": "Materials causing import loops if their start scripts modify themselves",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "fixed",
+      "title": "\"Frame targets on Tab switch\" being triggered with regular multi-selections",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "fixed",
+      "title": "Tab hover information not showing properly after reopening and resizing CoInspector",
+      "description": "",
+      "important": true
+    },
+    {
+      "section": "fixed",
+      "title": "Deleting multiple GameObjects at once sometimes triggering an error message",
+      "description": "",
+      "important": true
+    }
+  ]
+}

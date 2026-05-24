@@ -314,10 +314,6 @@ MonoBehaviour:
     m_Localized: Change Effect Status
     m_Metadata:
       m_Items: []
-  - m_Id: 840083911884800
-    m_Localized: Research Point
-    m_Metadata:
-      m_Items: []
   - m_Id: 834127593357312
     m_Localized: Count
     m_Metadata:
@@ -598,6 +594,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 41800596468416512
     m_Localized: Reward Cohesion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43305946866663424
+    m_Localized: Management Satisfaction
     m_Metadata:
       m_Items: []
   references:

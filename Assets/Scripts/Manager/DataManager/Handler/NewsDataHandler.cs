@@ -211,6 +211,6 @@ public class NewsDataHandler : IDataHandlerEvents, ITimeChangeHandler, IGameSave
     /// </summary>
     private static string BuildNewsEffectRuntimeId(string activeNewsId, string templateEffectId, int effectIndexInNews)
     {
-        return $"News::{activeNewsId}::{templateEffectId}::{effectIndexInNews}";
+        return $"news::{activeNewsId}::{templateEffectId}::{effectIndexInNews}";
     }
 }
