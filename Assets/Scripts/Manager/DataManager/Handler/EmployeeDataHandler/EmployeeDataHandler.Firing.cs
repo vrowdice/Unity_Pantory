@@ -64,6 +64,18 @@ public partial class EmployeeDataHandler
             }
 
             entry.state.count -= count;
+
+            int toUnassign = entry.state.assignedCount - entry.state.count;
+            if (_dataManager != null)
+            {
+                int assignedOnBuildings = _dataManager.GetPlacedBuildingAssignedEmployeeCount(type);
+                toUnassign = Mathf.Max(toUnassign, assignedOnBuildings - entry.state.count);
+                if (toUnassign > 0)
+                    _dataManager.UnassignEmployeesFromLastPlacedBuildings(type, toUnassign);
+            }
+
+            entry.state.assignedCount = Mathf.Min(entry.state.assignedCount, entry.state.count);
+
             entry.state.currentSatisfaction = Mathf.Clamp(
                 entry.state.currentSatisfaction - penalty,
                 -100f, 100f

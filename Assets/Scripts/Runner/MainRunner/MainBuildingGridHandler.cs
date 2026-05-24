@@ -192,6 +192,68 @@ public class MainBuildingGridHandler
         return list;
     }
 
+    /// <summary>
+    /// 마지막으로 배치된 건물부터 직원 할당을 해제합니다.
+    /// </summary>
+    public int UnassignEmployeesFromLastBuildings(EmployeeType type, int count)
+    {
+        if (count <= 0)
+            return 0;
+
+        int removed = 0;
+        for (int i = _buildingParent.childCount - 1; i >= 0 && removed < count; i--)
+        {
+            BuildingObject building = _buildingParent.GetChild(i).GetComponent<BuildingObject>();
+            if (building == null || building.IsRemovalAnimating)
+                continue;
+
+            int assigned = type == EmployeeType.Worker
+                ? building.AssignedWorkers
+                : building.AssignedTechnicians;
+            if (assigned <= 0)
+                continue;
+
+            int toRemove = Mathf.Min(count - removed, assigned);
+            if (building.TryApplyEmployeeDelta(type, -toRemove))
+            {
+                removed += toRemove;
+                continue;
+            }
+
+            int forcedRemoved = building.ForceRemoveAssignedEmployees(type, toRemove);
+            if (forcedRemoved > 0)
+            {
+                _dataManager.Employee.UnassignUpTo(type, forcedRemoved);
+                removed += forcedRemoved;
+            }
+        }
+
+        if (removed > 0)
+        {
+            _mainRunner.FlushPlacedLayoutToDataManager();
+            OnBuildingInstanceLayoutChanged?.Invoke();
+        }
+
+        return removed;
+    }
+
+    public int GetTotalAssignedEmployeeCount(EmployeeType type)
+    {
+        int total = 0;
+        for (int i = 0; i < _buildingParent.childCount; i++)
+        {
+            BuildingObject building = _buildingParent.GetChild(i).GetComponent<BuildingObject>();
+            if (building == null || building.IsRemovalAnimating)
+                continue;
+
+            total += type == EmployeeType.Worker
+                ? building.AssignedWorkers
+                : building.AssignedTechnicians;
+        }
+
+        return total;
+    }
+
     public void RestoreFromSave(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
     {
         ClearAllBuildings();

@@ -395,6 +395,37 @@ public class DataManager : Singleton<DataManager>
         BlueprintLayout?.SetFromSave(saveData.blueprintLayouts);
     }
 
+    /// <summary>
+    /// 마지막으로 배치된 건물부터 직원 할당을 해제합니다. MainRunner가 없으면 PlacedLayout 데이터를 갱신합니다.
+    /// </summary>
+    public int UnassignEmployeesFromLastPlacedBuildings(EmployeeType type, int count)
+    {
+        if (count <= 0)
+            return 0;
+
+        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        if (mainRunner != null && mainRunner.GridHandler != null)
+            return mainRunner.GridHandler.UnassignEmployeesFromLastBuildings(type, count);
+
+        if (PlacedLayout == null)
+            return 0;
+
+        int removed = PlacedLayout.UnassignEmployeesFromLastBuildings(type, count);
+        if (removed > 0)
+            Employee?.UnassignUpTo(type, removed);
+
+        return removed;
+    }
+
+    public int GetPlacedBuildingAssignedEmployeeCount(EmployeeType type)
+    {
+        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        if (mainRunner != null && mainRunner.GridHandler != null)
+            return mainRunner.GridHandler.GetTotalAssignedEmployeeCount(type);
+
+        return PlacedLayout?.GetTotalAssignedEmployeeCount(type) ?? 0;
+    }
+
     private static void NormalizeLoadedSaveData(GameSaveData data)
     {
         data.employees ??= new List<EmployeeStateSaveData>();

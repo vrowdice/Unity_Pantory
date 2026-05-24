@@ -123,6 +123,31 @@ public partial class BuildingObject
         return false;
     }
 
+    /// <summary>
+    /// 전역 할당 카운트와 무관하게 건물 로컬 배치만 해제합니다. (데이터 불일치 복구용)
+    /// </summary>
+    public int ForceRemoveAssignedEmployees(EmployeeType type, int count)
+    {
+        if (count <= 0)
+            return 0;
+
+        if (type == EmployeeType.Worker)
+        {
+            int removeAmount = Mathf.Min(count, _assignedWorkers);
+            _assignedWorkers -= removeAmount;
+            return removeAmount;
+        }
+
+        if (type == EmployeeType.Technician)
+        {
+            int removeAmount = Mathf.Min(count, _assignedTechnicians);
+            _assignedTechnicians -= removeAmount;
+            return removeAmount;
+        }
+
+        return 0;
+    }
+
     public void ReleaseAssignedEmployees()
     {
         DataManager dataManager = DataManager.Instance;
