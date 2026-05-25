@@ -26,7 +26,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private readonly Queue<ResourcePacket> _inputBuffer = new Queue<ResourcePacket>();
     private readonly Queue<ResourcePacket> _outputBuffer = new Queue<ResourcePacket>();
 
-    private MainRunner _mainRunner;
+    private BuildingSceneRunnerBase _mainRunner;
     private BuildingData _buildingData;
     private Vector2Int _origin;
     private Vector2Int _size;
@@ -46,6 +46,8 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private const float ClickDragThresholdPixels = 8f;
 
     public BuildingData BuildingData => _buildingData;
+    public bool HasConfiguredOutputResource =>
+        _selectedResource != null && !string.IsNullOrEmpty(_selectedResource.id);
     public bool IsRemovalAnimating => _removalAnimating;
     public Vector2Int Origin => _origin;
     public Vector2Int Size => _size;
@@ -58,7 +60,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         _buildingData.isProfessional ? 0 : RequiredEmployeeSlots;
     public int MaxTechnicianSlots => RequiredEmployeeSlots;
 
-    public void Init(MainRunner runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
+    public void Init(BuildingSceneRunnerBase runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
     {
         _mainRunner = runner;
         _buildingData = buildingData;
@@ -78,10 +80,8 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
         RebuildOutputGridPositions();
         UpdateOutputIndicators();
+        EnsureDefaultSelectedResourceForRawFactory();
         RefreshOutgoingResourceIcons();
-
-        if (_selectedResource == null && buildingData is RawMaterialFactoryData raw && raw.DefaultRawResource != null)
-            _selectedResource = raw.DefaultRawResource;
 
         if (isAutoEmployeeAssignment)
             TryAutoAssignEmployeesToFill();
@@ -125,6 +125,11 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
                 _removalAnimating = false;
                 onComplete?.Invoke();
             });
+    }
+
+    private void LateUpdate()
+    {
+        TryRefreshOutgoingIconsWhenVisible();
     }
 
     private void Update()
@@ -412,8 +417,13 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         _assignedTechnicians = Mathf.Max(0, saveData.assignedTechnicians);
 
         if (!string.IsNullOrEmpty(saveData.selectedResourceId))
-            _selectedResource = dataManager.Resource.GetResourceEntry(saveData.selectedResourceId)?.data;
+        {
+            ResourceData savedResource = dataManager.Resource.GetResourceEntry(saveData.selectedResourceId)?.data;
+            if (savedResource != null)
+                _selectedResource = savedResource;
+        }
 
+        EnsureDefaultSelectedResourceForRawFactory();
         ImportBuffer(_inputBuffer, saveData.inputBuffer, _maxInputCapacity);
         ImportBuffer(_outputBuffer, saveData.outputBuffer, _maxOutputCapacity);
 

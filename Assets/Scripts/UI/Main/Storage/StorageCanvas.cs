@@ -20,7 +20,12 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     public override void Init(MainCanvas argUIManager)
     {
-        base.Init(argUIManager);
+        Init((IBuildScenePanelHost)argUIManager);
+    }
+
+    public override void Init(IBuildScenePanelHost panelHost)
+    {
+        base.Init(panelHost);
 
         _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
         _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;

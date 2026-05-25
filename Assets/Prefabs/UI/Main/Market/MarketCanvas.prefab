@@ -6247,12 +6247,12 @@ MonoBehaviour:
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 5188010726665963993}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 1333407108071053040}
     onStepStart:
       m_PersistentCalls:
@@ -6269,7 +6269,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 8758420067102614815}
     onStepStart:
       m_PersistentCalls:
@@ -6286,7 +6286,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 1892148806806137914}
     onStepStart:
       m_PersistentCalls:
@@ -6303,7 +6303,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 8642540786574746152}
     onStepStart:
       m_PersistentCalls:
@@ -6320,7 +6320,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   _panelAnimationTarget: {fileID: 1057055313589436191}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1

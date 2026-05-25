@@ -11,18 +11,21 @@ public class ConfirmPopup : PopupBase
     [SerializeField] private TextMeshProUGUI _text;
 
     private Action _onConfirm;
+    private Action _onRefuse;
 
     /// <summary>
     /// ConfirmPopup을 초기화합니다.
     /// </summary>
     /// <param name="messageKey">ConfirmMessage 테이블의 로컬라이즈 키</param>
     /// <param name="onConfirm">확인 버튼 클릭 시 실행할 함수</param>
-    public void Init(string messageKey, Action onConfirm)
+    /// <param name="onRefuse">거부 버튼 클릭 시 실행할 함수</param>
+    public void Init(string messageKey, Action onConfirm, Action onRefuse = null)
     {
         base.Init();
 
         _text.text = messageKey.Localize(LocalizationUtils.TABLE_COMMON);
         _onConfirm = onConfirm;
+        _onRefuse = onRefuse;
 
         Show();
     }
@@ -43,6 +46,7 @@ public class ConfirmPopup : PopupBase
     /// </summary>
     public void OnClickRefuse()
     {
+        _onRefuse?.Invoke();
         ClosePopup();
     }
 

@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TimePlayPanel : MonoBehaviour
 {
+    public event Action OnTimePlayStarted;
+
+    public bool IsTimePaused => _isTimePaused;
+    public PlayPauseBtn PlayPauseButton => _playPauseBtn;
     [SerializeField] private GameObject _playPauseBtnPrefab;
     [SerializeField] private List<float> _btnSpeedGenList;
     [SerializeField] private Transform _speedBtnContentTransform;
@@ -83,6 +88,9 @@ public class TimePlayPanel : MonoBehaviour
     {
         if (_isTimePaused)
         {
+            if (!TutorialInputGate.CanUseTimePlay())
+                return;
+
             Play();
         }
         else
@@ -99,10 +107,14 @@ public class TimePlayPanel : MonoBehaviour
             return;
         }
 
+        bool wasPaused = _isTimePaused;
         _isTimePaused = false;
         _lastUsedSpeedBtn = targetBtn;
         _dataManager.Time.SetTimeSpeed(targetBtn.Speed);
         RefreshUiState();
+
+        if (wasPaused)
+            OnTimePlayStarted?.Invoke();
     }
 
     private void Pause()
@@ -119,10 +131,17 @@ public class TimePlayPanel : MonoBehaviour
 
     private void OnSpeedBtnClicked(SpeedBtn btn)
     {
+        if (!TutorialInputGate.CanUseTimePlay())
+            return;
+
+        bool wasPaused = _isTimePaused;
         _lastUsedSpeedBtn = btn;
         _isTimePaused = false;
         _dataManager.Time.SetTimeSpeed(btn.Speed);
         RefreshUiState();
+
+        if (wasPaused)
+            OnTimePlayStarted?.Invoke();
     }
 
     private void RefreshUiState()

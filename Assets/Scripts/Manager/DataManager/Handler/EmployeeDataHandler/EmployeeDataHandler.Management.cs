@@ -51,6 +51,28 @@ public partial class EmployeeDataHandler
     }
 
     /// <summary>
+    /// 관리 인원이 부족하면 크레딧 범위 내에서 매니저를 자동 고용합니다.
+    /// </summary>
+    public void TryEnsureRequiredManagers()
+    {
+        if (_initialEmployeeData == null)
+            return;
+
+        const int maxIterations = 64;
+        for (int i = 0; i < maxIterations; i++)
+        {
+            GetManagementInfo(out int currentManagers, out int requiredManagers);
+            int deficit = requiredManagers - currentManagers;
+            if (deficit <= 0)
+                return;
+
+            int hired = TryHireUpToAffordable(EmployeeType.Manager, deficit);
+            if (hired <= 0)
+                return;
+        }
+    }
+
+    /// <summary>
     /// 일일 직원 상태 업데이트 (만족도 및 효율성)를 수행합니다.
     /// </summary>
     public void HandleDayChanged()

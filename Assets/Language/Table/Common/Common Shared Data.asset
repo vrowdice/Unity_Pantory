@@ -419,6 +419,18 @@ MonoBehaviour:
     m_Key: OverwriteConfirm
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269006
+    m_Key: TutorialSkipConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269007
+    m_Key: ReplayTutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269008
+    m_Key: ReplayTutorialConfirm
+    m_Metadata:
+      m_Items: []
   - m_Id: 864226268001
     m_Key: ResearchCannotUnlock
     m_Metadata:

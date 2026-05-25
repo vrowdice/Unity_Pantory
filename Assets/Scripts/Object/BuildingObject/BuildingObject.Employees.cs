@@ -40,28 +40,77 @@ public partial class BuildingObject
     }
 
     /// <summary>
-    /// 배치 직후 등: 남는 고용 인원 한도 안에서 건물 슬롯을 채웁니다. (세이브 로드는 <see cref="ImportSaveData"/>로 복원)
+    /// 배치 직후 등: 부족하면 고용 후 건물 슬롯을 채웁니다. (세이브 로드는 <see cref="ImportSaveData"/>로 복원)
     /// </summary>
     public void TryAutoAssignEmployeesToFill()
     {
         int required = RequiredEmployeeSlots;
-        if (required <= 0) return;
+        if (required <= 0)
+            return;
+
+        DataManager dataManager = DataManager.Instance;
+        if (dataManager?.Employee == null)
+            return;
+
+        dataManager.Employee.TryEnsureRequiredManagers();
 
         if (_buildingData.isProfessional)
         {
             while (_assignedWorkers + _assignedTechnicians < required)
             {
-                if (!TryApplyEmployeeDelta(EmployeeType.Technician, 1)) break;
+                if (!TryApplyEmployeeDeltaWithAutoHire(EmployeeType.Technician, 1))
+                    break;
             }
-            return;
+        }
+        else
+        {
+            while (_assignedWorkers + _assignedTechnicians < required)
+            {
+                if (TryApplyEmployeeDeltaWithAutoHire(EmployeeType.Worker, 1))
+                    continue;
+
+                if (TryApplyEmployeeDeltaWithAutoHire(EmployeeType.Technician, 1))
+                    continue;
+
+                break;
+            }
         }
 
-        while (_assignedWorkers + _assignedTechnicians < required)
+        dataManager.Employee.TryEnsureRequiredManagers();
+    }
+
+    private bool TryApplyEmployeeDeltaWithAutoHire(EmployeeType type, int delta)
+    {
+        if (delta <= 0)
+            return TryApplyEmployeeDelta(type, delta);
+
+        DataManager dataManager = DataManager.Instance;
+        int requiredTotal = RequiredEmployeeSlots;
+        int room = requiredTotal - (_assignedWorkers + _assignedTechnicians);
+        if (room <= 0)
+            return false;
+
+        if (type == EmployeeType.Worker)
         {
-            if (TryApplyEmployeeDelta(EmployeeType.Worker, 1)) continue;
-            if (TryApplyEmployeeDelta(EmployeeType.Technician, 1)) continue;
-            break;
+            int addAmount = Mathf.Min(delta, room, MaxWorkerSlots - _assignedWorkers);
+            if (addAmount <= 0 || !dataManager.Employee.TryAssignEmployeeWithAutoHire(EmployeeType.Worker, addAmount))
+                return false;
+
+            _assignedWorkers += addAmount;
+            return true;
         }
+
+        if (type == EmployeeType.Technician)
+        {
+            int addAmount = Mathf.Min(delta, room, MaxTechnicianSlots - _assignedTechnicians);
+            if (addAmount <= 0 || !dataManager.Employee.TryAssignEmployeeWithAutoHire(EmployeeType.Technician, addAmount))
+                return false;
+
+            _assignedTechnicians += addAmount;
+            return true;
+        }
+
+        return false;
     }
 
     public bool TryApplyEmployeeDelta(EmployeeType type, int delta)

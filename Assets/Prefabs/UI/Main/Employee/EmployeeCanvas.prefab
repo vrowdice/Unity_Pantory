@@ -1925,7 +1925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.09411765, g: 0.09411765, b: 0.105882354, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1958,7 +1958,7 @@ MonoBehaviour:
   targetImage: {fileID: 3622786736405506045}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Secondary
+  colorID: Background
   fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
@@ -6704,7 +6704,7 @@ MonoBehaviour:
   targetImage: {fileID: 8585528628669127224}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Secondary
+  colorID: Background
   fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0
@@ -6742,7 +6742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.09411765, g: 0.09411765, b: 0.105882354, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10299,37 +10299,37 @@ MonoBehaviour:
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 897942945603451603}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 4615859976761310282}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 2203974394394473160}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 2203974394394473160}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 4761649670684508913}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 3951387518848020481}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   _panelAnimationTarget: {fileID: 2821009054968171816}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
@@ -11297,7 +11297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.09411765, g: 0.09411765, b: 0.105882354, a: 1}
+  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11330,7 +11330,7 @@ MonoBehaviour:
   targetImage: {fileID: 5158862422164898170}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Secondary
+  colorID: Background
   fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0

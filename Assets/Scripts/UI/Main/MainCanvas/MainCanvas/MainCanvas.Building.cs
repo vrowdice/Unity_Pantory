@@ -45,6 +45,18 @@ public partial class MainCanvas
         EnsureMainBlueprintTypeButtonInContent();
 
         SelectBuildingType(BuildingType.Distribution);
+        SyncAutoEmployeePlacementSwitch();
+    }
+
+    private void SyncAutoEmployeePlacementSwitch()
+    {
+        if (_mainRunner == null || _mainRunner.PlacementHandler == null)
+            return;
+
+        if (_autoEmployeePlacementSwitch != null)
+            _autoEmployeePlacementSwitch.SetValue(true);
+
+        _mainRunner.PlacementHandler.ToggleAutoEmployeePlacement(true);
     }
 
     private bool IsBuildingUnlocked(BuildingData data)
@@ -63,14 +75,9 @@ public partial class MainCanvas
         if (_isBlueprintPanelOpen)
             return;
 
-        for (int i = 0; i < _buildingBtns.Count; i++)
-        {
-            MainBuildingBtn btn = _buildingBtns[i];
-            if (btn == null || btn.BuildingData == null)
-                continue;
-
-            btn.RefreshUnlockState(IsBuildingUnlocked(btn.BuildingData), _mainRunner);
-        }
+        GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
+        _buildingBtns.Clear();
+        PopulateBuildingButtons();
     }
 
     private void ApplyRemovalMode(bool isOn)
@@ -92,15 +99,8 @@ public partial class MainCanvas
         UpdateBuildingButtonStates();
     }
 
-    public void SelectBuilding(BuildingData buildingData, bool isSelected, bool isUnlocked)
+    public void SelectBuilding(BuildingData buildingData, bool isSelected)
     {
-        if (!isUnlocked)
-        {
-            UIManager.ShowWarningPopup(WarningMessage.BuildingLockedResearchRequired);
-            DeselectBuilding();
-            return;
-        }
-
         if (buildingData != null &&
             buildingData.usePlacedCountLimit &&
             !_mainRunner.GridHandler.CanPlaceMoreInstances(buildingData))
@@ -156,23 +156,29 @@ public partial class MainCanvas
         _blueprintAddBtn = null;
 
         _selectedBuildingType = buildingType;
-        List<BuildingData> list = DataManager.Building.GetBuildingDataList(buildingType);
+        PopulateBuildingButtons();
+
+        UpdateBuildingTypeButtonStates();
+        _mainBlueprintTypeBtn.SetFocused(false);
+    }
+
+    private void PopulateBuildingButtons()
+    {
+        List<BuildingData> list = DataManager.Building.GetBuildingDataList(_selectedBuildingType);
         foreach (BuildingData data in list)
         {
-            bool isUnlocked = IsBuildingUnlocked(data);
+            if (!IsBuildingUnlocked(data))
+                continue;
 
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
             btnObj.transform.SetParent(_buildingBtnContent, false);
             MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
-            btn.Initialize(this, data, isUnlocked, _mainRunner);
+            btn.Initialize(this, data, _mainRunner);
             _buildingBtns.Add(btn);
         }
 
-        UpdateBuildingTypeButtonStates();
         UpdateBuildingButtonStates();
         RefreshBuildingPlacedCountDisplays();
-
-        _mainBlueprintTypeBtn.SetFocused(false);
     }
 
     private void EnsureMainBlueprintTypeButtonInContent()

@@ -11,6 +11,7 @@ public class OptionPopup : PopupBase
     [SerializeField] private Slider _SFXSlider;
     [SerializeField] private Dropdown _localizatioinDropdown;
     [SerializeField] private GameObject _saveBtn;
+    [SerializeField] private GameObject _replayTutorialBtn;
 
     private const string PREFS_LOCALE = "SelectedLocale";
 
@@ -31,6 +32,11 @@ public class OptionPopup : PopupBase
         else
         {
             _saveBtn.SetActive(false);
+        }
+
+        if (_replayTutorialBtn != null)
+        {
+            _replayTutorialBtn.SetActive(SceneLoadManager.Instance.CurrentSceneName != "Tutorial");
         }
 
         Show();
@@ -129,6 +135,16 @@ public class OptionPopup : PopupBase
         UIManager.Instance.ShowConfirmPopup(ConfirmMessage.UnsavedProgressConfirm, () =>
         {
             SceneLoadManager.Instance.LoadScene("Title");
+            OnClickExit();
+        });
+    }
+
+    public void OnClickReplayTutorial()
+    {
+        UIManager.Instance.ShowConfirmPopup(ConfirmMessage.ReplayTutorialConfirm, () =>
+        {
+            SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
+            SceneLoadManager.Instance.LoadScene("Tutorial");
             OnClickExit();
         });
     }

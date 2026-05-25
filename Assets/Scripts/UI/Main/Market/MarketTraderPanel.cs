@@ -24,10 +24,13 @@ public class MarketTraderPanel : MonoBehaviour
 
     public void Init(MarketCanvas marketPanel)
     {
-        _dataManager = marketPanel.Host.DataManager;
+        if (marketPanel == null)
+            return;
+
+        _dataManager = marketPanel.DataManager;
         _marketPanel = marketPanel;
 
-        if (_selectedActor == null)
+        if (_selectedActor == null && _dataManager != null)
         {
             ChangeActor(_dataManager.MarketActor.GetMarketActorEntry("artisan_furniture_workshop"));
         }
@@ -51,7 +54,8 @@ public class MarketTraderPanel : MonoBehaviour
     /// </summary>
     private void RefreshUI()
     {
-        if (_selectedActor == null) return;
+        if (_selectedActor == null || _marketPanel == null)
+            return;
 
         MarketActorData data = _selectedActor.data;
         MarketActorState state = _selectedActor.state;
@@ -62,7 +66,7 @@ public class MarketTraderPanel : MonoBehaviour
 
         string deltaSymbol = state.currentChangeWealth > 0 ? "+" : "";
         _wealthText.text = $"{ReplaceUtils.FormatNumber(state.wealth)} {deltaSymbol}{ReplaceUtils.FormatNumber(state.currentChangeWealth)}";
-        _wealthText.color = _marketPanel.Host.VisualManager.GetDeltaColor(state.currentChangeWealth);
+        _wealthText.color = _marketPanel.VisualManager.GetDeltaColor(state.currentChangeWealth);
         _trustText.text = $"{state.trust}";
     }
 
@@ -71,7 +75,10 @@ public class MarketTraderPanel : MonoBehaviour
     /// </summary>
     private void RefreshResourcesIcon()
     {
-        PoolingManager pool = _marketPanel.Host.GameManager.PoolingManager;
+        if (_marketPanel == null || _dataManager == null)
+            return;
+
+        PoolingManager pool = _marketPanel.GameManager?.PoolingManager;
         if (pool != null)
         {
             pool.ClearChildrenToPool(_consumeResourceContentTransform);
@@ -83,9 +90,12 @@ public class MarketTraderPanel : MonoBehaviour
             GameObjectUtils.ClearChildren(_provideResourceContentTransform);
         }
 
-        if (_selectedActor == null || _selectedActor.data.productionResourceList == null) return;
+        if (_selectedActor == null || _selectedActor.data.productionResourceList == null)
+            return;
 
-        UIManager uiManager = _marketPanel.Host.UIManager;
+        UIManager uiManager = _marketPanel.UIManager;
+        if (uiManager == null)
+            return;
 
         foreach (ResourceData resourceData in _selectedActor.data.comsumeResourceList)
         {
@@ -93,6 +103,7 @@ public class MarketTraderPanel : MonoBehaviour
             int productionCount = (int)_selectedActor.data.baseProductionCount;
             uiManager.CreateProductionIcon(_consumeResourceContentTransform, resourceEntry, productionCount);
         }
+
         foreach (ResourceData resourceData in _selectedActor.data.productionResourceList)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);

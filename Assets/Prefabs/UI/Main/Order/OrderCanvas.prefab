@@ -3062,27 +3062,27 @@ MonoBehaviour:
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 1409885764345321209}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 706890950265090473}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 611162565085724270}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 1360362170031989143}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   _panelAnimationTarget: {fileID: 7347850829863654944}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1

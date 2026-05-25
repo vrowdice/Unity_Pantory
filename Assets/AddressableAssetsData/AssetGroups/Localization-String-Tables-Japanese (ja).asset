@@ -58,6 +58,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ja
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50543270ba8382948b4b239938d0ddc1
+    m_Address: TutorialGuided_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 53d264611c4ba1344b258f4c6acea2b0
     m_Address: Resource_ja
     m_ReadOnly: 1
@@ -69,6 +75,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7aad9617834c51144844bce714153d0c
     m_Address: Policy_ja

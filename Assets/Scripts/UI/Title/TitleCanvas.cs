@@ -13,7 +13,15 @@ public class TitleCanvas : CanvasBase
     public void GoToMainScene()
     {
         SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
-        SceneLoadManager.LoadScene("Main");
+
+        if (DataManager.Instance.Player.HasCompletedIntroTutorial)
+        {
+            SceneLoadManager.LoadScene("Main");
+        }
+        else
+        {
+            SceneLoadManager.LoadScene("Tutorial");
+        }
     }
 
     public void ShowSaveLoadPopup()

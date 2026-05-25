@@ -17,6 +17,7 @@ public static class LocalizationUtils
     public const string TABLE_RESEARCH = "Research";
     public const string TABLE_RESOURCE = "Resource";
     public const string TABLE_TUTORIAL = "Tutorial";
+    public const string TABLE_TUTORIAL_GUIDED = "TutorialGuided";
 
     public const string KEY_SUFFIX_DESC = "_Desc";
 

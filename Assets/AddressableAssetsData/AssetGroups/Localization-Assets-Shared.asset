@@ -45,6 +45,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55d80ac21c79dd14f8e1397ca6e4b64d
+    m_Address: Assets/Language/Table/TutorialGuided Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 72e91faa79a78f44fb7e8d3d4e626469
     m_Address: Assets/Language/Table/Resource/Resource Shared Data.asset
     m_ReadOnly: 1

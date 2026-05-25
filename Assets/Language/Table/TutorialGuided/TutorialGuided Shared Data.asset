@@ -1,0 +1,180 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: TutorialGuided Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: TutorialGuided
+  m_TableCollectionNameGuidString: 55d80ac21c79dd14f8e1397ca6e4b64d
+  m_Entries:
+  - m_Id: 2578400000000016
+    m_Key: TutorialScene0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000000
+    m_Key: TutorialScene1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000013
+    m_Key: TutorialScene2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000014
+    m_Key: TutorialScene3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000015
+    m_Key: TutorialScene4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30819995552727040
+    m_Key: TutorialScene5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30820150800695296
+    m_Key: TutorialScene6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30820695795974144
+    m_Key: TutorialScene7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30820797528817664
+    m_Key: TutorialScene8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665216
+    m_Key: TutorialScene9
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000001
+    m_Key: TutorialScene10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665242
+    m_Key: TutorialScene11
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000002
+    m_Key: TutorialScene12
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665225
+    m_Key: TutorialScene13
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000003
+    m_Key: TutorialScene14
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000004
+    m_Key: TutorialScene15
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665233
+    m_Key: TutorialScene16
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665226
+    m_Key: TutorialScene17
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665227
+    m_Key: TutorialScene18
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000005
+    m_Key: TutorialScene19
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000006
+    m_Key: TutorialScene20
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665228
+    m_Key: TutorialScene21
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665229
+    m_Key: TutorialScene22
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000009
+    m_Key: TutorialScene23
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000010
+    m_Key: TutorialScene24
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665234
+    m_Key: TutorialScene25
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665235
+    m_Key: TutorialScene26
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665236
+    m_Key: TutorialScene27
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665237
+    m_Key: TutorialScene28
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665230
+    m_Key: TutorialScene29
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665231
+    m_Key: TutorialScene30
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665232
+    m_Key: TutorialScene31
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665238
+    m_Key: TutorialScene32
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000011
+    m_Key: TutorialScene33
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665239
+    m_Key: TutorialScene34
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665240
+    m_Key: TutorialScene35
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665241
+    m_Key: TutorialScene36
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000012
+    m_Key: TutorialScene37
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 2915796556165152854
+  references:
+    version: 2
+    RefIds:
+    - rid: 2915796556165152854
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1779694187122

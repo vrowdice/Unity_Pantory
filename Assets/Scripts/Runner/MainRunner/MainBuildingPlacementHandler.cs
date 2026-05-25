@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class MainBuildingPlacementHandler
 {
-    private readonly MainRunner _runner;
+    private readonly BuildingSceneRunnerBase _runner;
     private readonly MainBuildingGridHandler _gridHandler;
 
     private BuildingData _selectedBuilding;
@@ -16,7 +16,7 @@ public class MainBuildingPlacementHandler
     private bool _placementMode = false;
     private bool _removalMode = false;
     private bool _blueprintPlacementMode = false;
-    private bool _autoEmployeePlacement = false;
+    private bool _autoEmployeePlacement = true;
 
     private GameObject _previewObj;
     private PreviewObject _previewObject;
@@ -40,7 +40,7 @@ public class MainBuildingPlacementHandler
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int Rotation => _rotation;
 
-    public MainBuildingPlacementHandler(MainRunner runner)
+    public MainBuildingPlacementHandler(BuildingSceneRunnerBase runner)
     {
         _runner = runner;
 
@@ -131,6 +131,8 @@ public class MainBuildingPlacementHandler
     public void ToggleAutoEmployeePlacement(bool enabled)
     {
         _autoEmployeePlacement = enabled;
+        if (enabled)
+            _gridHandler.TryAutoStaffAllBuildings();
     }
 
     public void StartRemoval()

@@ -22,6 +22,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _selectResourcePanelPrefab;
     [SerializeField] private GameObject _saveLoadPopupPrefab;
     [SerializeField] private GameObject _tutorialPopupPrefab;
+    [SerializeField] private GameObject _tutorialGuidedPopupPrefab;
     [SerializeField] private GameObject _debugPopupPrefab;
 
     [Header("Main Info Panels")]
@@ -254,11 +255,11 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public ConfirmPopup ShowConfirmPopup(string messageKey, Action onConfirm)
+    public ConfirmPopup ShowConfirmPopup(string messageKey, Action onConfirm, Action onRefuse = null)
     {
         GameObject panelObj = InstantiatePopupPrefab(_confirmPanelPrefab);
         ConfirmPopup panel = panelObj.GetComponent<ConfirmPopup>();
-        panel.Init(messageKey, onConfirm);
+        panel.Init(messageKey, onConfirm, onRefuse);
         return panel;
     }
 
@@ -304,19 +305,65 @@ public class UIManager : Singleton<UIManager>
     {
         TutorialPopup panel = null;
         if (_managerCanvasTransform != null)
-        {
             panel = _managerCanvasTransform.GetComponentInChildren<TutorialPopup>(true);
-        }
 
         if (panel == null)
         {
+            if (_tutorialPopupPrefab == null)
+            {
+                Debug.LogError("[UIManager] Tutorial popup prefab is not assigned.");
+                return null;
+            }
+
             GameObject panelObj = InstantiatePopupPrefab(_tutorialPopupPrefab);
-            panel = panelObj.GetComponent<TutorialPopup>();
+            panel = panelObj != null ? panelObj.GetComponent<TutorialPopup>() : null;
         }
+
+        if (panel == null)
+            return null;
 
         panel.gameObject.SetActive(true);
         panel.Init(tutorialDataList, gameObjectName);
         return panel;
+    }
+
+    public TutorialGuidedPopup ShowTutorialGuidedPopup(List<TutorialData> tutorialDataList, string gameObjectName)
+    {
+        TutorialGuidedPopup panel = FindAvailableTutorialGuidedPopup();
+
+        if (panel == null)
+        {
+            if (_tutorialGuidedPopupPrefab == null)
+            {
+                Debug.LogError("[UIManager] Tutorial guided popup prefab is not assigned.");
+                return null;
+            }
+
+            GameObject panelObj = InstantiatePopupPrefab(_tutorialGuidedPopupPrefab);
+            panel = panelObj != null ? panelObj.GetComponent<TutorialGuidedPopup>() : null;
+        }
+
+        if (panel == null)
+            return null;
+
+        panel.gameObject.SetActive(true);
+        panel.Init(tutorialDataList, gameObjectName);
+        return panel;
+    }
+
+    private TutorialGuidedPopup FindAvailableTutorialGuidedPopup()
+    {
+        if (_managerCanvasTransform == null)
+            return null;
+
+        TutorialGuidedPopup[] popups = _managerCanvasTransform.GetComponentsInChildren<TutorialGuidedPopup>(true);
+        for (int i = 0; i < popups.Length; i++)
+        {
+            if (popups[i] != null && !popups[i].IsRetiring)
+                return popups[i];
+        }
+
+        return null;
     }
 
     public SaveLoadPopup ShowSaveLoadPopup(bool isSaveMode)

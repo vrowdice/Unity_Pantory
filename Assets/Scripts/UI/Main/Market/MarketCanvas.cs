@@ -30,7 +30,12 @@ public class MarketCanvas : MainCanvasPanelBase
     /// </summary>
     public override void Init(MainCanvas argUIManager)
     {
-        base.Init(argUIManager);
+        Init((IBuildScenePanelHost)argUIManager);
+    }
+
+    public override void Init(IBuildScenePanelHost panelHost)
+    {
+        base.Init(panelHost);
 
         SetupActionButtons();
 
@@ -38,13 +43,9 @@ public class MarketCanvas : MainCanvasPanelBase
         _dataManager.Time.OnDayChanged += HandleDayChanged;
 
         if (_isResourceView)
-        {
             ShowResourceView();
-        }
         else
-        {
             ShowTraderView();
-        }
     }
 
     private void OnDisable()
@@ -199,6 +200,23 @@ public class MarketCanvas : MainCanvasPanelBase
         RefreshButtons();
         _resourcePanel.HandleDayChanged();
         _traderPanel.HandleDayChanged();
+    }
+
+    public void SelectResourceById(string resourceId)
+    {
+        if (string.IsNullOrEmpty(resourceId) || _dataManager == null)
+            return;
+
+        ShowResourceView();
+
+        ResourceEntry entry = _dataManager.Resource.GetResourceEntry(resourceId);
+        if (entry != null)
+            _resourcePanel.ChangeResource(entry);
+    }
+
+    public GameObject FindSellDecreaseButton()
+    {
+        return _resourcePanel != null ? _resourcePanel.FindSellDecreaseButton() : null;
     }
 
     /// <summary>

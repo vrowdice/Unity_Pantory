@@ -8,4 +8,6 @@ public static class ConfirmMessage
     public const string DeleteConfirm = "DeleteConfirm";
     public const string UnsavedProgressConfirm = "UnsavedProgressConfirm";
     public const string OverwriteConfirm = "OverwriteConfirm";
+    public const string TutorialSkipConfirm = "TutorialSkipConfirm";
+    public const string ReplayTutorialConfirm = "ReplayTutorialConfirm";
 }

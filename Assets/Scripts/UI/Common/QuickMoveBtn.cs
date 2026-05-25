@@ -11,11 +11,13 @@ public class QuickMoveBtn : MonoBehaviour
     [SerializeField] private GameObject _alartImage = null;
 
     private MainPanelType _penalType;
-    MainCanvas _mainUiManager = null;
+    private IBuildScenePanelHost _panelHost;
 
-    public void Initialize(MainCanvas argUiManager, MainPanelType argPenalType)
+    public MainPanelType PanelType => _penalType;
+
+    public void Initialize(IBuildScenePanelHost panelHost, MainPanelType argPenalType)
     {
-        _mainUiManager = argUiManager;
+        _panelHost = panelHost;
         _penalType = argPenalType;
 
         _text.text = argPenalType.Localize(LocalizationUtils.TABLE_COMMON);
@@ -25,9 +27,14 @@ public class QuickMoveBtn : MonoBehaviour
         InitEvent();
     }
 
+    public void Initialize(MainCanvas argUiManager, MainPanelType argPenalType)
+    {
+        Initialize((IBuildScenePanelHost)argUiManager, argPenalType);
+    }
+
     public void OnClick()
     {
-        _mainUiManager.OpenPanel(_penalType);
+        _panelHost?.OpenPanel(_penalType);
         SetAlertActive(false);
     }
 

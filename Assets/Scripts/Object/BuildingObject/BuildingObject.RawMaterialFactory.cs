@@ -3,6 +3,17 @@ using UnityEngine;
 
 public partial class BuildingObject
 {
+    private void EnsureDefaultSelectedResourceForRawFactory()
+    {
+        if (_buildingData is not RawMaterialFactoryData rawFactory)
+            return;
+
+        if (_selectedResource != null && IsResourceAllowedForRawFactory(rawFactory, _selectedResource))
+            return;
+
+        _selectedResource = rawFactory.DefaultRawResource;
+    }
+
     private void TickSimulationRawMaterialFactory(DataManager dataManager, RawMaterialFactoryData rawFactory)
     {
         if (_selectedResource == null || string.IsNullOrEmpty(_selectedResource.id)) return;

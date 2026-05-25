@@ -51,6 +51,7 @@ MonoBehaviour:
   _selectResourcePanelPrefab: {fileID: 3902504510895382675, guid: 8e5e94113a3155c4baa0c42d053bcaed, type: 3}
   _saveLoadPopupPrefab: {fileID: 5511691627187789550, guid: 6124701b6567c7a4eaf09a7ad327b4ca, type: 3}
   _tutorialPopupPrefab: {fileID: 1601846500520044884, guid: 77b659caac0b87944861f599d6897417, type: 3}
+  _tutorialGuidedPopupPrefab: {fileID: 1601846500520044884, guid: f2a3b4c5d6e748509658b7e48197803b, type: 3}
   _debugPopupPrefab: {fileID: 3466702943055382764, guid: 7be09fbb432bee24eac047f4de76d32e, type: 3}
   _creditTopInfoPopupPrefab: {fileID: 5306945310880352919, guid: 88678014564df034ba522c0f0c2371f1, type: 3}
   _researchInfoPopupPrefab: {fileID: 2491370192534101071, guid: e550badc5e9a07249ab0f0615c91eadd, type: 3}

@@ -11,14 +11,19 @@ public class MainScrollViewResouceBtn : MonoBehaviour
     private MainCanvas _mainUiManager = null;
     private ResourceEntry _resourceEntry = null;
 
-    public void Init(MainCanvas mainUiManager, ResourceEntry resourceEntry)
+    public void Init(ResourceEntry resourceEntry)
     {
-        _mainUiManager = mainUiManager;
         _resourceEntry = resourceEntry;
         _image.sprite = resourceEntry.data.icon;
         _valueText.text = resourceEntry.state.count.ToString("N0");
 
         UpdateChangeValue();
+    }
+
+    public void Init(MainCanvas mainUiManager, ResourceEntry resourceEntry)
+    {
+        _mainUiManager = mainUiManager;
+        Init(resourceEntry);
     }
 
     public void OnClick()

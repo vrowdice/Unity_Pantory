@@ -344,9 +344,13 @@ public class BuildingInfoPopup : PopupBase
         if (!_buildingObject.TrySetSelectedResource(selected.data))
             return;
 
+        string buildingId = _buildingObject.BuildingData != null ? _buildingObject.BuildingData.id : null;
         UpdateUI();
         RefreshWorldIcons();
         Close();
+
+        if (!string.IsNullOrEmpty(buildingId))
+            TutorialDirector.Instance?.NotifyBuildingResourceAssigned(buildingId);
     }
 
     private void RefreshWorldIcons()

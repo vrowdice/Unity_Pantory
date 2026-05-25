@@ -181,6 +181,15 @@ public class DataManager : Singleton<DataManager>
     }
 
     /// <summary>
+    /// 튜토리얼 씬 진입용 초기화. 새 게임 상태에 시간을 일시정지합니다.
+    /// </summary>
+    public void ResetToTutorialGame()
+    {
+        ResetToNewGame();
+        Time?.PauseTime();
+    }
+
+    /// <summary>
     /// Initial 데이터 기준으로 모든 핸들러 상태를 재생성합니다. 타이틀 새 게임 시 호출.
     /// </summary>
     public void ResetToNewGame()
@@ -325,11 +334,11 @@ public class DataManager : Singleton<DataManager>
         foreach (IGameSaveHandler handler in _saveHandlers)
             handler.CaptureTo(saveData);
 
-        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
-        if (mainRunner != null && mainRunner.GridHandler != null)
+        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        if (sceneRunner != null && sceneRunner.GridHandler != null)
         {
-            saveData.placedBuildings = mainRunner.GridHandler.ExportPlacedBuildings();
-            saveData.placedRoads = mainRunner.GridHandler.ExportPlacedRoads();
+            saveData.placedBuildings = sceneRunner.GridHandler.ExportPlacedBuildings();
+            saveData.placedRoads = sceneRunner.GridHandler.ExportPlacedRoads();
         }
 
         if (BlueprintLayout != null)
@@ -404,9 +413,9 @@ public class DataManager : Singleton<DataManager>
         if (count <= 0)
             return 0;
 
-        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
-        if (mainRunner != null && mainRunner.GridHandler != null)
-            return mainRunner.GridHandler.UnassignEmployeesFromLastBuildings(type, count);
+        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        if (sceneRunner != null && sceneRunner.GridHandler != null)
+            return sceneRunner.GridHandler.UnassignEmployeesFromLastBuildings(type, count);
 
         if (PlacedLayout == null)
             return 0;
@@ -420,11 +429,24 @@ public class DataManager : Singleton<DataManager>
 
     public int GetPlacedBuildingAssignedEmployeeCount(EmployeeType type)
     {
-        MainRunner mainRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
-        if (mainRunner != null && mainRunner.GridHandler != null)
-            return mainRunner.GridHandler.GetTotalAssignedEmployeeCount(type);
+        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        if (sceneRunner != null && sceneRunner.GridHandler != null)
+            return sceneRunner.GridHandler.GetTotalAssignedEmployeeCount(type);
 
         return PlacedLayout?.GetTotalAssignedEmployeeCount(type) ?? 0;
+    }
+
+    /// <summary>
+    /// 자동 직원 배치: 건물 슬롯 채우기 전후로 필요 매니저·부족 인원 고용을 시도합니다.
+    /// </summary>
+    public void TryAutoStaffBuilding(BuildingObject building)
+    {
+        if (building == null || Employee == null)
+            return;
+
+        Employee.TryEnsureRequiredManagers();
+        building.TryAutoAssignEmployeesToFill();
+        Employee.TryEnsureRequiredManagers();
     }
 
     private static void NormalizeLoadedSaveData(GameSaveData data)
@@ -452,5 +474,16 @@ public class DataManager : Singleton<DataManager>
     {
         string json = JsonUtility.ToJson(state);
         return JsonUtility.FromJson<T>(json);
+    }
+
+    private static BuildingSceneRunnerBase FindActiveBuildingSceneRunner()
+    {
+        BuildingSceneRunnerBase sceneRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        if (sceneRunner != null)
+            return sceneRunner;
+
+        BuildingSceneRunnerBase[] runners =
+            UnityEngine.Object.FindObjectsByType<BuildingSceneRunnerBase>(FindObjectsSortMode.None);
+        return runners.Length > 0 ? runners[0] : null;
     }
 }

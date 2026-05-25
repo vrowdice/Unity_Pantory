@@ -897,12 +897,12 @@ MonoBehaviour:
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   - focusGameObject: {fileID: 22010665357046727}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []
-    tutorialPanelPosition: {x: 0, y: 0}
+    tutorialPanelPosition: {x: -10000, y: 10000}
   _panelAnimationTarget: {fileID: 8834582772067085463}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1

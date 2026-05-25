@@ -386,6 +386,18 @@ MonoBehaviour:
     m_Localized: Load this save file?
     m_Metadata:
       m_Items: []
+  - m_Id: 864226269006
+    m_Localized: This is an important tutorial. Skip it and go to the main game?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269007
+    m_Localized: Replay Tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226269008
+    m_Localized: Starting the tutorial will lose unsaved progress. Continue?
+    m_Metadata:
+      m_Items: []
   - m_Id: 33351417856
     m_Localized: Storage
     m_Metadata:

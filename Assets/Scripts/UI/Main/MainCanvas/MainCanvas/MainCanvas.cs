@@ -3,7 +3,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public partial class MainCanvas : CanvasBase
+public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePanelHost, IBuildingBuildHost, IBuildingTypeSelectHost
 {
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
@@ -17,7 +17,7 @@ public partial class MainCanvas : CanvasBase
     [SerializeField] private MainCanvasMainEventBtns _mainEventBtns;
     [SerializeField] private RectTransform _creditTopInfoToggleRect;
 
-    private MainRunner _mainRunner;
+    protected BuildingSceneRunnerBase _mainRunner;
 
     private void Update()
     {
@@ -35,6 +35,11 @@ public partial class MainCanvas : CanvasBase
     }
 
     public void Init(MainRunner mainRunner)
+    {
+        Init((BuildingSceneRunnerBase)mainRunner);
+    }
+
+    public void Init(BuildingSceneRunnerBase mainRunner)
     {
         base.Init();
 

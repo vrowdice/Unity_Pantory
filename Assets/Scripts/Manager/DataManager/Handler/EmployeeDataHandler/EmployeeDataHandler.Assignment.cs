@@ -106,5 +106,59 @@ public partial class EmployeeDataHandler
         OnEmployeeChanged?.Invoke();
         return removed;
     }
+
+    /// <summary>
+    /// 크레딧 범위 내에서 고용 가능한 최대 인원 수.
+    /// </summary>
+    public int GetMaxAffordableHireCount(EmployeeType type)
+    {
+        if (!TryGetEntry(type, out EmployeeEntry entry) || entry.data == null)
+            return 0;
+
+        if (_dataManager?.Finances == null)
+            return 0;
+
+        long hiringCost = entry.data.hiringCost;
+        if (hiringCost <= 0)
+            return int.MaxValue;
+
+        long credit = _dataManager.Finances.Credit;
+        if (credit < hiringCost)
+            return 0;
+
+        return (int)Mathf.Min(int.MaxValue, credit / hiringCost);
+    }
+
+    /// <summary>
+    /// 크레딧이 허용하는 만큼만 고용합니다. 실제 고용된 수를 반환합니다.
+    /// </summary>
+    public int TryHireUpToAffordable(EmployeeType type, int count)
+    {
+        if (count <= 0)
+            return 0;
+
+        int affordableCount = GetMaxAffordableHireCount(type);
+        int hireCount = Mathf.Min(count, affordableCount);
+        if (hireCount <= 0)
+            return 0;
+
+        HireEmployee(type, hireCount);
+        return hireCount;
+    }
+
+    /// <summary>
+    /// 할당 가능 인원이 부족하면 자동 고용 후 할당을 시도합니다.
+    /// </summary>
+    public bool TryAssignEmployeeWithAutoHire(EmployeeType type, int count)
+    {
+        if (count <= 0)
+            return false;
+
+        int availableCount = GetAvailableEmployeeCount(type);
+        if (availableCount < count)
+            TryHireUpToAffordable(type, count - availableCount);
+
+        return TryAssignEmployee(type, count);
+    }
 }
 

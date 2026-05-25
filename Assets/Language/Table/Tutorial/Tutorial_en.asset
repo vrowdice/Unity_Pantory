@@ -306,6 +306,42 @@ MonoBehaviour:
       big changes."
     m_Metadata:
       m_Items: []
+  - m_Id: 2578300000000000
+    m_Localized: This panel shows detailed information and controls for a selected
+      building. You can assign staff, review production recipes, manage on-site resource
+      buffers, and monitor output progress from here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000001
+    m_Localized: The building name is shown at the top. Build cost and daily maintenance
+      are listed below. The expertise toggle indicates whether only technicians can
+      be assigned to this building.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000002
+    m_Localized: Use the sliders to assign workers and technicians to this building.
+      The left numbers show your available staff; the slider sets how many are posted
+      here. More assigned staff generally raises production efficiency.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000003
+    m_Localized: This area shows the selected recipe's required inputs and outputs.
+      Tap this button to change what the building produces. Any materials waiting
+      in its buffers are returned to your inventory first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000004
+    m_Localized: These rows show materials currently stored in the building's input
+      and output buffers. Tap a resource icon to return that stock to your global
+      inventory when you need to free or recover items.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000005
+    m_Localized: Production progress shows how close the current batch is to completion,
+      rising each hour based on assigned staff efficiency. The efficiency bar reflects
+      how effectively posted workers and technicians are operating right now.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

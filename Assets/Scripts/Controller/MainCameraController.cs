@@ -33,7 +33,7 @@ public class MainCameraController : MonoBehaviour
     private Camera _camera;
     private Vector3 _dragOrigin;
     private bool _isDragging;
-    private MainRunner _mainRunner;
+    private BuildingSceneRunnerBase _sceneRunner;
 
     private void Awake() => Init();
 
@@ -163,17 +163,27 @@ public class MainCameraController : MonoBehaviour
 
     private bool IsContinuousPlacementInProgress()
     {
-        if (_mainRunner == null)
-            _mainRunner = FindAnyObjectByType<MainRunner>();
-        if (_mainRunner == null)
+        if (_sceneRunner == null)
+        {
+            _sceneRunner = FindAnyObjectByType<MainRunner>();
+            if (_sceneRunner == null)
+            {
+                BuildingSceneRunnerBase[] runners =
+                    FindObjectsByType<BuildingSceneRunnerBase>(FindObjectsSortMode.None);
+                if (runners.Length > 0)
+                    _sceneRunner = runners[0];
+            }
+        }
+
+        if (_sceneRunner == null)
             return false;
-        if (_mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlockingCameraDrag)
+        if (_sceneRunner.BlueprintHandler != null && _sceneRunner.BlueprintHandler.IsBlockingCameraDrag)
             return true;
-        if (_mainRunner.PlacementHandler == null)
+        if (_sceneRunner.PlacementHandler == null)
             return false;
-        if (!_mainRunner.PlacementHandler.IsPlacementMode)
+        if (!_sceneRunner.PlacementHandler.IsPlacementMode)
             return false;
-        return _mainRunner.PlacementHandler.IsPointerPlacementActive;
+        return _sceneRunner.PlacementHandler.IsPointerPlacementActive;
     }
 
     private void HandleScrollZoom()

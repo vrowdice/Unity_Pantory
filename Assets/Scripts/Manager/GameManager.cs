@@ -113,7 +113,11 @@ public class GameManager : Singleton<GameManager>
         }
 
         _dataManager.ClearAllEventSubscriptions();
-        _dataManager.Time.PauseTime();
+
+        if (scene.name == "Tutorial")
+            _dataManager.ResetToTutorialGame();
+        else
+            _dataManager.Time.PauseTime();
 
         MainCameraController mainCamera = FindAnyObjectByType<MainCameraController>();
         if (mainCamera == null)

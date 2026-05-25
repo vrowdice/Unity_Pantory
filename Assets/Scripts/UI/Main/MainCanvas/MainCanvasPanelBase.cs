@@ -12,10 +12,16 @@ public abstract class MainCanvasPanelBase : TutorialBase
     protected SoundManager _soundManager;
     protected VisualManager _visualManager;
     protected UIManager _panelUIManager;
+    protected IBuildScenePanelHost _panelHost;
     protected MainCanvas _uiManager;
     private Action _cachedOnClose;
 
     public MainCanvas Host => _uiManager;
+    public IBuildScenePanelHost PanelHost => _panelHost;
+    public GameManager GameManager => _gameManager;
+    public VisualManager VisualManager => _visualManager;
+    public DataManager DataManager => _dataManager;
+    public UIManager UIManager => _panelUIManager;
     public UIManager PanelUIManager => _panelUIManager;
 
     [Header("Animation")]
@@ -34,12 +40,23 @@ public abstract class MainCanvasPanelBase : TutorialBase
     /// </summary>
     public virtual void Init(MainCanvas argUIManager)
     {
-        _gameManager = argUIManager.GameManager;
-        _dataManager = argUIManager.DataManager;
-        _soundManager = argUIManager.SoundManager;
-        _visualManager = argUIManager.VisualManager;
-        _panelUIManager = argUIManager.UIManager;
-        _uiManager = argUIManager;
+        Init((IBuildScenePanelHost)argUIManager);
+    }
+
+    public virtual void Init(IBuildScenePanelHost panelHost)
+    {
+        if (panelHost != null)
+        {
+            _panelHost = panelHost;
+            _uiManager = panelHost as MainCanvas;
+            _gameManager = panelHost.GameManager;
+            _dataManager = panelHost.DataManager;
+            _soundManager = panelHost.SoundManager;
+            _visualManager = panelHost.VisualManager;
+            _panelUIManager = panelHost.UIManager;
+        }
+
+        EnsurePanelServices();
 
         if (_cachedOnClose == null) _cachedOnClose = OnClose;
         _panelUIManager?.PushCloseable(_cachedOnClose);
@@ -87,7 +104,22 @@ public abstract class MainCanvasPanelBase : TutorialBase
             gameObject.SetActive(false);
         }
 
-        _uiManager.CloseAllPanels();
+        _uiManager?.CloseAllPanels();
+        _panelHost?.CloseAllPanels();
+    }
+
+    protected void EnsurePanelServices()
+    {
+        if (_gameManager == null)
+            _gameManager = GameManager.Instance;
+        if (_dataManager == null)
+            _dataManager = DataManager.Instance;
+        if (_visualManager == null)
+            _visualManager = VisualManager.Instance;
+        if (_soundManager == null)
+            _soundManager = SoundManager.Instance;
+        if (_panelUIManager == null)
+            _panelUIManager = global::UIManager.Instance;
     }
 
     private bool TryGetPanelAnimator(out PanelDoAni animator)

@@ -12,22 +12,20 @@ public class MainBuildingBtn : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private TextMeshProUGUI _placedCountText = null;
 
-    private MainCanvas _host = null;
+    private IBuildingBuildHost _host = null;
     private BuildingData _buildingData;
     private bool _isSelected = false;
-    private bool _isUnlocked = false;
 
     public BuildingData BuildingData => _buildingData;
 
-    public void Initialize(MainCanvas host, BuildingData buildingData, bool isUnlocked, MainRunner runner)
+    public void Initialize(IBuildingBuildHost host, BuildingData buildingData, BuildingSceneRunnerBase runner)
     {
         _host = host;
         _buildingData = buildingData;
-        _isUnlocked = isUnlocked;
 
         if (_text != null) _text.text = buildingData.id.Localize(LocalizationUtils.TABLE_BUILDING);
         if (_image != null) _image.sprite = buildingData.icon;
-        if (_deactivatedImage != null) _deactivatedImage.gameObject.SetActive(!isUnlocked);
+        if (_deactivatedImage != null) _deactivatedImage.gameObject.SetActive(false);
 
         if (_buildingHelpButton != null)
         {
@@ -38,11 +36,17 @@ public class MainBuildingBtn : MonoBehaviour
         RefreshPlacedCount(runner);
     }
 
-    public void RefreshPlacedCount(MainRunner runner)
+    public void Initialize(MainCanvas host, BuildingData buildingData, MainRunner runner)
     {
-        if (_placedCountText == null || _buildingData == null || _deactivatedImage.gameObject.activeSelf == true)
+        Initialize(host, buildingData, (BuildingSceneRunnerBase)runner);
+    }
+
+    public void RefreshPlacedCount(BuildingSceneRunnerBase runner)
+    {
+        if (_placedCountText == null || _buildingData == null)
         {
-            _placedCountText.gameObject.SetActive(false);
+            if (_placedCountText != null)
+                _placedCountText.gameObject.SetActive(false);
             return;
         }
 
@@ -57,9 +61,10 @@ public class MainBuildingBtn : MonoBehaviour
         _placedCountText.text = $"{current}/{max}";
         _placedCountText.gameObject.SetActive(true);
     }
+
     public void OnClick()
     {
-        _host?.SelectBuilding(_buildingData, _isSelected, _isUnlocked);
+        _host?.SelectBuilding(_buildingData, _isSelected);
     }
 
     private void OnClickBuildingHelp()
@@ -73,14 +78,4 @@ public class MainBuildingBtn : MonoBehaviour
         _isSelected = isFocused;
         if (_focusedImage != null) _focusedImage.gameObject.SetActive(isFocused);
     }
-
-    public void RefreshUnlockState(bool isUnlocked, MainRunner runner)
-    {
-        _isUnlocked = isUnlocked;
-        if (_deactivatedImage != null)
-            _deactivatedImage.gameObject.SetActive(!isUnlocked);
-
-        RefreshPlacedCount(runner);
-    }
 }
-

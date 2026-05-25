@@ -35,7 +35,7 @@ public class MarketResourcePanel : MonoBehaviour
     /// <param name="marketPanel">부모 마켓 패널 참조</param>
     public void Init(MarketCanvas marketPanel)
     {
-        _dataManager = marketPanel.Host.DataManager;
+        _dataManager = marketPanel.DataManager;
         _marketPanel = marketPanel;
 
         if (_selectedResourceEntry == null)
@@ -86,6 +86,20 @@ public class MarketResourcePanel : MonoBehaviour
     {
         _resouceTradeInputField.text = (int.Parse(_resouceTradeInputField.text) + value).ToString();
         ChangeResouceTradeInput();
+
+        if (_selectedResourceEntry != null && _selectedResourceEntry.state.marketDeltaCount < 0)
+            TutorialDirector.Instance?.NotifyMarketSellConfigured();
+    }
+
+    public GameObject FindSellDecreaseButton()
+    {
+        foreach (Transform child in GetComponentsInChildren<Transform>(true))
+        {
+            if (child.name == "Dec1Btn")
+                return child.gameObject;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -98,7 +112,8 @@ public class MarketResourcePanel : MonoBehaviour
 
     private void RefreshUI()
     {
-        if (_selectedResourceEntry == null) return;
+        if (_selectedResourceEntry == null || _marketPanel == null || _dataManager == null)
+            return;
 
         ResourceData data = _selectedResourceEntry.data;
         ResourceState state = _selectedResourceEntry.state;
@@ -114,7 +129,7 @@ public class MarketResourcePanel : MonoBehaviour
             priceText += $" ({deltaSymbol}{state.currentChangeValue:N0})";
         }
         _resourcePriceText.text = priceText;
-        _resourcePriceText.color = _marketPanel.Host.VisualManager.GetDeltaColor(state.currentChangeValue);
+        _resourcePriceText.color = _marketPanel.VisualManager.GetDeltaColor(state.currentChangeValue);
 
         long purchasePrice = _dataManager.Resource.GetPurchasePrice(_selectedResourceId);
         long salePrice = _dataManager.Resource.GetSalePrice(_selectedResourceId);

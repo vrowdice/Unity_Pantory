@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public class TimeDataHandler : IDataHandlerEvents
 {
+    private const float MaxDeltaTimeSeconds = 0.1f;
+    private const int MaxTimeTicksPerFrame = 48;
+
     private readonly DataManager _dataManager;
     private InitialTimeData _initialTimeData;
 
@@ -41,39 +44,71 @@ public class TimeDataHandler : IDataHandlerEvents
     public void Update(float deltaTime)
     {
         if (IsPaused) return;
+        if (TimeSpeed <= 0f) return;
 
+        deltaTime = Mathf.Min(deltaTime, MaxDeltaTimeSeconds);
         DayProgress += (deltaTime / _realSecondsPerDay) * TimeSpeed;
-        UpdateHourLogic();
 
-        if (DayProgress >= 1.0f)
-        {
-            DayProgress -= 1.0f;
-            AdvanceDay();
-        }
+        int ticksRemaining = MaxTimeTicksPerFrame;
+        while (ticksRemaining > 0 && TryAdvanceOneTimeTick())
+            ticksRemaining--;
     }
 
-    private void UpdateHourLogic(bool forceNotify = false)
+    private bool TryAdvanceOneTimeTick()
     {
-        int newHour = Mathf.Clamp(Mathf.FloorToInt(DayProgress * _initialTimeData.hoursPerDay), 0, _initialTimeData.hoursPerDay - 1);
+        int hoursPerDay = _initialTimeData.hoursPerDay;
 
-        if (newHour != CurrentHour || forceNotify)
+        if (DayProgress >= 1f)
         {
-            CurrentHour = newHour;
-            OnHourChanged?.Invoke();
+            if (CurrentHour < hoursPerDay - 1)
+            {
+                AdvanceOneHour();
+                return true;
+            }
+
+            DayProgress -= 1f;
+            AdvanceOneHour();
+            return true;
         }
+
+        int targetHour = GetHourFromProgress(DayProgress);
+        if (CurrentHour == targetHour)
+            return false;
+
+        AdvanceOneHour();
+        return true;
     }
 
-    private void AdvanceDay()
+    private int GetHourFromProgress(float progress)
+    {
+        return Mathf.Clamp(
+            Mathf.FloorToInt(progress * _initialTimeData.hoursPerDay),
+            0,
+            _initialTimeData.hoursPerDay - 1);
+    }
+
+    private void AdvanceOneHour()
+    {
+        int hoursPerDay = _initialTimeData.hoursPerDay;
+        CurrentHour++;
+        if (CurrentHour >= hoursPerDay)
+        {
+            CurrentHour = 0;
+            AdvanceDayAfterHourRollover();
+        }
+
+        OnHourChanged?.Invoke();
+    }
+
+    private void AdvanceDayAfterHourRollover()
     {
         Day++;
-        CurrentHour = 0;
-        UpdateHourLogic(true);
-
         if (Day >= _daysPerMonth)
         {
             Day = 0;
             AdvanceMonth();
         }
+
         OnDayChanged?.Invoke();
     }
 
@@ -114,9 +149,11 @@ public class TimeDataHandler : IDataHandlerEvents
 
     public void SetDate(int year, int month, int day)
     {
-        Year = year; Month = month; Day = day;
+        Year = year;
+        Month = month;
+        Day = day;
         CurrentHour = 0;
-        UpdateHourLogic(true);
+        OnHourChanged?.Invoke();
     }
 
     public void SetRealSecondsPerDay(float seconds)

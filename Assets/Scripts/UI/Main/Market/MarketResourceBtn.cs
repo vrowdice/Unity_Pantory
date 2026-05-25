@@ -62,7 +62,7 @@ public class MarketResourceBtn : MonoBehaviour
         string deltaValueText = ReplaceUtils.FormatNumber(delta);
 
         _deltaText.text = $"{priceText} ({deltaSymbol}{deltaValueText})";
-        _deltaText.color = _marketPanel.Host.VisualManager.GetDeltaColor(delta);
+        _deltaText.color = _marketPanel.VisualManager.GetDeltaColor(delta);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class MarketResourceBtn : MonoBehaviour
         string tradeText = tradeDelta == 0 ? "0" : $"{deltaSymbol}{ReplaceUtils.FormatNumberWithCommas(tradeDelta)}";
 
         _tradeValueText.text = tradeText;
-        _tradeValueText.color = _marketPanel.Host.VisualManager.GetDeltaColor(tradeDelta);
+        _tradeValueText.color = _marketPanel.VisualManager.GetDeltaColor(tradeDelta);
     }
 
     /// <summary>

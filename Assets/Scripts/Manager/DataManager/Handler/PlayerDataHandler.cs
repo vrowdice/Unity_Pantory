@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 플레이어 공통 런타임 상태(튜토리얼 진행 등). GameSaveData.tutorialAutoShowPending 과 동기화.
@@ -7,6 +8,16 @@ using System.Collections.Generic;
 public class PlayerDataHandler : IGameSaveHandler
 {
     private readonly Dictionary<string, bool> _tutorialAutoShowPendingByOwnerName = new Dictionary<string, bool>();
+
+    private const string IntroTutorialCompletedKey = "HasCompletedIntroTutorial";
+
+    public bool HasCompletedIntroTutorial => PlayerPrefs.GetInt(IntroTutorialCompletedKey, 0) == 1;
+
+    public void MarkIntroTutorialCompleted()
+    {
+        PlayerPrefs.SetInt(IntroTutorialCompletedKey, 1);
+        PlayerPrefs.Save();
+    }
 
     public bool ShouldAutoStartTutorialForOwner(string ownerGameObjectName)
     {

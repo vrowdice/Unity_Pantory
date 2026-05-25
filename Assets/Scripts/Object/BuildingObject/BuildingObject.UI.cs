@@ -62,6 +62,29 @@ public partial class BuildingObject
             counts);
     }
 
+    private void TryRefreshOutgoingIconsWhenVisible()
+    {
+        if (_outgoingIconContainer != null)
+            return;
+
+        if (_selectedResource == null)
+            return;
+
+        if (_buildingData is LoadStationData)
+            return;
+
+        if (!(_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is RawMaterialFactoryData))
+            return;
+
+        if (!ResourceFlowFx.IsWorldPointVisible(transform.position))
+            return;
+
+        if (_selectedResource.GetBatchOutputCounts().Count == 0)
+            return;
+
+        RefreshOutgoingResourceIcons();
+    }
+
     private void ClearOutgoingIconContainer()
     {
         if (_outgoingIconContainer == null) return;
