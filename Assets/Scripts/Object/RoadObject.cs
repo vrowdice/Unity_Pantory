@@ -127,7 +127,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
         if (counts == null || counts.Count == 0) return;
 
         Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
-        _heldIconContainer = UIManager.Instance.CreateProductionIconContainer(
+        _heldIconContainer = UIManager.Instance.CreateResourceImageContainer(
             worldCanvas,
             $"RoadHeldIcons_{gameObject.GetInstanceID()}",
             worldPosition,

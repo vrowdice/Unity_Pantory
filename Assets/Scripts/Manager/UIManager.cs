@@ -38,6 +38,7 @@ public class UIManager : Singleton<UIManager>
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
+    [SerializeField] private GameObject _resourceImagePrefab;
     [SerializeField] private GameObject _gridSortContentPrefab;
     [SerializeField] private GameObject _textPairPanelPrefab;
     [SerializeField] private GameObject _actionBtnPrefab;
@@ -45,8 +46,10 @@ public class UIManager : Singleton<UIManager>
 
     [Header("Production Icon Settings")]
     [SerializeField] private float _productionIconScale = 1.0f;
+    [SerializeField] private float _worldResourceImageScale = 1.0f;
 
     const int ActionBtnInitialPoolCount = 8;
+    const int ResourceImageInitialPoolCount = 16;
 
     public GameObject ActionBtnPrefab => _actionBtnPrefab;
 
@@ -66,6 +69,9 @@ public class UIManager : Singleton<UIManager>
     {
         ClearCloseStack();
         _mainCanvas = null;
+
+        if (scene.name == "Title")
+            ClearManagerCanvasPopups();
     }
 
     private void Update()
@@ -135,6 +141,24 @@ public class UIManager : Singleton<UIManager>
     }
 
     /// <summary>
+    /// DontDestroy ManagerCanvas에 남은 팝업을 즉시 제거합니다 (씬 전환·타이틀 복귀용).
+    /// </summary>
+    public void ClearManagerCanvasPopups()
+    {
+        ClearCloseStack();
+
+        if (_managerCanvasTransform == null)
+            return;
+
+        List<GameObject> children = new List<GameObject>();
+        foreach (Transform child in _managerCanvasTransform)
+            children.Add(child.gameObject);
+
+        for (int i = 0; i < children.Count; i++)
+            Destroy(children[i]);
+    }
+
+    /// <summary>
     /// 닫기 스택에 등록된 패널/팝업이 하나 이상 열려있는지 반환합니다.
     /// </summary>
     public bool HasAnyOpenCloseablePanel()
@@ -164,6 +188,7 @@ public class UIManager : Singleton<UIManager>
     {
         CreateManagerCanvas();
         EnsureActionBtnPool();
+        EnsureResourceImagePool();
     }
 
     void EnsureActionBtnPool()
@@ -174,6 +199,16 @@ public class UIManager : Singleton<UIManager>
         if (pool == null) return;
 
         pool.CreatePool(_actionBtnPrefab, ActionBtnInitialPoolCount);
+    }
+
+    void EnsureResourceImagePool()
+    {
+        if (_resourceImagePrefab == null) return;
+
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool == null) return;
+
+        pool.CreatePool(_resourceImagePrefab, ResourceImageInitialPoolCount);
     }
 
     /// <summary>
@@ -661,7 +696,7 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
-    public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> productionCounts)
+    public GameObject CreateResourceImageContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> resourceCounts)
     {
         GameObject container = Instantiate(_gridSortContentPrefab, parent);
         container.name = name;
@@ -674,10 +709,75 @@ public class UIManager : Singleton<UIManager>
         t.rotation = Quaternion.identity;
         t.localScale = Vector3.one * containerScale;
 
-        if (productionCounts != null && productionCounts.Count > 0)
-            CreateProductionIcons(container.transform, productionCounts);
+        if (resourceCounts != null && resourceCounts.Count > 0)
+            CreateResourceImages(container.transform, resourceCounts);
 
         return container;
+    }
+
+    public GameObject CreateResourceImage(Transform parent, ResourceEntry resourceEntry)
+    {
+        if (_resourceImagePrefab == null || parent == null || resourceEntry == null)
+            return null;
+
+        GameObject iconObj;
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool != null)
+        {
+            iconObj = pool.GetPooledObject(_resourceImagePrefab);
+            iconObj.transform.SetParent(parent, false);
+        }
+        else
+        {
+            iconObj = Instantiate(_resourceImagePrefab, parent);
+        }
+
+        if (iconObj.TryGetComponent(out RectTransform rect))
+            rect.localScale = Vector3.one * _worldResourceImageScale;
+
+        if (iconObj.TryGetComponent(out ResourceImage iconComponent))
+            iconComponent.Init(resourceEntry);
+
+        return iconObj;
+    }
+
+    public void CreateResourceImages(Transform parent, Dictionary<string, int> resourceCounts)
+    {
+        if (parent == null || resourceCounts == null)
+            return;
+
+        foreach (KeyValuePair<string, int> kvp in resourceCounts)
+        {
+            string resourceId = kvp.Key;
+            if (string.IsNullOrEmpty(resourceId))
+                continue;
+
+            ResourceEntry entry = DataManager.Instance.Resource.GetResourceEntry(resourceId);
+            if (entry != null)
+                CreateResourceImage(parent, entry);
+        }
+    }
+
+    public void RepopulateResourceImages(Transform parent, Dictionary<string, int> resourceCounts)
+    {
+        if (parent == null)
+            return;
+
+        PoolingManager pool = GameManager.Instance != null ? GameManager.Instance.PoolingManager : null;
+        if (pool != null)
+            pool.ClearChildrenToPool(parent);
+        else
+            GameObjectUtils.ClearChildren(parent);
+
+        if (resourceCounts == null || resourceCounts.Count == 0)
+            return;
+
+        CreateResourceImages(parent, resourceCounts);
+    }
+
+    public GameObject CreateProductionIconContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> productionCounts)
+    {
+        return CreateResourceImageContainer(parent, name, worldPosition, containerScale, productionCounts);
     }
 
     public GameObject CreateProductionIcon(Transform parent, ResourceEntry resourceEntry, int amount)
@@ -699,7 +799,7 @@ public class UIManager : Singleton<UIManager>
         if (iconObj.TryGetComponent(out RectTransform rect))
             rect.localScale = Vector3.one * _productionIconScale;
 
-        if (iconObj.TryGetComponent(out ProductionInfoImage iconComponent))
+        if (iconObj.TryGetComponent(out ResourceInfoImage iconComponent))
             iconComponent.Init(resourceEntry, amount);
 
         return iconObj;

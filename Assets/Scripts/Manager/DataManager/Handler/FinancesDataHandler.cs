@@ -253,7 +253,19 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     }
 
     /// <summary>
-    /// 세이브 로드 후 씬 진입 시 파산 카운트다운 UI를 복원합니다.
+    /// 파산 게임오버 후 타이틀 복귀 시 플래그를 초기화합니다. 같은 세션에서 타이틀에 팝업이 다시 뜨는 것을 막습니다.
+    /// </summary>
+    public void ResetBankruptcyStateForTitleReturn()
+    {
+        _isBankruptcyGameOver = false;
+        _bankruptcyMonthsRemaining = 0;
+        _skipNextBankruptcyDecrement = false;
+        _lastBankruptcyMonthsRemaining = 0;
+        _dataManager.Time?.ResumeTime();
+    }
+
+    /// <summary>
+    /// 세이브 로드 후 플레이 씬 진입 시 파산 카운트다운 UI를 복원합니다.
     /// </summary>
     public void NotifyBankruptcyUiRestored()
     {

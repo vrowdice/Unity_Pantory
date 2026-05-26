@@ -268,16 +268,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000001
-    m_Localized: Building name
+    m_Localized: The building name is shown here. The indicator below shows whether
+      technicians are required.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000002
-    m_Localized: Assign workers and technicians with the sliders. More staff raises
-      efficiency.
+    m_Localized: Build cost, daily maintenance, required staff, and assignment sliders
+      are shown here.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000003
-    m_Localized: Shows recipe inputs and outputs. Tap to change production; buffers
+    m_Localized: Shows recipe inputs and outputs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000006
+    m_Localized: Tap this button to change the output resource. Buffer materials
       return to inventory first.
     m_Metadata:
       m_Items: []

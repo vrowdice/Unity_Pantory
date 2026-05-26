@@ -201,12 +201,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 32
-    m_Right: 32
-    m_Top: 28
-    m_Bottom: 28
+    m_Left: 30
+    m_Right: 30
+    m_Top: 40
+    m_Bottom: 60
   m_ChildAlignment: 1
-  m_Spacing: 16
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -2089,6 +2089,14 @@ PrefabInstance:
       propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 810307198100779398}
+    - target: {fileID: 2910112592935676860, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickReturnToTitle
+      objectReference: {fileID: 0}
+    - target: {fileID: 2910112592935676860, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
+      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: BankruptcyGameOverPopup, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 4550414814943913778, guid: 23a62a527d7dc6d4fa055e0eb71cce59, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

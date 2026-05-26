@@ -115,7 +115,9 @@ public class SceneLoadManager : Singleton<SceneLoadManager>
         if (dataManager != null)
         {
             dataManager.Research.ReapplyEffectsFromCompletedResearch();
-            dataManager.Finances?.NotifyBankruptcyUiRestored();
+
+            if (sceneName == "Main" || sceneName == "Tutorial")
+                dataManager.Finances?.NotifyBankruptcyUiRestored();
         }
 
         _isLoading = false;

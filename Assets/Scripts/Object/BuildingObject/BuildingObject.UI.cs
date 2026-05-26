@@ -54,7 +54,7 @@ public partial class BuildingObject
         Transform worldCanvas = GameManager.Instance.GetWorldCanvas();
         Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
 
-        _outgoingIconContainer = UIManager.Instance.CreateProductionIconContainer(
+        _outgoingIconContainer = UIManager.Instance.CreateResourceImageContainer(
             worldCanvas,
             $"BuildingOutgoingIcons_{gameObject.GetInstanceID()}",
             worldPosition,

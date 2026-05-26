@@ -26,6 +26,12 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
     [SerializeField] private int _gridHeight = 10;
     [SerializeField] private float _cameraZOffset = 11f;
 
+    [Header("Tile Zoom LOD")]
+    [Tooltip("카메라 orthographicSize가 이 값 이상이면 단일 그리드 스프라이트만 표시합니다 (줌 아웃).")]
+    [SerializeField] private float _tileOverviewOrthographicSizeThreshold = 12f;
+    [Tooltip("줌 아웃 오버뷰 타일 무늬 밀도. 1=그리드 칸당 약 1칸, 값을 올리면 더 촘촘하게 반복됩니다.")]
+    [SerializeField] private float _tileOverviewPatternDensity = 1f;
+
     private Camera _mainCamera;
     private MainCameraController _mainCameraController;
 
@@ -45,6 +51,8 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
     public float RemovalEffectZ => _removalEffectZ;
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
+    public float TileOverviewOrthographicSizeThreshold => _tileOverviewOrthographicSizeThreshold;
+    public float TileOverviewPatternDensity => Mathf.Max(0.01f, _tileOverviewPatternDensity);
     public GameObject PreviewPrefab => _previewPrefab;
     public GameObject BlueprintPreviewPrefab => _blueprintPreviewPrefab;
     public GameObject TilePrefab => _tilePrefab;
@@ -81,6 +89,14 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
 
         _placementHandler.Update(_mainCamera);
         _blueprintHandler.Update(_mainCamera);
+    }
+
+    private void LateUpdate()
+    {
+        if (_gridHandler == null || _mainCamera == null)
+            return;
+
+        _gridHandler.RefreshTileZoomVisuals(_mainCamera);
     }
 
     public override void Init()

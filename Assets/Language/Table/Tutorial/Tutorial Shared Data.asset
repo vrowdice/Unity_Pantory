@@ -255,12 +255,16 @@ MonoBehaviour:
     m_Key: BuildingInfoPopup3
     m_Metadata:
       m_Items: []
-  - m_Id: 2578300000000004
+  - m_Id: 2578300000000006
     m_Key: BuildingInfoPopup4
     m_Metadata:
       m_Items: []
-  - m_Id: 2578300000000005
+  - m_Id: 2578300000000004
     m_Key: BuildingInfoPopup5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578300000000005
+    m_Key: BuildingInfoPopup6
     m_Metadata:
       m_Items: []
   m_Metadata:

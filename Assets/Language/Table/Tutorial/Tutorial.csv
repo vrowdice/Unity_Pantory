@@ -56,8 +56,9 @@ NewsCanvas0,2578200000000000,Headlines on market shifts and main events appear h
 NewsCanvas1,2578200000000001,Scroll active stories here. New articles appear and old ones expire.,ストーリーをスクロールします。新記事が追加され期限で消えます。,기사 목록을 스크롤합니다. 새 기사가 추가되고 기한이 지나면 사라집니다.
 NewsCanvas2,2578200000000002,Open a headline to read the full article.,見出しを開くと本文が読めます。,제목을 열면 본문을 읽을 수 있습니다.
 BuildingInfoPopup0,2578300000000000,"Manage staff, recipes, buffers, and production for the selected building.",選択した建物の人員・レシピ・バッファ・生産を管理できます。,"선택한 건물의 직원, 레시피, 버퍼, 생산을 관리합니다."
-BuildingInfoPopup1,2578300000000001,Building name, build cost, maintenance, and technician-only toggle are shown here.,建物名、建設費、維持費、技術者限定設定が表示されます。,"건물 이름, 건설 비용, 유지비, 기술자 전용 설정이 표시됩니다."
-BuildingInfoPopup2,2578300000000002,Assign workers and technicians with the sliders. More staff raises efficiency.,スライダーで作業員と技術者を配置します。人数が多いほど効率が上がります。,슬라이더로 워커와 기술자를 배치합니다. 인원이 많을수록 효율이 올라갑니다.
-BuildingInfoPopup3,2578300000000003,Shows recipe inputs and outputs. Tap to change production; buffers return to inventory first.,レシピの入出力が表示されます。生産変更時はバッファが先に戻ります。,레시피 입·출력이 표시됩니다. 생산 변경 시 버퍼 자원이 먼저 반환됩니다.
-BuildingInfoPopup4,2578300000000004,Materials in input/output buffers. Tap an icon to return stock to inventory.,入出力バッファの資源です。アイコンをタップで在庫に戻せます。,입·출력 버퍼 자원입니다. 아이콘을 누르면 재고로 되돌립니다.
-BuildingInfoPopup5,2578300000000005,Production progress and staff efficiency for the current batch.,現在バッチの生産進行度と配置従業員の効率です。,현재 배치의 생산 진행도와 직원 효율입니다.
+BuildingInfoPopup1,2578300000000001,"The building name is shown here. The indicator below shows whether technicians are required.",建物名が表示されます。下の表示で技術者が必要かどうかが分かります。,건물 이름이 표시됩니다. 아래 표시로 기술자가 필요한 건물인지 확인할 수 있습니다.
+BuildingInfoPopup2,2578300000000002,"Build cost, daily maintenance, required staff, and assignment sliders are shown here.",建設費、維持費、必要人数、配置スライダーが表示されます。,"건설 비용, 유지비, 필요 인원, 배치 슬라이더가 표시됩니다."
+BuildingInfoPopup3,2578300000000003,Shows recipe inputs and outputs.,レシピの入出力が表示されます。,레시피 입·출력이 표시됩니다.
+BuildingInfoPopup4,2578300000000006,"Tap this button to change the output resource. Buffer materials return to inventory first.",このボタンを押すと出力資源を変更できます。変更時はバッファの資源が先に在庫へ戻ります。,이 버튼을 눌러 출력 자원을 변경할 수 있습니다. 변경 시 버퍼 자원이 먼저 창고로 반환됩니다.
+BuildingInfoPopup5,2578300000000004,Materials in input/output buffers. Tap an icon to return stock to inventory.,入出力バッファの資源です。アイコンをタップで在庫に戻せます。,입·출력 버퍼 자원입니다. 아이콘을 누르면 창고로 되돌립니다.
+BuildingInfoPopup6,2578300000000005,Production progress and staff efficiency for the current batch.,現在バッチの生産進行度と配置従業員の効率です。,현재 배치의 생산 진행도와 직원 효율입니다.

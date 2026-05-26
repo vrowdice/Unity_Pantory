@@ -531,9 +531,9 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: BankruptcyGameOverPopup, Assembly-CSharp
-        m_MethodName: OnClickReturnToTitle
+      - m_Target: {fileID: 490967990953751824}
+        m_TargetAssemblyTypeName: ActionBtn, Assembly-CSharp
+        m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

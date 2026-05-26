@@ -28,7 +28,10 @@ public class BankruptcyGameOverPopup : PopupBase
 
     public void OnClickReturnToTitle()
     {
-        CloseAndDestroy();
+        DataManager.Instance?.Finances?.ResetBankruptcyStateForTitleReturn();
+        UIManager.Instance?.ClearManagerCanvasPopups();
+
+        Destroy(gameObject);
         SceneLoadManager.Instance?.LoadScene("Title");
     }
 
