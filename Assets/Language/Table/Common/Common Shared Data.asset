@@ -667,6 +667,22 @@ MonoBehaviour:
     m_Key: Your companyCollapsedUnderDebt
     m_Metadata:
       m_Items: []
+  - m_Id: 43405946866663436
+    m_Key: GoalPanelTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663437
+    m_Key: GoalComplete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663438
+    m_Key: GoalChainComplete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663439
+    m_Key: GoalReward
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

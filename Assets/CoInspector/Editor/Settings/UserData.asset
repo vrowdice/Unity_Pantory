@@ -68,7 +68,52 @@ MonoBehaviour:
       mostClicked:
       - paths:
         - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
-        count: 23
+        count: 39
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]"}'
+        count: 5
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"Runner[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"GameManager[0]"}'
+        count: 1
         gameObjects:
         - {fileID: 0}
       recentlyClicked:
@@ -77,38 +122,54 @@ MonoBehaviour:
         count: 1
         gameObjects:
         - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"GameManager[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]/Content[0]"}'
+        count: 1
+        gameObjects:
+        - {fileID: 0}
       - paths: []
         count: 1
         gameObjects: []
-      - paths: []
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/QuickMoveContainer[0]/QuickMovePanelContent[0]"}'
         count: 1
-        gameObjects: []
-      - paths: []
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]"}'
         count: 1
-        gameObjects: []
-      - paths: []
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/TopInfoContainer[0]/DateTopInfoPanel[0]/SettingBtn[0]"}'
         count: 1
-        gameObjects: []
-      - paths: []
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]"}'
         count: 1
-        gameObjects: []
-      - paths: []
+        gameObjects:
+        - {fileID: 0}
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]/Content[0]/Icon[0]"}'
         count: 1
-        gameObjects: []
-      - paths: []
-        count: 1
-        gameObjects: []
-      - paths: []
-        count: 1
-        gameObjects: []
-      - paths: []
-        count: 1
-        gameObjects: []
+        gameObjects:
+        - {fileID: 0}
       mostClickedContents: []
       recentlyClickedContents: []
     sceneGUID: 8c9cfa26abfee488c85f1582747f6a02
     sceneName: Main
-    lastSaveTimePrint: 04:16 PM (May 26, 2026)
+    lastSaveTimePrint: 10:31 PM (May 26, 2026)
     gracePeriod: 3
     activeIndex: 0
     checkingToLoad: 0
@@ -119,22 +180,22 @@ MonoBehaviour:
     suggestedHeight: 0
     userAssetViewSize: -1
     previewHeight: 0
-    scrollPosition: {x: 0, y: 324}
+    scrollPosition: {x: 0, y: 0}
     toolbarScrollPosition: {x: 0, y: 0}
     rawUserHeight: 0
-    lastValidTabWidth: 96
+    lastValidTabWidth: 93
     alreadyCalculatedHeight: 0
     lastKnownHeight: 0
     tabs:
     - path: '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
       paths: []
-      tabWidth: 93
+      tabWidth: 90
       name: MainCanvas
       icon: {fileID: 7853449062886713960, guid: 0000000000000000d000000000000000, type: 0}
       shortName: MainCanvas
       filterString: 
       newTab: 0
-      scrollPosition: 324
+      scrollPosition: 0
       isSelected: 0
       allCollapsed: 0
       runtimeFoldouts: 
@@ -190,8 +251,8 @@ MonoBehaviour:
         focusAfter: 0
         awaitingScroll: 0
         hidden: 0
-        componentName: transform
-        niceComponentName: transform
+        componentName: recttransform
+        niceComponentName: rect transform
       - index: 0
         component: {fileID: 0}
         missingComponentID: -1
@@ -199,8 +260,8 @@ MonoBehaviour:
         focusAfter: 0
         awaitingScroll: 0
         hidden: 0
-        componentName: boxcollider2d
-        niceComponentName: box collider 2d
+        componentName: canvas
+        niceComponentName: canvas
       - index: 0
         component: {fileID: 0}
         missingComponentID: -1
@@ -208,8 +269,8 @@ MonoBehaviour:
         focusAfter: 0
         awaitingScroll: 0
         hidden: 0
-        componentName: buildingtile
-        niceComponentName: building tile
+        componentName: canvasscaler
+        niceComponentName: canvas scaler
       - index: 0
         component: {fileID: 0}
         missingComponentID: -1
@@ -217,8 +278,8 @@ MonoBehaviour:
         focusAfter: 0
         awaitingScroll: 0
         hidden: 0
-        componentName: 
-        niceComponentName: 
+        componentName: graphicraycaster
+        niceComponentName: graphic raycaster
       - index: 0
         component: {fileID: 0}
         missingComponentID: -1
@@ -226,19 +287,36 @@ MonoBehaviour:
         focusAfter: 0
         awaitingScroll: 0
         hidden: 0
-        componentName: 
-        niceComponentName: 
+        componentName: maincanvas
+        niceComponentName: main canvas
       historyPaths:
       - paths:
         - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]"}'
         prefab: 0
       - paths:
-        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"Runner[0]"}'
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"GameManager[0]"}'
+        prefab: 0
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]"}'
+        prefab: 0
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/GoalBtn[0]/Content[0]"}'
+        prefab: 0
+      - paths:
+        - '{"sceneGUID":"8c9cfa26abfee488c85f1582747f6a02","path":"MainCanvas[0]/QuickMoveContainer[0]/QuickMovePanelContent[0]"}'
         prefab: 0
       owner: {fileID: 0}
     closedTabs: []
     playModeTransforms: []
     historyAssets:
+    - assetGUIDs:
+      - c8d9e0f1a2b34567890abcdef1234567
+    - assetGUIDs:
+      - c1a2b3c4d5e6f708192a3b4c5d6e7f81
+    - assetGUIDs:
+      - c2a3b4c5d6e7f809192a3b4c5d6e7f82
+    - assetGUIDs:
+      - 10c608d4ef825d14b8a641b7ad998c7f
     - assetGUIDs:
       - 8c9cfa26abfee488c85f1582747f6a02
     - assetGUIDs:
@@ -253,17 +331,9 @@ MonoBehaviour:
       - c7d8e9f0a1b24365869708192a3b4c5d
     - assetGUIDs:
       - 23a62a527d7dc6d4fa055e0eb71cce59
-    - assetGUIDs:
-      - d4720c548accef4458b69d7fed340c43
-    - assetGUIDs:
-      - 6bd967e415823724f8074308be52ebc6
-    - assetGUIDs:
-      - ed0187957ce769647b7ed14119c00652
-    - assetGUIDs:
-      - 754ba511e06f147488ea6a4c3052a5c5
-    targetObject: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
+    targetObject: {fileID: 0}
     targetObjects: []
-    lastSelectedAsset: Assets/Scenes/Main.unity
+    lastSelectedAsset: 
     lastClickedTab: 0
     previousTab: 0
   - tracker:
@@ -666,7 +736,7 @@ MonoBehaviour:
     lastSelectedAsset: Assets/Scenes/Main.unity
     lastClickedTab: -1
     previousTab: 0
-  tipsShown: 01000000000000000100000000000000010000000100000000000000010000000100000001000000000000000100000001000000010000000100000000000000010000000100000000000000000000000000000001000000010000000000000001000000010000000100000000000000000000000100000000000000010000000100000001000000000000000000000001000000000000000000000000000000010000000100000000000000010000000100000001000000
+  tipsShown: 01000000000000000100000000000000010000000100000000000000010000000100000001000000000000000100000001000000010000000100000001000000010000000100000001000000000000000000000001000000010000000100000001000000010000000100000000000000000000000100000000000000010000000100000001000000000000000000000001000000000000000000000000000000010000000100000000000000010000000100000001000000
   playModeStartScene:
     m_Handle: 0
   enteringPlayMode: 0

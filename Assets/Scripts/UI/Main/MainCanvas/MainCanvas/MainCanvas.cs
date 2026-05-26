@@ -92,8 +92,10 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
 
         InitBuildUi();
         InitBankruptcyUi();
+        InitGoalUi();
 
         _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += RefreshBuildingPlacedCountDisplays;
+        DataManager.Goal?.BindSceneGrid(_mainRunner.GridHandler);
 
         RefreshResourceScrollView();
         UpdateAllMainText();
@@ -105,6 +107,8 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
 
         if (_mainRunner != null && _mainRunner.GridHandler != null)
             _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= RefreshBuildingPlacedCountDisplays;
+
+        DataManager?.Goal?.UnbindSceneGrid();
 
         if (DataManager != null)
         {
@@ -209,5 +213,10 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
     public void ShowOptionPanel()
     {
         UIManager.ShowOptionPopup();
+    }
+
+    public void ShowGoalPopup()
+    {
+        UIManager?.ShowGoalPopup();
     }
 }

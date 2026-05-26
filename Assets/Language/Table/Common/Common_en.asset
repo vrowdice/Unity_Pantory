@@ -672,6 +672,22 @@ MonoBehaviour:
     m_Localized: Your company collapsed under debt.
     m_Metadata:
       m_Items: []
+  - m_Id: 43405946866663436
+    m_Localized: Goal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663437
+    m_Localized: 'Goal Complete: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663438
+    m_Localized: All goals completed!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663439
+    m_Localized: 'Reward: {0}'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

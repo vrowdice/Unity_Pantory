@@ -35,6 +35,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _buildingInfoPopupPrefab;
     [SerializeField] private GameObject _buildingHelpPopupPrefab;
     [SerializeField] private GameObject _resourceHelpPopupPrefab;
+    [SerializeField] private GameObject _goalPopupPrefab;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
@@ -693,6 +694,34 @@ public class UIManager : Singleton<UIManager>
 
         popup.gameObject.SetActive(true);
         popup.Init(resourceData);
+        return popup;
+    }
+
+    public GoalPopup ShowGoalPopup()
+    {
+        GoalPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<GoalPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            if (_goalPopupPrefab == null)
+            {
+                Debug.LogWarning("[UIManager] Goal popup prefab is missing.");
+                return null;
+            }
+
+            GameObject obj = InstantiatePopupPrefab(_goalPopupPrefab);
+            popup = obj.GetComponent<GoalPopup>();
+        }
+
+        if (popup == null)
+            return null;
+
+        popup.gameObject.SetActive(true);
+        popup.Init();
         return popup;
     }
 

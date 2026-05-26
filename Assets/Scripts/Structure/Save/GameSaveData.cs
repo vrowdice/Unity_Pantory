@@ -73,6 +73,16 @@ public class GameSaveData
     // Player (tutorial auto-show pending by owner object name, JsonUtility는 Dictionary 미지원)
     public List<TutorialAutoShowPendingSaveData> tutorialAutoShowPending = new List<TutorialAutoShowPendingSaveData>();
 
+    // Goal Data
+    public string activeGoalId = string.Empty;
+    public long activeGoalProgress;
+    public bool allGoalsCompleted;
+
+    // Legacy goal save fields (pre single-goal refactor)
+    public string activeGoalChainId = string.Empty;
+    public int activeGoalStepIndex;
+    public bool goalChainCompleted;
+
     // Placed Objects (Main building/road layout)
     public List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
     public List<PlacedRoadSaveData> placedRoads = new List<PlacedRoadSaveData>();
