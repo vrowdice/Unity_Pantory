@@ -111,7 +111,12 @@ public class SceneLoadManager : Singleton<SceneLoadManager>
 
         yield return StartCoroutine(Fade(0f));
         
-        DataManager.Instance.Research.ReapplyEffectsFromCompletedResearch();
+        DataManager dataManager = DataManager.Instance;
+        if (dataManager != null)
+        {
+            dataManager.Research.ReapplyEffectsFromCompletedResearch();
+            dataManager.Finances?.NotifyBankruptcyUiRestored();
+        }
 
         _isLoading = false;
     }

@@ -42,6 +42,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     public long Credit => _credit;
     public long Wealth => _wealth;
     public int BankruptcyMonthsRemaining => _bankruptcyMonthsRemaining;
+    public int BankruptcyGraceMonths => GetBankruptcyGraceMonths();
     public bool IsBankruptcyCountdownActive => _bankruptcyMonthsRemaining > 0 && !_isBankruptcyGameOver;
     public bool IsBankruptcyGameOver => _isBankruptcyGameOver;
 
@@ -65,6 +66,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     public bool ModifyCredit(long credit)
     {
         _credit += credit;
+        RefreshWealth();
 
         OnCreditChanged?.Invoke();
         return true;
@@ -73,9 +75,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     public void HandleDayChanged()
     {
         CalculateDailyCreditDelta();
-
         ModifyCredit(_dailyTotal);
-        RefreshWealth();
     }
 
     public void HandleMonthChanged()
@@ -224,16 +224,20 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         }
     }
 
-    private void NotifyBankruptcyCountdownChanged(int monthsRemaining)
+    private void NotifyBankruptcyCountdownChanged(int monthsRemaining, bool showWarning = true)
     {
         if (monthsRemaining > 0)
         {
-            string messageKey = _lastBankruptcyMonthsRemaining <= 0
-                ? WarningMessage.BankruptcyCountdownStarted
-                : WarningMessage.BankruptcyCountdownTick;
+            if (showWarning)
+            {
+                string messageKey = _lastBankruptcyMonthsRemaining <= 0
+                    ? WarningMessage.BankruptcyCountdownStarted
+                    : WarningMessage.BankruptcyCountdownTick;
+
+                UIManager.Instance?.ShowWarningPopup(messageKey, monthsRemaining);
+            }
 
             _lastBankruptcyMonthsRemaining = monthsRemaining;
-            UIManager.Instance?.ShowWarningPopup(messageKey);
         }
         else
         {
@@ -241,6 +245,29 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         }
 
         OnBankruptcyCountdownChanged?.Invoke(monthsRemaining);
+    }
+
+    private void ShowBankruptcyGameOverUi()
+    {
+        UIManager.Instance?.ShowBankruptcyGameOverPopup();
+    }
+
+    /// <summary>
+    /// 세이브 로드 후 씬 진입 시 파산 카운트다운 UI를 복원합니다.
+    /// </summary>
+    public void NotifyBankruptcyUiRestored()
+    {
+        if (_isBankruptcyGameOver)
+        {
+            OnBankruptcyTriggered?.Invoke();
+            ShowBankruptcyGameOverUi();
+            return;
+        }
+
+        if (_bankruptcyMonthsRemaining > 0)
+        {
+            OnBankruptcyCountdownChanged?.Invoke(_bankruptcyMonthsRemaining);
+        }
     }
 
     private void TriggerBankruptcyGameOver()
@@ -252,7 +279,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
 
         _isBankruptcyGameOver = true;
         _dataManager.Time?.PauseTime();
-        UIManager.Instance?.ShowWarningPopup(WarningMessage.BankruptcyGameOver);
+        ShowBankruptcyGameOverUi();
         OnBankruptcyTriggered?.Invoke();
     }
 
@@ -288,6 +315,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         saveData.monthlyCreditHistory = new List<long>(_monthlyCreditHistory);
         saveData.monthlyWealthHistory = new List<long>(_monthlyWealthHistory);
         saveData.bankruptcyMonthsRemaining = _bankruptcyMonthsRemaining;
+        saveData.skipNextBankruptcyDecrement = _skipNextBankruptcyDecrement;
         saveData.isBankruptcyGameOver = _isBankruptcyGameOver;
     }
 
@@ -299,16 +327,43 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         }
 
         _credit = saveData.credit;
-        _wealth = saveData.wealth;
         _monthlyCreditHistory = new List<long>(saveData.monthlyCreditHistory ?? new List<long>());
         _monthlyWealthHistory = new List<long>(saveData.monthlyWealthHistory ?? new List<long>());
         _bankruptcyMonthsRemaining = saveData.bankruptcyMonthsRemaining;
+        _skipNextBankruptcyDecrement = saveData.skipNextBankruptcyDecrement;
         _isBankruptcyGameOver = saveData.isBankruptcyGameOver;
         _lastBankruptcyMonthsRemaining = _bankruptcyMonthsRemaining;
 
+        _wealth = CalculateCurrentTotalWealth();
+        ReconcileBankruptcyStateAfterLoad();
+    }
+
+    private void ReconcileBankruptcyStateAfterLoad()
+    {
         if (_isBankruptcyGameOver)
         {
             _dataManager.Time?.PauseTime();
+            return;
         }
+
+        if (_wealth >= 0)
+        {
+            if (_bankruptcyMonthsRemaining > 0)
+            {
+                _bankruptcyMonthsRemaining = 0;
+                _skipNextBankruptcyDecrement = false;
+            }
+
+            _lastBankruptcyMonthsRemaining = 0;
+            return;
+        }
+
+        if (_bankruptcyMonthsRemaining <= 0)
+        {
+            _bankruptcyMonthsRemaining = GetBankruptcyGraceMonths();
+            _skipNextBankruptcyDecrement = true;
+        }
+
+        _lastBankruptcyMonthsRemaining = _bankruptcyMonthsRemaining;
     }
 }

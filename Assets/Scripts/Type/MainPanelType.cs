@@ -1,11 +1,11 @@
 public enum MainPanelType
 {
     Storage,
-    Order,
     Market,
     Employment,
-    Policy,
     Research,
+    Order,
+    Policy,
     News,
     Finance
 }

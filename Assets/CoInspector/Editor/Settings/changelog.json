@@ -1,76 +1,46 @@
 {
-  "version": "1.7.0",
-  "date": "2026-01-08",
+  "version": "1.7.1",
+  "date": "2026-05-23",
   "entries": [
     {
       "section": "new",
-      "title": "Unity 6000.3 Support",
+      "title": "Basic previews for all GameObjects",
       "description": "",
       "important": true
     },
     {
       "section": "new",
-      "title": "Custom Asset Tracker for precise detection of asset creation, deletion, and modification",
-      "description": "",
-      "important": true
-    },
-    {
-      "section": "new",
-      "title": "\"Open Prefab\" options now target the selected relative child inside nested Prefab instances",
-      "description": "",
-      "important": true
-    },
-    {
-      "section": "new",
-      "title": "Option to reuse the closest unlocked Tab when the active one is locked\n(Settings Window -> If the Active Tab is Locked -> Reuse closest unlocked Tab)",
-      "description": "",
-      "important": true
-    },
-    {
-      "section": "new",
-      "title": "Extended VRCFury compatibility",
-      "description": "",
-      "important": false
-    },
-    {
-      "section": "changed",
-      "title": "\"Frame targets on Tab switch\" now works when creating new tabs",
-      "description": "",
-      "important": true
-    },
-    {
-      "section": "changed",
-      "title": "\"Open Prefab in Scene/Isolation\" now opens the closest parent Prefab instead of the root",
+      "title": "Support for Unity 6000.4",
       "description": "",
       "important": true
     },
     {
       "section": "fixed",
-      "title": "Prefab instances not refreshing immediately when changing the linked Prefab Asset on the Tab header",
+      "title": "Animation Play rendering issues on Unity 6000.4",
       "description": "",
       "important": true
     },
     {
       "section": "fixed",
-      "title": "Materials causing import loops if their start scripts modify themselves",
+      "title": "Deprecation warnings on Unity 6000.4",
       "description": "",
       "important": true
     },
     {
       "section": "fixed",
-      "title": "\"Frame targets on Tab switch\" being triggered with regular multi-selections",
+      "title": "Some Scriptable Objects failing to display their Editors when using Odin Inspector",
       "description": "",
       "important": true
     },
     {
       "section": "fixed",
-      "title": "Tab hover information not showing properly after reopening and resizing CoInspector",
+      "title": "Changing scenes during Play Mode when no previous data exists causing errors",
       "description": "",
       "important": true
     },
     {
       "section": "fixed",
-      "title": "Deleting multiple GameObjects at once sometimes triggering an error message",
+      "title": "Multiple preview bars appearing when entering Play Mode",
       "description": "",
       "important": true
     }

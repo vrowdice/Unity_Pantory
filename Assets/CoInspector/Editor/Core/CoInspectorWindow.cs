@@ -14,6 +14,7 @@ using UnityEditorInternal;
 using UnityEngine.Video;
 using UnityEngine.Audio;
 using UnityEditor.UIElements;
+using static CoInspector.EditorUtils;
 #if UNITY_2021_2_OR_NEWER
 #else
 using UnityEditor.Experimental.SceneManagement;
@@ -709,7 +710,8 @@ namespace CoInspector
                             GetActiveTab() != null &&
                             GetActiveTab().target != null &&
                             c.assetComponent != null &&
-                            c.containingInstanceGameObject.GetInstanceID() == GetActiveTab().target.GetInstanceID() &&
+EditorUtils.GetObjectId(c.containingInstanceGameObject) ==
+                            EditorUtils.GetObjectId(GetActiveTab().target) &&
                             EditorUtils.CanAddMultipleTimes(c.assetComponent.GetType(), GetActiveTab().target)
                         ).ToList();
                     }
@@ -791,16 +793,29 @@ namespace CoInspector
                     }
                     removedComponents.Clear();
                 }
-                if (EditorUtils.IsAnUIObject(GetActiveTab().target))
+                //  if (EditorUtils.IsAnUIObject(GetActiveTab().target))
+
+
                 {
                     List<Editor> allPreviewEditors = new List<Editor>();
                     foreach (var editor in runtimeEditors)
                     {
                         if (editor && editor.HasPreviewGUI())
                         {
+
                             allPreviewEditors.Insert(0, editor);
                         }
+
                     }
+                    if (allPreviewEditors.Count == 0)
+                    {
+                        if (gameObjectEditor && gameObjectEditor.HasPreviewGUI())
+                        {
+                            allPreviewEditors.Insert(0, gameObjectEditor);
+                        }
+
+                    }
+
                     if (allPreviewEditors.Count > 0)
                     {
                         allPreviewEditors.Add(runtimeEditors[0]);
@@ -816,7 +831,6 @@ namespace CoInspector
                         }
                     }
                 }
-
 
                 GetActiveTab().OrderMapsByIndex();
             }
@@ -883,6 +897,14 @@ namespace CoInspector
                         {
                             allPreviewEditors.Insert(0, editor);
                         }
+                    }
+                    if (allPreviewEditors.Count == 0)
+                    {
+                        if (gameObjectEditor && gameObjectEditor.HasPreviewGUI())
+                        {
+                            allPreviewEditors.Insert(0, gameObjectEditor);
+                        }
+
                     }
                     if (allPreviewEditors.Count > 0)
                     {
@@ -1387,9 +1409,9 @@ namespace CoInspector
                 }
                 else
                     if (componentBox.style.backgroundColor != componentBox.style.color.value)
-                {
-                    componentBox.style.backgroundColor = componentBox.style.color.value;
-                }
+                    {
+                        componentBox.style.backgroundColor = componentBox.style.color.value;
+                    }
 
                 if (pendingOperation != null && pendingOperation.targetIndex == i)
                 {
@@ -1978,7 +2000,7 @@ namespace CoInspector
 
         void TrackComponentMaps(Component[] components, List<ComponentMap> maps, bool prefabAsset = false)
         {
-            if (maps == null || components == null)
+            if (maps == null || components == null || components.Length == 0)
             {
                 return;
             }
@@ -2945,7 +2967,18 @@ namespace CoInspector
                 bool isSprite = targetObject is Sprite;
                 if (!debugAsset)
                 {
-                    assetInspector = new InspectorElement(assetEditor);
+                    if (odinInspectorPresent && targetObject is ScriptableObject)
+                    {
+                        var imgui = new InspectorElement(assetEditor);
+                        imgui.style.minHeight = 50;
+                        assetInspector = imgui;
+
+                    }
+                    else
+                    {
+                        assetInspector = new InspectorElement(assetEditor);
+                    }
+
                     if (isMissingScript)
                     {
                         EditorUtils.SetElementVisible(assetInspector, false);
@@ -2997,6 +3030,7 @@ namespace CoInspector
 
                 bool hasImportHeader = assetImportHeader != null;
                 EditorUtils.SetElementVisible(assetImportSettings, ShouldDrawImportSettings());
+
                 assetBox.RegisterOnce<GeometryChangedEvent>((evt) =>
                 {
                     if (assetInspector != null)
@@ -3073,6 +3107,7 @@ namespace CoInspector
                 assetBox.style.flexGrow = 0;
                 assetBox.style.flexShrink = 1;
                 assetBox.style.flexDirection = FlexDirection.Column;
+
                 if (hasPreview || hasImportPreview)
                 {
                     preview = new IMGUIContainer();
@@ -4279,10 +4314,12 @@ namespace CoInspector
             UnityEditor.Experimental.SceneManagement.PrefabStage.prefabStageOpened += OpenPrefabStage;
             UnityEditor.Experimental.SceneManagement.PrefabStage.prefabStageClosing += ClosePrefabStage;
 #endif
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.projectWindowItemByEntityIdOnGUI += HandleAssetClickEntity;
+#elif UNITY_2022_1_OR_NEWER
             EditorApplication.projectWindowItemInstanceOnGUI += HandleAssetClick;
 #else
-EditorApplication.projectWindowItemOnGUI += HandleAssetClick;
+    EditorApplication.projectWindowItemOnGUI += HandleAssetClick;
 #endif
             //EditorApplication.projectChanged += OnProjectChanged;
             AssetTracker.OnAssetChangesDetected += OnProjectChanged;
@@ -4292,7 +4329,11 @@ EditorApplication.projectWindowItemOnGUI += HandleAssetClick;
             SceneView.duringSceneGui += _OnSceneGUI;
             Selection.selectionChanged += HandleSelectionChange;
             EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += HandleMiddleClickEntity;
+#else
             EditorApplication.hierarchyWindowItemOnGUI += HandleMiddleClick;
+#endif
             EditorApplication.update += BackUpdate;
             EditorApplication.quitting += TrySaveSession;
             Undo.undoRedoPerformed += UndoRedoPerformed;
@@ -4304,7 +4345,6 @@ EditorApplication.projectWindowItemOnGUI += HandleAssetClick;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             onPrefabSceneMode = SceneIsInPrefabMode();
             // SceneManager.sceneUnloaded += CloseCoInspector;
-
         }
         void UnhookEvents()
         {
@@ -4315,10 +4355,12 @@ EditorApplication.projectWindowItemOnGUI += HandleAssetClick;
             UnityEditor.Experimental.SceneManagement.PrefabStage.prefabStageOpened -= OpenPrefabStage;
             UnityEditor.Experimental.SceneManagement.PrefabStage.prefabStageClosing -= ClosePrefabStage;
 #endif
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.projectWindowItemByEntityIdOnGUI -= HandleAssetClickEntity;
+#elif UNITY_2022_1_OR_NEWER
             EditorApplication.projectWindowItemInstanceOnGUI -= HandleAssetClick;
 #else
-EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
+    EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
 #endif
             //EditorApplication.projectChanged -= OnProjectChanged;
             AssetTracker.OnAssetChangesDetected -= OnProjectChanged;
@@ -4328,7 +4370,11 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
             SceneView.duringSceneGui -= _OnSceneGUI;
             Selection.selectionChanged -= HandleSelectionChange;
             EditorApplication.playModeStateChanged -= HandlePlayModeStateChanged;
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= HandleMiddleClickEntity;
+#else
             EditorApplication.hierarchyWindowItemOnGUI -= HandleMiddleClick;
+#endif
             EditorApplication.update -= BackUpdate;
             EditorApplication.quitting -= TrySaveSession;
             Undo.undoRedoPerformed -= UndoRedoPerformed;
@@ -4412,7 +4458,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
             lastClickedTab = -1;
             if (settingsData)
             {
-                if (TryLoadSession() /*&& ((sessionsMode != 2)*/ || inActualPlayMode || exitingPlayMode)
+                if (TryLoadSession() || ((inActualPlayMode || exitingPlayMode) && lastSessionData != null))
                 {
                     if ((!justOpened && !lastSessionData.checkingToLoad) || sessionsMode == 1 || (inActualPlayMode && !lastSessionData.checkingToLoad && sessionsMode == 1) || (pendingRestore && !lastSessionData.checkingToLoad) || exitingPlayMode && !lastSessionData.checkingToLoad)
                     {
@@ -9182,6 +9228,15 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 }
             }
         }
+#if UNITY_6000_4_OR_NEWER
+        internal void HandleAssetClickEntity(EntityId entityId, Rect selectionRect)
+        {
+#pragma warning disable CS0618
+            int instanceID = (int)entityId;
+#pragma warning restore CS0618
+            HandleAssetClick(instanceID, selectionRect);
+        }
+#endif
 #if UNITY_2022_1_OR_NEWER
         internal void HandleAssetClick(int instanceID, Rect selectionRect)
         {
@@ -9191,7 +9246,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 UnityEngine.Object asset = null;
                 MissingScriptManager missing = null;
 #if UNITY_6000_3_OR_NEWER
-                if (instanceID != 0 && EditorUtility.EntityIdToObject(instanceID) == null)
+                if (instanceID != 0 && EditorUtils.IdToObject(instanceID) == null)
 #else
                 if (instanceID != 0 && EditorUtility.InstanceIDToObject(instanceID) == null)
 
@@ -9203,7 +9258,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 else
                 {
 #if UNITY_6000_3_OR_NEWER
-                    asset = EditorUtility.EntityIdToObject(instanceID);
+                    asset = EditorUtils.IdToObject(instanceID);
 #else
                     asset = EditorUtility.InstanceIDToObject(instanceID);
 
@@ -9295,6 +9350,15 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
             FocusTab(activeIndex);
             RepaintForAWhile();
         }
+#if UNITY_6000_4_OR_NEWER
+        internal void HandleMiddleClickEntity(EntityId entityId, Rect selectionRect)
+        {
+#pragma warning disable CS0618
+            int instanceID = (int)entityId;
+#pragma warning restore CS0618
+            HandleMiddleClick(instanceID, selectionRect);
+        }
+#endif
 
         internal void HandleMiddleClick(int instanceID, Rect selectionRect)
         {
@@ -9326,7 +9390,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                     }
 
 #if UNITY_6000_3_OR_NEWER
-                    GameObject go = EditorUtility.EntityIdToObject(instanceID) as GameObject;
+                    GameObject go = IdToObject<GameObject>(instanceID);
 #else
                     GameObject go = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
 #endif
@@ -9422,7 +9486,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                     return;
                 }
 #if UNITY_6000_3_OR_NEWER
-                GameObject go = EditorUtility.EntityIdToObject(instanceID) as GameObject;
+                GameObject go = IdToObject<GameObject>(instanceID);
 #else
                 GameObject go = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
 #endif
@@ -10027,8 +10091,8 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 return false;
             }
 
-            var set1 = new HashSet<int>(array1.Where(obj => obj != null).Select(obj => obj.GetInstanceID()));
-            var set2 = new HashSet<int>(array2.Where(obj => obj != null).Select(obj => obj.GetInstanceID()));
+            var set1 = new HashSet<int>(array1.Where(obj => obj != null).Select(obj => GetObjectId(obj)));
+            var set2 = new HashSet<int>(array2.Where(obj => obj != null).Select(obj => GetObjectId(obj)));
 
             return set1.SetEquals(set2);
         }
@@ -10041,8 +10105,8 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 return false;
             }
 
-            var set1 = new HashSet<int>(array1.Where(obj => obj != null).Select(obj => obj.GetInstanceID()));
-            var set2 = new HashSet<int>(array2.Where(obj => obj != null).Select(obj => obj.GetInstanceID()));
+            var set1 = new HashSet<int>(array1.Where(obj => obj != null).Select(obj => GetObjectId(obj)));
+            var set2 = new HashSet<int>(array2.Where(obj => obj != null).Select(obj => GetObjectId(obj)));
 
             return set1.IsSupersetOf(set2);
         }
@@ -10216,25 +10280,25 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 return false;
             }
             else
-            if (editor.target != null || (editor.targets != null && editor.targets.Length > 0))
-            {
-                if (IsAssetImporterEditor(editor))
+                if (editor.target != null || (editor.targets != null && editor.targets.Length > 0))
                 {
-                    if (assetImporter == null && assetImporters == null)
+                    if (IsAssetImporterEditor(editor))
                     {
-                        return false;
+                        if (assetImporter == null && assetImporters == null)
+                        {
+                            return false;
+                        }
+                        if (editor.targets.Length == 1 && assetImporter != editor.target)
+                        {
+                            return false;
+                        }
+                        else if (editor.targets.Length > 1 && assetImporters != editor.targets)
+                        {
+                            return false;
+                        }
                     }
-                    if (editor.targets.Length == 1 && assetImporter != editor.target)
-                    {
-                        return false;
-                    }
-                    else if (editor.targets.Length > 1 && assetImporters != editor.targets)
-                    {
-                        return false;
-                    }
+                    return true;
                 }
-                return true;
-            }
             return false;
         }
         void ReinitializeAssetEditors()
@@ -10485,6 +10549,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
 
         internal void TryGatherTimeControls()
         {
+
             object avatarOwner = null;
             if (assetEditor.GetType().ToString() == "UnityEditor.Graphs.AnimationStateMachine.AnimatorStateTransitionInspector")
             {
@@ -10643,6 +10708,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                 MissingScriptManager.SetInactive();
                 MissingScriptManager.ClearData();
             }
+
         }
 
         bool AreWeChangingAssetTypes(UnityObject newTarget)
@@ -10754,6 +10820,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                     userHeight = suggestedHeight;
                 }
             }
+
             if (skipRebuild)
             {
                 return;
@@ -10761,6 +10828,7 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
             RepaintForAWhile();
             DrawCurrentAssets();
             ReloadPreview();
+
         }
         bool ShouldDrawImportSettings()
         {
@@ -10809,11 +10877,13 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                         rawUserHeight -= IntGetPreviewHeight();
                     }
 
+
                 }
                 else
                 {
                     assetsCollapsed = false;
                     alreadyCalculatedHeight = false;
+
                 }
                 lastKnownHeight = rawUserHeight;
             }
@@ -10894,15 +10964,18 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
 
             if (assetEditor != null && assetEditor.HasPreviewGUI() && (!videoClip && !hasImportPreview))
             {
+
                 EditorGUI.BeginChangeCheck();
                 assetEditor.DrawPreview(rect);
                 if (EditorGUI.EndChangeCheck())
                 {
+
                     TryGatherTimeControls();
                 }
             }
             else if (assetImportSettingsEditor != null)
             {
+
                 EditorGUI.BeginChangeCheck();
                 assetImportSettingsEditor.DrawPreview(rect);
                 if (EditorGUI.EndChangeCheck())
@@ -10913,6 +10986,9 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
             Rect rect1 = GUILayoutUtility.GetLastRect();
             if (IsAPrefabTarget())
             {
+                {
+                    TryGatherTimeControls();
+                }
                 EditorUtils.DrawLineOverRect(rect1, CustomColors.GradientShadow, 2);
                 EditorUtils.DrawLineOverRect(rect1, CustomColors.GradientShadow, 2);
             }
@@ -11936,7 +12012,9 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                             }
                             else if (missingScript != null)
                             {
+#pragma warning disable CS0618
                                 EditorGUIUtility.PingObject(missingScript.instanceID);
+#pragma warning restore CS0618
                             }
                             ActiveEditorTracker.sharedTracker.ForceRebuild();
                         }
@@ -12156,9 +12234,11 @@ EditorApplication.projectWindowItemOnGUI -= HandleAssetClick;
                     else
                     {
 #if UNITY_6000_3_OR_NEWER
+#pragma warning disable CS0618
                         Selection.entityIds = new EntityId[] { missingScript.instanceID };
+#pragma warning restore CS0618
 #else
-                        Selection.instanceIDs = new int[] { missingScript.instanceID };
+    Selection.instanceIDs = new int[] { missingScript.instanceID };
 #endif
 
                     }

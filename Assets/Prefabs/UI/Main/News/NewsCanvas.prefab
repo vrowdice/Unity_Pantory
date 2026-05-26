@@ -1250,7 +1250,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: -10000, y: 10000}
-  - focusGameObject: {fileID: 5651766694824639920}
+  - focusGameObject: {fileID: 0}
     onStepStart:
       m_PersistentCalls:
         m_Calls: []

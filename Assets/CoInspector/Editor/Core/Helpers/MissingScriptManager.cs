@@ -86,19 +86,11 @@ namespace CoInspector
         public static int CountMissingScripts()
         {
             int count = 0;
-#if UNITY_6000_3_OR_NEWER
-            foreach (var instanceID in Selection.entityIds)
-#else
+#pragma warning disable CS0618
             foreach (var instanceID in Selection.instanceIDs)
-
-#endif
+#pragma warning restore CS0618
             {
-#if UNITY_6000_3_OR_NEWER
-                var asset = EditorUtility.EntityIdToObject(instanceID);
-#else
-                var asset = EditorUtility.InstanceIDToObject(instanceID);
-
-#endif
+                var asset = EditorUtils.IdToObject(instanceID);
                 if (!asset)
                 {
                     if (count == 0)

@@ -230,6 +230,34 @@ namespace CoInspector
             "UnityEngine.ParticleSystemRenderer",
         };
 
+        internal static int GetObjectId(UnityObject obj)
+        {
+#if UNITY_6000_4_OR_NEWER
+#pragma warning disable CS0618
+            return (int)obj.GetEntityId();
+#pragma warning restore CS0618
+#else
+    return obj.GetInstanceID();
+#endif
+        }
+
+        public static UnityObject
+        IdToObject(int id)
+        {
+#if UNITY_6000_3_OR_NEWER
+#pragma warning disable CS0618
+            return EditorUtility.EntityIdToObject(id);
+#pragma warning restore CS0618
+#else
+        return EditorUtility.InstanceIDToObject(id);
+#endif
+        }
+
+        public static T IdToObject<T>(int id) where T : UnityObject
+        {
+            return IdToObject(id) as T;
+        }
+
         public static bool IsValidEditorToolType(Component component)
         {
             string componentTypeName = component.GetType().FullName;
@@ -964,9 +992,11 @@ namespace CoInspector
             if (id != 0)
             {
 #if UNITY_6000_3_OR_NEWER
+#pragma warning disable CS0618
                 go = EditorUtility.EntityIdToObject(id) as GameObject;
+#pragma warning restore CS0618
 #else
-                go = EditorUtility.InstanceIDToObject(id) as GameObject;
+    go = EditorUtility.InstanceIDToObject(id) as GameObject;
 #endif
 
                 //string _goPath = GatherGameObjectPath(go);
@@ -1837,14 +1867,14 @@ namespace CoInspector
                     continue;
                 }
                 bool found = false;
-                int id1 = obj1.GetInstanceID();
+                int id1 = GetObjectId(obj1);
                 foreach (var obj2 in selection2)
                 {
                     if (obj2 == null)
                     {
                         continue;
                     }
-                    if (id1 == obj2.GetInstanceID())
+                    if (id1 == GetObjectId(obj2))
                     {
                         found = true;
                         break;
@@ -2003,7 +2033,7 @@ namespace CoInspector
                 Component firstComponent = go.GetComponents<Component>()[0];
                 if (go == null) continue;
 
-                int instanceAbs = firstComponent.GetInstanceID();
+                int instanceAbs = GetObjectId(firstComponent);
                 if (instanceAbs < 0)
                 {
                     instanceAbs = -instanceAbs;
@@ -2264,7 +2294,9 @@ namespace CoInspector
             if (componentArray == null || !componentArray.isArray || index >= componentArray.arraySize) return 0;
             var element = componentArray.GetArrayElementAtIndex(index);
             var componentReference = element.FindPropertyRelative("component");
+#pragma warning disable CS0618
             var instanceID = componentReference.objectReferenceInstanceIDValue;
+#pragma warning restore CS0618
             return instanceID;
         }
         internal static readonly string[] prioritizedComponentTypes =

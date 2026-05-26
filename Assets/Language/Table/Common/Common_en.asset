@@ -612,6 +612,66 @@ MonoBehaviour:
     m_Localized: Management Satisfaction
     m_Metadata:
       m_Items: []
+  - m_Id: 43405946866663425
+    m_Localized: Company value is negative. Recover within {0} months or face bankruptcy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663426
+    m_Localized: '{0} months until bankruptcy.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663427
+    m_Localized: Your company has gone bankrupt.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663428
+    m_Localized: Your company has gone bankrupt. Return to the title screen?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43814161077968896
+    m_Localized: Until Bankruptcy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43814590109130752
+    m_Localized: Month Left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663429
+    m_Localized: Bankruptcy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663430
+    m_Localized: Your company collapsed under debt. Review your rise and fall below.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663431
+    m_Localized: 'Final Credit: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663432
+    m_Localized: 'Final Wealth: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663433
+    m_Localized: 'Run Duration: Year {0}, Month {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663434
+    m_Localized: Credit Growth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663435
+    m_Localized: Wealth Growth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43829247570026496
+    m_Localized: Bankruptcy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43829379661242368
+    m_Localized: Your company collapsed under debt.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

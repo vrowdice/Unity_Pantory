@@ -6321,6 +6321,23 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
     tutorialPanelPosition: {x: -10000, y: 10000}
+  - focusGameObject: {fileID: 0}
+    onStepStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5212969205864930363}
+          m_TargetAssemblyTypeName: MarketCanvas, Assembly-CSharp
+          m_MethodName: ShowResourceView
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    tutorialPanelPosition: {x: -10000, y: 10000}
   _panelAnimationTarget: {fileID: 1057055313589436191}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1

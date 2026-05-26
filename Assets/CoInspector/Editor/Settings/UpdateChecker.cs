@@ -11,7 +11,7 @@ namespace CoInspector
     {
         internal static bool IsUpdateAvailable { get; private set; } = false;
         internal static string LatestVersion { get; private set; } = string.Empty;
-        internal static readonly string currentVersion = "1.7.0";
+        internal static readonly string currentVersion = "1.7.1";
         internal static readonly bool hasChangeLog = true;
         internal static readonly bool autoOpenChangeLog = false;
         private static readonly string updateUrl = "https://stuff-solutions.com/coinspector/latest-version.json";

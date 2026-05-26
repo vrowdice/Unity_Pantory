@@ -33,6 +33,7 @@ public class GameSaveData
     public List<long> monthlyCreditHistory = new List<long>();
     public List<long> monthlyWealthHistory = new List<long>();
     public int bankruptcyMonthsRemaining;
+    public bool skipNextBankruptcyDecrement;
     public bool isBankruptcyGameOver;
 
     // Research Data

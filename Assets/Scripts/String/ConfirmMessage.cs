@@ -10,4 +10,5 @@ public static class ConfirmMessage
     public const string OverwriteConfirm = "OverwriteConfirm";
     public const string TutorialSkipConfirm = "TutorialSkipConfirm";
     public const string ReplayTutorialConfirm = "ReplayTutorialConfirm";
+    public const string BankruptcyGameOverConfirm = "BankruptcyGameOverConfirm";
 }

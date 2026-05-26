@@ -29,77 +29,58 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 575934971904
-    m_Localized: First, a quick overview of the UI. You can reopen this help anytime
-      with the (?) button on each main panel.
+    m_Localized: Each main panel has a (?) button to reopen this help.
     m_Metadata:
       m_Items: []
   - m_Id: 1678642659328
-    m_Localized: Credits and Research Points are shown at the top left; tap there
-      for details.
+    m_Localized: Credits and Research Points are shown at the top left.
     m_Metadata:
       m_Items: []
   - m_Id: 2291514359808
-    m_Localized: This container displays the employment status, allocation status,
-      and satisfaction level of employees.
+    m_Localized: Employee count, assignments, and satisfaction are shown here.
     m_Metadata:
       m_Items: []
   - m_Id: 2320476028928
-    m_Localized: This strip shows the in-game date and clock, plus buttons to reopen
-      the tutorial or open settings.
+    m_Localized: In-game date, time, tutorial, and settings buttons are here.
     m_Metadata:
       m_Items: []
   - m_Id: 2777508364288
-    m_Localized: Use these icons to jump between Storage, Orders, Market, Staff,
-      Research, News, and Finance. You can also press F1 through F9 for the same
-      shortcuts.
+    m_Localized: "Shortcuts to Storage, Orders, Market, Staff, Research, News, and
+      Finance. F1\u2013F9 works too."
     m_Metadata:
       m_Items: []
   - m_Id: 5943566155776
-    m_Localized: Logistics is the core of your factory. Build a line by connecting
-      stations and production buildings with roads, then keep every input and output
-      direction aligned so packets can continue moving without delay.
+    m_Localized: Use the building panel below to expand your factory.
     m_Metadata:
       m_Items: []
   - m_Id: 7203816095744
-    m_Localized: "Typical flow is Unload \u2192 roads \u2192 production buildings
-      \u2192 roads \u2192 Load. Unload pulls raw materials in, factories process
-      them, and Load sends finished goods toward storage."
+    m_Localized: Save layouts in the Blueprint tab and place them again later.
     m_Metadata:
       m_Items: []
   - m_Id: 7579063697408
     m_Localized: Building buttons are grouped by category. Distribution includes
-      roads, splitter, and tunnel. Many production buildings unlock through research.
-      Use the Blueprint tab to save layouts and place them again later.
+      roads, splitter, and tunnel.
     m_Metadata:
       m_Items: []
   - m_Id: 7894026567680
-    m_Localized: Place buildings and roads from this panel. Select an item, preview
-      rotation on the grid, and click to build. Hold placement input to lay long
-      road lines quickly.
+    m_Localized: Select a building or road here to place it on the grid.
     m_Metadata:
       m_Items: []
   - m_Id: 8131256401920
-    m_Localized: Track resource inventory in this panel. If a line stalls, first
-      check whether upstream materials are available, then verify road direction,
-      building orientation, and whether outputs are connected to valid destinations.
+    m_Localized: Current resource counts are shown here.
     m_Metadata:
       m_Items: []
   - m_Id: 9056704413696
-    m_Localized: Good logistics design means short paths, clear direction, and balanced
-      outputs. Expand gradually, watch for bottlenecks, and use splitter/tunnel strategically
-      to keep throughput stable as your factory grows.
+    m_Localized: Use splitters and tunnels to keep lines stable as your factory grows.
     m_Metadata:
       m_Items: []
   - m_Id: 11779361357824
-    m_Localized: "This panel toggles remove mode, rotates the selected building,
-      and can auto-assign workers when you place production buildings. Removing a
-      building clears its worker assignments\u2014recheck staffing after big layout
-      changes."
+    m_Localized: Remove mode and auto-assignment switches are here.
     m_Metadata:
       m_Items: []
   - m_Id: 12960301203456
-    m_Localized: This is the storage panel. This panel shows you the inventory of
-      resources you currently have.
+    m_Localized: This is the storage panel. Your current resource inventory is shown
+      here.
     m_Metadata:
       m_Items: []
   - m_Id: 13340426780672
@@ -108,13 +89,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17836750028800
-    m_Localized: This is the Orders panel. Clients request materials; accept a contract,
-      then deliver the listed resources before the deadline.
+    m_Localized: This is the Orders panel. Accept a contract, then deliver resources
+      before the deadline.
     m_Metadata:
       m_Items: []
   - m_Id: 17928651423744
-    m_Localized: "Filter by client type\u2014Market, Company, then Government. Orders
-      usually grow larger in that order, and your company Wealth can scale them further."
+    m_Localized: Filter by Market, Company, or Government. Orders usually grow larger
+      in that order.
     m_Metadata:
       m_Items: []
   - m_Id: 18539786682368
@@ -129,22 +110,21 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 19061579071488
     m_Localized: New contracts appear here. Click one to accept it, then deliver
-      the listed resources before time runs out.
+      before time runs out.
     m_Metadata:
       m_Items: []
   - m_Id: 19716532224000
-    m_Localized: This is the Market panel. Here you can buy and sell resources and
-      view information about competing companies.
+    m_Localized: This is the Market panel. Buy and sell resources and view competitor
+      info.
     m_Metadata:
       m_Items: []
   - m_Id: 22018345287680
-    m_Localized: Here you can choose whether to display the resource view or the
-      trader (competitor) view via the button.
+    m_Localized: Switch between the resource view and the trader (competitor) view
+      here.
     m_Metadata:
       m_Items: []
   - m_Id: 22020337582080
-    m_Localized: This is the Resource View. You can adjust your current resource
-      purchase and sale volume here.
+    m_Localized: Adjust your current resource purchase and sale volume here.
     m_Metadata:
       m_Items: []
   - m_Id: 24215317528576
@@ -152,12 +132,16 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 24483870425088
-    m_Localized: The price history of resources is visually displayed here.
+    m_Localized: Resource price history is shown here as a graph.
     m_Metadata:
       m_Items: []
   - m_Id: 24698149027840
-    m_Localized: This is the Trader (Competitor) View. You can view information about
-      each trader.
+    m_Localized: View information about each trader (competitor) here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24812468024680
+    m_Localized: Making money through the market is key. Watch prices and trade at
+      the right time.
     m_Metadata:
       m_Items: []
   - m_Id: 36510642880512
@@ -165,59 +149,49 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 36904429305856
-    m_Localized: This shows your current management capacity. A certain number of
-      managers are required per employee. If you are short on managers, employee
-      satisfaction will be penalized.
+    m_Localized: Shows management capacity. Short on managers and satisfaction will
+      drop.
     m_Metadata:
       m_Items: []
   - m_Id: 37440536854528
-    m_Localized: Employee satisfaction is affected by many factors. You can see what
-      is affecting it here.
+    m_Localized: See what is affecting employee satisfaction here.
     m_Metadata:
       m_Items: []
   - m_Id: 37828904239104
-    m_Localized: Employee efficiency depends on satisfaction, and that efficiency
-      directly affects building work speed and production throughput.
+    m_Localized: Efficiency depends on satisfaction and affects production speed.
     m_Metadata:
       m_Items: []
   - m_Id: 38302378246144
-    m_Localized: The easiest way to raise employee satisfaction is to pay them more.
-      Lower pay will reduce it.
+    m_Localized: Raising pay is the easiest way to improve satisfaction.
     m_Metadata:
       m_Items: []
   - m_Id: 39086448852992
-    m_Localized: "Four roles\u2014Workers and Technicians staff buildings on the
-      grid, Researchers generate Research Points (RP), and Managers keep the workforce
-      covered so satisfaction does not drop."
+    m_Localized: Workers and Technicians staff buildings, Researchers generate RP,
+      and Managers prevent satisfaction penalties.
     m_Metadata:
       m_Items: []
   - m_Id: 39688935456768
-    m_Localized: Here, you can decide whether to hire or fire employees. Hiring or
-      firing employees costs credits, and firing employees will decrease their satisfaction.
+    m_Localized: Hire or fire employees here. Both actions cost credits.
     m_Metadata:
       m_Items: []
   - m_Id: 2561770013474816
-    m_Localized: This is the research panel. You can unlock buildings and boost productivity.
+    m_Localized: Unlock buildings and boost productivity here.
     m_Metadata:
       m_Items: []
   - m_Id: 2562082698838016
-    m_Localized: This is where you can see your Research Points (RP) and how many
-      Research Points you gain each day.
+    m_Localized: Research Points (RP) and daily gain are shown here.
     m_Metadata:
       m_Items: []
   - m_Id: 2562316594200576
-    m_Localized: This is a panel where you can see the number of researchers and
-      the effects they are receiving.
+    m_Localized: See researcher count and active effects here.
     m_Metadata:
       m_Items: []
   - m_Id: 2562738453102592
-    m_Localized: This is the research tree. Finished nodes are tinted, and the next
-      linked projects unlock once their prerequisites are met.
+    m_Localized: Completed research is tinted; linked projects unlock in order.
     m_Metadata:
       m_Items: []
   - m_Id: 2563160425250816
-    m_Localized: This is the Finance panel, where you can view your company's growth
-      over time.
+    m_Localized: View your company's growth over time here.
     m_Metadata:
       m_Items: []
   - m_Id: 2564533472608256
@@ -237,109 +211,83 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000000
-    m_Localized: This panel tracks the Labor Union chapter. While it runs, overall
-      workforce satisfaction drives how much Union Cohesion rises or falls each day,
-      and the union may issue demands you can fulfill for extra cohesion.
+    m_Localized: Tracks the Labor Union chapter. Satisfaction shifts daily cohesion;
+      fulfilling requests adds more.
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000001
-    m_Localized: The event icon and number show how many days remain in this chapter.
-      When the counter reaches zero, the union phase ends.
+    m_Localized: Shows days remaining in this chapter. At zero the union phase ends.
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000002
-    m_Localized: These bars preview tomorrow's daily cohesion change from weighted
-      workforce satisfaction. The left bar fills left to right for gains above the
-      baseline; the right bar fills right to left for losses below it. The label
-      shows the exact percent per day.
+    m_Localized: Previews tomorrow's daily cohesion change from workforce satisfaction.
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000003
-    m_Localized: Union Cohesion is the main score for this event, from 0% to 100%.
-      It shifts automatically each day from the satisfaction preview above. Reaching
-      100% completes the chapter.
+    m_Localized: "Union Cohesion (0\u2013100%) shifts daily. Reaching 100% completes
+      the chapter."
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000004
-    m_Localized: Each employee role's satisfaction is shown here. Pay levels on the
-      Staff panel, avoiding mass layoffs, and completing union requests are the main
-      ways to move the daily bars and this cohesion meter.
+    m_Localized: Role satisfaction is shown here. Pay raises and completing requests
+      help most.
     m_Metadata:
       m_Items: []
   - m_Id: 2578000000000005
-    m_Localized: "Active union requests are listed here. Each has one requirement\u2014credits,
-      resources, or a policy\u2014and a deadline in days. When the requirement is
-      met, the row highlights; tap it to complete the request and claim the cohesion
-      reward."
+    m_Localized: Active union requests with one requirement and a deadline. Tap to
+      complete when met.
     m_Metadata:
       m_Items: []
   - m_Id: 2578100000000000
-    m_Localized: This is the Policy panel. Toggle workplace rules that apply ongoing
-      effects to production, costs, and employee satisfaction.
+    m_Localized: Toggle workplace rules with ongoing effects on production and satisfaction.
     m_Metadata:
       m_Items: []
   - m_Id: 2578100000000001
-    m_Localized: "Each policy can be switched on or off. Some cost credits or RP
-      to activate and may run for a limited number of months\u2014read the details
-      before committing."
+    m_Localized: Each policy can be switched on or off. Some cost credits or RP.
     m_Metadata:
       m_Items: []
   - m_Id: 2578100000000002
-    m_Localized: Active policies and their effects are summarized here. Use this
-      list to see which bonuses and penalties are currently shaping your factory.
+    m_Localized: Active policies and their effects are summarized here.
     m_Metadata:
       m_Items: []
   - m_Id: 2578200000000000
-    m_Localized: "This is the News panel. Headlines appear as events unfold\u2014market
-      shifts, main-event chapters, and other story beats that can change how you
-      should play."
+    m_Localized: Headlines on market shifts and main events appear here.
     m_Metadata:
       m_Items: []
   - m_Id: 2578200000000001
-    m_Localized: Scroll through active stories here. New articles are added when
-      triggers fire; older items drop off as they expire.
+    m_Localized: Scroll active stories here. New articles appear and old ones expire.
     m_Metadata:
       m_Items: []
   - m_Id: 2578200000000002
-    m_Localized: "Open a headline to read the full article. Many stories hint at
-      price moves, union pressure, or research opportunities\u2014check back after
-      big changes."
+    m_Localized: Open a headline to read the full article.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000000
-    m_Localized: This panel shows detailed information and controls for a selected
-      building. You can assign staff, review production recipes, manage on-site resource
-      buffers, and monitor output progress from here.
+    m_Localized: Manage staff, recipes, buffers, and production for the selected
+      building.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000001
-    m_Localized: The building name is shown at the top. Build cost and daily maintenance
-      are listed below. The expertise toggle indicates whether only technicians can
-      be assigned to this building.
+    m_Localized: Building name
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000002
-    m_Localized: Use the sliders to assign workers and technicians to this building.
-      The left numbers show your available staff; the slider sets how many are posted
-      here. More assigned staff generally raises production efficiency.
+    m_Localized: Assign workers and technicians with the sliders. More staff raises
+      efficiency.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000003
-    m_Localized: This area shows the selected recipe's required inputs and outputs.
-      Tap this button to change what the building produces. Any materials waiting
-      in its buffers are returned to your inventory first.
+    m_Localized: Shows recipe inputs and outputs. Tap to change production; buffers
+      return to inventory first.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000004
-    m_Localized: These rows show materials currently stored in the building's input
-      and output buffers. Tap a resource icon to return that stock to your global
-      inventory when you need to free or recover items.
+    m_Localized: Materials in input/output buffers. Tap an icon to return stock to
+      inventory.
     m_Metadata:
       m_Items: []
   - m_Id: 2578300000000005
-    m_Localized: Production progress shows how close the current batch is to completion,
-      rising each hour based on assigned staff efficiency. The efficiency bar reflects
-      how effectively posted workers and technicians are operating right now.
+    m_Localized: Production progress and staff efficiency for the current batch.
     m_Metadata:
       m_Items: []
   references:

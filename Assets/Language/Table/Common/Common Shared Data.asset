@@ -607,6 +607,66 @@ MonoBehaviour:
     m_Key: ManagementSatisfaction
     m_Metadata:
       m_Items: []
+  - m_Id: 43405946866663425
+    m_Key: BankruptcyCountdownStarted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663426
+    m_Key: BankruptcyCountdownTick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663427
+    m_Key: BankruptcyGameOver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663428
+    m_Key: BankruptcyGameOverConfirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43814161077968896
+    m_Key: UntilBankruptcy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43814590109130752
+    m_Key: MonthLeft
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663429
+    m_Key: BankruptcyGameOverPopupTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663430
+    m_Key: BankruptcyGameOverPopupSummary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663431
+    m_Key: BankruptcyGameOverPopupFinalCredit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663432
+    m_Key: BankruptcyGameOverPopupFinalWealth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663433
+    m_Key: BankruptcyGameOverPopupRunDuration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663434
+    m_Key: BankruptcyGameOverPopupCreditChart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663435
+    m_Key: BankruptcyGameOverPopupWealthChart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43829247570026496
+    m_Key: Bankruptcy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43829379661242368
+    m_Key: Your companyCollapsedUnderDebt
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

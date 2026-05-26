@@ -20,12 +20,12 @@ public class WarningPopup : MonoBehaviour
     /// <summary>
     /// 경고 메시지 키로 로컬라이즈 후 표시하고 페이드인 → 표시 → 페이드아웃 후 파괴
     /// </summary>
-    /// <param name="messageKey">WarningMessage 테이블의 로컬라이즈 키</param>
-    public void Init(string messageKey)
+    /// <param name="message">표시할 로컬라이즈된 메시지</param>
+    public void Init(string message)
     {
         if (_messageText != null)
         {
-            _messageText.text = messageKey.Localize(LocalizationUtils.TABLE_COMMON);
+            _messageText.text = message;
         }
 
         if(_warningSound != null)

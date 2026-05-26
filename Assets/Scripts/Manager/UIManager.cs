@@ -18,6 +18,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _optionPanelPrefab;
     [SerializeField] private GameObject _warningPanelPrefab;
     [SerializeField] private GameObject _confirmPanelPrefab;
+    [SerializeField] private GameObject _bankruptcyGameOverPopupPrefab;
     [SerializeField] private GameObject _enterNamePanelPrefab;
     [SerializeField] private GameObject _selectResourcePanelPrefab;
     [SerializeField] private GameObject _saveLoadPopupPrefab;
@@ -229,11 +230,14 @@ public class UIManager : Singleton<UIManager>
         return instance;
     }
 
-    public void ShowWarningPopup(string messageKey)
+    public void ShowWarningPopup(string messageKey, params object[] formatArgs)
     {
         GameObject warningPanelObj = GameManager.Instance.PoolingManager.GetPooledObject(_warningPanelPrefab);
         warningPanelObj.transform.SetParent(_managerCanvasTransform, false);
-        warningPanelObj.GetComponent<WarningPopup>().Init(messageKey);
+        string message = formatArgs != null && formatArgs.Length > 0
+            ? messageKey.LocalizeFormat(LocalizationUtils.TABLE_COMMON, formatArgs)
+            : messageKey.Localize(LocalizationUtils.TABLE_COMMON);
+        warningPanelObj.GetComponent<WarningPopup>().Init(message);
     }
 
     public SelectResourcePopup ShowSelectResourcePopup(List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected, List<ResourceData> producibleResources = null)
@@ -260,6 +264,20 @@ public class UIManager : Singleton<UIManager>
         GameObject panelObj = InstantiatePopupPrefab(_confirmPanelPrefab);
         ConfirmPopup panel = panelObj.GetComponent<ConfirmPopup>();
         panel.Init(messageKey, onConfirm, onRefuse);
+        return panel;
+    }
+
+    public BankruptcyGameOverPopup ShowBankruptcyGameOverPopup()
+    {
+        if (_bankruptcyGameOverPopupPrefab == null)
+        {
+            Debug.LogError("[UIManager] BankruptcyGameOverPopup prefab is not assigned.");
+            return null;
+        }
+
+        GameObject panelObj = InstantiatePopupPrefab(_bankruptcyGameOverPopupPrefab);
+        BankruptcyGameOverPopup panel = panelObj.GetComponent<BankruptcyGameOverPopup>();
+        panel.Init();
         return panel;
     }
 

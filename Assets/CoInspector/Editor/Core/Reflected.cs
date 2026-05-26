@@ -970,38 +970,91 @@ namespace CoInspector
             }
             return null;
         }
+        private static FieldInfo innerEditorField;
 
         public static void GatherTimeControl(Editor editor, object avatarOwner = null)
         {
             timeControl = null;
             avatarPreview = null;
             avatarPreviewField = null;
+            innerEditorField = null;
             timeControlGathered = false;
             ResetTimeControlGathering();
+
             if (editor == null)
             {
-
                 return;
             }
             if (avatarOwner == null)
             {
+
                 avatarOwner = editor;
             }
+
             Type editorType = avatarOwner.GetType();
+
             if (avatarPreviewType == null)
             {
+
                 avatarPreviewType = typeof(Editor).Assembly.GetType("UnityEditor.AvatarPreview");
                 if (avatarPreviewType == null)
                 {
                     return;
                 }
             }
-            avatarPreviewField = editorType.GetField("m_AvatarPreview", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            avatarPreviewField = FindAvatarPreviewField(editorType);
+
+            if (avatarPreviewField == null)
+            {
+
+                foreach (var f in editorType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+                {
+                    if (!typeof(Editor).IsAssignableFrom(f.FieldType))
+                    {
+                        continue;
+                    }
+
+                    var inner = f.GetValue(avatarOwner) as Editor;
+                    if (inner == null)
+                    {
+
+                        continue;
+                    }
+
+                    var found = FindAvatarPreviewField(inner.GetType());
+                    if (found != null)
+                    {
+
+                        innerEditorField = f;
+                        avatarPreviewField = found;
+                        break;
+                    }
+                }
+            }
+
             if (avatarPreviewField == null)
             {
                 return;
             }
+
             timeControlledEditor = avatarOwner;
+        }
+
+        private static FieldInfo FindAvatarPreviewField(Type t)
+        {
+            while (t != null && t != typeof(object))
+            {
+                foreach (var f in t.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+                {
+                    if (avatarPreviewType.IsAssignableFrom(f.FieldType))
+                    {
+                        return f;
+                    }
+                }
+                t = t.BaseType;
+            }
+            return null;
         }
 
         internal static bool FinishGatheringTimeControl(object editor)
@@ -1010,7 +1063,19 @@ namespace CoInspector
             {
                 return false;
             }
-            avatarPreview = avatarPreviewField.GetValue(editor);
+
+            // Resolve the actual host of m_AvatarPreview (outer for legacy, inner Editor for 6.x+).
+            object host = editor;
+            if (innerEditorField != null)
+            {
+                host = innerEditorField.GetValue(editor);
+                if (host == null)
+                {
+                    return false;
+                }
+            }
+
+            avatarPreview = avatarPreviewField.GetValue(host);
             if (avatarPreview == null)
             {
                 return false;
@@ -1029,6 +1094,7 @@ namespace CoInspector
             {
                 return false;
             }
+
             if (playingProperty == null)
             {
                 if (timeControlType == null)
@@ -1045,6 +1111,7 @@ namespace CoInspector
                     return false;
                 }
             }
+
             timeControlGathered = true;
             return true;
         }
@@ -1053,10 +1120,12 @@ namespace CoInspector
         {
             if (timeControlledEditor == null || avatarPreviewField == null)
             {
+
                 return false;
             }
             if (!timeControlGathered && avatarPreview == null && gatheringAttempts < MAX_GATHERING_ATTEMPTS)
             {
+
                 gatheringAttempts++;
                 if (!FinishGatheringTimeControl(timeControlledEditor))
                 {

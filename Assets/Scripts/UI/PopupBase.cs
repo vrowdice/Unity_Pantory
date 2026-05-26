@@ -28,6 +28,8 @@ public class PopupBase : TutorialBase
     protected DataManager _dataManager;
     private bool _isDayEventSubscribed;
     private bool _isHourEventSubscribed;
+    private bool _isClosing;
+    private bool _destroyAfterClose;
 
     private void OnDisable()
     {
@@ -167,6 +169,7 @@ public class PopupBase : TutorialBase
 
     public virtual void Show()
     {
+        _isClosing = false;
         if (_cachedClose == null) _cachedClose = Close;
         if (UIManager.Instance != null)
         {
@@ -228,7 +231,18 @@ public class PopupBase : TutorialBase
 
     public virtual void Close()
     {
+        RequestClose(false);
+    }
+
+    protected void CloseAndDestroy()
+    {
+        RequestClose(true);
+    }
+
+    private void RequestClose(bool destroyAfterClose)
+    {
         if (this == null) return;
+        if (_isClosing) return;
 
         if (_cachedClose != null && UIManager.Instance != null)
             UIManager.Instance.RemoveCloseable(_cachedClose);
@@ -244,19 +258,26 @@ public class PopupBase : TutorialBase
 
         if (UsesAnimatedClose() && gameObject.activeInHierarchy)
         {
+            _isClosing = true;
+            _destroyAfterClose = destroyAfterClose;
+
             if (_closeCoroutine != null)
                 StopCoroutine(_closeCoroutine);
             _closeCoroutine = StartCoroutine(CloseEffectCoroutine());
             return;
         }
 
-        gameObject.SetActive(false);
+        FinalizeClose(destroyAfterClose);
     }
 
-    protected void CloseAndDestroy()
+    private void FinalizeClose(bool destroyAfterClose)
     {
-        Close();
-        Destroy(gameObject);
+        _isClosing = false;
+        _closeCoroutine = null;
+        gameObject.SetActive(false);
+
+        if (destroyAfterClose)
+            Destroy(gameObject);
     }
 
     protected virtual IEnumerator CloseEffectCoroutine()
@@ -284,6 +305,6 @@ public class PopupBase : TutorialBase
         }
 
         _closeCoroutine = null;
-        gameObject.SetActive(false);
+        FinalizeClose(_destroyAfterClose);
     }
 }

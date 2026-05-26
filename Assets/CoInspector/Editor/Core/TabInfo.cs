@@ -592,14 +592,14 @@ namespace CoInspector
             if (target != null)
             {
                 path = EditorUtils.GatherGameObjectPath(target);
-                id = target.GetInstanceID();
+                id = EditorUtils.GetObjectId(target);
                 paths = null;
                 ids = null;
             }
             else if (IsValidMultiTarget())
             {
                 paths = targets.Select(EditorUtils.GatherGameObjectPath).ToArray();
-                ids = targets.Select(t => t.GetInstanceID()).ToArray();
+                ids = targets.Select(t => EditorUtils.GetObjectId(t)).ToArray();
                 path = "";
                 id = 0;
 
@@ -609,7 +609,7 @@ namespace CoInspector
                 historyPaths = history.Select(_history =>
                 {
                     var _paths = _history.Select(EditorUtils.GatherGameObjectPath).ToArray();
-                    var _ids = _history.Select(h => h.GetInstanceID()).ToArray();
+                    var _ids = _history.Select(h => EditorUtils.GetObjectId(h)).ToArray();
                     return new HistoryPaths(_paths, _ids, prefab);
                 }).ToList();
 

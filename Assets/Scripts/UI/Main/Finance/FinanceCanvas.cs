@@ -94,7 +94,7 @@ public class FinanceCanvas : MainCanvasPanelBase
             return wealthText;
         }
 
-        return $"{wealthText}\n<color=#FF6B6B>Bankruptcy: {finances.BankruptcyMonthsRemaining}M</color>";
+        return $"{wealthText}\n<color=#FF6B6B>{WarningMessage.BankruptcyCountdownTick.LocalizeFormat(LocalizationUtils.TABLE_COMMON, finances.BankruptcyMonthsRemaining)}</color>";
     }
 
     private void UpdateCharts()
@@ -106,21 +106,6 @@ public class FinanceCanvas : MainCanvasPanelBase
 
     private void UpdateSingleChart(LineChart chart, IReadOnlyList<long> history, long currentValue)
     {
-        if (chart == null) return;
-        chart.dataPoints.Clear();
-
-        int startIndex = Mathf.Max(0, history.Count - _maxDataPoints);
-        int totalPoints = (history.Count - startIndex) + 1;
-
-        int labelStep = totalPoints <= 12 ? 1 : Mathf.Max(1, totalPoints / 10);
-        for (int i = startIndex; i < history.Count; i++)
-        {
-            bool showLabel = (i % labelStep == 0);
-            string label = showLabel ? $"M{i + 1}" : "";
-            chart.dataPoints.Add(new LineChart.DataPoint(label, history[i]));
-        }
-
-        chart.dataPoints.Add(new LineChart.DataPoint("Now", currentValue));
-        chart.DrawChart();
+        FinancesChartUtility.PopulateChart(chart, history, currentValue, _maxDataPoints);
     }
 }

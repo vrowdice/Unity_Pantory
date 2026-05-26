@@ -91,6 +91,7 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
         CreateQuickMoveBtns();
 
         InitBuildUi();
+        InitBankruptcyUi();
 
         _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += RefreshBuildingPlacedCountDisplays;
 
@@ -100,6 +101,8 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
 
     private void OnDestroy()
     {
+        CleanupBankruptcyUi();
+
         if (_mainRunner != null && _mainRunner.GridHandler != null)
             _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged -= RefreshBuildingPlacedCountDisplays;
 
