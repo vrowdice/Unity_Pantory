@@ -112,6 +112,13 @@ public class TutorialGuidedPopup : PopupBase
         _advanceCallback?.Invoke();
     }
 
+    public void OnClickResetBtn()
+    {
+        UIManager.Instance?.ShowConfirmPopup(
+            ConfirmMessage.ReplayTutorialConfirm,
+            () => TutorialDirector.Instance?.ResetTutorial());
+    }
+
     public void Dismiss()
     {
         if (_focusPanel != null)

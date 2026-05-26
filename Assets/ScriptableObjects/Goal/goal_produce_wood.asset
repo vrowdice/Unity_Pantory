@@ -18,4 +18,4 @@ MonoBehaviour:
   targetId: wood_log
   targetValue: 30
   rewardCredit: 20000
-  nextGoal: {fileID: 11400000, guid: c3a4b5c6d7e8f90192a3b4c5d6e7f83, type: 2}
+  nextGoal: {fileID: 11400000, guid: c3a4b5c6d7e8f809192a3b4c5d6e7f83, type: 2}

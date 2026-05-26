@@ -519,6 +519,14 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         BeginStep(_currentStepIndex);
     }
 
+    public void ResetTutorial()
+    {
+        DismissActivePopup();
+        TutorialInputGate.Clear();
+        SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
+        SceneLoadManager.Instance?.LoadScene("Tutorial");
+    }
+
     public void CompleteTutorial()
     {
         DismissActivePopup();

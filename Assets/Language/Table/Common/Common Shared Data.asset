@@ -683,6 +683,10 @@ MonoBehaviour:
     m_Key: GoalReward
     m_Metadata:
       m_Items: []
+  - m_Id: 43988038063636480
+    m_Key: Tutorial
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

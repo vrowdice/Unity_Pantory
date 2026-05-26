@@ -234,3 +234,5 @@ MonoBehaviour:
   _goalDataList:
   - {fileID: 11400000, guid: c1a2b3c4d5e6f708192a3b4c5d6e7f81, type: 2}
   - {fileID: 11400000, guid: c2a3b4c5d6e7f809192a3b4c5d6e7f82, type: 2}
+  - {fileID: 11400000, guid: c3a4b5c6d7e8f809192a3b4c5d6e7f83, type: 2}
+  - {fileID: 11400000, guid: c4a5b6c7d8e9f809192a3b4c5d6e7f84, type: 2}
