@@ -2,6 +2,12 @@
 
 **Pantory** is a fantasy crafting & trading simulation game set in a world where magic and early industrial technology coexist. Players gather resources, craft various tools, and directly sell their creations in the market — shaping the economy with their own hands.
 
+## Gameplay
+
+[![Watch Pantory gameplay on YouTube](https://img.youtube.com/vi/FhVxkCAGbEg/hqdefault.jpg)](https://youtu.be/FhVxkCAGbEg)
+
+[Watch gameplay on YouTube](https://youtu.be/FhVxkCAGbEg?si=UB0Dbl00QhRAHthT)
+
 ---
 
 ## 🌍 Overview
