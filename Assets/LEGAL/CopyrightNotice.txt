@@ -1,0 +1,14 @@
+PANTORY
+Copyright (c) 2025-2026 Vrowdice. All Rights Reserved.
+
+This game and its original content (code, art, audio, design, and data created
+for Pantory) are proprietary and protected by copyright law.
+
+Unauthorized copying, modification, distribution, or reverse engineering is
+prohibited without prior written permission from Vrowdice.
+
+Third-party components are used under their respective licenses.
+See THIRD_PARTY_NOTICES.md in the project repository.
+
+Company: Vrowdice
+Product: Pantory

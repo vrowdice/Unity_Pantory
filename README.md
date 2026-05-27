@@ -17,7 +17,7 @@ Pantory is a production and commerce simulation where the fusion of fantasy and 
 
 ### 🏭 Building & Grid (Main Scene)
 
-* **Main runner:** `MainRunner` drives the main scene — building/road placement on a tile grid, rotation, and removal (`BuildingData`-based; the old tile “thread” placement flow has been retired).
+* **Main runner:** `MainRunner` drives the main scene — building/road placement on a tile grid, rotation, and removal (`BuildingData`-based; the old tile "thread" placement flow has been retired).
 * **Handlers:** `MainBuildingGridHandler` (grid, roads, staged resource flow ticks), `MainBuildingPlacementHandler` (install/remove previews), `MainBlueprintHandler` (blueprint layout mode).
 * **Layouts:** Save/restore placed buildings and roads via `PlacedObjectLayoutDataHandler`; named blueprint packs via `BlueprintLayoutDataHandler`.
 
@@ -145,4 +145,21 @@ Assets/
 
 ---
 
-*Internal design notes: some identifiers still say “Thread” in enums or legacy strings; production placement is building/grid-based in the main scene.*
+## 📜 License
+
+**Pantory is proprietary software.** All rights are reserved by **Vrowdice**.
+
+| Topic | Policy |
+| :--- | :--- |
+| **Owner commercial use** | Allowed - Vrowdice may use, modify, and sell Pantory commercially. |
+| **Copying / redistribution** | **Not allowed** without prior written permission from Vrowdice. |
+| **Forking / mirroring** | **Not allowed** without authorization. |
+| **Third-party assets** | Governed by their own licenses - see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). |
+
+Full legal terms: [`LICENSE`](LICENSE)
+
+Build/in-game notice: [`Assets/LEGAL/CopyrightNotice.txt`](Assets/LEGAL/CopyrightNotice.txt)
+
+---
+
+*Internal design notes: some identifiers still say "Thread" in enums or legacy strings; production placement is building/grid-based in the main scene.*

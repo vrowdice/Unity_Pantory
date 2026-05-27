@@ -1,0 +1,106 @@
+PANTORY PROPRIETARY SOFTWARE LICENSE
+Copyright (c) 2025-2026 Vrowdice. All Rights Reserved.
+
+================================================================================
+한국어 요약 (법적 효력은 아래 영문 본문이 우선합니다)
+================================================================================
+
+본 저장소 및 Pantory 프로젝트에 포함된 소스 코드, 에셋, 디자인, 문서, 데이터
+및 기타 모든 저작물(이하 "본 소프트웨어")의 저작권과 관련 권리는 Vrowdice에
+귀속됩니다.
+
+- Vrowdice(저작권자)는 본 소프트웨어를 상업적 목적을 포함하여 자유롭게 사용,
+  수정, 배포, 판매할 수 있습니다.
+- 저작권자의 사전 서면 허가 없이는 누구도 본 소프트웨어를 복제, 수정, 배포,
+  판매, 서브라이선스, 역컴파일, 디컴파일, 리버스 엔지니어링할 수 없습니다.
+- 본 소프트웨어는 "있는 그대로" 제공되며, 법률이 허용하는 범위 내에서만
+  책임이 제한됩니다.
+
+무단 복제·배포·2차 가공은 저작권법 및 관련 법령에 따라 민·형사상 책임을
+질 수 있습니다.
+
+문의: Vrowdice (프로젝트 소유자)
+
+================================================================================
+ENGLISH — LEGAL TERMS
+================================================================================
+
+1. DEFINITIONS
+
+   "Software" means the Pantory Unity project and all associated materials,
+   including but not limited to source code, binaries, art, audio, video,
+   shaders, prefabs, ScriptableObjects, documentation, localization tables,
+   build outputs, and project configuration, whether in this repository or
+   derived from it.
+
+   "Owner" means Vrowdice, the copyright holder of the Software.
+
+   "Authorized User" means the Owner and any person or entity that has received
+   prior written permission from the Owner.
+
+2. GRANT OF RIGHTS
+
+   The Owner retains all right, title, and interest in and to the Software.
+
+   Only the Owner may use, reproduce, modify, create derivative works from,
+   distribute, publicly display, publicly perform, sublicense, and sell the
+   Software for any purpose, including commercial purposes, without limitation.
+
+   No rights are granted to any other person or entity except as expressly set
+   forth in a separate written agreement signed by the Owner.
+
+3. RESTRICTIONS
+
+   Unless you are the Owner or an Authorized User, you may NOT:
+
+   a) Copy, reproduce, mirror, fork, clone, or duplicate the Software or any
+      portion thereof;
+   b) Modify, adapt, translate, or create derivative works based on the
+      Software;
+   c) Distribute, publish, rent, lease, lend, sell, or otherwise make the
+      Software available to any third party;
+   d) Remove or alter any copyright, trademark, or proprietary notices;
+   e) Reverse engineer, decompile, disassemble, or attempt to derive source
+      code or underlying ideas from the Software, except where such restriction
+      is prohibited by applicable law;
+   f) Use the Software for any commercial or non-commercial purpose.
+
+4. THIRD-PARTY COMPONENTS
+
+   The Software may include third-party libraries, assets, fonts, and tools
+   that are subject to their own licenses. See THIRD_PARTY_NOTICES.md. Those
+   components remain governed by their respective licenses and are not covered
+   by this proprietary license except as incorporated into the Owner's project.
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS
+   FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+6. LIMITATION OF LIABILITY
+
+   TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE OWNER SHALL NOT BE
+   LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
+   DAMAGES, OR ANY LOSS OF PROFITS, DATA, OR GOODWILL, ARISING FROM OR RELATED
+   TO THE SOFTWARE.
+
+7. ENFORCEMENT
+
+   Unauthorized copying, distribution, or use may constitute copyright
+   infringement and may be subject to civil and criminal penalties under
+   applicable law. The Owner reserves all remedies available at law and in
+   equity.
+
+8. GOVERNING LAW
+
+   This license shall be governed by and construed in accordance with the laws
+   of the Republic of Korea, without regard to conflict-of-law principles.
+
+9. ENTIRE AGREEMENT
+
+   This document constitutes the entire agreement regarding use of the Software
+   and supersedes all prior or contemporaneous understandings on this subject.
+
+   For licensing inquiries or written permission requests, contact the Owner
+   (Vrowdice).
