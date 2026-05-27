@@ -154,8 +154,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665238
-    m_Localized: While time runs, watch the resource panel on the right. You will
-      see resources move, produce, and get consumed.
+    m_Localized: "While time runs, watch the resource panel on the right. Advance
+      time until at least one day passes\u2014you will see resources move, produce,
+      and get consumed."
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000011
@@ -176,13 +177,18 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665241
-    m_Localized: Tap the Credits and Research Points button at the top left to check
-      your current finances.
+    m_Localized: Tap the button showing your Credits and Research Points at the top
+      left to check your current finances.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665242
     m_Localized: While placing buildings, rotate with Q/E or the rotate buttons at
       the bottom right.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665243
+    m_Localized: Advance time until at least one day passes, then check whether your
+      resources were sold. Resources are sold every day.
     m_Metadata:
       m_Items: []
   references:

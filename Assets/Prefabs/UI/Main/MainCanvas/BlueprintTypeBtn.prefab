@@ -662,6 +662,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22510f4be5d85cb459bc9318b4631ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 0}
   _focusedImage: {fileID: 6245909124064548425}
 --- !u!1 &6459874713904048320
 GameObject:

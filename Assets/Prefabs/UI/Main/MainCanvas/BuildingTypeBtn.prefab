@@ -621,6 +621,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 923e9746aefa0154c8d9f8ff4b7a608f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 0}
   _text: {fileID: 7164188938891426639}
   _focusedImage: {fileID: 6245909124064548425}
 --- !u!1 &6459874713904048320

@@ -20,4 +20,6 @@ public interface ITutorialSceneFlow
     void NotifyBuildingResourceAssigned(string buildingId);
 
     void NotifyMarketSellConfigured();
+
+    void NotifyDayAdvanced();
 }

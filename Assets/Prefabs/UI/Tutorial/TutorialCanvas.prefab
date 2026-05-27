@@ -14029,7 +14029,7 @@ MonoBehaviour:
   _quickMoveBtnPrefeb: {fileID: 1343671733478616711, guid: ecbf718cd5649e74d9e4fda0e969449e, type: 3}
   _quickMovePanelContent: {fileID: 5881713774088659892}
   _resourceScrollView: {fileID: 149838796137830201}
-  _mainScrollViewResouceBtn: {fileID: 3288361424689650741, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
+  _mainScrollViewResouceBtn: {fileID: 4338296998459436098, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
   _resouceScrollViewContent: {fileID: 5792593746420108247}
   _creditText: {fileID: 3157747697831197936}
   _deltaCreditText: {fileID: 5621586244536354010}

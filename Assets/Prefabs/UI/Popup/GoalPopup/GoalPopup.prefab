@@ -89,9 +89,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a4b5c6d7e84990a1b2c3d4e5f67890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tutorialPanelInfo: []
   _animationTarget: {fileID: 7673298843195649067}
   _effectType: 0
+  _tutorialPanelInfo: []
   _openPopupSfx: {fileID: 0}
   _goalBtnPrefab: {fileID: 9067360497433892034, guid: 8601573881c8c864c8541fea8a007581, type: 3}
   _goalBtnScrollViewContentTransform: {fileID: 1170502774119004648}
@@ -1292,15 +1292,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0

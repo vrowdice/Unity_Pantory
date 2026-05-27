@@ -29,3 +29,4 @@ MonoBehaviour:
   guaranteedUnionRequestDay: 60
   minUnionRequestDeadlineDays: 30
   maxUnionRequestDeadlineDays: 90
+  dividedFactoryEffect: {fileID: 11400000, guid: a5fe46096bf90304d9ed72d9baa88712, type: 2}

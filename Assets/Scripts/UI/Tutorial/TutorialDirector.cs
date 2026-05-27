@@ -24,6 +24,9 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     private bool _isPopupVisible;
     private bool _hasStarted;
     private TutorialGuidedPopup _activePopup;
+    private int _waitDayBaselineYear;
+    private int _waitDayBaselineMonth;
+    private int _waitDayBaselineDay;
 
     private readonly List<TutorialSceneStepDefinition> _steps = new List<TutorialSceneStepDefinition>
     {
@@ -60,10 +63,11 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
         new TutorialSceneStepDefinition(TutorialSceneStepKind.StartTimePlay),
         new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
+        new TutorialSceneStepDefinition(TutorialSceneStepKind.WaitDayPassed),
         new TutorialSceneStepDefinition(TutorialSceneStepKind.OpenMarketPanel),
         new TutorialSceneStepDefinition(TutorialSceneStepKind.AdjustMarketSell),
         new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
+        new TutorialSceneStepDefinition(TutorialSceneStepKind.WaitDayPassed),
         new TutorialSceneStepDefinition(TutorialSceneStepKind.Complete)
     };
 
@@ -203,6 +207,21 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             AdvanceAfterAction();
     }
 
+    public void NotifyDayAdvanced()
+    {
+        if (!_isWaitingForAction)
+            return;
+
+        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
+        if (step.Kind != TutorialSceneStepKind.WaitDayPassed)
+            return;
+
+        if (!HasAtLeastOneDayPassedSinceWaitStepBegan())
+            return;
+
+        AdvanceAfterAction();
+    }
+
     private void BeginStep(int stepIndex)
     {
         _currentStepIndex = stepIndex;
@@ -225,6 +244,9 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
         if (step.Kind == TutorialSceneStepKind.AdjustMarketSell)
             _tutorialCanvas?.PrepareMarketSellStep();
+
+        if (step.Kind == TutorialSceneStepKind.WaitDayPassed)
+            CaptureWaitDayBaseline();
 
         if (step.Kind == TutorialSceneStepKind.SelectBuilding)
             _tutorialCanvas?.SelectBuildingTypeForBuilding(step.BuildingId);
@@ -262,6 +284,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
                 TutorialInputGate.Configure(true, allowAutoEmployeeToggle: true);
                 break;
             case TutorialSceneStepKind.StartTimePlay:
+            case TutorialSceneStepKind.WaitDayPassed:
                 TutorialInputGate.Configure(true, allowTimePlay: true);
                 break;
             case TutorialSceneStepKind.AssignBuildingResource:
@@ -388,6 +411,28 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         return timePlayPanel == null || timePlayPanel.IsTimePaused;
     }
 
+    private void CaptureWaitDayBaseline()
+    {
+        TimeDataHandler time = DataManager.Instance?.Time;
+        if (time == null)
+            return;
+
+        _waitDayBaselineYear = time.Year;
+        _waitDayBaselineMonth = time.Month;
+        _waitDayBaselineDay = time.Day;
+    }
+
+    private bool HasAtLeastOneDayPassedSinceWaitStepBegan()
+    {
+        TimeDataHandler time = DataManager.Instance?.Time;
+        if (time == null)
+            return false;
+
+        return time.Year != _waitDayBaselineYear
+            || time.Month != _waitDayBaselineMonth
+            || time.Day != _waitDayBaselineDay;
+    }
+
     private void OnGuidedPopupClosedUnexpectedly()
     {
         if (!_hasStarted || _currentStepIndex >= _steps.Count || _activePopup != null)
@@ -417,6 +462,9 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
         if (_currentStepIndex == ResourcePanelStepIndex)
             return _tutorialCanvas?.FindResourceScrollView();
+
+        if (_currentStepIndex == WaitForResourceSellStepIndex)
+            return _tutorialCanvas?.FindTimePlayPanel();
 
         switch (step.Kind)
         {
@@ -451,6 +499,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     private const int TimePlayPanelStepIndex = 30;
     private const int ResourcePanelStepIndex = 32;
     private const int CreditsInfoStepIndex = 36;
+    private const int WaitForResourceSellStepIndex = 37;
 
     private void OnPopupAdvanceRequested()
     {
@@ -546,6 +595,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         PlaceBuilding,
         AssignBuildingResource,
         StartTimePlay,
+        WaitDayPassed,
         OpenMarketPanel,
         AdjustMarketSell,
         Complete
@@ -564,6 +614,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             Kind == TutorialSceneStepKind.PlaceBuilding ||
             Kind == TutorialSceneStepKind.AssignBuildingResource ||
             Kind == TutorialSceneStepKind.StartTimePlay ||
+            Kind == TutorialSceneStepKind.WaitDayPassed ||
             Kind == TutorialSceneStepKind.OpenMarketPanel ||
             Kind == TutorialSceneStepKind.AdjustMarketSell;
 

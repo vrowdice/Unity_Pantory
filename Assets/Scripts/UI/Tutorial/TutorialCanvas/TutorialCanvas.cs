@@ -20,6 +20,7 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
     protected BuildingSceneRunnerBase _sceneRunner;
     protected ITutorialSceneFlow _tutorialFlow;
     private TimePlayPanel _timePlayPanel;
+    private Coroutine _resourceScrollCoroutine;
 
     private void Update()
     {
@@ -92,6 +93,7 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
 
     protected override void OnDestroy()
     {
+        StaggeredSpawnUtils.Stop(this, ref _resourceScrollCoroutine);
         base.OnDestroy();
 
         if (_sceneRunner != null && _sceneRunner.GridHandler != null)
@@ -156,6 +158,7 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
     {
         RefreshResourceScrollView();
         UpdateAllMainText();
+        _tutorialFlow?.NotifyDayAdvanced();
     }
 
     private void OnBuildingLayoutChanged()

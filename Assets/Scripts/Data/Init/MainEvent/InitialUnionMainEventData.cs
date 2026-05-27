@@ -52,4 +52,7 @@ public class InitialUnionMainEventData : InitialMainEventModuleData
 
     [Tooltip("생성된 요구의 최대 마감 일수")]
     public int maxUnionRequestDeadlineDays = 90;
+
+    [Tooltip("조합 이벤트 실패 시 적용되는 효과")]
+    public EffectData dividedFactoryEffect;
 }

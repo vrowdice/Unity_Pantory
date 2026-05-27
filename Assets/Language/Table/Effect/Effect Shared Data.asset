@@ -171,6 +171,10 @@ MonoBehaviour:
     m_Key: policy_effect_employee_welfare_satisfaction
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000040
+    m_Key: divided_factory
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000045
     m_Key: effect_airplane_price_down_20
     m_Metadata:
