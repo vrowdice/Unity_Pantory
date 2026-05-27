@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,8 @@ public class StorageCanvas : MainCanvasPanelBase
 
     private ResourceType? _currentResourceType = null;
     private List<ActionBtn> _categoryButtons = new List<ActionBtn>();
+    private Coroutine _categoryButtonCoroutine;
+    private Coroutine _resourceListCoroutine;
 
     /// <summary>
     /// 패널 초기화 (BasePanel에서 호출)
@@ -34,8 +37,12 @@ public class StorageCanvas : MainCanvasPanelBase
         RefreshCurrentResourceTypeList();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        StaggeredSpawnUtils.Stop(this, ref _categoryButtonCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _resourceListCoroutine);
+        base.OnDisable();
+
         if (_dataManager != null)
             _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
     }
@@ -64,14 +71,25 @@ public class StorageCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_resourceTypeScrollViewContentTransform);
         _categoryButtons.Clear();
 
-        CreateCategoryButton(null, LocalizationUtils.Localize("All"));
+        List<(ResourceType? type, string label)> categoryDefs = new List<(ResourceType? type, string label)>
+        {
+            (null, LocalizationUtils.Localize("All"))
+        };
 
         foreach (ResourceType resourceType in EnumUtils.GetAllEnumValues<ResourceType>())
-        {
-            CreateCategoryButton(resourceType, resourceType.Localize(LocalizationUtils.TABLE_RESOURCE));
-        }
-        
+            categoryDefs.Add((resourceType, resourceType.Localize(LocalizationUtils.TABLE_RESOURCE)));
+
+        StaggeredSpawnUtils.Restart(this, ref _categoryButtonCoroutine, CreateCategoryButtonsRoutine(categoryDefs));
         UpdateCategoryHighlight();
+    }
+
+    private IEnumerator CreateCategoryButtonsRoutine(List<(ResourceType? type, string label)> categoryDefs)
+    {
+        yield return StaggeredSpawnUtils.ForEachFrame(categoryDefs.Count, i =>
+        {
+            (ResourceType? type, string label) def = categoryDefs[i];
+            CreateCategoryButton(def.type, def.label);
+        });
     }
 
     /// <summary>
@@ -124,30 +142,36 @@ public class StorageCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshCurrentResourceTypeList()
     {
+        StaggeredSpawnUtils.Restart(this, ref _resourceListCoroutine, RefreshCurrentResourceTypeListRoutine());
+    }
+
+    private IEnumerator RefreshCurrentResourceTypeListRoutine()
+    {
         if (!gameObject.activeInHierarchy)
-            return;
+            yield break;
 
         ScrollRect scroll = _resourceScrollViewContentTransform.GetComponentInParent<ScrollRect>();
         if (scroll != null)
-        {
             scroll.enabled = false;
-        }
 
         _gameManager.PoolingManager.ClearChildrenToPool(_resourceScrollViewContentTransform);
 
+        List<ResourceEntry> entries = new List<ResourceEntry>();
         foreach (KeyValuePair<string, ResourceEntry> resourceEntry in _dataManager.Resource.GetAllResources())
         {
             if (_currentResourceType == null || resourceEntry.Value.data.type == _currentResourceType.Value)
-            {
-                GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_storageResourceBtnPrefab);
-                btnObj.transform.SetParent(_resourceScrollViewContentTransform, false);
-                btnObj.GetComponent<StorageResourceBtn>().Init(this, resourceEntry.Value);
-            }
+                entries.Add(resourceEntry.Value);
         }
 
-        if (scroll != null)
+        yield return StaggeredSpawnUtils.ForEachFrame(entries.Count, i =>
         {
+            ResourceEntry entry = entries[i];
+            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_storageResourceBtnPrefab);
+            btnObj.transform.SetParent(_resourceScrollViewContentTransform, false);
+            btnObj.GetComponent<StorageResourceBtn>().Init(this, entry);
+        });
+
+        if (scroll != null)
             scroll.enabled = true;
-        }
     }
 }

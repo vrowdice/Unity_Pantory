@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class NewsCanvas : MainCanvasPanelBase
     [SerializeField] GameObject _newspaperPanelPrefab;
 
     private Dictionary<string, NewspaperPanel> _newsPanelMap = new Dictionary<string, NewspaperPanel>();
+    private Coroutine _refreshCoroutine;
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -19,8 +21,11 @@ public class NewsCanvas : MainCanvasPanelBase
         RefreshNewsList();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        StaggeredSpawnUtils.Stop(this, ref _refreshCoroutine);
+        base.OnDisable();
+
         if(_dataManager != null)
         {
             _dataManager.News.OnNewsChanged -= RefreshNewsList;
@@ -28,6 +33,11 @@ public class NewsCanvas : MainCanvasPanelBase
     }
 
     private void RefreshNewsList(NewsState newsState = null)
+    {
+        StaggeredSpawnUtils.Restart(this, ref _refreshCoroutine, RefreshNewsListRoutine());
+    }
+
+    private IEnumerator RefreshNewsListRoutine()
     {
         List<NewsState> activeNewsList = _dataManager.News.GetActiveNewsList();
 
@@ -44,11 +54,21 @@ public class NewsCanvas : MainCanvasPanelBase
             }
         }
 
+        List<NewsState> newsToCreate = new List<NewsState>();
         foreach (NewsState item in activeNewsList)
         {
-            if (item == null) continue;
-            if (_newsPanelMap.ContainsKey(item.id)) continue;
+            if (item == null)
+                continue;
 
+            if (_newsPanelMap.ContainsKey(item.id))
+                continue;
+
+            newsToCreate.Add(item);
+        }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(newsToCreate.Count, i =>
+        {
+            NewsState item = newsToCreate[i];
             GameObject newsObj = _gameManager.PoolingManager.GetPooledObject(_newspaperPanelPrefab);
             newsObj.transform.SetParent(_newspaperContentTransform, false);
             NewspaperPanel newsPanel = newsObj.GetComponent<NewspaperPanel>();
@@ -57,6 +77,6 @@ public class NewsCanvas : MainCanvasPanelBase
                 newsPanel.Init(item, this);
                 _newsPanelMap.Add(item.id, newsPanel);
             }
-        }
+        });
     }
 }

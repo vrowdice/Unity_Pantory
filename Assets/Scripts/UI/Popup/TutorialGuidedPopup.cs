@@ -228,8 +228,10 @@ public class TutorialGuidedPopup : PopupBase
             _focusPanelImage.raycastTarget = block;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         if (!_allowClose && !_isRetiring)
             _onDismissedUnexpectedly?.Invoke();
 

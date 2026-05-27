@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,36 +8,53 @@ public class DebugPopup : PopupBase
     [SerializeField] private Transform _debugBtnContentTransform;
     [SerializeField] private GameObject _debugBtnPrefab;
 
+    private Coroutine _buildButtonsCoroutine;
+
     public override void Init()
     {
         base.Init();
-        BuildDebugButtons();
+        StaggeredSpawnUtils.Restart(this, ref _buildButtonsCoroutine, BuildDebugButtonsRoutine());
         Show();
     }
 
-    private void BuildDebugButtons()
+    public override void Close()
+    {
+        StaggeredSpawnUtils.Stop(this, ref _buildButtonsCoroutine);
+        base.Close();
+    }
+
+    private IEnumerator BuildDebugButtonsRoutine()
     {
         if (_debugBtnContentTransform == null || _debugBtnPrefab == null)
         {
             Debug.LogError("[DebugPopup] Button content or prefab is missing.");
-            return;
+            yield break;
         }
 
         for (int i = _debugBtnContentTransform.childCount - 1; i >= 0; i--)
             Destroy(_debugBtnContentTransform.GetChild(i).gameObject);
 
-        AddButton("Credit +1,000,000", () => DataManager.Instance.Finances.ModifyCredit(1_000_000));
-        AddButton("All Resource +500", AddAllResourceCounts);
-        AddButton("RP +10,000", () => DataManager.Instance.Research.AddResearchPoints(10_000));
-        AddButton("Unlock All Research", UnlockAllResearch);
-        AddButton("All Employee +10", AddAllEmployees);
-        AddButton("All Employee Satisfaction 100", SetAllEmployeeSatisfactionMax);
-        AddButton("All Employee Salary Level 4", SetAllEmployeeSalaryLevelMax);
-        AddButton("All Market Actor Trust +10", BoostAllMarketTrust);
-        AddButton("Complete All Active Orders", CompleteAllActiveOrders);
-        AddButton("Time x10", () => DataManager.Instance.Time.SetTimeSpeed(10f));
-        AddButton("Pause Time", () => DataManager.Instance.Time.PauseTime());
-        AddButton("Resume Time", () => DataManager.Instance.Time.ResumeTime());
+        List<(string label, Action action)> buttonDefs = new List<(string label, Action action)>
+        {
+            ("Credit +1,000,000", () => DataManager.Instance.Finances.ModifyCredit(1_000_000)),
+            ("All Resource +500", AddAllResourceCounts),
+            ("RP +10,000", () => DataManager.Instance.Research.AddResearchPoints(10_000)),
+            ("Unlock All Research", UnlockAllResearch),
+            ("All Employee +10", AddAllEmployees),
+            ("All Employee Satisfaction 100", SetAllEmployeeSatisfactionMax),
+            ("All Employee Salary Level 4", SetAllEmployeeSalaryLevelMax),
+            ("All Market Actor Trust +10", BoostAllMarketTrust),
+            ("Complete All Active Orders", CompleteAllActiveOrders),
+            ("Time x10", () => DataManager.Instance.Time.SetTimeSpeed(10f)),
+            ("Pause Time", () => DataManager.Instance.Time.PauseTime()),
+            ("Resume Time", () => DataManager.Instance.Time.ResumeTime()),
+        };
+
+        yield return StaggeredSpawnUtils.ForEachFrame(buttonDefs.Count, i =>
+        {
+            (string label, Action action) def = buttonDefs[i];
+            AddButton(def.label, def.action);
+        });
     }
 
     private void AddButton(string label, Action onClickAction)

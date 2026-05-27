@@ -687,6 +687,10 @@ MonoBehaviour:
     m_Key: Tutorial
     m_Metadata:
       m_Items: []
+  - m_Id: 44242199258742784
+    m_Key: CompletedGoal
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -90,8 +90,10 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
         _tutorialFlow?.NotifyCanvasReady(this);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         if (_sceneRunner != null && _sceneRunner.GridHandler != null)
         {
             _sceneRunner.GridHandler.OnBuildingInstanceLayoutChanged -= RefreshBuildingPlacedCountDisplays;

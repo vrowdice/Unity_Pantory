@@ -1,26 +1,18 @@
-using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEngine;
 
 public class PopupBase : TutorialBase
 {
-    [SerializeField] private RectTransform _animationTarget;
-    [SerializeField] private BasePanelEffectType.TYPE _effectType = BasePanelEffectType.TYPE.FadeInFadeOut;
-
     [Header("Sound")]
     [SerializeField] private AudioClip _openPopupSfx;
 
     public const float DISPLAY_TIME = 0.6f;
     public const float MOVE_DURATION = 0.5f;
     public const float PUNCH_SCALE_DURATION = 1f;
-    public const float INOUT_DURATION = 0.1f;
 
-    private CanvasGroup _canvasGroup = null;
     protected Coroutine _showCoroutine = null;
     protected Coroutine _closeCoroutine = null;
-
-    private Vector3? _originalScale = null;
 
     private Action _onShowCompleteCallback = null;
     private Action _cachedClose;
@@ -31,8 +23,9 @@ public class PopupBase : TutorialBase
     private bool _isClosing;
     private bool _destroyAfterClose;
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         UnsubscribeDayEvents();
         UnsubscribeHourEvents();
 
@@ -42,65 +35,12 @@ public class PopupBase : TutorialBase
         }
     }
 
-    private void OnDestroy()
-    {
-        Transform target = GetAnimationTarget();
-        if (target != null)
-        {
-            target.DOKill();
-        }
-
-        if (_canvasGroup != null)
-        {
-            _canvasGroup.DOKill();
-        }
-    }
-
-    private Transform GetAnimationTarget()
-    {
-        return _animationTarget != null ? _animationTarget : transform;
-    }
-
-    private Vector3 GetOriginalScale()
-    {
-        Transform target = GetAnimationTarget();
-        _originalScale ??= target.localScale;
-        return _originalScale.Value;
-    }
-
-    private bool UsesAnimatedClose()
-    {
-        return _effectType == BasePanelEffectType.TYPE.FadeInFadeOut
-            || _effectType == BasePanelEffectType.TYPE.ScaleInScaleOut;
-    }
-
-    private Tween ConfigureTween(Tween tween)
-    {
-        return tween.SetUpdate(true).SetLink(GetAnimationTarget().gameObject);
-    }
-
-    private void KillActiveTweens()
-    {
-        Transform target = GetAnimationTarget();
-        target.DOKill();
-
-        if (_canvasGroup != null)
-        {
-            _canvasGroup.DOKill();
-        }
-    }
-
     public virtual void Init()
     {
         GameObjectUtils.ApplyPrefabInstanceName(gameObject);
 
-        Transform target = GetAnimationTarget();
-        _originalScale ??= target.localScale;
-        _canvasGroup = target.GetComponent<CanvasGroup>();
-        if (_canvasGroup == null)
-        {
-            _canvasGroup = target.gameObject.AddComponent<CanvasGroup>();
-        }
+        CacheOriginalScale();
+        EnsureCanvasGroup();
 
         SetDataManager(DataManager.Instance);
         SubscribeDayEvents();
@@ -184,6 +124,7 @@ public class PopupBase : TutorialBase
         }
         _showCoroutine = StartCoroutine(ShowEffectCoroutine());
     }
+
     public virtual Coroutine ShowCoroutine()
     {
         gameObject.SetActive(true);
@@ -202,30 +143,7 @@ public class PopupBase : TutorialBase
             SoundManager.Instance.PlaySFX(_openPopupSfx);
         }
 
-        KillActiveTweens();
-        Transform target = GetAnimationTarget();
-
-        switch (_effectType)
-        {
-            case BasePanelEffectType.TYPE.FadeInFadeOut:
-                if (_canvasGroup != null)
-                {
-                    _canvasGroup.alpha = 0f;
-                    Tween fadeTween = ConfigureTween(_canvasGroup.DOFade(1f, INOUT_DURATION));
-                    yield return fadeTween.WaitForCompletion();
-                }
-                break;
-
-            case BasePanelEffectType.TYPE.ScaleInScaleOut:
-                Vector3 originalScale = GetOriginalScale();
-                target.localScale = Vector3.zero;
-                Tween scaleTween = ConfigureTween(target.DOScale(originalScale, INOUT_DURATION).SetEase(Ease.OutBack));
-                yield return scaleTween.WaitForCompletion();
-                break;
-
-            default:
-                break;
-        }
+        yield return PlayShowEffectCoroutine();
         _onShowCompleteCallback?.Invoke();
     }
 
@@ -282,27 +200,7 @@ public class PopupBase : TutorialBase
 
     protected virtual IEnumerator CloseEffectCoroutine()
     {
-        KillActiveTweens();
-        Transform target = GetAnimationTarget();
-
-        switch (_effectType)
-        {
-            case BasePanelEffectType.TYPE.FadeInFadeOut:
-                if (_canvasGroup != null)
-                {
-                    Tween fadeTween = ConfigureTween(_canvasGroup.DOFade(0f, INOUT_DURATION));
-                    yield return fadeTween.WaitForCompletion();
-                }
-                break;
-
-            case BasePanelEffectType.TYPE.ScaleInScaleOut:
-                Tween scaleTween = ConfigureTween(target.DOScale(Vector3.zero, INOUT_DURATION).SetEase(Ease.InBack));
-                yield return scaleTween.WaitForCompletion();
-                break;
-
-            default:
-                break;
-        }
+        yield return PlayCloseEffectCoroutine();
 
         _closeCoroutine = null;
         FinalizeClose(_destroyAfterClose);

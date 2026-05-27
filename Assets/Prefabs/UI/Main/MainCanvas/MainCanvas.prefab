@@ -3098,7 +3098,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000017464161}
+  m_AnchoredPosition: {x: 0, y: 0.000035395737}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3125783419564302356
@@ -9954,6 +9954,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 211116100728dfc44afca43f9889cd76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _button: {fileID: 0}
   _unionCohesionProgressText: {fileID: 8455714559032770885}
   _remainDateText: {fileID: 8942632657807057956}
@@ -14450,6 +14452,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b35277fce0d8d742a3553ea42902b76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _button: {fileID: 0}
 --- !u!1 &6404377119141207814
 GameObject:
@@ -14740,6 +14744,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b94d9e3ad67224c88b407e1841ff60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _tutorialPanelInfo:
   - focusGameObject: {fileID: 0}
     onStepStart:
@@ -14847,6 +14853,8 @@ MonoBehaviour:
   _resouceScrollViewContent: {fileID: 5792593746420108247}
   _creditText: {fileID: 3157747697831197936}
   _deltaCreditText: {fileID: 5621586244536354010}
+  _creditGainSfx: {fileID: 8300000, guid: 6c9a363499891ac44b882c11162b3d0a, type: 3}
+  _creditLossSfx: {fileID: 8300000, guid: 4cc03aef8c389714ea69d0ab9430a03c, type: 3}
   _researchText: {fileID: 1357046106529955860}
   _deltaResearchText: {fileID: 2900234184803921058}
   _infoDatePanel: {fileID: 5746231852346789846}
@@ -19635,6 +19643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8de9afb97b26604b9617abf2bd22e1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _button: {fileID: 0}
 --- !u!1 &9067717359744380097
 GameObject:

@@ -70,6 +70,74 @@ MonoBehaviour:
     m_Localized: Reach 800,000 Wealth
     m_Metadata:
       m_Items: []
+  - m_Id: 5000000000000014
+    m_Localized: Produce 25 Fine Wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000015
+    m_Localized: Produce 10 Premium Wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000016
+    m_Localized: Complete Component Manufacturing Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000017
+    m_Localized: Place 1 Component Factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000018
+    m_Localized: Produce 15 Machine Parts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000019
+    m_Localized: Produce 20 Steel Ingots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000020
+    m_Localized: Produce 8 Simple Tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000021
+    m_Localized: Reach 1,200,000 Wealth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000022
+    m_Localized: Complete Oil Extraction Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000023
+    m_Localized: Place 1 Oil Pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000024
+    m_Localized: Produce 30 Crude Oil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000025
+    m_Localized: Complete Chemical Processing Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000026
+    m_Localized: Place 1 Chemical Plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000027
+    m_Localized: Produce 40 Fabric
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000028
+    m_Localized: Complete Heavy Industry Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000029
+    m_Localized: Place 1 Heavy Factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000030
+    m_Localized: Produce 5 Premium Furniture
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

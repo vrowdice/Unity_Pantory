@@ -692,6 +692,10 @@ MonoBehaviour:
     m_Localized: Tutorial
     m_Metadata:
       m_Items: []
+  - m_Id: 44242199258742784
+    m_Localized: Completed Goal
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

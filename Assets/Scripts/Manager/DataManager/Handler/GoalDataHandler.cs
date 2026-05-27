@@ -21,6 +21,16 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
     public IReadOnlyList<GoalState> ActiveGoals => _activeGoals;
     public bool AllGoalsCompleted => _allGoalsCompleted;
 
+    public void FillCompletedGoalIds(List<string> results)
+    {
+        if (results == null)
+            return;
+
+        results.Clear();
+        foreach (string goalId in _completedGoalIds)
+            results.Add(goalId);
+    }
+
     public event Action OnActiveGoalsChanged;
     public event Action<GoalState> OnGoalCompleted;
     public event Action OnAllGoalsCompleted;
@@ -403,9 +413,11 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
             _dataManager.Finances.ModifyCredit(completed.rewardCredit);
 
         OnGoalCompleted?.Invoke(completed);
+        ShowGoalCompletedWarning(goalData);
 
-        if (goalData.nextGoal != null && !string.IsNullOrEmpty(goalData.nextGoal.id))
-            TryUnlockGoal(goalData.nextGoal.id, resetProduceProgress: true);
+        string nextGoalId = ResolveNextGoalId(goalData);
+        if (!string.IsNullOrEmpty(nextGoalId))
+            TryUnlockGoal(nextGoalId, resetProduceProgress: true);
 
         if (AreAllGoalsCompleted())
         {
@@ -436,6 +448,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         _allGoalsCompleted = true;
         ClearActiveGoalRuntime();
         OnAllGoalsCompleted?.Invoke();
+        UIManager.Instance?.ShowWarningPopup("GoalChainComplete");
         NotifyActiveGoalsChanged();
     }
 
@@ -449,5 +462,25 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
     private void NotifyActiveGoalsChanged()
     {
         OnActiveGoalsChanged?.Invoke();
+    }
+
+    private static string ResolveNextGoalId(GoalData goalData)
+    {
+        if (goalData == null)
+            return string.Empty;
+
+        if (goalData.nextGoal != null && !string.IsNullOrEmpty(goalData.nextGoal.id))
+            return goalData.nextGoal.id;
+
+        return goalData.nextGoalId;
+    }
+
+    private static void ShowGoalCompletedWarning(GoalData goalData)
+    {
+        if (goalData == null || UIManager.Instance == null)
+            return;
+
+        string title = goalData.id.Localize(LocalizationUtils.TABLE_GOAL);
+        UIManager.Instance.ShowWarningPopup("GoalComplete", title);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,7 @@ public class UnionPopup : PopupBase
     private bool _isResourceEventSubscribed;
     private bool _isCreditEventSubscribed;
     private bool _isPolicyEventSubscribed;
+    private Coroutine _refreshCoroutine;
 
     public override void Init()
     {
@@ -45,6 +47,7 @@ public class UnionPopup : PopupBase
 
     public override void Close()
     {
+        StaggeredSpawnUtils.Stop(this, ref _refreshCoroutine);
         UnsubscribeUnionPopupEvents();
         base.Close();
     }
@@ -145,13 +148,20 @@ public class UnionPopup : PopupBase
 
     public void RefreshUI()
     {
+        StaggeredSpawnUtils.Restart(this, ref _refreshCoroutine, RefreshUIRoutine());
+    }
+
+    private IEnumerator RefreshUIRoutine()
+    {
         UnionStateModule module = _dataManager?.MainEvent?.UnionModule;
-        if (module == null) return;
+        if (module == null)
+            yield break;
 
         int remaining = module.RemainingDays;
         if (remaining <= 0)
         {
             Close();
+            yield break;
         }
 
         InitialUnionMainEventData unionData = _dataManager.InitialUnionMainEventData;
@@ -161,29 +171,30 @@ public class UnionPopup : PopupBase
 
         RefreshDailyCohesionChangeUI(module);
         RefreshUnionCohesionUI(module);
-        RefreshUnionRequestListUI(module);
 
         if (_employeeInfoContainerList.Count != 4)
         {
             GameObjectUtils.ClearChildren(_employeeInfoContainerContentTransform);
             _employeeInfoContainerList.Clear();
 
-            Dictionary<EmployeeType, EmployeeEntry> employeeEntries = _dataManager.Employee.GetAllEmployees();
-            foreach (EmployeeEntry employeeEntry in employeeEntries.Values)
+            List<EmployeeEntry> employeeEntries = new List<EmployeeEntry>(_dataManager.Employee.GetAllEmployees().Values);
+
+            yield return StaggeredSpawnUtils.ForEachFrame(employeeEntries.Count, i =>
             {
+                EmployeeEntry employeeEntry = employeeEntries[i];
                 GameObject containerObj = Instantiate(_employeeInfoContainerPrefab, _employeeInfoContainerContentTransform);
                 UnionPopupEmployeeInfoContainer container = containerObj.GetComponent<UnionPopupEmployeeInfoContainer>();
                 container.Init(employeeEntry);
                 _employeeInfoContainerList.Add(container);
-            }
+            });
         }
         else
         {
             foreach (UnionPopupEmployeeInfoContainer container in _employeeInfoContainerList)
-            {
                 container.RefreshUI();
-            }
         }
+
+        yield return RefreshUnionRequestListUIRoutine(module);
     }
 
     private void RefreshDailyCohesionChangeUI(UnionStateModule module)
@@ -231,44 +242,54 @@ public class UnionPopup : PopupBase
         }
     }
 
-    private void RefreshUnionRequestListUI(UnionStateModule module)
+    private IEnumerator RefreshUnionRequestListUIRoutine(UnionStateModule module)
     {
         if (_requestBtnPrefab == null || _requestScrollViewContentransform == null)
-        {
-            return;
-        }
+            yield break;
 
         List<UnionRequestState> activeRequests = module.GetActiveUnionRequests();
 
-        while (_requestBtnList.Count < activeRequests.Count)
+        while (_requestBtnList.Count > activeRequests.Count)
         {
-            UnionPopupRequestBtn requestBtn;
-            if (_requestBtnList.Count == 0)
-            {
-                requestBtn = _requestBtnPrefab.GetComponent<UnionPopupRequestBtn>();
-            }
-            else
-            {
-                GameObject btnObj = Instantiate(_requestBtnPrefab, _requestScrollViewContentransform);
-                requestBtn = btnObj.GetComponent<UnionPopupRequestBtn>();
-            }
-
-            _requestBtnList.Add(requestBtn);
+            int lastIndex = _requestBtnList.Count - 1;
+            UnionPopupRequestBtn removedBtn = _requestBtnList[lastIndex];
+            _requestBtnList.RemoveAt(lastIndex);
+            if (removedBtn != null && removedBtn.gameObject != _requestBtnPrefab)
+                Destroy(removedBtn.gameObject);
         }
 
-        for (int i = 0; i < _requestBtnList.Count; i++)
+        yield return StaggeredSpawnUtils.ForEachFrame(activeRequests.Count, i =>
         {
-            UnionPopupRequestBtn requestBtn = _requestBtnList[i];
-            if (i < activeRequests.Count)
-            {
-                requestBtn.gameObject.SetActive(true);
-                requestBtn.Init(activeRequests[i], _dataManager, this);
-            }
-            else
-            {
-                requestBtn.gameObject.SetActive(false);
-            }
+            UnionPopupRequestBtn requestBtn = GetOrCreateUnionRequestBtn(i);
+            if (requestBtn == null)
+                return;
+
+            requestBtn.gameObject.SetActive(true);
+            requestBtn.Init(activeRequests[i], _dataManager, this);
+        });
+
+        for (int i = activeRequests.Count; i < _requestBtnList.Count; i++)
+            _requestBtnList[i].gameObject.SetActive(false);
+    }
+
+    private UnionPopupRequestBtn GetOrCreateUnionRequestBtn(int index)
+    {
+        if (index < _requestBtnList.Count)
+            return _requestBtnList[index];
+
+        UnionPopupRequestBtn requestBtn;
+        if (_requestBtnList.Count == 0)
+        {
+            requestBtn = _requestBtnPrefab.GetComponent<UnionPopupRequestBtn>();
         }
+        else
+        {
+            GameObject btnObj = Instantiate(_requestBtnPrefab, _requestScrollViewContentransform);
+            requestBtn = btnObj.GetComponent<UnionPopupRequestBtn>();
+        }
+
+        _requestBtnList.Add(requestBtn);
+        return requestBtn;
     }
 
     private void RefreshUnionCohesionUI(UnionStateModule module)

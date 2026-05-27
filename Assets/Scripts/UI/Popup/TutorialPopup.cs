@@ -121,8 +121,10 @@ public class TutorialPopup : PopupBase
         CloseAndDestroy();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         if (_focusPanel != null)
             _focusPanel.transform.DOKill();
 

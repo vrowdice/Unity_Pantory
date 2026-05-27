@@ -67,6 +67,74 @@ MonoBehaviour:
     m_Key: goal_reach_wealth
     m_Metadata:
       m_Items: []
+  - m_Id: 5000000000000014
+    m_Key: goal_produce_fine_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000015
+    m_Key: goal_produce_premium_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000016
+    m_Key: goal_complete_components
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000017
+    m_Key: goal_place_component_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000018
+    m_Key: goal_produce_machine_parts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000019
+    m_Key: goal_produce_steel_ingot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000020
+    m_Key: goal_produce_simple_tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000021
+    m_Key: goal_reach_wealth_expansion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000022
+    m_Key: goal_complete_oil_extraction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000023
+    m_Key: goal_place_oil_pump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000024
+    m_Key: goal_produce_oil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000025
+    m_Key: goal_complete_chemical_processing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000026
+    m_Key: goal_place_chemical_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000027
+    m_Key: goal_produce_fabric
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000028
+    m_Key: goal_complete_heavy_industry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000029
+    m_Key: goal_place_heavy_factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000030
+    m_Key: goal_produce_premium_furniture
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

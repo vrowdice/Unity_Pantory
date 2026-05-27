@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -30,20 +31,27 @@ public partial class MainCanvas
 
     private void InitBuildUi()
     {
+        StaggeredSpawnUtils.Restart(this, ref _buildingTypeSpawnCoroutine, InitBuildUiRoutine());
+    }
+
+    private IEnumerator InitBuildUiRoutine()
+    {
         _buildingTypeBtns.Clear();
         GameManager.PoolingManager.ClearChildrenToPool(_buildingTypeBtnContent);
 
-        foreach (BuildingType buildingType in EnumUtils.GetAllEnumValues<BuildingType>())
+        List<BuildingType> buildingTypes = EnumUtils.GetAllEnumValues<BuildingType>();
+
+        yield return StaggeredSpawnUtils.ForEachFrame(buildingTypes.Count, i =>
         {
+            BuildingType buildingType = buildingTypes[i];
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
             btnObj.transform.SetParent(_buildingTypeBtnContent, false);
             MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
             btn.Init(this, buildingType);
             _buildingTypeBtns.Add(btn);
-        }
+        });
 
         EnsureMainBlueprintTypeButtonInContent();
-
         SelectBuildingType(BuildingType.Distribution);
         SyncAutoEmployeePlacementSwitch();
     }
@@ -164,18 +172,28 @@ public partial class MainCanvas
 
     private void PopulateBuildingButtons()
     {
+        StaggeredSpawnUtils.Restart(this, ref _buildingListSpawnCoroutine, PopulateBuildingButtonsRoutine());
+    }
+
+    private IEnumerator PopulateBuildingButtonsRoutine()
+    {
+        List<BuildingData> unlockedBuildings = new List<BuildingData>();
         List<BuildingData> list = DataManager.Building.GetBuildingDataList(_selectedBuildingType);
         foreach (BuildingData data in list)
         {
-            if (!IsBuildingUnlocked(data))
-                continue;
+            if (IsBuildingUnlocked(data))
+                unlockedBuildings.Add(data);
+        }
 
+        yield return StaggeredSpawnUtils.ForEachFrame(unlockedBuildings.Count, i =>
+        {
+            BuildingData data = unlockedBuildings[i];
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
             btnObj.transform.SetParent(_buildingBtnContent, false);
             MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
             btn.Init(this, data, _mainRunner);
             _buildingBtns.Add(btn);
-        }
+        });
 
         UpdateBuildingButtonStates();
         RefreshBuildingPlacedCountDisplays();
@@ -329,6 +347,11 @@ public partial class MainCanvas
 
     private void RebuildBlueprintSavedEntriesFromData()
     {
+        StaggeredSpawnUtils.Restart(this, ref _blueprintEntrySpawnCoroutine, RebuildBlueprintSavedEntriesFromDataRoutine());
+    }
+
+    private IEnumerator RebuildBlueprintSavedEntriesFromDataRoutine()
+    {
         GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
 
         _buildingBtns.Clear();
@@ -336,9 +359,11 @@ public partial class MainCanvas
         EnsureBlueprintAddButton();
 
         if (DataManager == null || DataManager.BlueprintLayout == null)
-            return;
+            yield break;
 
         IReadOnlyList<BlueprintLayoutSaveData> layouts = DataManager.BlueprintLayout.GetAll();
+        List<(string name, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)> layoutEntries = new List<(string, List<PlacedBuildingSaveData>, List<PlacedRoadSaveData>)>();
+
         for (int i = 0; i < layouts.Count; i++)
         {
             BlueprintLayoutSaveData layout = layouts[i];
@@ -347,8 +372,14 @@ public partial class MainCanvas
             if (!hasBuildings && !hasRoads)
                 continue;
 
-            CreateBlueprintSavedEntryUi(layout.blueprintName, layout.buildings, layout.roads);
+            layoutEntries.Add((layout.blueprintName, layout.buildings, layout.roads));
         }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(layoutEntries.Count, i =>
+        {
+            (string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads) entry = layoutEntries[i];
+            CreateBlueprintSavedEntryUi(entry.blueprintName, entry.buildings, entry.roads);
+        });
     }
 
     private void RefreshBlueprintUi()

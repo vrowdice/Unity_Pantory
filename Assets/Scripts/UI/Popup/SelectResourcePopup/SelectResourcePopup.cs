@@ -1,6 +1,7 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 /// <summary>
 /// 자원 타입별로 자원 목록을 필터링하여 사용자에게 선택 인터페이스를 제공하는 패널 클래스입니다.
@@ -18,14 +19,9 @@ public class SelectResourcePopup : PopupBase
     private List<ResourceType> _resourceTypes;
     private Action<ResourceEntry> _onResourceSelected;
     private List<ResourceData> _producibleResources;
+    private Coroutine _typeButtonCoroutine;
+    private Coroutine _resourceListCoroutine;
 
-    /// <summary>
-    /// 패널을 초기화하고 자원 타입 버튼 리스트를 생성합니다.
-    /// </summary>
-    /// <param name="gameDataManager">게임 데이터 매니저</param>
-    /// <param name="resourceTypes">표시할 자원 타입 목록</param>
-    /// <param name="onResourceSelected">자원 선택 시 실행될 콜백</param>
-    /// <param name="producibleResources">생산 가능한 자원 목록 (null일 경우 모든 자원 표시)</param>
     public void Init(DataManager gameDataManager, List<ResourceType> resourceTypes, Action<ResourceEntry> onResourceSelected = null, List<ResourceData> producibleResources = null)
     {
         base.Init();
@@ -35,43 +31,50 @@ public class SelectResourcePopup : PopupBase
         _onResourceSelected = onResourceSelected;
         _producibleResources = producibleResources;
 
-        InitializeResourceTypeButtons(resourceTypes);
+        StaggeredSpawnUtils.Restart(this, ref _typeButtonCoroutine, InitializeResourceTypeButtonsRoutine(resourceTypes));
         if (resourceTypes != null && resourceTypes.Count > 0)
         {
             OnResourceTypeClick(resourceTypes[0]);
         }
-        
+
         Show();
     }
 
-    /// <summary>
-    /// 상단 탭에 자원 타입 버튼들을 생성합니다.
-    /// </summary>
-    private void InitializeResourceTypeButtons(List<ResourceType> resourceTypes)
+    public override void Close()
     {
-        if (resourceTypes == null) return;
+        StaggeredSpawnUtils.Stop(this, ref _typeButtonCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _resourceListCoroutine);
+        base.Close();
+    }
+
+    private IEnumerator InitializeResourceTypeButtonsRoutine(List<ResourceType> resourceTypes)
+    {
+        if (resourceTypes == null)
+            yield break;
 
         GameObjectUtils.ClearChildren(_resourceTypeScrollViewContentTransform);
 
-        foreach (ResourceType resourceType in resourceTypes)
+        yield return StaggeredSpawnUtils.ForEachFrame(resourceTypes.Count, i =>
         {
+            ResourceType resourceType = resourceTypes[i];
             GameObject btnObj = Instantiate(_selectResourceTypeBtnPrefab, _resourceTypeScrollViewContentTransform);
             SelectResourceTypeBtn btnScript = btnObj.GetComponent<SelectResourceTypeBtn>();
 
             if (btnScript != null)
-            {
                 btnScript.Init(this, resourceType);
-            }
-        }
+        });
     }
 
-    /// <summary>
-    /// 특정 자원 타입을 클릭했을 때 해당 카테고리의 자원 목록을 표시합니다.
-    /// </summary>
-    /// <param name="resourceType">선택된 자원 타입</param>
     public void OnResourceTypeClick(ResourceType resourceType)
     {
+        StaggeredSpawnUtils.Restart(this, ref _resourceListCoroutine, PopulateResourceListRoutine(resourceType));
+    }
+
+    private IEnumerator PopulateResourceListRoutine(ResourceType resourceType)
+    {
         GameObjectUtils.ClearChildren(_resourceScrollViewContentTransform);
+
+        List<ResourceEntry> entries = new List<ResourceEntry>();
         if (_producibleResources != null && _producibleResources.Count > 0)
         {
             foreach (ResourceData producibleResource in _producibleResources)
@@ -79,7 +82,8 @@ public class SelectResourcePopup : PopupBase
                 if (producibleResource != null && producibleResource.type == resourceType)
                 {
                     ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(producibleResource.id);
-                    CreateResourceButton(resourceEntry);
+                    if (resourceEntry != null)
+                        entries.Add(resourceEntry);
                 }
             }
         }
@@ -89,33 +93,28 @@ public class SelectResourcePopup : PopupBase
             foreach (KeyValuePair<string, ResourceEntry> pair in resources)
             {
                 if (pair.Value.data.type == resourceType)
-                {
-                    CreateResourceButton(pair.Value);
-                }
+                    entries.Add(pair.Value);
             }
         }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(entries.Count, i =>
+        {
+            CreateResourceButton(entries[i]);
+        });
     }
 
-    /// <summary>
-    /// 리소스 버튼 오브젝트를 생성하고 초기화합니다.
-    /// </summary>
     private void CreateResourceButton(ResourceEntry resourceEntry)
     {
-        if (resourceEntry == null) return;
+        if (resourceEntry == null)
+            return;
 
         GameObject btnObj = Instantiate(_selectResourceBtnPrefab, _resourceScrollViewContentTransform);
         SelectResourceBtn btnScript = btnObj.GetComponent<SelectResourceBtn>();
 
         if (btnScript != null)
-        {
             btnScript.Init(this, resourceEntry);
-        }
     }
 
-    /// <summary>
-    /// 사용자가 자원을 최종 선택했을 때 콜백을 실행하고 패널을 닫습니다.
-    /// </summary>
-    /// <param name="selectedResource">선택된 자원 엔트리</param>
     public void OnResourceSelected(ResourceEntry selectedResource)
     {
         if (_onResourceSelected != null)
@@ -130,9 +129,6 @@ public class SelectResourcePopup : PopupBase
         Close();
     }
 
-    /// <summary>
-    /// 패널 오브젝트를 파괴합니다.
-    /// </summary>
     public void ClosePanel()
     {
         CloseAndDestroy();

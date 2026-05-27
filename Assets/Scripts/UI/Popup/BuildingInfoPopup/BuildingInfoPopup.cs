@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,6 +58,7 @@ public class BuildingInfoPopup : PopupBase
     private readonly List<string> _recipeInputIds = new List<string>();
     private readonly List<string> _recipeOutputIds = new List<string>();
     private string _recipeCurrentResourceId;
+    private Coroutine _resourceGridCoroutine;
 
     public void ShowBuildingInfo(BuildingObject buildingObject)
     {
@@ -73,6 +75,13 @@ public class BuildingInfoPopup : PopupBase
 
         UpdateUI();
         Show();
+    }
+
+    public override void Close()
+    {
+        StaggeredSpawnUtils.Stop(this, ref _resourceGridCoroutine);
+        UnsubscribeHourEvents();
+        base.Close();
     }
 
     protected override void HandleDayChanged()
@@ -260,16 +269,29 @@ public class BuildingInfoPopup : PopupBase
     /// </summary>
     private void RefreshResourceGrids()
     {
-        if (_buildingObject == null) return;
+        if (_buildingObject == null)
+            return;
+
         if (_currentData.IsLoadStation)
             _changeProductionBtn.gameObject.SetActive(false);
         else
             _changeProductionBtn.gameObject.SetActive(true);
 
         RefreshRecipeGrids();
+        StaggeredSpawnUtils.Restart(this, ref _resourceGridCoroutine, RefreshRuntimeResourceGridsRoutine());
+    }
 
-        RepopulateRuntimeResourceButton(_inputResourceContent, _buildingObject.GetRuntimeInputResourceCounts(), true);
-        RepopulateRuntimeResourceButton(_outputResourceContent, _buildingObject.GetRuntimeOutputResourceCounts(), false);
+    private IEnumerator RefreshRuntimeResourceGridsRoutine()
+    {
+        yield return RepopulateRuntimeResourceButtonsRoutine(
+            _inputResourceContent,
+            _buildingObject.GetRuntimeInputResourceCounts(),
+            true);
+
+        yield return RepopulateRuntimeResourceButtonsRoutine(
+            _outputResourceContent,
+            _buildingObject.GetRuntimeOutputResourceCounts(),
+            false);
     }
 
     public void RefreshAfterRuntimeBufferChanged()
@@ -278,19 +300,22 @@ public class BuildingInfoPopup : PopupBase
         RefreshAllRuntimePanels();
     }
 
-    private void RepopulateRuntimeResourceButton(Transform container, Dictionary<string, int> counts, bool fromInputBuffer)
+    private IEnumerator RepopulateRuntimeResourceButtonsRoutine(Transform container, Dictionary<string, int> counts, bool fromInputBuffer)
     {
         PoolingManager pool = GameManager.Instance.PoolingManager;
         pool.ClearChildrenToPool(container);
 
-        foreach (KeyValuePair<string, int> kvp in counts)
+        List<KeyValuePair<string, int>> resourceCounts = new List<KeyValuePair<string, int>>(counts);
+
+        yield return StaggeredSpawnUtils.ForEachFrame(resourceCounts.Count, i =>
         {
+            KeyValuePair<string, int> kvp = resourceCounts[i];
             ResourceEntry entry = _dataManager.Resource.GetResourceEntry(kvp.Key);
             GameObject btnObj = pool.GetPooledObject(_buildingInfoPopupResourceBtnPrefab);
             btnObj.transform.SetParent(container, false);
             btnObj.GetComponent<BuildingInfoPopupResourceBtn>()
                 .Init(_buildingObject, kvp.Key, fromInputBuffer, entry, kvp.Value, this);
-        }
+        });
     }
 
     private void RefreshRecipeGrids()

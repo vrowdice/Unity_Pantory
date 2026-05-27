@@ -60,21 +60,11 @@ public class GoalPanelContainer : MonoBehaviour
     private void HandleGoalCompleted(GoalState goalState)
     {
         Refresh();
-
-        if (goalState == null || UIManager.Instance == null || _dataManager?.Goal == null)
-            return;
-
-        GoalData completedGoalData = _dataManager.Goal.GetGoalData(goalState.goalId);
-        if (completedGoalData != null && completedGoalData.nextGoal == null)
-            return;
-
-        UIManager.Instance.ShowWarningPopup("GoalComplete", GoalBtn.GetTitle(completedGoalData));
     }
 
     private void HandleAllGoalsCompleted()
     {
         SetVisible(false);
-        UIManager.Instance?.ShowWarningPopup("GoalChainComplete");
     }
 
     private void Refresh()

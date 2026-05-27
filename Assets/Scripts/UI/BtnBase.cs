@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public abstract class BtnBase : MonoBehaviour
+public abstract class BtnBase : UITweenEffectBase
 {
     [SerializeField] private Evo.UI.Button _button;
 
-    protected virtual void OnEnable()
+    protected override bool PlayEffectOnEnable => true;
+
+    protected override void OnEnable()
     {
+        base.OnEnable();
         EnsureClickBound();
     }
 

@@ -19,4 +19,4 @@ MonoBehaviour:
   targetValue: 1
   rewardCredit: 35000
   isDefaultUnlocked: 0
-  nextGoal: {fileID: 11400000, guid: d5e6f708192a3b4c5d6e7f8091a2b9504, type: 2}
+  nextGoal: {fileID: 11400000, guid: cc5a52f151cfba047afe4b3231ac767d, type: 2}

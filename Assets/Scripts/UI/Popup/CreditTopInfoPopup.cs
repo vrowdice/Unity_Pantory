@@ -183,8 +183,10 @@ public class CreditTopInfoPopup : PopupBase
         return canvas.worldCamera;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         UnregisterEscClose();
 
         if (_dataManager?.Finances != null)

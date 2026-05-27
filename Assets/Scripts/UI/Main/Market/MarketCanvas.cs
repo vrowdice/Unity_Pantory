@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +25,8 @@ public class MarketCanvas : MainCanvasPanelBase
     private bool _isResourceView = true;
     private List<ActionBtn> _actionButtons = new List<ActionBtn>();
     private MarketActorEntry _playerMarketActorEntry;
+    private Coroutine _actionButtonCoroutine;
+    private Coroutine _scrollListCoroutine;
 
     /// <summary>
     /// 마켓 패널 초기화 및 이벤트 구독을 수행합니다.
@@ -48,8 +51,12 @@ public class MarketCanvas : MainCanvasPanelBase
             ShowTraderView();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        StaggeredSpawnUtils.Stop(this, ref _actionButtonCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _scrollListCoroutine);
+        base.OnDisable();
+
         if (_dataManager != null)
             _dataManager.Time.OnDayChanged -= HandleDayChanged;
     }
@@ -83,25 +90,32 @@ public class MarketCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_marketActionBtnContentTransform);
         _actionButtons.Clear();
 
-        List<MarketPanelType> panelTypes = EnumUtils.GetAllEnumValues<MarketPanelType>();
-        foreach (MarketPanelType panelType in panelTypes)
+        List<(MarketPanelType panelType, string label)> actionDefs = new List<(MarketPanelType panelType, string label)>();
+        foreach (MarketPanelType panelType in EnumUtils.GetAllEnumValues<MarketPanelType>())
+            actionDefs.Add((panelType, panelType.Localize(LocalizationUtils.TABLE_COMMON)));
+
+        StaggeredSpawnUtils.Restart(this, ref _actionButtonCoroutine, CreateActionButtonsRoutine(actionDefs));
+        UpdateActionButtonHighlight();
+    }
+
+    private IEnumerator CreateActionButtonsRoutine(List<(MarketPanelType panelType, string label)> actionDefs)
+    {
+        yield return StaggeredSpawnUtils.ForEachFrame(actionDefs.Count, i =>
         {
+            (MarketPanelType panelType, string label) def = actionDefs[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_marketActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
             if (btn != null)
             {
-                MarketPanelType capturedType = panelType;
-                string localizedName = capturedType.Localize(LocalizationUtils.TABLE_COMMON);
-                btn.Init(localizedName, () => {
+                MarketPanelType capturedType = def.panelType;
+                btn.Init(def.label, () => {
                     OnMarketPanelTypeClick(capturedType);
                     UpdateActionButtonHighlight();
                 });
                 _actionButtons.Add(btn);
             }
-        }
-        
-        UpdateActionButtonHighlight();
+        });
     }
 
     /// <summary>
@@ -242,41 +256,43 @@ public class MarketCanvas : MainCanvasPanelBase
     /// </summary>
     private void RefreshResourceList()
     {
+        StaggeredSpawnUtils.Restart(this, ref _scrollListCoroutine, RefreshResourceListRoutine());
+    }
+
+    private IEnumerator RefreshResourceListRoutine()
+    {
         ScrollRect scroll = _marketScrollViewContent.GetComponentInParent<ScrollRect>();
         if (scroll != null)
-        {
             scroll.enabled = false;
-        }
 
         PoolingManager pool = _gameManager.PoolingManager;
         pool.ClearChildrenToPool(_marketScrollViewContent);
 
-        Dictionary<string, ResourceEntry> resources = _dataManager.Resource.GetAllResources();
-        foreach (ResourceEntry entry in resources.Values)
+        List<ResourceEntry> resources = new List<ResourceEntry>(_dataManager.Resource.GetAllResources().Values);
+
+        yield return StaggeredSpawnUtils.ForEachFrame(resources.Count, i =>
         {
+            ResourceEntry entry = resources[i];
             GameObject btnObj = pool.GetPooledObject(_marketResourceBtnPrefab);
             btnObj.transform.SetParent(_marketScrollViewContent, false);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
             resourceBtn.Init(this, entry);
-        }
+        });
 
         if (scroll != null)
-        {
             scroll.enabled = true;
-        }
     }
 
-    /// <summary>
-    /// 거래자 데이터를 기반으로 스크롤 목록을 새로고침합니다.
-    /// 자산(wealth)에 따라 내림차순으로 정렬됩니다.
-    /// </summary>
     private void RefreshTraderList()
+    {
+        StaggeredSpawnUtils.Restart(this, ref _scrollListCoroutine, RefreshTraderListRoutine());
+    }
+
+    private IEnumerator RefreshTraderListRoutine()
     {
         ScrollRect scroll = _marketScrollViewContent.GetComponentInParent<ScrollRect>();
         if (scroll != null)
-        {
             scroll.enabled = false;
-        }
 
         PoolingManager pool = _gameManager.PoolingManager;
         pool.ClearChildrenToPool(_marketScrollViewContent);
@@ -290,21 +306,27 @@ public class MarketCanvas : MainCanvasPanelBase
         sortedTraders.Add(playerEntry);
         sortedTraders.Sort((a, b) => b.state.wealth.CompareTo(a.state.wealth));
 
+        List<MarketActorEntry> companyTraders = new List<MarketActorEntry>();
         foreach (MarketActorEntry entry in sortedTraders)
         {
-            if (entry.data.marketActorType != MarketActorType.Company) continue;
+            if (entry.data.marketActorType != MarketActorType.Company)
+                continue;
 
+            companyTraders.Add(entry);
+        }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(companyTraders.Count, i =>
+        {
+            MarketActorEntry entry = companyTraders[i];
             GameObject btnObj = pool.GetPooledObject(_marketTraderBtnPrefab);
             btnObj.transform.SetParent(_marketScrollViewContent, false);
             MarketTraderBtn traderBtn = btnObj.GetComponent<MarketTraderBtn>();
             bool isPlayerEntry = ReferenceEquals(entry, _playerMarketActorEntry);
             traderBtn.Init(this, entry, isPlayerEntry);
-        }
+        });
 
         if (scroll != null)
-        {
             scroll.enabled = true;
-        }
     }
 
     private MarketActorEntry GetOrCreatePlayerMarketActorEntry()

@@ -6242,6 +6242,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039f95be7032a1d4ca3aa431ac87ac1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _tutorialPanelInfo:
   - focusGameObject: {fileID: 0}
     onStepStart:
@@ -6341,7 +6343,7 @@ MonoBehaviour:
   _panelAnimationTarget: {fileID: 1057055313589436191}
   _usePanelAnimation: 1
   _deactivateAfterClose: 1
-  _openPanelSfx: {fileID: 8300000, guid: ca1b327f16bf68c48aa4ef6ac64f3e20, type: 3}
+  _openPanelSfx: {fileID: 8300000, guid: 94d93cab4332a24488a0a59bca198c97, type: 3}
   _marketActionBtnContentTransform: {fileID: 8662417582455416508}
   _resourcePanel: {fileID: 7350080560393423467}
   _traderPanel: {fileID: 1169212548226510050}

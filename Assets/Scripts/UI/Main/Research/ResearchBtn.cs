@@ -16,18 +16,20 @@ public class ResearchBtn : BtnBase
     {
         _researchEntry = researchEntry;
         _researchCanvas = researchCanvas;
+        Refresh(researchEntry);
+        EnsureClickBound();
+    }
+
+    public void Refresh(ResearchEntry researchEntry)
+    {
+        _researchEntry = researchEntry;
         _image.sprite = researchEntry.data.icon;
         _text.text = researchEntry.data.id.Localize(LocalizationUtils.TABLE_RESEARCH);
-        if(researchEntry.state.isCompleted)
-            _focusedImage.SetActive(true);
-        else
-            _focusedImage.SetActive(false);
+        _focusedImage.SetActive(researchEntry.state.isCompleted);
 
         Evo.UI.Button button = ResolveButton();
         if (button != null)
-        {
             button.interactable = researchEntry.state.isUnlocked;
-        }
     }
 
     protected override void HandleClick()

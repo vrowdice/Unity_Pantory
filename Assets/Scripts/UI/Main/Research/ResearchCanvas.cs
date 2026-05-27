@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,9 +25,13 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     private RectTransform _lineParent;
     private List<Transform> _researchBtnContainerList = new List<Transform>();
-    private Dictionary<string, RectTransform> _buttonMap = new Dictionary<string, RectTransform>();
+    private readonly Dictionary<string, ResearchBtn> _researchBtnMap = new Dictionary<string, ResearchBtn>();
     private List<ActionBtn> _researchTypeButtons = new List<ActionBtn>();
     private ResearchType _selectedResearchType = ResearchType.unlock_building;
+    private readonly List<Action> _researchSpawnActions = new List<Action>();
+    private Coroutine _researchTypeButtonCoroutine;
+    private Coroutine _researchScrollCoroutine;
+    private Coroutine _researchEffectCoroutine;
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -57,8 +62,23 @@ public class ResearchCanvas : MainCanvasPanelBase
     public void ResearchChanged()
     {
         UpdateAllText();
+        RefreshResearchButtons();
         UpdateResearchEffectStatus();
-        UpdateResearchScrollView();
+    }
+
+    private void RefreshResearchButtons()
+    {
+        if (_researchBtnMap.Count == 0)
+            return;
+
+        foreach (ResearchEntry entry in _dataManager.Research.GetAllResearchEntries())
+        {
+            if (entry?.data == null)
+                continue;
+
+            if (_researchBtnMap.TryGetValue(entry.data.id, out ResearchBtn researchBtn))
+                researchBtn.Refresh(entry);
+        }
     }
 
     /// <summary>
@@ -98,8 +118,16 @@ public class ResearchCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_researchActionBtnContent);
         _researchTypeButtons.Clear();
 
-        foreach (ResearchType researchType in EnumUtils.GetAllEnumValues<ResearchType>())
+        List<ResearchType> researchTypes = EnumUtils.GetAllEnumValues<ResearchType>();
+        StaggeredSpawnUtils.Restart(this, ref _researchTypeButtonCoroutine, CreateResearchTypeButtonsRoutine(researchTypes));
+        UpdateResearchTypeButtonHighlight();
+    }
+
+    private IEnumerator CreateResearchTypeButtonsRoutine(List<ResearchType> researchTypes)
+    {
+        yield return StaggeredSpawnUtils.ForEachFrame(researchTypes.Count, i =>
         {
+            ResearchType researchType = researchTypes[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_researchActionBtnContent, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
@@ -107,15 +135,10 @@ public class ResearchCanvas : MainCanvasPanelBase
             {
                 ResearchType capturedType = researchType;
                 string localizedName = capturedType.Localize(LocalizationUtils.TABLE_RESEARCH);
-                btn.Init(localizedName, () =>
-                {
-                    OnResearchTypeClick(capturedType);
-                });
+                btn.Init(localizedName, () => OnResearchTypeClick(capturedType));
                 _researchTypeButtons.Add(btn);
             }
-        }
-
-        UpdateResearchTypeButtonHighlight();
+        });
     }
 
     private void UpdateResearchTypeButtonHighlight()
@@ -134,6 +157,11 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     public void UpdateResearchScrollView()
     {
+        StaggeredSpawnUtils.Restart(this, ref _researchScrollCoroutine, UpdateResearchScrollViewRoutine());
+    }
+
+    private IEnumerator UpdateResearchScrollViewRoutine()
+    {
         _gameManager.PoolingManager.ClearChildrenToPool(_researchBtnContainerContentTransform);
         GameObject lineParentObj = new GameObject("LineParent", typeof(RectTransform));
         RectTransform lineParentRect = lineParentObj.GetComponent<RectTransform>();
@@ -145,28 +173,28 @@ public class ResearchCanvas : MainCanvasPanelBase
         lineParentRect.SetAsFirstSibling();
         _lineParent = lineParentRect;
         _researchBtnContainerList.Clear();
-        _buttonMap.Clear();
+        _researchBtnMap.Clear();
+        _researchSpawnActions.Clear();
 
         Dictionary<string, int> depths = new Dictionary<string, int>();
+        HashSet<string> plannedButtonIds = new HashSet<string>();
         List<ResearchEntry> allEntries = _dataManager.Research.GetAllResearchEntries();
 
         foreach (ResearchEntry entry in allEntries)
         {
             if (entry.data == null)
-            {
                 continue;
-            }
 
             if (entry.data.isDefaultUnlocked && entry.data.researchType == _selectedResearchType)
-            {
-                SetDepthRecursive(entry.data, 0, depths);
-            }
+                QueueDepthRecursive(entry.data, 0, depths, plannedButtonIds);
         }
 
-        StartCoroutine(DrawLinesStepByStep(allEntries));
+        yield return StaggeredSpawnUtils.ForEachFrame(_researchSpawnActions.Count, i => _researchSpawnActions[i]());
+
+        yield return DrawLinesStepByStep(allEntries);
     }
 
-    private void SetDepthRecursive(ResearchData data, int currentDepth, Dictionary<string, int> depths)
+    private void QueueDepthRecursive(ResearchData data, int currentDepth, Dictionary<string, int> depths, HashSet<string> plannedButtonIds)
     {
         if (data == null || data.researchType != _selectedResearchType)
         {
@@ -186,39 +214,47 @@ public class ResearchCanvas : MainCanvasPanelBase
 
         depths[data.id] = currentDepth;
 
-        for (int i = _researchBtnContainerList.Count; i <= currentDepth; i++)
+        int depth = currentDepth;
+        _researchSpawnActions.Add(() =>
         {
-            GameObject containerObj = _gameManager.PoolingManager.GetPooledObject(_researchBtnContainerPrefab);
-            containerObj.transform.SetParent(_researchBtnContainerContentTransform, false);
-            containerObj.name = $"Layer_{i}";
-            _researchBtnContainerList.Add(containerObj.transform);
-        }
+            for (int i = _researchBtnContainerList.Count; i <= depth; i++)
+            {
+                GameObject containerObj = _gameManager.PoolingManager.GetPooledObject(_researchBtnContainerPrefab);
+                containerObj.transform.SetParent(_researchBtnContainerContentTransform, false);
+                containerObj.name = $"Layer_{i}";
+                _researchBtnContainerList.Add(containerObj.transform);
+            }
+        });
 
-        if (!_buttonMap.ContainsKey(data.id))
+        if (!plannedButtonIds.Contains(data.id))
         {
-            Transform parentLayer = _researchBtnContainerList[currentDepth];
-            GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_researchBtnPrefab);
-            btnObj.transform.SetParent(parentLayer, false);
+            plannedButtonIds.Add(data.id);
+            string researchId = data.id;
+            ResearchEntry capturedEntry = entry;
+            _researchSpawnActions.Add(() =>
+            {
+                if (_researchBtnMap.ContainsKey(researchId))
+                    return;
 
-            _buttonMap.Add(data.id, btnObj.GetComponent<RectTransform>());
+                Transform parentLayer = _researchBtnContainerList[depth];
+                GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_researchBtnPrefab);
+                btnObj.transform.SetParent(parentLayer, false);
 
-            ResearchBtn script = btnObj.GetComponent<ResearchBtn>();
-            script.Init(entry, this);
+                ResearchBtn script = btnObj.GetComponent<ResearchBtn>();
+                _researchBtnMap.Add(researchId, script);
+                script.Init(capturedEntry, this);
+            });
         }
 
         if (data.unlockResearchList == null)
-        {
             return;
-        }
 
         foreach (ResearchData childData in data.unlockResearchList)
         {
             if (childData == null || childData.researchType != _selectedResearchType)
-            {
                 continue;
-            }
 
-            SetDepthRecursive(childData, currentDepth + 1, depths);
+            QueueDepthRecursive(childData, currentDepth + 1, depths, plannedButtonIds);
         }
     }
 
@@ -228,21 +264,19 @@ public class ResearchCanvas : MainCanvasPanelBase
 
         foreach (ResearchEntry entry in allEntries)
         {
-            if (entry.data == null || !_buttonMap.ContainsKey(entry.data.id))
-            {
+            if (entry.data == null || !_researchBtnMap.ContainsKey(entry.data.id))
                 continue;
-            }
 
             if (entry.data.unlockResearchList == null)
-            {
                 continue;
-            }
 
+            RectTransform start = _researchBtnMap[entry.data.id].GetComponent<RectTransform>();
             foreach (ResearchData childData in entry.data.unlockResearchList)
             {
-                if (childData != null && _buttonMap.ContainsKey(childData.id))
+                if (childData != null && _researchBtnMap.ContainsKey(childData.id))
                 {
-                    ConnectButtons(_buttonMap[entry.data.id], _buttonMap[childData.id]);
+                    RectTransform end = _researchBtnMap[childData.id].GetComponent<RectTransform>();
+                    ConnectButtons(start, end);
                 }
             }
         }
@@ -284,32 +318,41 @@ public class ResearchCanvas : MainCanvasPanelBase
 
     private void UpdateResearchEffectStatus()
     {
+        StaggeredSpawnUtils.Restart(this, ref _researchEffectCoroutine, UpdateResearchEffectStatusRoutine());
+    }
+
+    private IEnumerator UpdateResearchEffectStatusRoutine()
+    {
         if (_researchEffectScrollViewContentTransform == null)
-        {
-            return;
-        }
+            yield break;
 
         _gameManager.PoolingManager.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
 
         if (_dataManager?.Effect == null)
-        {
-            return;
-        }
+            yield break;
 
         List<EffectState> effects = _dataManager.Effect.GetEffectStatEffects(
             EffectTargetType.Research,
             EffectStatType.Research_RPProduction
         );
 
-        foreach (EffectState effectState in effects)
+        yield return StaggeredSpawnUtils.ForEachFrame(effects.Count, i =>
         {
-            if (effectState == null) continue;
+            EffectState effectState = effects[i];
+            if (effectState == null)
+                return;
+
             _panelUIManager.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, effectState);
-        }
+        });
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        StaggeredSpawnUtils.Stop(this, ref _researchTypeButtonCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _researchScrollCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _researchEffectCoroutine);
+        base.OnDisable();
+
         if (_dataManager != null)
         {
             _dataManager.Research.OnResearchPointsChanged -= ResearchChanged;

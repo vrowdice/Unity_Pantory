@@ -1,20 +1,25 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using Evo.UI;
 
 public class GoalPopup : PopupBase
 {
     [SerializeField] private GameObject _goalBtnPrefab;
     [SerializeField] private Transform _goalBtnScrollViewContentTransform;
-    [SerializeField] private TextMeshProUGUI _completedText;
+    [SerializeField] private Switch _completedGoalSwitch;
 
     private readonly List<GoalBtn> _goalBtnList = new List<GoalBtn>();
+    private readonly List<string> _completedGoalIds = new List<string>();
     private bool _isGoalEventSubscribed;
+    private Coroutine _refreshCoroutine;
 
     public override void Init()
     {
         base.Init();
         SubscribeGoalEvents();
+        BindCompletedGoalSwitch();
 
         Refresh();
         Show();
@@ -22,6 +27,8 @@ public class GoalPopup : PopupBase
 
     public override void Close()
     {
+        StaggeredSpawnUtils.Stop(this, ref _refreshCoroutine);
+        UnbindCompletedGoalSwitch();
         UnsubscribeGoalEvents();
         base.Close();
     }
@@ -30,6 +37,23 @@ public class GoalPopup : PopupBase
     {
         if (gameObject.activeSelf)
             Refresh();
+    }
+
+    private void BindCompletedGoalSwitch()
+    {
+        if (_completedGoalSwitch == null)
+            return;
+
+        _completedGoalSwitch.onValueChanged.RemoveListener(OnCompletedGoalSwitchChanged);
+        _completedGoalSwitch.onValueChanged.AddListener(OnCompletedGoalSwitchChanged);
+    }
+
+    private void UnbindCompletedGoalSwitch()
+    {
+        if (_completedGoalSwitch == null)
+            return;
+
+        _completedGoalSwitch.onValueChanged.RemoveListener(OnCompletedGoalSwitchChanged);
     }
 
     private void SubscribeGoalEvents()
@@ -69,60 +93,84 @@ public class GoalPopup : PopupBase
         Refresh();
     }
 
+    private void OnCompletedGoalSwitchChanged(bool isOn)
+    {
+        Refresh();
+    }
+
     public void Refresh()
+    {
+        StaggeredSpawnUtils.Restart(this, ref _refreshCoroutine, RefreshRoutine());
+    }
+
+    private bool IsShowingCompletedGoals()
+    {
+        return _completedGoalSwitch != null && _completedGoalSwitch.IsOn;
+    }
+
+    private IEnumerator RefreshRoutine()
     {
         GoalDataHandler goalHandler = _dataManager?.Goal;
         if (goalHandler == null)
-            return;
+            yield break;
 
-        if (goalHandler.AllGoalsCompleted)
+        if (IsShowingCompletedGoals())
+        {
+            goalHandler.FillCompletedGoalIds(_completedGoalIds);
+            TrimGoalButtons(_completedGoalIds.Count);
+
+            yield return StaggeredSpawnUtils.ForEachFrame(_completedGoalIds.Count, i =>
+            {
+                GoalData goalData = goalHandler.GetGoalData(_completedGoalIds[i]);
+                GoalBtn goalBtn = GetOrCreateGoalBtn(i);
+                if (goalBtn != null)
+                    goalBtn.RefreshCompleted(goalData);
+            });
+            yield break;
+        }
+
+        if (goalHandler.ActiveGoals.Count == 0)
         {
             ClearGoalButtons();
-            ShowCompletedState();
-            return;
+            yield break;
         }
 
         IReadOnlyList<GoalState> activeGoals = goalHandler.ActiveGoals;
-        if (activeGoals == null || activeGoals.Count == 0)
-        {
-            ClearGoalButtons();
-            ShowEmptyState();
-            return;
-        }
+        TrimGoalButtons(activeGoals.Count);
 
-        HideStatusText();
-        RepopulateGoalButtons(activeGoals, goalHandler);
+        yield return StaggeredSpawnUtils.ForEachFrame(activeGoals.Count, i =>
+        {
+            GoalState goalState = activeGoals[i];
+            GoalData goalData = goalHandler.GetGoalData(goalState.goalId);
+            GoalBtn goalBtn = GetOrCreateGoalBtn(i);
+            if (goalBtn != null)
+                goalBtn.Refresh(goalState, goalData);
+        });
     }
 
-    private void RepopulateGoalButtons(IReadOnlyList<GoalState> activeGoals, GoalDataHandler goalHandler)
+    private GoalBtn GetOrCreateGoalBtn(int index)
     {
-        while (_goalBtnList.Count > activeGoals.Count)
+        if (index < _goalBtnList.Count)
+            return _goalBtnList[index];
+
+        GameObject btnObj = Instantiate(_goalBtnPrefab, _goalBtnScrollViewContentTransform);
+        GoalBtn goalBtn = btnObj.GetComponent<GoalBtn>();
+        if (goalBtn == null)
+            return null;
+
+        _goalBtnList.Add(goalBtn);
+        return goalBtn;
+    }
+
+    private void TrimGoalButtons(int targetCount)
+    {
+        while (_goalBtnList.Count > targetCount)
         {
             int lastIndex = _goalBtnList.Count - 1;
             GoalBtn removedBtn = _goalBtnList[lastIndex];
             _goalBtnList.RemoveAt(lastIndex);
             if (removedBtn != null)
                 Destroy(removedBtn.gameObject);
-        }
-
-        for (int i = 0; i < activeGoals.Count; i++)
-        {
-            GoalState goalState = activeGoals[i];
-            GoalData goalData = goalHandler.GetGoalData(goalState.goalId);
-
-            if (i >= _goalBtnList.Count)
-            {
-                GameObject btnObj = Instantiate(_goalBtnPrefab, _goalBtnScrollViewContentTransform);
-                GoalBtn goalBtn = btnObj.GetComponent<GoalBtn>();
-                if (goalBtn == null)
-                    continue;
-
-                _goalBtnList.Add(goalBtn);
-                goalBtn.Init(goalState, goalData);
-                continue;
-            }
-
-            _goalBtnList[i].Refresh(goalState, goalData);
         }
     }
 
@@ -138,29 +186,5 @@ public class GoalPopup : PopupBase
 
         if (_goalBtnScrollViewContentTransform != null)
             GameObjectUtils.ClearChildren(_goalBtnScrollViewContentTransform);
-    }
-
-    private void ShowCompletedState()
-    {
-        if (_completedText == null)
-            return;
-
-        _completedText.gameObject.SetActive(true);
-        _completedText.text = "GoalChainComplete".Localize(LocalizationUtils.TABLE_COMMON);
-    }
-
-    private void ShowEmptyState()
-    {
-        if (_completedText == null)
-            return;
-
-        _completedText.gameObject.SetActive(true);
-        _completedText.text = string.Empty;
-    }
-
-    private void HideStatusText()
-    {
-        if (_completedText != null)
-            _completedText.gameObject.SetActive(false);
     }
 }

@@ -5,5 +5,29 @@ globs: **/*.cs
 
 # 코딩 규칙
 
-- **인라인 주석**: 정말 설명이 필요한 경우에만 사용. 인라인 주석을 덕지덕지 붙이지 말 것.
-- **var 금지**: 타입을 반드시 명시할 것. `var` 대신 구체적인 타입명 사용.
+## 네이밍
+
+- **private / `[SerializeField] private` 필드**: `_camelCase` (예: `_goalBtnList`, `_dataManager`)
+- **public 필드** (ScriptableObject, `[Serializable]` DTO): `_` 없이 `camelCase` (예: `id`, `targetValue`, `currentProgress`)
+- **public 프로퍼티·메서드·이벤트**: PascalCase (예: `ActiveGoals`, `Init()`, `OnGoalCompleted`)
+- **상수**: PascalCase 또는 `TABLE_*`처럼 대문자 스네이크 (예: `LocalizationUtils.TABLE_COMMON`)
+- **초기화 메서드**: `Init`만 사용 (`Initialize` 금지)
+
+## 코드 스타일
+
+- **var 금지**: 구체적 타입명을 명시한다.
+- **인라인 주석**: 비자명한 비즈니스 로직에만. 자명한 코드에 덕지덕지 붙이지 않는다.
+- **래퍼 함수 자제**: 한 줄 위임·별칭만 하는 private 메서드는 만들지 않는다. (예: `ClosePopup()` → `CloseAndDestroy()` 호출만 하는 경우 `CloseAndDestroy()`를 직접 호출)
+- **컬렉션**: 인스턴스 수명 동안 재사용하는 List/Dictionary는 `private readonly` + `Clear()` 재사용을 우선한다.
+- **partial class**: 파일명 `ClassName.기능.cs` (예: `MainCanvas.Building.cs`, `EmployeeDataHandler.Management.cs`)
+
+## 로컬라이제이션
+
+- UI 문자열은 하드코딩하지 않는다.
+- `"키".Localize(LocalizationUtils.TABLE_*)` 또는 `LocalizeFormat` 사용.
+- 테이블 상수는 `LocalizationUtils`에 정의된 `TABLE_*`를 쓴다.
+
+## 참고
+
+- UI 버튼(클릭): `ui-button.mdc`
+- Popup: `PopupBase` 상속, `Init()`에서 `base.Init()`, `Close()`에서 이벤트 해제 후 `base.Close()`

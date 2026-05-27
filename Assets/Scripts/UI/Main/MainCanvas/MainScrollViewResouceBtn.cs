@@ -11,12 +11,12 @@ public class MainScrollViewResouceBtn : BtnBase
     private MainCanvas _mainUiManager = null;
     private ResourceEntry _resourceEntry = null;
 
+    public string ResourceId => _resourceEntry?.data?.id;
+
     public void Init(ResourceEntry resourceEntry)
     {
         _resourceEntry = resourceEntry;
-        _image.sprite = resourceEntry.data.icon;
-        _valueText.text = resourceEntry.state.count.ToString("N0");
-        UpdateChangeValue();
+        RefreshDisplay();
     }
 
     public void Init(MainCanvas mainUiManager, ResourceEntry resourceEntry)
@@ -25,8 +25,24 @@ public class MainScrollViewResouceBtn : BtnBase
         Init(resourceEntry);
     }
 
+    public void Refresh(ResourceEntry resourceEntry)
+    {
+        _resourceEntry = resourceEntry;
+        RefreshDisplay();
+    }
+
     protected override void HandleClick()
     {
+    }
+
+    private void RefreshDisplay()
+    {
+        if (_resourceEntry == null)
+            return;
+
+        _image.sprite = _resourceEntry.data.icon;
+        _valueText.text = _resourceEntry.state.count.ToString("N0");
+        UpdateChangeValue();
     }
 
     private void UpdateChangeValue()

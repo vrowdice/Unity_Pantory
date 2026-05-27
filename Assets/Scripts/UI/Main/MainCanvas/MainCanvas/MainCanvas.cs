@@ -1,13 +1,17 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePanelHost, IBuildingBuildHost, IBuildingTypeSelectHost
 {
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
     [SerializeField] private TextMeshProUGUI _deltaCreditText;
+    [SerializeField] private AudioClip _creditGainSfx;
+    [SerializeField] private AudioClip _creditLossSfx;
     [SerializeField] private TextMeshProUGUI _researchText;
     [SerializeField] private TextMeshProUGUI _deltaResearchText;
 
@@ -18,6 +22,17 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
     [SerializeField] private RectTransform _creditTopInfoToggleRect;
 
     protected BuildingSceneRunnerBase _mainRunner;
+
+    private Coroutine _resourceScrollCoroutine;
+    private Coroutine _buildingTypeSpawnCoroutine;
+    private Coroutine _buildingListSpawnCoroutine;
+    private Coroutine _blueprintEntrySpawnCoroutine;
+
+    private const float CreditCountDuration = 0.35f;
+
+    private long _displayedCredit;
+    private bool _creditDisplayInitialized;
+    private Tween _creditCountTween;
 
     private void Update()
     {
@@ -74,13 +89,7 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
             _mainEventBtns.SetMainEventContainer(DataManager.MainEvent.CurrentEventType, this);
         }
 
-        RectTransform creditToggleRect = _creditTopInfoToggleRect != null
-            ? _creditTopInfoToggleRect
-            : _creditText != null ? _creditText.rectTransform : null;
-        if (creditToggleRect != null)
-        {
-            UIManager.SetCreditTopInfoToggleRect(creditToggleRect);
-        }
+        UIManager.SetCreditTopInfoToggleRect(_creditTopInfoToggleRect);
 
         TimePlayPanel timePlayPanel = GetComponentInChildren<TimePlayPanel>(true);
         timePlayPanel?.Init(DataManager, GameManager);
@@ -100,8 +109,15 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
         UpdateAllMainText();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        StaggeredSpawnUtils.Stop(this, ref _resourceScrollCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _buildingTypeSpawnCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _buildingListSpawnCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _blueprintEntrySpawnCoroutine);
+        KillCreditCountTween();
+        base.OnDestroy();
+
         CleanupBankruptcyUi();
 
         if (_mainRunner != null && _mainRunner.GridHandler != null)
@@ -147,8 +163,77 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
 
     private void UpdateCreditText()
     {
-        long resourceAmount = DataManager.Finances.Credit;
-        _creditText.text = ReplaceUtils.FormatNumberWithCommas(resourceAmount);
+        if (_creditText == null || DataManager?.Finances == null)
+            return;
+
+        long targetCredit = DataManager.Finances.Credit;
+        UpdateDeltaCreditText();
+
+        if (!_creditDisplayInitialized)
+        {
+            _creditDisplayInitialized = true;
+            SetCreditTextImmediate(targetCredit);
+            return;
+        }
+
+        long creditDelta = targetCredit - _displayedCredit;
+        long dailyTotal = DataManager.Finances.DailyTotal;
+        bool isDailySettlement = creditDelta != 0 && creditDelta == dailyTotal;
+
+        if (isDailySettlement && dailyTotal < 0)
+            PlayDailyCreditSfx(dailyTotal);
+        if (isDailySettlement && dailyTotal > 0)
+            PlayDailyCreditSfx(dailyTotal);
+
+        if (targetCredit <= _displayedCredit)
+        {
+            SetCreditTextImmediate(targetCredit);
+            return;
+        }
+
+        KillCreditCountTween();
+
+        long startCredit = _displayedCredit;
+        _creditCountTween = DOVirtual.Float(0f, 1f, CreditCountDuration, t =>
+        {
+            long currentCredit = startCredit + (long)((targetCredit - startCredit) * t);
+            _displayedCredit = currentCredit;
+            _creditText.text = ReplaceUtils.FormatNumberWithCommas(currentCredit);
+        })
+        .SetEase(Ease.OutCubic)
+        .SetLink(_creditText.gameObject)
+        .OnComplete(() => SetCreditTextImmediate(targetCredit));
+    }
+
+    private void SetCreditTextImmediate(long credit)
+    {
+        _displayedCredit = credit;
+        _creditText.text = ReplaceUtils.FormatNumberWithCommas(credit);
+    }
+
+    private void KillCreditCountTween()
+    {
+        if (_creditCountTween == null)
+            return;
+
+        _creditCountTween.Kill();
+        _creditCountTween = null;
+    }
+
+    private void PlayDailyCreditSfx(long dailyTotal)
+    {
+        if (dailyTotal == 0)
+            return;
+
+        AudioClip clip = dailyTotal > 0 ? _creditGainSfx : _creditLossSfx;
+        if (clip == null)
+            return;
+
+        SoundManager.Instance?.PlaySFX(clip);
+    }
+
+    private void UpdateDeltaCreditText()
+    {
         long deltaCredit = DataManager.Finances.DailyTotal;
         if (deltaCredit == 0)
         {
@@ -158,7 +243,7 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
 
         string sign = deltaCredit > 0 ? " +" : " ";
         _deltaCreditText.text = $"{sign}{ReplaceUtils.FormatNumberWithCommas(deltaCredit)}";
-        _deltaCreditText.color = this.VisualManager.GetDeltaColor(deltaCredit);
+        _deltaCreditText.color = VisualManager.GetDeltaColor(deltaCredit);
     }
 
     private void UpdateResearchText()
