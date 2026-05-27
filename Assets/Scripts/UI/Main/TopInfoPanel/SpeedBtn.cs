@@ -3,7 +3,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
-public class SpeedBtn : MonoBehaviour
+public class SpeedBtn : BtnBase
 {
     [SerializeField] private GameObject _sigPanel;
     [SerializeField] private TextMeshProUGUI _text;
@@ -51,10 +51,7 @@ public class SpeedBtn : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 버튼 클릭 시 호출. (Inspector에서 Button onClick에 연결)
-    /// </summary>
-    public void OnClick()
+    protected override void HandleClick()
     {
         _onClicked?.Invoke(this);
     }

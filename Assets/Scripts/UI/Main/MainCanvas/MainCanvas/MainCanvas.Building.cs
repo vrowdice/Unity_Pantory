@@ -173,7 +173,7 @@ public partial class MainCanvas
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
             btnObj.transform.SetParent(_buildingBtnContent, false);
             MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
-            btn.Initialize(this, data, _mainRunner);
+            btn.Init(this, data, _mainRunner);
             _buildingBtns.Add(btn);
         }
 
@@ -321,7 +321,7 @@ public partial class MainCanvas
                           _mainRunner.PlacementHandler.IsBlueprintPlacementMode &&
                           _activeBlueprintLayoutKey == layoutKey;
         if (btn != null)
-            btn.Initialize(this, layoutKey, blueprintName, buildings, roads, isSelected);
+            btn.Init(this, layoutKey, blueprintName, buildings, roads, isSelected);
 
         if (_blueprintAddBtn != null)
             entryObj.transform.SetSiblingIndex(_blueprintAddBtn.transform.GetSiblingIndex());

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainBlueprintTypeBtn : MonoBehaviour
+public class MainBlueprintTypeBtn : BtnBase
 {
     [SerializeField] private Image _focusedImage = null;
 
@@ -12,7 +12,7 @@ public class MainBlueprintTypeBtn : MonoBehaviour
         _mainCanvas = mainCanvas;
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _mainCanvas?.OnMainBlueprintBtnClicked();
     }

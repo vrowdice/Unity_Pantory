@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Goal_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: e0b41f42f93c1d74d9f0cec8ea7c67fd, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 5000000000000001
+    m_Localized: Place 1 Logging Camp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000002
+    m_Localized: Produce 30 Logs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000003
+    m_Localized: Reach 550,000 Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000004
+    m_Localized: Place 1 Sawmill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000005
+    m_Localized: Place 1 Mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000006
+    m_Localized: Produce 40 Iron Ore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000007
+    m_Localized: Complete Smelting Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000008
+    m_Localized: Place 1 Smelter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000009
+    m_Localized: Produce 15 Iron Ingots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000010
+    m_Localized: Hold 20 Logs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000011
+    m_Localized: Place 1 Light Factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000012
+    m_Localized: Produce 10 Basic Furniture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5000000000000013
+    m_Localized: Reach 800,000 Wealth
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

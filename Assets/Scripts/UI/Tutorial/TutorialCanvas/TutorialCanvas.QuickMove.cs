@@ -27,7 +27,7 @@ public partial class TutorialCanvas
             btnObj.transform.SetParent(_quickMovePanelContent, false);
 
             QuickMoveBtn quickBtn = btnObj.GetComponent<QuickMoveBtn>();
-            quickBtn.Initialize(this, panelType);
+            quickBtn.Init(this, panelType);
             _quickMoveBtns.Add(quickBtn);
         }
     }

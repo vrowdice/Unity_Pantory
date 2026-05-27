@@ -3098,7 +3098,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00004553795}
+  m_AnchoredPosition: {x: 0, y: -0.000017464161}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3125783419564302356
@@ -9514,19 +9514,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5592491476032548071}
-        m_TargetAssemblyTypeName: MainCanvasUnionContainer, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -9966,6 +9954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 211116100728dfc44afca43f9889cd76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _button: {fileID: 0}
   _unionCohesionProgressText: {fileID: 8455714559032770885}
   _remainDateText: {fileID: 8942632657807057956}
 --- !u!1 &4711101167637235972
@@ -13771,19 +13760,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2852541990186096388}
-        m_TargetAssemblyTypeName: MainCanvasAutomationContainer, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -14473,6 +14450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b35277fce0d8d742a3553ea42902b76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _button: {fileID: 0}
 --- !u!1 &6404377119141207814
 GameObject:
   m_ObjectHideFlags: 0
@@ -14855,7 +14833,6 @@ MonoBehaviour:
   _blueprintSavedEntryPrefab: {fileID: 412398129040250562, guid: 217efe202fa5fad4aacf64f8dc2d67d1, type: 3}
   _autoEmployeePlacementSwitch: {fileID: 5257570787913362637}
   _removalModeSwitch: {fileID: 6085614814687480489}
-  _goalPanel: {fileID: 0}
   _storageCanvasPrefab: {fileID: 3873413108417295653, guid: 30056fd530b20ab46b220efa4515fd26, type: 3}
   _orderCanvasPrefab: {fileID: 6298053347902593458, guid: 4922c1492c6bfd74e905d25940c2ccd2, type: 3}
   _marketCanvasPrefab: {fileID: 4348083378959238153, guid: d79de820966302849b1946f890c89388, type: 3}
@@ -14866,7 +14843,7 @@ MonoBehaviour:
   _financeCanvasPrefab: {fileID: 6333051514348184066, guid: 3ba3b235a00b5be45a7a643116f3e020, type: 3}
   _quickMoveBtnPrefeb: {fileID: 1343671733478616711, guid: ecbf718cd5649e74d9e4fda0e969449e, type: 3}
   _quickMovePanelContent: {fileID: 5881713774088659892}
-  _mainScrollViewResouceBtn: {fileID: 3288361424689650741, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
+  _mainScrollViewResouceBtn: {fileID: 4338296998459436098, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
   _resouceScrollViewContent: {fileID: 5792593746420108247}
   _creditText: {fileID: 3157747697831197936}
   _deltaCreditText: {fileID: 5621586244536354010}
@@ -19289,19 +19266,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3664099670961166894}
-        m_TargetAssemblyTypeName: MainCanvasWarContainer, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -19670,6 +19635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8de9afb97b26604b9617abf2bd22e1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _button: {fileID: 0}
 --- !u!1 &9067717359744380097
 GameObject:
   m_ObjectHideFlags: 0
@@ -20310,6 +20276,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7428171230476497647, guid: 520ed7d7d599aa54f9239e23086fb9ed, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560903175456629520, guid: 520ed7d7d599aa54f9239e23086fb9ed, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560903175456629520, guid: 520ed7d7d599aa54f9239e23086fb9ed, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560903175456629520, guid: 520ed7d7d599aa54f9239e23086fb9ed, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

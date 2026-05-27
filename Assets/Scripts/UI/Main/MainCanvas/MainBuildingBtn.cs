@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using Evo.UI;
 using TMPro;
 
-public class MainBuildingBtn : MonoBehaviour
+public class MainBuildingBtn : BtnBase
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private Image _focusedImage = null;
@@ -18,7 +18,7 @@ public class MainBuildingBtn : MonoBehaviour
 
     public BuildingData BuildingData => _buildingData;
 
-    public void Initialize(IBuildingBuildHost host, BuildingData buildingData, BuildingSceneRunnerBase runner)
+    public void Init(IBuildingBuildHost host, BuildingData buildingData, BuildingSceneRunnerBase runner)
     {
         _host = host;
         _buildingData = buildingData;
@@ -27,18 +27,15 @@ public class MainBuildingBtn : MonoBehaviour
         if (_image != null) _image.sprite = buildingData.icon;
         if (_deactivatedImage != null) _deactivatedImage.gameObject.SetActive(false);
 
-        if (_buildingHelpButton != null)
-        {
-            _buildingHelpButton.onClick.RemoveListener(OnClickBuildingHelp);
-            _buildingHelpButton.onClick.AddListener(OnClickBuildingHelp);
-        }
+        BindClick(_buildingHelpButton, OnClickBuildingHelp);
 
         RefreshPlacedCount(runner);
+        EnsureClickBound();
     }
 
-    public void Initialize(MainCanvas host, BuildingData buildingData, MainRunner runner)
+    public void Init(MainCanvas host, BuildingData buildingData, MainRunner runner)
     {
-        Initialize(host, buildingData, (BuildingSceneRunnerBase)runner);
+        Init(host, buildingData, (BuildingSceneRunnerBase)runner);
     }
 
     public void RefreshPlacedCount(BuildingSceneRunnerBase runner)
@@ -62,7 +59,7 @@ public class MainBuildingBtn : MonoBehaviour
         _placedCountText.gameObject.SetActive(true);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _host?.SelectBuilding(_buildingData, _isSelected);
     }

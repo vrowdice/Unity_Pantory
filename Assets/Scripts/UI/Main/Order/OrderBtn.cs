@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class OrderBtn : MonoBehaviour
+public class OrderBtn : BtnBase
 {
     [SerializeField] private MarketActorPopupBtn _marketActorPopupBtn;
     [SerializeField] private TextMeshProUGUI _marketActorNameText;
@@ -112,7 +112,7 @@ public class OrderBtn : MonoBehaviour
         }
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_orderState == null) return;
 

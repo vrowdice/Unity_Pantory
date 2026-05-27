@@ -19,8 +19,6 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialUnionMainEventData _initialUnionMainEventData;
     [SerializeField] private InitialWarMainEventData _initialWarMainEventData;
     [SerializeField] private InitialAutomationMainEventData _initialAutomationMainEventData;
-    [SerializeField] private InitialGoalData _initialGoalData;
-
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
     [SerializeField] private List<ResourceData> _resourceDataList = new List<ResourceData>();
@@ -131,7 +129,7 @@ public class DataManager : Singleton<DataManager>
             _initialUnionMainEventData,
             _initialWarMainEventData,
             _initialAutomationMainEventData);
-        Goal = new GoalDataHandler(this, _goalDataList, _initialGoalData);
+        Goal = new GoalDataHandler(this, _goalDataList);
 
         Player = new PlayerDataHandler();
 
@@ -208,7 +206,6 @@ public class DataManager : Singleton<DataManager>
 
         InitializeServices();
         ClearAllEventSubscriptions();
-        Goal?.TryStartInitialGoalForNewGame();
     }
 
 #if UNITY_EDITOR
@@ -477,8 +474,8 @@ public class DataManager : Singleton<DataManager>
         data.placedRoads ??= new List<PlacedRoadSaveData>();
         data.blueprintLayouts ??= new List<BlueprintLayoutSaveData>();
         data.tutorialAutoShowPending ??= new List<TutorialAutoShowPendingSaveData>();
-        data.activeGoalId ??= string.Empty;
-        data.activeGoalChainId ??= string.Empty;
+        data.activeGoals ??= new List<GoalActiveSaveData>();
+        data.completedGoalIds ??= new List<string>();
     }
 
     private static T CloneState<T>(T state)

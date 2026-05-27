@@ -9197,19 +9197,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5592491476032548071}
-        m_TargetAssemblyTypeName: MainCanvasUnionContainer, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -13052,19 +13040,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2852541990186096388}
-        m_TargetAssemblyTypeName: MainCanvasAutomationContainer, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -18190,19 +18166,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3664099670961166894}
-        m_TargetAssemblyTypeName: MainCanvasWarContainer, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class SelectResourceBtn : MonoBehaviour
+public class SelectResourceBtn : BtnBase
 {
     [SerializeField] private Image _resourceIconImage;
     [SerializeField] private TextMeshProUGUI _resourceNameText;
@@ -21,7 +21,7 @@ public class SelectResourceBtn : MonoBehaviour
         _resourceCountText.text = _resourceEntry.state.count.ToString();
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_selectResourcePanel != null && _resourceEntry != null)
         {

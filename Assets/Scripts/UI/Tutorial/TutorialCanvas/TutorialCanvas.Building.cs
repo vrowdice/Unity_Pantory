@@ -167,7 +167,7 @@ public partial class TutorialCanvas
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
             btnObj.transform.SetParent(_buildingBtnContent, false);
             MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
-            btn.Initialize(this, data, _sceneRunner);
+            btn.Init(this, data, _sceneRunner);
             _buildingBtns.Add(btn);
         }
 

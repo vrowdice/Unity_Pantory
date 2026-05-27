@@ -20,6 +20,8 @@ public class GoalData : ScriptableObject
     [Tooltip("완료 시 지급 크레딧")]
     public long rewardCredit;
 
+    public bool isDefaultUnlocked;
+
     [Tooltip("완료 후 활성화할 다음 목표. 비우면 목표 라인 종료")]
     public GoalData nextGoal;
 }

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using Evo.UI;
 using TMPro;
 
-public class ResearchBtn : MonoBehaviour
+public class ResearchBtn : BtnBase
 {
     [SerializeField] private Image _image;
     [SerializeField] private GameObject _focusedImage;
@@ -16,22 +16,21 @@ public class ResearchBtn : MonoBehaviour
     {
         _researchEntry = researchEntry;
         _researchCanvas = researchCanvas;
-
         _image.sprite = researchEntry.data.icon;
         _text.text = researchEntry.data.id.Localize(LocalizationUtils.TABLE_RESEARCH);
-
         if(researchEntry.state.isCompleted)
             _focusedImage.SetActive(true);
         else
             _focusedImage.SetActive(false);
 
-        if(researchEntry.state.isUnlocked)
-            GetComponent<Evo.UI.Button>().interactable = true;
-        else
-            GetComponent<Evo.UI.Button>().interactable = false;
+        Evo.UI.Button button = ResolveButton();
+        if (button != null)
+        {
+            button.interactable = researchEntry.state.isUnlocked;
+        }
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _researchCanvas.PanelUIManager.ShowResearchInfoPopup(_researchEntry);
     }

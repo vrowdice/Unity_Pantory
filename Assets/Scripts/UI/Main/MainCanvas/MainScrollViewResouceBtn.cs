@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class MainScrollViewResouceBtn : MonoBehaviour
+public class MainScrollViewResouceBtn : BtnBase
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private TextMeshProUGUI _valueText = null;
@@ -16,7 +16,6 @@ public class MainScrollViewResouceBtn : MonoBehaviour
         _resourceEntry = resourceEntry;
         _image.sprite = resourceEntry.data.icon;
         _valueText.text = resourceEntry.state.count.ToString("N0");
-
         UpdateChangeValue();
     }
 
@@ -26,9 +25,8 @@ public class MainScrollViewResouceBtn : MonoBehaviour
         Init(resourceEntry);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
-        
     }
 
     private void UpdateChangeValue()
@@ -37,16 +35,10 @@ public class MainScrollViewResouceBtn : MonoBehaviour
         int delta = resourceState.currnetChangeCount;
 
         if (delta > 0)
-        {
             _changeValueText.text = $"+{delta:N0}";
-        }
         else if (delta < 0)
-        {
             _changeValueText.text = delta.ToString("N0");
-        }
         else
-        {
             _changeValueText.text = "";
-        }
     }
 }

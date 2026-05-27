@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
-public class QuickMoveBtn : MonoBehaviour
+public class QuickMoveBtn : BtnBase
 {
     [SerializeField] private AudioClip _alartSound;
     [SerializeField] private Image _icon = null;
@@ -15,7 +15,7 @@ public class QuickMoveBtn : MonoBehaviour
 
     public MainPanelType PanelType => _penalType;
 
-    public void Initialize(IBuildScenePanelHost panelHost, MainPanelType argPenalType)
+    public void Init(IBuildScenePanelHost panelHost, MainPanelType argPenalType)
     {
         _panelHost = panelHost;
         _penalType = argPenalType;
@@ -25,14 +25,15 @@ public class QuickMoveBtn : MonoBehaviour
 
         _alartImage.SetActive(false);
         InitEvent();
+        EnsureClickBound();
     }
 
-    public void Initialize(MainCanvas argUiManager, MainPanelType argPenalType)
+    public void Init(MainCanvas argUiManager, MainPanelType argPenalType)
     {
-        Initialize((IBuildScenePanelHost)argUiManager, argPenalType);
+        Init((IBuildScenePanelHost)argUiManager, argPenalType);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _panelHost?.OpenPanel(_penalType);
         SetAlertActive(false);

@@ -92,7 +92,6 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
 
         InitBuildUi();
         InitBankruptcyUi();
-        InitGoalUi();
 
         _mainRunner.GridHandler.OnBuildingInstanceLayoutChanged += RefreshBuildingPlacedCountDisplays;
         DataManager.Goal?.BindSceneGrid(_mainRunner.GridHandler);

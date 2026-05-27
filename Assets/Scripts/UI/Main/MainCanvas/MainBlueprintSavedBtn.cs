@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainBlueprintSavedBtn : MonoBehaviour
+public class MainBlueprintSavedBtn : BtnBase
 {
     [SerializeField] private Image _focusedImage = null;
     [SerializeField] private TextMeshProUGUI _label;
@@ -16,7 +16,7 @@ public class MainBlueprintSavedBtn : MonoBehaviour
 
     public IReadOnlyList<PlacedBuildingSaveData> Buildings => _buildings;
 
-    public void Initialize(MainCanvas mainCanvas, string layoutKey, string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads, bool isSelected)
+    public void Init(MainCanvas mainCanvas, string layoutKey, string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads, bool isSelected)
     {
         _mainCanvas = mainCanvas;
         _layoutKey = layoutKey;
@@ -28,7 +28,7 @@ public class MainBlueprintSavedBtn : MonoBehaviour
         SetSelected(isSelected);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_mainCanvas != null)
             _mainCanvas.ToggleSavedBlueprintPlacement(_layoutKey, _blueprintName, _buildings, _roads);

@@ -21,7 +21,7 @@ public partial class MainCanvas
             btnObj.transform.SetParent(_quickMovePanelContent, false);
 
             QuickMoveBtn quickBtn = btnObj.GetComponent<QuickMoveBtn>();
-            quickBtn.Initialize(this, panelType);
+            quickBtn.Init(this, panelType);
             _quickMoveBtns.Add(quickBtn);
         }
     }

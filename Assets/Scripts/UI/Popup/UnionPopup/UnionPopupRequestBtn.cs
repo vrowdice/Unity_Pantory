@@ -2,7 +2,7 @@ using Evo.UI;
 using TMPro;
 using UnityEngine;
 
-public class UnionPopupRequestBtn : MonoBehaviour
+public class UnionPopupRequestBtn : BtnBase
 {
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -62,7 +62,7 @@ public class UnionPopupRequestBtn : MonoBehaviour
         RefreshCompleteButton();
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_dataManager?.UnionRequest == null || _requestState == null)
         {
@@ -208,7 +208,7 @@ public class UnionPopupRequestBtn : MonoBehaviour
     {
         bool canFulfill = _dataManager.UnionRequest.CanFulfillUnionRequest(_requestState);
 
-        Button button = GetComponent<Button>();
+        Evo.UI.Button button = ResolveButton();
         if (button != null)
         {
             button.interactable = canFulfill;

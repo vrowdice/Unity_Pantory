@@ -489,19 +489,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1732200943486443442}
-        m_TargetAssemblyTypeName: SaveLoadBtn, Assembly-CSharp
-        m_MethodName: OnClickDeleteBtn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -954,19 +942,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1732200943486443442}
-        m_TargetAssemblyTypeName: SaveLoadBtn, Assembly-CSharp
-        m_MethodName: OnClickLoadBtn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -2243,19 +2219,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1732200943486443442}
-        m_TargetAssemblyTypeName: SaveLoadBtn, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -2323,6 +2287,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _saveDataNameText: {fileID: 2176846069677804310}
   _loadBtn: {fileID: 1217211006504594328}
+  _loadButton: {fileID: 5489316518787421977}
+  _deleteButton: {fileID: 6064283502602327699}
 --- !u!1 &6271425121669549042
 GameObject:
   m_ObjectHideFlags: 0

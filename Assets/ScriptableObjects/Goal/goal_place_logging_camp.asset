@@ -18,4 +18,5 @@ MonoBehaviour:
   targetId: logging_camp
   targetValue: 1
   rewardCredit: 10000
+  isDefaultUnlocked: 1
   nextGoal: {fileID: 11400000, guid: c2a3b4c5d6e7f809192a3b4c5d6e7f82, type: 2}

@@ -18,4 +18,5 @@ MonoBehaviour:
   targetId: sawmill
   targetValue: 1
   rewardCredit: 50000
+  isDefaultUnlocked: 0
   nextGoal: {fileID: 0}

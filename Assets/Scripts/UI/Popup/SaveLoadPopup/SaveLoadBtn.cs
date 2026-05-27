@@ -1,10 +1,12 @@
 using TMPro;
 using UnityEngine;
 
-public class SaveLoadBtn : MonoBehaviour
+public class SaveLoadBtn : BtnBase
 {
     [SerializeField] private TextMeshProUGUI _saveDataNameText;
     [SerializeField] private GameObject _loadBtn;
+    [SerializeField] private Evo.UI.Button _loadButton;
+    [SerializeField] private Evo.UI.Button _deleteButton;
 
     private SaveLoadPopup _saveLoadPopup;
     private bool _isSaveMode = false;
@@ -21,18 +23,18 @@ public class SaveLoadBtn : MonoBehaviour
             _saveDataNameText.text = saveFileName;
         }
 
-        _loadBtn.SetActive(false);
-/*        if (_isSaveMode)
+        if (_loadButton == null && _loadBtn != null)
         {
-            _loadBtn.SetActive(true);
+            _loadButton = _loadBtn.GetComponent<Evo.UI.Button>();
         }
-        else
-        {
-            _loadBtn.SetActive(false);
-        }*/
+
+        _loadBtn.SetActive(false);
+
+        BindClick(_loadButton, OnClickLoad);
+        BindClick(_deleteButton, OnClickDelete);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_isSaveMode)
         {
@@ -44,12 +46,12 @@ public class SaveLoadBtn : MonoBehaviour
         }
     }
 
-    public void OnClickLoadBtn()
+    private void OnClickLoad()
     {
         _saveLoadPopup.LoadSavefile(_saveFileName);
     }
 
-    public void OnClickDeleteBtn()
+    private void OnClickDelete()
     {
         _saveLoadPopup.DeleteSavefile(_saveFileName);
     }

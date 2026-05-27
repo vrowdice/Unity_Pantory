@@ -34,10 +34,10 @@ public class GoalPanelContainer : MonoBehaviour
         if (_dataManager?.Goal == null)
             return;
 
-        _dataManager.Goal.OnActiveGoalChanged -= HandleActiveGoalChanged;
+        _dataManager.Goal.OnActiveGoalsChanged -= HandleActiveGoalsChanged;
         _dataManager.Goal.OnGoalCompleted -= HandleGoalCompleted;
         _dataManager.Goal.OnAllGoalsCompleted -= HandleAllGoalsCompleted;
-        _dataManager.Goal.OnActiveGoalChanged += HandleActiveGoalChanged;
+        _dataManager.Goal.OnActiveGoalsChanged += HandleActiveGoalsChanged;
         _dataManager.Goal.OnGoalCompleted += HandleGoalCompleted;
         _dataManager.Goal.OnAllGoalsCompleted += HandleAllGoalsCompleted;
     }
@@ -47,12 +47,12 @@ public class GoalPanelContainer : MonoBehaviour
         if (_dataManager?.Goal == null)
             return;
 
-        _dataManager.Goal.OnActiveGoalChanged -= HandleActiveGoalChanged;
+        _dataManager.Goal.OnActiveGoalsChanged -= HandleActiveGoalsChanged;
         _dataManager.Goal.OnGoalCompleted -= HandleGoalCompleted;
         _dataManager.Goal.OnAllGoalsCompleted -= HandleAllGoalsCompleted;
     }
 
-    private void HandleActiveGoalChanged(GoalState goalState)
+    private void HandleActiveGoalsChanged()
     {
         Refresh();
     }
@@ -64,15 +64,11 @@ public class GoalPanelContainer : MonoBehaviour
         if (goalState == null || UIManager.Instance == null || _dataManager?.Goal == null)
             return;
 
-        GoalData completedGoalData = GetCompletedGoalData(goalState.goalId);
+        GoalData completedGoalData = _dataManager.Goal.GetGoalData(goalState.goalId);
         if (completedGoalData != null && completedGoalData.nextGoal == null)
             return;
 
-        string goalTitle = !string.IsNullOrEmpty(completedGoalData?.displayName)
-            ? completedGoalData.displayName
-            : goalState.goalId;
-
-        UIManager.Instance.ShowWarningPopup("GoalComplete", goalTitle);
+        UIManager.Instance.ShowWarningPopup("GoalComplete", GoalBtn.GetTitle(completedGoalData));
     }
 
     private void HandleAllGoalsCompleted()
@@ -81,44 +77,26 @@ public class GoalPanelContainer : MonoBehaviour
         UIManager.Instance?.ShowWarningPopup("GoalChainComplete");
     }
 
-    private GoalData GetCompletedGoalData(string goalId)
-    {
-        if (string.IsNullOrEmpty(goalId) || _dataManager?.Goal == null)
-            return null;
-
-        return _dataManager.Goal.GetGoalData(goalId);
-    }
-
-    public void Refresh()
+    private void Refresh()
     {
         GoalDataHandler goalHandler = _dataManager?.Goal;
-        if (goalHandler == null || goalHandler.AllGoalsCompleted || goalHandler.ActiveGoal == null)
+        if (goalHandler == null || goalHandler.AllGoalsCompleted || goalHandler.ActiveGoals.Count == 0)
         {
             SetVisible(false);
             return;
         }
 
         SetVisible(true);
-        GoalState activeGoal = goalHandler.ActiveGoal;
+        GoalState activeGoal = goalHandler.ActiveGoals[0];
+        GoalData activeGoalData = goalHandler.GetGoalData(activeGoal.goalId);
 
-        if (_titleText != null)
-            _titleText.text = "GoalPanelTitle".Localize(LocalizationUtils.TABLE_COMMON);
-
-        if (_descriptionText != null)
-            _descriptionText.text = GoalDisplayUtils.GetGoalTitle(goalHandler);
-
-        if (_progressText != null)
-            _progressText.text = GoalDisplayUtils.FormatProgress(activeGoal);
-
-        if (_rewardText != null)
-            _rewardText.text = GoalDisplayUtils.FormatReward(activeGoal.rewardCredit);
-
-        if (_progressSlider != null)
-        {
-            _progressSlider.minValue = 0f;
-            _progressSlider.maxValue = 1f;
-            _progressSlider.value = activeGoal.ProgressRatio;
-        }
+        _titleText.text = "GoalPanelTitle".Localize(LocalizationUtils.TABLE_COMMON);
+        _descriptionText.text = GoalBtn.GetTitle(activeGoalData);
+        _progressText.text = GoalBtn.FormatProgress(activeGoal);
+        _rewardText.text = GoalBtn.FormatReward(activeGoal.rewardCredit);
+        _progressSlider.minValue = 0f;
+        _progressSlider.maxValue = 1f;
+        _progressSlider.value = activeGoal.ProgressRatio;
     }
 
     private void SetVisible(bool visible)

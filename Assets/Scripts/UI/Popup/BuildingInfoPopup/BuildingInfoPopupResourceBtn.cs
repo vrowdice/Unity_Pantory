@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class BuildingInfoPopupResourceBtn : MonoBehaviour
+public class BuildingInfoPopupResourceBtn : BtnBase
 {
     [SerializeField] private Image _icon;
     [SerializeField] private TextMeshProUGUI _amountText;
@@ -29,7 +29,7 @@ public class BuildingInfoPopupResourceBtn : MonoBehaviour
         _amountText.text = amount.ToString("N0");
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _building.TryReturnBufferResourceToDataManager(DataManager.Instance, _resourceId, _fromInputBuffer);
         _popup.RefreshAfterRuntimeBufferChanged();

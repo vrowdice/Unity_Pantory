@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class MainBuildingTypeBtn : MonoBehaviour
+public class MainBuildingTypeBtn : BtnBase
 {
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private Image _focusedImage = null;
@@ -24,7 +24,7 @@ public class MainBuildingTypeBtn : MonoBehaviour
         Init((IBuildingTypeSelectHost)host, buildingType);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _host?.SelectBuildingType(_buildingType);
     }
@@ -34,4 +34,3 @@ public class MainBuildingTypeBtn : MonoBehaviour
         if (_focusedImage != null) _focusedImage.gameObject.SetActive(isFocused);
     }
 }
-

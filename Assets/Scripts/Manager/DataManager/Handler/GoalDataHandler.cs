@@ -3,35 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 플레이어 목표(퀘스트) 진행을 관리합니다. 한 번에 활성 목표 1개, nextGoal로 순서 연결.
+/// 플레이어 목표(퀘스트) 진행을 관리합니다. isDefaultUnlocked 목표는 생성 시 자동 활성화되며,
+/// 완료 시 nextGoal을 해제합니다.
 /// </summary>
 public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSaveHandler
 {
     private readonly DataManager _dataManager;
-    private readonly InitialGoalData _initialGoalData;
     private readonly Dictionary<string, GoalData> _goalDict = new Dictionary<string, GoalData>();
+    private readonly List<GoalState> _activeGoals = new List<GoalState>();
+    private readonly Dictionary<string, long> _produceProgressByGoalId = new Dictionary<string, long>();
+    private readonly Dictionary<string, int> _produceResourceSnapshotByGoalId = new Dictionary<string, int>();
+    private readonly HashSet<string> _completedGoalIds = new HashSet<string>();
 
-    private GoalData _activeGoalData;
-    private GoalState _activeGoal;
     private bool _allGoalsCompleted;
-
-    private long _produceProgress;
-    private int _produceResourceSnapshot;
-
     private MainBuildingGridHandler _boundGridHandler;
 
-    public GoalState ActiveGoal => _activeGoal;
-    public GoalData ActiveGoalData => _activeGoalData;
+    public IReadOnlyList<GoalState> ActiveGoals => _activeGoals;
     public bool AllGoalsCompleted => _allGoalsCompleted;
 
-    public event Action<GoalState> OnActiveGoalChanged;
+    public event Action OnActiveGoalsChanged;
     public event Action<GoalState> OnGoalCompleted;
     public event Action OnAllGoalsCompleted;
 
-    public GoalDataHandler(DataManager dataManager, List<GoalData> goalDataList, InitialGoalData initialGoalData)
+    public GoalDataHandler(DataManager dataManager, List<GoalData> goalDataList)
     {
         _dataManager = dataManager;
-        _initialGoalData = initialGoalData;
 
         if (goalDataList != null)
         {
@@ -51,21 +47,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         }
 
         SubscribeCrossHandlerEvents();
-    }
-
-    public void TryStartInitialGoalForNewGame()
-    {
-        if (_allGoalsCompleted || _activeGoal != null || _activeGoalData != null)
-            return;
-
-        if (_initialGoalData == null
-            || !_initialGoalData.autoStartOnNewGame
-            || _initialGoalData.startingGoal == null)
-        {
-            return;
-        }
-
-        StartGoal(_initialGoalData.startingGoal.id);
+        UnlockDefaultGoals();
     }
 
     public GoalData GetGoalData(string goalId)
@@ -76,18 +58,6 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         return _goalDict.TryGetValue(goalId, out GoalData goalData) ? goalData : null;
     }
 
-    public bool StartGoal(string goalId)
-    {
-        GoalData goalData = GetGoalData(goalId);
-        if (goalData == null)
-            return false;
-
-        _activeGoalData = goalData;
-        _allGoalsCompleted = false;
-        ActivateGoal(resetProduceProgress: true);
-        return true;
-    }
-
     public void BindSceneGrid(MainBuildingGridHandler gridHandler)
     {
         if (gridHandler == null)
@@ -95,9 +65,9 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
 
         UnbindSceneGrid();
         _boundGridHandler = gridHandler;
-        _boundGridHandler.OnBuildingInstanceLayoutChanged -= EvaluateActiveGoal;
-        _boundGridHandler.OnBuildingInstanceLayoutChanged += EvaluateActiveGoal;
-        EvaluateActiveGoal();
+        _boundGridHandler.OnBuildingInstanceLayoutChanged -= EvaluateAllActiveGoals;
+        _boundGridHandler.OnBuildingInstanceLayoutChanged += EvaluateAllActiveGoals;
+        EvaluateAllActiveGoals();
     }
 
     public void UnbindSceneGrid()
@@ -105,7 +75,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         if (_boundGridHandler == null)
             return;
 
-        _boundGridHandler.OnBuildingInstanceLayoutChanged -= EvaluateActiveGoal;
+        _boundGridHandler.OnBuildingInstanceLayoutChanged -= EvaluateAllActiveGoals;
         _boundGridHandler = null;
     }
 
@@ -113,8 +83,8 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
     {
         if (_dataManager?.Finances != null)
         {
-            _dataManager.Finances.OnCreditChanged -= EvaluateActiveGoal;
-            _dataManager.Finances.OnCreditChanged += EvaluateActiveGoal;
+            _dataManager.Finances.OnCreditChanged -= EvaluateAllActiveGoals;
+            _dataManager.Finances.OnCreditChanged += EvaluateAllActiveGoals;
         }
 
         if (_dataManager?.Resource != null)
@@ -135,7 +105,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         UnbindSceneGrid();
 
         if (_dataManager?.Finances != null)
-            _dataManager.Finances.OnCreditChanged -= EvaluateActiveGoal;
+            _dataManager.Finances.OnCreditChanged -= EvaluateAllActiveGoals;
 
         if (_dataManager?.Resource != null)
             _dataManager.Resource.OnResourceChanged -= HandleResourceChanged;
@@ -143,7 +113,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         if (_dataManager?.Research != null)
             _dataManager.Research.OnResearchCompleted -= HandleResearchCompleted;
 
-        OnActiveGoalChanged = null;
+        OnActiveGoalsChanged = null;
         OnGoalCompleted = null;
         OnAllGoalsCompleted = null;
     }
@@ -153,8 +123,22 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         if (saveData == null)
             return;
 
-        saveData.activeGoalId = _activeGoalData != null ? _activeGoalData.id : string.Empty;
-        saveData.activeGoalProgress = _produceProgress;
+        saveData.activeGoals ??= new List<GoalActiveSaveData>();
+        saveData.activeGoals.Clear();
+
+        for (int i = 0; i < _activeGoals.Count; i++)
+        {
+            GoalState state = _activeGoals[i];
+            saveData.activeGoals.Add(new GoalActiveSaveData
+            {
+                goalId = state.goalId,
+                produceProgress = _produceProgressByGoalId.TryGetValue(state.goalId, out long progress) ? progress : 0
+            });
+        }
+
+        saveData.completedGoalIds ??= new List<string>();
+        saveData.completedGoalIds.Clear();
+        saveData.completedGoalIds.AddRange(_completedGoalIds);
         saveData.allGoalsCompleted = _allGoalsCompleted;
     }
 
@@ -163,126 +147,183 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         if (saveData == null)
             return;
 
-        _allGoalsCompleted = saveData.allGoalsCompleted || saveData.goalChainCompleted;
-        _produceProgress = saveData.activeGoalProgress;
+        ClearActiveGoalRuntime();
+        _completedGoalIds.Clear();
+        _allGoalsCompleted = saveData.allGoalsCompleted;
+
+        if (saveData.completedGoalIds != null)
+        {
+            for (int i = 0; i < saveData.completedGoalIds.Count; i++)
+            {
+                string goalId = saveData.completedGoalIds[i];
+                if (!string.IsNullOrEmpty(goalId))
+                    _completedGoalIds.Add(goalId);
+            }
+        }
 
         if (_allGoalsCompleted)
-        {
-            _activeGoalData = null;
-            _activeGoal = null;
             return;
+
+        if (RestoreActiveGoalsFromSave(saveData))
+            EvaluateAllActiveGoals();
+        else
+            UnlockDefaultGoals();
+    }
+
+    private void UnlockDefaultGoals()
+    {
+        if (_allGoalsCompleted)
+            return;
+
+        foreach (GoalData goalData in _goalDict.Values)
+        {
+            if (goalData == null || !goalData.isDefaultUnlocked)
+                continue;
+
+            TryUnlockGoal(goalData.id, resetProduceProgress: true);
         }
 
-        string goalId = saveData.activeGoalId;
-        if (string.IsNullOrEmpty(goalId) && !string.IsNullOrEmpty(saveData.activeGoalChainId))
-        {
-            TryStartInitialGoalForNewGame();
+        if (_activeGoals.Count == 0)
             return;
+
+        NotifyActiveGoalsChanged();
+        EvaluateAllActiveGoals();
+    }
+
+    private bool RestoreActiveGoalsFromSave(GameSaveData saveData)
+    {
+        if (saveData.activeGoals == null || saveData.activeGoals.Count == 0)
+            return false;
+
+        for (int i = 0; i < saveData.activeGoals.Count; i++)
+        {
+            GoalActiveSaveData entry = saveData.activeGoals[i];
+            if (entry == null || string.IsNullOrEmpty(entry.goalId))
+                continue;
+
+            _produceProgressByGoalId[entry.goalId] = entry.produceProgress;
+            TryUnlockGoal(entry.goalId, resetProduceProgress: false);
         }
 
-        if (string.IsNullOrEmpty(goalId))
+        return _activeGoals.Count > 0;
+    }
+
+    private bool TryUnlockGoal(string goalId, bool resetProduceProgress)
+    {
+        if (string.IsNullOrEmpty(goalId)
+            || _completedGoalIds.Contains(goalId)
+            || ContainsActiveGoal(goalId))
         {
-            _activeGoalData = null;
-            _activeGoal = null;
-            TryStartInitialGoalForNewGame();
-            return;
+            return false;
         }
 
         GoalData goalData = GetGoalData(goalId);
         if (goalData == null)
-        {
-            _activeGoalData = null;
-            _activeGoal = null;
-            return;
-        }
+            return false;
 
-        _activeGoalData = goalData;
+        _allGoalsCompleted = false;
+
+        if (resetProduceProgress || !_produceProgressByGoalId.ContainsKey(goalId))
+            _produceProgressByGoalId[goalId] = 0;
+
         if (goalData.conditionType == GoalConditionType.ProduceResource)
-            _produceResourceSnapshot = GetResourceCount(goalData.targetId);
+            _produceResourceSnapshotByGoalId[goalId] = GetResourceCount(goalData.targetId);
 
-        BuildActiveGoalState(resetProduceSnapshot: false);
-        EvaluateActiveGoal();
+        long progress = GetCurrentProgress(goalData, goalId);
+        _activeGoals.Add(new GoalState(goalData, progress));
+        return true;
     }
 
-    private void ActivateGoal(bool resetProduceProgress)
+    private bool ContainsActiveGoal(string goalId)
     {
-        if (_activeGoalData == null)
+        for (int i = 0; i < _activeGoals.Count; i++)
         {
-            CompleteAllGoals();
-            return;
+            if (_activeGoals[i].goalId == goalId)
+                return true;
         }
 
-        if (resetProduceProgress)
-            _produceProgress = 0;
-
-        BuildActiveGoalState(resetProduceSnapshot: resetProduceProgress);
-        EvaluateActiveGoal();
+        return false;
     }
 
-    private void BuildActiveGoalState(bool resetProduceSnapshot)
+    private int IndexOfActiveGoal(string goalId)
     {
-        if (_activeGoalData == null)
+        for (int i = 0; i < _activeGoals.Count; i++)
         {
-            _activeGoal = null;
-            return;
+            if (_activeGoals[i].goalId == goalId)
+                return i;
         }
 
-        if (resetProduceSnapshot && _activeGoalData.conditionType == GoalConditionType.ProduceResource)
-            _produceResourceSnapshot = GetResourceCount(_activeGoalData.targetId);
-
-        long progress = GetCurrentProgress(_activeGoalData);
-        _activeGoal = new GoalState(_activeGoalData, progress);
+        return -1;
     }
 
     private void HandleResourceChanged()
     {
-        if (_activeGoal == null || _allGoalsCompleted || _activeGoalData == null)
+        if (_allGoalsCompleted || _activeGoals.Count == 0)
             return;
 
-        if (_activeGoalData.conditionType == GoalConditionType.ProduceResource)
+        for (int i = 0; i < _activeGoals.Count; i++)
         {
-            int current = GetResourceCount(_activeGoalData.targetId);
-            if (current > _produceResourceSnapshot)
-                _produceProgress += current - _produceResourceSnapshot;
+            string goalId = _activeGoals[i].goalId;
+            GoalData goalData = GetGoalData(goalId);
+            if (goalData == null || goalData.conditionType != GoalConditionType.ProduceResource)
+                continue;
 
-            _produceResourceSnapshot = current;
+            int current = GetResourceCount(goalData.targetId);
+            if (!_produceResourceSnapshotByGoalId.TryGetValue(goalId, out int snapshot))
+                snapshot = current;
+
+            if (current > snapshot)
+            {
+                long progress = _produceProgressByGoalId.TryGetValue(goalId, out long existingProgress)
+                    ? existingProgress
+                    : 0;
+                _produceProgressByGoalId[goalId] = progress + (current - snapshot);
+            }
+
+            _produceResourceSnapshotByGoalId[goalId] = current;
         }
 
-        EvaluateActiveGoal();
+        EvaluateAllActiveGoals();
     }
 
     private void HandleResearchCompleted(string researchId)
     {
-        if (_activeGoal == null || _allGoalsCompleted || _activeGoalData == null)
-            return;
-
-        if (_activeGoalData.conditionType != GoalConditionType.CompleteResearch
-            || _activeGoalData.targetId != researchId)
-        {
-            return;
-        }
-
-        EvaluateActiveGoal();
+        EvaluateAllActiveGoals();
     }
 
-    private void EvaluateActiveGoal()
+    private void EvaluateAllActiveGoals()
     {
-        if (_activeGoal == null || _allGoalsCompleted || _activeGoalData == null)
+        if (_allGoalsCompleted || _activeGoals.Count == 0)
             return;
 
-        long progress = GetCurrentProgress(_activeGoalData);
-        _activeGoal.currentProgress = progress;
+        bool progressChanged = false;
 
-        if (_activeGoal.IsComplete)
+        for (int i = 0; i < _activeGoals.Count; i++)
         {
-            CompleteCurrentGoal();
-            return;
+            GoalState state = _activeGoals[i];
+            GoalData goalData = GetGoalData(state.goalId);
+            if (goalData == null)
+                continue;
+
+            long progress = GetCurrentProgress(goalData, state.goalId);
+            if (state.currentProgress != progress)
+            {
+                state.currentProgress = progress;
+                progressChanged = true;
+            }
+
+            if (state.IsComplete)
+            {
+                CompleteGoal(state.goalId);
+                return;
+            }
         }
 
-        OnActiveGoalChanged?.Invoke(_activeGoal);
+        if (progressChanged)
+            NotifyActiveGoalsChanged();
     }
 
-    private long GetCurrentProgress(GoalData goalData)
+    private long GetCurrentProgress(GoalData goalData, string goalId)
     {
         if (goalData == null)
             return 0;
@@ -296,7 +337,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
             case GoalConditionType.HaveResource:
                 return GetResourceCount(goalData.targetId);
             case GoalConditionType.ProduceResource:
-                return _produceProgress;
+                return _produceProgressByGoalId.TryGetValue(goalId, out long progress) ? progress : 0;
             case GoalConditionType.PlaceBuilding:
                 return GetPlacedBuildingCount(goalData.targetId);
             case GoalConditionType.AssignBuildingOutput:
@@ -342,35 +383,71 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
             && _dataManager.PlacedLayout.AnyPlacedBuildingHasConfiguredOutputResource(buildingId);
     }
 
-    private void CompleteCurrentGoal()
+    private void CompleteGoal(string goalId)
     {
-        GoalState completed = _activeGoal;
-        if (completed == null || _activeGoalData == null)
+        int index = IndexOfActiveGoal(goalId);
+        if (index < 0)
             return;
+
+        GoalState completed = _activeGoals[index];
+        GoalData goalData = GetGoalData(goalId);
+        if (goalData == null)
+            return;
+
+        _activeGoals.RemoveAt(index);
+        _produceProgressByGoalId.Remove(goalId);
+        _produceResourceSnapshotByGoalId.Remove(goalId);
+        _completedGoalIds.Add(goalId);
 
         if (completed.rewardCredit > 0 && _dataManager.Finances != null)
             _dataManager.Finances.ModifyCredit(completed.rewardCredit);
 
         OnGoalCompleted?.Invoke(completed);
 
-        GoalData nextGoal = _activeGoalData.nextGoal;
-        if (nextGoal == null)
+        if (goalData.nextGoal != null && !string.IsNullOrEmpty(goalData.nextGoal.id))
+            TryUnlockGoal(goalData.nextGoal.id, resetProduceProgress: true);
+
+        if (AreAllGoalsCompleted())
         {
             CompleteAllGoals();
             return;
         }
 
-        _activeGoalData = nextGoal;
-        ActivateGoal(resetProduceProgress: true);
+        NotifyActiveGoalsChanged();
+        EvaluateAllActiveGoals();
+    }
+
+    private bool AreAllGoalsCompleted()
+    {
+        if (_goalDict.Count == 0)
+            return false;
+
+        foreach (KeyValuePair<string, GoalData> pair in _goalDict)
+        {
+            if (!_completedGoalIds.Contains(pair.Key))
+                return false;
+        }
+
+        return true;
     }
 
     private void CompleteAllGoals()
     {
         _allGoalsCompleted = true;
-        _activeGoal = null;
-        _activeGoalData = null;
-        _produceProgress = 0;
-        _produceResourceSnapshot = 0;
+        ClearActiveGoalRuntime();
         OnAllGoalsCompleted?.Invoke();
+        NotifyActiveGoalsChanged();
+    }
+
+    private void ClearActiveGoalRuntime()
+    {
+        _activeGoals.Clear();
+        _produceProgressByGoalId.Clear();
+        _produceResourceSnapshotByGoalId.Clear();
+    }
+
+    private void NotifyActiveGoalsChanged()
+    {
+        OnActiveGoalsChanged?.Invoke();
     }
 }

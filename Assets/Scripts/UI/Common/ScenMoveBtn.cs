@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ScenMoveBtn : MonoBehaviour
+public class ScenMoveBtn : BtnBase
 {
-    [SerializeField] string _scenName;
+    [SerializeField] private string _scenName;
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (SceneLoadManager.Instance == null)
         {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class MainCanvasUnionContainer : MonoBehaviour
+public class MainCanvasUnionContainer : BtnBase
 {
     [SerializeField] private TextMeshProUGUI _unionCohesionProgressText;
     [SerializeField] private TextMeshProUGUI _remainDateText;
@@ -28,7 +28,7 @@ public class MainCanvasUnionContainer : MonoBehaviour
         _remainDateText.text = $"{module.RemainingDays}";
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         UIManager.Instance?.ShowUnionPopup();
     }

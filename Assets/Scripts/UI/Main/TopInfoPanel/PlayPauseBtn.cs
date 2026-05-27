@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayPauseBtn : MonoBehaviour
+public class PlayPauseBtn : BtnBase
 {
     [SerializeField] private Image _playIcon;
     [SerializeField] private Image _pauseIcon;
@@ -17,18 +17,11 @@ public class PlayPauseBtn : MonoBehaviour
 
     public void SetPausedVisual(bool isPaused)
     {
-        if (_playIcon != null)
-        {
-            _playIcon.gameObject.SetActive(isPaused);
-        }
-
-        if (_pauseIcon != null)
-        {
-            _pauseIcon.gameObject.SetActive(!isPaused);
-        }
+        if (_playIcon != null) _playIcon.gameObject.SetActive(isPaused);
+        if (_pauseIcon != null) _pauseIcon.gameObject.SetActive(!isPaused);
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _onClicked?.Invoke();
     }

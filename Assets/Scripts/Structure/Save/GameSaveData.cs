@@ -74,14 +74,9 @@ public class GameSaveData
     public List<TutorialAutoShowPendingSaveData> tutorialAutoShowPending = new List<TutorialAutoShowPendingSaveData>();
 
     // Goal Data
-    public string activeGoalId = string.Empty;
-    public long activeGoalProgress;
+    public List<GoalActiveSaveData> activeGoals = new List<GoalActiveSaveData>();
+    public List<string> completedGoalIds = new List<string>();
     public bool allGoalsCompleted;
-
-    // Legacy goal save fields (pre single-goal refactor)
-    public string activeGoalChainId = string.Empty;
-    public int activeGoalStepIndex;
-    public bool goalChainCompleted;
 
     // Placed Objects (Main building/road layout)
     public List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
@@ -89,6 +84,13 @@ public class GameSaveData
 
     // Blueprint presets captured in main scene.
     public List<BlueprintLayoutSaveData> blueprintLayouts = new List<BlueprintLayoutSaveData>();
+}
+
+[Serializable]
+public class GoalActiveSaveData
+{
+    public string goalId;
+    public long produceProgress;
 }
 
 /// <summary>
