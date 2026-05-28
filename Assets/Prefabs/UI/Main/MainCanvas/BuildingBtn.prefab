@@ -267,19 +267,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8571443995578845938}
-        m_TargetAssemblyTypeName: BuildingBtn, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -345,6 +333,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2d3032936dc9724fbd687629375ef0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 1576423898513474100}
   _image: {fileID: 3752710505855117348}
   _focusedImage: {fileID: 8650751563559075721}
   _deactivatedImage: {fileID: 4322468000598999485}

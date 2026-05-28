@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class MainCanvasWarContainer : MonoBehaviour
+public class MainCanvasWarContainer : BtnBase
 {
     public void Init(MainCanvas mainCanvas)
     {
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
     }
 }

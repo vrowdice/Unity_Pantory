@@ -19,7 +19,6 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private InitialUnionMainEventData _initialUnionMainEventData;
     [SerializeField] private InitialWarMainEventData _initialWarMainEventData;
     [SerializeField] private InitialAutomationMainEventData _initialAutomationMainEventData;
-
     [Header("Game Data Lists")]
     [SerializeField] private List<BuildingData> _buildingDataList = new List<BuildingData>();
     [SerializeField] private List<ResourceData> _resourceDataList = new List<ResourceData>();
@@ -30,6 +29,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private List<NewsData> _newsDataList = new List<NewsData>();
     [SerializeField] private List<PolicyData> _policyDataList = new List<PolicyData>();
     [SerializeField] private List<UnionRequestData> _unionRequestDataList = new List<UnionRequestData>();
+    [SerializeField] private List<GoalData> _goalDataList = new List<GoalData>();
 
     public InitialTimeData InitialTimeData => _timeSettingsData;
     public InitialEmployeeData InitialEmployeeData => _initialEmployeeData;
@@ -69,6 +69,7 @@ public class DataManager : Singleton<DataManager>
     public PolicyDataHandler Policy { get; private set; }
     public MainEventDataHandler MainEvent { get; private set; }
     public UnionRequestDataHandler UnionRequest { get; private set; }
+    public GoalDataHandler Goal { get; private set; }
 
     public PlayerDataHandler Player { get; private set; }
 
@@ -128,6 +129,7 @@ public class DataManager : Singleton<DataManager>
             _initialUnionMainEventData,
             _initialWarMainEventData,
             _initialAutomationMainEventData);
+        Goal = new GoalDataHandler(this, _goalDataList);
 
         Player = new PlayerDataHandler();
 
@@ -146,6 +148,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(Policy);
         _eventHandlers.Add(UnionRequest);
         _eventHandlers.Add(MainEvent);
+        _eventHandlers.Add(Goal);
 
         _dayHandlers.Clear();
         _dayHandlers.Add(Resource);
@@ -172,9 +175,11 @@ public class DataManager : Singleton<DataManager>
         _saveHandlers.Add(Effect);
         _saveHandlers.Add(Policy);
         _saveHandlers.Add(Player);
+        _saveHandlers.Add(Goal);
 
         _crossHandlerEvents.Clear();
         _crossHandlerEvents.Add(MainEvent);
+        _crossHandlerEvents.Add(Goal);
 
         Research.ReapplyEffectsFromCompletedResearch();
         Policy.ReapplyEffectsFromActivePolicies();
@@ -218,6 +223,7 @@ public class DataManager : Singleton<DataManager>
         AutoLoadToList(_orderDataList);
         AutoLoadToList(_newsDataList);
         AutoLoadToList(_unionRequestDataList, UnionRequestDataSearchFolder);
+        AutoLoadToList(_goalDataList);
         AutoLoadPolicyDataList();
 
         UnityEditor.EditorUtility.SetDirty(this);
@@ -468,6 +474,8 @@ public class DataManager : Singleton<DataManager>
         data.placedRoads ??= new List<PlacedRoadSaveData>();
         data.blueprintLayouts ??= new List<BlueprintLayoutSaveData>();
         data.tutorialAutoShowPending ??= new List<TutorialAutoShowPendingSaveData>();
+        data.activeGoals ??= new List<GoalActiveSaveData>();
+        data.completedGoalIds ??= new List<string>();
     }
 
     private static T CloneState<T>(T state)

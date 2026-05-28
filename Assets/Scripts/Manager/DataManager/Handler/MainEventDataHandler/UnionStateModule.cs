@@ -150,6 +150,7 @@ public class UnionStateModule : MainEventStateModuleBase
         _remainingDays--;
         if (_remainingDays <= 0)
         {
+            TryApplyDividedFactoryEffectOnTimeout();
             MarkComplete();
         }
     }
@@ -201,5 +202,21 @@ public class UnionStateModule : MainEventStateModuleBase
     private static float ClampCohesionProgress(float progress)
     {
         return Mathf.Clamp(progress, MinCohesionProgress, MaxCohesionProgress);
+    }
+
+    private void TryApplyDividedFactoryEffectOnTimeout()
+    {
+        if (_unionCohesionProgress >= MaxCohesionProgress)
+        {
+            return;
+        }
+
+        EffectData effect = _unionInit?.dividedFactoryEffect;
+        if (effect == null || _dataManager?.Effect == null)
+        {
+            return;
+        }
+
+        _dataManager.Effect.ApplyEffect(effect);
     }
 }

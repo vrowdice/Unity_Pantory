@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7a8b9c0d1e2436586970809a0b1c2d3, type: 3}
+  m_Name: goal_produce_basic_furniture
+  m_EditorClassIdentifier: 
+  id: goal_produce_basic_furniture
+  displayName: "\uAE30\uBCF8 \uAC00\uAD6C 10\uAC1C \uC0DD\uC0B0"
+  conditionType: 3
+  targetId: basic_furniture
+  targetValue: 10
+  rewardCredit: 30000
+  isDefaultUnlocked: 0
+  nextGoal: {fileID: 11400000, guid: 16803a5d7f8566b40bad628c95043710, type: 2}

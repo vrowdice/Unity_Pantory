@@ -1,5 +1,6 @@
 using UnityEngine;
 using Evo.UI;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,6 +23,9 @@ public class OrderCanvas : MainCanvasPanelBase
     private List<ActionBtn> _filterButtonList = new();
     private List<MarketActorPopupBtn> _marketActorPopupBtnList = new();
     private Dictionary<OrderState, OrderBtn> _orderButtonMap = new();
+    private Coroutine _filterButtonCoroutine;
+    private Coroutine _marketActorCoroutine;
+    private Coroutine _orderButtonCoroutine;
 
     public override void Init(MainCanvas argUIManager)
     {
@@ -71,29 +75,40 @@ public class OrderCanvas : MainCanvasPanelBase
         _gameManager.PoolingManager.ClearChildrenToPool(_orderActionBtnContentTransform);
         _filterButtonList.Clear();
 
-        GameObject allBtnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
-        allBtnObj.transform.SetParent(_orderActionBtnContentTransform, false);
-        ActionBtn allBtn = allBtnObj.GetComponent<ActionBtn>();
-        allBtn.Init(LocalizationUtils.Localize("All"), () => {
-            OnMarketActorTypeClick(null);
-            UpdateFilterHighlight();
-        });
-        _filterButtonList.Add(allBtn);
+        List<(string label, System.Action onClick)> filterDefs = new List<(string label, System.Action onClick)>
+        {
+            (LocalizationUtils.Localize("All"), () =>
+            {
+                OnMarketActorTypeClick(null);
+                UpdateFilterHighlight();
+            })
+        };
 
         foreach (MarketActorType actorType in EnumUtils.GetAllEnumValues<MarketActorType>())
         {
+            MarketActorType capturedType = actorType;
+            filterDefs.Add((actorType.Localize(LocalizationUtils.TABLE_MARKET_ACTOR), () =>
+            {
+                OnMarketActorTypeClick(capturedType);
+                UpdateFilterHighlight();
+            }));
+        }
+
+        StaggeredSpawnUtils.Restart(this, ref _filterButtonCoroutine, CreateFilterButtonsRoutine(filterDefs));
+        UpdateFilterHighlight();
+    }
+
+    private IEnumerator CreateFilterButtonsRoutine(List<(string label, System.Action onClick)> filterDefs)
+    {
+        yield return StaggeredSpawnUtils.ForEachFrame(filterDefs.Count, i =>
+        {
+            (string label, System.Action onClick) def = filterDefs[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(_orderActionBtnContentTransform, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
-            MarketActorType capturedType = actorType;
-            btn.Init(actorType.Localize(LocalizationUtils.TABLE_MARKET_ACTOR), () => {
-                OnMarketActorTypeClick(capturedType);
-                UpdateFilterHighlight();
-            });
+            btn.Init(def.label, def.onClick);
             _filterButtonList.Add(btn);
-        }
-
-        UpdateFilterHighlight();
+        });
     }
 
     private void UpdateFilterHighlight()
@@ -124,28 +139,45 @@ public class OrderCanvas : MainCanvasPanelBase
 
     private void RefreshMarketActorButtons()
     {
+        StaggeredSpawnUtils.Restart(this, ref _marketActorCoroutine, RefreshMarketActorButtonsRoutine());
+    }
+
+    private IEnumerator RefreshMarketActorButtonsRoutine()
+    {
         _gameManager.PoolingManager.ClearChildrenToPool(_orderMarketActorPopupBtnScrollViewContentTransform);
         _marketActorPopupBtnList.Clear();
+
+        List<MarketActorEntry> actorEntries = new List<MarketActorEntry>();
         foreach (MarketActorEntry actorEntry in _dataManager.MarketActor.GetAllMarketActors().Values)
         {
-            if (actorEntry == null) continue;
+            if (actorEntry == null)
+                continue;
 
             if (_currentMarketActorType != null && actorEntry.data.marketActorType != _currentMarketActorType.Value)
                 continue;
 
+            actorEntries.Add(actorEntry);
+        }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(actorEntries.Count, i =>
+        {
+            MarketActorEntry actorEntry = actorEntries[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_orderMarketActorPopupBtnPrefab);
             btnObj.transform.SetParent(_orderMarketActorPopupBtnScrollViewContentTransform, false);
             MarketActorPopupBtn btn = btnObj.GetComponent<MarketActorPopupBtn>();
             if (btn != null)
-            {
                 btn.Init(actorEntry);
-            }
 
             _marketActorPopupBtnList.Add(btn);
-        }
+        });
     }
 
     private void RefreshOrderButtons()
+    {
+        StaggeredSpawnUtils.Restart(this, ref _orderButtonCoroutine, RefreshOrderButtonsRoutine());
+    }
+
+    private IEnumerator RefreshOrderButtonsRoutine()
     {
         List<OrderState> activeOrders = _dataManager.Order.GetActiveOrderList();
         List<OrderState> filteredOrders = activeOrders.Where(order => {
@@ -175,14 +207,21 @@ public class OrderCanvas : MainCanvasPanelBase
             }
         }
 
+        List<OrderState> ordersToCreate = new List<OrderState>();
         foreach (OrderState order in filteredOrders)
         {
-            if (_orderButtonMap.TryGetValue(order, out OrderBtn existingBtn))
+            if (_orderButtonMap.ContainsKey(order))
             {
-                existingBtn.Init(order, _uiManager);
+                _orderButtonMap[order].Init(order, _uiManager);
                 continue;
             }
 
+            ordersToCreate.Add(order);
+        }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(ordersToCreate.Count, i =>
+        {
+            OrderState order = ordersToCreate[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_orderBtnPrefab);
             btnObj.transform.SetParent(_orderBtnScrollViewContentTransform, false);
 
@@ -192,7 +231,7 @@ public class OrderCanvas : MainCanvasPanelBase
                 btn.Init(order, _uiManager);
                 _orderButtonMap.Add(order, btn);
             }
-        }
+        });
     }
 
     private void HandleOrderUpdated(OrderState orderState)
@@ -214,8 +253,13 @@ public class OrderCanvas : MainCanvasPanelBase
         UpdataUI();
     }
     
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        StaggeredSpawnUtils.Stop(this, ref _filterButtonCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _marketActorCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _orderButtonCoroutine);
+        base.OnDisable();
+
         if (_acceptedOrderSwitch != null)
             _acceptedOrderSwitch.onValueChanged.RemoveListener(OnAcceptedOrderSwitchChanged);
 

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 public class MarketActorInfoPopup : PopupBase
@@ -16,6 +17,7 @@ public class MarketActorInfoPopup : PopupBase
     [SerializeField] private GameObject _typeOfOrderScrollViewItemTextPrefab;
 
     private MarketActorEntry _currentMarketActorEntry;
+    private Coroutine _orderListCoroutine;
 
     public void Init(MarketActorEntry marketActorEntry)
     {
@@ -28,6 +30,12 @@ public class MarketActorInfoPopup : PopupBase
         Show();
     }
 
+    public override void Close()
+    {
+        StaggeredSpawnUtils.Stop(this, ref _orderListCoroutine);
+        base.Close();
+    }
+
     public void RefreshAllUI()
     {
         _nameText.text = _currentMarketActorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
@@ -37,40 +45,43 @@ public class MarketActorInfoPopup : PopupBase
 
         _marketActorImage.sprite = _currentMarketActorEntry.data.icon;
 
-        UpdateTypeOfOrder();
+        StaggeredSpawnUtils.Restart(this, ref _orderListCoroutine, UpdateTypeOfOrderRoutine());
     }
 
-    private void UpdateTypeOfOrder()
+    private IEnumerator UpdateTypeOfOrderRoutine()
     {
-        if (_typeOfOrderScrollViewContextTransform == null || _typeOfOrderScrollViewItemTextPrefab == null) return;
+        if (_typeOfOrderScrollViewContextTransform == null || _typeOfOrderScrollViewItemTextPrefab == null)
+            yield break;
 
         for (int i = _typeOfOrderScrollViewContextTransform.childCount - 1; i >= 0; i--)
-        {
             Destroy(_typeOfOrderScrollViewContextTransform.GetChild(i).gameObject);
-        }
 
         MarketActorType actorType = _currentMarketActorEntry.data.marketActorType;
         Dictionary<string, OrderData> allOrders = _dataManager.Order.GetAllOrderData();
+        List<OrderData> matchedOrders = new List<OrderData>();
 
         foreach (OrderData orderData in allOrders.Values)
         {
-            if (orderData == null || orderData.marketActorType != actorType) continue;
+            if (orderData == null || orderData.marketActorType != actorType)
+                continue;
 
+            matchedOrders.Add(orderData);
+        }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(matchedOrders.Count, i =>
+        {
+            OrderData orderData = matchedOrders[i];
             GameObject itemObj = Instantiate(_typeOfOrderScrollViewItemTextPrefab, _typeOfOrderScrollViewContextTransform);
             TextMeshProUGUI textComp = itemObj.GetComponent<TextMeshProUGUI>();
             if (textComp != null)
-            {
                 textComp.text = orderData.id.Localize(LocalizationUtils.TABLE_ORDER);
-            }
-        }
+        });
     }
 
     protected override void HandleDayChanged()
     {
         if (gameObject.activeSelf)
-        {
             RefreshAllUI();
-        }
     }
 
     public void OnClickClose()

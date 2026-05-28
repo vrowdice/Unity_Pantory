@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -11,7 +12,8 @@ public class SaveLoadPopup : PopupBase
 
     private bool _isSaveMode = false;
     private string _selectedSaveFileName = string.Empty;
-    private List<SaveLoadBtn> _saveLoadBtns = new List<SaveLoadBtn>();
+    private readonly List<SaveLoadBtn> _saveLoadBtns = new List<SaveLoadBtn>();
+    private Coroutine _refreshCoroutine;
 
     public void Init(bool isSaveMode)
     {
@@ -24,6 +26,12 @@ public class SaveLoadPopup : PopupBase
         RefreshSaveFileList();
 
         Show();
+    }
+
+    public override void Close()
+    {
+        StaggeredSpawnUtils.Stop(this, ref _refreshCoroutine);
+        base.Close();
     }
 
     private void UpdateUI()
@@ -40,28 +48,32 @@ public class SaveLoadPopup : PopupBase
         }
     }
 
-    private void RefreshSaveFileList()
+    public void RefreshSaveFileList()
+    {
+        StaggeredSpawnUtils.Restart(this, ref _refreshCoroutine, RefreshSaveFileListRoutine());
+    }
+
+    private IEnumerator RefreshSaveFileListRoutine()
     {
         if (_saveLoadBtnContentTransform == null || _saveLoadBtnPrefab == null)
         {
             Debug.LogError("[SaveLoadPopup] Container or Prefab is null.");
-            return;
+            yield break;
         }
 
         foreach (SaveLoadBtn btn in _saveLoadBtns)
         {
             if (btn != null)
-            {
                 Destroy(btn.gameObject);
-            }
         }
 
         _saveLoadBtns.Clear();
 
         List<string> saveFiles = SaveLoadManager.Instance.GetSaveFileList();
 
-        foreach (string fileName in saveFiles)
+        yield return StaggeredSpawnUtils.ForEachFrame(saveFiles.Count, i =>
         {
+            string fileName = saveFiles[i];
             GameObject btnObj = Instantiate(_saveLoadBtnPrefab, _saveLoadBtnContentTransform);
             SaveLoadBtn btn = btnObj.GetComponent<SaveLoadBtn>();
             if (btn != null)
@@ -69,7 +81,7 @@ public class SaveLoadPopup : PopupBase
                 btn.Init(this, _isSaveMode, fileName);
                 _saveLoadBtns.Add(btn);
             }
-        }
+        });
     }
 
     public void SetSelectedSaveFileName(string fileName)

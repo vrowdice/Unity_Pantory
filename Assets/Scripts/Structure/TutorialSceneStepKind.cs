@@ -8,6 +8,7 @@ public enum TutorialSceneStepKind
     PlaceBuilding,
     AssignBuildingResource,
     StartTimePlay,
+    WaitDayPassed,
     OpenMarketPanel,
     AdjustMarketSell,
     Complete

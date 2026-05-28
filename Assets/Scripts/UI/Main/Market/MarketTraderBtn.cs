@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class MarketTraderBtn : MonoBehaviour
+public class MarketTraderBtn : BtnBase
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private Image _backgroundImage = null;
@@ -15,16 +15,13 @@ public class MarketTraderBtn : MonoBehaviour
     private bool _isPlayer = false;
     private Sprite _defaultSprite = null;
 
-    private void Awake()
+    public void Init(MarketCanvas panel, MarketActorEntry actorEntry, bool isPlayer = false)
     {
-        if (_image != null)
+        if (_defaultSprite == null && _image != null)
         {
             _defaultSprite = _image.sprite;
         }
-    }
 
-    public void Init(MarketCanvas panel, MarketActorEntry actorEntry, bool isPlayer = false)
-    {
         _marketPanel = panel;
         _actorEntry = actorEntry;
         _isPlayer = isPlayer;
@@ -37,7 +34,7 @@ public class MarketTraderBtn : MonoBehaviour
         RefreshAllUI();
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_isPlayer)
         {
@@ -47,9 +44,6 @@ public class MarketTraderBtn : MonoBehaviour
         _marketPanel.OnTraderButtonClicked(_actorEntry);
     }
 
-    /// <summary>
-    /// 버튼 정보를 업데이트합니다
-    /// </summary>
     public void RefreshAllUI()
     {
         MarketActorState state = _actorEntry.state;
@@ -64,4 +58,3 @@ public class MarketTraderBtn : MonoBehaviour
         _currentChangeWealthText.color = _marketPanel.VisualManager.GetDeltaColor(change);
     }
 }
-

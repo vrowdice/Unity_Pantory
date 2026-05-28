@@ -25,6 +25,9 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     private bool _isPopupVisible;
     private bool _hasStarted;
     private TutorialGuidedPopup _activePopup;
+    private int _waitDayBaselineYear;
+    private int _waitDayBaselineMonth;
+    private int _waitDayBaselineDay;
 
     private int StepCount => _tutorialSequence != null ? _tutorialSequence.steps.Count : 0;
 
@@ -170,6 +173,21 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             AdvanceAfterAction();
     }
 
+    public void NotifyDayAdvanced()
+    {
+        if (!_isWaitingForAction)
+            return;
+
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind != TutorialSceneStepKind.WaitDayPassed)
+            return;
+
+        if (!HasAtLeastOneDayPassedSinceWaitStepBegan())
+            return;
+
+        AdvanceAfterAction();
+    }
+
     private void BeginStep(int stepIndex)
     {
         _currentStepIndex = stepIndex;
@@ -192,6 +210,9 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
         if (step.kind == TutorialSceneStepKind.AdjustMarketSell)
             _tutorialCanvas?.PrepareMarketSellStep();
+
+        if (step.kind == TutorialSceneStepKind.WaitDayPassed)
+            CaptureWaitDayBaseline();
 
         if (step.kind == TutorialSceneStepKind.SelectBuilding)
             _tutorialCanvas?.SelectBuildingTypeForBuilding(step.buildingId);
@@ -229,6 +250,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
                 TutorialInputGate.Configure(true, allowAutoEmployeeToggle: true);
                 break;
             case TutorialSceneStepKind.StartTimePlay:
+            case TutorialSceneStepKind.WaitDayPassed:
                 TutorialInputGate.Configure(true, allowTimePlay: true);
                 break;
             case TutorialSceneStepKind.AssignBuildingResource:
@@ -339,6 +361,11 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
                     AdvanceAfterAction();
                 break;
 
+            case TutorialSceneStepKind.WaitDayPassed:
+                if (HasAtLeastOneDayPassedSinceWaitStepBegan())
+                    AdvanceAfterAction();
+                break;
+
             case TutorialSceneStepKind.AssignBuildingResource:
                 if (_tutorialRunner?.GridHandler != null &&
                     _tutorialRunner.GridHandler.AnyPlacedBuildingHasConfiguredOutputResource(step.buildingId))
@@ -353,6 +380,28 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             ? _tutorialCanvas.GetComponentInChildren<TimePlayPanel>(true)
             : null;
         return timePlayPanel == null || timePlayPanel.IsTimePaused;
+    }
+
+    private void CaptureWaitDayBaseline()
+    {
+        TimeDataHandler time = DataManager.Instance?.Time;
+        if (time == null)
+            return;
+
+        _waitDayBaselineYear = time.Year;
+        _waitDayBaselineMonth = time.Month;
+        _waitDayBaselineDay = time.Day;
+    }
+
+    private bool HasAtLeastOneDayPassedSinceWaitStepBegan()
+    {
+        TimeDataHandler time = DataManager.Instance?.Time;
+        if (time == null)
+            return false;
+
+        return time.Year != _waitDayBaselineYear
+            || time.Month != _waitDayBaselineMonth
+            || time.Day != _waitDayBaselineDay;
     }
 
     private void OnGuidedPopupClosedUnexpectedly()
@@ -404,6 +453,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
                     : TutorialUiAnchor.Resolve("AutoEmployeePlacement");
             case TutorialSceneStepKind.StartTimePlay:
                 return _tutorialCanvas?.FindPlayPauseButton();
+            case TutorialSceneStepKind.WaitDayPassed:
+                return _tutorialCanvas?.FindTimePlayPanel();
             case TutorialSceneStepKind.OpenMarketPanel:
                 return _tutorialCanvas != null
                     ? _tutorialCanvas.FindQuickMoveButton(MainPanelType.Market)?.gameObject
@@ -480,6 +531,14 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         }
 
         BeginStep(_currentStepIndex);
+    }
+
+    public void ResetTutorial()
+    {
+        DismissActivePopup();
+        TutorialInputGate.Clear();
+        SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
+        SceneLoadManager.Instance?.LoadScene("Tutorial");
     }
 
     public void CompleteTutorial()

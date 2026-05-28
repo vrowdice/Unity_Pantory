@@ -1,26 +1,29 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using TMPro;
-using JetBrains.Annotations;
-using System.ComponentModel;
+using UnityEngine;
 
 public class MarketTraderPanel : MonoBehaviour
 {
     private DataManager _dataManager;
     private MarketCanvas _marketPanel;
     private MarketActorEntry _selectedActor;
+    private Coroutine _resourceIconCoroutine;
 
     [Header("Details")]
     [SerializeField] private MarketActorPopupBtn _marketActorPopupBtn;
-    [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private TextMeshProUGUI _descriptionText;
-    [SerializeField] private TextMeshProUGUI _wealthText;
-    [SerializeField] private TextMeshProUGUI _trustText;
+    [SerializeField] private TMPro.TextMeshProUGUI _nameText;
+    [SerializeField] private TMPro.TextMeshProUGUI _descriptionText;
+    [SerializeField] private TMPro.TextMeshProUGUI _wealthText;
+    [SerializeField] private TMPro.TextMeshProUGUI _trustText;
 
     [Header("Resource Lists")]
     [SerializeField] private Transform _provideResourceContentTransform;
     [SerializeField] private Transform _consumeResourceContentTransform;
+
+    private void OnDisable()
+    {
+        StaggeredSpawnUtils.Stop(this, ref _resourceIconCoroutine);
+    }
 
     public void Init(MarketCanvas marketPanel)
     {
@@ -49,9 +52,6 @@ public class MarketTraderPanel : MonoBehaviour
         RefreshUI();
     }
 
-    /// <summary>
-    /// 선택된 행위자의 UI를 새로고침합니다.
-    /// </summary>
     private void RefreshUI()
     {
         if (_selectedActor == null || _marketPanel == null)
@@ -70,13 +70,15 @@ public class MarketTraderPanel : MonoBehaviour
         _trustText.text = $"{state.trust}";
     }
 
-    /// <summary>
-    /// 생산 자원 아이콘들을 새로고침합니다.
-    /// </summary>
     private void RefreshResourcesIcon()
     {
+        StaggeredSpawnUtils.Restart(this, ref _resourceIconCoroutine, RefreshResourcesIconRoutine());
+    }
+
+    private IEnumerator RefreshResourcesIconRoutine()
+    {
         if (_marketPanel == null || _dataManager == null)
-            return;
+            yield break;
 
         PoolingManager pool = _marketPanel.GameManager?.PoolingManager;
         if (pool != null)
@@ -91,24 +93,32 @@ public class MarketTraderPanel : MonoBehaviour
         }
 
         if (_selectedActor == null || _selectedActor.data.productionResourceList == null)
-            return;
+            yield break;
 
         UIManager uiManager = _marketPanel.UIManager;
         if (uiManager == null)
-            return;
+            yield break;
+
+        List<(Transform parent, ResourceEntry entry, int count)> iconDefs = new List<(Transform, ResourceEntry, int)>();
 
         foreach (ResourceData resourceData in _selectedActor.data.comsumeResourceList)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
             int productionCount = (int)_selectedActor.data.baseProductionCount;
-            uiManager.CreateProductionIcon(_consumeResourceContentTransform, resourceEntry, productionCount);
+            iconDefs.Add((_consumeResourceContentTransform, resourceEntry, productionCount));
         }
 
         foreach (ResourceData resourceData in _selectedActor.data.productionResourceList)
         {
             ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(resourceData.id);
             int productionCount = (int)_selectedActor.data.baseProductionCount;
-            uiManager.CreateProductionIcon(_provideResourceContentTransform, resourceEntry, productionCount);
+            iconDefs.Add((_provideResourceContentTransform, resourceEntry, productionCount));
         }
+
+        yield return StaggeredSpawnUtils.ForEachFrame(iconDefs.Count, i =>
+        {
+            (Transform parent, ResourceEntry entry, int count) def = iconDefs[i];
+            uiManager.CreateProductionIcon(def.parent, def.entry, def.count);
+        });
     }
 }

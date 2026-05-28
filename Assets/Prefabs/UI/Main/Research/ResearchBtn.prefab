@@ -386,19 +386,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7863034422051436369}
-        m_TargetAssemblyTypeName: ResearchBtn, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -464,6 +452,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87cea371ed9e3b94fb98d08f27b7626e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 0
+  _button: {fileID: 0}
   _image: {fileID: 1319282404712029965}
   _focusedImage: {fileID: 8471714963510895328}
   _text: {fileID: 5041794408598379912}

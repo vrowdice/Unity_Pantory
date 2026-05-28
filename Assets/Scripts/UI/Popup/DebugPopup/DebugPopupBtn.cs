@@ -1,8 +1,8 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using System;
 
-public class DebugPopupBtn : MonoBehaviour
+public class DebugPopupBtn : BtnBase
 {
     [SerializeField] private TextMeshProUGUI buttonText;
     private Action _onClickAction;
@@ -14,7 +14,7 @@ public class DebugPopupBtn : MonoBehaviour
             buttonText.text = text;
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _onClickAction?.Invoke();
     }

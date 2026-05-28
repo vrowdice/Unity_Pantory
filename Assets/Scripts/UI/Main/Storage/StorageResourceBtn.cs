@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class StorageResourceBtn : MonoBehaviour
+public class StorageResourceBtn : BtnBase
 {
     [SerializeField] private Image _resourceIconImage;
     [SerializeField] private TextMeshProUGUI _resourceNameText;
@@ -21,7 +21,7 @@ public class StorageResourceBtn : MonoBehaviour
         _resourceCountText.text = _resourceEntry.state.count.ToString("N0");
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (_resourceEntry == null || _resourceEntry.data == null) return;
         _storagePanel.PanelUIManager?.ShowResourceHelpPopup(_resourceEntry.data);

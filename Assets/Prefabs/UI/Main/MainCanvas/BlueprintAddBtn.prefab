@@ -127,19 +127,7 @@ MonoBehaviour:
   selectedCG: {fileID: 0}
   onClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6502936725547638309}
-        m_TargetAssemblyTypeName: MainBlueprintAddBtn, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPointerDown:
     m_PersistentCalls:
       m_Calls: []
@@ -205,6 +193,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5693262c655cc8840ae5baeebeea32b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 0}
   _focusedImage: {fileID: 8650751563559075721}
 --- !u!1 &2422106114936039737
 GameObject:

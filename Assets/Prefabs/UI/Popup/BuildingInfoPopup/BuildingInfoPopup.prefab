@@ -605,7 +605,6 @@ GameObject:
   - component: {fileID: 7551284484878605176}
   - component: {fileID: 5343514379623049523}
   - component: {fileID: 8278976042346167008}
-  - component: {fileID: 2508664300478701869}
   m_Layer: 5
   m_Name: ChangeProductionBtn
   m_TagString: Untagged
@@ -787,19 +786,6 @@ MonoBehaviour:
   contentFitter: {fileID: 0}
   contentLayout: {fileID: 0}
   objectFoldout: 1
---- !u!114 &2508664300478701869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 692557040864015359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50ea7f933a13caa428baa6b3b5941eb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tutorialBase: {fileID: 0}
 --- !u!1 &777360755142307228
 GameObject:
   m_ObjectHideFlags: 0

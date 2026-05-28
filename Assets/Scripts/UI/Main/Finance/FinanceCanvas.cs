@@ -32,8 +32,10 @@ public class FinanceCanvas : MainCanvasPanelBase
         UpdateMonthlyUI();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+
         if (_dataManager != null)
         {
             _dataManager.Time.OnDayChanged -= UpdateDailyUI;

@@ -1,18 +1,19 @@
 ﻿Key,Id,English(en),Japanese(ja),Korean(ko)
-MainCanvas0,11264212992,Hello! Welcome to Pantory!,こんにちは！パントリーへようこそ！,팬토리에 오신 것을 환영합니다.
-MainCanvas1,438890283008,Pantory is a factory management simulation game.,パントリーは工場経営シミュレーションゲームです。,공장 경영 시뮬레이션 게임입니다.
+MainCanvas0,11264212992,Hello! Welcome to the main game of Pantory!,こんにちは！パントリーの本編へようこそ！,팬토리 본 게임에 오신 것을 환영합니다!
+MainCanvas1,438890283008,Pantory is a factory management simulation game.,パントリーは工場経営シミュレーションゲームです。,팬토리는 공장 경영 시뮬레이션 게임입니다.
 MainCanvas2,575934971904,Each main panel has a (?) button to reopen this help.,各メインパネルの（？）ボタンでいつでもヘルプを開けます。,각 메인 패널의 (?) 버튼으로 도움말을 다시 열 수 있습니다.
 MainCanvas3,1678642659328,Credits and Research Points are shown at the top left.,左上にクレジットと研究ポイントが表示されます。,왼쪽 위에 크레딧과 연구 포인트가 표시됩니다.
 MainCanvas4,2291514359808,"Employee count, assignments, and satisfaction are shown here.",ここに従業員数・配置・満足度が表示されます。,"직원 수, 배치, 만족도가 표시됩니다."
 MainCanvas5,2320476028928,"In-game date, time, tutorial, and settings buttons are here.",日付・時刻、チュートリアル、設定ボタンがあります。,"날짜·시각, 튜토리얼, 설정 버튼이 있습니다."
 MainCanvas6,2777508364288,"Shortcuts to Storage, Orders, Market, Staff, Research, News, and Finance. F1–F9 works too.",倉庫・発注・市場・従業員・研究・ニュース・財務へのショートカットです。F1〜F9でも開けます。,"저장소·발주·시장·직원·연구·뉴스·재무 패널 단축 아이콘입니다. F1~F9도 사용할 수 있습니다."
-MainCanvas7,5943566155776,Use the building panel below to expand your factory.,下の建物パネルで工場を拡張できます。,아래 건물 패널에서 공장을 확장할 수 있습니다.
-MainCanvas8,7203816095744,Save layouts in the Blueprint tab and place them again later.,ブループリントタブで配置を保存し、後から再利用できます。,블루프린트 탭에서 배치를 저장해 나중에 다시 깔 수 있습니다.
-MainCanvas9,7579063697408,"Building buttons are grouped by category. Distribution includes roads, splitter, and tunnel.",建物ボタンはカテゴリ別です。流通には道路・スプリッター・トンネルがあります。,"건물 버튼은 용도별로 묶여 있습니다. 유통에는 도로, 스플리터, 터널이 있습니다."
+MainCanvas7,5943566155776,Use the building buttons below to construct buildings on the grid.,下の建物ボタンからグリッドに建物を配置・ 建設できます。,아래 건물 버튼을 통해서 건물을 배치하고 지을 수 있습니다.
+MainCanvas8,7203816095744,Save building layouts in the Blueprint tab and place them again later.,ブループリントタブで建物の配置を保存し、後から再利用できます。,설계도 탭에서 건물의 배치를 저장해 나중에 다시 깔 수 있습니다.
+MainCanvas9,7579063697408,"Building buttons are grouped by category.",建物ボタンはカテゴリ別です。,"건물 버튼은 카테고리별로 묶여 있습니다."
 MainCanvas10,7894026567680,Select a building or road here to place it on the grid.,ここで建物や道路を選び、グリッドに配置します。,여기서 건물·도로를 고른 뒤 그리드에 배치합니다.
 MainCanvas11,11779361357824,Remove mode and auto-assignment switches are here.,削除モードと自動配置スイッチがあります。,제거 모드와 자동 배치 스위치가 있습니다.
 MainCanvas12,8131256401920,Current resource counts are shown here.,現在の資源数量がここに表示されます。,현재 자원 수량이 여기 표시됩니다.
 MainCanvas13,9056704413696,Use splitters and tunnels to keep lines stable as your factory grows.,工場が大きくなったらスプリッターとトンネルで処理量を安定させましょう。,공장이 커지면 스플리터와 터널로 처리량을 안정시키세요.
+MainCanvas14,9056704413697,Press the Goals button to find your next steps! Good luck!,目標ボタンを押して、次に進む道を見つけましょう！がんばってください！,목표 버튼을 눌러서 다음으로 나아갈 길을 찾아봅시다! 행운을 빌어요!
 StorageCanvas0,12960301203456,This is the storage panel. Your current resource inventory is shown here.,これは倉庫パネルです。現在所持している資源の在庫が表示されます。,저장소 패널입니다. 보유 자원 수량이 표시됩니다.
 StorageCanvas1,13340426780672,Every resource belongs to a category; use the filters here to narrow the list.,資源にはカテゴリがあるので、上段のカテゴリボタンで一覧を絞り込めます。,"자원마다 카테고리가 있으니, 위쪽 카테고리 버튼으로 목록을 좁혀 보세요."
 OrderCanvas0,17836750028800,"This is the Orders panel. Accept a contract, then deliver resources before the deadline.",発注パネルです。契約を承諾し、期限内に資源を納品します。,발주 패널입니다. 계약을 수락하고 기한 안에 자원을 납품하세요.

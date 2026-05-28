@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class TutorialBtn : MonoBehaviour
+public class TutorialBtn : BtnBase
 {
     [SerializeField] private TutorialBase _tutorialBase;
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _tutorialBase.StartTutorial();
     }

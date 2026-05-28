@@ -1,0 +1,26 @@
+---
+description: UI 버튼(Btn) 스크립트 작성 규칙
+globs: Assets/Scripts/**/*Btn*.cs
+---
+
+# UI Button 규칙
+
+## 적용 범위
+
+- **클릭 가능한 Btn**: `BtnBase` 상속 (예: `MainBuildingBtn`, `SaveLoadBtn`)
+- **클릭 없는 표시 전용 Btn** (예: `GoalBtn`): `MonoBehaviour` 유지, 아래 클릭/바인딩 규칙은 해당 없음
+
+## BtnBase 패턴
+
+- 초기화: `Init(...)` — `Initialize` 금지
+- 클릭 진입점: `BtnBase.OnClick()` → `HandleClick()` 오버라이드
+- `Evo.UI.Button.onClick`은 Inspector가 아니라 `EnsureClickBound()` / `BindClick()`으로 연결
+- `EnsureClickBound()`: `RemoveAllListeners()` 후 `AddListener(OnClick)` — Inspector 중복 연결 금지
+- 풀링 재사용 Btn: `Init()` 마지막에 `EnsureClickBound()` 호출
+- 보조 버튼: `[SerializeField] Evo.UI.Button` + `Init()`에서 `BindClick(button, handler)`
+- 프리팹 `_button` 참조: `Tools/Pantory/UI/Wire Btn Prefab References`로 일괄 할당
+
+## 금지
+
+- `HandleClick()` 내용을 다른 메서드로 한 줄만 위임하는 래퍼
+- Inspector `onClick`에 직접 연결

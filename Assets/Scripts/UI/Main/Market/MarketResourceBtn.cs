@@ -5,7 +5,7 @@ using TMPro;
 /// <summary>
 /// 시장 리스트 내 개별 리소스 항목을 관리하고 UI를 갱신하는 컴포넌트입니다.
 /// </summary>
-public class MarketResourceBtn : MonoBehaviour
+public class MarketResourceBtn : BtnBase
 {
     [Header("UI Components")]
     [SerializeField] private Image _image = null;
@@ -44,7 +44,7 @@ public class MarketResourceBtn : MonoBehaviour
     /// <summary>
     /// 버튼 클릭 시 호출되어 상세 정보 패널을 갱신합니다.
     /// </summary>
-    public void OnClick()
+    protected override void HandleClick()
     {
         _marketPanel.OnResourceButtonClicked(_resourceEntry);
     }

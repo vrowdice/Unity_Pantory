@@ -76,5 +76,40 @@ public class PlacedObjectLayoutDataHandler
 
         return total;
     }
+
+    public int CountPlacedBuildings(string buildingDataId)
+    {
+        if (string.IsNullOrEmpty(buildingDataId) || _placedBuildings == null)
+            return 0;
+
+        int count = 0;
+        for (int i = 0; i < _placedBuildings.Count; i++)
+        {
+            PlacedBuildingSaveData saveData = _placedBuildings[i];
+            if (saveData != null && saveData.buildingDataId == buildingDataId)
+                count++;
+        }
+
+        return count;
+    }
+
+    public bool AnyPlacedBuildingHasConfiguredOutputResource(string buildingDataId)
+    {
+        if (string.IsNullOrEmpty(buildingDataId) || _placedBuildings == null)
+            return false;
+
+        for (int i = 0; i < _placedBuildings.Count; i++)
+        {
+            PlacedBuildingSaveData saveData = _placedBuildings[i];
+            if (saveData != null
+                && saveData.buildingDataId == buildingDataId
+                && !string.IsNullOrEmpty(saveData.selectedResourceId))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 

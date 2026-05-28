@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class TutorialBase : MonoBehaviour
+public class TutorialBase : UITweenEffectBase
 {
     [SerializeField] private List<TutorialData> _tutorialPanelInfo = new List<TutorialData>();
 

@@ -2,7 +2,7 @@ using Evo.UI;
 using TMPro;
 using UnityEngine;
 
-public class PolicySetBtn : MonoBehaviour
+public class PolicySetBtn : BtnBase
 {
     [SerializeField] private Switch _switch;
     [SerializeField] private TextMeshProUGUI _policyTitleText;
@@ -21,7 +21,7 @@ public class PolicySetBtn : MonoBehaviour
         DisplayEffects();
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         bool changed = _dataManager.Policy.TrySetPolicyActive(_policyEntry.data.id, !_policyEntry.state.isActive);
         if (!changed)

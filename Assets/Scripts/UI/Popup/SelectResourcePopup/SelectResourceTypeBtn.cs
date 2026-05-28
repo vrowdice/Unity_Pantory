@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Localization;
 
-public class SelectResourceTypeBtn : MonoBehaviour
+public class SelectResourceTypeBtn : BtnBase
 {
     [SerializeField] private TMP_Text _resourceTypeNameText;
     private ResourceType _resourceType;
@@ -18,7 +17,7 @@ public class SelectResourceTypeBtn : MonoBehaviour
         _selectResourcePanel = selectResourcePanel;
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _selectResourcePanel.OnResourceTypeClick(_resourceType);
     }

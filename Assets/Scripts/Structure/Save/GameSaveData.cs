@@ -73,12 +73,24 @@ public class GameSaveData
     // Player (tutorial auto-show pending by owner object name, JsonUtility는 Dictionary 미지원)
     public List<TutorialAutoShowPendingSaveData> tutorialAutoShowPending = new List<TutorialAutoShowPendingSaveData>();
 
+    // Goal Data
+    public List<GoalActiveSaveData> activeGoals = new List<GoalActiveSaveData>();
+    public List<string> completedGoalIds = new List<string>();
+    public bool allGoalsCompleted;
+
     // Placed Objects (Main building/road layout)
     public List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
     public List<PlacedRoadSaveData> placedRoads = new List<PlacedRoadSaveData>();
 
     // Blueprint presets captured in main scene.
     public List<BlueprintLayoutSaveData> blueprintLayouts = new List<BlueprintLayoutSaveData>();
+}
+
+[Serializable]
+public class GoalActiveSaveData
+{
+    public string goalId;
+    public long produceProgress;
 }
 
 /// <summary>

@@ -112,6 +112,13 @@ public class TutorialGuidedPopup : PopupBase
         _advanceCallback?.Invoke();
     }
 
+    public void OnClickResetBtn()
+    {
+        UIManager.Instance?.ShowConfirmPopup(
+            ConfirmMessage.ReplayTutorialConfirm,
+            () => TutorialDirector.Instance?.ResetTutorial());
+    }
+
     public void Dismiss()
     {
         if (_focusPanel != null)
@@ -221,8 +228,10 @@ public class TutorialGuidedPopup : PopupBase
             _focusPanelImage.raycastTarget = block;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         if (!_allowClose && !_isRetiring)
             _onDismissedUnexpectedly?.Invoke();
 

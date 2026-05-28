@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,13 +20,19 @@ public class TimePlayPanel : MonoBehaviour
     private PlayPauseBtn _playPauseBtn;
     private List<SpeedBtn> _speedBtnList = new List<SpeedBtn>();
     private SpeedBtn _lastUsedSpeedBtn;
+    private Coroutine _speedButtonCoroutine;
+
+    private void OnDisable()
+    {
+        StaggeredSpawnUtils.Stop(this, ref _speedButtonCoroutine);
+    }
 
     public void Init(DataManager dataManager, GameManager gameManager)
     {
         _dataManager = dataManager;
         _gameManager = gameManager;
         BuildPlayPauseButton();
-        BuildSpeedButtons();
+        StaggeredSpawnUtils.Restart(this, ref _speedButtonCoroutine, BuildSpeedButtonsRoutine());
         RefreshUiState();
     }
 
@@ -65,14 +72,14 @@ public class TimePlayPanel : MonoBehaviour
         _playPauseBtn.Init(TogglePlayPause);
     }
 
-    private void BuildSpeedButtons()
+    private IEnumerator BuildSpeedButtonsRoutine()
     {
         if (_gameManager == null || _speedBtnPrefab == null || _speedBtnContentTransform == null)
-        {
-            return;
-        }
+            yield break;
 
-        for (int i = 0; i < _btnSpeedGenList.Count; i++)
+        _speedBtnList.Clear();
+
+        yield return StaggeredSpawnUtils.ForEachFrame(_btnSpeedGenList.Count, i =>
         {
             float speed = _btnSpeedGenList[i];
             GameObject go = _gameManager.PoolingManager.GetPooledObject(_speedBtnPrefab);
@@ -81,7 +88,7 @@ public class TimePlayPanel : MonoBehaviour
             int index = i;
             btn.Init(speed, index, OnSpeedBtnClicked);
             _speedBtnList.Add(btn);
-        }
+        });
     }
 
     private void TogglePlayPause()

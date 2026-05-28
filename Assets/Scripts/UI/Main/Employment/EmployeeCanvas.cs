@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,9 @@ public class EmployeeCanvas : MainCanvasPanelBase
     private List<ActionBtn> _roleButtons = new List<ActionBtn>();
     private EmployeeType _selectedEmployeeType = EmployeeType.Worker;
     private bool _isUpdatingToggles;
+    private Coroutine _roleButtonCoroutine;
+    private Coroutine _efficiencyEffectCoroutine;
+    private Coroutine _satisfactionEffectCoroutine;
 
     /// <summary>
     /// (BasePanel)
@@ -63,8 +67,13 @@ public class EmployeeCanvas : MainCanvasPanelBase
         OnEmployeeTypeClick(EmployeeType.Worker);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        StaggeredSpawnUtils.Stop(this, ref _roleButtonCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _efficiencyEffectCoroutine);
+        StaggeredSpawnUtils.Stop(this, ref _satisfactionEffectCoroutine);
+        base.OnDisable();
+
         if (_dataManager != null)
         {
             _dataManager.Time.OnDayChanged -= HandleDayChanged;
@@ -158,8 +167,15 @@ public class EmployeeCanvas : MainCanvasPanelBase
         _roleButtons.Clear();
 
         List<EmployeeType> roles = EnumUtils.GetAllEnumValues<EmployeeType>();
-        foreach (EmployeeType role in roles)
+        StaggeredSpawnUtils.Restart(this, ref _roleButtonCoroutine, CreateRoleButtonsRoutine(roles));
+        UpdateRoleButtonHighlight();
+    }
+
+    private IEnumerator CreateRoleButtonsRoutine(List<EmployeeType> roles)
+    {
+        yield return StaggeredSpawnUtils.ForEachFrame(roles.Count, i =>
         {
+            EmployeeType role = roles[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_panelUIManager.ActionBtnPrefab);
             btnObj.transform.SetParent(EmployeeActionBtnContent, false);
             ActionBtn btn = btnObj.GetComponent<ActionBtn>();
@@ -173,9 +189,7 @@ public class EmployeeCanvas : MainCanvasPanelBase
                 });
                 _roleButtons.Add(btn);
             }
-        }
-        
-        UpdateRoleButtonHighlight();
+        });
     }
 
     /// <summary>
@@ -344,28 +358,33 @@ public class EmployeeCanvas : MainCanvasPanelBase
     /// </summary>
     private void UpdateEfficiencyEffectStatus()
     {
+        StaggeredSpawnUtils.Restart(this, ref _efficiencyEffectCoroutine, UpdateEfficiencyEffectStatusRoutine());
+    }
+
+    private IEnumerator UpdateEfficiencyEffectStatusRoutine()
+    {
         _gameManager.PoolingManager.ClearChildrenToPool(_efficiencyStatusScrollViewContentTransform);
 
         List<EffectState> combinedEffects = new List<EffectState>();
-
         string instanceId = _selectedEmployeeType.ToString();
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Efficiency, instanceId));
 
-        if (combinedEffects.Count > 0)
+        yield return StaggeredSpawnUtils.ForEachFrame(combinedEffects.Count, i =>
         {
-            foreach (EffectState effectState in combinedEffects)
-            {
-                if (effectState == null) continue;
+            EffectState effectState = combinedEffects[i];
+            if (effectState == null)
+                return;
 
-                _panelUIManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
-            }
-        }
+            _panelUIManager.CreateEffectTextPairPanel(_efficiencyStatusScrollViewContentTransform, effectState);
+        });
     }
 
-    /// <summary>
-    /// 만족도 관련 이펙트 상태를 업데이트합니다.
-    /// </summary>
     private void UpdateSatisfactionEffectStatus()
+    {
+        StaggeredSpawnUtils.Restart(this, ref _satisfactionEffectCoroutine, UpdateSatisfactionEffectStatusRoutine());
+    }
+
+    private IEnumerator UpdateSatisfactionEffectStatusRoutine()
     {
         _gameManager.PoolingManager.ClearChildrenToPool(_satisfactionStatusScrollViewContentTransform);
 
@@ -373,12 +392,14 @@ public class EmployeeCanvas : MainCanvasPanelBase
         string instanceId = _selectedEmployeeType.ToString();
         combinedEffects.AddRange(_dataManager.Effect.GetEffectStatEffects(EffectTargetType.Employee, EffectStatType.Employee_Satisfaction, instanceId));
 
-        foreach (EffectState effectState in combinedEffects)
+        yield return StaggeredSpawnUtils.ForEachFrame(combinedEffects.Count, i =>
         {
-            if (effectState == null) continue;
+            EffectState effectState = combinedEffects[i];
+            if (effectState == null)
+                return;
 
             _panelUIManager.CreateEffectTextPairPanel(_satisfactionStatusScrollViewContentTransform, effectState);
-        }
+        });
     }
 
     /// <summary>

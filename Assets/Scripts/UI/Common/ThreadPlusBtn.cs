@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class ThreadPlusBtn : MonoBehaviour
+public class ThreadPlusBtn : BtnBase
 {
-    public void OnClick()
+    protected override void HandleClick()
     {
         if (SceneLoadManager.Instance == null)
         {

@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 
-public class ActionBtn : MonoBehaviour
+public class ActionBtn : BtnBase
 {
     [SerializeField] private GameObject _selectedImage;
     [SerializeField] private TextMeshProUGUI _text;
@@ -17,17 +17,14 @@ public class ActionBtn : MonoBehaviour
         }
 
         _onClick = onClick;
+        EnsureClickBound();
     }
 
-    public void OnClick()
+    protected override void HandleClick()
     {
         _onClick?.Invoke();
     }
 
-    /// <summary>
-    /// 버튼의 하이라이트 상태를 설정합니다.
-    /// </summary>
-    /// <param name="isHighlight">하이라이트 여부</param>
     public void SetHighlight(bool isHighlight)
     {
         if (_selectedImage != null)

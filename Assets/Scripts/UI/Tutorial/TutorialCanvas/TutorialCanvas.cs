@@ -20,6 +20,7 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
     protected BuildingSceneRunnerBase _sceneRunner;
     protected ITutorialSceneFlow _tutorialFlow;
     private TimePlayPanel _timePlayPanel;
+    private Coroutine _resourceScrollCoroutine;
 
     private void Update()
     {
@@ -90,8 +91,11 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
         _tutorialFlow?.NotifyCanvasReady(this);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        StaggeredSpawnUtils.Stop(this, ref _resourceScrollCoroutine);
+        base.OnDestroy();
+
         if (_sceneRunner != null && _sceneRunner.GridHandler != null)
         {
             _sceneRunner.GridHandler.OnBuildingInstanceLayoutChanged -= RefreshBuildingPlacedCountDisplays;
@@ -154,6 +158,7 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
     {
         RefreshResourceScrollView();
         UpdateAllMainText();
+        _tutorialFlow?.NotifyDayAdvanced();
     }
 
     private void OnBuildingLayoutChanged()
