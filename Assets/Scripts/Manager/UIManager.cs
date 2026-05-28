@@ -303,7 +303,12 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public BankruptcyGameOverPopup ShowBankruptcyGameOverPopup()
+    public GameOverPopup ShowBankruptcyGameOverPopup()
+    {
+        return ShowGameOverPopup(GameOverType.Bankruptcy);
+    }
+
+    public GameOverPopup ShowGameOverPopup(GameOverType gameOverType)
     {
         if (_bankruptcyGameOverPopupPrefab == null)
         {
@@ -312,8 +317,8 @@ public class UIManager : Singleton<UIManager>
         }
 
         GameObject panelObj = InstantiatePopupPrefab(_bankruptcyGameOverPopupPrefab);
-        BankruptcyGameOverPopup panel = panelObj.GetComponent<BankruptcyGameOverPopup>();
-        panel.Init();
+        GameOverPopup panel = panelObj.GetComponent<GameOverPopup>();
+        panel.Init(gameOverType);
         return panel;
     }
 

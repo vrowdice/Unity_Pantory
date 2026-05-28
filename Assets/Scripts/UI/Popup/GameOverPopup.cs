@@ -1,11 +1,11 @@
-using Evo.UI;
 using TMPro;
+using Evo.UI;
 using UnityEngine;
 
 /// <summary>
-/// 파산 게임오버 시 회사 성장 그래프와 최종 실적을 보여주는 팝업.
+/// 파산·기한 만료·기업 1등 달성 등 게임 오버 시 회사 성장 그래프와 최종 실적을 보여주는 팝업.
 /// </summary>
-public class BankruptcyGameOverPopup : PopupBase
+public class GameOverPopup : PopupBase
 {
     private const int MaxChartDataPoints = 60;
 
@@ -19,20 +19,38 @@ public class BankruptcyGameOverPopup : PopupBase
     [SerializeField] private LineChart _creditChart;
     [SerializeField] private LineChart _wealthChart;
 
+    [SerializeField] private GameObject _goTitleBtn;
+    [SerializeField] private GameObject _continueBtn;
+
+    private GameOverType _gameOverType = GameOverType.Bankruptcy;
+
     public override void Init()
     {
+        Init(GameOverType.Bankruptcy);
+    }
+
+    public void Init(GameOverType gameOverType)
+    {
+        _gameOverType = gameOverType;
         base.Init();
         RefreshContent();
         Show();
     }
 
-    public void OnClickReturnToTitle()
+    public void OnClickGoTitle()
     {
+        DataManager.Instance?.GameOver?.ResetForTitleReturn();
         DataManager.Instance?.Finances?.ResetBankruptcyStateForTitleReturn();
         UIManager.Instance?.ClearManagerCanvasPopups();
 
         Destroy(gameObject);
         SceneLoadManager.Instance?.LoadScene("Title");
+    }
+
+    public void OnClickContinue()
+    {
+        DataManager.Instance?.GameOver?.ClearGameOverForContinue();
+        CloseAndDestroy();
     }
 
     private void RefreshContent()
@@ -42,12 +60,14 @@ public class BankruptcyGameOverPopup : PopupBase
 
         if (_titleText != null)
         {
-            _titleText.text = GameOverPopupMessage.Title.Localize(LocalizationUtils.TABLE_COMMON);
+            _titleText.text = GameOverPopupMessage.GetTitleKey(_gameOverType)
+                .Localize(LocalizationUtils.TABLE_COMMON);
         }
 
         if (_summaryText != null)
         {
-            _summaryText.text = GameOverPopupMessage.Summary.Localize(LocalizationUtils.TABLE_COMMON);
+            _summaryText.text = GameOverPopupMessage.GetSummaryKey(_gameOverType)
+                .Localize(LocalizationUtils.TABLE_COMMON);
         }
 
         if (_finalCreditText != null)
@@ -92,5 +112,15 @@ public class BankruptcyGameOverPopup : PopupBase
             finances.MonthlyWealthHistory,
             finances.Wealth,
             MaxChartDataPoints);
+
+        if (_goTitleBtn != null)
+        {
+            _goTitleBtn.SetActive(true);
+        }
+
+        if (_continueBtn != null)
+        {
+            _continueBtn.SetActive(_gameOverType == GameOverType.CompanyRankFirst);
+        }
     }
 }

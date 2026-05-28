@@ -109,10 +109,13 @@ MonoBehaviour:
   - kind: 7
     buildingId: 
     focusTarget: 0
-  - kind: 0
+  - kind: 8
     buildingId: 
     focusTarget: 3
-  - kind: 8
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
     buildingId: 
     focusTarget: 0
   - kind: 9

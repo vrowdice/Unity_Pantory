@@ -21,6 +21,8 @@ public class TutorialGuidedPopup : PopupBase
     [SerializeField] private float _focusPulseDuration = 0.6f;
     [SerializeField] private float _panelMoveDuration = 0.35f;
     [SerializeField] private Ease _panelMoveEase = Ease.OutCubic;
+    [SerializeField] private float _stepTransitionDuration = 0.25f;
+    [SerializeField] private Ease _stepTransitionEase = Ease.OutCubic;
     [SerializeField] private float _screenEdgePadding = 16f;
 
     private List<TutorialData> _tutorialDataList;
@@ -41,13 +43,13 @@ public class TutorialGuidedPopup : PopupBase
     public void SetStepIndexOverride(int localizationIndex)
     {
         _localizationIndexOverride = localizationIndex;
-        UpdateDescription();
+        UpdateDescription(animateTransition: true);
     }
 
     public void SetLocalizationKey(string localizationKey)
     {
         _localizationKeyOverride = localizationKey;
-        UpdateDescription();
+        UpdateDescription(animateTransition: true);
     }
 
     public void SetAdvanceCallback(System.Action advanceCallback)
@@ -121,6 +123,8 @@ public class TutorialGuidedPopup : PopupBase
 
     public void Dismiss()
     {
+        TutorialStepTransition.Kill(_descriptionText);
+
         if (_focusPanel != null)
             _focusPanel.transform.DOKill();
 
@@ -133,7 +137,7 @@ public class TutorialGuidedPopup : PopupBase
         CloseAndDestroy();
     }
 
-    private void UpdateDescription()
+    private void UpdateDescription(bool animateTransition = false)
     {
         if (_tutorialDataList == null || _tutorialDataList.Count == 0)
             return;
@@ -142,11 +146,37 @@ public class TutorialGuidedPopup : PopupBase
         string localizationKey = !string.IsNullOrEmpty(_localizationKeyOverride)
             ? _localizationKeyOverride
             : $"{_gameObjectName}{(_localizationIndexOverride >= 0 ? _localizationIndexOverride : 0)}";
-        _descriptionText.text = localizationKey.Localize(LocalizationUtils.TABLE_TUTORIAL_GUIDED);
+        string descriptionText = localizationKey.Localize(LocalizationUtils.TABLE_TUTORIAL_GUIDED);
+        bool isFirstShow = _isFirstPanelPlacement;
+        bool shouldAnimate = animateTransition
+            && !isFirstShow
+            && descriptionText != _descriptionText.text;
 
-        ApplyPanelPosition(currentData.tutorialPanelPosition, currentData.focusGameObject);
+        System.Action applyContent = () => ApplyStepContent(currentData, descriptionText, !isFirstShow);
+
+        if (shouldAnimate)
+        {
+            TutorialStepTransition.Play(
+                _descriptionText,
+                null,
+                applyContent,
+                _stepTransitionDuration,
+                _stepTransitionEase);
+        }
+        else
+        {
+            TutorialStepTransition.EnsureVisible(_descriptionText);
+            applyContent();
+        }
+
+        _isFirstPanelPlacement = false;
+    }
+
+    private void ApplyStepContent(TutorialData currentData, string descriptionText, bool animatePanel)
+    {
+        _descriptionText.text = descriptionText;
+        ApplyPanelPosition(currentData.tutorialPanelPosition, currentData.focusGameObject, animatePanel);
         currentData.onStepStart?.Invoke();
-
         ApplyFocusTarget(currentData.focusGameObject);
     }
 
@@ -158,23 +188,21 @@ public class TutorialGuidedPopup : PopupBase
         TutorialData currentData = _tutorialDataList[0];
         currentData.focusGameObject = focusGameObject;
 
-        ApplyPanelPosition(currentData.tutorialPanelPosition, focusGameObject);
+        ApplyPanelPosition(currentData.tutorialPanelPosition, focusGameObject, animatePanel: true);
         ApplyFocusTarget(focusGameObject);
     }
 
-    private void ApplyPanelPosition(Vector2 desiredPosition, GameObject focusTarget)
+    private void ApplyPanelPosition(Vector2 desiredPosition, GameObject focusTarget, bool animatePanel)
     {
         RectTransform panelRect = _panel.GetComponent<RectTransform>();
-        bool animate = !_isFirstPanelPlacement;
         TutorialPanelLayout.MovePanelToPosition(
             panelRect,
             desiredPosition,
             focusTarget,
             _screenEdgePadding,
-            animate,
+            animatePanel,
             _panelMoveDuration,
             _panelMoveEase);
-        _isFirstPanelPlacement = false;
     }
 
     private void ApplyFocusTarget(GameObject focusGameObject)
@@ -234,6 +262,8 @@ public class TutorialGuidedPopup : PopupBase
 
         if (!_allowClose && !_isRetiring)
             _onDismissedUnexpectedly?.Invoke();
+
+        TutorialStepTransition.Kill(_descriptionText);
 
         if (_focusPanel != null)
             _focusPanel.transform.DOKill();

@@ -66,6 +66,46 @@ MonoBehaviour:
     m_Localized: 労働組合は休憩室改修のための木材供給を求めています。
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000007
+    m_Localized: 安全装備の供給
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001007
+    m_Localized: 労働者が作業事故防止のために安全用具の供給を要求しています。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000008
+    m_Localized: 休憩室家具の交換
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001008
+    m_Localized: 労働組合は従業員の休憩スペース整備に向け、基本家具の提供を求めています。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000009
+    m_Localized: 防寒衣服の支給
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001009
+    m_Localized: 従業員が寒い季節に備えて防寒用の基本衣服の支給を要請しました。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000010
+    m_Localized: 福祉基金の寄付
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001010
+    m_Localized: 労働組合は労働福祉基金への資金拠出（クレジット提供）を求めています。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000011
+    m_Localized: 福祉政策の導入
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001011
+    m_Localized: 労働組合は従業員福祉政策の公式導入を強く求めています。
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

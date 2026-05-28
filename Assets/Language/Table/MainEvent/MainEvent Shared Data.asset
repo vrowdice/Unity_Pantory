@@ -63,6 +63,46 @@ MonoBehaviour:
     m_Key: union_request_wood_supplies_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000007
+    m_Key: union_request_safety_equipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001007
+    m_Key: union_request_safety_equipment_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000008
+    m_Key: union_request_break_room_furniture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001008
+    m_Key: union_request_break_room_furniture_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000009
+    m_Key: union_request_warm_clothing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001009
+    m_Key: union_request_warm_clothing_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000010
+    m_Key: union_request_welfare_fund
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001010
+    m_Key: union_request_welfare_fund_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000011
+    m_Key: union_request_welfare_policy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001011
+    m_Key: union_request_welfare_policy_Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -18,6 +18,8 @@ public class TutorialPopup : PopupBase
     [SerializeField] private float _focusPulseDuration = 0.6f;
     [SerializeField] private float _panelMoveDuration = 0.35f;
     [SerializeField] private Ease _panelMoveEase = Ease.OutCubic;
+    [SerializeField] private float _stepTransitionDuration = 0.25f;
+    [SerializeField] private Ease _stepTransitionEase = Ease.OutCubic;
     [SerializeField] private float _screenEdgePadding = 16f;
 
     private List<TutorialData> _tutorialDataList;
@@ -40,7 +42,7 @@ public class TutorialPopup : PopupBase
     public void OnClickBeforeBtn()
     {
         _currentIndex = Mathf.Max(0, _currentIndex - 1);
-        UpdateDescription();
+        UpdateDescription(animateTransition: true);
     }
 
     public void OnClickNextBtn()
@@ -52,10 +54,10 @@ public class TutorialPopup : PopupBase
         }
 
         _currentIndex++;
-        UpdateDescription();
+        UpdateDescription(animateTransition: true);
     }
 
-    private void UpdateDescription()
+    private void UpdateDescription(bool animateTransition = false)
     {
         if (_tutorialDataList == null || _tutorialDataList.Count == 0)
             return;
@@ -67,28 +69,63 @@ public class TutorialPopup : PopupBase
             return;
 
         TutorialData currentData = _tutorialDataList[_currentIndex];
-        _indexText.text = $"{_currentIndex + 1} / {_tutorialDataList.Count}";
-        _descriptionText.text = $"{_gameObjectName + _currentIndex}".Localize(LocalizationUtils.TABLE_TUTORIAL);
+        string indexText = $"{_currentIndex + 1} / {_tutorialDataList.Count}";
+        string descriptionText = $"{_gameObjectName + _currentIndex}".Localize(LocalizationUtils.TABLE_TUTORIAL);
+        bool isFirstShow = _isFirstPanelPlacement;
+        bool shouldAnimate = animateTransition
+            && !isFirstShow
+            && (descriptionText != _descriptionText.text || indexText != _indexText.text);
+
+        System.Action applyContent = () => ApplyStepContent(currentData, indexText, descriptionText, !isFirstShow);
+
+        if (shouldAnimate)
+        {
+            TutorialStepTransition.Play(
+                _descriptionText,
+                _indexText,
+                applyContent,
+                _stepTransitionDuration,
+                _stepTransitionEase);
+        }
+        else
+        {
+            TutorialStepTransition.EnsureVisible(_descriptionText, _indexText);
+            applyContent();
+        }
+
+        _isFirstPanelPlacement = false;
+    }
+
+    private void ApplyStepContent(
+        TutorialData currentData,
+        string indexText,
+        string descriptionText,
+        bool animatePanel)
+    {
+        _indexText.text = indexText;
+        _descriptionText.text = descriptionText;
 
         RectTransform panelRect = _panel.GetComponent<RectTransform>();
-        bool animate = !_isFirstPanelPlacement;
         TutorialPanelLayout.MovePanelToPosition(
             panelRect,
             currentData.tutorialPanelPosition,
             currentData.focusGameObject,
             _screenEdgePadding,
-            animate,
+            animatePanel,
             _panelMoveDuration,
             _panelMoveEase);
-        _isFirstPanelPlacement = false;
         currentData.onStepStart?.Invoke();
+        ApplyFocusTarget(currentData.focusGameObject);
+    }
 
-        if (currentData.focusGameObject != null)
+    private void ApplyFocusTarget(GameObject focusGameObject)
+    {
+        if (focusGameObject != null)
         {
             _focusPanel.SetActive(true);
 
             RectTransform focusTransform = _focusPanel.GetComponent<RectTransform>();
-            RectTransform targetTransform = currentData.focusGameObject.GetComponent<RectTransform>();
+            RectTransform targetTransform = focusGameObject.GetComponent<RectTransform>();
 
             focusTransform.position = targetTransform.position;
             Vector3 baseScale = targetTransform.localScale;
@@ -110,6 +147,8 @@ public class TutorialPopup : PopupBase
 
     public void OnClickExit()
     {
+        TutorialStepTransition.Kill(_descriptionText, _indexText);
+
         if (_focusPanel != null)
             _focusPanel.transform.DOKill();
 
@@ -124,6 +163,8 @@ public class TutorialPopup : PopupBase
     protected override void OnDestroy()
     {
         base.OnDestroy();
+
+        TutorialStepTransition.Kill(_descriptionText, _indexText);
 
         if (_focusPanel != null)
             _focusPanel.transform.DOKill();

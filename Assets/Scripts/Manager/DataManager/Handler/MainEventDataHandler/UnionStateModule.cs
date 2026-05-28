@@ -212,11 +212,6 @@ public class UnionStateModule : MainEventStateModuleBase
         }
 
         EffectData effect = _unionInit?.dividedFactoryEffect;
-        if (effect == null || _dataManager?.Effect == null)
-        {
-            return;
-        }
-
         _dataManager.Effect.ApplyEffect(effect);
     }
 }

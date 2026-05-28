@@ -27,4 +27,4 @@ MonoBehaviour:
     count: 1
   - resource: {fileID: 11400000, guid: 81b07decfdbd5aa4d9521a87285057d6, type: 2}
     count: 1
-  initialAmount: 10
+  initialAmount: 0

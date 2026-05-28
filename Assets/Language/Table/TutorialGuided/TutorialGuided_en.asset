@@ -18,139 +18,31 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 2578400000000016
-    m_Localized: First, learn the controls. Drag the mouse or use WASD to move the
-      camera, and scroll the mouse wheel to zoom. Press Q or E to rotate buildings
-      while placing them.
+  - m_Id: 2578400000000012
+    m_Localized: Tutorial complete. You are ready for the main game. A fresh factory
+      will begin when you continue.
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000000
-    m_Localized: Welcome to the tutorial. You will place Logging Camp, Unload, Sawmill,
-      and Load, then connect them with roads.
+  - m_Id: 30821035190665243
+    m_Localized: Advance time until at least one day passes, then check whether your
+      resources were sold. Resources are sold every day.
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000013
-    m_Localized: Let's learn removal mode. A practice road is placed at the top-left
-      of the map. Removal mode lets you delete buildings and roads.
+  - m_Id: 30821035190665241
+    m_Localized: Tap the button showing your Credits and Research Points at the top
+      left to check your current finances.
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000014
-    m_Localized: Turn on the Removal Mode switch.
+  - m_Id: 30821035190665240
+    m_Localized: Use the minus button to set daily resource sales.
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000015
-    m_Localized: A practice road is in the top-left of the map. Move to the top-left
-      and click the practice road on the grid to remove it.
+  - m_Id: 30821035190665239
+    m_Localized: Press the Market button on the left to open the market panel.
     m_Metadata:
       m_Items: []
-  - m_Id: 30819995552727040
-    m_Localized: Pantory has a convenient auto employee assignment feature.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30820150800695296
-    m_Localized: Every factory needs staff, and managing employee morale is very
-      important.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30820695795974144
-    m_Localized: Turn on auto employee assignment.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30820797528817664
-    m_Localized: "Employees are now assigned automatically\u2014you don't need to
-      hire them manually!"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665216
-    m_Localized: Now let's build a production line for premium wood.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000001
-    m_Localized: Select the Logging Camp. Harvested logs go directly to Storage without
-      any roads.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000002
-    m_Localized: Place the Logging Camp on the grid. No road connection is needed.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665225
-    m_Localized: To exit build mode, right-click or click the building button again.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000003
-    m_Localized: Select the Unload building. It sends resources from storage into
-      your factory.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000004
-    m_Localized: Place the Unload building on the grid.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665233
-    m_Localized: Yellow arrows show the next grid cell where resources will move.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665226
-    m_Localized: Select the Road tool to connect the Unload building.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665227
-    m_Localized: Place one road tile next to the Unload building.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000005
-    m_Localized: Select the Sawmill. It processes raw wood into premium wood.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000006
-    m_Localized: Place the Sawmill on the grid.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665228
-    m_Localized: Select the Road tool again.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665229
-    m_Localized: Place one road tile next to the Sawmill.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000009
-    m_Localized: Select the Load building. It receives goods from your factory and
-      sends them to storage.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2578400000000010
-    m_Localized: Place the Load building on the grid.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665234
-    m_Localized: Each building must specify what resource it outputs. Click the Unload
-      building you placed and assign the 'Raw Wood' resource.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665235
-    m_Localized: Next, click the Sawmill and assign the 'Premium Wood' resource.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665236
-    m_Localized: The Load station accepts any resource, so it does not need an assignment.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665237
-    m_Localized: Now let's run the factory.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665230
-    m_Localized: Running the factory takes time.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665231
-    m_Localized: You can advance time from the time panel.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30821035190665232
-    m_Localized: Press the Start button to run the factory clock.
+  - m_Id: 2578400000000011
+    m_Localized: Now it is time to sell what you produced and earn a profit.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665238
@@ -159,26 +51,83 @@ MonoBehaviour:
       and get consumed."
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000011
-    m_Localized: Now it is time to sell what you produced and earn a profit.
+  - m_Id: 30821035190665232
+    m_Localized: Press the Start button to run the factory clock.
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000012
-    m_Localized: Tutorial complete. You are ready for the main game. A fresh factory
-      will begin when you continue.
+  - m_Id: 30821035190665231
+    m_Localized: You can advance time from the time panel.
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665239
-    m_Localized: Press the Market button on the left to open the market panel.
+  - m_Id: 30821035190665230
+    m_Localized: Running the factory takes time.
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665240
-    m_Localized: Use the minus button to set daily resource sales.
+  - m_Id: 30821035190665237
+    m_Localized: Now let's run the factory.
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665241
-    m_Localized: Tap the button showing your Credits and Research Points at the top
-      left to check your current finances.
+  - m_Id: 30821035190665235
+    m_Localized: Next, click the Sawmill and assign the 'Premium Wood' resource.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665234
+    m_Localized: Each building must specify what resource it outputs. Click the Unload
+      building you placed and assign the 'Raw Wood' resource.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000010
+    m_Localized: Place the Load building on the grid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000009
+    m_Localized: Select the Load building. It receives goods from your factory and
+      sends them to storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665229
+    m_Localized: Place one road tile next to the Sawmill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665228
+    m_Localized: Select the Road tool again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000006
+    m_Localized: Place the Sawmill on the grid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000005
+    m_Localized: Select the Sawmill. It processes raw wood into premium wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665227
+    m_Localized: Place one road tile next to the Unload building.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665226
+    m_Localized: Select the Road tool to connect the Unload building.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665233
+    m_Localized: Yellow arrows show the next grid cell where resources will move.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000004
+    m_Localized: Place the Unload building on the grid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000003
+    m_Localized: Select the Unload building. It sends resources from storage into
+      your factory.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665225
+    m_Localized: To exit build mode, right-click or click the building button again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000002
+    m_Localized: Place the Logging Camp on the grid. No road connection is needed.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665242
@@ -186,9 +135,65 @@ MonoBehaviour:
       the bottom right.
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665243
-    m_Localized: Advance time until at least one day passes, then check whether your
-      resources were sold. Resources are sold every day.
+  - m_Id: 2578400000000001
+    m_Localized: Select the Logging Camp. Harvested logs go directly to Storage without
+      any roads.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665216
+    m_Localized: Now let's build a production line for premium wood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30820797528817664
+    m_Localized: "Employees are now assigned automatically\u2014you don't need to
+      hire them manually!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30820695795974144
+    m_Localized: Turn on auto employee assignment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30820150800695296
+    m_Localized: Every factory needs staff, and managing employee morale is very
+      important.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30819995552727040
+    m_Localized: Pantory has a convenient auto employee assignment feature.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000016
+    m_Localized: First, learn the controls. Drag the mouse or use WASD to move the
+      camera, and scroll the mouse wheel to zoom. Press Q or E to rotate buildings
+      while placing them.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000015
+    m_Localized: A practice road is in the top-left of the map. Move to the top-left
+      and click the practice road on the grid to remove it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000014
+    m_Localized: Turn on the Removal Mode switch.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000013
+    m_Localized: Let's learn removal mode. A practice road is placed at the top-left
+      of the map. Removal mode lets you delete buildings and roads.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665236
+    m_Localized: The Load station accepts any resource, so it does not need an assignment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000000
+    m_Localized: Welcome to the tutorial. You will place Logging Camp, Unload, Sawmill,
+      and Load, then connect them with roads.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821035190665421
+    m_Localized: Expanding production lines is not much different from what you just
+      did. You can connect different production lines together or split them apart.
     m_Metadata:
       m_Items: []
   references:

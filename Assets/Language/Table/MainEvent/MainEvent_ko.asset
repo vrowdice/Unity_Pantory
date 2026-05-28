@@ -66,6 +66,46 @@ MonoBehaviour:
     m_Localized: 노조가 휴게실 리모델링을 위한 목재 보급을 요청했습니다.
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000007
+    m_Localized: 안전 장비 보급
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001007
+    m_Localized: 노동자들이 작업장 사고 예방을 위한 안전 장비 보급을 요구하고 있습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000008
+    m_Localized: 휴게실 가구 교체
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001008
+    m_Localized: 노조가 노동자 휴게 공간 정비를 위해 기본 가구 지원을 요청했습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000009
+    m_Localized: 방한 의복 지급
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001009
+    m_Localized: 근로자들이 추운 계절을 대비해 방한용 기본 의복 지급을 요청했습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000010
+    m_Localized: 복지 기금 기부
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001010
+    m_Localized: 노조가 근로 복지 기금에 자금 출자(크레딧 지원)를 요구하고 있습니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000011
+    m_Localized: 복지 제도 채택
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001011
+    m_Localized: 노조 협상단이 근로자 복지 정책의 공식 도입을 요구하고 있습니다.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

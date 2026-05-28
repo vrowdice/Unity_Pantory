@@ -70,6 +70,7 @@ public class DataManager : Singleton<DataManager>
     public MainEventDataHandler MainEvent { get; private set; }
     public UnionRequestDataHandler UnionRequest { get; private set; }
     public GoalDataHandler Goal { get; private set; }
+    public GameOverDataHandler GameOver { get; private set; }
 
     public PlayerDataHandler Player { get; private set; }
 
@@ -130,6 +131,7 @@ public class DataManager : Singleton<DataManager>
             _initialWarMainEventData,
             _initialAutomationMainEventData);
         Goal = new GoalDataHandler(this, _goalDataList);
+        GameOver = new GameOverDataHandler(this);
 
         Player = new PlayerDataHandler();
 
@@ -149,6 +151,7 @@ public class DataManager : Singleton<DataManager>
         _eventHandlers.Add(UnionRequest);
         _eventHandlers.Add(MainEvent);
         _eventHandlers.Add(Goal);
+        _eventHandlers.Add(GameOver);
 
         _dayHandlers.Clear();
         _dayHandlers.Add(Resource);
@@ -164,6 +167,7 @@ public class DataManager : Singleton<DataManager>
         _monthHandlers.Clear();
         _monthHandlers.Add(Finances);
         _monthHandlers.Add(Policy);
+        _monthHandlers.Add(GameOver);
 
         _saveHandlers.Clear();
         _saveHandlers.Add(Finances);
@@ -176,6 +180,7 @@ public class DataManager : Singleton<DataManager>
         _saveHandlers.Add(Policy);
         _saveHandlers.Add(Player);
         _saveHandlers.Add(Goal);
+        _saveHandlers.Add(GameOver);
 
         _crossHandlerEvents.Clear();
         _crossHandlerEvents.Add(MainEvent);
@@ -274,6 +279,8 @@ public class DataManager : Singleton<DataManager>
         Time.OnDayChanged += HandleDayChanged;
         Time.OnMonthChanged -= HandleMonthChanged;
         Time.OnMonthChanged += HandleMonthChanged;
+        Time.OnYearChanged -= HandleYearChanged;
+        Time.OnYearChanged += HandleYearChanged;
 
         foreach (ICrossHandlerEvents handler in _crossHandlerEvents)
             handler.SubscribeCrossHandlerEvents();
@@ -293,6 +300,11 @@ public class DataManager : Singleton<DataManager>
         SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
         if (saveLoadManager != null)
             saveLoadManager.PerformAutoSave(this);
+    }
+
+    private void HandleYearChanged()
+    {
+        GameOver?.HandleYearChanged();
     }
 
     public void CaptureGameStateTo(GameSaveData saveData)

@@ -25,7 +25,6 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     private long _placedBuildingsAssetValue;
 
     private int _bankruptcyMonthsRemaining;
-    private bool _isBankruptcyGameOver;
     private bool _skipNextBankruptcyDecrement;
     private int _lastBankruptcyMonthsRemaining = -1;
 
@@ -43,8 +42,11 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     public long Wealth => _wealth;
     public int BankruptcyMonthsRemaining => _bankruptcyMonthsRemaining;
     public int BankruptcyGraceMonths => GetBankruptcyGraceMonths();
-    public bool IsBankruptcyCountdownActive => _bankruptcyMonthsRemaining > 0 && !_isBankruptcyGameOver;
-    public bool IsBankruptcyGameOver => _isBankruptcyGameOver;
+    public bool IsBankruptcyCountdownActive => _bankruptcyMonthsRemaining > 0 && !IsBankruptcyGameOver;
+    public bool IsBankruptcyGameOver =>
+        _dataManager?.GameOver != null
+        && _dataManager.GameOver.IsGameOver
+        && _dataManager.GameOver.CurrentGameOverType == GameOverType.Bankruptcy;
 
     public long DailySalary => _dailySalary;
     public long DailyResource => _dailyResource;
@@ -169,7 +171,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
 
     private void UpdateBankruptcyStateOnWealthChanged()
     {
-        if (_isBankruptcyGameOver)
+        if (IsBankruptcyGameOver || (_dataManager?.GameOver != null && _dataManager.GameOver.IsGameOver))
         {
             return;
         }
@@ -197,7 +199,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
 
     private void AdvanceBankruptcyCountdown()
     {
-        if (_isBankruptcyGameOver)
+        if (IsBankruptcyGameOver || (_dataManager?.GameOver != null && _dataManager.GameOver.IsGameOver))
         {
             return;
         }
@@ -247,21 +249,14 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         OnBankruptcyCountdownChanged?.Invoke(monthsRemaining);
     }
 
-    private void ShowBankruptcyGameOverUi()
-    {
-        UIManager.Instance?.ShowBankruptcyGameOverPopup();
-    }
-
     /// <summary>
-    /// 파산 게임오버 후 타이틀 복귀 시 플래그를 초기화합니다. 같은 세션에서 타이틀에 팝업이 다시 뜨는 것을 막습니다.
+    /// 파산 게임오버 후 타이틀 복귀 시 파산 카운트다운 상태를 초기화합니다.
     /// </summary>
     public void ResetBankruptcyStateForTitleReturn()
     {
-        _isBankruptcyGameOver = false;
         _bankruptcyMonthsRemaining = 0;
         _skipNextBankruptcyDecrement = false;
         _lastBankruptcyMonthsRemaining = 0;
-        _dataManager.Time?.ResumeTime();
     }
 
     /// <summary>
@@ -269,10 +264,9 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
     /// </summary>
     public void NotifyBankruptcyUiRestored()
     {
-        if (_isBankruptcyGameOver)
+        if (IsBankruptcyGameOver)
         {
             OnBankruptcyTriggered?.Invoke();
-            ShowBankruptcyGameOverUi();
             return;
         }
 
@@ -284,14 +278,12 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
 
     private void TriggerBankruptcyGameOver()
     {
-        if (_isBankruptcyGameOver)
+        if (IsBankruptcyGameOver)
         {
             return;
         }
 
-        _isBankruptcyGameOver = true;
-        _dataManager.Time?.PauseTime();
-        ShowBankruptcyGameOverUi();
+        _dataManager.GameOver?.TriggerGameOver(GameOverType.Bankruptcy);
         OnBankruptcyTriggered?.Invoke();
     }
 
@@ -328,7 +320,7 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         saveData.monthlyWealthHistory = new List<long>(_monthlyWealthHistory);
         saveData.bankruptcyMonthsRemaining = _bankruptcyMonthsRemaining;
         saveData.skipNextBankruptcyDecrement = _skipNextBankruptcyDecrement;
-        saveData.isBankruptcyGameOver = _isBankruptcyGameOver;
+        saveData.isBankruptcyGameOver = IsBankruptcyGameOver;
     }
 
     public void ApplyFromSave(GameSaveData saveData)
@@ -343,7 +335,6 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         _monthlyWealthHistory = new List<long>(saveData.monthlyWealthHistory ?? new List<long>());
         _bankruptcyMonthsRemaining = saveData.bankruptcyMonthsRemaining;
         _skipNextBankruptcyDecrement = saveData.skipNextBankruptcyDecrement;
-        _isBankruptcyGameOver = saveData.isBankruptcyGameOver;
         _lastBankruptcyMonthsRemaining = _bankruptcyMonthsRemaining;
 
         _wealth = CalculateCurrentTotalWealth();
@@ -352,9 +343,8 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
 
     private void ReconcileBankruptcyStateAfterLoad()
     {
-        if (_isBankruptcyGameOver)
+        if (IsBankruptcyGameOver)
         {
-            _dataManager.Time?.PauseTime();
             return;
         }
 

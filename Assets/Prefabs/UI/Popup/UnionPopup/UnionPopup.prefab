@@ -670,6 +670,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 332c603ae3c4d504aa4042d83802f8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 3135167764949484093}
+  _effectType: 0
   _tutorialPanelInfo:
   - focusGameObject: {fileID: 303268207376778243}
     onStepStart:
@@ -701,8 +703,6 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     tutorialPanelPosition: {x: 0, y: 0}
-  _animationTarget: {fileID: 3135167764949484093}
-  _effectType: 0
   _openPopupSfx: {fileID: 0}
   _employeeInfoContainerPrefab: {fileID: 3276077880647917691, guid: fbc15179fbe554d4ba1cd179ad7eaef8, type: 3}
   _employeeInfoContainerContentTransform: {fileID: 2630030520654971393}
@@ -931,7 +931,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 512
   m_textAlignment: 65535

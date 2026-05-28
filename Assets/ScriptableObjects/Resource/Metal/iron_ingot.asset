@@ -24,4 +24,4 @@ MonoBehaviour:
     count: 2
   recipeOutputs: []
   primaryOutputPerBatch: 1
-  initialAmount: 60
+  initialAmount: 0

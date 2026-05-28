@@ -147,28 +147,32 @@ MonoBehaviour:
     m_Key: TutorialScene32
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000011
+  - m_Id: 30821035190665421
     m_Key: TutorialScene33
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665239
+  - m_Id: 2578400000000011
     m_Key: TutorialScene34
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665240
+  - m_Id: 30821035190665239
     m_Key: TutorialScene35
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665241
+  - m_Id: 30821035190665240
     m_Key: TutorialScene36
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665243
+  - m_Id: 30821035190665241
     m_Key: TutorialScene37
     m_Metadata:
       m_Items: []
-  - m_Id: 2578400000000012
+  - m_Id: 30821035190665243
     m_Key: TutorialScene38
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2578400000000012
+    m_Key: TutorialScene39
     m_Metadata:
       m_Items: []
   m_Metadata:

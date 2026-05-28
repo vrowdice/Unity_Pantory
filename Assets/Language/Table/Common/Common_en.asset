@@ -692,8 +692,30 @@ MonoBehaviour:
     m_Localized: Tutorial
     m_Metadata:
       m_Items: []
-  - m_Id: 44242199258742784
-    m_Localized: Completed Goal
+  - m_Id: 43405946866663440
+    m_Localized: Government Dissolution Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663441
+    m_Localized: You failed to become the top company within the time limit. The
+      government ordered your company dissolved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663442
+    m_Localized: Industry Leader
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663443
+    m_Localized: Your company became the wealthiest in the market. You may continue
+      running the business.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44601439007834112
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44607573030633472
+    m_Localized: Game Over
     m_Metadata:
       m_Items: []
   references:

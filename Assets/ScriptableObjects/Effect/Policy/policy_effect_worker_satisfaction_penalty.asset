@@ -15,9 +15,9 @@ MonoBehaviour:
   targetType: 1
   isGlobalEffect: 0
   id: policy_effect_worker_satisfaction_penalty
-  displayName: Policy — Worker Satisfaction Drift
+  displayName: "Policy \u2014 Worker Satisfaction Drift"
   statType: 3
   modifierType: 0
-  value: -2
+  value: -0.1
   durationDays: 0
   targetId: Worker

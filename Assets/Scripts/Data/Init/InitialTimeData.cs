@@ -28,6 +28,9 @@ public class InitialTimeData : ScriptableObject
     [Range(0, 30)]
     [Tooltip("시작 일 (0부터 시작)")]
     public int startDay = 0;
+    [Range(0, 999)]
+    [Tooltip("게임 종료 기한(년). 0이면 기한 없음")]
+    public int gameYearLimit = 20;
 
     /// <summary>
     /// Editor에서 값 검증
@@ -47,6 +50,7 @@ public class InitialTimeData : ScriptableObject
         // Clamp starting month/day to valid ranges
         if (startMonth >= monthsPerYear) startMonth = monthsPerYear - 1;
         if (startDay >= daysPerMonth) startDay = daysPerMonth - 1;
+        if (gameYearLimit < 0) gameYearLimit = 0;
     }
 }
 

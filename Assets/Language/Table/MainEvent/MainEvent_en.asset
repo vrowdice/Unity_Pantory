@@ -69,6 +69,46 @@ MonoBehaviour:
     m_Localized: Union requests wood supplies for break-room renovations.
     m_Metadata:
       m_Items: []
+  - m_Id: 7300000000007
+    m_Localized: Safety Equipment Supplies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001007
+    m_Localized: Workers demand safety equipment shipments to prevent workplace accidents.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000008
+    m_Localized: Break Room Furniture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001008
+    m_Localized: Union requests basic furniture to furnish worker relaxation areas.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000009
+    m_Localized: Winter Warm Clothing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001009
+    m_Localized: Workers request basic warm clothing to survive the cold season.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000010
+    m_Localized: Welfare Fund Contribution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001010
+    m_Localized: Union requests a substantial credit deposit to their welfare fund.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000000011
+    m_Localized: Adopt Welfare Policy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7300000001011
+    m_Localized: Union demands the adoption of the Employee Welfare Policy.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

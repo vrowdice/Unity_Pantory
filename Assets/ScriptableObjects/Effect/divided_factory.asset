@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetType: 1
   isGlobalEffect: 1
-  id: 
+  id: divided_factory
   displayName: 
   statType: 3
-  modifierType: 0
-  value: 0
-  durationDays: 0
+  modifierType: 1
+  value: -0.01
+  durationDays: 365
   targetId: 

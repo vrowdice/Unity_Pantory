@@ -176,6 +176,30 @@ public class TimeDataHandler : IDataHandlerEvents
         if (months > 0) _monthsPerYear = months;
     }
 
+    public void AdvanceOneDay()
+    {
+        DayProgress = 0f;
+        CurrentHour = 0;
+        AdvanceDayAfterHourRollover();
+    }
+
+    public void AdvanceOneMonth()
+    {
+        int daysRemaining = _daysPerMonth - Day;
+        for (int i = 0; i < daysRemaining; i++)
+        {
+            AdvanceOneDay();
+        }
+    }
+
+    public void AdvanceOneYear()
+    {
+        for (int i = 0; i < _monthsPerYear; i++)
+        {
+            AdvanceOneMonth();
+        }
+    }
+
     /// <summary>
     /// 모든 이벤트 구독을 초기화합니다.
     /// </summary>

@@ -22,4 +22,4 @@ MonoBehaviour:
   requirements: []
   recipeOutputs: []
   primaryOutputPerBatch: 2
-  initialAmount: 200
+  initialAmount: 0

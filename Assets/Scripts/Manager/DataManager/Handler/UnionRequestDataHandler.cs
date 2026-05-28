@@ -130,10 +130,7 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
             PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(request.requiredPolicyId);
             if (policyEntry == null || !policyEntry.state.isActive)
             {
-                if (!_dataManager.Policy.TrySetPolicyActive(request.requiredPolicyId, true))
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -382,12 +379,7 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
         if (HasPolicyRequirement(request))
         {
             PolicyEntry entry = _dataManager.Policy.GetPolicyEntry(request.requiredPolicyId);
-            if (entry == null)
-            {
-                return false;
-            }
-
-            if (!entry.state.isActive && entry.state.remainingMonths > 0)
+            if (entry == null || !entry.state.isActive)
             {
                 return false;
             }

@@ -15,9 +15,9 @@ MonoBehaviour:
   targetType: 1
   isGlobalEffect: 1
   id: policy_effect_employee_welfare_satisfaction
-  displayName: Policy — Employee Welfare (Satisfaction)
+  displayName: "Policy \u2014 Employee Welfare (Satisfaction)"
   statType: 3
   modifierType: 0
-  value: 1
+  value: 0.05
   durationDays: 0
   targetId: 

@@ -93,6 +93,54 @@ public partial class MarketActorDataHandler : IDataHandlerEvents, ITimeChangeHan
         return new Dictionary<string, MarketActorEntry>(_actorDic);
     }
 
+    public bool IsPlayerWealthRankFirstAmongCompanies(long playerWealth)
+    {
+        foreach (MarketActorEntry entry in _actorDic.Values)
+        {
+            if (entry?.data == null || entry.state == null)
+            {
+                continue;
+            }
+
+            if (entry.data.marketActorType != MarketActorType.Company)
+            {
+                continue;
+            }
+
+            if (entry.state.wealth > playerWealth)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public int GetPlayerCompanyRank(long playerWealth)
+    {
+        int rank = 1;
+
+        foreach (MarketActorEntry entry in _actorDic.Values)
+        {
+            if (entry?.data == null || entry.state == null)
+            {
+                continue;
+            }
+
+            if (entry.data.marketActorType != MarketActorType.Company)
+            {
+                continue;
+            }
+
+            if (entry.state.wealth > playerWealth)
+            {
+                rank++;
+            }
+        }
+
+        return rank;
+    }
+
     public void ModifyMarketActorTrust(string actorId, int trustChange)
     {
         if (_actorDic.TryGetValue(actorId, out MarketActorEntry entry))

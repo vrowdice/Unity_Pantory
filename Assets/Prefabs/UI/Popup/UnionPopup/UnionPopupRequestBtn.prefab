@@ -1193,6 +1193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278697af32b26ee45be57274ccafe3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _button: {fileID: 0}
   _titleText: {fileID: 9084802933702093229}
   _descriptionText: {fileID: 4066582095105807574}

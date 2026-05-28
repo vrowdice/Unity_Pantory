@@ -659,6 +659,26 @@ MonoBehaviour:
     m_Key: BankruptcyGameOverPopupWealthChart
     m_Metadata:
       m_Items: []
+  - m_Id: 43405946866663439
+    m_Key: GoalReward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663440
+    m_Key: GameOverPopupTitle_GovernmentDissolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663441
+    m_Key: GameOverPopupSummary_GovernmentDissolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663442
+    m_Key: GameOverPopupTitle_CompanyRankFirst
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43405946866663443
+    m_Key: GameOverPopupSummary_CompanyRankFirst
+    m_Metadata:
+      m_Items: []
   - m_Id: 43829247570026496
     m_Key: Bankruptcy
     m_Metadata:
@@ -687,8 +707,12 @@ MonoBehaviour:
     m_Key: Tutorial
     m_Metadata:
       m_Items: []
-  - m_Id: 44242199258742784
-    m_Key: CompletedGoal
+  - m_Id: 44601439007834112
+    m_Key: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44607573030633472
+    m_Key: GameOver
     m_Metadata:
       m_Items: []
   m_Metadata:

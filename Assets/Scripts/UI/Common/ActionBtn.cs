@@ -7,17 +7,34 @@ public class ActionBtn : BtnBase
     [SerializeField] private GameObject _selectedImage;
     [SerializeField] private TextMeshProUGUI _text;
 
+    private string _label = string.Empty;
     private Action _onClick;
 
     public void Init(string label, Action onClick)
     {
-        if (_text != null && !string.IsNullOrEmpty(label))
+        _label = label ?? string.Empty;
+        _onClick = onClick;
+
+        if (_text != null)
         {
-            _text.SetText(label);
+            DisableTextLocalization(_text);
+            if (!string.IsNullOrEmpty(_label))
+            {
+                _text.SetText(_label);
+            }
         }
 
-        _onClick = onClick;
         EnsureClickBound();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        if (_text != null && !string.IsNullOrEmpty(_label))
+        {
+            _text.SetText(_label);
+        }
     }
 
     protected override void HandleClick()
@@ -30,6 +47,18 @@ public class ActionBtn : BtnBase
         if (_selectedImage != null)
         {
             _selectedImage.SetActive(isHighlight);
+        }
+    }
+
+    private static void DisableTextLocalization(TextMeshProUGUI text)
+    {
+        MonoBehaviour[] behaviours = text.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            if (behaviours[i] != null && behaviours[i].GetType().Name == "LocalizeStringEvent")
+            {
+                behaviours[i].enabled = false;
+            }
         }
     }
 }

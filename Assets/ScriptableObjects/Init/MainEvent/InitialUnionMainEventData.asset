@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f3a9c2b1d8e4f6a5b0c3d7e9f1a2b4c, type: 3}
   m_Name: InitialUnionMainEventData
   m_EditorClassIdentifier: 
+  eventOverDate: 0
   announcementLocalizationKey: main_event_union
   announcementIcon: {fileID: 21300000, guid: 50cd4ec9ed786164aa98a47e4e616280, type: 3}
   openNewsAudio: {fileID: 8300000, guid: 1a042150e91d449449eccc09f2a03389, type: 3}
-  unionEmployeeCountToStart: 500
+  unionEmployeeCountToStart: 50
   unionDaysToComplete: 720
-  unionDailyCreditCost: 200
+  unionDailyCreditCost: 0
   cohesionSatisfactionBaseline: 0
   cohesionProgressPerSatisfactionPointPerDay: 0.05
   maxCohesionProgressGainPerDay: 2

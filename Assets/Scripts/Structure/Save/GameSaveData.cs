@@ -36,6 +36,12 @@ public class GameSaveData
     public bool skipNextBankruptcyDecrement;
     public bool isBankruptcyGameOver;
 
+    // Game Over
+    public int gameOverType;
+    public bool isGameOver;
+    public bool yearLimitResolved;
+    public bool companyRankFirstCelebrated;
+
     // Research Data
     public long researchPoint;
     public bool isAutoPatentMode;

@@ -77,6 +77,10 @@ crashlytics-build.properties
 Api.env
 Api.env.meta
 
+# CoInspector per-user editor preferences
+/[Aa]ssets/CoInspector/Editor/Settings/UserData.asset
+/[Aa]ssets/CoInspector/Editor/Settings/UserData.asset.meta
+
 # Addressables platform build output (auto-generated, empty folders)
 /[Aa]ssets/[Aa]ddressableAssetsData/[Aa]ndroid/
 /[Aa]ssets/[Aa]ddressableAssetsData/[Aa]ndroid.meta
