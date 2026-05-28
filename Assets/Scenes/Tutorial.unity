@@ -536,6 +536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tutorialRunner: {fileID: 590199396}
+  _tutorialSequence: {fileID: 11400000, guid: 5ace1afafb964bf9911f9a97200041d6, type: 2}
   _defaultPanelPosition: {x: -10000, y: 10000}
 --- !u!1001 &5992938681985129688
 PrefabInstance:

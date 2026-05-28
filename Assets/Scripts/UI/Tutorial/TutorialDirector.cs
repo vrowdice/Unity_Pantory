@@ -14,6 +14,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     private const int MinRoadTilesToAdvanceRoadStep = 1;
 
     [SerializeField] private BuildingSceneRunnerBase _tutorialRunner;
+    [SerializeField] private TutorialSequenceData _tutorialSequence;
     [SerializeField] private Vector2 _defaultPanelPosition = new Vector2(0f, -220f);
 
     private TutorialCanvas _tutorialCanvas;
@@ -25,47 +26,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     private bool _hasStarted;
     private TutorialGuidedPopup _activePopup;
 
-    private readonly List<TutorialSceneStepDefinition> _steps = new List<TutorialSceneStepDefinition>
-    {
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.EnableRemovalMode),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.RemovePracticeBuilding),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.EnableAutoEmployeePlacement),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.SelectBuilding, "logging_camp"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.PlaceBuilding, "logging_camp"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.SelectBuilding, "unload"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.PlaceBuilding, "unload"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.SelectBuilding, "road"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.PlaceBuilding, "road"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.SelectBuilding, "sawmill"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.PlaceBuilding, "sawmill"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.SelectBuilding, "road"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.PlaceBuilding, "road"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.SelectBuilding, "load"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.PlaceBuilding, "load"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.AssignBuildingResource, "unload"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.AssignBuildingResource, "sawmill"),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.StartTimePlay),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.OpenMarketPanel),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.AdjustMarketSell),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Message),
-        new TutorialSceneStepDefinition(TutorialSceneStepKind.Complete)
-    };
+    private int StepCount => _tutorialSequence != null ? _tutorialSequence.steps.Count : 0;
 
     private void Awake()
     {
@@ -101,6 +62,12 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (_hasStarted)
             yield break;
 
+        if (_tutorialSequence == null || StepCount == 0)
+        {
+            Debug.LogError("[TutorialDirector] TutorialSequenceData is missing or empty.");
+            yield break;
+        }
+
         _hasStarted = true;
         BeginStep(0);
     }
@@ -110,11 +77,11 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind != TutorialSceneStepKind.SelectBuilding)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind != TutorialSceneStepKind.SelectBuilding)
             return;
 
-        if (step.BuildingId == buildingId)
+        if (step.buildingId == buildingId)
             AdvanceAfterAction();
     }
 
@@ -123,15 +90,15 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction || _tutorialRunner == null)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.PlaceBuilding)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.PlaceBuilding)
         {
             if (IsPlacementGoalMet(step))
                 AdvanceAfterAction();
             return;
         }
 
-        if (step.Kind == TutorialSceneStepKind.RemovePracticeBuilding)
+        if (step.kind == TutorialSceneStepKind.RemovePracticeBuilding)
         {
             if (_tutorialRunner is TutorialRunner tutorialRunner &&
                 _practiceRemovalTargetWasPresent &&
@@ -145,8 +112,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction || !isOn)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.EnableRemovalMode)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.EnableRemovalMode)
             AdvanceAfterAction();
     }
 
@@ -155,8 +122,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction || !isOn)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
             AdvanceAfterAction();
     }
 
@@ -165,8 +132,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.StartTimePlay)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.StartTimePlay)
             AdvanceAfterAction();
     }
 
@@ -175,11 +142,11 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction || string.IsNullOrEmpty(buildingId))
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind != TutorialSceneStepKind.AssignBuildingResource)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind != TutorialSceneStepKind.AssignBuildingResource)
             return;
 
-        if (step.BuildingId == buildingId)
+        if (step.buildingId == buildingId)
             AdvanceAfterAction();
     }
 
@@ -188,8 +155,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.OpenMarketPanel && panelType == MainPanelType.Market)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.OpenMarketPanel && panelType == MainPanelType.Market)
             AdvanceAfterAction();
     }
 
@@ -198,8 +165,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.AdjustMarketSell)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.AdjustMarketSell)
             AdvanceAfterAction();
     }
 
@@ -208,28 +175,28 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         _currentStepIndex = stepIndex;
         _isWaitingForAction = false;
 
-        if (_currentStepIndex >= _steps.Count)
+        if (_currentStepIndex >= StepCount)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
         ApplyInputGate(step);
 
-        if (step.Kind == TutorialSceneStepKind.PlaceBuilding && _tutorialRunner != null)
-            _placementBaselineCount = GetPlacementCount(step.BuildingId);
+        if (step.kind == TutorialSceneStepKind.PlaceBuilding && _tutorialRunner != null)
+            _placementBaselineCount = GetPlacementCount(step.buildingId);
 
-        if (step.Kind == TutorialSceneStepKind.RemovePracticeBuilding && _tutorialRunner is TutorialRunner tutorialRunner)
+        if (step.kind == TutorialSceneStepKind.RemovePracticeBuilding && _tutorialRunner is TutorialRunner tutorialRunner)
             _practiceRemovalTargetWasPresent = tutorialRunner.IsPracticeRemovalTargetPresent();
 
-        if (step.Kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
+        if (step.kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
             _tutorialCanvas?.PrepareAutoEmployeePlacementStep();
 
-        if (step.Kind == TutorialSceneStepKind.AdjustMarketSell)
+        if (step.kind == TutorialSceneStepKind.AdjustMarketSell)
             _tutorialCanvas?.PrepareMarketSellStep();
 
-        if (step.Kind == TutorialSceneStepKind.SelectBuilding)
-            _tutorialCanvas?.SelectBuildingTypeForBuilding(step.BuildingId);
-        else if (step.Kind == TutorialSceneStepKind.PlaceBuilding)
-            _tutorialCanvas?.SelectBuildingTypeForBuilding(step.BuildingId);
+        if (step.kind == TutorialSceneStepKind.SelectBuilding)
+            _tutorialCanvas?.SelectBuildingTypeForBuilding(step.buildingId);
+        else if (step.kind == TutorialSceneStepKind.PlaceBuilding)
+            _tutorialCanvas?.SelectBuildingTypeForBuilding(step.buildingId);
 
         if (step.RequiresAction)
             _isWaitingForAction = true;
@@ -238,15 +205,15 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         TryEvaluatePendingAction();
     }
 
-    private void ApplyInputGate(TutorialSceneStepDefinition step)
+    private void ApplyInputGate(TutorialStep step)
     {
-        switch (step.Kind)
+        switch (step.kind)
         {
             case TutorialSceneStepKind.SelectBuilding:
-                TutorialInputGate.Configure(true, new[] { step.BuildingId });
+                TutorialInputGate.Configure(true, new[] { step.buildingId });
                 break;
             case TutorialSceneStepKind.PlaceBuilding:
-                TutorialInputGate.Configure(true, new[] { step.BuildingId });
+                TutorialInputGate.Configure(true, new[] { step.buildingId });
                 break;
             case TutorialSceneStepKind.OpenMarketPanel:
                 TutorialInputGate.Configure(true, allowedPanels: new[] { MainPanelType.Market });
@@ -276,7 +243,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         }
     }
 
-    private void ShowStepPopup(TutorialSceneStepDefinition step)
+    private void ShowStepPopup(TutorialStep step)
     {
         if (UIManager.Instance == null)
         {
@@ -327,13 +294,13 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         if (!_isWaitingForAction)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
 
-        switch (step.Kind)
+        switch (step.kind)
         {
             case TutorialSceneStepKind.SelectBuilding:
                 BuildingData selectedBuilding = _tutorialRunner?.PlacementHandler?.SelectedBuilding;
-                if (selectedBuilding != null && selectedBuilding.id == step.BuildingId)
+                if (selectedBuilding != null && selectedBuilding.id == step.buildingId)
                     AdvanceAfterAction();
                 break;
 
@@ -374,7 +341,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
             case TutorialSceneStepKind.AssignBuildingResource:
                 if (_tutorialRunner?.GridHandler != null &&
-                    _tutorialRunner.GridHandler.AnyPlacedBuildingHasConfiguredOutputResource(step.BuildingId))
+                    _tutorialRunner.GridHandler.AnyPlacedBuildingHasConfiguredOutputResource(step.buildingId))
                     AdvanceAfterAction();
                 break;
         }
@@ -390,7 +357,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
     private void OnGuidedPopupClosedUnexpectedly()
     {
-        if (!_hasStarted || _currentStepIndex >= _steps.Count || _activePopup != null)
+        if (!_hasStarted || _currentStepIndex >= StepCount || _activePopup != null)
             return;
 
         StartCoroutine(RestorePopupNextFrame());
@@ -400,30 +367,33 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     {
         yield return null;
 
-        if (!_hasStarted || _currentStepIndex >= _steps.Count || _activePopup != null)
+        if (!_hasStarted || _currentStepIndex >= StepCount || _activePopup != null)
             yield break;
 
         _isPopupVisible = true;
-        ShowStepPopup(_steps[_currentStepIndex]);
+        ShowStepPopup(_tutorialSequence.steps[_currentStepIndex]);
     }
 
-    private GameObject ResolveFocusTarget(TutorialSceneStepDefinition step)
+    private GameObject ResolveFocusTarget(TutorialStep step)
     {
-        if (_currentStepIndex == RotateBtnStepIndex)
-            return _tutorialCanvas?.FindRotateBtnContainer();
+        switch (step.focusTarget)
+        {
+            case TutorialUiFocusTarget.RotateButton:
+                return _tutorialCanvas?.FindRotateBtnContainer();
+            case TutorialUiFocusTarget.TimePlayPanel:
+                return _tutorialCanvas?.FindTimePlayPanel();
+            case TutorialUiFocusTarget.ResourcePanel:
+                return _tutorialCanvas?.FindResourceScrollView();
+            case TutorialUiFocusTarget.CreditsInfo:
+                return _tutorialCanvas?.FindCreditTopInfoToggle();
+        }
 
-        if (_currentStepIndex == TimePlayPanelStepIndex)
-            return _tutorialCanvas?.FindTimePlayPanel();
-
-        if (_currentStepIndex == ResourcePanelStepIndex)
-            return _tutorialCanvas?.FindResourceScrollView();
-
-        switch (step.Kind)
+        switch (step.kind)
         {
             case TutorialSceneStepKind.SelectBuilding:
                 return _tutorialCanvas != null
-                    ? _tutorialCanvas.FindBuildingButton(step.BuildingId)?.gameObject
-                    : TutorialUiAnchor.Resolve($"Building_{step.BuildingId}");
+                    ? _tutorialCanvas.FindBuildingButton(step.buildingId)?.gameObject
+                    : TutorialUiAnchor.Resolve($"Building_{step.buildingId}");
             case TutorialSceneStepKind.EnableRemovalMode:
                 return _tutorialCanvas != null
                     ? _tutorialCanvas.FindRemovalModeSwitch()?.gameObject
@@ -441,24 +411,17 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             case TutorialSceneStepKind.AdjustMarketSell:
                 return _tutorialCanvas?.FindMarketSellDecreaseButton();
             default:
-                if (_currentStepIndex == CreditsInfoStepIndex)
-                    return _tutorialCanvas?.FindCreditTopInfoToggle();
                 return null;
         }
     }
-
-    private const int RotateBtnStepIndex = 11;
-    private const int TimePlayPanelStepIndex = 30;
-    private const int ResourcePanelStepIndex = 32;
-    private const int CreditsInfoStepIndex = 36;
 
     private void OnPopupAdvanceRequested()
     {
         if (!_isPopupVisible)
             return;
 
-        TutorialSceneStepDefinition step = _steps[_currentStepIndex];
-        if (step.Kind == TutorialSceneStepKind.Complete)
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.Complete)
         {
             CompleteTutorial();
             return;
@@ -478,13 +441,13 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         return _tutorialRunner.GridHandler.CountPlacedLayoutEntries(buildingId);
     }
 
-    private bool IsPlacementGoalMet(TutorialSceneStepDefinition step)
+    private bool IsPlacementGoalMet(TutorialStep step)
     {
-        if (_tutorialRunner == null || step.Kind != TutorialSceneStepKind.PlaceBuilding)
+        if (_tutorialRunner == null || step.kind != TutorialSceneStepKind.PlaceBuilding)
             return false;
 
-        int currentCount = GetPlacementCount(step.BuildingId);
-        if (step.BuildingId == "road")
+        int currentCount = GetPlacementCount(step.buildingId);
+        if (step.buildingId == "road")
             return currentCount >= _placementBaselineCount + MinRoadTilesToAdvanceRoadStep;
 
         return currentCount > _placementBaselineCount;
@@ -510,7 +473,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         _isPopupVisible = false;
         _currentStepIndex++;
 
-        if (_currentStepIndex >= _steps.Count)
+        if (_currentStepIndex >= StepCount)
         {
             CompleteTutorial();
             return;
@@ -526,43 +489,5 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         DataManager.Instance?.Player?.MarkIntroTutorialCompleted();
         DataManager.Instance?.ResetToNewGame();
         SceneLoadManager.Instance?.LoadScene("Main");
-    }
-
-    private enum TutorialSceneStepKind
-    {
-        Message,
-        EnableRemovalMode,
-        RemovePracticeBuilding,
-        EnableAutoEmployeePlacement,
-        SelectBuilding,
-        PlaceBuilding,
-        AssignBuildingResource,
-        StartTimePlay,
-        OpenMarketPanel,
-        AdjustMarketSell,
-        Complete
-    }
-
-    private readonly struct TutorialSceneStepDefinition
-    {
-        public TutorialSceneStepKind Kind { get; }
-        public string BuildingId { get; }
-
-        public bool RequiresAction =>
-            Kind == TutorialSceneStepKind.EnableRemovalMode ||
-            Kind == TutorialSceneStepKind.RemovePracticeBuilding ||
-            Kind == TutorialSceneStepKind.EnableAutoEmployeePlacement ||
-            Kind == TutorialSceneStepKind.SelectBuilding ||
-            Kind == TutorialSceneStepKind.PlaceBuilding ||
-            Kind == TutorialSceneStepKind.AssignBuildingResource ||
-            Kind == TutorialSceneStepKind.StartTimePlay ||
-            Kind == TutorialSceneStepKind.OpenMarketPanel ||
-            Kind == TutorialSceneStepKind.AdjustMarketSell;
-
-        public TutorialSceneStepDefinition(TutorialSceneStepKind kind, string buildingId = null)
-        {
-            Kind = kind;
-            BuildingId = buildingId;
-        }
     }
 }

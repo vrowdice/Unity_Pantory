@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22575b9745dc482e9d28f113829e18cf, type: 3}
+  m_Name: TutorialSceneSequence
+  m_EditorClassIdentifier: 
+  steps:
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 1
+    buildingId: 
+    focusTarget: 0
+  - kind: 2
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 3
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 4
+    buildingId: logging_camp
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 1
+  - kind: 5
+    buildingId: logging_camp
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 4
+    buildingId: unload
+    focusTarget: 0
+  - kind: 5
+    buildingId: unload
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 4
+    buildingId: road
+    focusTarget: 0
+  - kind: 5
+    buildingId: road
+    focusTarget: 0
+  - kind: 4
+    buildingId: sawmill
+    focusTarget: 0
+  - kind: 5
+    buildingId: sawmill
+    focusTarget: 0
+  - kind: 4
+    buildingId: road
+    focusTarget: 0
+  - kind: 5
+    buildingId: road
+    focusTarget: 0
+  - kind: 4
+    buildingId: load
+    focusTarget: 0
+  - kind: 5
+    buildingId: load
+    focusTarget: 0
+  - kind: 6
+    buildingId: unload
+    focusTarget: 0
+  - kind: 6
+    buildingId: sawmill
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 7
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 3
+  - kind: 0
+    buildingId: 
+    focusTarget: 0
+  - kind: 8
+    buildingId: 
+    focusTarget: 0
+  - kind: 9
+    buildingId: 
+    focusTarget: 0
+  - kind: 0
+    buildingId: 
+    focusTarget: 4
+  - kind: 10
+    buildingId: 
+    focusTarget: 0
