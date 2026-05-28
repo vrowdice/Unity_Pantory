@@ -718,6 +718,10 @@ MonoBehaviour:
     m_Localized: Game Over
     m_Metadata:
       m_Items: []
+  - m_Id: 44695410453135360
+    m_Localized: Completed Goal
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

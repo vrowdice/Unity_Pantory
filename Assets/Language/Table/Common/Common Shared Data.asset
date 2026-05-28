@@ -715,6 +715,10 @@ MonoBehaviour:
     m_Key: GameOver
     m_Metadata:
       m_Items: []
+  - m_Id: 44695410453135360
+    m_Key: CompletedGoal
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
