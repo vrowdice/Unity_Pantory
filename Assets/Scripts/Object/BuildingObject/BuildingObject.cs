@@ -23,6 +23,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     [SerializeField] private int _assignedTechnicians;
 
     private GameObject _outgoingIconContainer;
+    private readonly List<ResourcePacket> _failedReturnPackets = new List<ResourcePacket>();
     private readonly Queue<ResourcePacket> _inputBuffer = new Queue<ResourcePacket>();
     private readonly Queue<ResourcePacket> _outputBuffer = new Queue<ResourcePacket>();
 
@@ -78,8 +79,9 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         _collider.size = new Vector2(rotatedSize.x, rotatedSize.y);
         _collider.offset = Vector2.zero;
 
-        RebuildOutputGridPositions();
-        UpdateOutputIndicators();
+        OutputGridPositions = BuildingCalculationUtils.GetOutputGridPositions(_origin, _size, _rotation);
+        if (!(_buildingData is LoadStationData) && !(_buildingData is RawMaterialFactoryData))
+            OutputIndicatorHelper.SpawnOnRightEdge(transform, _outputIndicatorPrefab, _size);
         EnsureDefaultSelectedResourceForRawFactory();
         RefreshOutgoingResourceIcons();
 
@@ -169,35 +171,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         }
     }
 
-    private void RebuildOutputGridPositions()
-    {
-        OutputGridPositions = BuildingCalculationUtils.GetOutputGridPositions(_origin, _size, _rotation);
-    }
-
-    private void UpdateOutputIndicators()
-    {
-        if (_buildingData is LoadStationData || _buildingData is RawMaterialFactoryData) return;
-        foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
-        {
-            GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
-            indicator.transform.localPosition = localPos;
-            indicator.transform.localRotation = Quaternion.identity;
-        }
-    }
-
-    private static Dictionary<string, int> AggregateQueueCounts(Queue<ResourcePacket> queue)
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-        foreach (ResourcePacket p in queue)
-        {
-            if (string.IsNullOrEmpty(p.Id)) continue;
-            if (counts.TryGetValue(p.Id, out int v)) counts[p.Id] = v + p.Amount;
-            else counts[p.Id] = p.Amount;
-        }
-
-        return counts;
-    }
-
     private void OnDestroy()
     {
         transform.DOKill(false);
@@ -218,7 +191,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     public bool TryForwardTo(IResourceNode destination, FlowDirection outputDirection)
     {
         if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
-            return TryForwardOutputBufferTo(destination, outputDirection);
+            return TryForwardFromBuffer(_outputBuffer, destination, outputDirection, playTransitFx: !(_buildingData is UnloadStationData));
 
         return false;
     }
@@ -230,62 +203,45 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         return true;
     }
 
-    private bool TryForwardOutputBufferTo(IResourceNode destination, FlowDirection outputDirection)
+    private bool TryForwardFromBuffer(Queue<ResourcePacket> buffer, IResourceNode destination, FlowDirection outputDirection, bool playTransitFx)
     {
-        if (_outputBuffer.Count == 0) return false;
-        ResourcePacket packet = _outputBuffer.Peek();
+        if (buffer.Count == 0) return false;
+        ResourcePacket packet = buffer.Peek();
         packet.TravelDirection = outputDirection;
         if (!destination.TryPush(packet)) return false;
-        bool destIsRoad = destination is RoadObject || destination is DualLaneRoadObject;
-        if (!(_buildingData is UnloadStationData) && !destIsRoad)
+
+        if (playTransitFx && !(destination is RoadObject) && !(destination is DualLaneRoadObject))
             ResourceFlowFx.TryPlayNodeTransit(packet.Id, this, destination);
-        _outputBuffer.Dequeue();
+
+        buffer.Dequeue();
         return true;
     }
 
-    private bool TryForwardInputBufferTo(IResourceNode destination, FlowDirection outputDirection)
-    {
-        if (_inputBuffer.Count == 0) return false;
-        ResourcePacket packet = _inputBuffer.Peek();
-        packet.TravelDirection = outputDirection;
-        if (!destination.TryPush(packet)) return false;
-        _inputBuffer.Dequeue();
-        return true;
-    }
-
-    public Dictionary<string, int> GetRuntimeInputResourceCounts() => AggregateQueueCounts(_inputBuffer);
-    public Dictionary<string, int> GetRuntimeOutputResourceCounts() => AggregateQueueCounts(_outputBuffer);
+    public Dictionary<string, int> GetRuntimeInputResourceCounts() => ResourcePacketQueueUtils.AggregateCounts(_inputBuffer);
+    public Dictionary<string, int> GetRuntimeOutputResourceCounts() => ResourcePacketQueueUtils.AggregateCounts(_outputBuffer);
 
     /// <summary>
     /// 입·출력 큐의 자원을 모두 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 플레이어 보유에 반영합니다. 실패한 패킷은 해당 큐에 다시 넣습니다.
     /// </summary>
     public void ReturnAllRuntimeBuffersToDataManager(DataManager dataManager)
     {
-        List<ResourcePacket> failedInput = new List<ResourcePacket>();
-        while (_inputBuffer.Count > 0)
+        ReturnBufferToDataManager(_inputBuffer, dataManager);
+        ReturnBufferToDataManager(_outputBuffer, dataManager);
+    }
+
+    private void ReturnBufferToDataManager(Queue<ResourcePacket> buffer, DataManager dataManager)
+    {
+        _failedReturnPackets.Clear();
+        while (buffer.Count > 0)
         {
-            ResourcePacket p = _inputBuffer.Dequeue();
-            if (string.IsNullOrEmpty(p.Id))
-                continue;
-            if (!dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
-                failedInput.Add(p);
+            ResourcePacket packet = buffer.Dequeue();
+            if (string.IsNullOrEmpty(packet.Id)) continue;
+            if (!dataManager.Resource.ModifyResourceCount(packet.Id, packet.Amount))
+                _failedReturnPackets.Add(packet);
         }
 
-        foreach (ResourcePacket p in failedInput)
-            _inputBuffer.Enqueue(p);
-
-        List<ResourcePacket> failedOutput = new List<ResourcePacket>();
-        while (_outputBuffer.Count > 0)
-        {
-            ResourcePacket p = _outputBuffer.Dequeue();
-            if (string.IsNullOrEmpty(p.Id))
-                continue;
-            if (!dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
-                failedOutput.Add(p);
-        }
-
-        foreach (ResourcePacket p in failedOutput)
-            _outputBuffer.Enqueue(p);
+        for (int i = 0; i < _failedReturnPackets.Count; i++)
+            buffer.Enqueue(_failedReturnPackets[i]);
     }
 
     /// <summary>

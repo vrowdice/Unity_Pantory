@@ -63,7 +63,7 @@ public partial class BuildingObject
 
     private bool InputBufferSatisfies(Dictionary<string, int> need)
     {
-        Dictionary<string, int> have = AggregateQueueCounts(_inputBuffer);
+        Dictionary<string, int> have = ResourcePacketQueueUtils.AggregateCounts(_inputBuffer);
         foreach (KeyValuePair<string, int> kvp in need)
         {
             if (!have.TryGetValue(kvp.Key, out int h) || h < kvp.Value)

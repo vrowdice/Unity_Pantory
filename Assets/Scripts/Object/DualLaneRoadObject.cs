@@ -1,18 +1,36 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 {
+    private static readonly Vector2Int[] NeighborDeltas =
+    {
+        new Vector2Int(0, -1),
+        new Vector2Int(1, 0),
+        new Vector2Int(0, 1),
+        new Vector2Int(-1, 0)
+    };
+
     [SerializeField] private SpriteRenderer _viewObjRenderer;
     [SerializeField] private Vector2Int _gridPosition;
     [SerializeField] private int _rotation;
     [SerializeField] private int _maxCapacityPerLane = 8;
     [SerializeField] private float _heldIconScale = 0.14f;
     [SerializeField] private BuildingData _sourceBuildingData;
+    [SerializeField] private GameObject _outputIndicatorPrefab;
+
+    [Header("Splitter")]
+    [SerializeField] private Transform _splitterArrowRoot;
+    [SerializeField] private Sprite _splitterArrow;
+    [SerializeField] private float _splitterVisualTweenDuration = 0.2f;
 
     private readonly Queue<ResourcePacket> _laneA = new Queue<ResourcePacket>();
     private readonly Queue<ResourcePacket> _laneB = new Queue<ResourcePacket>();
     private GameObject _heldIconContainer;
+    private Transform _outputIndicatorVisual;
+    private Tween _splitterArrowTween;
+    private Tween _splitterIndicatorTween;
     private bool _splitterToggle;
     private bool _isSplitter;
 
@@ -29,9 +47,20 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         _isSplitter = sourceBuildingData != null && sourceBuildingData.id == "splitter";
         transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
         RebuildOutputGridPositions();
+
+        if (_splitterArrowRoot != null)
+            _splitterArrowRoot.gameObject.SetActive(_isSplitter);
+
+        if (_isSplitter)
+        {
+            EnsureSplitterVisuals();
+            SetSplitterOutputVisual(GetOutputDirection(0), true);
+        }
+
         RefreshHeldResourceIcons();
 
-        _viewObjRenderer.sprite = _sourceBuildingData.buildingSprite;
+        if (_sourceBuildingData != null)
+            _viewObjRenderer.sprite = _sourceBuildingData.buildingSprite;
     }
 
     public bool TryPush(ResourcePacket packet)
@@ -39,58 +68,20 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         if (packet == null) return false;
 
         if (_isSplitter)
-        {
-            Queue<ResourcePacket> targetLane = _splitterToggle ? _laneB : _laneA;
-            FlowDirection splitterDirection = _splitterToggle ? GetOutputDirection(1) : GetOutputDirection(0);
-            _splitterToggle = !_splitterToggle;
-            if (targetLane.Count >= _maxCapacityPerLane) return false;
-            packet.TravelDirection = splitterDirection;
-            targetLane.Enqueue(packet);
-            packet.BlockRoadForwardThisTick = true;
-            RefreshHeldResourceIcons();
-            ResourceFlowFx.TryPulseHeldIconContainer(_heldIconContainer, transform.position);
-            return true;
-        }
+            return TryPushSplitter(packet);
 
-        if (IsVertical(packet.TravelDirection))
-        {
-            if (_laneA.Count >= _maxCapacityPerLane) return false;
-            _laneA.Enqueue(packet);
-        }
-        else if (IsHorizontal(packet.TravelDirection))
-        {
-            if (_laneB.Count >= _maxCapacityPerLane) return false;
-            _laneB.Enqueue(packet);
-        }
-        else if (_laneA.Count <= _laneB.Count)
-        {
-            if (_laneA.Count >= _maxCapacityPerLane) return false;
-            _laneA.Enqueue(packet);
-        }
-        else
-        {
-            if (_laneB.Count >= _maxCapacityPerLane) return false;
-            _laneB.Enqueue(packet);
-        }
+        Queue<ResourcePacket> lane = SelectLaneForPacket(packet);
+        if (lane.Count >= _maxCapacityPerLane) return false;
 
+        lane.Enqueue(packet);
         packet.BlockRoadForwardThisTick = true;
         RefreshHeldResourceIcons();
         ResourceFlowFx.TryPulseHeldIconContainer(_heldIconContainer, transform.position);
         return true;
     }
 
-    public void ResetRoadForwardGatesForQueuedPackets()
-    {
-        foreach (ResourcePacket packet in _laneA)
-        {
-            if (packet != null) packet.BlockRoadForwardThisTick = false;
-        }
-
-        foreach (ResourcePacket packet in _laneB)
-        {
-            if (packet != null) packet.BlockRoadForwardThisTick = false;
-        }
-    }
+    public void ResetRoadForwardGatesForQueuedPackets() =>
+        ResourcePacketQueueUtils.ResetRoadForwardGates(_laneA, _laneB);
 
     public bool TryForwardToCell(Vector2Int outCell, IResourceNode destination)
     {
@@ -99,15 +90,19 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         if (_isSplitter)
         {
             if (OutputGridPositions.Count < 2) return false;
-            if (outCell == OutputGridPositions[0]) return TryForwardLaneAndRefresh(_laneA, destination, GetOutputDirection(0));
-            if (outCell == OutputGridPositions[1]) return TryForwardLaneAndRefresh(_laneB, destination, GetOutputDirection(1));
+            if (outCell == OutputGridPositions[0])
+                return TryForwardLaneAndRefresh(_laneA, destination, GetOutputDirection(0));
+            if (outCell == OutputGridPositions[1])
+                return TryForwardLaneAndRefresh(_laneB, destination, GetOutputDirection(1));
             return false;
         }
 
-        FlowDirection outDirection = DirectionFromDelta(outCell - _gridPosition);
+        FlowDirection outDirection = GridFlowUtils.DirectionFromDelta(outCell - _gridPosition);
         if (outDirection == FlowDirection.None) return false;
-        if (IsVertical(outDirection)) return TryForwardLaneAndRefresh(_laneA, destination, outDirection);
-        if (IsHorizontal(outDirection)) return TryForwardLaneAndRefresh(_laneB, destination, outDirection);
+        if (GridFlowUtils.IsVertical(outDirection))
+            return TryForwardLaneAndRefresh(_laneA, destination, outDirection);
+        if (GridFlowUtils.IsHorizontal(outDirection))
+            return TryForwardLaneAndRefresh(_laneB, destination, outDirection);
         return true;
     }
 
@@ -118,20 +113,9 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         data.y = _gridPosition.y;
         data.rotation = _rotation;
         data.roadDataId = _sourceBuildingData != null ? _sourceBuildingData.id : null;
-        data.sourceBuildingDataId = _sourceBuildingData != null ? _sourceBuildingData.id : null;
-
-        foreach (ResourcePacket packet in _laneA)
-        {
-            if (packet == null || string.IsNullOrEmpty(packet.Id)) continue;
-            data.buffer.Add(new ResourcePacketSaveData(packet.Id, Mathf.Max(1, packet.Amount), packet.TravelDirection));
-        }
-
-        foreach (ResourcePacket packet in _laneB)
-        {
-            if (packet == null || string.IsNullOrEmpty(packet.Id)) continue;
-            data.buffer.Add(new ResourcePacketSaveData(packet.Id, Mathf.Max(1, packet.Amount), packet.TravelDirection));
-        }
-
+        data.sourceBuildingDataId = data.roadDataId;
+        ResourcePacketQueueUtils.ExportToSaveBuffer(_laneA, data.buffer);
+        ResourcePacketQueueUtils.ExportToSaveBuffer(_laneB, data.buffer);
         return data;
     }
 
@@ -139,17 +123,41 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
     {
         _laneA.Clear();
         _laneB.Clear();
-        if (saveData == null || saveData.buffer == null) return;
+        if (saveData?.buffer == null) return;
 
         for (int i = 0; i < saveData.buffer.Count; i++)
         {
             ResourcePacketSaveData saved = saveData.buffer[i];
             if (saved == null || string.IsNullOrEmpty(saved.id)) continue;
-            if (_laneA.Count <= _laneB.Count) _laneA.Enqueue(new ResourcePacket(saved.id, Mathf.Max(1, saved.amount), saved.direction));
-            else _laneB.Enqueue(new ResourcePacket(saved.id, Mathf.Max(1, saved.amount), saved.direction));
+
+            Queue<ResourcePacket> lane = _laneA.Count <= _laneB.Count ? _laneA : _laneB;
+            lane.Enqueue(new ResourcePacket(saved.id, Mathf.Max(1, saved.amount), saved.direction));
         }
 
         RefreshHeldResourceIcons();
+    }
+
+    private bool TryPushSplitter(ResourcePacket packet)
+    {
+        Queue<ResourcePacket> targetLane = _splitterToggle ? _laneB : _laneA;
+        FlowDirection splitterDirection = _splitterToggle ? GetOutputDirection(1) : GetOutputDirection(0);
+        _splitterToggle = !_splitterToggle;
+        if (targetLane.Count >= _maxCapacityPerLane) return false;
+
+        packet.TravelDirection = splitterDirection;
+        targetLane.Enqueue(packet);
+        packet.BlockRoadForwardThisTick = true;
+        SetSplitterOutputVisual(splitterDirection, false);
+        RefreshHeldResourceIcons();
+        ResourceFlowFx.TryPulseHeldIconContainer(_heldIconContainer, transform.position);
+        return true;
+    }
+
+    private Queue<ResourcePacket> SelectLaneForPacket(ResourcePacket packet)
+    {
+        if (GridFlowUtils.IsVertical(packet.TravelDirection)) return _laneA;
+        if (GridFlowUtils.IsHorizontal(packet.TravelDirection)) return _laneB;
+        return _laneA.Count <= _laneB.Count ? _laneA : _laneB;
     }
 
     private void RebuildOutputGridPositions()
@@ -157,17 +165,63 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         OutputGridPositions.Clear();
         if (_isSplitter)
         {
-            Vector2Int right = RotateDirectionClockwise(new Vector2Int(1, 0), _rotation);
-            Vector2Int down = RotateDirectionClockwise(new Vector2Int(0, 1), _rotation);
+            Vector2Int right = GridFlowUtils.RotateCellClockwise(new Vector2Int(1, 0), _rotation);
+            Vector2Int down = GridFlowUtils.RotateCellClockwise(new Vector2Int(0, 1), _rotation);
             OutputGridPositions.Add(_gridPosition + right);
             OutputGridPositions.Add(_gridPosition + down);
             return;
         }
 
-        OutputGridPositions.Add(_gridPosition + new Vector2Int(0, -1));
-        OutputGridPositions.Add(_gridPosition + new Vector2Int(1, 0));
-        OutputGridPositions.Add(_gridPosition + new Vector2Int(0, 1));
-        OutputGridPositions.Add(_gridPosition + new Vector2Int(-1, 0));
+        for (int i = 0; i < NeighborDeltas.Length; i++)
+            OutputGridPositions.Add(_gridPosition + NeighborDeltas[i]);
+    }
+
+    private void EnsureSplitterVisuals()
+    {
+        if (_splitterArrowRoot != null && _splitterArrow != null)
+        {
+            SpriteRenderer renderer = _splitterArrowRoot.GetComponent<SpriteRenderer>();
+            if (renderer == null)
+                renderer = _splitterArrowRoot.gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = _splitterArrow;
+            renderer.sortingOrder = 1;
+            _splitterArrowRoot.localPosition = Vector3.zero;
+        }
+
+        if (_outputIndicatorVisual == null && _outputIndicatorPrefab != null)
+        {
+            GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
+            _outputIndicatorVisual = indicator.transform;
+            OutputIndicatorHelper.ApplyLocalPlacement(_outputIndicatorVisual, Vector2Int.one, OutputIndicatorEdge.Right);
+        }
+    }
+
+    private void SetSplitterOutputVisual(FlowDirection direction, bool immediate)
+    {
+        if (!_isSplitter) return;
+
+        OutputIndicatorEdge edge = OutputIndicatorHelper.EdgeFromSplitterFlow(direction, GetOutputDirection(1));
+        float arrowRotationZ = OutputIndicatorHelper.GetSplitterArrowRotationZ(edge);
+        float indicatorRotationZ = BuildingCalculationUtils.GetOutputIndicatorLocalRotationZ(edge);
+
+        OutputIndicatorHelper.SetLocalRotationZ(_splitterArrowRoot, arrowRotationZ, immediate, _splitterVisualTweenDuration, ref _splitterArrowTween);
+        OutputIndicatorHelper.SetLocalRotationZ(_outputIndicatorVisual, indicatorRotationZ, immediate, _splitterVisualTweenDuration, ref _splitterIndicatorTween);
+    }
+
+    private void DestroySplitterVisuals()
+    {
+        _splitterArrowTween?.Kill();
+        _splitterIndicatorTween?.Kill();
+        _splitterArrowTween = null;
+        _splitterIndicatorTween = null;
+        _splitterArrowRoot?.DOKill();
+        _outputIndicatorVisual?.DOKill();
+
+        if (_outputIndicatorVisual != null)
+        {
+            Destroy(_outputIndicatorVisual.gameObject);
+            _outputIndicatorVisual = null;
+        }
     }
 
     private bool TryForwardLaneAndRefresh(Queue<ResourcePacket> lane, IResourceNode destination, FlowDirection outputDirection)
@@ -182,98 +236,30 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 
         lane.Dequeue();
 
-        bool destIsRoad = destination is RoadObject || destination is DualLaneRoadObject;
-        if (!destIsRoad)
+        if (!(destination is RoadObject) && !(destination is DualLaneRoadObject))
             ResourceFlowFx.TryPlayNodeTransit(packet.Id, this, destination);
 
         RefreshHeldResourceIcons();
         return true;
     }
 
-    private Dictionary<string, int> BuildHeldResourceCounts()
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-        AggregateLaneCounts(_laneA, counts);
-        AggregateLaneCounts(_laneB, counts);
-        return counts;
-    }
-
-    private static void AggregateLaneCounts(Queue<ResourcePacket> lane, Dictionary<string, int> counts)
-    {
-        foreach (ResourcePacket packet in lane)
-        {
-            if (packet == null || string.IsNullOrEmpty(packet.Id)) continue;
-            if (counts.TryGetValue(packet.Id, out int current)) counts[packet.Id] = current + packet.Amount;
-            else counts[packet.Id] = packet.Amount;
-        }
-    }
-
-    private void RefreshHeldResourceIcons()
-    {
-        ClearHeldIconContainer();
-
-        if (!ResourceFlowFx.IsWorldPointVisible(transform.position))
-            return;
-
-        GameManager gameManager = GameManager.Instance;
-        Transform worldCanvas = gameManager.GetWorldCanvas();
-        if (worldCanvas == null) return;
-        Dictionary<string, int> counts = BuildHeldResourceCounts();
-        if (counts == null || counts.Count == 0) return;
-
-        Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
-        _heldIconContainer = UIManager.Instance.CreateResourceImageContainer(
-            worldCanvas,
-            $"DualRoadHeldIcons_{gameObject.GetInstanceID()}",
-            worldPosition,
+    private void RefreshHeldResourceIcons() =>
+        HeldResourceIconHelper.Refresh(
+            ref _heldIconContainer,
+            transform,
             _heldIconScale,
-            counts);
-    }
-
-    private void ClearHeldIconContainer()
-    {
-        if (_heldIconContainer == null) return;
-        PoolingManager.Instance?.ClearChildrenToPool(_heldIconContainer.transform);
-        Destroy(_heldIconContainer);
-        _heldIconContainer = null;
-    }
+            "DualRoadHeldIcons",
+            ResourcePacketQueueUtils.AggregateCounts(_laneA, _laneB));
 
     private void OnDestroy()
     {
-        ClearHeldIconContainer();
-    }
-
-    private static Vector2Int RotateDirectionClockwise(Vector2Int direction, int rotation)
-    {
-        int normalized = ((rotation % 4) + 4) % 4;
-        Vector2Int current = direction;
-        for (int i = 0; i < normalized; i++)
-            current = new Vector2Int(-current.y, current.x);
-        return current;
-    }
-
-    private static bool IsVertical(FlowDirection direction)
-    {
-        return direction == FlowDirection.Up || direction == FlowDirection.Down;
-    }
-
-    private static bool IsHorizontal(FlowDirection direction)
-    {
-        return direction == FlowDirection.Left || direction == FlowDirection.Right;
-    }
-
-    private static FlowDirection DirectionFromDelta(Vector2Int delta)
-    {
-        if (delta == new Vector2Int(0, -1)) return FlowDirection.Up;
-        if (delta == new Vector2Int(1, 0)) return FlowDirection.Right;
-        if (delta == new Vector2Int(0, 1)) return FlowDirection.Down;
-        if (delta == new Vector2Int(-1, 0)) return FlowDirection.Left;
-        return FlowDirection.None;
+        HeldResourceIconHelper.Clear(ref _heldIconContainer);
+        DestroySplitterVisuals();
     }
 
     private FlowDirection GetOutputDirection(int outputIndex)
     {
         if (outputIndex < 0 || outputIndex >= OutputGridPositions.Count) return FlowDirection.None;
-        return DirectionFromDelta(OutputGridPositions[outputIndex] - _gridPosition);
+        return GridFlowUtils.DirectionFromDelta(OutputGridPositions[outputIndex] - _gridPosition);
     }
 }

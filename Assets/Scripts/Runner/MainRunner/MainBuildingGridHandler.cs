@@ -711,7 +711,7 @@ public class MainBuildingGridHandler
             {
                 if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
                 if (ReferenceEquals(road, destNode)) continue;
-                road.TryForwardTo(destNode, DirectionFromDelta(outCell - road.GridPosition));
+                road.TryForwardTo(destNode, GridFlowUtils.DirectionFromDelta(outCell - road.GridPosition));
                 break;
             }
         }
@@ -978,15 +978,6 @@ public class MainBuildingGridHandler
 
     private static bool IsDualLaneRoadData(BuildingData roadData) =>
         roadData != null && (roadData.id == "splitter" || roadData.id == "tunnel");
-
-    private static FlowDirection DirectionFromDelta(Vector2Int delta)
-    {
-        if (delta == new Vector2Int(0, -1)) return FlowDirection.Up;
-        if (delta == new Vector2Int(1, 0)) return FlowDirection.Right;
-        if (delta == new Vector2Int(0, 1)) return FlowDirection.Down;
-        if (delta == new Vector2Int(-1, 0)) return FlowDirection.Left;
-        return FlowDirection.None;
-    }
 
     private static FlowDirection DirectionFromBuildingOutput(BuildingObject building, Vector2Int outCell)
     {

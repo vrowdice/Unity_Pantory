@@ -3,6 +3,11 @@ using UnityEngine;
 
 public partial class BuildingObject
 {
+    private bool ShowsOutgoingResourceIcons =>
+        _buildingData is ProductionBuildingData
+        || _buildingData is UnloadStationData
+        || _buildingData is RawMaterialFactoryData;
+
     /// <summary>
     /// UI 레시피 그리드용. 선택 레시피 기준 입력/출력 ID 목록을 채웁니다.
     /// </summary>
@@ -35,29 +40,20 @@ public partial class BuildingObject
     {
         ClearOutgoingIconContainer();
 
-        if (_buildingData is LoadStationData)
-            return;
-
-        if (!(_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is RawMaterialFactoryData))
-            return;
-
-        if (_selectedResource == null)
-            return;
-
-        if (!ResourceFlowFx.IsWorldPointVisible(transform.position))
+        if (!ShowsOutgoingResourceIcons || _selectedResource == null)
             return;
 
         Dictionary<string, int> counts = _selectedResource.GetBatchOutputCounts();
-        if (counts.Count == 0)
+        if (counts.Count == 0 || !ResourceFlowFx.IsWorldPointVisible(transform.position))
             return;
 
         Transform worldCanvas = GameManager.Instance.GetWorldCanvas();
-        Vector3 worldPosition = transform.position + new Vector3(0f, 0f, -1f);
+        if (worldCanvas == null) return;
 
         _outgoingIconContainer = UIManager.Instance.CreateResourceImageContainer(
             worldCanvas,
             $"BuildingOutgoingIcons_{gameObject.GetInstanceID()}",
-            worldPosition,
+            transform.position + ResourceFlowFx.IconWorldOffset,
             _outgoingIconScale,
             counts);
     }
@@ -67,13 +63,7 @@ public partial class BuildingObject
         if (_outgoingIconContainer != null)
             return;
 
-        if (_selectedResource == null)
-            return;
-
-        if (_buildingData is LoadStationData)
-            return;
-
-        if (!(_buildingData is ProductionBuildingData || _buildingData is UnloadStationData || _buildingData is RawMaterialFactoryData))
+        if (_selectedResource == null || !ShowsOutgoingResourceIcons)
             return;
 
         if (!ResourceFlowFx.IsWorldPointVisible(transform.position))

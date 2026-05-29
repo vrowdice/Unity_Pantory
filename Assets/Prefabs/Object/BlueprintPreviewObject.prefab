@@ -81,7 +81,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4592731772729374179
 MonoBehaviour:
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_isVolumetricText: 0
   _SortingLayer: 0
   _SortingLayerID: 0
-  _SortingOrder: 0
+  _SortingOrder: 2
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 7846069054862170399}
   m_maskType: 0
@@ -298,7 +298,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2141981757785245974
 MonoBehaviour:
@@ -391,7 +391,7 @@ MonoBehaviour:
   m_isVolumetricText: 0
   _SortingLayer: 0
   _SortingLayerID: 0
-  _SortingOrder: 0
+  _SortingOrder: 2
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 3993545818242778712}
   m_maskType: 0
@@ -525,7 +525,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &9092399508378715281
 MonoBehaviour:
@@ -618,7 +618,7 @@ MonoBehaviour:
   m_isVolumetricText: 0
   _SortingLayer: 0
   _SortingLayerID: 0
-  _SortingOrder: 0
+  _SortingOrder: 2
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 528356864681910882}
   m_maskType: 0

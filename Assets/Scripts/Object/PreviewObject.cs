@@ -9,6 +9,13 @@ public class PreviewObject : MonoBehaviour
     [SerializeField] private TextMeshPro _buildingPriceText;
     [SerializeField] private float _previewAlpha = 0.65f;
 
+    private void Awake()
+    {
+        TextMeshPro[] texts = GetComponentsInChildren<TextMeshPro>(true);
+        for (int i = 0; i < texts.Length; i++)
+            texts[i].sortingOrder = WorldSortOrder.PreviewWorldText;
+    }
+
     public void SetBuildingData(BuildingData buildingData)
     {
         _buildingSprite.sprite = buildingData.buildingSprite;
