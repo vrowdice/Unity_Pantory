@@ -48,10 +48,16 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
     private MainCameraController _mainCameraController;
 
     private MainBuildingGridHandler _gridHandler;
+    private MainTileGridHandler _tileGridHandler;
+    private MainRawBuildingHandler _rawBuildingHandler;
+    private MainResourceFlowHandler _resourceFlowHandler;
     private MainBuildingPlacementHandler _placementHandler;
     private MainBlueprintHandler _blueprintHandler;
 
     public MainBuildingGridHandler GridHandler => _gridHandler;
+    public MainTileGridHandler TileGridHandler => _tileGridHandler;
+    public MainRawBuildingHandler RawBuildingHandler => _rawBuildingHandler;
+    public MainResourceFlowHandler ResourceFlowHandler => _resourceFlowHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
     public MainBlueprintHandler BlueprintHandler => _blueprintHandler;
 
@@ -113,10 +119,10 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
 
     private void LateUpdate()
     {
-        if (_gridHandler == null || _mainCamera == null)
+        if (_tileGridHandler == null || _mainCamera == null)
             return;
 
-        _gridHandler.RefreshTileZoomVisuals(_mainCamera);
+        _tileGridHandler.RefreshTileZoomVisuals(_mainCamera);
     }
 
     public override void Init()
@@ -127,21 +133,31 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
         _mainCameraController = GameManager.MainCameraController;
 
         _gridHandler = CreateGridHandler();
+        _tileGridHandler = new MainTileGridHandler(this, _gridHandler.TileParent);
+        _rawBuildingHandler = new MainRawBuildingHandler(this, _gridHandler.BuildingParent);
+        _resourceFlowHandler = new MainResourceFlowHandler(
+            this,
+            _gridHandler.BuildingParent,
+            _gridHandler.RoadObjDict,
+            _gridHandler.DualLaneRoadObjDict,
+            _gridHandler.BuildingOutputRoundRobinIndex,
+            _gridHandler.BuildingObjDict
+        );
         _placementHandler = CreatePlacementHandler();
         _blueprintHandler = CreateBlueprintHandler();
 
         transform.position = new Vector3(0f, 0f, _cameraZOffset);
 
-        _gridHandler.CreateGrid(_gridWidth, _gridHeight);
+        _tileGridHandler.CreateGrid(_gridWidth, _gridHeight, _rawBuildingHandler.InitializeRepresentativeRawBuildings);
         SetCameraCollider();
 
         OnGridReady();
 
-        DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
-        DataManager.Time.OnHourChanged += _gridHandler.OnMainHourChanged;
+        DataManager.Time.OnHourChanged -= _resourceFlowHandler.OnMainHourChanged;
+        DataManager.Time.OnHourChanged += _resourceFlowHandler.OnMainHourChanged;
 
-        DataManager.OnResearchCompleted -= _gridHandler.OnResearchCompleted;
-        DataManager.OnResearchCompleted += _gridHandler.OnResearchCompleted;
+        DataManager.OnResearchCompleted -= _rawBuildingHandler.OnResearchCompleted;
+        DataManager.OnResearchCompleted += _rawBuildingHandler.OnResearchCompleted;
 
         InitBuildSceneCanvas();
     }
@@ -177,14 +193,22 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
         }
 
         _gridHandler.RestoreFromSave(buildings, roads);
+        _rawBuildingHandler.RestoreFromSave(buildings);
     }
 
     protected abstract void InitBuildSceneCanvas();
 
     public void FlushPlacedLayoutToDataManager()
     {
+        List<PlacedBuildingSaveData> allBuildings = new List<PlacedBuildingSaveData>();
+        allBuildings.AddRange(_gridHandler.ExportPlacedBuildings());
+        if (_rawBuildingHandler != null)
+        {
+            allBuildings.AddRange(_rawBuildingHandler.ExportPlacedBuildings());
+        }
+
         DataManager.PlacedLayout.SetFromSave(
-            _gridHandler.ExportPlacedBuildings(),
+            allBuildings,
             _gridHandler.ExportPlacedRoads());
     }
 
@@ -222,10 +246,13 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
 
     private void OnDisable()
     {
-        if (_gridHandler != null)
+        if (_resourceFlowHandler != null)
         {
-            DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
-            DataManager.OnResearchCompleted -= _gridHandler.OnResearchCompleted;
+            DataManager.Time.OnHourChanged -= _resourceFlowHandler.OnMainHourChanged;
+        }
+        if (_rawBuildingHandler != null)
+        {
+            DataManager.OnResearchCompleted -= _rawBuildingHandler.OnResearchCompleted;
         }
     }
 }

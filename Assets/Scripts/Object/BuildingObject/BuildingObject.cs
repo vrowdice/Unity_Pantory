@@ -6,7 +6,7 @@ using DG.Tweening;
 /// <summary>
 /// 그리드에 설치된 건물: 뷰, 입출력 큐, 시간 틱 시뮬, 직원, 클릭 UI.
 /// </summary>
-public partial class BuildingObject : MonoBehaviour, IResourceNode
+public partial class BuildingObject : MonoBehaviour, IResourceNode, IBuilding
 {
     [SerializeField] private SpriteRenderer _viewObjRenderer;
     [SerializeField] private BoxCollider2D _collider;
@@ -45,6 +45,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     private const float ClickDragThresholdPixels = 8f;
 
     public BuildingData BuildingData => _buildingData;
+    public string BuildingDataId => _buildingData != null ? _buildingData.id : null;
     public bool HasConfiguredOutputResource =>
         _selectedResource != null && !string.IsNullOrEmpty(_selectedResource.id);
     public bool IsRemovalAnimating => _removalAnimating;

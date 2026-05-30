@@ -3,6 +3,8 @@
 /// </summary>
 public class TutorialBuildingGridHandler : MainBuildingGridHandler
 {
+    protected override bool AllowRawBuildingPlacement => true;
+
     public TutorialBuildingGridHandler(BuildingSceneRunnerBase runner) : base(runner)
     {
     }

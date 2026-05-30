@@ -7,7 +7,7 @@ using DG.Tweening;
 /// RawBuildingInfoPanel UI를 통해 가동 갯수(Count)를 조절받으며,
 /// 1개의 빌딩 오브젝트 내부에서 갯수에 비례한 비용, 인력, 틱 속도를 곱해 가상 병렬 시뮬레이션을 수행합니다.
 /// </summary>
-public partial class RawBuildingObject : MonoBehaviour, IResourceNode
+public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
 {
     [SerializeField] private SpriteRenderer _viewRenderer;
     [SerializeField] private BoxCollider2D _collider;
@@ -24,6 +24,8 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode
     private Vector2Int _size;
 
     public RawMaterialFactoryData BuildingData => _buildingData;
+    public string BuildingDataId => _buildingData != null ? _buildingData.id : null;
+    public bool IsRemovalAnimating => false;
     public int RawMaterialCount => _rawMaterialCount;
     public int AssignedWorkers => _assignedWorkers;
     public int AssignedTechnicians => _assignedTechnicians;
@@ -337,6 +339,23 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode
         }
     }
 
+    public int ForceRemoveAssignedEmployees(EmployeeType type, int count)
+    {
+        if (count <= 0) return 0;
+        if (type == EmployeeType.Worker)
+        {
+            int toRemove = Mathf.Min(count, _assignedWorkers);
+            _assignedWorkers -= toRemove;
+            return toRemove;
+        }
+        else
+        {
+            int toRemove = Mathf.Min(count, _assignedTechnicians);
+            _assignedTechnicians -= toRemove;
+            return toRemove;
+        }
+    }
+
     private void PlayCountChangeAnimation()
     {
         if (_viewRenderer == null) return;
@@ -345,7 +364,7 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode
         Vector3 baseScale = new Vector3(_size.x, _size.y, 1f);
         _viewRenderer.transform.localScale = baseScale;
 
-        Vector3 punchAmount = baseScale * 0.15f;
-        _viewRenderer.transform.DOPunchScale(punchAmount, 0.25f, 10, 1f);
+        Vector3 punchAmount = baseScale * 0.22f;
+        _viewRenderer.transform.DOPunchScale(punchAmount, 0.35f, 12, 0.7f);
     }
 }
