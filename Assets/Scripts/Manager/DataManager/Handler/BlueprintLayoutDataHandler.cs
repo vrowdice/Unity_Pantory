@@ -92,7 +92,6 @@ public class BlueprintLayoutDataHandler
             dst.selectedResourceId = src.selectedResourceId;
             dst.workProgress = src.workProgress;
             dst.inputBuffer = ClonePacketList(src.inputBuffer);
-            dst.outputBuffer = ClonePacketList(src.outputBuffer);
             clone.Add(dst);
         }
 

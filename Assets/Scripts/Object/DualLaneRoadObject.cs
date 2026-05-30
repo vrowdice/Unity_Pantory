@@ -63,6 +63,20 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
             _viewObjRenderer.sprite = _sourceBuildingData.buildingSprite;
     }
 
+    public bool CanAcceptIncoming(ResourcePacket packet)
+    {
+        if (packet == null) return false;
+
+        if (_isSplitter)
+        {
+            Queue<ResourcePacket> targetLane = _splitterToggle ? _laneB : _laneA;
+            return targetLane.Count < _maxCapacityPerLane;
+        }
+
+        Queue<ResourcePacket> lane = SelectLaneForPacket(packet);
+        return lane.Count < _maxCapacityPerLane;
+    }
+
     public bool TryPush(ResourcePacket packet)
     {
         if (packet == null) return false;

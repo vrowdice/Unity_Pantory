@@ -44,6 +44,9 @@ public partial class MainCanvas
         yield return StaggeredSpawnUtils.ForEachFrame(buildingTypes.Count, i =>
         {
             BuildingType buildingType = buildingTypes[i];
+            if (buildingType == BuildingType.RawProduction)
+                return;
+
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
             btnObj.transform.SetParent(_buildingTypeBtnContent, false);
             MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
@@ -69,13 +72,7 @@ public partial class MainCanvas
 
     private bool IsBuildingUnlocked(BuildingData data)
     {
-        if (data == null)
-            return false;
-
-        if (data.requiredResearch == null)
-            return true;
-
-        return DataManager.Research.IsResearchCompleted(data.requiredResearch.id) || data.isUnlockedByDefault;
+        return DataManager.Building.IsBuildingUnlocked(data);
     }
 
     private void RefreshBuildUiOnResearchCompleted()
@@ -181,6 +178,9 @@ public partial class MainCanvas
         List<BuildingData> list = DataManager.Building.GetBuildingDataList(_selectedBuildingType);
         foreach (BuildingData data in list)
         {
+            if (data is RawMaterialFactoryData)
+                continue;
+
             if (IsBuildingUnlocked(data))
                 unlockedBuildings.Add(data);
         }

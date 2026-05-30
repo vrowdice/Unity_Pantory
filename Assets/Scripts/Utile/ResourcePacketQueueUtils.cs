@@ -48,6 +48,48 @@ public static class ResourcePacketQueueUtils
         ResetRoadForwardGates(laneB);
     }
 
+    public static bool CanAcceptResourceAmount(
+        Dictionary<string, int> currentCounts,
+        string resourceId,
+        int addAmount,
+        int maxPerResource,
+        int maxKinds)
+    {
+        if (string.IsNullOrEmpty(resourceId) || addAmount <= 0) return false;
+        if (maxPerResource <= 0) return false;
+
+        int current = currentCounts.TryGetValue(resourceId, out int existing) ? existing : 0;
+        if (current + addAmount > maxPerResource) return false;
+
+        if (!currentCounts.ContainsKey(resourceId) && maxKinds > 0 && currentCounts.Count >= maxKinds)
+            return false;
+
+        return true;
+    }
+
+    public static bool CanAcceptResourceAmounts(
+        Dictionary<string, int> currentCounts,
+        Dictionary<string, int> toAdd,
+        int maxPerResource,
+        int maxKinds)
+    {
+        if (toAdd == null || toAdd.Count == 0) return true;
+
+        Dictionary<string, int> simulated = new Dictionary<string, int>(currentCounts);
+        foreach (KeyValuePair<string, int> kvp in toAdd)
+        {
+            if (!CanAcceptResourceAmount(simulated, kvp.Key, kvp.Value, maxPerResource, maxKinds))
+                return false;
+
+            if (simulated.TryGetValue(kvp.Key, out int existing))
+                simulated[kvp.Key] = existing + kvp.Value;
+            else
+                simulated[kvp.Key] = kvp.Value;
+        }
+
+        return true;
+    }
+
     public static void ExportToSaveBuffer(Queue<ResourcePacket> queue, List<ResourcePacketSaveData> buffer)
     {
         foreach (ResourcePacket packet in queue)

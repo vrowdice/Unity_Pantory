@@ -43,10 +43,11 @@ public abstract class BuildingData : ScriptableObject
     [Tooltip("이펙트 Flat 보너스와 합산되는 기본 최대 설치 수(0이면 이펙트만으로 해금)")]
     public int baseMaxPlacedCount = 0;
 
-    [Tooltip("입력 버퍼(도로·창고 연결) 최대 용량")]
-    public int maxInputBufferCapacity = 16;
-    [Tooltip("출력 버퍼 최대 용량")]
-    public int maxOutputBufferCapacity = 16;
+    [Header("Input buffer")]
+    [Tooltip("자원 종류당 입력 버퍼 최대 수량(0이면 입력 불가)")]
+    public int maxInputBufferCapacity = 10;
+    [Tooltip("입력 버퍼에 둘 수 있는 자원 종류 수(0이면 무제한)")]
+    public int maxInputResourceKinds = 10;
 
     public virtual bool IsProductionBuilding => false;
     public virtual bool IsLoadStation => false;

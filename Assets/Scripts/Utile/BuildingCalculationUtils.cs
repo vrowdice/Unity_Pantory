@@ -41,7 +41,7 @@ public static class BuildingCalculationUtils
     }
 
     /// <summary>
-    /// OutputObj 루트 앵커. ViewObj 로컬 x=0.5 로 오른쪽 시각 오프셋 — 여기서는 Y(또는 X)만 조정하고 Z 회전으로 면을 맞춥니다.
+    /// OutputObj 루트 앵커 (1×1 도로·스플리터). ViewObj local x=0.5 — 칸 경계(건물 사이)에 맞춤.
     /// </summary>
     public static Vector3 GetOutputIndicatorLocalPosition(Vector2Int size, OutputIndicatorEdge edge, int spanIndex = 0)
     {
@@ -60,6 +60,16 @@ public static class BuildingCalculationUtils
             default:
                 return Vector3.zero;
         }
+    }
+
+    /// <summary>
+    /// 건물 오른쪽 출력 인디케이터. 다칸 발자국일 때 ViewObj x=0.5 보정만큼 X를 추가합니다.
+    /// </summary>
+    public static Vector3 GetBuildingOutputIndicatorLocalPosition(Vector2Int size, int spanIndex = 0)
+    {
+        Vector3 position = GetOutputIndicatorLocalPosition(size, OutputIndicatorEdge.Right, spanIndex);
+        position.x += (size.x - 1) * 0.5f;
+        return position;
     }
 
     public static int GetOutputIndicatorSpanCount(Vector2Int size, OutputIndicatorEdge edge)

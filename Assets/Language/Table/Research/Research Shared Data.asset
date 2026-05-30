@@ -267,6 +267,126 @@ MonoBehaviour:
     m_Key: unlock_gold_mine_Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 864226266030
+    m_Key: search_coal_mine_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267030
+    m_Key: search_coal_mine_1_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266031
+    m_Key: search_coal_mine_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267031
+    m_Key: search_coal_mine_2_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266032
+    m_Key: search_coal_mine_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267032
+    m_Key: search_coal_mine_3_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266033
+    m_Key: search_coal_mine_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267033
+    m_Key: search_coal_mine_4_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266034
+    m_Key: search_coal_mine_5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267034
+    m_Key: search_coal_mine_5_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266035
+    m_Key: search_copper_mine_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267035
+    m_Key: search_copper_mine_1_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266036
+    m_Key: search_copper_mine_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267036
+    m_Key: search_copper_mine_2_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266037
+    m_Key: search_copper_mine_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267037
+    m_Key: search_copper_mine_3_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266038
+    m_Key: search_copper_mine_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267038
+    m_Key: search_copper_mine_4_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266039
+    m_Key: search_copper_mine_5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267039
+    m_Key: search_copper_mine_5_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266040
+    m_Key: search_aluminum_mine_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267040
+    m_Key: search_aluminum_mine_1_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266041
+    m_Key: search_aluminum_mine_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267041
+    m_Key: search_aluminum_mine_2_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266042
+    m_Key: search_aluminum_mine_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267042
+    m_Key: search_aluminum_mine_3_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266043
+    m_Key: search_aluminum_mine_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267043
+    m_Key: search_aluminum_mine_4_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266044
+    m_Key: search_aluminum_mine_5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267044
+    m_Key: search_aluminum_mine_5_Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

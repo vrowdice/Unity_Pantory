@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270002
-    m_Localized: Component Factory
+    m_Localized: General Parts Factory
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270009
-    m_Localized: Mine
+    m_Localized: Iron Mine
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
@@ -84,9 +84,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270102
-    m_Localized: A precision parts factory. Produces machine parts from iron ingots,
-      electronic components from copper and aluminum ingots, and precision tools
-      from steel ingots and machine parts. Essential for advanced production chains.
+    m_Localized: A general parts factory. Produces machine parts from iron ingots.
+      Foundational mid-game facility for engines and vehicles.
     m_Metadata:
       m_Items: []
   - m_Id: 864226270103
@@ -125,9 +124,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270109
-    m_Localized: A general underground mine. Extracts iron ore, coal, copper ore, and
-      aluminum ore. Does not produce gold ore—build a Gold Mine for gold extraction.
-      High investment but supplies core industrial raw materials.
+    m_Localized: A dedicated iron ore mine. Extracts iron ore for smelting into iron
+      ingots. Core facility for metalworking chains.
     m_Metadata:
       m_Items: []
   - m_Id: 864226270110
@@ -200,6 +198,42 @@ MonoBehaviour:
   - m_Id: 864226270119
     m_Localized: A dedicated gold mine. Extracts gold ore only for smelting into
       pure gold. Higher cost than a general mine; placement may be limited.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270020
+    m_Localized: Electronic Components Factory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270120
+    m_Localized: Produces electronic components from copper and aluminum ingots. Required
+      for engines and advanced production chains.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270021
+    m_Localized: Coal Mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270121
+    m_Localized: A dedicated coal mine. Extracts coal for smelting, fuel, and munitions
+      production.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270022
+    m_Localized: Copper Mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270122
+    m_Localized: A dedicated copper ore mine. Extracts copper ore for smelting and
+      electronics chains.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270023
+    m_Localized: Aluminum Mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270123
+    m_Localized: A dedicated aluminum ore mine. Extracts aluminum ore for smelting
+      and advanced manufacturing.
     m_Metadata:
       m_Items: []
   references:

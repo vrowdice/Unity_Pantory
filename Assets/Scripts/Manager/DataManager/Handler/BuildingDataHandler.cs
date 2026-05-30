@@ -138,11 +138,23 @@ public class BuildingDataHandler
         return _buildings.Count;
     }
 
+    public bool IsBuildingUnlocked(BuildingData buildingData)
+    {
+        if (buildingData == null)
+            return false;
+
+        if (buildingData.isUnlockedByDefault)
+            return true;
+
+        if (buildingData.requiredResearch == null)
+            return true;
+
+        return _dataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
+    }
+
     public bool IsBuildingResearchUnlocked(string buildingId)
     {
-        if (!_buildings.TryGetValue(buildingId, out BuildingData buildingData)) return false;
-        if (buildingData.requiredResearch == null) return true;
-        return _dataManager.Research.IsResearchCompleted(buildingData.requiredResearch.id);
+        return IsBuildingUnlocked(GetBuildingData(buildingId));
     }
 
     /// <summary>

@@ -114,24 +114,28 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
             return false;
         }
 
-        if (request.requireCredit > 0 && !_dataManager.Finances.ModifyCredit(-request.requireCredit))
+        switch (request.conditionType)
         {
-            return false;
-        }
+            case UnionRequestConditionType.Credit:
+                if (!_dataManager.Finances.ModifyCredit(-request.targetValue))
+                {
+                    return false;
+                }
+                break;
 
-        if (HasResourceRequirement(request)
-            && !_dataManager.Resource.ModifyResourceCount(request.requireResourceId, -request.requireResourceCount))
-        {
-            return false;
-        }
+            case UnionRequestConditionType.Resource:
+                if (!_dataManager.Resource.ModifyResourceCount(request.targetId, -(int)request.targetValue))
+                {
+                    return false;
+                }
+                break;
 
-        if (HasPolicyRequirement(request))
-        {
-            PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(request.requiredPolicyId);
-            if (policyEntry == null || !policyEntry.state.isActive)
-            {
+            case UnionRequestConditionType.Policy:
+                // Policy는 Active 상태인지만 확인하므로 실제 인게임 차감은 필요 없음
+                break;
+
+            default:
                 return false;
-            }
         }
 
         UnionRequestData template = GetUnionRequestData(request.id);
@@ -262,6 +266,8 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
         }
 
         UnionRequestState newState = new UnionRequestState(template);
+        newState.targetId = template.targetId;
+
         int employeeCount = _dataManager.Employee != null
             ? _dataManager.Employee.GetTotalEmployeeCount()
             : 1;
@@ -270,47 +276,46 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
             : 1;
         float employeeScale = employeeCount / (float)employeeBaseline;
 
-        long scaledCredit = template.requireCredit;
-        if (scaledCredit > 0)
-        {
-            float creditScale = Mathf.Max(0.1f, employeeScale * template.creditScaleFactor);
-            scaledCredit = (long)Math.Round(scaledCredit * creditScale, MidpointRounding.AwayFromZero);
-            scaledCredit = Math.Max(1L, scaledCredit);
-        }
+        long scaledValue = template.targetValue;
 
-        newState.requireCredit = scaledCredit;
-
-        if (template.requireResource != null
-            && template.requireResource.resource != null
-            && !string.IsNullOrEmpty(template.requireResource.resource.id))
+        switch (template.conditionType)
         {
-            ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(template.requireResource.resource.id);
-            if (resourceEntry != null)
-            {
-                long playerWealth = _dataManager.Finances != null ? _dataManager.Finances.Wealth : 0L;
-                float resourceScale = Mathf.Max(0.1f, template.resourceScaleFactor);
-                int baseCount = Mathf.Max(1, template.requireResource.count);
-                int scaledCount = baseCount;
-                if (playerWealth > 0 && resourceEntry.state.currentValue > 0)
+            case UnionRequestConditionType.Credit:
+                if (scaledValue > 0)
                 {
-                    float allocatedWealth = playerWealth * resourceScale;
-                    scaledCount = Mathf.RoundToInt(allocatedWealth / resourceEntry.state.currentValue);
-                    scaledCount = Mathf.Max(baseCount, scaledCount);
+                    float creditScale = Mathf.Max(0.1f, employeeScale * template.scaleFactor);
+                    scaledValue = (long)Math.Round(scaledValue * creditScale, MidpointRounding.AwayFromZero);
+                    scaledValue = Math.Max(1L, scaledValue);
                 }
+                break;
 
-                newState.requireResourceId = template.requireResource.resource.id;
-                newState.requireResourceCount = scaledCount;
-            }
+            case UnionRequestConditionType.Resource:
+                if (!string.IsNullOrEmpty(template.targetId))
+                {
+                    ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(template.targetId);
+                    if (resourceEntry != null)
+                    {
+                        long playerWealth = _dataManager.Finances != null ? _dataManager.Finances.Wealth : 0L;
+                        float resourceScale = Mathf.Max(0.1f, template.scaleFactor);
+                        int baseCount = Mathf.Max(1, (int)template.targetValue);
+                        int scaledCount = baseCount;
+                        if (playerWealth > 0 && resourceEntry.state.currentValue > 0)
+                        {
+                            float allocatedWealth = playerWealth * resourceScale;
+                            scaledCount = Mathf.RoundToInt(allocatedWealth / resourceEntry.state.currentValue);
+                            scaledCount = Mathf.Max(baseCount, scaledCount);
+                        }
+                        scaledValue = scaledCount;
+                    }
+                }
+                break;
+
+            case UnionRequestConditionType.Policy:
+                scaledValue = 1;
+                break;
         }
 
-        if (template.requirePolicy != null && !string.IsNullOrEmpty(template.requirePolicy.id))
-        {
-            PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(template.requirePolicy.id);
-            if (policyEntry == null || !policyEntry.state.isActive)
-            {
-                newState.requiredPolicyId = template.requirePolicy.id;
-            }
-        }
+        newState.targetValue = scaledValue;
 
         int minDays = _initialUnionMainEventData.minUnionRequestDeadlineDays;
         int maxDays = _initialUnionMainEventData.maxUnionRequestDeadlineDays;
@@ -336,23 +341,30 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
             return false;
         }
 
-        bool hasCredit = template.requireCredit > 0;
-        bool hasResources = template.requireResource != null
-            && template.requireResource.resource != null
-            && !string.IsNullOrEmpty(template.requireResource.resource.id);
-        bool hasUnmetPolicy = false;
-        if (template.requirePolicy != null && !string.IsNullOrEmpty(template.requirePolicy.id))
+        switch (template.conditionType)
         {
-            PolicyEntry entry = _dataManager.Policy.GetPolicyEntry(template.requirePolicy.id);
-            hasUnmetPolicy = entry == null || !entry.state.isActive;
-        }
+            case UnionRequestConditionType.Credit:
+                return template.targetValue > 0;
 
-        return hasCredit || hasResources || hasUnmetPolicy;
+            case UnionRequestConditionType.Resource:
+                return !string.IsNullOrEmpty(template.targetId) && template.targetValue > 0;
+
+            case UnionRequestConditionType.Policy:
+                if (!string.IsNullOrEmpty(template.targetId))
+                {
+                    PolicyEntry entry = _dataManager.Policy.GetPolicyEntry(template.targetId);
+                    return entry == null || !entry.state.isActive;
+                }
+                return false;
+
+            default:
+                return false;
+        }
     }
 
     private bool CanFulfillRequest(UnionRequestState request)
     {
-        if (_dataManager.Finances == null || _dataManager.Resource == null || _dataManager.Policy == null)
+        if (request == null || _dataManager.Finances == null || _dataManager.Resource == null || _dataManager.Policy == null)
         {
             return false;
         }
@@ -362,50 +374,53 @@ public class UnionRequestDataHandler : IDataHandlerEvents, IGameSaveHandler
             return false;
         }
 
-        if (request.requireCredit > 0 && _dataManager.Finances.Credit < request.requireCredit)
+        switch (request.conditionType)
         {
-            return false;
-        }
+            case UnionRequestConditionType.Credit:
+                return _dataManager.Finances.Credit >= request.targetValue;
 
-        if (HasResourceRequirement(request))
-        {
-            ResourceEntry entry = _dataManager.Resource.GetResourceEntry(request.requireResourceId);
-            if (entry == null || entry.state.count < request.requireResourceCount)
-            {
+            case UnionRequestConditionType.Resource:
+                if (!string.IsNullOrEmpty(request.targetId))
+                {
+                    ResourceEntry entry = _dataManager.Resource.GetResourceEntry(request.targetId);
+                    return entry != null && entry.state.count >= request.targetValue;
+                }
                 return false;
-            }
-        }
 
-        if (HasPolicyRequirement(request))
-        {
-            PolicyEntry entry = _dataManager.Policy.GetPolicyEntry(request.requiredPolicyId);
-            if (entry == null || !entry.state.isActive)
-            {
+            case UnionRequestConditionType.Policy:
+                if (!string.IsNullOrEmpty(request.targetId))
+                {
+                    PolicyEntry entry = _dataManager.Policy.GetPolicyEntry(request.targetId);
+                    return entry != null && entry.state.isActive;
+                }
                 return false;
-            }
-        }
 
-        return true;
+            default:
+                return false;
+        }
     }
 
     private static bool HasAnyRequirement(UnionRequestState request)
     {
-        return request != null
-            && (request.requireCredit > 0
-                || HasResourceRequirement(request)
-                || HasPolicyRequirement(request));
-    }
+        if (request == null)
+        {
+            return false;
+        }
 
-    private static bool HasResourceRequirement(UnionRequestState request)
-    {
-        return request != null
-            && !string.IsNullOrEmpty(request.requireResourceId)
-            && request.requireResourceCount > 0;
-    }
+        switch (request.conditionType)
+        {
+            case UnionRequestConditionType.Credit:
+                return request.targetValue > 0;
 
-    private static bool HasPolicyRequirement(UnionRequestState request)
-    {
-        return request != null && !string.IsNullOrEmpty(request.requiredPolicyId);
+            case UnionRequestConditionType.Resource:
+                return !string.IsNullOrEmpty(request.targetId) && request.targetValue > 0;
+
+            case UnionRequestConditionType.Policy:
+                return !string.IsNullOrEmpty(request.targetId);
+
+            default:
+                return false;
+        }
     }
 
     private void ResetUnionRequestChance()

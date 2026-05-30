@@ -5,8 +5,7 @@ public partial class BuildingObject
 {
     private bool ShowsOutgoingResourceIcons =>
         _buildingData is ProductionBuildingData
-        || _buildingData is UnloadStationData
-        || _buildingData is RawMaterialFactoryData;
+        || _buildingData is UnloadStationData;
 
     /// <summary>
     /// UI 레시피 그리드용. 선택 레시피 기준 입력/출력 ID 목록을 채웁니다.

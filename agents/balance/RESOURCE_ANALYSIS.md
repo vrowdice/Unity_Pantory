@@ -83,24 +83,25 @@
 
 | id | buildCost | maintenanceCost /일 |
 |----|-----------|---------------------|
-| chemical_plant | 9600 | 18 |
-| component_plant | 10800 | 25 |
-| engine_plant | 16800 | 30 |
-| gold_mine | 23400 | 48 |
-| heavy_factory | 18600 | 40 |
-| light_factory | 9000 | 18 |
-| load | 3900 | 5 |
-| logging_camp | 5400 | 15 |
-| mine | 18600 | 35 |
-| military_plant | 16800 | 35 |
-| oil_pump | 22200 | 25 |
-| road | 300 | 0 |
-| sawmill | 6900 | 15 |
-| smelter | 7800 | 18 |
-| splitter | 750 | 1 |
-| tunnel | 900 | 1 |
-| unload | 3900 | 5 |
-| vehicle_plant | 29400 | 70 |
+| chemical_plant | 5000 | 12 |
+| parts_plant | 3000 | 9 |
+| electronics_plant | 2500 | 8 |
+| engine_plant | 12000 | 24 |
+| gold_mine | 14000 | 32 |
+| heavy_factory | 13000 | 32 |
+| light_factory | 4500 | 12 |
+| load | 800 | 3 |
+| logging_camp | 2700 | 10 |
+| mine | 9000 | 22 |
+| military_plant | 12000 | 28 |
+| oil_pump | 11000 | 16 |
+| road | 50 | 0 |
+| sawmill | 3500 | 10 |
+| smelter | 4000 | 12 |
+| splitter | 200 | 1 |
+| tunnel | 300 | 1 |
+| unload | 800 | 3 |
+| vehicle_plant | 20000 | 55 |
 
 배치 상한·수급 보너스 등은 건물 데이터가 아닌 **`Effect`**(예: RawResourceSearch, `Building_MaxPlacedCount`)와 연구 완료 상태에 묶인 경우가 많습니다.
 

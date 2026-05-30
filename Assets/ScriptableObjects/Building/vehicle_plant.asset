@@ -23,14 +23,14 @@ MonoBehaviour:
   isUnlockedByDefault: 0
   isProfessional: 1
   requiredEmployees: 12
-  buildCost: 29400
-  maintenanceCost: 70
+  buildCost: 20000
+  maintenanceCost: 55
   size: {x: 5, y: 5}
   requiredResearch: {fileID: 11400000, guid: dca56d55f40aca64888694217236f731, type: 2}
   usePlacedCountLimit: 0
   baseMaxPlacedCount: 0
-  maxInputBufferCapacity: 16
-  maxOutputBufferCapacity: 16
+  maxInputBufferCapacity: 10
+  maxInputResourceKinds: 8
   allowedResourceTypes: 06000000
   _producibleResources:
   - {fileID: 11400000, guid: fabba59ec3e95354394bd2fdcb52f3c4, type: 2}

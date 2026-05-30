@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226266001
-    m_Localized: "부품 제조"
+    m_Localized: "전자 부품"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
@@ -59,15 +59,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267001
-    m_Localized: "부품 공장 해금. 철 인골→기계 부품,
-      동·알루미늄 인골→전자 부품, 강철·기계
-      부품→정밀 공구. 차량·고급 산업 중반 핵심."
+    m_Localized: "전자 부품 공장을 해금한다. 동·알루미늄 인골로
+      전자 부품을 생산하며, 엔진 및 고급 생산에 필요하다."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267002
-    m_Localized: "일반 광산 해금. 철·석탄·동·알루미늄
-      광석 채굴. 금광석은 없음—금광 건설
-      연구 별도. 건설·유지 비용 높음."
+    m_Localized: "전용 광산(철·석탄·동·알루미늄) 해금. 각 광산은 한 종류의 광석만 채굴. 금광석은 금광 건설 연구 별도. 건설·유지 비용 높음."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267003
@@ -165,43 +162,43 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226266015
-    m_Localized: 광물 조사 I
+    m_Localized: 철광 조사 I
     m_Metadata:
       m_Items: []
   - m_Id: 864226267015
-    m_Localized: 광맥·매장 조사로 광산을 더 많이 설치할 수 있게 합니다.
+    m_Localized: 철광맥 조사로 철광을 더 많이 설치할 수 있게 합니다.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266016
-    m_Localized: 광물 조사 II
+    m_Localized: 철광 조사 II
     m_Metadata:
       m_Items: []
   - m_Id: 864226267016
-    m_Localized: 시료와 지질 모델을 보강해 광산 설치 한도를 더 늘립니다.
+    m_Localized: 시료와 지질 모델을 보강해 철광 설치 한도를 더 늘립니다.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266017
-    m_Localized: 광물 조사 III
+    m_Localized: 철광 조사 III
     m_Metadata:
       m_Items: []
   - m_Id: 864226267017
-    m_Localized: 심부 탐사로 채굴 적지를 넓혀 광산 가동 규모를 확대합니다.
+    m_Localized: 심부 탐사로 철광 채굴 적지를 넓혀 설치 한도를 확대합니다.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266018
-    m_Localized: 광물 조사 IV
+    m_Localized: 철광 조사 IV
     m_Metadata:
       m_Items: []
   - m_Id: 864226267018
-    m_Localized: 매장량 추정과 물류 분석으로 병렬 채굴 한도를 올립니다.
+    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 철광 채굴 규모를 확대합니다.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266019
-    m_Localized: 광물 조사 V
+    m_Localized: 철광 조사 V
     m_Metadata:
       m_Items: []
   - m_Id: 864226267019
-    m_Localized: 광역 매장 조사망을 완성해 광산 설치 가능 수를 최대로 올립니다.
+    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 철광 수를 최대화합니다.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266020
@@ -283,6 +280,127 @@ MonoBehaviour:
   - m_Id: 864226267029
     m_Localized: "전용 금광 해금. 금광석만 채굴해 제련·순금
       생산. 채굴 연구 완료 필요."
+    m_Metadata:
+      m_Items: []
+
+  - m_Id: 864226266030
+    m_Localized: 석탄 조사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267030
+    m_Localized: 석탄층 조사로 설치 가능한 석탄광 수 한도를 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266031
+    m_Localized: 석탄 조사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267031
+    m_Localized: 층상 모델과 시료 분석을 강화해 석탄광 설치 한도를 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266032
+    m_Localized: 석탄 조사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267032
+    m_Localized: 심부 탐사로 석탄 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266033
+    m_Localized: 석탄 조사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267033
+    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 석탄 채굴 규모를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266034
+    m_Localized: 석탄 조사 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267034
+    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 석탄광 수를 최대화합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266035
+    m_Localized: 동광 조사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267035
+    m_Localized: 동광맥 조사로 설치 가능한 동광 수 한도를 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266036
+    m_Localized: 동광 조사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267036
+    m_Localized: 시료와 지질 모델을 보강해 동광 설치 한도를 더 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266037
+    m_Localized: 동광 조사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267037
+    m_Localized: 심부 탐사로 동광 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266038
+    m_Localized: 동광 조사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267038
+    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 동광 채굴 규모를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266039
+    m_Localized: 동광 조사 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267039
+    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 동광 수를 최대화합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266040
+    m_Localized: 알루미늄 광 조사 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267040
+    m_Localized: 알루미늄 광상 조사로 설치 가능한 알루미늄 광 수 한도를 올립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266041
+    m_Localized: 알루미늄 광 조사 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267041
+    m_Localized: 시료와 지질 모델을 보강해 알루미늄 광 설치 한도를 더 늘립니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266042
+    m_Localized: 알루미늄 광 조사 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267042
+    m_Localized: 심부 탐사로 알루미늄 광 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266043
+    m_Localized: 알루미늄 광 조사 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267043
+    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 알루미늄 광 채굴 규모를 확대합니다.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266044
+    m_Localized: 알루미늄 광 조사 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267044
+    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 알루미늄 광 수를 최대화합니다.
     m_Metadata:
       m_Items: []
   references:

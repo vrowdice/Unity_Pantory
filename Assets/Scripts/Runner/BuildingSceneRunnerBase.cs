@@ -13,13 +13,25 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
     [SerializeField] private float _buildEffectZ = 8.5f;
     [SerializeField] private float _removalEffectZ = 8.5f;
 
+    [Header("Removal feedback (DOTween)")]
+    [SerializeField] private float _removalScaleDuration = 0.2f;
+    [SerializeField] private float _removalPunchDuration = 0.08f;
+    [SerializeField] private float _removalPunchStrength = 0.05f;
+    [SerializeField] private bool _removalShakeCamera = true;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject _previewPrefab;
     [SerializeField] private GameObject _blueprintPreviewPrefab;
     [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private GameObject _buildingObjectPrefab;
+    [SerializeField] private GameObject _rawBuildingObjectPrefab;
     [SerializeField] private GameObject _roadObjectPrefab;
     [SerializeField] private GameObject _dualLaneRoadObjectPrefab;
+
+    [Header("Raw Buildings Spawning Offset")]
+    [SerializeField] private float _rawBuildingsSpawnY = 2.0f;
+    [SerializeField] private float _rawBuildingsStartX = 1.5f;
+    [SerializeField] private float _rawBuildingsSpacingX = 3.0f;
 
     [Header("Grid Settings")]
     [SerializeField] private int _gridWidth = 10;
@@ -49,6 +61,9 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
     public GameObject RemovalParticlePrefab => _removalParticlePrefab;
     public float BuildEffectZ => _buildEffectZ;
     public float RemovalEffectZ => _removalEffectZ;
+    public float RemovalScaleDuration => Mathf.Max(0.01f, _removalScaleDuration);
+    public float RemovalPunchDuration => Mathf.Max(0f, _removalPunchDuration);
+    public float RemovalPunchStrength => Mathf.Max(0f, _removalPunchStrength);
     public int GridWidth => _gridWidth;
     public int GridHeight => _gridHeight;
     public float TileOverviewOrthographicSizeThreshold => _tileOverviewOrthographicSizeThreshold;
@@ -57,8 +72,13 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
     public GameObject BlueprintPreviewPrefab => _blueprintPreviewPrefab;
     public GameObject TilePrefab => _tilePrefab;
     public GameObject BuildingObjectPrefab => _buildingObjectPrefab;
+    public GameObject RawBuildingObjectPrefab => _rawBuildingObjectPrefab;
     public GameObject RoadObjectPrefab => _roadObjectPrefab;
     public GameObject DualLaneRoadObjectPrefab => _dualLaneRoadObjectPrefab;
+
+    public float RawBuildingsSpawnY => _rawBuildingsSpawnY;
+    public float RawBuildingsStartX => _rawBuildingsStartX;
+    public float RawBuildingsSpacingX => _rawBuildingsSpacingX;
 
     public abstract IBuildSceneCanvas BuildSceneCanvas { get; }
 
@@ -110,7 +130,7 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
         _placementHandler = CreatePlacementHandler();
         _blueprintHandler = CreateBlueprintHandler();
 
-        transform.position = new Vector3(-_gridWidth / 2f, _gridHeight / 2f, _cameraZOffset);
+        transform.position = new Vector3(0f, 0f, _cameraZOffset);
 
         _gridHandler.CreateGrid(_gridWidth, _gridHeight);
         SetCameraCollider();
@@ -119,6 +139,9 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
 
         DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
         DataManager.Time.OnHourChanged += _gridHandler.OnMainHourChanged;
+
+        DataManager.OnResearchCompleted -= _gridHandler.OnResearchCompleted;
+        DataManager.OnResearchCompleted += _gridHandler.OnResearchCompleted;
 
         InitBuildSceneCanvas();
     }
@@ -165,6 +188,17 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
             _gridHandler.ExportPlacedRoads());
     }
 
+    /// <summary>
+    /// 그리드 건물 제거 시 카메라 등 씬 피드백 (건설 ShakeForConstruction과 대칭).
+    /// </summary>
+    public void PlayBuildingRemovalFeedback()
+    {
+        if (!_removalShakeCamera || _mainCameraController == null)
+            return;
+
+        _mainCameraController.ShakeForRemoval();
+    }
+
     public void SetCameraCollider()
     {
         BoxCollider2D col = GetComponent<BoxCollider2D>();
@@ -173,12 +207,16 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
             col = gameObject.AddComponent<BoxCollider2D>();
         }
 
-        col.offset = new Vector2(_gridWidth / 2f, -_gridHeight / 2f);
-        col.size = new Vector2(_gridWidth, _gridHeight);
+        float rawSpawnY = Mathf.Max(0f, _rawBuildingsSpawnY);
+        float boundaryHeight = _gridHeight + rawSpawnY;
+        float boundaryCenterY = -_gridHeight / 2f + rawSpawnY / 2f;
 
-        Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, -_gridHeight / 2f, 0);
+        col.offset = new Vector2(_gridWidth / 2f, boundaryCenterY);
+        col.size = new Vector2(_gridWidth, boundaryHeight);
+
+        Vector3 gridWorldCenter = transform.position + new Vector3(_gridWidth / 2f, boundaryCenterY, 0);
         Vector2 center = new Vector2(gridWorldCenter.x, gridWorldCenter.y);
-        Vector2 size = new Vector2(_gridWidth, _gridHeight);
+        Vector2 size = new Vector2(_gridWidth, boundaryHeight);
         _mainCameraController.SetBoundary(center, size);
     }
 
@@ -187,6 +225,7 @@ public abstract class BuildingSceneRunnerBase : RunnerBase
         if (_gridHandler != null)
         {
             DataManager.Time.OnHourChanged -= _gridHandler.OnMainHourChanged;
+            DataManager.OnResearchCompleted -= _gridHandler.OnResearchCompleted;
         }
     }
 }

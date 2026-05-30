@@ -9,6 +9,9 @@ using UnityEngine;
 [Serializable]
 public class GameSaveData
 {
+    /// <summary>세이브 시각(UTC, ISO 8601). UI 표시용.</summary>
+    public string savedAtUtc;
+
     // Time Data
     public int year;
     public int month;
@@ -156,9 +159,9 @@ public class PlacedBuildingSaveData
     public float workProgress;
     public int assignedWorkers;
     public int assignedTechnicians;
+    public int rawMaterialScale = 1;
 
     public List<ResourcePacketSaveData> inputBuffer = new List<ResourcePacketSaveData>();
-    public List<ResourcePacketSaveData> outputBuffer = new List<ResourcePacketSaveData>();
 }
 
 /// <summary>

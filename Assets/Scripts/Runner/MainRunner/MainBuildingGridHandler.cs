@@ -15,7 +15,7 @@ public class MainBuildingGridHandler
     private readonly Transform _buildingParent;
     private readonly Transform _roadParent;
 
-    private readonly Dictionary<string, BuildingObject> _rawResourceBuildingObjDict = new();
+    private readonly Dictionary<string, RawBuildingObject> _rawResourceBuildingObjDict = new();
     private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
     private readonly Dictionary<string, DualLaneRoadObject> _dualLaneRoadObjDict = new();
@@ -72,6 +72,139 @@ public class MainBuildingGridHandler
 
         _tileViewportCullInitialized = false;
         EnsureGridOverview(_mainRunner.GridWidth, _mainRunner.GridHeight);
+
+        InitializeRepresentativeRawBuildings();
+    }
+
+    public void InitializeRepresentativeRawBuildings()
+    {
+        SyncRepresentativeRawBuildings();
+    }
+
+    public void OnResearchCompleted(string researchId)
+    {
+        SyncRepresentativeRawBuildings();
+    }
+
+    public void SyncRepresentativeRawBuildings()
+    {
+        List<(RawMaterialFactoryData rawData, ResourceData resData)> spawnList = BuildUnlockedRawBuildingSpawnList();
+
+        List<string> staleIds = new List<string>();
+        foreach (KeyValuePair<string, RawBuildingObject> pair in _rawResourceBuildingObjDict)
+        {
+            RawMaterialFactoryData buildingData = pair.Value != null ? pair.Value.BuildingData : null;
+            if (buildingData == null || !_dataManager.Building.IsBuildingUnlocked(buildingData))
+                staleIds.Add(pair.Key);
+        }
+
+        for (int i = 0; i < staleIds.Count; i++)
+            DestroyRawBuildingInstance(staleIds[i]);
+
+        for (int i = 0; i < spawnList.Count; i++)
+        {
+            RawMaterialFactoryData rawData = spawnList[i].rawData;
+            ResourceData resData = spawnList[i].resData;
+
+            if (_rawResourceBuildingObjDict.TryGetValue(rawData.id, out RawBuildingObject existing))
+            {
+                RepositionRawBuilding(existing, i);
+                continue;
+            }
+
+            SpawnRawBuildingInstance(rawData, resData, i);
+        }
+    }
+
+    private List<(RawMaterialFactoryData rawData, ResourceData resData)> BuildUnlockedRawBuildingSpawnList()
+    {
+        List<(RawMaterialFactoryData rawData, ResourceData resData)> spawnList = new();
+
+        foreach (BuildingData data in _dataManager.Building.GetBuildingDataList(BuildingType.RawProduction))
+        {
+            if (data is not RawMaterialFactoryData rawData || rawData.ProducibleResources == null)
+                continue;
+
+            if (!_dataManager.Building.IsBuildingUnlocked(rawData))
+                continue;
+
+            foreach (ResourceData res in rawData.ProducibleResources)
+                spawnList.Add((rawData, res));
+        }
+
+        return spawnList;
+    }
+
+    private void SpawnRawBuildingInstance(RawMaterialFactoryData rawData, ResourceData resData, int layoutIndex)
+    {
+        Vector3 worldPos = GetRawBuildingWorldPosition(layoutIndex);
+
+        GameObject prefabToSpawn = _mainRunner.RawBuildingObjectPrefab != null
+            ? _mainRunner.RawBuildingObjectPrefab
+            : _mainRunner.BuildingObjectPrefab;
+
+        GameObject obj = MonoBehaviour.Instantiate(prefabToSpawn, _buildingParent);
+        obj.name = $"RawBuilding_{rawData.id}_{resData.id}";
+        obj.transform.position = worldPos;
+        obj.transform.localScale = Vector3.one;
+
+        RawBuildingObject rawObj = obj.GetComponent<RawBuildingObject>();
+        if (rawObj == null)
+        {
+            BuildingObject oldComp = obj.GetComponent<BuildingObject>();
+            if (oldComp != null)
+                MonoBehaviour.DestroyImmediate(oldComp);
+
+            rawObj = obj.AddComponent<RawBuildingObject>();
+        }
+
+        Vector2Int dummyOrigin = new Vector2Int(Mathf.RoundToInt(worldPos.x), 0);
+        rawObj.Init(rawData, dummyOrigin, _mainRunner);
+        rawObj.TrySetSelectedResource(resData);
+
+        UIManager.Instance?.ShowRawBuildingInfoPanel(rawObj);
+        _rawResourceBuildingObjDict[rawData.id] = rawObj;
+    }
+
+    private void RepositionRawBuilding(RawBuildingObject rawBuilding, int layoutIndex)
+    {
+        if (rawBuilding == null)
+            return;
+
+        rawBuilding.transform.position = GetRawBuildingWorldPosition(layoutIndex);
+    }
+
+    private Vector3 GetRawBuildingWorldPosition(int layoutIndex)
+    {
+        float x = _mainRunner.RawBuildingsStartX + (layoutIndex * _mainRunner.RawBuildingsSpacingX);
+        return new Vector3(x, _mainRunner.RawBuildingsSpawnY, BuildingZ);
+    }
+
+    private void DestroyRawBuildingInstance(string buildingId)
+    {
+        if (!_rawResourceBuildingObjDict.TryGetValue(buildingId, out RawBuildingObject rawBuilding))
+            return;
+
+        rawBuilding.ReleaseAssignedEmployees();
+        _rawResourceBuildingObjDict.Remove(buildingId);
+        MonoBehaviour.Destroy(rawBuilding.gameObject);
+    }
+
+    private static string ResolveRawBuildingSaveId(PlacedBuildingSaveData saveData)
+    {
+        if (saveData == null || string.IsNullOrEmpty(saveData.buildingDataId))
+            return null;
+
+        if (saveData.buildingDataId != "mine")
+            return saveData.buildingDataId;
+
+        return saveData.selectedResourceId switch
+        {
+            "coal" => "coal_mine",
+            "copper_ore" => "copper_mine",
+            "aluminum_ore" => "aluminum_mine",
+            _ => "iron_mine",
+        };
     }
 
     public void ClearGrid()
@@ -184,13 +317,19 @@ public class MainBuildingGridHandler
     {
         _dataManager.Finances.ClearPlacedBuildingMaintenanceTotal();
 
+        foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
+        {
+            rawBuilding.ReleaseAssignedEmployees();
+            MonoBehaviour.Destroy(rawBuilding.gameObject);
+        }
+        _rawResourceBuildingObjDict.Clear();
+
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
             building.ReleaseAssignedEmployees();
             MonoBehaviour.Destroy(building.gameObject);
         }
         _buildingObjDict.Clear();
-        _rawResourceBuildingObjDict.Clear();
         _buildingOutputRoundRobinIndex.Clear();
 
         foreach (RoadObject road in _roadObjDict.Values)
@@ -209,12 +348,17 @@ public class MainBuildingGridHandler
 
     public List<PlacedBuildingSaveData> ExportPlacedBuildings()
     {
-        List<PlacedBuildingSaveData> list = new List<PlacedBuildingSaveData>(_buildingObjDict.Count);
+        List<PlacedBuildingSaveData> list = new List<PlacedBuildingSaveData>(_buildingObjDict.Count + _rawResourceBuildingObjDict.Count);
 
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
             if (building.IsRemovalAnimating) continue;
             list.Add(building.ExportSaveData());
+        }
+
+        foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
+        {
+            list.Add(rawBuilding.ExportSaveData());
         }
 
         return list;
@@ -521,6 +665,17 @@ public class MainBuildingGridHandler
         if (string.IsNullOrEmpty(buildingDataId))
             return 0;
 
+        BuildingData data = _dataManager.Building.GetBuildingData(buildingDataId);
+        if (data is RawMaterialFactoryData)
+        {
+            foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
+            {
+                if (rawBuilding.BuildingData.id == buildingDataId)
+                    return rawBuilding.RawMaterialCount;
+            }
+            return 0;
+        }
+
         int count = 0;
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
@@ -552,6 +707,13 @@ public class MainBuildingGridHandler
             if (building.BuildingData.id == buildingDataId && building.HasConfiguredOutputResource)
                 return true;
         }
+
+        foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
+        {
+            if (rawBuilding.BuildingData.id == buildingDataId && rawBuilding.HasConfiguredOutputResource)
+                return true;
+        }
+
         return false;
     }
 
@@ -628,7 +790,7 @@ public class MainBuildingGridHandler
     {
         placed = null;
         insufficientCredits = false;
-        if (data == null || data.buildingSprite == null || !CanPlaceMoreInstances(data))
+        if (data == null || data is RawMaterialFactoryData || data.buildingSprite == null || !CanPlaceMoreInstances(data))
             return false;
 
         if (data.buildCost > 0 && _dataManager.Finances.Credit < data.buildCost)
@@ -660,6 +822,9 @@ public class MainBuildingGridHandler
         if (!_occupiedAsObjectDict.TryGetValue(anyOccupiedCell, out string key))
             return false;
 
+        if (_rawResourceBuildingObjDict.ContainsKey(key))
+            return false;
+
         if (_roadObjDict.TryGetValue(key, out RoadObject road))
             return RemoveRoadInstance(road.GridPosition, key, road.SourceBuildingData, road.gameObject, _roadObjDict);
 
@@ -671,6 +836,7 @@ public class MainBuildingGridHandler
 
         Vector2Int origin = building.Origin;
         Vector2Int size = building.Size;
+        _mainRunner.PlayBuildingRemovalFeedback();
         building.PlayRemovalAnimation(() =>
         {
             building.ReleaseAssignedEmployees();
@@ -687,13 +853,117 @@ public class MainBuildingGridHandler
 
     public void OnMainHourChanged()
     {
+        TickResourceFlowFull();
+
         foreach (BuildingObject building in _buildingObjDict.Values)
         {
             if (building.IsRemovalAnimating) continue;
             building.TickSimulation(_dataManager);
         }
 
-        TickResourceFlowFull();
+        foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
+        {
+            rawBuilding.TickSimulation(_dataManager);
+        }
+    }
+
+    /// <summary>
+    /// 생산·하역 완료 시 인접 도로(터널/스플리터)가 출력을 받을 수 있는지 검사합니다.
+    /// </summary>
+    public bool CanAcceptBuildingOutputs(BuildingObject building, Dictionary<string, int> outputs)
+    {
+        if (building == null || outputs == null || outputs.Count == 0) return false;
+
+        List<Vector2Int> outputCells = building.OutputGridPositions;
+        if (outputCells == null || outputCells.Count == 0) return false;
+
+        string buildingKey = BuildingGridKey(building.Origin);
+        _buildingOutputRoundRobinIndex.TryGetValue(buildingKey, out int startIndex);
+        startIndex = Mathf.Clamp(startIndex, 0, outputCells.Count - 1);
+        bool useRoundRobin = building.BuildingData is ProductionBuildingData && outputCells.Count > 1;
+
+        foreach (KeyValuePair<string, int> kvp in outputs)
+        {
+            ResourcePacket packet = new ResourcePacket(kvp.Key, Mathf.Max(1, kvp.Value));
+            bool placed = false;
+
+            for (int offset = 0; offset < outputCells.Count; offset++)
+            {
+                int outIndex = useRoundRobin
+                    ? (startIndex + offset) % outputCells.Count
+                    : offset;
+                Vector2Int outCell = outputCells[outIndex];
+                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
+                if (ReferenceEquals(building, destNode)) continue;
+                if (!RoadNodeCanAccept(destNode, packet)) continue;
+
+                placed = true;
+                if (useRoundRobin)
+                    startIndex = (outIndex + 1) % outputCells.Count;
+                break;
+            }
+
+            if (!placed) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 생산·하역 결과를 건물 출력 버퍼 없이 인접 도로에 바로 적재합니다.
+    /// </summary>
+    public bool TryEmitBuildingOutputs(BuildingObject building, Dictionary<string, int> outputs)
+    {
+        if (building == null || outputs == null || outputs.Count == 0) return false;
+
+        List<Vector2Int> outputCells = building.OutputGridPositions;
+        if (outputCells == null || outputCells.Count == 0) return false;
+
+        string buildingKey = BuildingGridKey(building.Origin);
+        _buildingOutputRoundRobinIndex.TryGetValue(buildingKey, out int startIndex);
+        startIndex = Mathf.Clamp(startIndex, 0, outputCells.Count - 1);
+        bool useRoundRobin = building.BuildingData is ProductionBuildingData && outputCells.Count > 1;
+
+        foreach (KeyValuePair<string, int> kvp in outputs)
+        {
+            ResourcePacket packet = new ResourcePacket(kvp.Key, Mathf.Max(1, kvp.Value));
+            bool placed = false;
+
+            for (int offset = 0; offset < outputCells.Count; offset++)
+            {
+                int outIndex = useRoundRobin
+                    ? (startIndex + offset) % outputCells.Count
+                    : offset;
+                Vector2Int outCell = outputCells[outIndex];
+                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
+                if (ReferenceEquals(building, destNode)) continue;
+                if (destNode is not RoadObject && destNode is not DualLaneRoadObject) continue;
+
+                packet.TravelDirection = DirectionFromBuildingOutput(building, outCell);
+                if (!destNode.TryPush(packet)) continue;
+
+                placed = true;
+                if (useRoundRobin)
+                    startIndex = (outIndex + 1) % outputCells.Count;
+                break;
+            }
+
+            if (!placed) return false;
+        }
+
+        if (useRoundRobin)
+            _buildingOutputRoundRobinIndex[buildingKey] = startIndex;
+
+        return true;
+    }
+
+    private static bool RoadNodeCanAccept(IResourceNode node, ResourcePacket packet)
+    {
+        if (node is RoadObject road)
+            return !road.IsFull;
+        if (node is DualLaneRoadObject dual)
+            return dual.CanAcceptIncoming(packet);
+        return false;
     }
 
     public void TickResourceFlowFull()
@@ -728,40 +998,6 @@ public class MainBuildingGridHandler
             }
         }
 
-        foreach (KeyValuePair<string, BuildingObject> buildingPair in _buildingObjDict)
-        {
-            string buildingKey = buildingPair.Key;
-            BuildingObject building = buildingPair.Value;
-            if (building.IsRemovalAnimating) continue;
-
-            List<Vector2Int> outputCells = building.OutputGridPositions;
-            if (outputCells == null || outputCells.Count == 0) continue;
-
-            bool useRoundRobin = building.BuildingData is ProductionBuildingData && outputCells.Count > 1;
-            int startIndex = 0;
-            if (useRoundRobin)
-            {
-                _buildingOutputRoundRobinIndex.TryGetValue(buildingKey, out startIndex);
-                startIndex = Mathf.Clamp(startIndex, 0, outputCells.Count - 1);
-            }
-
-            for (int offset = 0; offset < outputCells.Count; offset++)
-            {
-                int outIndex = useRoundRobin
-                    ? (startIndex + offset) % outputCells.Count
-                    : offset;
-                Vector2Int outCell = outputCells[outIndex];
-                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
-                if (ReferenceEquals(building, destNode)) continue;
-
-                if (!building.TryForwardTo(destNode, DirectionFromBuildingOutput(building, outCell)))
-                    continue;
-
-                if (useRoundRobin)
-                    _buildingOutputRoundRobinIndex[buildingKey] = (outIndex + 1) % outputCells.Count;
-                break;
-            }
-        }
     }
 
     private static Transform CreateChildTransform(Transform parent, string name)
@@ -807,11 +1043,31 @@ public class MainBuildingGridHandler
         if (saveData == null || string.IsNullOrEmpty(saveData.buildingDataId))
             return false;
 
-        BuildingData data = _dataManager.Building.GetBuildingData(saveData.buildingDataId);
+        string resolvedBuildingId = ResolveRawBuildingSaveId(saveData);
+        if (string.IsNullOrEmpty(resolvedBuildingId))
+            return false;
+
+        BuildingData data = _dataManager.Building.GetBuildingData(resolvedBuildingId);
         if (data == null)
             return false;
 
         Vector2Int origin = new Vector2Int(saveData.originX, saveData.originY);
+
+        if (data is RawMaterialFactoryData)
+        {
+            if (_rawResourceBuildingObjDict.TryGetValue(resolvedBuildingId, out RawBuildingObject rawBuilding))
+            {
+                rawBuilding.ImportSaveData(saveData, _dataManager);
+
+                long maintenance = data.maintenanceCost * rawBuilding.RawMaterialCount;
+                long assetValue = data.buildCost * rawBuilding.RawMaterialCount;
+                _dataManager.Finances.ModifyPlacedBuildingMaintenance(maintenance, assetValue);
+
+                return true;
+            }
+            return false;
+        }
+
         Vector2Int rotatedSize = GetRotatedSize(data.size, saveData.rotation);
         if (!CanPlace(origin, rotatedSize))
             return false;
@@ -856,8 +1112,6 @@ public class MainBuildingGridHandler
         string key = BuildingGridKey(origin);
         RegisterBuildingOccupancy(origin, rotatedSize, key);
         _buildingObjDict[key] = building;
-        if (data is RawMaterialFactoryData)
-            _rawResourceBuildingObjDict[key] = building;
         _buildingOutputRoundRobinIndex[key] = 0;
     }
 

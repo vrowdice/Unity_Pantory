@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: union_request_warm_clothing
   description: Workers request basic warm clothing to survive the cold season.
-  requireCredit: 0
-  creditScaleFactor: 1
-  requireResource:
-    resource: {fileID: 11400000, guid: d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4, type: 2}
-    count: 20
-  resourceScaleFactor: 0.05
-  requirePolicy: {fileID: 0}
-  rewardCohesion: 6
+  conditionType: 2
+  targetId: basic_clothing
+  targetValue: 8
+  scaleFactor: 0.01
+  rewardCohesion: 2

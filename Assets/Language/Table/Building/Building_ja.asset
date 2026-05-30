@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270002
-    m_Localized: "部品工場"
+    m_Localized: "一般部品工場"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270009
-    m_Localized: "鉱山"
+    m_Localized: "鉄鉱山"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
@@ -83,7 +83,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270102
-    m_Localized: "精密部品工場。鉄インゴットから機械部品、銅・アルミインゴットから電子部品、鋼材と機械部品から精密工具を生産。高度な生産チェーンに不可欠。"
+    m_Localized: "一般部品工場。鉄インゴットから機械部品を生産。エンジン・車両など中盤生産の基礎施設。"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270103
@@ -111,7 +111,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270109
-    m_Localized: "一般鉱山。地下から鉄鉱石・石炭・銅鉱石・アルミ鉱石を採掘。金鉱石は生産しない—金鉱山を建設する。高額投資だが産業の核心原料を供給する。"
+    m_Localized: "専用の鉄鉱山。鉄鉱石を採掘し、製錬して鉄インゴットにする。金属加工チェーンの基礎施設。"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270110
@@ -172,6 +172,38 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226270119
     m_Localized: 専用の金鉱山。金鉱石のみを採掘し、製錬して純金にする。一般鉱山よりコストが高く、設置数に制限がある場合がある。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270020
+    m_Localized: 電子部品工場
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270120
+    m_Localized: 銅・アルミインゴットから電子部品を生産。エンジンや先進生産チェーンに必要。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270021
+    m_Localized: 石炭鉱山
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270121
+    m_Localized: 専用の石炭鉱山。石炭を採掘し、製錬・燃料・弾薬生産に供給する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270022
+    m_Localized: 銅鉱山
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270122
+    m_Localized: 専用の銅鉱山。銅鉱石を採掘し、製錬と電子部品チェーンに供給する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270023
+    m_Localized: アルミ鉱山
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270123
+    m_Localized: 専用のアルミ鉱山。アルミ鉱石を採掘し、製錬と先進製造に供給する。
     m_Metadata:
       m_Items: []
   references:

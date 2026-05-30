@@ -120,36 +120,23 @@ public class UnionPopupRequestBtn : BtnBase
 
     private UnionRequestConditionType GetConditionType()
     {
-        if (_requestState.requireCredit > 0)
-        {
-            return UnionRequestConditionType.Credit;
-        }
-
-        if (!string.IsNullOrEmpty(_requestState.requireResourceId) && _requestState.requireResourceCount > 0)
-        {
-            return UnionRequestConditionType.Resource;
-        }
-
-        if (!string.IsNullOrEmpty(_requestState.requiredPolicyId))
-        {
-            return UnionRequestConditionType.Policy;
-        }
-
-        return UnionRequestConditionType.None;
+        return _requestState != null ? _requestState.conditionType : UnionRequestConditionType.None;
     }
 
     private void RefreshCreditConditionUI()
     {
-        if (_creditCostText == null)
+        if (_creditCostText == null || _requestState == null)
         {
             return;
         }
 
-        _creditCostText.text = ReplaceUtils.FormatNumberWithCommas(_requestState.requireCredit);
+        _creditCostText.text = ReplaceUtils.FormatNumberWithCommas(_requestState.targetValue);
     }
 
     private void RefreshResourceConditionUI()
     {
+        if (_requestState == null) return;
+
         OrderRequireResourceItemPanel resourcePanel = _resourceItemPanel;
         if (resourcePanel == null && _resourceConditionContainer != null)
         {
@@ -161,23 +148,25 @@ public class UnionPopupRequestBtn : BtnBase
             return;
         }
 
-        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(_requestState.requireResourceId);
+        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(_requestState.targetId);
         if (resourceEntry == null)
         {
             return;
         }
 
-        resourcePanel.Init(resourceEntry, _requestState.requireResourceCount);
+        resourcePanel.Init(resourceEntry, (int)_requestState.targetValue);
     }
 
     private void RefreshPolicyConditionUI()
     {
-        PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(_requestState.requiredPolicyId);
+        if (_requestState == null) return;
+
+        PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(_requestState.targetId);
         if (_policyRequirementText != null)
         {
             _policyRequirementText.text = policyEntry?.data != null
                 ? policyEntry.data.id.Localize(LocalizationUtils.TABLE_POLICY)
-                : _requestState.requiredPolicyId;
+                : _requestState.targetId;
         }
 
         if (_policySwitch != null)

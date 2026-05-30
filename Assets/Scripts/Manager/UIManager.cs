@@ -36,6 +36,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _buildingHelpPopupPrefab;
     [SerializeField] private GameObject _resourceHelpPopupPrefab;
     [SerializeField] private GameObject _goalPopupPrefab;
+    [SerializeField] private GameObject _rawBuildingInfoPanelPrefab;
 
     [Header("Common UI")]
     [SerializeField] private GameObject _productionInfoImagePrefab;
@@ -655,6 +656,25 @@ public class UIManager : Singleton<UIManager>
         return popup;
     }
 
+    public BuildingInfoPopup ShowBuildingInfoPopup(RawBuildingObject rawBuildingObject)
+    {
+        BuildingInfoPopup popup = null;
+        if (_managerCanvasTransform != null)
+        {
+            popup = _managerCanvasTransform.GetComponentInChildren<BuildingInfoPopup>(true);
+        }
+
+        if (popup == null)
+        {
+            GameObject obj = InstantiatePopupPrefab(_buildingInfoPopupPrefab);
+            popup = obj.GetComponent<BuildingInfoPopup>();
+        }
+
+        popup.gameObject.SetActive(true);
+        popup.ShowRawBuildingInfo(rawBuildingObject);
+        return popup;
+    }
+
     public BuildingHelpPopup ShowBuildingHelpPopup(BuildingData buildingData)
     {
         BuildingHelpPopup popup = null;
@@ -728,6 +748,26 @@ public class UIManager : Singleton<UIManager>
         popup.gameObject.SetActive(true);
         popup.Init();
         return popup;
+    }
+
+    public RawBuildingInfoPanel ShowRawBuildingInfoPanel(RawBuildingObject targetRawBuilding)
+    {
+        if (_rawBuildingInfoPanelPrefab == null)
+        {
+            Debug.LogWarning("[UIManager] RawBuildingInfoPanel prefab is not assigned.");
+            return null;
+        }
+
+        // 메인 스크린 캔버스가 아닌 월드 캔버스 아래에 부모로 설정
+        Transform parent = GameManager.Instance != null && GameManager.Instance.GetWorldCanvas() != null 
+            ? GameManager.Instance.GetWorldCanvas() 
+            : (_mainCanvas != null ? _mainCanvas.transform : _managerCanvasTransform);
+
+        GameObject obj = Instantiate(_rawBuildingInfoPanelPrefab, parent, false);
+
+        RawBuildingInfoPanel panel = obj.GetComponent<RawBuildingInfoPanel>();
+        panel.Init(targetRawBuilding);
+        return panel;
     }
 
     public GameObject CreateResourceImageContainer(Transform parent, string name, Vector3 worldPosition, float containerScale, Dictionary<string, int> resourceCounts)

@@ -24,6 +24,27 @@ public static class OutputIndicatorHelper
             Spawn(parent, prefab, footprintSize, OutputIndicatorEdge.Right, i);
     }
 
+    public static void SpawnOnRightEdgeForBuilding(Transform parent, GameObject prefab, Vector2Int footprintSize)
+    {
+        if (prefab == null || parent == null) return;
+
+        int count = BuildingCalculationUtils.GetOutputIndicatorSpanCount(footprintSize, OutputIndicatorEdge.Right);
+        for (int i = 0; i < count; i++)
+        {
+            GameObject instance = Object.Instantiate(prefab, parent);
+            ApplyBuildingLocalPlacement(instance.transform, footprintSize, i);
+        }
+    }
+
+    public static void ApplyBuildingLocalPlacement(Transform indicator, Vector2Int footprintSize, int spanIndex = 0)
+    {
+        if (indicator == null) return;
+
+        indicator.localPosition = BuildingCalculationUtils.GetBuildingOutputIndicatorLocalPosition(footprintSize, spanIndex);
+        float rotationZ = BuildingCalculationUtils.GetOutputIndicatorLocalRotationZ(OutputIndicatorEdge.Right);
+        indicator.localRotation = Quaternion.Euler(0f, 0f, rotationZ);
+    }
+
     public static void ApplyLocalPlacement(Transform indicator, Vector2Int footprintSize, OutputIndicatorEdge edge, int spanIndex = 0)
     {
         if (indicator == null) return;

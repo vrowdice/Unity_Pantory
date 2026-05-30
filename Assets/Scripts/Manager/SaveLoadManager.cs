@@ -5,6 +5,18 @@ using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 
+public class SaveFileInfo
+{
+    public string FileName { get; }
+    public DateTime SavedAtUtc { get; }
+
+    public SaveFileInfo(string fileName, DateTime savedAtUtc)
+    {
+        FileName = fileName;
+        SavedAtUtc = savedAtUtc;
+    }
+}
+
 /// <summary>
 /// 게임 데이터 저장/로드를 처리하는 매니저 클래스.
 /// JSON 본문은 GameSaveData이며, DataManager.CaptureGameStateTo / ApplyGameStateFrom 에서
@@ -184,6 +196,7 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
         {
             GameSaveData saveData = new GameSaveData();
             dataManager.CaptureGameStateTo(saveData);
+            saveData.savedAtUtc = DateTime.UtcNow.ToString("o");
             string json = JsonUtility.ToJson(saveData, true);
             string filePath = GetSaveFilePath(fileName);
             string directory = Path.GetDirectoryName(filePath);
@@ -239,9 +252,9 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
         }
     }
 
-    public List<string> GetSaveFileList()
+    public List<SaveFileInfo> GetSaveFileList()
     {
-        List<string> saveFiles = new List<string>();
+        List<SaveFileInfo> saveFiles = new List<SaveFileInfo>();
         string directory = GetSaveFileDirectory();
         if (!Directory.Exists(directory))
         {
@@ -250,9 +263,13 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
 
         try
         {
-            foreach (string file in Directory.GetFiles(directory, $"*{SaveFileExtension}"))
+            foreach (string filePath in Directory.GetFiles(directory, $"*{SaveFileExtension}"))
             {
-                saveFiles.Add(Path.GetFileNameWithoutExtension(file));
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                DateTime savedAt = TryReadSavedAtUtc(filePath, out DateTime utc)
+                    ? utc
+                    : File.GetLastWriteTimeUtc(filePath);
+                saveFiles.Add(new SaveFileInfo(fileName, savedAt));
             }
         }
         catch (Exception e)
@@ -261,6 +278,46 @@ public class SaveLoadManager : Singleton<SaveLoadManager>
         }
 
         return saveFiles;
+    }
+
+    public static string FormatSaveDateForDisplay(DateTime savedAtUtc)
+    {
+        return savedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+    }
+
+    private static bool TryReadSavedAtUtc(string filePath, out DateTime savedAtUtc)
+    {
+        savedAtUtc = default;
+        if (!File.Exists(filePath))
+        {
+            return false;
+        }
+
+        try
+        {
+            string json = File.ReadAllText(filePath);
+            GameSaveData saveData = JsonUtility.FromJson<GameSaveData>(json);
+            if (saveData == null || string.IsNullOrEmpty(saveData.savedAtUtc))
+            {
+                return false;
+            }
+
+            if (!DateTime.TryParse(saveData.savedAtUtc, null, System.Globalization.DateTimeStyles.RoundtripKind, out savedAtUtc))
+            {
+                return false;
+            }
+
+            if (savedAtUtc.Kind == DateTimeKind.Unspecified)
+            {
+                savedAtUtc = DateTime.SpecifyKind(savedAtUtc, DateTimeKind.Utc);
+            }
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public bool HasSaveFile(string fileName)

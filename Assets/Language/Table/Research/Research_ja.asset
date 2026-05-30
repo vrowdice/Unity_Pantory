@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226266001
-    m_Localized: "部品製造"
+    m_Localized: "電子部品"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
@@ -59,11 +59,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267001
-    m_Localized: "部品工場を解禁。鉄インゴットから機械部品、銅・アルミインゴットから電子部品、鋼材と機械部品から精密工具を生産。車両・先進産業の中盤の要。"
+    m_Localized: "電子部品工場を解禁。銅・アルミインゴットから電子部品を生産。エンジンや先進生産に必要。"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267002
-    m_Localized: "一般鉱山を解禁。鉄・石炭・銅・アルミ鉱石を採掘。金鉱石は生産しない—別途金鉱山研究が必要。建設・維持コストは高い。"
+    m_Localized: "専用鉱山（鉄・石炭・銅・アルミ）を解禁。各鉱山は1種類の鉱石のみ採掘。金鉱石は別途金鉱山研究が必要。建設・維持コストは高い。"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267003
@@ -151,43 +151,43 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226266015
-    m_Localized: 鉱物調査 I
+    m_Localized: 鉄鉱調査 I
     m_Metadata:
       m_Items: []
   - m_Id: 864226267015
-    m_Localized: 鉱脈と埋蔵の調査により、設置可能な鉱山数の上限を引き上げる。
+    m_Localized: 鉄鉱脈調査により、設置可能な鉄鉱山数の上限を引き上げる。
     m_Metadata:
       m_Items: []
   - m_Id: 864226266016
-    m_Localized: 鉱物調査 II
+    m_Localized: 鉄鉱調査 II
     m_Metadata:
       m_Items: []
   - m_Id: 864226267016
-    m_Localized: 試料と地質モデルを強化し、鉱山の設置上限をさらに拡大する。
+    m_Localized: 試料と地質モデルを強化し、鉄鉱山の設置上限をさらに拡大する。
     m_Metadata:
       m_Items: []
   - m_Id: 864226266017
-    m_Localized: 鉱物調査 III
+    m_Localized: 鉄鉱調査 III
     m_Metadata:
       m_Items: []
   - m_Id: 864226267017
-    m_Localized: 深部探査で採掘適地を広げ、鉱山規模の上限を拡張する。
+    m_Localized: 深部探査で鉄鉱採掘適地を広げ、設置上限を拡張する。
     m_Metadata:
       m_Items: []
   - m_Id: 864226266018
-    m_Localized: 鉱物調査 IV
+    m_Localized: 鉄鉱調査 IV
     m_Metadata:
       m_Items: []
   - m_Id: 864226267018
-    m_Localized: 埋蔵量推定と後勤解析により、並列採掘の上限を高める。
+    m_Localized: 埋蔵量推定と物流計画を統合し、並行鉄鉱採掘規模を拡大する。
     m_Metadata:
       m_Items: []
   - m_Id: 864226266019
-    m_Localized: 鉱物調査 V
+    m_Localized: 鉄鉱調査 V
     m_Metadata:
       m_Items: []
   - m_Id: 864226267019
-    m_Localized: 広域埋蔵調査網を完成させ、鉱山設置可能数を最大まで引き上げる。
+    m_Localized: 鉱区全域の地質図を完成させ、運用可能な鉄鉱山数を最大化する。
     m_Metadata:
       m_Items: []
   - m_Id: 864226266020
@@ -268,6 +268,127 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226267029
     m_Localized: "専用金鉱山を解禁。金鉱石のみを採掘し製錬で純金にする。採掘研究の完了が前提。"
+    m_Metadata:
+      m_Items: []
+
+  - m_Id: 864226266030
+    m_Localized: 石炭調査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267030
+    m_Localized: 石炭層調査により、設置可能な石炭鉱山数の上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266031
+    m_Localized: 石炭調査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267031
+    m_Localized: 層状モデルと試料分析を強化し、石炭鉱山の設置上限を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266032
+    m_Localized: 石炭調査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267032
+    m_Localized: 深部探査で石炭採掘適地を広げ、設置上限を拡張する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266033
+    m_Localized: 石炭調査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267033
+    m_Localized: 埋蔵量推定と物流計画を統合し、並行石炭採掘規模を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266034
+    m_Localized: 石炭調査 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267034
+    m_Localized: 鉱区全域の地質図を完成させ、運用可能な石炭鉱山数を最大化する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266035
+    m_Localized: 銅鉱調査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267035
+    m_Localized: 銅鉱脈調査により、設置可能な銅鉱山数の上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266036
+    m_Localized: 銅鉱調査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267036
+    m_Localized: 試料と地質モデルを強化し、銅鉱山の設置上限を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266037
+    m_Localized: 銅鉱調査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267037
+    m_Localized: 深部探査で銅鉱採掘適地を広げ、設置上限を拡張する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266038
+    m_Localized: 銅鉱調査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267038
+    m_Localized: 埋蔵量推定と物流計画を統合し、並行銅鉱採掘規模を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266039
+    m_Localized: 銅鉱調査 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267039
+    m_Localized: 鉱区全域の地質図を完成させ、運用可能な銅鉱山数を最大化する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266040
+    m_Localized: アルミ鉱調査 I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267040
+    m_Localized: アルミ鉱床調査により、設置可能なアルミ鉱山数の上限を引き上げる。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266041
+    m_Localized: アルミ鉱調査 II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267041
+    m_Localized: 試料と地質モデルを強化し、アルミ鉱山の設置上限を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266042
+    m_Localized: アルミ鉱調査 III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267042
+    m_Localized: 深部探査でアルミ鉱採掘適地を広げ、設置上限を拡張する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266043
+    m_Localized: アルミ鉱調査 IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267043
+    m_Localized: 埋蔵量推定と物流計画を統合し、並行アルミ鉱採掘規模を拡大する。
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266044
+    m_Localized: アルミ鉱調査 V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267044
+    m_Localized: 鉱区全域の地質図を完成させ、運用可能なアルミ鉱山数を最大化する。
     m_Metadata:
       m_Items: []
   references:

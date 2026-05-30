@@ -21,7 +21,9 @@ public class MainBuildingPlacementHandler
     private GameObject _previewObj;
     private PreviewObject _previewObject;
     private bool _isPointerPlacementActive;
+    private bool _isPointerRemovalActive;
     private Vector2Int _lastPlacedOrigin;
+    private Vector2Int _lastRemovedCell = new Vector2Int(int.MinValue, int.MinValue);
     private int _lastPlacedRotation;
     private string _lastPlacedBuildingId;
     private readonly List<PlacedBuildingSaveData> _selectedBlueprintBuildings = new List<PlacedBuildingSaveData>();
@@ -37,6 +39,7 @@ public class MainBuildingPlacementHandler
     public bool IsBlueprintPlacementMode => _blueprintPlacementMode;
     public bool IsAutoEmployeePlacement => _autoEmployeePlacement;
     public bool IsPointerPlacementActive => _isPointerPlacementActive;
+    public bool IsPointerRemovalActive => _isPointerRemovalActive;
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int Rotation => _rotation;
 
@@ -140,11 +143,15 @@ public class MainBuildingPlacementHandler
         CancelBlueprintPlacement();
         CancelPlacement();
         _removalMode = true;
+        _isPointerRemovalActive = false;
+        _lastRemovedCell = new Vector2Int(int.MinValue, int.MinValue);
     }
 
     public void CancelRemoval()
     {
         _removalMode = false;
+        _isPointerRemovalActive = false;
+        _lastRemovedCell = new Vector2Int(int.MinValue, int.MinValue);
     }
 
     public void Rotate(bool clockwise)
@@ -279,16 +286,33 @@ public class MainBuildingPlacementHandler
             if (PointerInput.IsPointerOverUi())
                 return;
 
-            bool removed = _gridHandler.TryRemoveAt(p);
-            if (removed && _runner.RemovalSound != null)
-            {
-                _runner.SoundManager?.PlaySFX(_runner.RemovalSound);
-            }
-            if (removed)
-            {
-                PlayRemovalEffectAt(p);
-            }
+            _isPointerRemovalActive = true;
+            _lastRemovedCell = new Vector2Int(int.MinValue, int.MinValue);
+            TryRemoveAtCell(p);
         }
+
+        if (PointerInput.GetPrimaryPointerHeld() && _isPointerRemovalActive)
+            TryRemoveAtCell(p);
+
+        if (PointerInput.GetPrimaryPointerUp())
+        {
+            _isPointerRemovalActive = false;
+            _lastRemovedCell = new Vector2Int(int.MinValue, int.MinValue);
+        }
+    }
+
+    private void TryRemoveAtCell(Vector2Int cell)
+    {
+        if (cell == _lastRemovedCell)
+            return;
+
+        _lastRemovedCell = cell;
+
+        bool removed = _gridHandler.TryRemoveAt(cell);
+        if (removed && _runner.RemovalSound != null)
+            _runner.SoundManager?.PlaySFX(_runner.RemovalSound);
+        if (removed)
+            PlayRemovalEffectAt(cell);
     }
 
     private void CreatePreview()

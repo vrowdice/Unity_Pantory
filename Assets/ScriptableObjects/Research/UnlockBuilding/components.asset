@@ -13,13 +13,11 @@ MonoBehaviour:
   m_Name: components
   m_EditorClassIdentifier: 
   id: components
-  displayName: Component Manufacturing
+  displayName: Electronic Components
   researchType: 0
   icon: {fileID: 21300000, guid: 1e70a9003ec4ad74f99aef642e0864b4, type: 3}
-  description: Unlocks component factories. Produces machine parts from iron ingots,
-    electronic components from copper and aluminum ingots, and precision tools from
-    steel ingots and machine parts. Core mid-game production for vehicles and advanced
-    industry.
+  description: Unlocks the Electronic Components Factory. Produces electronic components
+    from copper and aluminum ingots. Essential for engines and advanced production.
   isDefaultUnlocked: 0
   researchPointCost: 2000
   unlockResearchList: []

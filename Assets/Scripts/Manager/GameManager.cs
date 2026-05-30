@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
 
     public MainCameraController MainCameraController => _mainCameraController;
     public PoolingManager PoolingManager => _poolingManager;
+    public RunnerBase CurrentRunner => _currentRunnerBase;
 
     [Header("World Space Canvas Settings")]
     [SerializeField] private string _worldCanvasName = "SharedWorldCanvas";
@@ -176,8 +177,6 @@ public class GameManager : Singleton<GameManager>
         _canvasRect.localPosition = Vector3.zero;
         _canvasRect.localRotation = Quaternion.identity;
 
-        CanvasGroup group = _sharedWorldCanvas.AddComponent<CanvasGroup>();
-        group.interactable = false;
-        group.blocksRaycasts = false;
+        _sharedWorldCanvas.AddComponent<GraphicRaycaster>();
     }
 }

@@ -16,7 +16,7 @@ MonoBehaviour:
   announcementLocalizationKey: main_event_union
   announcementIcon: {fileID: 21300000, guid: 50cd4ec9ed786164aa98a47e4e616280, type: 3}
   openNewsAudio: {fileID: 8300000, guid: 1a042150e91d449449eccc09f2a03389, type: 3}
-  unionEmployeeCountToStart: 50
+  unionEmployeeCountToStart: 200
   unionDaysToComplete: 720
   unionDailyCreditCost: 0
   cohesionSatisfactionBaseline: 0

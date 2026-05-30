@@ -9,20 +9,17 @@ public class BuildingInfoPopupResourceBtn : BtnBase
 
     private BuildingObject _building;
     private string _resourceId;
-    private bool _fromInputBuffer;
     private BuildingInfoPopup _popup;
 
     public void Init(
         BuildingObject building,
         string resourceId,
-        bool fromInputBuffer,
         ResourceEntry resourceEntry,
         int amount,
         BuildingInfoPopup popup)
     {
         _building = building;
         _resourceId = resourceId;
-        _fromInputBuffer = fromInputBuffer;
         _popup = popup;
 
         _icon.sprite = resourceEntry.data.icon;
@@ -31,7 +28,7 @@ public class BuildingInfoPopupResourceBtn : BtnBase
 
     protected override void HandleClick()
     {
-        _building.TryReturnBufferResourceToDataManager(DataManager.Instance, _resourceId, _fromInputBuffer);
-        _popup.RefreshAfterRuntimeBufferChanged();
+        _building.TryReturnInputBufferResourceToDataManager(DataManager.Instance, _resourceId);
+        _popup.RefreshAfterRuntimeInputBufferChanged();
     }
 }

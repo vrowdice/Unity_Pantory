@@ -16,9 +16,9 @@ MonoBehaviour:
   displayName: Mining
   researchType: 0
   icon: {fileID: 21300000, guid: e35cd4b03adf09642af883920b6d70e9, type: 3}
-  description: "Unlocks general mines. Extracts iron ore, coal, copper ore, and aluminum
-    ore. Does not produce gold ore\u2014research Gold Mine Construction separately.
-    High build and upkeep costs."
+  description: "Unlocks dedicated ore mines (iron, coal, copper, aluminum). Each
+    mine extracts one resource type. Does not unlock gold ore\u2014research Gold Mine
+    Construction separately. High build and upkeep costs."
   isDefaultUnlocked: 1
   researchPointCost: 1400
   unlockResearchList:
