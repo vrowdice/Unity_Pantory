@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MainResourceFlowHandler
 {
-    private readonly BuildingSceneRunnerBase _mainRunner;
+    private readonly MainRunner _mainRunner;
     private readonly Transform _buildingParent;
     private readonly DataManager _dataManager;
 
@@ -15,7 +15,7 @@ public class MainResourceFlowHandler
     private const float BuildingZ = 9f;
 
     public MainResourceFlowHandler(
-        BuildingSceneRunnerBase runner,
+        MainRunner runner,
         Transform buildingParent,
         Dictionary<string, RoadObject> roadObjDict,
         Dictionary<string, DualLaneRoadObject> dualLaneRoadObjDict,
@@ -178,8 +178,13 @@ public class MainResourceFlowHandler
     private bool TryGetResourceNodeAtCell(Vector2Int pos, out IResourceNode node)
     {
         node = null;
-        BuildingSceneRunnerBase runner = GameManager.Instance?.CurrentRunner as BuildingSceneRunnerBase;
-        return runner != null && runner.GridHandler != null && runner.GridHandler.TryGetResourceNodeAtCell(pos, out node);
+        if (GameManager.Instance?.CurrentRunner is not MainRunner runner
+            || runner.GridHandler == null)
+        {
+            return false;
+        }
+
+        return runner.GridHandler.TryGetResourceNodeAtCell(pos, out node);
     }
 
     private static FlowDirection DirectionFromBuildingOutput(BuildingObject building, Vector2Int outputCell)

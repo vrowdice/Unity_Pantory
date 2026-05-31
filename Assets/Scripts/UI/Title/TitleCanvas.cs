@@ -12,14 +12,14 @@ public class TitleCanvas : CanvasBase
 
     public void GoToMainScene()
     {
-        SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
-
         if (DataManager.Instance.Player.HasCompletedIntroTutorial)
         {
+            SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
             SceneLoadManager.LoadScene("Main");
         }
         else
         {
+            // 튜토리얼은 씬 로드 시 GameManager → ResetToTutorialGame()으로 새 게임 적용
             SceneLoadManager.LoadScene("Tutorial");
         }
     }

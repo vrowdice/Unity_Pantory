@@ -18,17 +18,9 @@ public class StorageCanvas : MainCanvasPanelBase
     private Coroutine _categoryButtonCoroutine;
     private Coroutine _resourceListCoroutine;
 
-    /// <summary>
-    /// 패널 초기화 (BasePanel에서 호출)
-    /// </summary>
     public override void Init(MainCanvas argUIManager)
     {
-        Init((IBuildScenePanelHost)argUIManager);
-    }
-
-    public override void Init(IBuildScenePanelHost panelHost)
-    {
-        base.Init(panelHost);
+        base.Init(argUIManager);
 
         _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
         _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;

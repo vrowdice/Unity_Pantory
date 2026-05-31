@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MainRawBuildingHandler
 {
-    private readonly BuildingSceneRunnerBase _mainRunner;
+    private readonly MainRunner _mainRunner;
     private readonly Transform _buildingParent;
     private readonly DataManager _dataManager;
 
@@ -13,7 +13,7 @@ public class MainRawBuildingHandler
 
     public Dictionary<string, RawBuildingObject> RawResourceBuildingObjDict => _rawResourceBuildingObjDict;
 
-    public MainRawBuildingHandler(BuildingSceneRunnerBase runner, Transform buildingParent)
+    public MainRawBuildingHandler(MainRunner runner, Transform buildingParent)
     {
         _mainRunner = runner;
         _buildingParent = buildingParent;

@@ -7,7 +7,7 @@ public class MainBlueprintHandler
     private const float SelectionBoxZ = 8f;
     private const int SelectionSortOrder = 950;
 
-    private readonly BuildingSceneRunnerBase _runner;
+    private readonly MainRunner _runner;
 
     private bool _isBlueprintMode;
     private bool _pointerDownForSelection;
@@ -20,7 +20,7 @@ public class MainBlueprintHandler
     public bool IsBlueprintMode => _isBlueprintMode;
     public bool IsBlockingCameraDrag => _isBlueprintMode && _pointerDownForSelection;
 
-    public MainBlueprintHandler(BuildingSceneRunnerBase runner)
+    public MainBlueprintHandler(MainRunner runner)
     {
         _runner = runner;
     }
@@ -114,12 +114,6 @@ public class MainBlueprintHandler
         List<PlacedRoadSaveData> capturedRoads = grid.ExportRoadsIntersectingGridRect(cellMin, cellMax);
         if (captured.Count == 0 && capturedRoads.Count == 0)
             return;
-
-        IBuildSceneCanvas canvas = _runner.BuildSceneCanvas;
-        if (canvas != null)
-        {
-            canvas.RequestSaveBlueprintEntry(captured, capturedRoads);
-        }
     }
 
     private void EnsureSelectionVisual()

@@ -41,7 +41,7 @@ public class MainCameraController : MonoBehaviour
     private bool _isDragging;
     private Vector3 _middleDragOrigin;
     private bool _isMiddleDragging;
-    private BuildingSceneRunnerBase _sceneRunner;
+    private MainRunner _sceneRunner;
 
     private void Awake()
     {
@@ -232,8 +232,8 @@ public class MainCameraController : MonoBehaviour
             _sceneRunner = FindAnyObjectByType<MainRunner>();
             if (_sceneRunner == null)
             {
-                BuildingSceneRunnerBase[] runners =
-                    FindObjectsByType<BuildingSceneRunnerBase>(FindObjectsSortMode.None);
+                MainRunner[] runners =
+                    FindObjectsByType<MainRunner>(FindObjectsSortMode.None);
                 if (runners.Length > 0)
                     _sceneRunner = runners[0];
             }

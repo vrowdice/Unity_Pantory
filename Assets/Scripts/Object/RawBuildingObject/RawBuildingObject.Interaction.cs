@@ -3,7 +3,7 @@ using UnityEngine;
 
 public partial class RawBuildingObject
 {
-    private BuildingSceneRunnerBase _runner;
+    private MainRunner _runner;
     private bool _clickArmed;
     private Vector2 _pointerDownScreenPos;
     private const float ClickDragThresholdPixels = 8f;
@@ -12,7 +12,7 @@ public partial class RawBuildingObject
     public bool HasConfiguredOutputResource =>
         _selectedResource != null && !string.IsNullOrEmpty(_selectedResource.id);
 
-    public void Init(RawMaterialFactoryData buildingData, Vector2Int origin, BuildingSceneRunnerBase runner)
+    public void Init(RawMaterialFactoryData buildingData, Vector2Int origin, MainRunner runner)
     {
         _runner = runner;
         _buildingData = buildingData;

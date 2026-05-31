@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class MainBuildingGridHandler
 {
-    private readonly BuildingSceneRunnerBase _mainRunner;
+    private readonly MainRunner _mainRunner;
     private readonly DataManager _dataManager;
 
     private readonly Transform _tileParent;
@@ -32,7 +32,7 @@ public class MainBuildingGridHandler
     public Transform TileParent => _tileParent;
     public Transform BuildingParent => _buildingParent;
     public Transform RoadParent => _roadParent;
-    protected virtual bool AllowRawBuildingPlacement => false;
+    private bool AllowRawBuildingPlacement => _mainRunner.AllowRawBuildingPlacement;
 
     public IEnumerable<IBuilding> GetAllBuildings()
     {
@@ -40,7 +40,7 @@ public class MainBuildingGridHandler
             yield return building;
     }
 
-    public MainBuildingGridHandler(BuildingSceneRunnerBase runner)
+    public MainBuildingGridHandler(MainRunner runner)
     {
         _mainRunner = runner;
         _dataManager = DataManager.Instance;
@@ -343,6 +343,48 @@ public class MainBuildingGridHandler
     }
 
     public bool IsCellOccupied(Vector2Int position) => _occupiedAsObjectDict.ContainsKey(position);
+
+    public bool TryGetPlacedGameObjectAt(Vector2Int gridPosition, out GameObject placedObject)
+    {
+        placedObject = null;
+        if (!_occupiedAsObjectDict.TryGetValue(gridPosition, out string key))
+            return false;
+
+        if (_roadObjDict.TryGetValue(key, out RoadObject road))
+        {
+            placedObject = road.gameObject;
+            return true;
+        }
+
+        if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualLaneRoad))
+        {
+            placedObject = dualLaneRoad.gameObject;
+            return true;
+        }
+
+        if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
+        {
+            placedObject = building.gameObject;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryGetRoadAt(Vector2Int gridPosition, out RoadObject road)
+    {
+        road = null;
+        if (!_occupiedAsObjectDict.TryGetValue(gridPosition, out string key))
+            return false;
+
+        if (_roadObjDict.TryGetValue(key, out RoadObject foundRoad))
+        {
+            road = foundRoad;
+            return true;
+        }
+
+        return false;
+    }
 
     public virtual bool CanPlaceMoreInstances(BuildingData data)
     {

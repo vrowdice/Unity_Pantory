@@ -1,7 +1,8 @@
-public enum TutorialSceneStepKind
+public enum TutorialSceneStepType
 {
     Message,
     EnableRemovalMode,
+    DisableRemovalMode,
     RemovePracticeBuilding,
     EnableAutoEmployeePlacement,
     SelectBuilding,
@@ -11,5 +12,7 @@ public enum TutorialSceneStepKind
     WaitDayPassed,
     OpenMarketPanel,
     AdjustMarketSell,
-    Complete
+    Complete,
+    AddRawBuilding,
+    ClosePanel,
 }

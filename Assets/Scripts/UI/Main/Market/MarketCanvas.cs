@@ -28,17 +28,9 @@ public class MarketCanvas : MainCanvasPanelBase
     private Coroutine _actionButtonCoroutine;
     private Coroutine _scrollListCoroutine;
 
-    /// <summary>
-    /// 마켓 패널 초기화 및 이벤트 구독을 수행합니다.
-    /// </summary>
     public override void Init(MainCanvas argUIManager)
     {
-        Init((IBuildScenePanelHost)argUIManager);
-    }
-
-    public override void Init(IBuildScenePanelHost panelHost)
-    {
-        base.Init(panelHost);
+        base.Init(argUIManager);
 
         SetupActionButtons();
 

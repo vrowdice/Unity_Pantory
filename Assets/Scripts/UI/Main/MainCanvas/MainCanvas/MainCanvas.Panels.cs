@@ -30,35 +30,35 @@ public partial class MainCanvas
         if (_storageCanvas != null)
             return;
 
-        GameObject storageObj = Object.Instantiate(_storageCanvasPrefab);
+        GameObject storageObj = Instantiate(_storageCanvasPrefab);
         storageObj.name = _storageCanvasPrefab.name;
         _storageCanvas = storageObj.GetComponent<StorageCanvas>();
 
-        GameObject orderObj = Object.Instantiate(_orderCanvasPrefab);
+        GameObject orderObj = Instantiate(_orderCanvasPrefab);
         orderObj.name = _orderCanvasPrefab.name;
         _orderCanvas = orderObj.GetComponent<OrderCanvas>();
 
-        GameObject marketObj = Object.Instantiate(_marketCanvasPrefab);
+        GameObject marketObj = Instantiate(_marketCanvasPrefab);
         marketObj.name = _marketCanvasPrefab.name;
         _marketCanvas = marketObj.GetComponent<MarketCanvas>();
 
-        GameObject employmentObj = Object.Instantiate(_employmentCanvasPrefab);
+        GameObject employmentObj = Instantiate(_employmentCanvasPrefab);
         employmentObj.name = _employmentCanvasPrefab.name;
         _employmentCanvas = employmentObj.GetComponent<EmployeeCanvas>();
 
-        GameObject policyObj = Object.Instantiate(_policyCanvasPrefab);
+        GameObject policyObj = Instantiate(_policyCanvasPrefab);
         policyObj.name = _policyCanvasPrefab.name;
         _policyCanvas = policyObj.GetComponent<PolicyCanvas>();
 
-        GameObject newsObj = Object.Instantiate(_newsCanvasPrefab);
+        GameObject newsObj = Instantiate(_newsCanvasPrefab);
         newsObj.name = _newsCanvasPrefab.name;
         _newsCanvas = newsObj.GetComponent<NewsCanvas>();
 
-        GameObject researchObj = Object.Instantiate(_researchCanvasPrefab);
+        GameObject researchObj = Instantiate(_researchCanvasPrefab);
         researchObj.name = _researchCanvasPrefab.name;
         _researchCanvas = researchObj.GetComponent<ResearchCanvas>();
 
-        GameObject financeObj = Object.Instantiate(_financeCanvasPrefab);
+        GameObject financeObj = Instantiate(_financeCanvasPrefab);
         financeObj.name = _financeCanvasPrefab.name;
         _financeCanvas = financeObj.GetComponent<FinanceCanvas>();
     }
@@ -105,11 +105,41 @@ public partial class MainCanvas
 
         panel.Init(this);
         _currentOpenPanelType = panelType;
+        TutorialDirector.Instance?.NotifyPanelOpened(panelType);
     }
 
     private void ClosePanelInternal(MainPanelType panelType)
     {
         _panelDict[panelType].OnClose();
+    }
+
+    public void NotifyTutorialPanelClosed(MainCanvasPanelBase panel)
+    {
+        if (_panelDict == null || panel == null)
+            return;
+
+        foreach (KeyValuePair<MainPanelType, MainCanvasPanelBase> kvp in _panelDict)
+        {
+            if (kvp.Value != panel)
+                continue;
+
+            if (_currentOpenPanelType == kvp.Key)
+                _currentOpenPanelType = null;
+
+            TutorialDirector.Instance?.NotifyPanelClosed();
+            return;
+        }
+    }
+
+    public bool IsAnyPanelOpen()
+    {
+        if (!_currentOpenPanelType.HasValue || _panelDict == null)
+            return false;
+
+        if (!_panelDict.TryGetValue(_currentOpenPanelType.Value, out MainCanvasPanelBase panel))
+            return false;
+
+        return panel != null && panel.gameObject.activeSelf;
     }
 
     public void CloseAllPanels()

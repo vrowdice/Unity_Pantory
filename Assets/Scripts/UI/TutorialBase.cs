@@ -39,6 +39,8 @@ public class TutorialBase : UITweenEffectBase
     public void StartTutorial()
     {
         if (_tutorialPanelInfo == null || _tutorialPanelInfo.Count == 0) return;
+        if (SceneLoadManager.Instance.GetSceneName() == "Tutorial") return;
+
         UIManager.Instance.ShowTutorialPopup(_tutorialPanelInfo, this.name);
     }
 }

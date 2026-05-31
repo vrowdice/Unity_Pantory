@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class MainBuildingPlacementHandler
 {
-    private readonly BuildingSceneRunnerBase _runner;
+    private readonly MainRunner _runner;
     private readonly MainBuildingGridHandler _gridHandler;
 
     private BuildingData _selectedBuilding;
@@ -43,7 +43,7 @@ public class MainBuildingPlacementHandler
     public BuildingData SelectedBuilding => _selectedBuilding;
     public int Rotation => _rotation;
 
-    public MainBuildingPlacementHandler(BuildingSceneRunnerBase runner)
+    public MainBuildingPlacementHandler(MainRunner runner)
     {
         _runner = runner;
 

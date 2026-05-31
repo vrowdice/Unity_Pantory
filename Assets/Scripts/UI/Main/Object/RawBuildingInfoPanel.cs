@@ -81,15 +81,24 @@ public class RawBuildingInfoPanel : MonoBehaviour
 
         RefreshUI();
 
-        BuildingSceneRunnerBase runner = GameManager.Instance?.CurrentRunner as BuildingSceneRunnerBase;
-        if (delta > 0 &&
-            runner?.PlacementHandler != null &&
-            runner.PlacementHandler.IsAutoEmployeePlacement)
+        if (delta > 0)
         {
-            _targetRawBuilding.TryAutoAssignEmployeesToFill();
+            string buildingId = _targetRawBuilding.BuildingData?.id;
+            if (!string.IsNullOrEmpty(buildingId))
+                TutorialDirector.Instance?.NotifyRawBuildingAdded(buildingId);
         }
 
-        runner?.FlushPlacedLayoutToDataManager();
+        if (GameManager.Instance?.CurrentRunner is MainRunner runner)
+        {
+            if (delta > 0 &&
+                runner.PlacementHandler != null &&
+                runner.PlacementHandler.IsAutoEmployeePlacement)
+            {
+                _targetRawBuilding.TryAutoAssignEmployeesToFill();
+            }
+
+            runner.FlushPlacedLayoutToDataManager();
+        }
     }
 
     public void RefreshUI()

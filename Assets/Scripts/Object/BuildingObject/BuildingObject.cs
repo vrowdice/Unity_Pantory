@@ -26,7 +26,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode, IBuilding
     private readonly List<ResourcePacket> _failedReturnPackets = new List<ResourcePacket>();
     private readonly Queue<ResourcePacket> _inputBuffer = new Queue<ResourcePacket>();
 
-    private BuildingSceneRunnerBase _mainRunner;
+    private MainRunner _mainRunner;
     private BuildingData _buildingData;
     private Vector2Int _origin;
     private Vector2Int _size;
@@ -60,7 +60,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode, IBuilding
         _buildingData.isProfessional ? 0 : RequiredEmployeeSlots;
     public int MaxTechnicianSlots => RequiredEmployeeSlots;
 
-    public void Init(BuildingSceneRunnerBase runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
+    public void Init(MainRunner runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
     {
         _mainRunner = runner;
         _buildingData = buildingData;

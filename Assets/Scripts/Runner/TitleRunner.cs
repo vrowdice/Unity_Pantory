@@ -4,7 +4,7 @@ public class TitleRunner : RunnerBase
 {
     [SerializeField] private TitleCanvas _titleCanvas;
 
-    override public void Init()
+    public override void Init()
     {
         base.Init();
 

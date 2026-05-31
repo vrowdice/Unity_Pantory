@@ -650,6 +650,8 @@ MonoBehaviour:
   _panelMoveDuration: 0.35
   _panelMoveEase: 9
   _screenEdgePadding: 16
+  _worldFocusDefaultScreenSize: 72
+  _worldFocusDefaultWorldSize: 1.5
   _descriptionText: {fileID: 6438303232244461482}
   _indexTextRoot: {fileID: 842021811728243377}
   _beforeBtnRoot: {fileID: 2736375140717877441}
@@ -1855,7 +1857,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14117648, g: 0.15686275, b: 0.17254902, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1888,7 +1890,7 @@ MonoBehaviour:
   targetImage: {fileID: 8340910963225966526}
   targetText: {fileID: 0}
   objectType: 0
-  colorID: Background
+  colorID: Primary
   fontID: Noto
   useCustomColor: 0
   overrideAlpha: 0

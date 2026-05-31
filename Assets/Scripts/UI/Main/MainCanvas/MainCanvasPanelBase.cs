@@ -12,12 +12,10 @@ public abstract class MainCanvasPanelBase : TutorialBase
     protected SoundManager _soundManager;
     protected VisualManager _visualManager;
     protected UIManager _panelUIManager;
-    protected IBuildScenePanelHost _panelHost;
     protected MainCanvas _uiManager;
     private Action _cachedOnClose;
 
     public MainCanvas Host => _uiManager;
-    public IBuildScenePanelHost PanelHost => _panelHost;
     public GameManager GameManager => _gameManager;
     public VisualManager VisualManager => _visualManager;
     public DataManager DataManager => _dataManager;
@@ -38,22 +36,16 @@ public abstract class MainCanvasPanelBase : TutorialBase
     /// <summary>
     /// 패널이 열릴 때 호출됩니다.
     /// </summary>
-    public virtual void Init(MainCanvas argUIManager)
+    public virtual void Init(MainCanvas host)
     {
-        Init((IBuildScenePanelHost)argUIManager);
-    }
-
-    public virtual void Init(IBuildScenePanelHost panelHost)
-    {
-        if (panelHost != null)
+        if (host != null)
         {
-            _panelHost = panelHost;
-            _uiManager = panelHost as MainCanvas;
-            _gameManager = panelHost.GameManager;
-            _dataManager = panelHost.DataManager;
-            _soundManager = panelHost.SoundManager;
-            _visualManager = panelHost.VisualManager;
-            _panelUIManager = panelHost.UIManager;
+            _uiManager = host;
+            _gameManager = host.GameManager;
+            _dataManager = host.DataManager;
+            _soundManager = host.SoundManager;
+            _visualManager = host.VisualManager;
+            _panelUIManager = host.UIManager;
         }
 
         EnsurePanelServices();
@@ -87,6 +79,8 @@ public abstract class MainCanvasPanelBase : TutorialBase
             return;
         }
 
+        _uiManager?.NotifyTutorialPanelClosed(this);
+
         if (TryGetPanelAnimator(out PanelDoAni animator))
         {
             animator.ClosePanel(() =>
@@ -105,7 +99,6 @@ public abstract class MainCanvasPanelBase : TutorialBase
         }
 
         _uiManager?.CloseAllPanels();
-        _panelHost?.CloseAllPanels();
     }
 
     protected void EnsurePanelServices()

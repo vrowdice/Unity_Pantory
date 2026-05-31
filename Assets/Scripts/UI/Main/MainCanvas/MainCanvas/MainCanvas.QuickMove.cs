@@ -19,6 +19,7 @@ public partial class MainCanvas
         {
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_quickMoveBtnPrefeb);
             btnObj.transform.SetParent(_quickMovePanelContent, false);
+            btnObj.name = $"QuickMoveBtn_{panelType}";
 
             QuickMoveBtn quickBtn = btnObj.GetComponent<QuickMoveBtn>();
             quickBtn.Init(this, panelType);

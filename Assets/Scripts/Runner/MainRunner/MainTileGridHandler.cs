@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MainTileGridHandler
 {
-    private readonly BuildingSceneRunnerBase _mainRunner;
+    private readonly MainRunner _mainRunner;
     private readonly Transform _tileParent;
     private readonly Dictionary<Vector2Int, BuildingTile> _tileDict = new();
 
@@ -24,7 +24,7 @@ public class MainTileGridHandler
     public bool TileOverviewModeActive => _tileOverviewModeActive;
     public Dictionary<Vector2Int, BuildingTile> TileDict => _tileDict;
 
-    public MainTileGridHandler(BuildingSceneRunnerBase runner, Transform tileParent)
+    public MainTileGridHandler(MainRunner runner, Transform tileParent)
     {
         _mainRunner = runner;
         _tileParent = tileParent;
@@ -41,6 +41,7 @@ public class MainTileGridHandler
                 Vector2Int p = new Vector2Int(x, y);
                 GameObject tileObj = MonoBehaviour.Instantiate(_mainRunner.TilePrefab, _tileParent);
                 tileObj.transform.localPosition = new Vector3(x, -y, TileZ);
+                tileObj.name = $"Tile_{x}_{y}";
 
                 if (!tileObj.TryGetComponent(out BuildingTile tile))
                     tile = tileObj.AddComponent<BuildingTile>();

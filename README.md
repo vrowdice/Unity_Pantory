@@ -84,9 +84,10 @@ Functional domains accessed as `DataManager.<Handler>`:
 
 ### Runners (`Assets/Scripts/Runner`)
 
-* **`MainRunner`** — main scene construction grid and UI bridge to `MainCanvas`.
-* **`TitleRunner`** — title flow.
-* **`RunnerBase`** — shared runner base.
+* **`RunnerBase`** — shared runner base (managers, BGM).
+* **`MainRunner`** — main/tutorial construction grid and placement.
+* **`TutorialRunner`** — extends `MainRunner` for tutorial overrides.
+* **`TitleRunner`** — extends `RunnerBase` for title flow.
 
 ### Supporting layout (`Assets/Scripts`)
 
@@ -119,7 +120,7 @@ Assets/
 │   ├── Manager/                # GameManager, DataManager, SaveLoad, UI, Sound, …
 │   │   └── DataManager/
 │   │       └── Handler/        # Per-domain data handlers
-│   ├── Runner/                 # MainRunner, TitleRunner, RunnerBase
+│   ├── Runner/                 # RunnerBase, MainRunner, TutorialRunner, TitleRunner
 │   ├── UI/                     # Common, Main, Popup, Title
 │   ├── Data/                   # Scriptable data types (Building, Resource, Policy, …)
 │   ├── Object/                 # World objects
@@ -220,7 +221,7 @@ Build/in-game notice: [`Assets/LEGAL/CopyrightNotice.txt`](Assets/LEGAL/Copyrigh
 
 **데이터 핸들러:** `Time`, `Resource`, `MarketActor`, `Finances`, `Employee`, `Building`, `Effect`, `Research`, `Order`, `News`, `Policy`, `MainEvent`, `Player`, `PlacedLayout`, `BlueprintLayout`
 
-**러너:** `MainRunner`(메인 씬), `TitleRunner`(타이틀), `RunnerBase`(공통 베이스)
+**러너:** `RunnerBase`(공통), `MainRunner`(메인 씬), `TutorialRunner`(튜토리얼), `TitleRunner`(타이틀)
 
 **기타:** `Controller`, `Object`, `Common`, `Interface`, `Structure`, `Type`, `String`, `Utile`, `Py`(자동화 스크립트)
 

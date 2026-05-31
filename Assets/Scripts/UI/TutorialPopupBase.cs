@@ -13,7 +13,6 @@ public abstract class TutorialPopupBase : PopupBase
     [SerializeField] protected float _focusPulseScale = 1.1f;
     [SerializeField] protected float _focusPulseDuration = 0.6f;
 
-    // Arrow: distance from focus target towards panel.
     [SerializeField] protected float _focusArrowDistance = 80f;
     [SerializeField] protected float _focusArrowMoveAmount = 10f;
     [SerializeField] protected float _focusArrowMoveDuration = 0.5f;
@@ -22,8 +21,12 @@ public abstract class TutorialPopupBase : PopupBase
     [SerializeField] protected float _panelMoveDuration = 0.35f;
     [SerializeField] protected Ease _panelMoveEase = Ease.OutCubic;
     [SerializeField] protected float _screenEdgePadding = 16f;
+    [SerializeField] protected float _worldFocusDefaultScreenSize = 72f;
+    [SerializeField] protected float _worldFocusDefaultWorldSize = 1.5f;
 
-    private RectTransform _currentFocusTarget;
+    private RectTransform _currentUiFocusTarget;
+    private Transform _currentWorldFocusTarget;
+    private Vector3 _focusAnchorPosition;
     private Tweener _arrowBobTween;
     private float _arrowBob01;
 
@@ -49,66 +52,139 @@ public abstract class TutorialPopupBase : PopupBase
     {
         if (_focusPanel == null)
         {
-            _currentFocusTarget = null;
-            HideFocusArrow();
+            ClearFocusHighlight();
             return;
         }
 
-        if (focusGameObject != null)
+        if (focusGameObject == null)
         {
-            _focusPanel.SetActive(true);
+            ClearFocusHighlight();
+            return;
+        }
 
-            RectTransform focusTransform = _focusPanel.GetComponent<RectTransform>();
-            RectTransform targetTransform = focusGameObject.GetComponent<RectTransform>();
+        RectTransform focusTransform = _focusPanel.GetComponent<RectTransform>();
+        if (focusTransform == null)
+        {
+            ClearFocusHighlight();
+            return;
+        }
 
-            if (focusTransform == null || targetTransform == null)
-            {
-                _currentFocusTarget = null;
-                HideFocusArrow();
-                return;
-            }
+        _focusPanel.SetActive(true);
+        focusTransform.DOKill();
+        Canvas.ForceUpdateCanvases();
 
-            focusTransform.position = targetTransform.position;
-            Vector3 baseScale = targetTransform.localScale;
-            focusTransform.localScale = baseScale;
-            RectTransformUtils.SyncSizeToTarget(focusTransform, targetTransform);
-            focusTransform.DOKill();
-
-            focusTransform
-                .DOScale(baseScale * _focusPulseScale, _focusPulseDuration)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.InOutSine);
-
-            _currentFocusTarget = targetTransform;
-            EnsureArrowBobTween();
-            UpdateFocusArrowImmediate();
+        if (TutorialFocusResolver.TryGetFocusTargets(focusGameObject, out RectTransform uiTarget, out Transform worldTarget))
+        {
+            if (uiTarget != null)
+                ApplyUiFocusTarget(focusTransform, uiTarget);
+            else
+                ApplyWorldFocusTarget(focusTransform, worldTarget);
         }
         else
         {
-            _currentFocusTarget = null;
-            _focusPanel.transform.DOKill();
-            _focusPanel.SetActive(false);
-            HideFocusArrow();
+            ClearFocusHighlight();
+            return;
         }
+
+        EnsureArrowBobTween();
+        UpdateFocusArrowImmediate();
+    }
+
+    private void ApplyUiFocusTarget(RectTransform focusTransform, RectTransform targetTransform)
+    {
+        _currentWorldFocusTarget = null;
+        _currentUiFocusTarget = targetTransform;
+
+        RectTransformUtils.SyncUiFocusToTarget(focusTransform, targetTransform);
+
+        focusTransform.localScale = Vector3.one;
+        focusTransform
+            .DOScale(Vector3.one * _focusPulseScale, _focusPulseDuration)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
+
+        _focusAnchorPosition = focusTransform.position;
+    }
+
+    private void ApplyWorldFocusTarget(RectTransform focusTransform, Transform worldTarget)
+    {
+        _currentUiFocusTarget = null;
+        _currentWorldFocusTarget = worldTarget;
+
+        focusTransform.localScale = Vector3.one;
+        SyncWorldFocusVisual(focusTransform);
+
+        focusTransform
+            .DOScale(Vector3.one * _focusPulseScale, _focusPulseDuration)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
+    }
+
+    private void SyncWorldFocusVisual(RectTransform focusTransform)
+    {
+        if (_currentWorldFocusTarget == null || focusTransform == null)
+            return;
+
+        if (!TutorialFocusProjection.TryProjectToScreen(
+                _currentWorldFocusTarget,
+                ResolveWorldCamera(),
+                focusTransform,
+                _worldFocusDefaultWorldSize,
+                _worldFocusDefaultScreenSize,
+                out Vector3 screenCenter,
+                out Vector2 screenSize))
+        {
+            return;
+        }
+
+        TutorialFocusProjection.ApplyScreenRectToFocusPanel(focusTransform, screenCenter, screenSize);
+        _focusAnchorPosition = screenCenter;
+    }
+
+    private static Camera ResolveWorldCamera()
+    {
+        RunnerBase runner = GameManager.Instance?.CurrentRunner;
+        if (runner != null && runner.MainCamera != null)
+            return runner.MainCamera;
+
+        return Camera.main;
     }
 
     private void LateUpdate()
     {
-        if (_currentFocusTarget == null)
+        if (_currentWorldFocusTarget != null)
+        {
+            RectTransform focusTransform = _focusPanel != null
+                ? _focusPanel.GetComponent<RectTransform>()
+                : null;
+            SyncWorldFocusVisual(focusTransform);
+        }
+        else if (_currentUiFocusTarget == null)
         {
             return;
         }
+        else
+        {
+            RectTransform focusTransform = _focusPanel != null
+                ? _focusPanel.GetComponent<RectTransform>()
+                : null;
+            if (focusTransform != null)
+            {
+                RectTransformUtils.SyncUiFocusToTarget(focusTransform, _currentUiFocusTarget);
+                _focusAnchorPosition = focusTransform.position;
+            }
+            else
+            {
+                _focusAnchorPosition = _currentUiFocusTarget.position;
+            }
+        }
 
-        // Keep arrow attached while panel is tweening.
         UpdateFocusArrowImmediate();
     }
 
     private void EnsureArrowBobTween()
     {
-        if (_arrowBobTween != null && _arrowBobTween.IsActive())
-        {
-            return;
-        }
+        KillArrowBobTween();
 
         _arrowBob01 = 0f;
         _arrowBobTween = DOTween
@@ -129,22 +205,21 @@ public abstract class TutorialPopupBase : PopupBase
 
     private void UpdateFocusArrowImmediate()
     {
-        if (_focusArrow == null || _currentFocusTarget == null || _panel == null)
-        {
+        if (_focusArrow == null || _panel == null)
             return;
-        }
+
+        if (_currentUiFocusTarget == null && _currentWorldFocusTarget == null)
+            return;
 
         RectTransform panelRect = _panel.GetComponent<RectTransform>();
         RectTransform arrowRect = _focusArrow.GetComponent<RectTransform>();
         if (panelRect == null || arrowRect == null)
-        {
             return;
-        }
 
         _focusArrow.SetActive(true);
 
         Vector3 panelWorld = panelRect.position;
-        Vector3 targetWorld = _currentFocusTarget.position;
+        Vector3 targetWorld = _focusAnchorPosition;
         Vector3 dir = (targetWorld - panelWorld);
         if (dir.sqrMagnitude < 0.001f)
         {
@@ -152,20 +227,64 @@ public abstract class TutorialPopupBase : PopupBase
         }
         dir.Normalize();
 
-        // Arrow asset is assumed to point up at 0 degrees.
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f + _focusArrowRotationOffset;
         arrowRect.rotation = Quaternion.Euler(0f, 0f, angle);
 
-        // Near target: offset towards panel.
         Vector3 basePos = targetWorld - dir * _focusArrowDistance;
         float bob = (_focusArrowMoveAmount > 0f) ? (_arrowBob01 * _focusArrowMoveAmount) : 0f;
-        arrowRect.position = basePos + dir * bob;
+        Vector3 arrowPos = ClampArrowPositionToScreen(arrowRect, basePos + dir * bob);
+        arrowRect.position = arrowPos;
+    }
+
+    private Vector3 ClampArrowPositionToScreen(RectTransform arrowRect, Vector3 desiredPosition)
+    {
+        float width = arrowRect.rect.width * Mathf.Abs(arrowRect.lossyScale.x);
+        float height = arrowRect.rect.height * Mathf.Abs(arrowRect.lossyScale.y);
+        Vector2 pivot = arrowRect.pivot;
+
+        float left = desiredPosition.x - width * pivot.x;
+        float right = desiredPosition.x + width * (1f - pivot.x);
+        float bottom = desiredPosition.y - height * pivot.y;
+        float top = desiredPosition.y + height * (1f - pivot.y);
+
+        float pad = _screenEdgePadding;
+        float dx = 0f;
+        float dy = 0f;
+
+        if (left < pad)
+            dx = pad - left;
+        else if (right > Screen.width - pad)
+            dx = (Screen.width - pad) - right;
+
+        if (bottom < pad)
+            dy = pad - bottom;
+        else if (top > Screen.height - pad)
+            dy = (Screen.height - pad) - top;
+
+        desiredPosition.x += dx;
+        desiredPosition.y += dy;
+        return desiredPosition;
+    }
+
+    protected void ClearFocusHighlight()
+    {
+        _currentUiFocusTarget = null;
+        _currentWorldFocusTarget = null;
+
+        if (_focusPanel != null)
+        {
+            _focusPanel.transform.DOKill();
+            _focusPanel.SetActive(false);
+        }
+
+        HideFocusArrow();
     }
 
     protected void HideFocusArrow()
     {
         if (_focusArrow == null)
         {
+            KillArrowBobTween();
             return;
         }
 
@@ -186,8 +305,6 @@ public abstract class TutorialPopupBase : PopupBase
             _panel.GetComponent<RectTransform>()?.DOKill();
         }
 
-        _currentFocusTarget = null;
-        HideFocusArrow();
+        ClearFocusHighlight();
     }
 }
-

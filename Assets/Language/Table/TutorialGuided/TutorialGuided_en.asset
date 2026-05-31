@@ -55,10 +55,6 @@ MonoBehaviour:
     m_Localized: Press the Start button to run the factory clock.
     m_Metadata:
       m_Items: []
-  - m_Id: 30821035190665231
-    m_Localized: You can advance time from the time panel.
-    m_Metadata:
-      m_Items: []
   - m_Id: 30821035190665230
     m_Localized: Running the factory takes time.
     m_Metadata:
@@ -144,15 +140,6 @@ MonoBehaviour:
     m_Localized: Now let's build a production line for premium wood.
     m_Metadata:
       m_Items: []
-  - m_Id: 30820797528817664
-    m_Localized: "Employees are now assigned automatically\u2014you don't need to
-      hire them manually!"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 30820695795974144
-    m_Localized: Turn on auto employee assignment.
-    m_Metadata:
-      m_Items: []
   - m_Id: 30820150800695296
     m_Localized: Every factory needs staff, and managing employee morale is very
       important.
@@ -194,6 +181,10 @@ MonoBehaviour:
   - m_Id: 30821035190665421
     m_Localized: Expanding production lines is not much different from what you just
       did. You can connect different production lines together or split them apart.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30821036190665226
+    m_Localized: To exit build mode, right-click or click the building button again.
     m_Metadata:
       m_Items: []
   references:

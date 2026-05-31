@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
-    private RunnerBase _currentRunnerBase;
+    private RunnerBase _currentRunner;
     private DataManager _dataManager;
     private VisualManager _visualManager;
     private SaveLoadManager _saveLoadManager;
@@ -18,7 +18,7 @@ public class GameManager : Singleton<GameManager>
 
     public MainCameraController MainCameraController => _mainCameraController;
     public PoolingManager PoolingManager => _poolingManager;
-    public RunnerBase CurrentRunner => _currentRunnerBase;
+    public RunnerBase CurrentRunner => _currentRunner;
 
     [Header("World Space Canvas Settings")]
     [SerializeField] private string _worldCanvasName = "SharedWorldCanvas";
@@ -106,7 +106,7 @@ public class GameManager : Singleton<GameManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         _mainCameraController = null;
-        _currentRunnerBase = null;
+        _currentRunner = null;
 
         if (_sharedWorldCanvas != null)
         {
@@ -132,16 +132,16 @@ public class GameManager : Singleton<GameManager>
 
         CreateWorldCanvas(_mainCameraController.Camera);
 
-        RunnerBase runnerBase = FindAnyObjectByType<RunnerBase>();
-        if (runnerBase == null)
+        RunnerBase runner = FindAnyObjectByType<RunnerBase>();
+        if (runner == null)
         {
-            _currentRunnerBase = null;
+            _currentRunner = null;
             Debug.LogError("[GameManager] RunnerBase not found in loaded scene.");
         }
         else
         {
-            _currentRunnerBase = runnerBase;
-            _currentRunnerBase.Init();
+            _currentRunner = runner;
+            _currentRunner.Init();
         }
 
         UIManager.Instance?.RefreshCamera();

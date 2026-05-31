@@ -722,6 +722,14 @@ MonoBehaviour:
     m_Localized: Completed Goal
     m_Metadata:
       m_Items: []
+  - m_Id: 45730788731666432
+    m_Localized: Select Resource
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45731453591764992
+    m_Localized: Building Condition
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

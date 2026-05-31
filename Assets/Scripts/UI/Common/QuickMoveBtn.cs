@@ -10,32 +10,27 @@ public class QuickMoveBtn : BtnBase
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private GameObject _alartImage = null;
 
-    private MainPanelType _penalType;
-    private IBuildScenePanelHost _panelHost;
+    private MainPanelType _panelType;
+    private MainCanvas _panelHost;
 
-    public MainPanelType PanelType => _penalType;
+    public MainPanelType PanelType => _panelType;
 
-    public void Init(IBuildScenePanelHost panelHost, MainPanelType argPenalType)
+    public void Init(MainCanvas panelHost, MainPanelType argPanelType)
     {
         _panelHost = panelHost;
-        _penalType = argPenalType;
+        _panelType = argPanelType;
 
-        _text.text = argPenalType.Localize(LocalizationUtils.TABLE_COMMON);
-        _icon.sprite = VisualManager.Instance.GetMainPanelIcon(_penalType.ToString());
+        _text.text = argPanelType.Localize(LocalizationUtils.TABLE_COMMON);
+        _icon.sprite = VisualManager.Instance.GetMainPanelIcon(_panelType.ToString());
 
         _alartImage.SetActive(false);
         InitEvent();
         EnsureClickBound();
     }
 
-    public void Init(MainCanvas argUiManager, MainPanelType argPenalType)
-    {
-        Init((IBuildScenePanelHost)argUiManager, argPenalType);
-    }
-
     protected override void HandleClick()
     {
-        _panelHost?.OpenPanel(_penalType);
+        _panelHost?.OpenPanel(_panelType);
         SetAlertActive(false);
     }
 
@@ -81,7 +76,7 @@ public class QuickMoveBtn : BtnBase
 
     private void InitEvent()
     {
-        switch (_penalType)
+        switch (_panelType)
         {
             case MainPanelType.News:
                 DataManager.Instance.News.OnNewsChanged += OnNewsChanged;

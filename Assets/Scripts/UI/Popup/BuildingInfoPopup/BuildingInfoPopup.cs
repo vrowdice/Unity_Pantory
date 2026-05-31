@@ -236,8 +236,10 @@ public class BuildingInfoPopup : PopupBase
         if (_rawBuildingObject == null)
             return;
 
-        BuildingSceneRunnerBase runner = GameManager.Instance?.CurrentRunner as BuildingSceneRunnerBase;
-        runner?.FlushPlacedLayoutToDataManager();
+        if (GameManager.Instance?.CurrentRunner is MainRunner runner)
+        {
+            runner.FlushPlacedLayoutToDataManager();
+        }
     }
 
     private void UpdateEmployeeStatusFromBuilding()

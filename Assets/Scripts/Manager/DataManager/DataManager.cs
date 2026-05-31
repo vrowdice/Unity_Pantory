@@ -191,11 +191,26 @@ public class DataManager : Singleton<DataManager>
     }
 
     /// <summary>
-    /// 튜토리얼 씬 진입용 초기화. 새 게임 상태에 시간을 일시정지합니다.
+    /// 튜토리얼 씬 진입 시 단일 진입점. 새 게임(핸들러 재생성·오토세이브 삭제) 후 시간을 일시정지합니다.
+    /// GameManager.OnSceneLoaded(Tutorial)에서 호출됩니다.
     /// </summary>
     public void ResetToTutorialGame()
     {
-        ResetToNewGame();
+        if (Instance != this)
+        {
+            return;
+        }
+
+        SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
+        if (saveLoadManager != null)
+        {
+            saveLoadManager.StartNewGame(this);
+        }
+        else
+        {
+            ResetToNewGame();
+        }
+
         Time?.PauseTime();
     }
 
@@ -352,7 +367,7 @@ public class DataManager : Singleton<DataManager>
         foreach (IGameSaveHandler handler in _saveHandlers)
             handler.CaptureTo(saveData);
 
-        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        MainRunner sceneRunner = FindActiveBuildingSceneRunner();
         if (sceneRunner != null && sceneRunner.GridHandler != null)
         {
             saveData.placedBuildings = sceneRunner.GridHandler.ExportPlacedBuildings();
@@ -430,7 +445,7 @@ public class DataManager : Singleton<DataManager>
         if (count <= 0)
             return 0;
 
-        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        MainRunner sceneRunner = FindActiveBuildingSceneRunner();
         if (sceneRunner != null && sceneRunner.GridHandler != null)
             return sceneRunner.GridHandler.UnassignEmployeesFromLastBuildings(type, count);
 
@@ -446,7 +461,7 @@ public class DataManager : Singleton<DataManager>
 
     public int GetPlacedBuildingAssignedEmployeeCount(EmployeeType type)
     {
-        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        MainRunner sceneRunner = FindActiveBuildingSceneRunner();
         if (sceneRunner != null && sceneRunner.GridHandler != null)
             return sceneRunner.GridHandler.GetTotalAssignedEmployeeCount(type);
 
@@ -495,14 +510,14 @@ public class DataManager : Singleton<DataManager>
         return JsonUtility.FromJson<T>(json);
     }
 
-    private static BuildingSceneRunnerBase FindActiveBuildingSceneRunner()
+    private static MainRunner FindActiveBuildingSceneRunner()
     {
-        BuildingSceneRunnerBase sceneRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        MainRunner sceneRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
         if (sceneRunner != null)
             return sceneRunner;
 
-        BuildingSceneRunnerBase[] runners =
-            UnityEngine.Object.FindObjectsByType<BuildingSceneRunnerBase>(FindObjectsSortMode.None);
+        MainRunner[] runners =
+            UnityEngine.Object.FindObjectsByType<MainRunner>(FindObjectsSortMode.None);
         return runners.Length > 0 ? runners[0] : null;
     }
 }

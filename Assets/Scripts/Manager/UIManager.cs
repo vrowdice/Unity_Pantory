@@ -387,7 +387,7 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public TutorialGuidedPopup ShowTutorialGuidedPopup(List<TutorialData> tutorialDataList)
+    public TutorialGuidedPopup ShowTutorialGuidedPopup()
     {
         GameObject panelObj = InstantiatePopupPrefab(_tutorialGuidedPopupPrefab);
         TutorialGuidedPopup panel = panelObj != null ? panelObj.GetComponent<TutorialGuidedPopup>() : null;
@@ -396,7 +396,7 @@ public class UIManager : Singleton<UIManager>
             return null;
 
         panel.gameObject.SetActive(true);
-        panel.Init(tutorialDataList);
+        panel.Init();
         return panel;
     }
 

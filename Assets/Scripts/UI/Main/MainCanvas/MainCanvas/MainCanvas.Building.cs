@@ -48,6 +48,7 @@ public partial class MainCanvas
                 return;
 
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingTypeBtnPrefab);
+            btnObj.name = $"{buildingType}Btn";
             btnObj.transform.SetParent(_buildingTypeBtnContent, false);
             MainBuildingTypeBtn btn = btnObj.GetComponent<MainBuildingTypeBtn>();
             btn.Init(this, buildingType);
@@ -82,7 +83,7 @@ public partial class MainCanvas
 
         GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
-        PopulateBuildingButtons();
+        StaggeredSpawnUtils.Restart(this, ref _buildingListSpawnCoroutine, PopulateBuildingButtonsRoutine());
     }
 
     private void ApplyRemovalMode(bool isOn)
@@ -102,6 +103,7 @@ public partial class MainCanvas
         }
 
         UpdateBuildingButtonStates();
+        TutorialDirector.Instance?.NotifyRemovalModeChanged(isOn);
     }
 
     public void SelectBuilding(BuildingData buildingData, bool isSelected)
@@ -132,6 +134,7 @@ public partial class MainCanvas
         }
 
         UpdateBuildingButtonStates();
+        TutorialDirector.Instance?.NotifyBuildingSelected(buildingData?.id);
     }
 
     public void DeselectBuilding()
@@ -143,7 +146,10 @@ public partial class MainCanvas
 
     public void AutoEmployeePlacementToggle()
     {
-        _mainRunner.PlacementHandler.ToggleAutoEmployeePlacement(_autoEmployeePlacementSwitch.IsOn);
+        bool isOn = _autoEmployeePlacementSwitch.IsOn;
+        _mainRunner.PlacementHandler.ToggleAutoEmployeePlacement(isOn);
+
+        TutorialDirector.Instance?.NotifyAutoEmployeePlacementChanged(isOn);
     }
 
     public void RemovalModeToggle()
@@ -161,15 +167,12 @@ public partial class MainCanvas
         _blueprintAddBtn = null;
 
         _selectedBuildingType = buildingType;
-        PopulateBuildingButtons();
+        StaggeredSpawnUtils.Restart(this, ref _buildingListSpawnCoroutine, PopulateBuildingButtonsRoutine());
 
         UpdateBuildingTypeButtonStates();
-        _mainBlueprintTypeBtn.SetFocused(false);
-    }
 
-    private void PopulateBuildingButtons()
-    {
-        StaggeredSpawnUtils.Restart(this, ref _buildingListSpawnCoroutine, PopulateBuildingButtonsRoutine());
+        if (_mainBlueprintTypeBtn != null)
+            _mainBlueprintTypeBtn.SetFocused(false);
     }
 
     private IEnumerator PopulateBuildingButtonsRoutine()
@@ -189,6 +192,7 @@ public partial class MainCanvas
         {
             BuildingData data = unlockedBuildings[i];
             GameObject btnObj = GameManager.PoolingManager.GetPooledObject(_buildingBtnPrefab);
+            btnObj.name = $"{data.id}Btn";
             btnObj.transform.SetParent(_buildingBtnContent, false);
             MainBuildingBtn btn = btnObj.GetComponent<MainBuildingBtn>();
             btn.Init(this, data, _mainRunner);
