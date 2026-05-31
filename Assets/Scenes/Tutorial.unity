@@ -582,7 +582,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tutorialRunner: {fileID: 590199396}
   _tutorialCanvas: {fileID: 789901298}
-  _debugStartStepIndex: 35
+  _debugStartStepIndex: 0
   _steps:
   - kind: 0
     buildingId: 
@@ -708,11 +708,11 @@ MonoBehaviour:
     buildingId: 
     focusGameObject: {fileID: 0}
     focusObjectName: 
-  - kind: 0
+  - kind: 8
     buildingId: 
     focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 8
+    focusObjectName: PlayPauseBtn(Clone)
+  - kind: 9
     buildingId: 
     focusGameObject: {fileID: 0}
     focusObjectName: PlayPauseBtn(Clone)

@@ -29,12 +29,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665241
-    m_Localized: Tap the button showing your Credits and Research Points at the top
-      left to check your current finances.
+    m_Localized: Press the close button at the top right of the market panel to go
+      back.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665240
-    m_Localized: Use the minus button to set daily resource sales.
+    m_Localized: Use the minus button to sell the premium wood you produced.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665239
@@ -69,11 +69,12 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 30821035190665234
     m_Localized: Each building must specify what resource it outputs. Click the Unload
-      building you placed and assign the 'Raw Wood' resource.
+      building you placed and use the resource selection button to assign 'Raw Wood'.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000010
-    m_Localized: Place the Load building on the grid.
+    m_Localized: Place the Load building on the grid, directly to the right of the
+      last road tile you placed. Any facing is fine.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000009
@@ -82,7 +83,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665229
-    m_Localized: Place one road tile next to the Sawmill.
+    m_Localized: Place one road tile next to the Sawmill, to the right.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665228
@@ -90,7 +91,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000006
-    m_Localized: Place the Sawmill on the grid.
+    m_Localized: Place the Sawmill on the grid, right next to the road and facing
+      right.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000005
@@ -98,7 +100,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665227
-    m_Localized: Place one road tile next to the Unload building.
+    m_Localized: Place one road tile next to the Unload building, to the right.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665226
@@ -110,7 +112,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000004
-    m_Localized: Place the Unload building on the grid.
+    m_Localized: Place the Unload building on the grid, facing right.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000003
@@ -119,25 +121,25 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665225
-    m_Localized: To exit build mode, right-click or click the building button again.
+    m_Localized: Press the Start button to advance time.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000002
-    m_Localized: Place the Logging Camp on the grid. No road connection is needed.
+    m_Localized: Pantory is a game where resources move over time. You can advance
+      time from the time control panel.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665242
-    m_Localized: While placing buildings, rotate with Q/E or the rotate buttons at
-      the bottom right.
+    m_Localized: Well done! As time passes, raw wood will be added to storage.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000001
-    m_Localized: Select the Logging Camp. Harvested logs go directly to Storage without
-      any roads.
+    m_Localized: Use the plus button on the Logging Camp to add another logging camp.
     m_Metadata:
       m_Items: []
   - m_Id: 30821035190665216
-    m_Localized: Now let's build a production line for premium wood.
+    m_Localized: Now let's build a production line for premium wood and get the factory
+      running.
     m_Metadata:
       m_Items: []
   - m_Id: 30820150800695296
@@ -146,13 +148,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30819995552727040
-    m_Localized: Pantory has a convenient auto employee assignment feature.
+    m_Localized: Pantory has a convenient auto employee assignment feature. It is
+      enabled by default.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000016
     m_Localized: First, learn the controls. Drag the mouse or use WASD to move the
-      camera, and scroll the mouse wheel to zoom. Press Q or E to rotate buildings
-      while placing them.
+      camera, and scroll the mouse wheel to zoom.
     m_Metadata:
       m_Items: []
   - m_Id: 2578400000000015
@@ -184,7 +186,27 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30821036190665226
-    m_Localized: To exit build mode, right-click or click the building button again.
+    m_Localized: As time passes, you will see raw wood appear in storage. Let's advance
+      one day.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2160556255887360
+    m_Localized: Well done! Now turn off the Removal Mode switch.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2191034279149568
+    m_Localized: After selecting a building, use the Q and E keys or the rotate buttons
+      at the bottom right to rotate it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2201319677247488
+    m_Localized: Here you can see how many resources to sell to the market each day.
+      Negative values mean sell; positive values mean buy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2273495235313664
+    m_Localized: Use this button to check your current income and expenses. Stay
+      in the black and run your factory steadily!
     m_Metadata:
       m_Items: []
   references:
