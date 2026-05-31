@@ -10,6 +10,8 @@ public partial class TutorialCanvas
     [SerializeField] private GameObject _mainScrollViewResouceBtn;
     [SerializeField] private Transform _resouceScrollViewContent;
 
+    public GameObject ResourceScrollView => _resourceScrollView;
+
     private readonly Dictionary<string, MainScrollViewResouceBtn> _resourceBtnMap = new Dictionary<string, MainScrollViewResouceBtn>();
 
     private void RefreshResourceScrollView()
@@ -77,17 +79,5 @@ public partial class TutorialCanvas
             resourceBtn.Init(entry);
             _resourceBtnMap.Add(entry.data.id, resourceBtn);
         });
-    }
-
-    public GameObject FindResourceScrollView()
-    {
-        if (_resourceScrollView != null)
-            return _resourceScrollView;
-
-        if (_resouceScrollViewContent == null)
-            return null;
-
-        ScrollRect scroll = _resouceScrollViewContent.GetComponentInParent<ScrollRect>();
-        return scroll != null ? scroll.gameObject : _resouceScrollViewContent.gameObject;
     }
 }

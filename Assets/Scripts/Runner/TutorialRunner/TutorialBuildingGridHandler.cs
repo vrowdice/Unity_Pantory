@@ -7,13 +7,6 @@ public class TutorialBuildingGridHandler : MainBuildingGridHandler
 
     public TutorialBuildingGridHandler(BuildingSceneRunnerBase runner) : base(runner)
     {
-    }
 
-    public override bool CanPlaceMoreInstances(BuildingData data)
-    {
-        if (data != null && TutorialInputGate.IsActive && TutorialInputGate.CanSelectBuilding(data.id))
-            return true;
-
-        return base.CanPlaceMoreInstances(data);
     }
 }

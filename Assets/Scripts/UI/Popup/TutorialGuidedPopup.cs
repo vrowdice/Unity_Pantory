@@ -20,7 +20,7 @@ public class TutorialGuidedPopup : TutorialPopupBase
 
     private List<TutorialData> _tutorialDataList;
     private string _gameObjectName;
-    private int _localizationIndexOverride = -1;
+    private int _localizationIndexOverride = 0;
     private string _localizationKeyOverride;
     private System.Action _advanceCallback;
     private System.Action _onDismissedUnexpectedly;
@@ -28,8 +28,6 @@ public class TutorialGuidedPopup : TutorialPopupBase
     private bool _allowClose;
     private bool _isRetiring;
     private bool _isFirstPanelPlacement = true;
-    private Image _rootBlockerImage;
-    private Image _focusPanelImage;
 
     public bool IsRetiring => _isRetiring;
 
@@ -67,18 +65,13 @@ public class TutorialGuidedPopup : TutorialPopupBase
             if (showNextButton)
                 _nextBtn.interactable = true;
         }
-
-        SetRaycastBlocker(!allowWorldInteraction);
     }
 
-    public void Init(List<TutorialData> tutorialDataList, string gameObjectName)
+    public void Init(List<TutorialData> tutorialDataList)
     {
         base.Init();
 
         _tutorialDataList = tutorialDataList;
-        _gameObjectName = gameObjectName;
-        _localizationIndexOverride = -1;
-        _localizationKeyOverride = null;
 
         HideUnusedNavigation();
         if (_nextBtn != null)
@@ -131,9 +124,7 @@ public class TutorialGuidedPopup : TutorialPopupBase
             return;
 
         TutorialData currentData = _tutorialDataList[0];
-        string localizationKey = !string.IsNullOrEmpty(_localizationKeyOverride)
-            ? _localizationKeyOverride
-            : $"{_gameObjectName}{(_localizationIndexOverride >= 0 ? _localizationIndexOverride : 0)}";
+        string localizationKey = $"TutorialScene{(_localizationIndexOverride)}";
         string descriptionText = localizationKey.Localize(LocalizationUtils.TABLE_TUTORIAL_GUIDED);
         bool isFirstShow = _isFirstPanelPlacement;
         bool shouldAnimate = animateTransition
@@ -168,18 +159,6 @@ public class TutorialGuidedPopup : TutorialPopupBase
         ApplyFocusTarget(currentData.focusGameObject);
     }
 
-    public void RefreshFocusTarget(GameObject focusGameObject)
-    {
-        if (_tutorialDataList == null || _tutorialDataList.Count == 0)
-            return;
-
-        TutorialData currentData = _tutorialDataList[0];
-        currentData.focusGameObject = focusGameObject;
-
-        ApplyPanelPosition(currentData.tutorialPanelPosition, focusGameObject, animatePanel: true);
-        ApplyFocusTarget(focusGameObject);
-    }
-
     private void HideUnusedNavigation()
     {
         if (_indexTextRoot != null)
@@ -187,21 +166,6 @@ public class TutorialGuidedPopup : TutorialPopupBase
 
         if (_beforeBtnRoot != null)
             _beforeBtnRoot.SetActive(false);
-    }
-
-    private void SetRaycastBlocker(bool block)
-    {
-        if (_rootBlockerImage == null)
-            _rootBlockerImage = GetComponent<Image>();
-
-        if (_rootBlockerImage != null)
-            _rootBlockerImage.raycastTarget = block;
-
-        if (_focusPanelImage == null && _focusPanel != null)
-            _focusPanelImage = _focusPanel.GetComponent<Image>();
-
-        if (_focusPanelImage != null)
-            _focusPanelImage.raycastTarget = block;
     }
 
     protected override void OnDestroy()

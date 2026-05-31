@@ -10,6 +10,8 @@ public partial class TutorialCanvas
     private Dictionary<MainPanelType, MainCanvasPanelBase> _panelDict;
     private MainPanelType? _currentOpenPanelType;
 
+    public GameObject CreditTopInfoToggle => _creditTopInfoToggleRect.gameObject;
+
     private void CreateTutorialPanels()
     {
         if (_marketCanvas != null)
@@ -41,9 +43,6 @@ public partial class TutorialCanvas
 
     public void OpenPanel(MainPanelType panelType)
     {
-        if (!TutorialInputGate.CanOpenPanel(panelType))
-            return;
-
         if (!_panelDict.TryGetValue(panelType, out MainCanvasPanelBase panel))
             return;
 

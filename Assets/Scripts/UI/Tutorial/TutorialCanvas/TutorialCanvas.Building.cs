@@ -8,13 +8,11 @@ public partial class TutorialCanvas
     {
         BuildingType.Distribution,
         BuildingType.Production,
-        BuildingType.RawProduction,
     };
 
     private static readonly HashSet<string> TutorialBuildingIds = new HashSet<string>
     {
         "load",
-        "logging_camp",
         "road",
         "sawmill",
         "unload"
@@ -35,6 +33,10 @@ public partial class TutorialCanvas
     private readonly List<MainBuildingTypeBtn> _buildingTypeBtns = new List<MainBuildingTypeBtn>();
     private readonly List<MainBuildingBtn> _buildingBtns = new List<MainBuildingBtn>();
 
+    public Switch AutoEmployeePlacementSwitch => _autoEmployeePlacementSwitch;
+    public Switch RemovalModeSwitch => _removalModeSwitch;
+    public GameObject RotateBtnContainer => _rotateBtnContainer;
+
     private void InitBuildUi()
     {
         _buildingTypeBtns.Clear();
@@ -54,22 +56,18 @@ public partial class TutorialCanvas
         SyncAutoEmployeePlacementSwitch(false);
     }
 
-    private void SyncAutoEmployeePlacementSwitch(bool? forceValue = null)
+    public void SyncAutoEmployeePlacementSwitch(bool forceValue)
     {
         if (_sceneRunner == null || _sceneRunner.PlacementHandler == null)
             return;
 
-        bool isOn = forceValue ?? _sceneRunner.PlacementHandler.IsAutoEmployeePlacement;
+        bool isOn = forceValue;
 
         if (_autoEmployeePlacementSwitch != null)
             _autoEmployeePlacementSwitch.SetValue(isOn);
 
         _sceneRunner.PlacementHandler.ToggleAutoEmployeePlacement(isOn);
-    }
-
-    public void PrepareAutoEmployeePlacementStep()
-    {
-        SyncAutoEmployeePlacementSwitch(false);
+        _tutorialFlow?.NotifyAutoEmployeePlacementChanged(isOn);
     }
 
     public void SelectBuildingTypeForBuilding(string buildingId)
@@ -86,14 +84,7 @@ public partial class TutorialCanvas
 
     public void SelectBuilding(BuildingData buildingData, bool isSelected)
     {
-        if (buildingData != null && !TutorialInputGate.CanSelectBuilding(buildingData.id))
-        {
-            DeselectBuilding();
-            return;
-        }
-
         if (buildingData != null &&
-            !TutorialInputGate.IsActive &&
             buildingData.usePlacedCountLimit &&
             !_sceneRunner.GridHandler.CanPlaceMoreInstances(buildingData))
         {
@@ -122,27 +113,8 @@ public partial class TutorialCanvas
         UpdateBuildingButtonStates();
     }
 
-    public void AutoEmployeePlacementToggle()
-    {
-        if (!TutorialInputGate.CanToggleAutoEmployeePlacement())
-        {
-            SyncAutoEmployeePlacementSwitch();
-            return;
-        }
-
-        bool isOn = _autoEmployeePlacementSwitch.IsOn;
-        _sceneRunner.PlacementHandler.ToggleAutoEmployeePlacement(isOn);
-        _tutorialFlow?.NotifyAutoEmployeePlacementChanged(isOn);
-    }
-
     public void RemovalModeToggle()
     {
-        if (!TutorialInputGate.CanUseRemovalMode())
-        {
-            _removalModeSwitch.SetValue(false);
-            return;
-        }
-
         ApplyRemovalMode(_removalModeSwitch.IsOn);
     }
 
@@ -177,12 +149,6 @@ public partial class TutorialCanvas
 
     private void ApplyRemovalMode(bool isOn)
     {
-        if (isOn && !TutorialInputGate.CanUseRemovalMode())
-        {
-            _removalModeSwitch.SetValue(false);
-            return;
-        }
-
         if (isOn)
         {
             _selectedBuilding = null;
@@ -230,47 +196,6 @@ public partial class TutorialCanvas
             _buildingBtns[i].RefreshPlacedCount(_sceneRunner);
     }
 
-    public bool TryCancelActiveBuildMode()
-    {
-        MainBuildingPlacementHandler placementHandler = _sceneRunner.PlacementHandler;
-        if (placementHandler == null)
-            return false;
-
-        if (placementHandler.IsRemovalMode)
-        {
-            _removalModeSwitch.SetValue(false);
-            ApplyRemovalMode(false);
-            return true;
-        }
-
-        if (placementHandler.IsPlacementMode)
-        {
-            DeselectBuilding();
-            return true;
-        }
-
-        return false;
-    }
-
-    public void CancelRemovalModeIfActive()
-    {
-        if (_sceneRunner?.PlacementHandler != null && _sceneRunner.PlacementHandler.IsRemovalMode)
-        {
-            _removalModeSwitch.SetValue(false);
-            ApplyRemovalMode(false);
-        }
-    }
-
-    public Switch FindRemovalModeSwitch()
-    {
-        return _removalModeSwitch;
-    }
-
-    public Switch FindAutoEmployeePlacementSwitch()
-    {
-        return _autoEmployeePlacementSwitch;
-    }
-
     public MainBuildingBtn FindBuildingButton(string buildingId)
     {
         for (int i = 0; i < _buildingBtns.Count; i++)
@@ -281,10 +206,5 @@ public partial class TutorialCanvas
         }
 
         return null;
-    }
-
-    public GameObject FindRotateBtnContainer()
-    {
-        return _rotateBtnContainer;
     }
 }

@@ -387,43 +387,17 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
-    public TutorialGuidedPopup ShowTutorialGuidedPopup(List<TutorialData> tutorialDataList, string gameObjectName)
+    public TutorialGuidedPopup ShowTutorialGuidedPopup(List<TutorialData> tutorialDataList)
     {
-        TutorialGuidedPopup panel = FindAvailableTutorialGuidedPopup();
-
-        if (panel == null)
-        {
-            if (_tutorialGuidedPopupPrefab == null)
-            {
-                Debug.LogError("[UIManager] Tutorial guided popup prefab is not assigned.");
-                return null;
-            }
-
-            GameObject panelObj = InstantiatePopupPrefab(_tutorialGuidedPopupPrefab);
-            panel = panelObj != null ? panelObj.GetComponent<TutorialGuidedPopup>() : null;
-        }
+        GameObject panelObj = InstantiatePopupPrefab(_tutorialGuidedPopupPrefab);
+        TutorialGuidedPopup panel = panelObj != null ? panelObj.GetComponent<TutorialGuidedPopup>() : null;
 
         if (panel == null)
             return null;
 
         panel.gameObject.SetActive(true);
-        panel.Init(tutorialDataList, gameObjectName);
+        panel.Init(tutorialDataList);
         return panel;
-    }
-
-    private TutorialGuidedPopup FindAvailableTutorialGuidedPopup()
-    {
-        if (_managerCanvasTransform == null)
-            return null;
-
-        TutorialGuidedPopup[] popups = _managerCanvasTransform.GetComponentsInChildren<TutorialGuidedPopup>(true);
-        for (int i = 0; i < popups.Length; i++)
-        {
-            if (popups[i] != null && !popups[i].IsRetiring)
-                return popups[i];
-        }
-
-        return null;
     }
 
     public SaveLoadPopup ShowSaveLoadPopup(bool isSaveMode)

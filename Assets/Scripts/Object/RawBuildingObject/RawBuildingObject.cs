@@ -15,7 +15,7 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
     private RawMaterialFactoryData _buildingData;
     private ResourceData _selectedResource;
 
-    private int _rawMaterialCount = 0; // 초기값 0 (UI로 조절)
+    private int _rawMaterialCount = 0;
     private int _assignedWorkers = 0;
     private int _assignedTechnicians = 0;
     private float _workProgress = 0f;
@@ -59,7 +59,7 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
             long cost = _buildingData.buildCost * (newCount - oldCount);
             if (cost > 0 && dataManager.Finances.Credit < cost)
             {
-                return false; // 예산 부족
+                return false;
             }
             if (cost > 0)
             {
@@ -77,11 +77,8 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
 
         _rawMaterialCount = newCount;
         PlayCountChangeAnimation();
-
-        // Finances에 누적 유지비와 자산 가치 동적 업데이트
         dataManager.Finances.ModifyPlacedBuildingMaintenance(maintenanceDelta, assetValueDelta);
 
-        // 스케일이 줄어들어 할당 인원이 슬롯을 초과하면 초과 인원 자동 해제
         int required = RequiredEmployeeSlots;
         int currentAssigned = _assignedWorkers + _assignedTechnicians;
         if (currentAssigned > required)

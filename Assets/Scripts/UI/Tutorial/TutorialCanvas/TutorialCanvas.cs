@@ -18,9 +18,12 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
     [SerializeField] private GameObject _mainEventBtns;
 
     protected BuildingSceneRunnerBase _sceneRunner;
-    protected ITutorialSceneFlow _tutorialFlow;
+    protected TutorialDirector _tutorialFlow;
     private TimePlayPanel _timePlayPanel;
     private Coroutine _resourceScrollCoroutine;
+
+    public GameObject PlayPauseButton => _timePlayPanel.PlayPauseButton.gameObject;
+    public GameObject TimePlayPanel => _timePlayPanel.gameObject;
 
     private void Update()
     {
@@ -31,11 +34,6 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
             return;
 
         HandlePanelShortcutKeys();
-    }
-
-    protected override void Start()
-    {
-        // TutorialDirector가 단계별 가이드를 담당합니다. TutorialBase 자동 팝업은 사용하지 않습니다.
     }
 
     public void Init(BuildingSceneRunnerBase sceneRunner)
@@ -87,8 +85,6 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
 
         RefreshResourceScrollView();
         UpdateAllMainText();
-
-        _tutorialFlow?.NotifyCanvasReady(this);
     }
 
     protected override void OnDestroy()
@@ -112,18 +108,6 @@ public partial class TutorialCanvas : CanvasBase, IBuildSceneCanvas, IBuildScene
 
         if (_timePlayPanel != null)
             _timePlayPanel.OnTimePlayStarted -= HandleTimePlayStarted;
-    }
-
-    public GameObject FindPlayPauseButton()
-    {
-        return _timePlayPanel != null && _timePlayPanel.PlayPauseButton != null
-            ? _timePlayPanel.PlayPauseButton.gameObject
-            : null;
-    }
-
-    public GameObject FindTimePlayPanel()
-    {
-        return _timePlayPanel != null ? _timePlayPanel.gameObject : null;
     }
 
     private void HandleTimePlayStarted()

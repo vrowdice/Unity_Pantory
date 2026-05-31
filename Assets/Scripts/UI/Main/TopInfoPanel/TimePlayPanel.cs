@@ -95,9 +95,6 @@ public class TimePlayPanel : MonoBehaviour
     {
         if (_isTimePaused)
         {
-            if (!TutorialInputGate.CanUseTimePlay())
-                return;
-
             Play();
         }
         else
@@ -138,9 +135,6 @@ public class TimePlayPanel : MonoBehaviour
 
     private void OnSpeedBtnClicked(SpeedBtn btn)
     {
-        if (!TutorialInputGate.CanUseTimePlay())
-            return;
-
         bool wasPaused = _isTimePaused;
         _lastUsedSpeedBtn = btn;
         _isTimePaused = false;

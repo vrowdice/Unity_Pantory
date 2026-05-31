@@ -3,28 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 튜토리얼 씬의 단계별 가이드를 진행합니다.
+/// 튜토리얼 씬의 단계별 가이드를 진행합니다. (Incremental Refresh 패턴 적용)
 /// </summary>
 [DefaultExecutionOrder(-100)]
-public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
+public class TutorialDirector : MonoBehaviour
 {
     public static TutorialDirector Instance { get; private set; }
 
-    private const string LocalizationOwnerName = "TutorialScene";
     private const int MinRoadTilesToAdvanceRoadStep = 1;
 
-    [SerializeField] private BuildingSceneRunnerBase _tutorialRunner;
+    [SerializeField] private TutorialRunner _tutorialRunner;
+    [SerializeField] private TutorialCanvas _tutorialCanvas;
     [SerializeField] private TutorialSequenceData _tutorialSequence;
     [SerializeField] private Vector2 _defaultPanelPosition = new Vector2(0f, -220f);
 
-    private TutorialCanvas _tutorialCanvas;
     private int _currentStepIndex;
     private int _placementBaselineCount;
     private bool _practiceRemovalTargetWasPresent;
     private bool _isWaitingForAction;
-    private bool _isPopupVisible;
-    private bool _hasStarted;
+
     private TutorialGuidedPopup _activePopup;
+
     private int _waitDayBaselineYear;
     private int _waitDayBaselineMonth;
     private int _waitDayBaselineDay;
@@ -34,45 +33,17 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     private void Awake()
     {
         Instance = this;
+    }
 
-        if (_tutorialRunner == null)
-            _tutorialRunner = FindAnyObjectByType<TutorialRunner>();
+    private void Start()
+    {
+        BeginStep(0);
     }
 
     private void OnDestroy()
     {
         if (Instance == this)
             Instance = null;
-    }
-
-    public void NotifyCanvasReady(TutorialCanvas canvas)
-    {
-        if (_hasStarted)
-            return;
-
-        _tutorialCanvas = canvas;
-
-        if (_tutorialRunner == null)
-            _tutorialRunner = FindAnyObjectByType<TutorialRunner>();
-
-        StartCoroutine(StartTutorialAfterSceneReady());
-    }
-
-    private IEnumerator StartTutorialAfterSceneReady()
-    {
-        yield return null;
-
-        if (_hasStarted)
-            yield break;
-
-        if (_tutorialSequence == null || StepCount == 0)
-        {
-            Debug.LogError("[TutorialDirector] TutorialSequenceData is missing or empty.");
-            yield break;
-        }
-
-        _hasStarted = true;
-        BeginStep(0);
     }
 
     public void NotifyBuildingSelected(string buildingId)
@@ -117,16 +88,6 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
         TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
         if (step.kind == TutorialSceneStepKind.EnableRemovalMode)
-            AdvanceAfterAction();
-    }
-
-    public void NotifyAutoEmployeePlacementChanged(bool isOn)
-    {
-        if (!_isWaitingForAction || !isOn)
-            return;
-
-        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
-        if (step.kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
             AdvanceAfterAction();
     }
 
@@ -197,7 +158,6 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             return;
 
         TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
-        ApplyInputGate(step);
 
         if (step.kind == TutorialSceneStepKind.PlaceBuilding && _tutorialRunner != null)
             _placementBaselineCount = GetPlacementCount(step.buildingId);
@@ -206,7 +166,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             _practiceRemovalTargetWasPresent = tutorialRunner.IsPracticeRemovalTargetPresent();
 
         if (step.kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
-            _tutorialCanvas?.PrepareAutoEmployeePlacementStep();
+            _tutorialCanvas?.SyncAutoEmployeePlacementSwitch(false);
 
         if (step.kind == TutorialSceneStepKind.AdjustMarketSell)
             _tutorialCanvas?.PrepareMarketSellStep();
@@ -226,53 +186,8 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
         TryEvaluatePendingAction();
     }
 
-    private void ApplyInputGate(TutorialStep step)
-    {
-        switch (step.kind)
-        {
-            case TutorialSceneStepKind.SelectBuilding:
-                TutorialInputGate.Configure(true, new[] { step.buildingId });
-                break;
-            case TutorialSceneStepKind.PlaceBuilding:
-                TutorialInputGate.Configure(true, new[] { step.buildingId });
-                break;
-            case TutorialSceneStepKind.OpenMarketPanel:
-                TutorialInputGate.Configure(true, allowedPanels: new[] { MainPanelType.Market });
-                break;
-            case TutorialSceneStepKind.AdjustMarketSell:
-                TutorialInputGate.Configure(true, allowedPanels: new[] { MainPanelType.Market });
-                break;
-            case TutorialSceneStepKind.EnableRemovalMode:
-            case TutorialSceneStepKind.RemovePracticeBuilding:
-                TutorialInputGate.Configure(true);
-                break;
-            case TutorialSceneStepKind.EnableAutoEmployeePlacement:
-                TutorialInputGate.Configure(true, allowAutoEmployeeToggle: true);
-                break;
-            case TutorialSceneStepKind.StartTimePlay:
-            case TutorialSceneStepKind.WaitDayPassed:
-                TutorialInputGate.Configure(true, allowTimePlay: true);
-                break;
-            case TutorialSceneStepKind.AssignBuildingResource:
-                TutorialInputGate.Configure(true);
-                break;
-            case TutorialSceneStepKind.Complete:
-                TutorialInputGate.Clear();
-                break;
-            default:
-                TutorialInputGate.Configure(false);
-                break;
-        }
-    }
-
     private void ShowStepPopup(TutorialStep step)
     {
-        if (UIManager.Instance == null)
-        {
-            Debug.LogError("[TutorialDirector] UIManager.Instance is null. Cannot show tutorial popup.");
-            return;
-        }
-
         List<TutorialData> popupData = new List<TutorialData>
         {
             new TutorialData
@@ -282,31 +197,20 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             }
         };
 
-        _isPopupVisible = true;
-
-        TutorialGuidedPopup popup = _activePopup;
-        if (popup == null)
+        if (_activePopup == null || _activePopup.IsRetiring)
         {
-            popup = UIManager.Instance.ShowTutorialGuidedPopup(popupData, LocalizationOwnerName);
-            if (popup == null)
-            {
-                Debug.LogError("[TutorialDirector] Failed to create TutorialGuidedPopup.");
-                return;
-            }
-
-            _activePopup = popup;
+            _activePopup = UIManager.Instance.ShowTutorialGuidedPopup(popupData);
         }
         else
         {
-            popup.gameObject.SetActive(true);
-            popup.Init(popupData, LocalizationOwnerName);
+            _activePopup.gameObject.SetActive(true);
+            _activePopup.Init(popupData);
         }
 
-        popup.SetLocalizationKey(null);
-        popup.SetStepIndexOverride(_currentStepIndex);
-        popup.SetAdvanceCallback(OnPopupAdvanceRequested);
-        popup.SetOnDismissedUnexpectedly(OnGuidedPopupClosedUnexpectedly);
-        popup.ConfigureStepPresentation(
+        _activePopup.SetLocalizationKey(null);
+        _activePopup.SetStepIndexOverride(_currentStepIndex);
+        _activePopup.SetAdvanceCallback(OnPopupAdvanceRequested);
+        _activePopup.ConfigureStepPresentation(
             allowWorldInteraction: true,
             showNextButton: !step.RequiresAction);
     }
@@ -352,7 +256,7 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
                 break;
 
             case TutorialSceneStepKind.EnableAutoEmployeePlacement:
-                if (_tutorialRunner?.PlacementHandler != null && _tutorialRunner.PlacementHandler.IsAutoEmployeePlacement)
+                if (_tutorialRunner.PlacementHandler.IsAutoEmployeePlacement)
                     AdvanceAfterAction();
                 break;
 
@@ -404,61 +308,34 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
             || time.Day != _waitDayBaselineDay;
     }
 
-    private void OnGuidedPopupClosedUnexpectedly()
-    {
-        if (!_hasStarted || _currentStepIndex >= StepCount || _activePopup != null)
-            return;
-
-        StartCoroutine(RestorePopupNextFrame());
-    }
-
-    private IEnumerator RestorePopupNextFrame()
-    {
-        yield return null;
-
-        if (!_hasStarted || _currentStepIndex >= StepCount || _activePopup != null)
-            yield break;
-
-        _isPopupVisible = true;
-        ShowStepPopup(_tutorialSequence.steps[_currentStepIndex]);
-    }
-
     private GameObject ResolveFocusTarget(TutorialStep step)
     {
         switch (step.focusTarget)
         {
             case TutorialUiFocusTarget.RotateButton:
-                return _tutorialCanvas?.FindRotateBtnContainer();
+                return _tutorialCanvas?.RotateBtnContainer;
             case TutorialUiFocusTarget.TimePlayPanel:
-                return _tutorialCanvas?.FindTimePlayPanel();
+                return _tutorialCanvas?.TimePlayPanel;
             case TutorialUiFocusTarget.ResourcePanel:
-                return _tutorialCanvas?.FindResourceScrollView();
+                return _tutorialCanvas?.ResourceScrollView;
             case TutorialUiFocusTarget.CreditsInfo:
-                return _tutorialCanvas?.FindCreditTopInfoToggle();
+                return _tutorialCanvas?.CreditTopInfoToggle;
         }
 
         switch (step.kind)
         {
             case TutorialSceneStepKind.SelectBuilding:
-                return _tutorialCanvas != null
-                    ? _tutorialCanvas.FindBuildingButton(step.buildingId)?.gameObject
-                    : TutorialUiAnchor.Resolve($"Building_{step.buildingId}");
+                return _tutorialCanvas.FindBuildingButton(step.buildingId)?.gameObject;
             case TutorialSceneStepKind.EnableRemovalMode:
-                return _tutorialCanvas != null
-                    ? _tutorialCanvas.FindRemovalModeSwitch()?.gameObject
-                    : TutorialUiAnchor.Resolve("RemovalMode");
+                return _tutorialCanvas.RemovalModeSwitch?.gameObject;
             case TutorialSceneStepKind.EnableAutoEmployeePlacement:
-                return _tutorialCanvas != null
-                    ? _tutorialCanvas.FindAutoEmployeePlacementSwitch()?.gameObject
-                    : TutorialUiAnchor.Resolve("AutoEmployeePlacement");
+                return _tutorialCanvas.AutoEmployeePlacementSwitch?.gameObject;
             case TutorialSceneStepKind.StartTimePlay:
-                return _tutorialCanvas?.FindPlayPauseButton();
+                return _tutorialCanvas?.PlayPauseButton;
             case TutorialSceneStepKind.WaitDayPassed:
-                return _tutorialCanvas?.FindTimePlayPanel();
+                return _tutorialCanvas?.TimePlayPanel;
             case TutorialSceneStepKind.OpenMarketPanel:
-                return _tutorialCanvas != null
-                    ? _tutorialCanvas.FindQuickMoveButton(MainPanelType.Market)?.gameObject
-                    : TutorialUiAnchor.Resolve("QuickMove_Market");
+                return _tutorialCanvas.FindQuickMoveButton(MainPanelType.Market)?.gameObject;
             case TutorialSceneStepKind.AdjustMarketSell:
                 return _tutorialCanvas?.FindMarketSellDecreaseButton();
             default:
@@ -468,9 +345,6 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
     private void OnPopupAdvanceRequested()
     {
-        if (!_isPopupVisible)
-            return;
-
         TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
         if (step.kind == TutorialSceneStepKind.Complete)
         {
@@ -506,11 +380,11 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
     private void DismissActivePopup()
     {
-        if (_activePopup == null)
-            return;
-
-        _activePopup.Dismiss();
-        _activePopup = null;
+        if (_activePopup != null)
+        {
+            _activePopup.Dismiss();
+            _activePopup = null;
+        }
     }
 
     private void AdvanceAfterAction()
@@ -521,7 +395,6 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
 
     private void AdvanceStep()
     {
-        _isPopupVisible = false;
         _currentStepIndex++;
 
         if (_currentStepIndex >= StepCount)
@@ -536,7 +409,6 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     public void ResetTutorial()
     {
         DismissActivePopup();
-        TutorialInputGate.Clear();
         SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
         SceneLoadManager.Instance?.LoadScene("Tutorial");
     }
@@ -544,9 +416,17 @@ public class TutorialDirector : MonoBehaviour, ITutorialSceneFlow
     public void CompleteTutorial()
     {
         DismissActivePopup();
-        TutorialInputGate.Clear();
         DataManager.Instance?.Player?.MarkIntroTutorialCompleted();
         DataManager.Instance?.ResetToNewGame();
         SceneLoadManager.Instance?.LoadScene("Main");
+    }
+
+    public void NotifyAutoEmployeePlacementChanged(bool isOn)
+    {
+        if (!_isWaitingForAction || !isOn) return;
+
+        TutorialStep step = _tutorialSequence.steps[_currentStepIndex];
+        if (step.kind == TutorialSceneStepKind.EnableAutoEmployeePlacement)
+            AdvanceAfterAction();
     }
 }
