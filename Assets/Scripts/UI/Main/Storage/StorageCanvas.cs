@@ -14,7 +14,8 @@ public class StorageCanvas : MainCanvasPanelBase
     [SerializeField] private Transform _resourceScrollViewContentTransform;
 
     private ResourceType? _currentResourceType = null;
-    private List<ActionBtn> _categoryButtons = new List<ActionBtn>();
+    private readonly List<ActionBtn> _categoryButtons = new List<ActionBtn>();
+    private readonly Dictionary<string, StorageResourceBtn> _resourceBtnById = new Dictionary<string, StorageResourceBtn>();
     private Coroutine _categoryButtonCoroutine;
     private Coroutine _resourceListCoroutine;
 
@@ -22,8 +23,8 @@ public class StorageCanvas : MainCanvasPanelBase
     {
         base.Init(argUIManager);
 
-        _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
-        _dataManager.Resource.OnResourceChanged += RefreshCurrentResourceTypeList;
+        _dataManager.Resource.OnResourceChanged -= HandleResourceChanged;
+        _dataManager.Resource.OnResourceChanged += HandleResourceChanged;
 
         InitializeResourceTypeButtons();
         RefreshCurrentResourceTypeList();
@@ -36,7 +37,15 @@ public class StorageCanvas : MainCanvasPanelBase
         base.OnDisable();
 
         if (_dataManager != null)
-            _dataManager.Resource.OnResourceChanged -= RefreshCurrentResourceTypeList;
+            _dataManager.Resource.OnResourceChanged -= HandleResourceChanged;
+    }
+
+    private void HandleResourceChanged()
+    {
+        if (!gameObject.activeInHierarchy || _resourceBtnById.Count == 0)
+            return;
+
+        EntryListPanelUtils.RefreshAll(_resourceBtnById);
     }
 
     /// <summary>
@@ -147,6 +156,7 @@ public class StorageCanvas : MainCanvasPanelBase
             scroll.enabled = false;
 
         _gameManager.PoolingManager.ClearChildrenToPool(_resourceScrollViewContentTransform);
+        _resourceBtnById.Clear();
 
         List<ResourceEntry> entries = new List<ResourceEntry>();
         foreach (KeyValuePair<string, ResourceEntry> resourceEntry in _dataManager.Resource.GetAllResources())
@@ -160,7 +170,9 @@ public class StorageCanvas : MainCanvasPanelBase
             ResourceEntry entry = entries[i];
             GameObject btnObj = _gameManager.PoolingManager.GetPooledObject(_storageResourceBtnPrefab);
             btnObj.transform.SetParent(_resourceScrollViewContentTransform, false);
-            btnObj.GetComponent<StorageResourceBtn>().Init(this, entry);
+            StorageResourceBtn btn = btnObj.GetComponent<StorageResourceBtn>();
+            btn.Init(this, entry);
+            _resourceBtnById[entry.data.id] = btn;
         });
 
         if (scroll != null)

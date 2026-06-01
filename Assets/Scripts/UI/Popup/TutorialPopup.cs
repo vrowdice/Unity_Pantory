@@ -109,7 +109,7 @@ public class TutorialPopup : TutorialPopupBase
 
         KillCommonTweens();
         transform.DOKill();
-        DataManager.Instance?.Player?.MarkTutorialSequenceFinishedForOwner(_gameObjectName);
+        SaveLoadManager.Instance?.MarkTutorialSequenceFinishedForOwner(_gameObjectName);
         CloseAndDestroy();
     }
 

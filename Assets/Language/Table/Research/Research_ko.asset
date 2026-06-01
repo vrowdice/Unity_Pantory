@@ -19,388 +19,472 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226266001
-    m_Localized: "전자 부품"
+    m_Localized: "\uC804\uC790 \uBD80\uD488"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
-    m_Localized: "채굴"
+    m_Localized: "\uCCA0\uAD11 \uAC74\uC124"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266003
-    m_Localized: "화학 공정"
+    m_Localized: "\uD654\uD559 \uACF5\uC815"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266004
-    m_Localized: "중공업"
+    m_Localized: "\uC911\uACF5\uC5C5"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266005
-    m_Localized: "석유 채굴"
+    m_Localized: "\uC11D\uC720 \uCC44\uAD74"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266006
-    m_Localized: "금속 제련"
+    m_Localized: "\uAE08\uC18D \uC81C\uB828"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266007
-    m_Localized: "엔진 제조"
+    m_Localized: "\uC5D4\uC9C4 \uC81C\uC870"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266008
-    m_Localized: "군사 생산"
+    m_Localized: "\uAD70\uC0AC \uC0DD\uC0B0"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266009
-    m_Localized: "차량 조립"
+    m_Localized: "\uCC28\uB7C9 \uC870\uB9BD"
     m_Metadata:
       m_Items: []
   - m_Id: 10606215174701056
-    m_Localized: "공장 기본"
+    m_Localized: "\uACF5\uC7A5 \uAE30\uBCF8"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267001
-    m_Localized: "전자 부품 공장을 해금한다. 동·알루미늄 인골로
-      전자 부품을 생산하며, 엔진 및 고급 생산에 필요하다."
+    m_Localized: "\uC804\uC790 \uBD80\uD488 \uACF5\uC7A5\uC744 \uD574\uAE08\uD55C\uB2E4.
+      \uB3D9\xB7\uC54C\uB8E8\uBBF8\uB284 \uC778\uACE8\uB85C \uC804\uC790 \uBD80\uD488\uC744
+      \uC0DD\uC0B0\uD558\uBA70, \uC5D4\uC9C4 \uBC0F \uACE0\uAE09 \uC0DD\uC0B0\uC5D0
+      \uD544\uC694\uD558\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267002
-    m_Localized: "전용 광산(철·석탄·동·알루미늄) 해금. 각 광산은 한 종류의 광석만 채굴. 금광석은 금광 건설 연구 별도. 건설·유지 비용 높음."
+    m_Localized: "\uCCA0\uAD11\uC744 \uD574\uAE08\uD569\uB2C8\uB2E4. \uCCA0\uAD11\uC11D\uC744
+      \uCC44\uAD74\uD574 \uC81C\uB828\xB7\uCCA0 \uC778\uACE8 \uC0DD\uC0B0. \uAE08\uC18D
+      \uAC00\uACF5 \uCCB4\uC778\uC758 \uAE30\uCD08\uC774\uBA70, \uC2DC\uC791\uBD80\uD130
+      \uC774\uC6A9 \uAC00\uB2A5\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267003
-    m_Localized: "화학 공장 해금. 원유 소비 직물 생산,
-      제재소 목재 체인 보완."
+    m_Localized: "\uD654\uD559 \uACF5\uC7A5 \uD574\uAE08. \uC6D0\uC720 \uC18C\uBE44
+      \uC9C1\uBB3C \uC0DD\uC0B0, \uC81C\uC7AC\uC18C \uBAA9\uC7AC \uCCB4\uC778 \uBCF4\uC644."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267004
-    m_Localized: "중공장 해금. 직물·금광석→고급
-      의류, 고급 목재·직물·기계 부품→고급
-      가구. 고급 시장용 고투자."
+    m_Localized: "\uC911\uACF5\uC7A5 \uD574\uAE08. \uC9C1\uBB3C\xB7\uAE08\uAD11\uC11D\u2192\uACE0\uAE09
+      \uC758\uB958, \uACE0\uAE09 \uBAA9\uC7AC\xB7\uC9C1\uBB3C\xB7\uAE30\uACC4 \uBD80\uD488\u2192\uACE0\uAE09
+      \uAC00\uAD6C. \uACE0\uAE09 \uC2DC\uC7A5\uC6A9 \uACE0\uD22C\uC790."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267005
-    m_Localized: "유정 해금. 지하 원유 채굴. 유지비
-      매우 높음. 완료 시 화학 공정 연구 해금."
+    m_Localized: "\uC720\uC815 \uD574\uAE08. \uC9C0\uD558 \uC6D0\uC720 \uCC44\uAD74.
+      \uC720\uC9C0\uBE44 \uB9E4\uC6B0 \uB192\uC74C. \uC644\uB8CC \uC2DC \uD654\uD559
+      \uACF5\uC815 \uC5F0\uAD6C \uD574\uAE08."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267006
-    m_Localized: "제련소 해금. 철·동·알루미늄 광석→인골,
-      금광석→순금. 금속·전자 체인 필수."
+    m_Localized: "\uC81C\uB828\uC18C \uD574\uAE08. \uCCA0\xB7\uB3D9\xB7\uC54C\uB8E8\uBBF8\uB284
+      \uAD11\uC11D\u2192\uC778\uACE8, \uAE08\uAD11\uC11D\u2192\uC21C\uAE08. \uAE08\uC18D\xB7\uC804\uC790
+      \uCCB4\uC778 \uD544\uC218."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267007
-    m_Localized: "엔진 공장 해금. 기계 부품, 전자 부품,
-      강철 인골으로 엔진 생산. 차량 조립 선행 조건."
+    m_Localized: "\uC5D4\uC9C4 \uACF5\uC7A5 \uD574\uAE08. \uAE30\uACC4 \uBD80\uD488,
+      \uC804\uC790 \uBD80\uD488, \uAC15\uCCA0 \uC778\uACE8\uC73C\uB85C \uC5D4\uC9C4
+      \uC0DD\uC0B0. \uCC28\uB7C9 \uC870\uB9BD \uC120\uD589 \uC870\uAC74."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267008
-    m_Localized: "군수 공장 해금. 강철, 기계 부품, 좋은
-      목재, 석탄 등으로 소화기·중화기·탄약 생산."
+    m_Localized: "\uAD70\uC218 \uACF5\uC7A5 \uD574\uAE08. \uAC15\uCCA0, \uAE30\uACC4
+      \uBD80\uD488, \uC88B\uC740 \uBAA9\uC7AC, \uC11D\uD0C4 \uB4F1\uC73C\uB85C \uC18C\uD654\uAE30\xB7\uC911\uD654\uAE30\xB7\uD0C4\uC57D
+      \uC0DD\uC0B0."
     m_Metadata:
       m_Items: []
   - m_Id: 864226267009
-    m_Localized: "차량 조립 공장 해금. 엔진, 강철, 전자,
-      알루미늄, 원유, 무기 등으로 자동차·전투기·전차
-      생산. 최고 부가가치·가장 복잡 체인."
+    m_Localized: "\uCC28\uB7C9 \uC870\uB9BD \uACF5\uC7A5 \uD574\uAE08. \uC5D4\uC9C4,
+      \uAC15\uCCA0, \uC804\uC790, \uC54C\uB8E8\uBBF8\uB284, \uC6D0\uC720, \uBB34\uAE30
+      \uB4F1\uC73C\uB85C \uC790\uB3D9\uCC28\xB7\uC804\uD22C\uAE30\xB7\uC804\uCC28
+      \uC0DD\uC0B0. \uCD5C\uACE0 \uBD80\uAC00\uAC00\uCE58\xB7\uAC00\uC7A5 \uBCF5\uC7A1
+      \uCCB4\uC778."
     m_Metadata:
       m_Items: []
   - m_Id: 10166970572226560
-    m_Localized: "공장 운영 기초 연구. 경공장과 적재장
-      해금. 채굴·제련·석유 채굴 연구 경로 열림."
+    m_Localized: "\uACF5\uC7A5 \uC6B4\uC601 \uAE30\uCD08 \uC5F0\uAD6C. \uACBD\uACF5\uC7A5\uACFC
+      \uC801\uC7AC\uC7A5 \uD574\uAE08. \uAC01\uC885 \uAD11\uC0B0\xB7\uC81C\uB828\xB7\uC11D\uC720
+      \uCC44\uAD74 \uC5F0\uAD6C \uACBD\uB85C\uAC00 \uC5F4\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 22606259738263552
-    m_Localized: "건물 잠금 해제"
+    m_Localized: "\uAC74\uBB3C \uC7A0\uAE08 \uD574\uC81C"
     m_Metadata:
       m_Items: []
   - m_Id: 22606455687757824
-    m_Localized: "원자재 탐색"
+    m_Localized: "\uC6D0\uC790\uC7AC \uD0D0\uC0C9"
     m_Metadata:
       m_Items: []
   - m_Id: 22606619886370816
-    m_Localized: "생산 효율"
+    m_Localized: "\uC0DD\uC0B0 \uD6A8\uC728"
     m_Metadata:
       m_Items: []
   - m_Id: 864226266010
-    m_Localized: 산림 조사 I
+    m_Localized: "\uC0B0\uB9BC \uC870\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267010
-    m_Localized: 산림 자원을 탐색하여 벌목 캠프를 더 많이 설치할 수 있게 합니다.
+    m_Localized: "\uC0B0\uB9BC \uC790\uC6D0\uC744 \uD0D0\uC0C9\uD558\uC5EC \uBC8C\uBAA9
+      \uCEA0\uD504\uB97C \uB354 \uB9CE\uC774 \uC124\uCE58\uD560 \uC218 \uC788\uAC8C
+      \uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266011
-    m_Localized: 산림 조사 II
+    m_Localized: "\uC0B0\uB9BC \uC870\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267011
-    m_Localized: 목재 자원 평가를 심화하여 벌목 캠프 설치 한도를 늘립니다.
+    m_Localized: "\uBAA9\uC7AC \uC790\uC6D0 \uD3C9\uAC00\uB97C \uC2EC\uD654\uD558\uC5EC
+      \uBC8C\uBAA9 \uCEA0\uD504 \uC124\uCE58 \uD55C\uB3C4\uB97C \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266012
-    m_Localized: 산림 조사 III
+    m_Localized: "\uC0B0\uB9BC \uC870\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267012
-    m_Localized: 유역·생산량 조사로 적합한 캠프 부지를 더 확보합니다.
+    m_Localized: "\uC720\uC5ED\xB7\uC0DD\uC0B0\uB7C9 \uC870\uC0AC\uB85C \uC801\uD569\uD55C
+      \uCEA0\uD504 \uBD80\uC9C0\uB97C \uB354 \uD655\uBCF4\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266013
-    m_Localized: 산림 조사 IV
+    m_Localized: "\uC0B0\uB9BC \uC870\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267013
-    m_Localized: 정밀 재고와 접근로 분석으로 지속 가능한 채취 한도를 확장합니다.
+    m_Localized: "\uC815\uBC00 \uC7AC\uACE0\uC640 \uC811\uADFC\uB85C \uBD84\uC11D\uC73C\uB85C
+      \uC9C0\uC18D \uAC00\uB2A5\uD55C \uCC44\uCDE8 \uD55C\uB3C4\uB97C \uD655\uC7A5\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266014
-    m_Localized: 산림 조사 V
+    m_Localized: "\uC0B0\uB9BC \uC870\uC0AC V"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267014
-    m_Localized: 광역 조사망을 완성하여 허용 가능한 벌목 캠프 규모를 최대로 올립니다.
+    m_Localized: "\uAD11\uC5ED \uC870\uC0AC\uB9DD\uC744 \uC644\uC131\uD558\uC5EC
+      \uD5C8\uC6A9 \uAC00\uB2A5\uD55C \uBC8C\uBAA9 \uCEA0\uD504 \uADDC\uBAA8\uB97C
+      \uCD5C\uB300\uB85C \uC62C\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266015
-    m_Localized: 철광 조사 I
+    m_Localized: "\uCCA0\uAD11 \uC870\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267015
-    m_Localized: 철광맥 조사로 철광을 더 많이 설치할 수 있게 합니다.
+    m_Localized: "\uCCA0\uAD11\uB9E5 \uC870\uC0AC\uB85C \uCCA0\uAD11\uC744 \uB354
+      \uB9CE\uC774 \uC124\uCE58\uD560 \uC218 \uC788\uAC8C \uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266016
-    m_Localized: 철광 조사 II
+    m_Localized: "\uCCA0\uAD11 \uC870\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267016
-    m_Localized: 시료와 지질 모델을 보강해 철광 설치 한도를 더 늘립니다.
+    m_Localized: "\uC2DC\uB8CC\uC640 \uC9C0\uC9C8 \uBAA8\uB378\uC744 \uBCF4\uAC15\uD574
+      \uCCA0\uAD11 \uC124\uCE58 \uD55C\uB3C4\uB97C \uB354 \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266017
-    m_Localized: 철광 조사 III
+    m_Localized: "\uCCA0\uAD11 \uC870\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267017
-    m_Localized: 심부 탐사로 철광 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Localized: "\uC2EC\uBD80 \uD0D0\uC0AC\uB85C \uCCA0\uAD11 \uCC44\uAD74 \uC801\uC9C0\uB97C
+      \uB113\uD600 \uC124\uCE58 \uD55C\uB3C4\uB97C \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266018
-    m_Localized: 철광 조사 IV
+    m_Localized: "\uCCA0\uAD11 \uC870\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267018
-    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 철광 채굴 규모를 확대합니다.
+    m_Localized: "\uB9E4\uC7A5\uB7C9 \uCD94\uC815\uACFC \uBB3C\uB958 \uACC4\uD68D\uC744
+      \uD1B5\uD569\uD574 \uBCD1\uD589 \uCCA0\uAD11 \uCC44\uAD74 \uADDC\uBAA8\uB97C
+      \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266019
-    m_Localized: 철광 조사 V
+    m_Localized: "\uCCA0\uAD11 \uC870\uC0AC V"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267019
-    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 철광 수를 최대화합니다.
+    m_Localized: "\uAD11\uAD6C \uC804\uC5ED \uC9C0\uC9C8\uB3C4\uB97C \uC644\uC131\uD574
+      \uC6B4\uC601 \uAC00\uB2A5\uD55C \uCCA0\uAD11 \uC218\uB97C \uCD5C\uB300\uD654\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266020
-    m_Localized: 석유 탐사 I
+    m_Localized: "\uC11D\uC720 \uD0D0\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267020
-    m_Localized: 지표·물리 탐사로 유정 설치 허용 대수를 늘립니다.
+    m_Localized: "\uC9C0\uD45C\xB7\uBB3C\uB9AC \uD0D0\uC0AC\uB85C \uC720\uC815 \uC124\uCE58
+      \uD5C8\uC6A9 \uB300\uC218\uB97C \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266021
-    m_Localized: 석유 탐사 II
+    m_Localized: "\uC11D\uC720 \uD0D0\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267021
-    m_Localized: 지하 구조 모델을 정교화해 펌프(유정) 배치 한도를 확대합니다.
+    m_Localized: "\uC9C0\uD558 \uAD6C\uC870 \uBAA8\uB378\uC744 \uC815\uAD50\uD654\uD574
+      \uD38C\uD504(\uC720\uC815) \uBC30\uCE58 \uD55C\uB3C4\uB97C \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266022
-    m_Localized: 석유 탐사 III
+    m_Localized: "\uC11D\uC720 \uD0D0\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267022
-    m_Localized: 시추·광역 상관으로 유전 평가를 넓혀 설치 상한을 올립니다.
+    m_Localized: "\uC2DC\uCD94\xB7\uAD11\uC5ED \uC0C1\uAD00\uC73C\uB85C \uC720\uC804
+      \uD3C9\uAC00\uB97C \uB113\uD600 \uC124\uCE58 \uC0C1\uD55C\uC744 \uC62C\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266023
-    m_Localized: 석유 탐사 IV
+    m_Localized: "\uC11D\uC720 \uD0D0\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267023
-    m_Localized: 저류층 특성 분석으로 동시 가동 가능 유정 수를 늘립니다.
+    m_Localized: "\uC800\uB958\uCE35 \uD2B9\uC131 \uBD84\uC11D\uC73C\uB85C \uB3D9\uC2DC
+      \uAC00\uB3D9 \uAC00\uB2A5 \uC720\uC815 \uC218\uB97C \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266024
-    m_Localized: 석유 탐사 V
+    m_Localized: "\uC11D\uC720 \uD0D0\uC0AC V"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267024
-    m_Localized: 분지 단위 탐사 체계를 완성해 유정 설치 한도를 최대로 올립니다.
+    m_Localized: "\uBD84\uC9C0 \uB2E8\uC704 \uD0D0\uC0AC \uCCB4\uACC4\uB97C \uC644\uC131\uD574
+      \uC720\uC815 \uC124\uCE58 \uD55C\uB3C4\uB97C \uCD5C\uB300\uB85C \uC62C\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266025
-    m_Localized: 금광 조사 I
+    m_Localized: "\uAE08\uAD11 \uC870\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267025
-    m_Localized: 금맥·노출 조사로 금광 설치 한도를 늘립니다.
+    m_Localized: "\uAE08\uB9E5\xB7\uB178\uCD9C \uC870\uC0AC\uB85C \uAE08\uAD11 \uC124\uCE58
+      \uD55C\uB3C4\uB97C \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266026
-    m_Localized: 금광 조사 II
+    m_Localized: "\uAE08\uAD11 \uC870\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267026
-    m_Localized: 시료와 지질 모델을 보강해 금광 설치 한도를 더 늘립니다.
+    m_Localized: "\uC2DC\uB8CC\uC640 \uC9C0\uC9C8 \uBAA8\uB378\uC744 \uBCF4\uAC15\uD574
+      \uAE08\uAD11 \uC124\uCE58 \uD55C\uB3C4\uB97C \uB354 \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266027
-    m_Localized: 금광 조사 III
+    m_Localized: "\uAE08\uAD11 \uC870\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267027
-    m_Localized: 심부 매장 조사로 금광 가동 규모를 확대합니다.
+    m_Localized: "\uC2EC\uBD80 \uB9E4\uC7A5 \uC870\uC0AC\uB85C \uAE08\uAD11 \uAC00\uB3D9
+      \uADDC\uBAA8\uB97C \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266028
-    m_Localized: 금광 조사 IV
+    m_Localized: "\uAE08\uAD11 \uC870\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267028
-    m_Localized: 매장량 추정과 물류 분석으로 병렬 채굴 한도를 올립니다.
+    m_Localized: "\uB9E4\uC7A5\uB7C9 \uCD94\uC815\uACFC \uBB3C\uB958 \uBD84\uC11D\uC73C\uB85C
+      \uBCD1\uB82C \uCC44\uAD74 \uD55C\uB3C4\uB97C \uC62C\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266029
-    m_Localized: 금광 건설 허가
+    m_Localized: "\uAE08\uAD11 \uAC74\uC124 \uD5C8\uAC00"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267029
-    m_Localized: "전용 금광 해금. 금광석만 채굴해 제련·순금
-      생산. 채굴 연구 완료 필요."
+    m_Localized: "\uC804\uC6A9 \uAE08\uAD11 \uD574\uAE08. \uAE08\uAD11\uC11D\uB9CC
+      \uCC44\uAD74\uD574 \uC81C\uB828\xB7\uC21C\uAE08 \uC0DD\uC0B0. \uCCA0\uAD11
+      \uAC74\uC124 \uC5F0\uAD6C \uC644\uB8CC\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
-
   - m_Id: 864226266030
-    m_Localized: 석탄 조사 I
+    m_Localized: "\uC11D\uD0C4\uAD11 \uC870\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267030
-    m_Localized: 석탄층 조사로 설치 가능한 석탄광 수 한도를 올립니다.
+    m_Localized: "\uC11D\uD0C4\uAD11\uB9E5 \uC870\uC0AC\uB85C \uC11D\uD0C4\uAD11\uC744
+      \uB354 \uB9CE\uC774 \uC124\uCE58\uD560 \uC218 \uC788\uAC8C \uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266031
-    m_Localized: 석탄 조사 II
+    m_Localized: "\uC11D\uD0C4\uAD11 \uC870\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267031
-    m_Localized: 층상 모델과 시료 분석을 강화해 석탄광 설치 한도를 늘립니다.
+    m_Localized: "\uC2DC\uB8CC\uC640 \uC9C0\uCE35 \uBAA8\uB378\uC744 \uBCF4\uAC15\uD574
+      \uC11D\uD0C4\uAD11 \uC124\uCE58 \uD55C\uB3C4\uB97C \uB354 \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266032
-    m_Localized: 석탄 조사 III
+    m_Localized: "\uC11D\uD0C4\uAD11 \uC870\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267032
-    m_Localized: 심부 탐사로 석탄 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Localized: "\uC2EC\uBD80 \uD0D0\uC0AC\uB85C \uC11D\uD0C4 \uCC44\uAD74 \uC801\uC9C0\uB97C
+      \uB113\uD600 \uC124\uCE58 \uD55C\uB3C4\uB97C \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266033
-    m_Localized: 석탄 조사 IV
+    m_Localized: "\uC11D\uD0C4\uAD11 \uC870\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267033
-    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 석탄 채굴 규모를 확대합니다.
+    m_Localized: "\uB9E4\uC7A5\uB7C9 \uCD94\uC815\uACFC \uBB3C\uB958 \uACC4\uD68D\uC744
+      \uD1B5\uD569\uD574 \uBCD1\uD589 \uC11D\uD0C4 \uCC44\uAD74 \uADDC\uBAA8\uB97C
+      \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266034
-    m_Localized: 석탄 조사 V
+    m_Localized: "\uC11D\uD0C4\uAD11 \uC870\uC0AC V"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267034
-    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 석탄광 수를 최대화합니다.
+    m_Localized: "\uAD11\uAD6C \uC804\uC5ED \uC9C0\uC9C8\uB3C4\uB97C \uC644\uC131\uD574
+      \uC6B4\uC601 \uAC00\uB2A5\uD55C \uC11D\uD0C4\uAD11 \uC218\uB97C \uCD5C\uB300\uD654\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266035
-    m_Localized: 동광 조사 I
+    m_Localized: "\uB3D9\uAD11 \uC870\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267035
-    m_Localized: 동광맥 조사로 설치 가능한 동광 수 한도를 올립니다.
+    m_Localized: "\uB3D9\uAD11\uB9E5 \uC870\uC0AC\uB85C \uB3D9\uAD11\uC744 \uB354
+      \uB9CE\uC774 \uC124\uCE58\uD560 \uC218 \uC788\uAC8C \uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266036
-    m_Localized: 동광 조사 II
+    m_Localized: "\uB3D9\uAD11 \uC870\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267036
-    m_Localized: 시료와 지질 모델을 보강해 동광 설치 한도를 더 늘립니다.
+    m_Localized: "\uC2DC\uB8CC\uC640 \uC9C0\uC9C8 \uBAA8\uB378\uC744 \uBCF4\uAC15\uD574
+      \uB3D9\uAD11 \uC124\uCE58 \uD55C\uB3C4\uB97C \uB354 \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266037
-    m_Localized: 동광 조사 III
+    m_Localized: "\uB3D9\uAD11 \uC870\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267037
-    m_Localized: 심부 탐사로 동광 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Localized: "\uC2EC\uBD80 \uD0D0\uC0AC\uB85C \uB3D9\uAD11 \uCC44\uAD74 \uC801\uC9C0\uB97C
+      \uB113\uD600 \uC124\uCE58 \uD55C\uB3C4\uB97C \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266038
-    m_Localized: 동광 조사 IV
+    m_Localized: "\uB3D9\uAD11 \uC870\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267038
-    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 동광 채굴 규모를 확대합니다.
+    m_Localized: "\uB9E4\uC7A5\uB7C9 \uCD94\uC815\uACFC \uBB3C\uB958 \uACC4\uD68D\uC744
+      \uD1B5\uD569\uD574 \uBCD1\uD589 \uB3D9\uAD11 \uCC44\uAD74 \uADDC\uBAA8\uB97C
+      \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266039
-    m_Localized: 동광 조사 V
+    m_Localized: "\uB3D9\uAD11 \uC870\uC0AC V"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267039
-    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 동광 수를 최대화합니다.
+    m_Localized: "\uAD11\uAD6C \uC804\uC5ED \uC9C0\uC9C8\uB3C4\uB97C \uC644\uC131\uD574
+      \uC6B4\uC601 \uAC00\uB2A5\uD55C \uB3D9\uAD11 \uC218\uB97C \uCD5C\uB300\uD654\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266040
-    m_Localized: 알루미늄 광 조사 I
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC870\uC0AC I"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267040
-    m_Localized: 알루미늄 광상 조사로 설치 가능한 알루미늄 광 수 한도를 올립니다.
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11\uB9E5 \uC870\uC0AC\uB85C \uC54C\uB8E8\uBBF8\uB284
+      \uAD11\uC744 \uB354 \uB9CE\uC774 \uC124\uCE58\uD560 \uC218 \uC788\uAC8C \uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266041
-    m_Localized: 알루미늄 광 조사 II
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC870\uC0AC II"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267041
-    m_Localized: 시료와 지질 모델을 보강해 알루미늄 광 설치 한도를 더 늘립니다.
+    m_Localized: "\uC2DC\uB8CC\uC640 \uAD11\uC0C1 \uBAA8\uB378\uC744 \uBCF4\uAC15\uD574
+      \uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC124\uCE58 \uD55C\uB3C4\uB97C \uB354 \uB298\uB9BD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266042
-    m_Localized: 알루미늄 광 조사 III
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC870\uC0AC III"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267042
-    m_Localized: 심부 탐사로 알루미늄 광 채굴 적지를 넓혀 설치 한도를 확대합니다.
+    m_Localized: "\uC2EC\uBD80 \uD0D0\uC0AC\uB85C \uC54C\uB8E8\uBBF8\uB284 \uCC44\uAD74
+      \uC801\uC9C0\uB97C \uB113\uD600 \uC124\uCE58 \uD55C\uB3C4\uB97C \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266043
-    m_Localized: 알루미늄 광 조사 IV
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC870\uC0AC IV"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267043
-    m_Localized: 매장량 추정과 물류 계획을 통합해 병행 알루미늄 광 채굴 규모를 확대합니다.
+    m_Localized: "\uB9E4\uC7A5\uB7C9 \uCD94\uC815\uACFC \uBB3C\uB958 \uACC4\uD68D\uC744
+      \uD1B5\uD569\uD574 \uBCD1\uD589 \uC54C\uB8E8\uBBF8\uB284 \uCC44\uAD74 \uADDC\uBAA8\uB97C
+      \uD655\uB300\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 864226266044
-    m_Localized: 알루미늄 광 조사 V
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC870\uC0AC V"
     m_Metadata:
       m_Items: []
   - m_Id: 864226267044
-    m_Localized: 광구 전역 지질도를 완성해 운영 가능한 알루미늄 광 수를 최대화합니다.
+    m_Localized: "\uAD11\uAD6C \uC804\uC5ED \uC9C0\uC9C8\uB3C4\uB97C \uC644\uC131\uD574
+      \uC6B4\uC601 \uAC00\uB2A5\uD55C \uC54C\uB8E8\uBBF8\uB284 \uAD11 \uC218\uB97C
+      \uCD5C\uB300\uD654\uD569\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266045
+    m_Localized: "\uC11D\uD0C4\uAD11 \uAC74\uC124"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267045
+    m_Localized: "\uC11D\uD0C4\uAD11\uC744 \uD574\uAE08\uD569\uB2C8\uB2E4. \uC11D\uD0C4\uC744
+      \uCC44\uAD74\uD574 \uC81C\uB828, \uC5F0\uB8CC, \uD0C4\uC57D \uC0DD\uC0B0\uC5D0
+      \uC501\uB2C8\uB2E4. \uAC74\uC124\xB7\uC720\uC9C0 \uBE44\uC6A9\uC774 \uB192\uC2B5\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266046
+    m_Localized: "\uB3D9\uAD11 \uAC74\uC124"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267046
+    m_Localized: "\uB3D9\uAD11\uC744 \uD574\uAE08\uD569\uB2C8\uB2E4. \uB3D9\uAD11\uC11D\uC744
+      \uCC44\uAD74\uD574 \uC81C\uB828 \uBC0F \uC804\uC790 \uBD80\uD488 \uCCB4\uC778\uC5D0
+      \uC501\uB2C8\uB2E4. \uAC74\uC124\xB7\uC720\uC9C0 \uBE44\uC6A9\uC774 \uB192\uC2B5\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266047
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11 \uAC74\uC124"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267047
+    m_Localized: "\uC54C\uB8E8\uBBF8\uB284 \uAD11\uC744 \uD574\uAE08\uD569\uB2C8\uB2E4.
+      \uC54C\uB8E8\uBBF8\uB284 \uAD11\uC11D\uC744 \uCC44\uAD74\uD574 \uC81C\uB828
+      \uBC0F \uACE0\uAE09 \uC81C\uC870\uC5D0 \uC501\uB2C8\uB2E4. \uAC74\uC124\xB7\uC720\uC9C0
+      \uBE44\uC6A9\uC774 \uB192\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   references:

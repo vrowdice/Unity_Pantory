@@ -51,7 +51,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode, IBuilding
     public bool IsRemovalAnimating => _removalAnimating;
     public Vector2Int Origin => _origin;
     public Vector2Int Size => _size;
-    public List<Vector2Int> OutputGridPositions { get; private set; }
+    public Vector2Int OutputGridPosition { get; private set; }
 
     public int AssignedWorkers => _assignedWorkers;
     public int AssignedTechnicians => _assignedTechnicians;
@@ -78,9 +78,9 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode, IBuilding
         _collider.size = new Vector2(rotatedSize.x, rotatedSize.y);
         _collider.offset = Vector2.zero;
 
-        OutputGridPositions = BuildingCalculationUtils.GetOutputGridPositions(_origin, _size, _rotation);
+        OutputGridPosition = BuildingOutputUtils.GetOutputGridPosition(_origin, _size, _rotation, _buildingData);
         if (!(_buildingData is LoadStationData))
-            OutputIndicatorHelper.SpawnOnRightEdgeForBuilding(transform, _outputIndicatorPrefab, _size);
+            BuildingOutputUtils.SpawnIndicator(transform, _outputIndicatorPrefab, _size, _buildingData);
         RefreshOutgoingResourceIcons();
 
         if (isAutoEmployeeAssignment)

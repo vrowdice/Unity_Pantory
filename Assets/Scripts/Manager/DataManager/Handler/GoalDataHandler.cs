@@ -16,6 +16,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
     private readonly HashSet<string> _completedGoalIds = new HashSet<string>();
 
     private bool _allGoalsCompleted;
+    private bool _suppressGoalEvaluation;
     private MainBuildingGridHandler _boundGridHandler;
 
     public IReadOnlyList<GoalState> ActiveGoals => _activeGoals;
@@ -68,6 +69,23 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         return _goalDict.TryGetValue(goalId, out GoalData goalData) ? goalData : null;
     }
 
+    public void BeginLayoutRestore()
+    {
+        _suppressGoalEvaluation = true;
+    }
+
+    public void EndLayoutRestore()
+    {
+        if (!_suppressGoalEvaluation)
+            return;
+
+        _suppressGoalEvaluation = false;
+        EvaluateAllActiveGoals();
+
+        if (_activeGoals.Count > 0)
+            NotifyActiveGoalsChanged();
+    }
+
     public void BindSceneGrid(MainBuildingGridHandler gridHandler)
     {
         if (gridHandler == null)
@@ -77,7 +95,9 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         _boundGridHandler = gridHandler;
         _boundGridHandler.OnBuildingInstanceLayoutChanged -= EvaluateAllActiveGoals;
         _boundGridHandler.OnBuildingInstanceLayoutChanged += EvaluateAllActiveGoals;
-        EvaluateAllActiveGoals();
+
+        if (!_suppressGoalEvaluation)
+            EvaluateAllActiveGoals();
     }
 
     public void UnbindSceneGrid()
@@ -174,13 +194,22 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         if (_allGoalsCompleted)
             return;
 
-        if (RestoreActiveGoalsFromSave(saveData))
-            EvaluateAllActiveGoals();
-        else
-            UnlockDefaultGoals();
+        if (!RestoreActiveGoalsFromSave(saveData))
+            UnlockDefaultGoalEntries();
     }
 
     private void UnlockDefaultGoals()
+    {
+        UnlockDefaultGoalEntries();
+
+        if (_activeGoals.Count == 0)
+            return;
+
+        NotifyActiveGoalsChanged();
+        EvaluateAllActiveGoals();
+    }
+
+    private void UnlockDefaultGoalEntries()
     {
         if (_allGoalsCompleted)
             return;
@@ -192,12 +221,6 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
 
             TryUnlockGoal(goalData.id, resetProduceProgress: true);
         }
-
-        if (_activeGoals.Count == 0)
-            return;
-
-        NotifyActiveGoalsChanged();
-        EvaluateAllActiveGoals();
     }
 
     private bool RestoreActiveGoalsFromSave(GameSaveData saveData)
@@ -341,7 +364,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
 
     private void EvaluateAllActiveGoals()
     {
-        if (_allGoalsCompleted || _activeGoals.Count == 0)
+        if (_suppressGoalEvaluation || _allGoalsCompleted || _activeGoals.Count == 0)
             return;
 
         bool progressChanged = false;

@@ -334,7 +334,13 @@ public class UIManager : Singleton<UIManager>
         if (panel == null)
         {
             GameObject panelObj = InstantiatePopupPrefab(_enterNamePanelPrefab);
-            panel = panelObj.GetComponent<EnterNamePopup>();
+            panel = panelObj != null ? panelObj.GetComponent<EnterNamePopup>() : null;
+        }
+
+        if (panel == null)
+        {
+            Debug.LogError("[UIManager] EnterNamePopup component is missing on prefab.");
+            return null;
         }
 
         panel.gameObject.SetActive(true);

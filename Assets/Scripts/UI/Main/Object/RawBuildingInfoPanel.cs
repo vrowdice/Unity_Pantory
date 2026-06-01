@@ -64,7 +64,11 @@ public class RawBuildingInfoPanel : MonoBehaviour
         if (nextCount == current)
             return;
 
-        if (!_targetRawBuilding.TrySetRawMaterialCount(nextCount))
+        MainRunner runner = GameManager.Instance?.CurrentRunner as MainRunner;
+        if (runner == null || runner.RawBuildingHandler == null)
+            return;
+
+        if (!runner.RawBuildingHandler.TrySetRawMaterialCount(_targetRawBuilding, nextCount))
         {
             if (delta > 0)
             {
@@ -88,17 +92,14 @@ public class RawBuildingInfoPanel : MonoBehaviour
                 TutorialDirector.Instance?.NotifyRawBuildingAdded(buildingId);
         }
 
-        if (GameManager.Instance?.CurrentRunner is MainRunner runner)
+        if (delta > 0 &&
+            runner.PlacementHandler != null &&
+            runner.PlacementHandler.IsAutoEmployeePlacement)
         {
-            if (delta > 0 &&
-                runner.PlacementHandler != null &&
-                runner.PlacementHandler.IsAutoEmployeePlacement)
-            {
-                _targetRawBuilding.TryAutoAssignEmployeesToFill();
-            }
-
-            runner.FlushPlacedLayoutToDataManager();
+            _targetRawBuilding.TryAutoAssignEmployeesToFill();
         }
+
+        runner.FlushPlacedLayoutToDataManager();
     }
 
     public void RefreshUI()

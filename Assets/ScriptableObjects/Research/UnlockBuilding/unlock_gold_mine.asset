@@ -16,9 +16,9 @@ MonoBehaviour:
   displayName: Gold Mine Construction
   researchType: 0
   icon: {fileID: 21300000, guid: 404b3dbc866512a408ffc7ec7da3a791, type: 3}
-  description: Unlocks dedicated gold mines. Extracts gold ore only for smelting into
-    pure gold. Requires prior mining research.
+  description: Unlocks dedicated gold mines. Extracts gold ore only for smelting
+    into pure gold. Requires iron mine construction research.
   isDefaultUnlocked: 0
-  researchPointCost: 1500
+  researchPointCost: 3000
   unlockResearchList: []
   effects: []

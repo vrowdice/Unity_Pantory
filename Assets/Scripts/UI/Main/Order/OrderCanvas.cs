@@ -17,6 +17,9 @@ public class OrderCanvas : MainCanvasPanelBase
     [SerializeField] private GameObject _orderMarketActorPopupBtnPrefab;
     [SerializeField] private GameObject _orderBtnPrefab;
 
+    [Header("Complete Feedback")]
+    [SerializeField] private AudioClip _requirementCompleteSfx;
+
     private MarketActorType? _currentMarketActorType = null;
     private bool _showAcceptedOrders = false;
 
@@ -48,10 +51,10 @@ public class OrderCanvas : MainCanvasPanelBase
         _acceptedOrderSwitch.onValueChanged.AddListener(OnAcceptedOrderSwitchChanged);
     }
 
-    public void UpdataUI()
+    private void RefreshListButtons()
     {
-        foreach (MarketActorPopupBtn btn in _marketActorPopupBtnList) btn.UpdateUI();
-        foreach (OrderBtn btn in _orderButtonMap.Values) btn.UpdateUI();
+        EntryListPanelUtils.RefreshAll(_marketActorPopupBtnList);
+        EntryListPanelUtils.RefreshAll(_orderButtonMap);
     }
 
     private void InitializeFilterButtons()
@@ -212,7 +215,7 @@ public class OrderCanvas : MainCanvasPanelBase
         {
             if (_orderButtonMap.ContainsKey(order))
             {
-                _orderButtonMap[order].Init(order, _uiManager);
+                _orderButtonMap[order].Refresh();
                 continue;
             }
 
@@ -228,7 +231,7 @@ public class OrderCanvas : MainCanvasPanelBase
             OrderBtn btn = btnObj.GetComponent<OrderBtn>();
             if (btn != null)
             {
-                btn.Init(order, _uiManager);
+                btn.Init(order, _uiManager, _requirementCompleteSfx);
                 _orderButtonMap.Add(order, btn);
             }
         });
@@ -242,7 +245,7 @@ public class OrderCanvas : MainCanvasPanelBase
     private void HandleDayChanged()
     {
         RefreshOrderButtons();
-        UpdataUI();
+        RefreshListButtons();
     }
 
     private void HandleResourceChanged()
@@ -250,7 +253,7 @@ public class OrderCanvas : MainCanvasPanelBase
         if (!gameObject.activeInHierarchy)
             return;
 
-        UpdataUI();
+        RefreshListButtons();
     }
     
     protected override void OnDisable()

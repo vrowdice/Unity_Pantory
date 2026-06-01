@@ -77,7 +77,9 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
 
         _rawMaterialCount = newCount;
         PlayCountChangeAnimation();
+
         dataManager.Finances.ModifyPlacedBuildingMaintenance(maintenanceDelta, assetValueDelta);
+        _infoPanel?.RefreshUI();
 
         int required = RequiredEmployeeSlots;
         int currentAssigned = _assignedWorkers + _assignedTechnicians;
@@ -294,6 +296,7 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
             if (dataManager.Resource.ModifyResourceCount(_selectedResource.id, amount))
             {
                 ResourceFlowFx.TryPlayToWarehouse(_selectedResource, transform.position);
+                BuildingVisualFx.TryPlayProductionPulse(_viewRenderer, transform.position);
             }
             _workProgress -= 1f;
         }
@@ -325,15 +328,17 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
         _workProgress = Mathf.Clamp01(saveData.workProgress);
         _assignedWorkers = Mathf.Max(0, saveData.assignedWorkers);
         _assignedTechnicians = Mathf.Max(0, saveData.assignedTechnicians);
-        
-        _rawMaterialCount = saveData.rawMaterialScale;
+        _rawMaterialCount = Mathf.Max(0, saveData.rawMaterialScale);
 
         if (!string.IsNullOrEmpty(saveData.selectedResourceId))
         {
             ResourceData savedResource = dataManager.Resource.GetResourceEntry(saveData.selectedResourceId)?.data;
             if (savedResource != null)
-                _selectedResource = savedResource;
+                TrySetSelectedResource(savedResource);
         }
+
+        RefreshBuildingVisual();
+        _infoPanel?.RefreshUI();
     }
 
     public int ForceRemoveAssignedEmployees(EmployeeType type, int count)
@@ -355,13 +360,17 @@ public partial class RawBuildingObject : MonoBehaviour, IResourceNode, IBuilding
 
     private void PlayCountChangeAnimation()
     {
-        if (_viewRenderer == null) return;
+        if (_viewRenderer == null)
+            return;
 
-        _viewRenderer.transform.DOKill();
+        _viewRenderer.transform.DOKill(false);
         Vector3 baseScale = new Vector3(_size.x, _size.y, 1f);
         _viewRenderer.transform.localScale = baseScale;
 
         Vector3 punchAmount = baseScale * 0.22f;
-        _viewRenderer.transform.DOPunchScale(punchAmount, 0.35f, 12, 0.7f);
+        _viewRenderer.transform
+            .DOPunchScale(punchAmount, 0.35f, 12, 0.7f)
+            .SetUpdate(true)
+            .SetLink(_viewRenderer.gameObject);
     }
 }

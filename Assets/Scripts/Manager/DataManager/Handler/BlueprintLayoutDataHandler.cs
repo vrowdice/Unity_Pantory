@@ -131,7 +131,6 @@ public class BlueprintLayoutDataHandler
             dst.y = src.y;
             dst.rotation = src.rotation;
             dst.roadDataId = src.roadDataId;
-            dst.sourceBuildingDataId = src.sourceBuildingDataId;
             dst.buffer = ClonePacketList(src.buffer);
             clone.Add(dst);
         }

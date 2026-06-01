@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 /// <summary>
 /// 건물 데이터의 기반 클래스 (abstract)
@@ -49,9 +48,23 @@ public abstract class BuildingData : ScriptableObject
     [Tooltip("입력 버퍼에 둘 수 있는 자원 종류 수(0이면 무제한)")]
     public int maxInputResourceKinds = 10;
 
+    [Header("Output")]
+    [Tooltip("발자국 로컬 좌표(회전 전). 도로가 붙는 이웃 그리드 칸. 1×1이 (0,0)이면 출구는 (1,0). 화살표는 그 방향 건물 가장자리에 자동 배치.")]
+    public Vector2Int outputOffset;
+
     public virtual bool IsProductionBuilding => false;
     public virtual bool IsLoadStation => false;
     public virtual bool IsUnloadStation => false;
     public virtual bool IsRoad => false;
     public virtual List<ResourceType> AllowedResourceTypes => null;
+
+    protected virtual void OnValidate()
+    {
+        if (IsInsideFootprint(outputOffset, size))
+            outputOffset = new Vector2Int(size.x, Mathf.Max(0, (size.y - 1) / 2));
+    }
+
+    private static bool IsInsideFootprint(Vector2Int localCell, Vector2Int footprintSize) =>
+        localCell.x >= 0 && localCell.x < footprintSize.x
+        && localCell.y >= 0 && localCell.y < footprintSize.y;
 }

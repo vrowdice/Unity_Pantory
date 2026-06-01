@@ -15,7 +15,7 @@ MonoBehaviour:
   id: search_coal_mine_5
   displayName: 
   researchType: 1
-  icon: {fileID: 21300000, guid: ec25fe544e4460647936b5f977868f8e, type: 3}
+  icon: {fileID: 21300000, guid: fa2c65b7a93a77143bd749f09ea7bf5a, type: 3}
   description: 
   isDefaultUnlocked: 0
   researchPointCost: 12000

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,16 +17,6 @@ public class MainRawBuildingHandler
         _mainRunner = runner;
         _buildingParent = buildingParent;
         _dataManager = DataManager.Instance;
-    }
-
-    public void InitializeRepresentativeRawBuildings()
-    {
-        SyncRepresentativeRawBuildings();
-    }
-
-    public void OnResearchCompleted(string researchId)
-    {
-        SyncRepresentativeRawBuildings();
     }
 
     public void SyncRepresentativeRawBuildings()
@@ -57,6 +46,42 @@ public class MainRawBuildingHandler
             }
 
             SpawnRawBuildingInstance(rawData, resData, i);
+        }
+    }
+
+    /// <summary>세이브의 원자재 공장 항목만 반영합니다. 그리드 복원 후 호출합니다.</summary>
+    public void ApplyLayoutFromSave(List<PlacedBuildingSaveData> buildings)
+    {
+        ClearAllBuildings();
+        SyncRepresentativeRawBuildings();
+
+        if (buildings == null)
+            return;
+
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            PlacedBuildingSaveData saveData = buildings[i];
+            if (saveData == null || string.IsNullOrEmpty(saveData.buildingDataId))
+                continue;
+
+            BuildingData data = _dataManager.Building.GetBuildingData(saveData.buildingDataId);
+            if (data is not RawMaterialFactoryData rawData)
+                continue;
+
+            if (!_rawResourceBuildingObjDict.TryGetValue(saveData.buildingDataId, out RawBuildingObject rawBuilding)
+                || rawBuilding == null)
+            {
+                continue;
+            }
+
+            rawBuilding.ImportSaveData(saveData, _dataManager);
+
+            if (rawBuilding.RawMaterialCount > 0)
+            {
+                long maintenance = rawData.maintenanceCost * rawBuilding.RawMaterialCount;
+                long assetValue = rawData.buildCost * rawBuilding.RawMaterialCount;
+                _dataManager.Finances.ModifyPlacedBuildingMaintenance(maintenance, assetValue);
+            }
         }
     }
 
@@ -106,7 +131,6 @@ public class MainRawBuildingHandler
         rawObj.Init(rawData, dummyOrigin, _mainRunner);
         rawObj.TrySetSelectedResource(resData);
 
-        UIManager.Instance?.ShowRawBuildingInfoPanel(rawObj);
         _rawResourceBuildingObjDict[rawData.id] = rawObj;
     }
 
@@ -140,32 +164,13 @@ public class MainRawBuildingHandler
 
         foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
         {
-            if (rawBuilding.IsRemovalAnimating) continue;
+            if (rawBuilding == null || rawBuilding.IsRemovalAnimating)
+                continue;
+
             list.Add(rawBuilding.ExportSaveData());
         }
 
         return list;
-    }
-
-    public void RestoreFromSave(List<PlacedBuildingSaveData> buildings)
-    {
-        if (buildings == null) return;
-
-        foreach (PlacedBuildingSaveData saveData in buildings)
-        {
-            if (string.IsNullOrEmpty(saveData.buildingDataId)) continue;
-            BuildingData data = _dataManager.Building.GetBuildingData(saveData.buildingDataId);
-            if (data is not RawMaterialFactoryData) continue;
-
-            if (_rawResourceBuildingObjDict.TryGetValue(saveData.buildingDataId, out RawBuildingObject rawBuilding))
-            {
-                rawBuilding.ImportSaveData(saveData, _dataManager);
-
-                long maintenance = data.maintenanceCost * rawBuilding.RawMaterialCount;
-                long assetValue = data.buildCost * rawBuilding.RawMaterialCount;
-                _dataManager.Finances.ModifyPlacedBuildingMaintenance(maintenance, assetValue);
-            }
-        }
     }
 
     public void ClearAllBuildings()
@@ -186,7 +191,9 @@ public class MainRawBuildingHandler
         int total = 0;
         foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
         {
-            if (rawBuilding.IsRemovalAnimating) continue;
+            if (rawBuilding == null || rawBuilding.IsRemovalAnimating)
+                continue;
+
             total += type == EmployeeType.Worker
                 ? rawBuilding.AssignedWorkers
                 : rawBuilding.AssignedTechnicians;
@@ -198,7 +205,7 @@ public class MainRawBuildingHandler
     {
         foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
         {
-            if (rawBuilding.BuildingData.id == buildingDataId)
+            if (rawBuilding != null && rawBuilding.BuildingData.id == buildingDataId)
                 return rawBuilding.RawMaterialCount;
         }
         return 0;
@@ -208,8 +215,12 @@ public class MainRawBuildingHandler
     {
         foreach (RawBuildingObject rawBuilding in _rawResourceBuildingObjDict.Values)
         {
-            if (rawBuilding.BuildingData.id == buildingDataId && rawBuilding.HasConfiguredOutputResource)
+            if (rawBuilding != null
+                && rawBuilding.BuildingData.id == buildingDataId
+                && rawBuilding.HasConfiguredOutputResource)
+            {
                 return true;
+            }
         }
         return false;
     }
@@ -221,5 +232,26 @@ public class MainRawBuildingHandler
             if (rawBuilding != null)
                 rawBuilding.TickSimulation(_dataManager);
         }
+    }
+
+    public bool TrySetRawMaterialCount(RawBuildingObject rawBuilding, int newCount)
+    {
+        if (rawBuilding == null)
+            return false;
+
+        int oldCount = rawBuilding.RawMaterialCount;
+        if (!rawBuilding.TrySetRawMaterialCount(newCount))
+            return false;
+
+        if (newCount == oldCount)
+            return true;
+
+        Vector3 worldPosition = rawBuilding.transform.position;
+        if (newCount > oldCount)
+            _mainRunner.PlayBuildFeedbackAt(worldPosition, playSound: true);
+        else
+            _mainRunner.PlayRemovalFeedbackAt(worldPosition, playSound: true);
+
+        return true;
     }
 }

@@ -27,7 +27,10 @@ public partial class BuildingObject
         if (need.Count > 0 && !InputBufferSatisfies(need)) return false;
 
         Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
-        return CanEmitOutputsToAdjacentRoads(outputs);
+        return outputs.Count > 0
+            && _mainRunner != null
+            && _mainRunner.ResourceFlowHandler != null
+            && _mainRunner.ResourceFlowHandler.CanAcceptBuildingOutputs(this, outputs);
     }
 
     private bool TryCompleteProductionBatch(DataManager dataManager)
@@ -40,20 +43,23 @@ public partial class BuildingObject
         }
 
         Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
-        if (!TryEmitOutputsToAdjacentRoads(outputs))
+        if (outputs.Count == 0
+            || _mainRunner == null
+            || _mainRunner.ResourceFlowHandler == null
+            || !_mainRunner.ResourceFlowHandler.TryEmitBuildingOutputs(this, outputs))
+        {
             return false;
+        }
 
-        NotifyProductionGoals(dataManager, outputs);
+        if (dataManager?.Goal != null)
+        {
+            foreach (KeyValuePair<string, int> kvp in outputs)
+                dataManager.Goal.NotifyResourceProduced(kvp.Key, kvp.Value);
+        }
+
+        BuildingVisualFx.TryPlayProductionPulse(_viewObjRenderer, transform.position);
+
         return true;
-    }
-
-    private static void NotifyProductionGoals(DataManager dataManager, Dictionary<string, int> outputs)
-    {
-        if (dataManager?.Goal == null || outputs == null)
-            return;
-
-        foreach (KeyValuePair<string, int> kvp in outputs)
-            dataManager.Goal.NotifyResourceProduced(kvp.Key, kvp.Value);
     }
 
     private static Dictionary<string, int> GetInputNeedForBatch(ResourceData recipe)

@@ -4,6 +4,7 @@ using UnityEngine;
 public partial class RawBuildingObject
 {
     private MainRunner _runner;
+    private RawBuildingInfoPanel _infoPanel;
     private bool _clickArmed;
     private Vector2 _pointerDownScreenPos;
     private const float ClickDragThresholdPixels = 8f;
@@ -19,9 +20,37 @@ public partial class RawBuildingObject
         _origin = origin;
         _size = buildingData.size;
 
+        if (_viewRenderer == null)
+            _viewRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        RefreshBuildingVisual();
+
+        _selectedResource = buildingData.DefaultRawResource;
+
+        if (_infoPanel == null && UIManager.Instance != null)
+            _infoPanel = UIManager.Instance.ShowRawBuildingInfoPanel(this);
+    }
+
+    private void OnDestroy()
+    {
+        if (_infoPanel != null)
+        {
+            Destroy(_infoPanel.gameObject);
+            _infoPanel = null;
+        }
+    }
+
+    public void RefreshBuildingVisual()
+    {
+        if (_buildingData == null)
+            return;
+
+        if (_viewRenderer == null)
+            _viewRenderer = GetComponentInChildren<SpriteRenderer>();
+
         if (_viewRenderer != null)
         {
-            _viewRenderer.sprite = buildingData.buildingSprite;
+            _viewRenderer.sprite = _buildingData.buildingSprite;
             _viewRenderer.transform.localScale = new Vector3(_size.x, _size.y, 1f);
         }
 
@@ -30,8 +59,6 @@ public partial class RawBuildingObject
             _collider.size = new Vector2(_size.x, _size.y);
             _collider.offset = Vector2.zero;
         }
-
-        _selectedResource = buildingData.DefaultRawResource;
     }
 
     public float GetProductionProgressNormalized() => Mathf.Clamp01(_workProgress);

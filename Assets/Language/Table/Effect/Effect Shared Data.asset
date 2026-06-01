@@ -143,6 +143,22 @@ MonoBehaviour:
     m_Key: gold_mine_max_placed
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000059
+    m_Key: iron_mine_max_placed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000060
+    m_Key: coal_mine_max_placed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000061
+    m_Key: copper_mine_max_placed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000062
+    m_Key: aluminum_mine_max_placed
+    m_Metadata:
+      m_Items: []
   - m_Id: 7000000000033
     m_Key: policy_effect_iron_ingot_price_subsidy
     m_Metadata:

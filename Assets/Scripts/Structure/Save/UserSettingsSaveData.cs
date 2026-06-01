@@ -10,4 +10,5 @@ public class UserSettingsSaveData
     public float bgmVolume = 0.5f;
     public float sfxVolume = 1f;
     public string localeCode = "en";
+    public bool hasCompletedIntroTutorial;
 }

@@ -1751,7 +1751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 1
-  m_VerticalFit: 0
+  m_VerticalFit: 1
 --- !u!1 &3654429143038139697
 GameObject:
   m_ObjectHideFlags: 0
@@ -3486,6 +3486,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d06d6acc585e9a249b6f0da5b699beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _tutorialPanelInfo:
   - focusGameObject: {fileID: 0}
     onStepStart:
@@ -3519,6 +3521,7 @@ MonoBehaviour:
   _researchBtnContainerContentTransform: {fileID: 1010129423689547118}
   _linePrefab: {fileID: 5815302338130445571, guid: 1b2c03a932f7a8140afa24e9db65810d, type: 3}
   _researchEffectScrollViewContentTransform: {fileID: 8801356156607299997}
+  _researchCompleteSfx: {fileID: 8300000, guid: 730dfcd7a3a2973419c07521901ae0ee, type: 3}
 --- !u!1 &7850401188986410325
 GameObject:
   m_ObjectHideFlags: 0

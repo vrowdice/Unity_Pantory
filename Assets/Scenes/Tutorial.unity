@@ -536,223 +536,114 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7484345267587496400, guid: e849b637dd67d3c439ff15317e1b1213, type: 3}
   m_PrefabInstance: {fileID: 5992938681985129688}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &651105313765434227
-GameObject:
+--- !u!1001 &4157580044075877441
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 965901760967192249}
-  - component: {fileID: 5925347978017307467}
-  m_Layer: 0
-  m_Name: TutorialDirector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &965901760967192249
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 651105313765434227}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5925347978017307467
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _tutorialCanvas
+      value: 
+      objectReference: {fileID: 789901298}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _tutorialRunner
+      value: 
+      objectReference: {fileID: 590199396}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[3].focusGameObject
+      value: 
+      objectReference: {fileID: 1720866215}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[5].focusGameObject
+      value: 
+      objectReference: {fileID: 1720866215}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[6].focusGameObject
+      value: 
+      objectReference: {fileID: 1661141863}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[11].focusGameObject
+      value: 
+      objectReference: {fileID: 1252555811}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[13].focusGameObject
+      value: 
+      objectReference: {fileID: 2059352448}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[15].focusGameObject
+      value: 
+      objectReference: {fileID: 518975836}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[39].focusGameObject
+      value: 
+      objectReference: {fileID: 2059352448}
+    - target: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: _steps.Array.data[40].focusGameObject
+      value: 
+      objectReference: {fileID: 2102729120}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181912418673246076, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6966941690458243711, guid: 2559445492d47514780906c481e1a281, type: 3}
+      propertyPath: m_Name
+      value: TutorialDirector
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2559445492d47514780906c481e1a281, type: 3}
+--- !u!114 &5925347978017307467 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 4073238219165134209, guid: 2559445492d47514780906c481e1a281, type: 3}
+  m_PrefabInstance: {fileID: 4157580044075877441}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 651105313765434227}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2b3c4d5e6f747438658b7e48197802b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tutorialRunner: {fileID: 590199396}
-  _tutorialCanvas: {fileID: 789901298}
-  _debugStartStepIndex: 0
-  _steps:
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 1
-    buildingId: 
-    focusGameObject: {fileID: 1720866215}
-    focusObjectName: 
-  - kind: 3
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: Road_4_4
-  - kind: 2
-    buildingId: 
-    focusGameObject: {fileID: 1720866215}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 1661141863}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 13
-    buildingId: logging_camp
-    focusGameObject: {fileID: 0}
-    focusObjectName: RawBuilding_logging_camp_wood_log
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 1252555811}
-    focusObjectName: 
-  - kind: 8
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: PlayPauseBtn(Clone)
-  - kind: 9
-    buildingId: 
-    focusGameObject: {fileID: 2059352448}
-    focusObjectName: 
-  - kind: 5
-    buildingId: unload
-    focusGameObject: {fileID: 0}
-    focusObjectName: unloadBtn
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 518975836}
-    focusObjectName: 
-  - kind: 6
-    buildingId: unload
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_2_2
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 5
-    buildingId: road
-    focusGameObject: {fileID: 0}
-    focusObjectName: roadBtn
-  - kind: 6
-    buildingId: road
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_3_2
-  - kind: 5
-    buildingId: sawmill
-    focusGameObject: {fileID: 0}
-    focusObjectName: sawmillBtn
-  - kind: 6
-    buildingId: sawmill
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_4_1
-  - kind: 5
-    buildingId: road
-    focusGameObject: {fileID: 0}
-    focusObjectName: roadBtn
-  - kind: 6
-    buildingId: road
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_6_2
-  - kind: 5
-    buildingId: load
-    focusGameObject: {fileID: 0}
-    focusObjectName: loadBtn
-  - kind: 6
-    buildingId: load
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_7_2
-  - kind: 7
-    buildingId: unload
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_2_2
-  - kind: 7
-    buildingId: sawmill
-    focusGameObject: {fileID: 0}
-    focusObjectName: Tile_4_1
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 8
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: PlayPauseBtn(Clone)
-  - kind: 9
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: PlayPauseBtn(Clone)
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  - kind: 10
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: QuickMoveBtn_Market
-  - kind: 11
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: Dec1Btn
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: ResourceInputField
-  - kind: 14
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: MarketPanelCloseBtn
-  - kind: 9
-    buildingId: 
-    focusGameObject: {fileID: 2059352448}
-    focusObjectName: 
-  - kind: 0
-    buildingId: 
-    focusGameObject: {fileID: 2102729120}
-    focusObjectName: 
-  - kind: 12
-    buildingId: 
-    focusGameObject: {fileID: 0}
-    focusObjectName: 
-  _defaultPanelPosition: {x: -10000, y: 10000}
 --- !u!1001 &5992938681985129688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1615,4 +1506,4 @@ SceneRoots:
   - {fileID: 590199395}
   - {fileID: 513008398}
   - {fileID: 5992938681985129688}
-  - {fileID: 965901760967192249}
+  - {fileID: 4157580044075877441}

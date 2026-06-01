@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class StorageResourceBtn : BtnBase
+public class StorageResourceBtn : EntryListBtnBase
 {
     [SerializeField] private Image _resourceIconImage;
     [SerializeField] private TextMeshProUGUI _resourceNameText;
@@ -18,6 +18,14 @@ public class StorageResourceBtn : BtnBase
 
         _resourceIconImage.sprite = _resourceEntry.data.icon;
         _resourceNameText.text = _resourceEntry.data.id.Localize(LocalizationUtils.TABLE_RESOURCE);
+        Refresh();
+    }
+
+    public override void Refresh()
+    {
+        if (_resourceEntry == null)
+            return;
+
         _resourceCountText.text = _resourceEntry.state.count.ToString("N0");
     }
 

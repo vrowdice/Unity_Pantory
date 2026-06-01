@@ -6,6 +6,7 @@ public class MainBlueprintHandler
     private const float MinDragWorldSqr = 0.0004f;
     private const float SelectionBoxZ = 8f;
     private const int SelectionSortOrder = 950;
+    private const int HighlightSortOrder = 949;
 
     private readonly MainRunner _runner;
 
@@ -15,6 +16,10 @@ public class MainBlueprintHandler
 
     private GameObject _selectionBoxObj;
     private SpriteRenderer _selectionRenderer;
+    private GameObject _highlightRoot;
+    private readonly List<GameObject> _highlightObjects = new List<GameObject>();
+    private readonly List<Vector2Int> _scratchOrigins = new List<Vector2Int>();
+    private readonly List<Vector2Int> _scratchSizes = new List<Vector2Int>();
     private static Sprite _unitSquareSprite;
 
     public bool IsBlueprintMode => _isBlueprintMode;
@@ -87,33 +92,45 @@ public class MainBlueprintHandler
         if ((worldB - worldA).sqrMagnitude < MinDragWorldSqr)
             return;
 
-        MainBuildingGridHandler grid = _runner.GridHandler;
-        Vector2Int cellMin = new Vector2Int(int.MaxValue, int.MaxValue);
-        Vector2Int cellMax = new Vector2Int(int.MinValue, int.MinValue);
+        if (!TryGetGridRectFromWorldDrag(worldA, worldB, out Vector2Int cellMin, out Vector2Int cellMax))
+            return;
 
-        void ExpandCell(Vector3 world)
-        {
-            Vector2Int g = grid.WorldToGridPosition(world);
-            cellMin.x = Mathf.Min(cellMin.x, g.x);
-            cellMin.y = Mathf.Min(cellMin.y, g.y);
-            cellMax.x = Mathf.Max(cellMax.x, g.x);
-            cellMax.y = Mathf.Max(cellMax.y, g.y);
-        }
+        MainBuildingGridHandler grid = _runner.GridHandler;
+        List<PlacedBuildingSaveData> captured = grid.ExportBuildingsIntersectingGridRect(cellMin, cellMax);
+        List<PlacedRoadSaveData> capturedRoads = grid.ExportRoadsIntersectingGridRect(cellMin, cellMax);
+        if (captured.Count == 0 && capturedRoads.Count == 0)
+            return;
+
+        _runner.CommitBlueprintSelection(captured, capturedRoads);
+    }
+
+    private bool TryGetGridRectFromWorldDrag(Vector3 worldA, Vector3 worldB, out Vector2Int cellMin, out Vector2Int cellMax)
+    {
+        cellMin = default;
+        cellMax = default;
+
+        MainBuildingGridHandler grid = _runner.GridHandler;
+        if (grid == null)
+            return false;
 
         float minX = Mathf.Min(worldA.x, worldB.x);
         float maxX = Mathf.Max(worldA.x, worldB.x);
         float minY = Mathf.Min(worldA.y, worldB.y);
         float maxY = Mathf.Max(worldA.y, worldB.y);
 
-        ExpandCell(new Vector3(minX, minY, 0f));
-        ExpandCell(new Vector3(maxX, minY, 0f));
-        ExpandCell(new Vector3(maxX, maxY, 0f));
-        ExpandCell(new Vector3(minX, maxY, 0f));
+        Vector2Int g0 = grid.WorldToGridPosition(new Vector3(minX, minY, 0f));
+        Vector2Int g1 = grid.WorldToGridPosition(new Vector3(maxX, minY, 0f));
+        Vector2Int g2 = grid.WorldToGridPosition(new Vector3(maxX, maxY, 0f));
+        Vector2Int g3 = grid.WorldToGridPosition(new Vector3(minX, maxY, 0f));
 
-        List<PlacedBuildingSaveData> captured = grid.ExportBuildingsIntersectingGridRect(cellMin, cellMax);
-        List<PlacedRoadSaveData> capturedRoads = grid.ExportRoadsIntersectingGridRect(cellMin, cellMax);
-        if (captured.Count == 0 && capturedRoads.Count == 0)
-            return;
+        int x0 = Mathf.Min(Mathf.Min(g0.x, g1.x), Mathf.Min(g2.x, g3.x));
+        int y0 = Mathf.Min(Mathf.Min(g0.y, g1.y), Mathf.Min(g2.y, g3.y));
+        int x1 = Mathf.Max(Mathf.Max(g0.x, g1.x), Mathf.Max(g2.x, g3.x));
+        int y1 = Mathf.Max(Mathf.Max(g0.y, g1.y), Mathf.Max(g2.y, g3.y));
+
+        cellMin = new Vector2Int(x0, y0);
+        cellMax = new Vector2Int(x1, y1);
+        return true;
     }
 
     private void EnsureSelectionVisual()
@@ -133,7 +150,8 @@ public class MainBlueprintHandler
 
     private void UpdateSelectionVisual(Vector3 worldA, Vector3 worldB)
     {
-        if (_selectionRenderer == null) return;
+        if (_selectionRenderer == null)
+            return;
 
         float minX = Mathf.Min(worldA.x, worldB.x);
         float maxX = Mathf.Max(worldA.x, worldB.x);
@@ -146,10 +164,85 @@ public class MainBlueprintHandler
 
         _selectionBoxObj.transform.position = center;
         _selectionBoxObj.transform.localScale = new Vector3(w, h, 1f);
+
+        UpdateSelectionHighlights(worldA, worldB);
+    }
+
+    private void UpdateSelectionHighlights(Vector3 worldA, Vector3 worldB)
+    {
+        ClearHighlightOverlays();
+
+        if (!TryGetGridRectFromWorldDrag(worldA, worldB, out Vector2Int cellMin, out Vector2Int cellMax))
+            return;
+
+        MainBuildingGridHandler grid = _runner.GridHandler;
+        if (grid == null)
+            return;
+
+        grid.CollectFootprintsIntersectingGridRect(cellMin, cellMax, _scratchOrigins, _scratchSizes);
+        if (_scratchOrigins.Count == 0)
+            return;
+
+        EnsureHighlightRoot();
+        Color highlightColor = GetHighlightColor();
+
+        for (int i = 0; i < _scratchOrigins.Count; i++)
+        {
+            Vector2Int origin = _scratchOrigins[i];
+            Vector2Int size = _scratchSizes[i];
+            GameObject highlight = new GameObject("BlueprintSelectionHighlight");
+            highlight.transform.SetParent(_highlightRoot.transform, worldPositionStays: true);
+
+            SpriteRenderer renderer = highlight.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetUnitSquareSprite();
+            renderer.sortingOrder = HighlightSortOrder;
+            renderer.color = highlightColor;
+
+            Vector3 position = grid.GridToWorldPosition(origin, size);
+            position.z = SelectionBoxZ - 0.05f;
+            highlight.transform.position = position;
+            highlight.transform.localScale = new Vector3(size.x, size.y, 1f);
+
+            _highlightObjects.Add(highlight);
+        }
+    }
+
+    private static Color GetHighlightColor()
+    {
+        Color c = VisualManager.Instance.ValidColor;
+        return new Color(c.r, c.g, c.b, Mathf.Clamp01(c.a + 0.25f));
+    }
+
+    private void EnsureHighlightRoot()
+    {
+        if (_highlightRoot != null)
+            return;
+
+        _highlightRoot = new GameObject("BlueprintSelectionHighlights");
+        _highlightRoot.transform.SetParent(_runner.transform, worldPositionStays: true);
+    }
+
+    private void ClearHighlightOverlays()
+    {
+        for (int i = 0; i < _highlightObjects.Count; i++)
+        {
+            if (_highlightObjects[i] != null)
+                Object.Destroy(_highlightObjects[i]);
+        }
+
+        _highlightObjects.Clear();
     }
 
     private void DestroySelectionVisual()
     {
+        ClearHighlightOverlays();
+
+        if (_highlightRoot != null)
+        {
+            Object.Destroy(_highlightRoot);
+            _highlightRoot = null;
+        }
+
         if (_selectionBoxObj != null)
         {
             Object.Destroy(_selectionBoxObj);

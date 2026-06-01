@@ -2,7 +2,7 @@ using Evo.UI;
 using TMPro;
 using UnityEngine;
 
-public class PolicySetBtn : BtnBase
+public class PolicySetBtn : EntryListBtnBase
 {
     [SerializeField] private Switch _switch;
     [SerializeField] private TextMeshProUGUI _policyTitleText;
@@ -17,7 +17,7 @@ public class PolicySetBtn : BtnBase
     {
         _dataManager = DataManager.Instance;
         _policyEntry = policyEntry;
-        RefreshUI();
+        Refresh();
         DisplayEffects();
     }
 
@@ -31,14 +31,14 @@ public class PolicySetBtn : BtnBase
                 UIManager.Instance.ShowWarningPopup(WarningMessage.PolicyChangeLocked);
             }
 
-            RefreshUI();
+            Refresh();
             return;
         }
 
-        RefreshUI();
+        Refresh();
     }
 
-    public void RefreshUI()
+    public override void Refresh()
     {
         if (_policyEntry?.data == null || _policyEntry.state == null || _dataManager?.Policy == null)
         {

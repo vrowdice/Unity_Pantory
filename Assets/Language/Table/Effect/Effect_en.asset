@@ -178,6 +178,22 @@ MonoBehaviour:
     m_Localized: Divided Factory
     m_Metadata:
       m_Items: []
+  - m_Id: 7000000000059
+    m_Localized: Iron Mine Placement Limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000060
+    m_Localized: Coal Mine Placement Limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000061
+    m_Localized: Copper Mine Placement Limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7000000000062
+    m_Localized: Aluminum Mine Placement Limit
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

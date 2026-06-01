@@ -23,6 +23,9 @@ public class ResearchCanvas : MainCanvasPanelBase
     
     [SerializeField] private Transform _researchEffectScrollViewContentTransform;
 
+    [Header("Complete Feedback")]
+    [SerializeField] private AudioClip _researchCompleteSfx;
+
     private RectTransform _lineParent;
     private List<Transform> _researchBtnContainerList = new List<Transform>();
     private readonly Dictionary<string, ResearchBtn> _researchBtnMap = new Dictionary<string, ResearchBtn>();
@@ -42,6 +45,9 @@ public class ResearchCanvas : MainCanvasPanelBase
 
         _dataManager.Time.OnDayChanged -= ResearchChanged;
         _dataManager.Time.OnDayChanged += ResearchChanged;
+
+        _dataManager.OnResearchCompleted -= HandleResearchCompleted;
+        _dataManager.OnResearchCompleted += HandleResearchCompleted;
 
         SetupResearchTypeButtons();
 
@@ -66,6 +72,21 @@ public class ResearchCanvas : MainCanvasPanelBase
         UpdateResearchEffectStatus();
     }
 
+    private void HandleResearchCompleted(string researchId)
+    {
+        if (!gameObject.activeInHierarchy || string.IsNullOrEmpty(researchId))
+            return;
+
+        if (!_researchBtnMap.TryGetValue(researchId, out ResearchBtn researchBtn))
+            return;
+
+        Transform target = researchBtn.GetCompleteAnimationTarget();
+        if (ResearchInfoPopup.ConsumeCanvasCompleteSfxSkip())
+            RequirementCompleteFeedbackUtils.PlayButtonAnimation(target);
+        else
+            RequirementCompleteFeedbackUtils.Play(target, _researchCompleteSfx);
+    }
+
     private void RefreshResearchButtons()
     {
         if (_researchBtnMap.Count == 0)
@@ -77,7 +98,7 @@ public class ResearchCanvas : MainCanvasPanelBase
                 continue;
 
             if (_researchBtnMap.TryGetValue(entry.data.id, out ResearchBtn researchBtn))
-                researchBtn.Refresh(entry);
+                researchBtn.Refresh();
         }
     }
 
@@ -357,6 +378,7 @@ public class ResearchCanvas : MainCanvasPanelBase
         {
             _dataManager.Research.OnResearchPointsChanged -= ResearchChanged;
             _dataManager.Time.OnDayChanged -= ResearchChanged;
+            _dataManager.OnResearchCompleted -= HandleResearchCompleted;
         }
     }
 }

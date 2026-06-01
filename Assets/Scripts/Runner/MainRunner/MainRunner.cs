@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,6 +57,7 @@ public class MainRunner : RunnerBase
     private MainResourceFlowHandler _resourceFlowHandler;
     private MainBuildingPlacementHandler _placementHandler;
     private MainBlueprintHandler _blueprintHandler;
+    private Action<string> _syncRawBuildingsOnResearchCompleted;
 
     public MainBuildingGridHandler GridHandler => _gridHandler;
     public MainTileGridHandler TileGridHandler => _tileGridHandler;
@@ -63,6 +65,8 @@ public class MainRunner : RunnerBase
     public MainResourceFlowHandler ResourceFlowHandler => _resourceFlowHandler;
     public MainBuildingPlacementHandler PlacementHandler => _placementHandler;
     public MainBlueprintHandler BlueprintHandler => _blueprintHandler;
+
+    public bool IsRestoringPlacedLayout { get; private set; }
 
     public AudioClip BuildSound => _buildSound;
     public AudioClip RemovalSound => _removalSound;
@@ -171,6 +175,20 @@ public class MainRunner : RunnerBase
         _blueprintHandler.SetBlueprintMode(active);
     }
 
+    public void CommitBlueprintSelection(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
+    {
+        if (_mainCanvas == null)
+            return;
+
+        bool hasBuildings = buildings != null && buildings.Count > 0;
+        bool hasRoads = roads != null && roads.Count > 0;
+        if (!hasBuildings && !hasRoads)
+            return;
+
+        SetBlueprintMode(false);
+        _mainCanvas.RequestSaveBlueprintEntry(buildings, roads);
+    }
+
     private void Update()
     {
         if (_placementHandler == null || _blueprintHandler == null)
@@ -206,10 +224,8 @@ public class MainRunner : RunnerBase
         _rawBuildingHandler = new MainRawBuildingHandler(this, _gridHandler.BuildingParent);
         _resourceFlowHandler = new MainResourceFlowHandler(
             this,
-            _gridHandler.BuildingParent,
             _gridHandler.RoadObjDict,
             _gridHandler.DualLaneRoadObjDict,
-            _gridHandler.BuildingOutputRoundRobinIndex,
             _gridHandler.BuildingObjDict
         );
         _placementHandler = CreatePlacementHandler();
@@ -217,7 +233,7 @@ public class MainRunner : RunnerBase
 
         transform.position = new Vector3(0f, 0f, _cameraZOffset);
 
-        _tileGridHandler.CreateGrid(_gridWidth, _gridHeight, _rawBuildingHandler.InitializeRepresentativeRawBuildings);
+        _tileGridHandler.CreateGrid(_gridWidth, _gridHeight, null);
         SetCameraCollider();
 
         OnGridReady();
@@ -225,8 +241,9 @@ public class MainRunner : RunnerBase
         DataManager.Time.OnHourChanged -= _resourceFlowHandler.OnMainHourChanged;
         DataManager.Time.OnHourChanged += _resourceFlowHandler.OnMainHourChanged;
 
-        DataManager.OnResearchCompleted -= _rawBuildingHandler.OnResearchCompleted;
-        DataManager.OnResearchCompleted += _rawBuildingHandler.OnResearchCompleted;
+        _syncRawBuildingsOnResearchCompleted = _ => _rawBuildingHandler.SyncRepresentativeRawBuildings();
+        DataManager.OnResearchCompleted -= _syncRawBuildingsOnResearchCompleted;
+        DataManager.OnResearchCompleted += _syncRawBuildingsOnResearchCompleted;
 
         InitBuildSceneCanvas();
     }
@@ -253,16 +270,32 @@ public class MainRunner : RunnerBase
 
     protected void RestorePlacedLayoutIfAny()
     {
-        DataManager.PlacedLayout.Consume(out List<PlacedBuildingSaveData> buildings,
-            out List<PlacedRoadSaveData> roads);
+        IsRestoringPlacedLayout = true;
 
-        if (buildings.Count == 0 && roads.Count == 0)
+        try
         {
-            return;
-        }
+            DataManager.PlacedLayout.Consume(out List<PlacedBuildingSaveData> buildings,
+                out List<PlacedRoadSaveData> roads);
 
-        _gridHandler.RestoreFromSave(buildings, roads);
-        _rawBuildingHandler.RestoreFromSave(buildings);
+            bool hasLayout = buildings.Count > 0 || roads.Count > 0;
+            DataManager.Goal?.BeginLayoutRestore();
+
+            if (hasLayout)
+            {
+                _gridHandler.RestoreFromSave(buildings, roads);
+                _rawBuildingHandler.ApplyLayoutFromSave(buildings);
+            }
+            else
+            {
+                _rawBuildingHandler.SyncRepresentativeRawBuildings();
+            }
+
+            DataManager.Goal?.EndLayoutRestore();
+        }
+        finally
+        {
+            IsRestoringPlacedLayout = false;
+        }
     }
 
     protected virtual void InitBuildSceneCanvas()
@@ -287,12 +320,64 @@ public class MainRunner : RunnerBase
             _gridHandler.ExportPlacedRoads());
     }
 
+    public void PlayBuildSound()
+    {
+        if (_buildSound != null && SoundManager != null)
+            SoundManager.PlaySFX(_buildSound);
+    }
+
+    public void PlayRemovalSound()
+    {
+        if (_removalSound != null && SoundManager != null)
+            SoundManager.PlaySFX(_removalSound);
+    }
+
+    public void PlayBuildFeedbackAt(Vector3 worldPosition, bool playSound)
+    {
+        if (playSound)
+            PlayBuildSound();
+
+        if (_buildParticlePrefab == null)
+            return;
+
+        Vector3 effectPosition = worldPosition;
+        effectPosition.z = _buildEffectZ;
+        UnityEngine.Object.Instantiate(_buildParticlePrefab, effectPosition, Quaternion.identity);
+    }
+
+    public void PlayRemovalFeedbackAt(Vector3 worldPosition, bool playSound)
+    {
+        if (playSound)
+            PlayRemovalSound();
+
+        if (_removalParticlePrefab == null)
+            return;
+
+        Vector3 effectPosition = worldPosition;
+        effectPosition.z = _removalEffectZ;
+        UnityEngine.Object.Instantiate(_removalParticlePrefab, effectPosition, Quaternion.identity);
+    }
+
     public void PlayBuildingRemovalFeedback()
     {
         if (!_removalShakeCamera || _mainCameraController == null)
             return;
 
         _mainCameraController.ShakeForRemoval();
+    }
+
+    public void PlayGridBuildingBuildFeedback(Vector3 worldPosition, bool playSound, bool shakeCamera)
+    {
+        PlayBuildFeedbackAt(worldPosition, playSound);
+
+        if (shakeCamera)
+            GameManager.Instance?.MainCameraController?.ShakeForConstruction();
+    }
+
+    public void PlayGridBuildingRemovalFeedback(Vector3 worldPosition, bool playSound)
+    {
+        PlayRemovalFeedbackAt(worldPosition, playSound);
+        PlayBuildingRemovalFeedback();
     }
 
     public void SetCameraCollider()
@@ -322,9 +407,7 @@ public class MainRunner : RunnerBase
         {
             DataManager.Time.OnHourChanged -= _resourceFlowHandler.OnMainHourChanged;
         }
-        if (_rawBuildingHandler != null)
-        {
-            DataManager.OnResearchCompleted -= _rawBuildingHandler.OnResearchCompleted;
-        }
+        if (_syncRawBuildingsOnResearchCompleted != null)
+            DataManager.OnResearchCompleted -= _syncRawBuildingsOnResearchCompleted;
     }
 }

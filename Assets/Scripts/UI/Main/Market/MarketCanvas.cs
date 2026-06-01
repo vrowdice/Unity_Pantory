@@ -23,7 +23,8 @@ public class MarketCanvas : MainCanvasPanelBase
     [SerializeField] private MarketActorData _playerActorData;
 
     private bool _isResourceView = true;
-    private List<ActionBtn> _actionButtons = new List<ActionBtn>();
+    private readonly List<ActionBtn> _actionButtons = new List<ActionBtn>();
+    private readonly Dictionary<string, MarketResourceBtn> _resourceBtnById = new Dictionary<string, MarketResourceBtn>();
     private MarketActorEntry _playerMarketActorEntry;
     private Coroutine _actionButtonCoroutine;
     private Coroutine _scrollListCoroutine;
@@ -232,10 +233,7 @@ public class MarketCanvas : MainCanvasPanelBase
     {
         if (_isResourceView)
         {
-            foreach (Transform child in _marketScrollViewContent)
-            {
-                child.GetComponent<MarketResourceBtn>().RefreshAllUI();
-            }
+            EntryListPanelUtils.RefreshAll(_resourceBtnById);
         }
         else
         {
@@ -259,6 +257,7 @@ public class MarketCanvas : MainCanvasPanelBase
 
         PoolingManager pool = _gameManager.PoolingManager;
         pool.ClearChildrenToPool(_marketScrollViewContent);
+        _resourceBtnById.Clear();
 
         List<ResourceEntry> resources = new List<ResourceEntry>(_dataManager.Resource.GetAllResources().Values);
 
@@ -269,6 +268,7 @@ public class MarketCanvas : MainCanvasPanelBase
             btnObj.transform.SetParent(_marketScrollViewContent, false);
             MarketResourceBtn resourceBtn = btnObj.GetComponent<MarketResourceBtn>();
             resourceBtn.Init(this, entry);
+            _resourceBtnById[entry.data.id] = resourceBtn;
         });
 
         if (scroll != null)

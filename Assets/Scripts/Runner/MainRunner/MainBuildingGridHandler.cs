@@ -16,7 +16,6 @@ public class MainBuildingGridHandler
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
     private readonly Dictionary<string, DualLaneRoadObject> _dualLaneRoadObjDict = new();
 
-    private readonly Dictionary<string, int> _buildingOutputRoundRobinIndex = new();
     private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();
 
     private const float TileZ = 10f;
@@ -27,7 +26,6 @@ public class MainBuildingGridHandler
     public Dictionary<string, BuildingObject> BuildingObjDict => _buildingObjDict;
     public Dictionary<string, RoadObject> RoadObjDict => _roadObjDict;
     public Dictionary<string, DualLaneRoadObject> DualLaneRoadObjDict => _dualLaneRoadObjDict;
-    public Dictionary<string, int> BuildingOutputRoundRobinIndex => _buildingOutputRoundRobinIndex;
     public Dictionary<Vector2Int, string> OccupiedAsObjectDict => _occupiedAsObjectDict;
     public Transform TileParent => _tileParent;
     public Transform BuildingParent => _buildingParent;
@@ -52,6 +50,15 @@ public class MainBuildingGridHandler
 
     public void ClearAllBuildings()
     {
+        ClearGridBuildingsOnly();
+
+        if (_mainRunner.RawBuildingHandler != null)
+            _mainRunner.RawBuildingHandler.ClearAllBuildings();
+    }
+
+    /// <summary>그리드·도로만 제거합니다. 세이브 복원 시 대표 원자재 건물은 별도로 다룹니다.</summary>
+    public void ClearGridBuildingsOnly()
+    {
         _dataManager.Finances.ClearPlacedBuildingMaintenanceTotal();
 
         foreach (IBuilding building in GetAllBuildings())
@@ -60,7 +67,6 @@ public class MainBuildingGridHandler
             MonoBehaviour.Destroy(building.gameObject);
         }
         _buildingObjDict.Clear();
-        _buildingOutputRoundRobinIndex.Clear();
 
         foreach (RoadObject road in _roadObjDict.Values)
             MonoBehaviour.Destroy(road.gameObject);
@@ -77,9 +83,6 @@ public class MainBuildingGridHandler
             foreach (BuildingTile tile in _mainRunner.TileGridHandler.TileDict.Values)
                 tile.SetOccupied(false);
         }
-
-        if (_mainRunner.RawBuildingHandler != null)
-            _mainRunner.RawBuildingHandler.ClearAllBuildings();
     }
 
     public List<PlacedBuildingSaveData> ExportPlacedBuildings()
@@ -125,6 +128,52 @@ public class MainBuildingGridHandler
         }
 
         return list;
+    }
+
+    /// <summary>선택 사각형과 겹치는 배치물 발자국(건물·도로)을 수집합니다.</summary>
+    public void CollectFootprintsIntersectingGridRect(
+        Vector2Int cellMin,
+        Vector2Int cellMax,
+        List<Vector2Int> origins,
+        List<Vector2Int> sizes)
+    {
+        origins.Clear();
+        sizes.Clear();
+        ClampRectToGrid(ref cellMin, ref cellMax);
+
+        foreach (BuildingObject building in _buildingObjDict.Values)
+        {
+            if (building.IsRemovalAnimating)
+                continue;
+
+            Vector2Int origin = building.Origin;
+            Vector2Int footprint = building.Size;
+            if (!IntersectsGridRect(origin, footprint, cellMin, cellMax))
+                continue;
+
+            origins.Add(origin);
+            sizes.Add(footprint);
+        }
+
+        foreach (RoadObject road in _roadObjDict.Values)
+        {
+            Vector2Int origin = road.GridPosition;
+            if (!IsCellInGridRect(origin, cellMin, cellMax))
+                continue;
+
+            origins.Add(origin);
+            sizes.Add(Vector2Int.one);
+        }
+
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+        {
+            Vector2Int origin = dualRoad.GridPosition;
+            if (!IsCellInGridRect(origin, cellMin, cellMax))
+                continue;
+
+            origins.Add(origin);
+            sizes.Add(Vector2Int.one);
+        }
     }
 
     public List<PlacedRoadSaveData> ExportRoadsIntersectingGridRect(Vector2Int cellMin, Vector2Int cellMax)
@@ -213,7 +262,7 @@ public class MainBuildingGridHandler
 
     public void RestoreFromSave(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
     {
-        ClearAllBuildings();
+        ClearGridBuildingsOnly();
 
         if (roads != null)
         {
@@ -395,7 +444,13 @@ public class MainBuildingGridHandler
         return max > 0 && CountPlacedBuildingsWithId(data.id) < max;
     }
 
-    public bool TryPlaceRoad(BuildingData roadData, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
+    public bool TryPlaceRoad(
+        BuildingData roadData,
+        Vector2Int position,
+        int rotation,
+        out GameObject placed,
+        out bool insufficientCredits,
+        bool playSound = true)
     {
         placed = null;
         insufficientCredits = false;
@@ -411,6 +466,7 @@ public class MainBuildingGridHandler
             return false;
 
         ApplyPlacementFinances(roadData);
+        _mainRunner.PlayBuildFeedbackAt(placed.transform.position, playSound);
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
     }
@@ -447,7 +503,7 @@ public class MainBuildingGridHandler
 
         RegisterPlacedBuilding(building, data, origin, rotatedSize);
         building.PlayPlaceEntranceAnimation(targetLocalScale);
-        GameManager.Instance.MainCameraController.ShakeForConstruction();
+        _mainRunner.PlayGridBuildingBuildFeedback(building.transform.position, playSound: false, shakeCamera: false);
         ApplyPlacementFinances(data);
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
@@ -476,7 +532,7 @@ public class MainBuildingGridHandler
 
         RegisterPlacedBuilding(building, data, position, rotatedSize);
         building.PlayPlaceEntranceAnimation(targetLocalScale);
-        GameManager.Instance.MainCameraController.ShakeForConstruction();
+        _mainRunner.PlayGridBuildingBuildFeedback(building.transform.position, playSound: true, shakeCamera: true);
         ApplyPlacementFinances(data);
 
         placed = building.gameObject;
@@ -490,24 +546,23 @@ public class MainBuildingGridHandler
             return false;
 
         if (_roadObjDict.TryGetValue(key, out RoadObject road))
-            return RemoveRoadInstance(road.GridPosition, key, road.SourceBuildingData, road.gameObject, _roadObjDict);
+            return RemoveRoadInstance(road.GridPosition, key, road.RoadData, road.gameObject, _roadObjDict);
 
         if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualRoad))
-            return RemoveRoadInstance(dualRoad.GridPosition, key, dualRoad.SourceBuildingData, dualRoad.gameObject, _dualLaneRoadObjDict);
+            return RemoveRoadInstance(dualRoad.GridPosition, key, dualRoad.RoadData, dualRoad.gameObject, _dualLaneRoadObjDict);
 
         if (!_buildingObjDict.TryGetValue(key, out BuildingObject building) || building.IsRemovalAnimating)
             return false;
 
         Vector2Int origin = building.Origin;
         Vector2Int size = building.Size;
-        _mainRunner.PlayBuildingRemovalFeedback();
+        _mainRunner.PlayGridBuildingRemovalFeedback(building.transform.position, playSound: true);
         building.PlayRemovalAnimation(() =>
         {
             building.ReleaseAssignedEmployees();
             _dataManager.Finances.UnregisterPlacedBuildingMaintenance(building.BuildingData);
             UnregisterOccupancy(origin, size);
             _buildingObjDict.Remove(key);
-            _buildingOutputRoundRobinIndex.Remove(key);
             MonoBehaviour.Destroy(building.gameObject);
             OnBuildingInstanceLayoutChanged?.Invoke();
         });
@@ -565,23 +620,25 @@ public class MainBuildingGridHandler
         string key = BuildingGridKey(origin);
         RegisterBuildingOccupancy(origin, rotatedSize, key);
         _buildingObjDict[key] = building;
-        _buildingOutputRoundRobinIndex[key] = 0;
     }
 
     private bool TryInstantiateRoad(
         Vector2Int position,
         int rotation,
-        BuildingData sourceBuildingData,
+        BuildingData roadData,
         PlacedRoadSaveData saveData,
         bool animatePlacement,
         out GameObject placed)
     {
         placed = null;
 
+        if (roadData is not RoadBuildingData roadBuildingData)
+            return false;
+
         if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position))
             return false;
 
-        bool isDualLaneRoad = IsDualLaneRoadData(sourceBuildingData);
+        bool isDualLaneRoad = IsDualLaneRoadData(roadBuildingData);
         GameObject roadPrefab = isDualLaneRoad ? _mainRunner.DualLaneRoadObjectPrefab : _mainRunner.RoadObjectPrefab;
         if (roadPrefab == null)
             return false;
@@ -607,7 +664,7 @@ public class MainBuildingGridHandler
                 return false;
             }
 
-            dualRoadObject.Init(position, rotation, sourceBuildingData);
+            dualRoadObject.Init(position, rotation, roadBuildingData);
             if (saveData != null)
                 dualRoadObject.ImportSaveData(saveData);
             _dualLaneRoadObjDict[key] = dualRoadObject;
@@ -621,7 +678,7 @@ public class MainBuildingGridHandler
                 return false;
             }
 
-            roadObject.Init(position, rotation, sourceBuildingData);
+            roadObject.Init(position, rotation, roadBuildingData);
             if (saveData != null)
                 roadObject.ImportSaveData(saveData);
             _roadObjDict[key] = roadObject;
@@ -653,6 +710,7 @@ public class MainBuildingGridHandler
         if (sourceData != null)
             _dataManager.Finances.UnregisterPlacedBuildingMaintenance(sourceData);
 
+        _mainRunner.PlayRemovalFeedbackAt(instance.transform.position, playSound: true);
         MonoBehaviour.Destroy(instance);
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
@@ -668,8 +726,8 @@ public class MainBuildingGridHandler
     private static string BuildingGridKey(Vector2Int origin) => $"b:{origin.x}_{origin.y}";
     private static string RoadGridKey(Vector2Int pos) => $"r:{pos.x}_{pos.y}";
 
-    private static bool IsDualLaneRoadData(BuildingData roadData) =>
-        roadData != null && (roadData.id == "splitter" || roadData.id == "tunnel");
+    private static bool IsDualLaneRoadData(RoadBuildingData roadData) =>
+        roadData != null && (roadData.passThroughNeighbors || roadData.hasSecondaryOutput);
 
     private void RegisterBuildingOccupancy(Vector2Int origin, Vector2Int size, string instanceKey)
     {
@@ -706,6 +764,13 @@ public class MainBuildingGridHandler
             }
         }
     }
+
+    private static bool IsCellInGridRect(Vector2Int cell, Vector2Int cellMin, Vector2Int cellMax) =>
+        cell.x >= cellMin.x && cell.x <= cellMax.x && cell.y >= cellMin.y && cell.y <= cellMax.y;
+
+    private static bool IntersectsGridRect(Vector2Int origin, Vector2Int size, Vector2Int cellMin, Vector2Int cellMax) =>
+        origin.x <= cellMax.x && origin.x + size.x - 1 >= cellMin.x &&
+        origin.y <= cellMax.y && origin.y + size.y - 1 >= cellMin.y;
 
     private void ClampRectToGrid(ref Vector2Int cellMin, ref Vector2Int cellMax)
     {
@@ -752,17 +817,15 @@ public class MainBuildingGridHandler
 
     private bool TryPlaceRoadFromSave(PlacedRoadSaveData saveData)
     {
-        if (saveData == null) return false;
+        if (saveData == null || string.IsNullOrEmpty(saveData.roadDataId))
+            return false;
 
         Vector2Int position = new Vector2Int(saveData.x, saveData.y);
-        BuildingData roadData = _dataManager.Building.GetBuildingData(
-            string.IsNullOrEmpty(saveData.roadDataId) ? "road" : saveData.roadDataId);
+        BuildingData roadData = _dataManager.Building.GetBuildingData(saveData.roadDataId);
+        if (roadData == null)
+            return false;
 
-        BuildingData sourceBuildingData = roadData;
-        if (!string.IsNullOrEmpty(saveData.sourceBuildingDataId))
-            sourceBuildingData = _dataManager.Building.GetBuildingData(saveData.sourceBuildingDataId);
-
-        if (!TryInstantiateRoad(position, saveData.rotation, sourceBuildingData, saveData, animatePlacement: false, out _))
+        if (!TryInstantiateRoad(position, saveData.rotation, roadData, saveData, animatePlacement: false, out _))
             return false;
 
         if (roadData != null)

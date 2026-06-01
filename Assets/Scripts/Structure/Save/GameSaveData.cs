@@ -9,17 +9,12 @@ using UnityEngine;
 [Serializable]
 public class GameSaveData
 {
-    /// <summary>세이브 시각(UTC, ISO 8601). UI 표시용.</summary>
     public string savedAtUtc;
-
-    // Time Data
     public int year;
     public int month;
     public int day;
     public int currentHour;
     public float dayProgress;
-    public bool isPaused;
-    public float timeSpeed;
 
     // Employee Data
     public List<EmployeeStateSaveData> employees = new List<EmployeeStateSaveData>();
@@ -79,9 +74,6 @@ public class GameSaveData
     // Effect Data
     public EffectStateSaveData effects = new EffectStateSaveData();
 
-    // Player (tutorial auto-show pending by owner object name, JsonUtility는 Dictionary 미지원)
-    public List<TutorialAutoShowPendingSaveData> tutorialAutoShowPending = new List<TutorialAutoShowPendingSaveData>();
-
     // Goal Data
     public List<GoalActiveSaveData> activeGoals = new List<GoalActiveSaveData>();
     public List<string> completedGoalIds = new List<string>();
@@ -93,6 +85,9 @@ public class GameSaveData
 
     // Blueprint presets captured in main scene.
     public List<BlueprintLayoutSaveData> blueprintLayouts = new List<BlueprintLayoutSaveData>();
+
+    /// <summary>완료한 패널·팝업 튜토리얼(TutorialBase) ownerKey 목록 — gameObject.name.</summary>
+    public List<string> completedPanelTutorialOwnerKeys = new List<string>();
 }
 
 [Serializable]
@@ -100,17 +95,6 @@ public class GoalActiveSaveData
 {
     public string goalId;
     public long produceProgress;
-}
-
-/// <summary>
-/// 튜토리얼 자동 표시 여부 (TutorialBase 오브젝트 이름 기준).
-/// pendingAutoShow == true: 아직 끝까지 보지 않았거나 자동 표시 대기, false: 완료 후 자동 표시 안 함.
-/// </summary>
-[Serializable]
-public class TutorialAutoShowPendingSaveData
-{
-    public string ownerGameObjectName;
-    public bool pendingAutoShow;
 }
 
 /// <summary>
@@ -133,9 +117,6 @@ public class ResourcePacketSaveData
     }
 }
 
-/// <summary>
-/// 배치된 BuildingObject 저장용 데이터
-/// </summary>
 [Serializable]
 public class BlueprintLayoutSaveData
 {
@@ -174,7 +155,6 @@ public class PlacedRoadSaveData
     public int y;
     public int rotation;
     public string roadDataId;
-    public string sourceBuildingDataId;
 
     public List<ResourcePacketSaveData> buffer = new List<ResourcePacketSaveData>();
 }

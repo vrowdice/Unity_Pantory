@@ -715,6 +715,7 @@ MonoBehaviour:
   _requestScrollViewContentransform: {fileID: 4417277361865604349}
   _requestBtnPrefab: {fileID: 1876461821265281219, guid: 7802661a5155b1f4385fd0c5769c9999, type: 3}
   _remainDayText: {fileID: 4449709333569447999}
+  _requirementCompleteSfx: {fileID: 8300000, guid: 730dfcd7a3a2973419c07521901ae0ee, type: 3}
 --- !u!1 &424350543427825330
 GameObject:
   m_ObjectHideFlags: 0

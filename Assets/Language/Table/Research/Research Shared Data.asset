@@ -24,11 +24,35 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
-    m_Key: mining
+    m_Key: unlock_iron_mine
     m_Metadata:
       m_Items: []
   - m_Id: 864226267002
-    m_Key: mining_Desc
+    m_Key: unlock_iron_mine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266045
+    m_Key: unlock_coal_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267045
+    m_Key: unlock_coal_mine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266046
+    m_Key: unlock_copper_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267046
+    m_Key: unlock_copper_mine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266047
+    m_Key: unlock_aluminum_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267047
+    m_Key: unlock_aluminum_mine_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226266003

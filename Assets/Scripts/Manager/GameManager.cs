@@ -116,9 +116,13 @@ public class GameManager : Singleton<GameManager>
         _dataManager.ClearAllEventSubscriptions();
 
         if (scene.name == "Tutorial")
+        {
             _dataManager.ResetToTutorialGame();
-        else
+        }
+        else if (_saveLoadManager == null || !_saveLoadManager.TryApplyPendingGameSave(_dataManager))
+        {
             _dataManager.Time.PauseTime();
+        }
 
         MainCameraController mainCamera = FindAnyObjectByType<MainCameraController>();
         if (mainCamera == null)

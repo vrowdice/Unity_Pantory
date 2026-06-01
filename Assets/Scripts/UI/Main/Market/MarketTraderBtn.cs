@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class MarketTraderBtn : BtnBase
+public class MarketTraderBtn : EntryListBtnBase
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private Image _backgroundImage = null;
@@ -31,7 +31,7 @@ public class MarketTraderBtn : BtnBase
         _image.sprite = _actorEntry.data.icon != null ? _actorEntry.data.icon : _defaultSprite;
         _nameText.text = _actorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
 
-        RefreshAllUI();
+        Refresh();
     }
 
     protected override void HandleClick()
@@ -44,7 +44,7 @@ public class MarketTraderBtn : BtnBase
         _marketPanel.OnTraderButtonClicked(_actorEntry);
     }
 
-    public void RefreshAllUI()
+    public override void Refresh()
     {
         MarketActorState state = _actorEntry.state;
         long change = state.currentChangeWealth;

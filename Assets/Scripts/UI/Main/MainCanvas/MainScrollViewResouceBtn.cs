@@ -2,13 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class MainScrollViewResouceBtn : BtnBase
+public class MainScrollViewResouceBtn : EntryListBtnBase
 {
     [SerializeField] private Image _image = null;
     [SerializeField] private TextMeshProUGUI _valueText = null;
     [SerializeField] private TextMeshProUGUI _changeValueText = null;
 
-    private MainCanvas _mainUiManager = null;
     private ResourceEntry _resourceEntry = null;
 
     public string ResourceId => _resourceEntry?.data?.id;
@@ -16,33 +15,29 @@ public class MainScrollViewResouceBtn : BtnBase
     public void Init(ResourceEntry resourceEntry)
     {
         _resourceEntry = resourceEntry;
-        RefreshDisplay();
+
+        if (_resourceEntry?.data != null)
+            _image.sprite = _resourceEntry.data.icon;
+
+        Refresh();
     }
 
     public void Init(MainCanvas mainUiManager, ResourceEntry resourceEntry)
     {
-        _mainUiManager = mainUiManager;
         Init(resourceEntry);
     }
 
-    public void Refresh(ResourceEntry resourceEntry)
-    {
-        _resourceEntry = resourceEntry;
-        RefreshDisplay();
-    }
-
-    protected override void HandleClick()
-    {
-    }
-
-    private void RefreshDisplay()
+    public override void Refresh()
     {
         if (_resourceEntry == null)
             return;
 
-        _image.sprite = _resourceEntry.data.icon;
         _valueText.text = _resourceEntry.state.count.ToString("N0");
         UpdateChangeValue();
+    }
+
+    protected override void HandleClick()
+    {
     }
 
     private void UpdateChangeValue()

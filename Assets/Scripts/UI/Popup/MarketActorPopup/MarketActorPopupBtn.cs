@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MarketActorPopupBtn : BtnBase
+public class MarketActorPopupBtn : EntryListBtnBase
 {
     [SerializeField] private Image _marketActorImage;
     [SerializeField] private TextMeshProUGUI _marketActorNameText;
@@ -13,15 +13,22 @@ public class MarketActorPopupBtn : BtnBase
     public void Init(MarketActorEntry marketActorEntry)
     {
         _marketActorEntry = marketActorEntry;
-        UpdateUI();
+
+        if (_marketActorImage != null)
+            _marketActorImage.sprite = _marketActorEntry.data.icon;
+        if (_marketActorNameText != null)
+            _marketActorNameText.text = _marketActorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
+
+        Refresh();
     }
 
-    public void UpdateUI()
+    public override void Refresh()
     {
-        if (_marketActorEntry == null) return;
-        if (_marketActorImage != null) _marketActorImage.sprite = _marketActorEntry.data.icon;
-        if (_marketActorNameText != null) _marketActorNameText.text = _marketActorEntry.data.id.Localize(LocalizationUtils.TABLE_MARKET_ACTOR);
-        if (_trustText != null) _trustText.text = _marketActorEntry.state.trust.ToString();
+        if (_marketActorEntry == null)
+            return;
+
+        if (_trustText != null)
+            _trustText.text = _marketActorEntry.state.trust.ToString();
     }
 
     protected override void HandleClick()

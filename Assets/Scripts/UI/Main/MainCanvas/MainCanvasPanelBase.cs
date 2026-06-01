@@ -64,6 +64,13 @@ public abstract class MainCanvasPanelBase : TutorialBase
             animator.SnapToClosedPosition();
             animator.OpenPanel();
         }
+
+        TryAutoStartTutorialIfPending();
+    }
+
+    protected override void Start()
+    {
+        // 패널은 씬 로드 시 Instantiate 직후 Start가 돌 수 있어, OpenPanel → Init()에서만 튜토리얼을 띄웁니다.
     }
 
     /// <summary>

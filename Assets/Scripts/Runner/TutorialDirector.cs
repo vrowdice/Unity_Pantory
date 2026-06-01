@@ -445,7 +445,7 @@ public class TutorialDirector : MonoBehaviour
     public void CompleteTutorial()
     {
         DismissActivePopup();
-        DataManager.Instance?.Player?.MarkIntroTutorialCompleted();
+        SaveLoadManager.Instance?.MarkIntroTutorialCompleted();
         DataManager.Instance?.ResetToNewGame();
         SceneLoadManager.Instance?.LoadScene("Main");
     }

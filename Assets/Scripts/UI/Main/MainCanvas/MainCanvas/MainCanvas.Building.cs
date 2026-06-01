@@ -26,6 +26,7 @@ public partial class MainCanvas
 
     private MainBlueprintTypeBtn _mainBlueprintTypeBtn;
     private MainBlueprintAddBtn _blueprintAddBtn;
+    private readonly List<MainBlueprintSavedBtn> _blueprintSavedBtns = new List<MainBlueprintSavedBtn>();
     private bool _isBlueprintPanelOpen;
     private string _activeBlueprintLayoutKey;
 
@@ -164,6 +165,7 @@ public partial class MainCanvas
         _isBlueprintPanelOpen = false;
         GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
         _buildingBtns.Clear();
+        _blueprintSavedBtns.Clear();
         _blueprintAddBtn = null;
 
         _selectedBuildingType = buildingType;
@@ -214,7 +216,8 @@ public partial class MainCanvas
 
     public void SyncBlueprintAddButtonSelected(bool isBlueprintMode)
     {
-        RefreshBlueprintUi();
+        if (_blueprintAddBtn != null)
+            _blueprintAddBtn.SetSelected(isBlueprintMode);
     }
 
     public void AddBlueprintSavedEntryBeforeAddButton(string blueprintName, List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
@@ -254,8 +257,10 @@ public partial class MainCanvas
 
         _isBlueprintPanelOpen = true;
         _selectedBuilding = null;
+        ExitRemovalModeForBlueprintInteraction();
         _mainRunner.PlacementHandler.CancelPlacement();
 
+        RebuildBlueprintSavedEntriesFromData();
         RefreshBlueprintUi();
         UpdateBuildingButtonStates();
     }
@@ -263,6 +268,11 @@ public partial class MainCanvas
     public void ToggleBlueprintMode()
     {
         bool nextActive = !_mainRunner.BlueprintHandler.IsBlueprintMode;
+        if (nextActive)
+            CancelActiveBlueprintPlacement();
+
+        ExitRemovalModeForBlueprintInteraction();
+
         if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode != nextActive)
             _mainRunner.SetBlueprintMode(nextActive);
         _isBlueprintPanelOpen = true;
@@ -273,6 +283,18 @@ public partial class MainCanvas
         }
         RefreshBlueprintUi();
         UpdateBuildingButtonStates();
+    }
+
+    private void CancelActiveBlueprintPlacement()
+    {
+        if (_mainRunner == null || _mainRunner.PlacementHandler == null)
+            return;
+
+        if (!_mainRunner.PlacementHandler.IsBlueprintPlacementMode)
+            return;
+
+        _mainRunner.PlacementHandler.CancelBlueprintPlacement();
+        _activeBlueprintLayoutKey = null;
     }
 
     public void RotateBuilding(bool clockwise)
@@ -322,7 +344,6 @@ public partial class MainCanvas
                 PlacedRoadSaveData r = roads[i];
                 if (r == null) continue;
                 sb.Append("r:")
-                    .Append(r.sourceBuildingDataId).Append(':')
                     .Append(r.roadDataId).Append(':')
                     .Append(r.x).Append(':')
                     .Append(r.y).Append(':')
@@ -343,10 +364,41 @@ public partial class MainCanvas
                           _mainRunner.PlacementHandler.IsBlueprintPlacementMode &&
                           _activeBlueprintLayoutKey == layoutKey;
         if (btn != null)
+        {
             btn.Init(this, layoutKey, blueprintName, buildings, roads, isSelected);
+            _blueprintSavedBtns.Add(btn);
+        }
 
         if (_blueprintAddBtn != null)
             entryObj.transform.SetSiblingIndex(_blueprintAddBtn.transform.GetSiblingIndex());
+    }
+
+    private void ExitRemovalModeForBlueprintInteraction()
+    {
+        if (_mainRunner?.PlacementHandler == null || !_mainRunner.PlacementHandler.IsRemovalMode)
+            return;
+
+        if (_removalModeSwitch != null)
+            _removalModeSwitch.SetValue(false);
+        else
+            ApplyRemovalMode(false);
+    }
+
+    private void UpdateBlueprintSavedButtonStates()
+    {
+        bool isBlueprintPlacementMode = _mainRunner != null &&
+                                        _mainRunner.PlacementHandler != null &&
+                                        _mainRunner.PlacementHandler.IsBlueprintPlacementMode;
+
+        for (int i = 0; i < _blueprintSavedBtns.Count; i++)
+        {
+            MainBlueprintSavedBtn btn = _blueprintSavedBtns[i];
+            if (btn == null)
+                continue;
+
+            bool isSelected = isBlueprintPlacementMode && _activeBlueprintLayoutKey == btn.LayoutKey;
+            btn.SetSelected(isSelected);
+        }
     }
 
     private void RebuildBlueprintSavedEntriesFromData()
@@ -359,6 +411,7 @@ public partial class MainCanvas
         GameManager.PoolingManager.ClearChildrenToPool(_buildingBtnContent);
 
         _buildingBtns.Clear();
+        _blueprintSavedBtns.Clear();
         _blueprintAddBtn = null;
         EnsureBlueprintAddButton();
 
@@ -399,7 +452,7 @@ public partial class MainCanvas
                 btn.SetFocused(false);
             _mainBlueprintTypeBtn.SetFocused(true);
 
-            RebuildBlueprintSavedEntriesFromData();
+            UpdateBlueprintSavedButtonStates();
             if (_blueprintAddBtn != null)
             {
                 _blueprintAddBtn.gameObject.SetActive(true);
@@ -443,6 +496,7 @@ public partial class MainCanvas
             _mainRunner.PlacementHandler.CancelBlueprintPlacement();
             _activeBlueprintLayoutKey = null;
             RefreshBlueprintUi();
+            UpdateBuildingButtonStates();
             return;
         }
 
@@ -463,11 +517,13 @@ public partial class MainCanvas
         if (_mainRunner == null || _mainRunner.PlacementHandler == null)
             return;
 
-        if (_mainRunner != null && _mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
+        if (_mainRunner.BlueprintHandler != null && _mainRunner.BlueprintHandler.IsBlueprintMode)
             _mainRunner.SetBlueprintMode(false);
 
+        CancelActiveBlueprintPlacement();
+        ExitRemovalModeForBlueprintInteraction();
+
         _selectedBuilding = null;
-        _mainRunner.PlacementHandler.CancelRemoval();
         _mainRunner.StartBlueprintPlacementMode(blueprintName, blueprintBuildings, blueprintRoads);
         _activeBlueprintLayoutKey = layoutKey;
         RefreshBlueprintUi();

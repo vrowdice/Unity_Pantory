@@ -19,7 +19,13 @@ public partial class BuildingObject
         {
             { _selectedResource.id, u.pullPerHour }
         };
-        if (!CanEmitOutputsToAdjacentRoads(outputs)) return false;
+        if (outputs.Count == 0
+            || _mainRunner == null
+            || _mainRunner.ResourceFlowHandler == null
+            || !_mainRunner.ResourceFlowHandler.CanAcceptBuildingOutputs(this, outputs))
+        {
+            return false;
+        }
 
         ResourceEntry entry = dataManager.Resource.GetResourceEntry(_selectedResource.id);
         return entry.state.count >= u.pullPerHour;
@@ -35,7 +41,9 @@ public partial class BuildingObject
         {
             { _selectedResource.id, pull }
         };
-        if (!TryEmitOutputsToAdjacentRoads(outputs))
+        if (_mainRunner == null
+            || _mainRunner.ResourceFlowHandler == null
+            || !_mainRunner.ResourceFlowHandler.TryEmitBuildingOutputs(this, outputs))
         {
             dataManager.Resource.ModifyResourceCount(_selectedResource.id, pull);
             return false;

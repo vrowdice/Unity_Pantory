@@ -50,6 +50,80 @@ public class ResourceDataHandler : IDataHandlerEvents, ITimeChangeHandler
         return new Dictionary<string, ResourceEntry>(_resourceDic);
     }
 
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+            return;
+
+        saveData.resources.Clear();
+        foreach (KeyValuePair<string, ResourceEntry> kvp in _resourceDic)
+        {
+            saveData.resources.Add(new ResourceStateSaveData(kvp.Key, CloneResourceState(kvp.Value.state)));
+        }
+    }
+
+    /// <summary>세이브의 자원 상태로 전체 덮어씁니다. 세이브에 없는 ID는 초기 수량으로 리셋합니다.</summary>
+    public void ApplyFromSave(GameSaveData saveData)
+    {
+        if (saveData == null)
+            return;
+
+        Dictionary<string, ResourceState> savedById = new Dictionary<string, ResourceState>();
+        if (saveData.resources != null)
+        {
+            foreach (ResourceStateSaveData resourceSave in saveData.resources)
+            {
+                if (resourceSave == null
+                    || string.IsNullOrEmpty(resourceSave.resourceId)
+                    || resourceSave.state == null)
+                {
+                    continue;
+                }
+
+                savedById[resourceSave.resourceId] = CloneResourceState(resourceSave.state);
+            }
+        }
+
+        foreach (KeyValuePair<string, ResourceEntry> kvp in _resourceDic)
+        {
+            if (savedById.TryGetValue(kvp.Key, out ResourceState loadedState))
+                kvp.Value.state = loadedState;
+            else
+                ResetEntryToInitial(kvp.Value);
+        }
+
+        _pendingResourceChangedNotify = true;
+    }
+
+    public void NotifyResourceStateRestored()
+    {
+        FlushPendingResourceChangedNotify();
+    }
+
+    private static ResourceState CloneResourceState(ResourceState state)
+    {
+        if (state == null)
+            return null;
+
+        return JsonUtility.FromJson<ResourceState>(JsonUtility.ToJson(state));
+    }
+
+    private static void ResetEntryToInitial(ResourceEntry entry)
+    {
+        if (entry?.data == null)
+            return;
+
+        entry.state.count = entry.data.initialAmount;
+        entry.state.threadDeltaCount = 0;
+        entry.state.marketDeltaCount = 0;
+        entry.state.currnetChangeCount = 0;
+        entry.state.currentEventValue = entry.data.baseValue;
+        entry.state.currentValue = entry.data.baseValue;
+        entry.state.currentChangeValue = 0;
+        if (entry.state._priceHistory != null)
+            entry.state._priceHistory.Clear();
+    }
+
     public void ModifyThreadDelta(string resourceId, int count)
     {
         if (!_resourceDic.TryGetValue(resourceId, out ResourceEntry resourceEntry)) return;

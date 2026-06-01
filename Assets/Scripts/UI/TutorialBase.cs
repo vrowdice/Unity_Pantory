@@ -15,20 +15,15 @@ public class TutorialBase : UITweenEffectBase
         TryAutoStartTutorialIfPending();
     }
 
-    /// <summary>
-    /// PlayerDataHandler 기준으로 아직 자동 표시 대기(true)인 경우에만 튜토리얼을 띄웁니다.
-    /// </summary>
+    /// <summary>아직 완료하지 않은 패널·팝업 튜토리얼만 자동 표시합니다(완료 시 게임 세이브에 포함).</summary>
     protected void TryAutoStartTutorialIfPending()
     {
         if (_tutorialPanelInfo == null || _tutorialPanelInfo.Count == 0)
-        {
             return;
-        }
 
-        if (!DataManager.Instance.Player.ShouldAutoStartTutorialForOwner(gameObject.name))
-        {
+        SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
+        if (saveLoadManager == null || !saveLoadManager.ShouldAutoStartTutorialForOwner(gameObject.name))
             return;
-        }
 
         StartTutorial();
     }

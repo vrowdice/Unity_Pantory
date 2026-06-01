@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 로드된 세이브 데이터의 배치(건물/도로) 정보를 런너가 소비할 수 있게 보관합니다.
@@ -6,8 +7,14 @@ using System.Collections.Generic;
 /// </summary>
 public class PlacedObjectLayoutDataHandler
 {
+    private readonly DataManager _dataManager;
     private List<PlacedBuildingSaveData> _placedBuildings = new List<PlacedBuildingSaveData>();
     private List<PlacedRoadSaveData> _placedRoads = new List<PlacedRoadSaveData>();
+
+    public PlacedObjectLayoutDataHandler(DataManager dataManager)
+    {
+        _dataManager = dataManager;
+    }
 
     public void SetFromSave(List<PlacedBuildingSaveData> placedBuildings, List<PlacedRoadSaveData> placedRoads)
     {
@@ -22,6 +29,47 @@ public class PlacedObjectLayoutDataHandler
 
         _placedBuildings = new List<PlacedBuildingSaveData>();
         _placedRoads = new List<PlacedRoadSaveData>();
+    }
+
+    public void CopyLayoutSnapshotTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+            return;
+
+        saveData.placedBuildings = CloneBuildingList(_placedBuildings);
+        saveData.placedRoads = CloneRoadList(_placedRoads);
+    }
+
+    private static List<PlacedBuildingSaveData> CloneBuildingList(List<PlacedBuildingSaveData> source)
+    {
+        List<PlacedBuildingSaveData> copy = new List<PlacedBuildingSaveData>();
+        if (source == null)
+            return copy;
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlacedBuildingSaveData item = source[i];
+            if (item != null)
+                copy.Add(JsonUtility.FromJson<PlacedBuildingSaveData>(JsonUtility.ToJson(item)));
+        }
+
+        return copy;
+    }
+
+    private static List<PlacedRoadSaveData> CloneRoadList(List<PlacedRoadSaveData> source)
+    {
+        List<PlacedRoadSaveData> copy = new List<PlacedRoadSaveData>();
+        if (source == null)
+            return copy;
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlacedRoadSaveData item = source[i];
+            if (item != null)
+                copy.Add(JsonUtility.FromJson<PlacedRoadSaveData>(JsonUtility.ToJson(item)));
+        }
+
+        return copy;
     }
 
     /// <summary>
@@ -82,12 +130,17 @@ public class PlacedObjectLayoutDataHandler
         if (string.IsNullOrEmpty(buildingDataId) || _placedBuildings == null)
             return 0;
 
+        BuildingData template = _dataManager?.Building?.GetBuildingData(buildingDataId);
+        bool isRawRepresentative = template is RawMaterialFactoryData;
+
         int count = 0;
         for (int i = 0; i < _placedBuildings.Count; i++)
         {
             PlacedBuildingSaveData saveData = _placedBuildings[i];
-            if (saveData != null && saveData.buildingDataId == buildingDataId)
-                count++;
+            if (saveData == null || saveData.buildingDataId != buildingDataId)
+                continue;
+
+            count += isRawRepresentative ? Mathf.Max(0, saveData.rawMaterialScale) : 1;
         }
 
         return count;
@@ -112,4 +165,3 @@ public class PlacedObjectLayoutDataHandler
         return false;
     }
 }
-

@@ -20,8 +20,10 @@ public class ProductionBuildingData : BuildingData
     public override List<ResourceType> AllowedResourceTypes => allowedResourceTypes;
     public List<ResourceData> ProducibleResources => _producibleResources;
 
-    protected virtual void OnValidate()
+    protected override void OnValidate()
     {
+        base.OnValidate();
+
         _producibleResources ??= new List<ResourceData>();
         if (allowedResourceTypes != null && allowedResourceTypes.Count > 0)
         {

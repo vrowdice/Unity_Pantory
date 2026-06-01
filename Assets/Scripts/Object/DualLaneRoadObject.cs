@@ -4,20 +4,12 @@ using UnityEngine;
 
 public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 {
-    private static readonly Vector2Int[] NeighborDeltas =
-    {
-        new Vector2Int(0, -1),
-        new Vector2Int(1, 0),
-        new Vector2Int(0, 1),
-        new Vector2Int(-1, 0)
-    };
-
     [SerializeField] private SpriteRenderer _viewObjRenderer;
     [SerializeField] private Vector2Int _gridPosition;
     [SerializeField] private int _rotation;
     [SerializeField] private int _maxCapacityPerLane = 8;
     [SerializeField] private float _heldIconScale = 0.14f;
-    [SerializeField] private BuildingData _sourceBuildingData;
+    [SerializeField] private RoadBuildingData _roadData;
     [SerializeField] private GameObject _outputIndicatorPrefab;
 
     [Header("Splitter")]
@@ -27,47 +19,53 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 
     private readonly Queue<ResourcePacket> _laneA = new Queue<ResourcePacket>();
     private readonly Queue<ResourcePacket> _laneB = new Queue<ResourcePacket>();
+    private readonly List<Vector2Int> _outputGridPositions = new List<Vector2Int>();
     private GameObject _heldIconContainer;
     private Transform _outputIndicatorVisual;
     private Tween _splitterArrowTween;
     private Tween _splitterIndicatorTween;
     private bool _splitterToggle;
-    private bool _isSplitter;
 
     public Vector2Int GridPosition => _gridPosition;
-    public BuildingData SourceBuildingData => _sourceBuildingData;
+    public RoadBuildingData RoadData => _roadData;
     public bool IsEmpty => _laneA.Count == 0 && _laneB.Count == 0;
-    public List<Vector2Int> OutputGridPositions { get; private set; } = new List<Vector2Int>();
+    public IReadOnlyList<Vector2Int> OutputGridPositions => _outputGridPositions;
 
-    public void Init(Vector2Int gridPosition, int rotation, BuildingData sourceBuildingData = null)
+    public void Init(Vector2Int gridPosition, int rotation, RoadBuildingData roadData)
     {
+        if (roadData == null)
+        {
+            Debug.LogError("[DualLaneRoadObject] RoadBuildingData is required.");
+            return;
+        }
+
         _gridPosition = gridPosition;
         _rotation = rotation % 4;
-        _sourceBuildingData = sourceBuildingData;
-        _isSplitter = sourceBuildingData != null && sourceBuildingData.id == "splitter";
+        _roadData = roadData;
         transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
         RebuildOutputGridPositions();
 
-        if (_splitterArrowRoot != null)
-            _splitterArrowRoot.gameObject.SetActive(_isSplitter);
-
-        if (_isSplitter)
+        if (_roadData.hasSecondaryOutput)
         {
+            if (_splitterArrowRoot != null)
+                _splitterArrowRoot.gameObject.SetActive(true);
             EnsureSplitterVisuals();
             SetSplitterOutputVisual(GetOutputDirection(0), true);
         }
+        else if (_splitterArrowRoot != null)
+        {
+            _splitterArrowRoot.gameObject.SetActive(false);
+        }
 
+        _viewObjRenderer.sprite = _roadData.buildingSprite;
         RefreshHeldResourceIcons();
-
-        if (_sourceBuildingData != null)
-            _viewObjRenderer.sprite = _sourceBuildingData.buildingSprite;
     }
 
     public bool CanAcceptIncoming(ResourcePacket packet)
     {
         if (packet == null) return false;
 
-        if (_isSplitter)
+        if (_roadData.hasSecondaryOutput)
         {
             Queue<ResourcePacket> targetLane = _splitterToggle ? _laneB : _laneA;
             return targetLane.Count < _maxCapacityPerLane;
@@ -81,7 +79,7 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
     {
         if (packet == null) return false;
 
-        if (_isSplitter)
+        if (_roadData.hasSecondaryOutput)
             return TryPushSplitter(packet);
 
         Queue<ResourcePacket> lane = SelectLaneForPacket(packet);
@@ -101,12 +99,12 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
     {
         if (destination == null) return false;
 
-        if (_isSplitter)
+        if (_roadData.hasSecondaryOutput)
         {
-            if (OutputGridPositions.Count < 2) return false;
-            if (outCell == OutputGridPositions[0])
+            if (_outputGridPositions.Count < 2) return false;
+            if (outCell == _outputGridPositions[0])
                 return TryForwardLaneAndRefresh(_laneA, destination, GetOutputDirection(0));
-            if (outCell == OutputGridPositions[1])
+            if (outCell == _outputGridPositions[1])
                 return TryForwardLaneAndRefresh(_laneB, destination, GetOutputDirection(1));
             return false;
         }
@@ -126,8 +124,7 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         data.x = _gridPosition.x;
         data.y = _gridPosition.y;
         data.rotation = _rotation;
-        data.roadDataId = _sourceBuildingData != null ? _sourceBuildingData.id : null;
-        data.sourceBuildingDataId = data.roadDataId;
+        data.roadDataId = _roadData.id;
         ResourcePacketQueueUtils.ExportToSaveBuffer(_laneA, data.buffer);
         ResourcePacketQueueUtils.ExportToSaveBuffer(_laneB, data.buffer);
         return data;
@@ -174,21 +171,8 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         return _laneA.Count <= _laneB.Count ? _laneA : _laneB;
     }
 
-    private void RebuildOutputGridPositions()
-    {
-        OutputGridPositions.Clear();
-        if (_isSplitter)
-        {
-            Vector2Int right = GridFlowUtils.RotateCellClockwise(new Vector2Int(1, 0), _rotation);
-            Vector2Int down = GridFlowUtils.RotateCellClockwise(new Vector2Int(0, 1), _rotation);
-            OutputGridPositions.Add(_gridPosition + right);
-            OutputGridPositions.Add(_gridPosition + down);
-            return;
-        }
-
-        for (int i = 0; i < NeighborDeltas.Length; i++)
-            OutputGridPositions.Add(_gridPosition + NeighborDeltas[i]);
-    }
+    private void RebuildOutputGridPositions() =>
+        BuildingOutputUtils.CollectRoadOutputCells(_roadData, _gridPosition, _rotation, _outputGridPositions);
 
     private void EnsureSplitterVisuals()
     {
@@ -203,23 +187,20 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
         }
 
         if (_outputIndicatorVisual == null && _outputIndicatorPrefab != null)
-        {
-            GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
-            _outputIndicatorVisual = indicator.transform;
-            OutputIndicatorHelper.ApplyLocalPlacement(_outputIndicatorVisual, Vector2Int.one, OutputIndicatorEdge.Right);
-        }
+            _outputIndicatorVisual = BuildingOutputUtils.SpawnIndicator(
+                transform, _outputIndicatorPrefab, Vector2Int.one, _roadData)?.transform;
     }
 
     private void SetSplitterOutputVisual(FlowDirection direction, bool immediate)
     {
-        if (!_isSplitter) return;
+        if (!_roadData.hasSecondaryOutput) return;
 
-        OutputIndicatorEdge edge = OutputIndicatorHelper.EdgeFromSplitterFlow(direction, GetOutputDirection(1));
-        float arrowRotationZ = OutputIndicatorHelper.GetSplitterArrowRotationZ(edge);
-        float indicatorRotationZ = BuildingCalculationUtils.GetOutputIndicatorLocalRotationZ(edge);
+        OutputIndicatorEdge edge = BuildingOutputUtils.EdgeFromSplitterFlow(direction, GetOutputDirection(1));
+        float arrowRotationZ = BuildingOutputUtils.GetSplitterArrowRotationZ(edge);
+        float indicatorRotationZ = BuildingOutputUtils.GetIndicatorRotationZ(edge);
 
-        OutputIndicatorHelper.SetLocalRotationZ(_splitterArrowRoot, arrowRotationZ, immediate, _splitterVisualTweenDuration, ref _splitterArrowTween);
-        OutputIndicatorHelper.SetLocalRotationZ(_outputIndicatorVisual, indicatorRotationZ, immediate, _splitterVisualTweenDuration, ref _splitterIndicatorTween);
+        BuildingOutputUtils.TweenIndicatorRotationZ(_splitterArrowRoot, arrowRotationZ, immediate, _splitterVisualTweenDuration, ref _splitterArrowTween);
+        BuildingOutputUtils.TweenIndicatorRotationZ(_outputIndicatorVisual, indicatorRotationZ, immediate, _splitterVisualTweenDuration, ref _splitterIndicatorTween);
     }
 
     private void DestroySplitterVisuals()
@@ -273,7 +254,7 @@ public class DualLaneRoadObject : MonoBehaviour, IResourceNode
 
     private FlowDirection GetOutputDirection(int outputIndex)
     {
-        if (outputIndex < 0 || outputIndex >= OutputGridPositions.Count) return FlowDirection.None;
-        return GridFlowUtils.DirectionFromDelta(OutputGridPositions[outputIndex] - _gridPosition);
+        if (outputIndex < 0 || outputIndex >= _outputGridPositions.Count) return FlowDirection.None;
+        return GridFlowUtils.DirectionFromDelta(_outputGridPositions[outputIndex] - _gridPosition);
     }
 }

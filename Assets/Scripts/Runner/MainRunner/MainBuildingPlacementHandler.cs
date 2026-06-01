@@ -308,11 +308,7 @@ public class MainBuildingPlacementHandler
 
         _lastRemovedCell = cell;
 
-        bool removed = _gridHandler.TryRemoveAt(cell);
-        if (removed && _runner.RemovalSound != null)
-            _runner.SoundManager?.PlaySFX(_runner.RemovalSound);
-        if (removed)
-            PlayRemovalEffectAt(cell);
+        _gridHandler.TryRemoveAt(cell);
     }
 
     private void CreatePreview()
@@ -368,31 +364,16 @@ public class MainBuildingPlacementHandler
 
         if (_selectedBuilding.IsRoad)
         {
-            if (_gridHandler.TryPlaceRoad(_selectedBuilding, origin, _rotation, out _, out bool roadNoMoney))
-            {
-                if (_runner.BuildSound != null)
-                {
-                    _runner.SoundManager?.PlaySFX(_runner.BuildSound);
-                }
-                PlayBuildEffectAt(origin, Vector2Int.one);
-            }
-            else if (roadNoMoney)
+            if (!_gridHandler.TryPlaceRoad(_selectedBuilding, origin, _rotation, out _, out bool roadNoMoney)
+                && roadNoMoney)
             {
                 UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
             }
             return;
         }
 
-        if (_gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _, out bool buildingNoMoney))
-        {
-            if (_runner.BuildSound != null)
-            {
-                _runner.SoundManager?.PlaySFX(_runner.BuildSound);
-            }
-            Vector2Int size = MainBuildingGridHandler.GetRotatedSize(_selectedBuilding.size, _rotation);
-            PlayBuildEffectAt(origin, size);
-        }
-        else if (buildingNoMoney)
+        if (!_gridHandler.TryPlaceBuilding(_selectedBuilding, origin, _rotation, out _, out bool buildingNoMoney)
+            && buildingNoMoney)
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
         }
@@ -465,8 +446,6 @@ public class MainBuildingPlacementHandler
                     UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
                 return false;
             }
-            Vector2Int size = MainBuildingGridHandler.GetRotatedSize(data.size, saveData.rotation);
-            PlayBuildEffectAt(origin, size);
         }
 
         for (int i = 0; i < _selectedBlueprintRoads.Count; i++)
@@ -477,39 +456,18 @@ public class MainBuildingPlacementHandler
                 return false;
 
             Vector2Int position = GetBlueprintPlacementPosition(anchor, saveData.x, saveData.y);
-            if (!_gridHandler.TryPlaceRoad(roadData, position, saveData.rotation, out _, out bool roadNoMoney))
+            if (!_gridHandler.TryPlaceRoad(roadData, position, saveData.rotation, out _, out bool roadNoMoney, playSound: false))
             {
                 if (roadNoMoney)
                     UIManager.Instance.ShowWarningPopup(WarningMessage.NotEnoughCredits);
                 return false;
             }
-            PlayBuildEffectAt(position, Vector2Int.one);
         }
 
-        if (_runner.BuildSound != null)
-            _runner.SoundManager?.PlaySFX(_runner.BuildSound);
+        _runner.PlayBuildSound();
+        GameManager.Instance?.MainCameraController?.ShakeForConstruction();
 
         return true;
-    }
-
-    private void PlayBuildEffectAt(Vector2Int origin, Vector2Int size)
-    {
-        if (_runner.BuildParticlePrefab == null)
-            return;
-
-        Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, size);
-        effectPosition.z = _runner.BuildEffectZ;
-        Object.Instantiate(_runner.BuildParticlePrefab, effectPosition, Quaternion.identity);
-    }
-
-    private void PlayRemovalEffectAt(Vector2Int origin)
-    {
-        if (_runner.RemovalParticlePrefab == null)
-            return;
-        
-        Vector3 effectPosition = _gridHandler.GridToWorldPosition(origin, Vector2Int.one);
-        effectPosition.z = _runner.RemovalEffectZ;
-        Object.Instantiate(_runner.RemovalParticlePrefab, effectPosition, Quaternion.identity);
     }
 
     private static PlacedBuildingSaveData CreateBlueprintPlacementSaveData(PlacedBuildingSaveData src, Vector2Int origin)
@@ -542,10 +500,10 @@ public class MainBuildingPlacementHandler
         if (saveData == null)
             return null;
 
-        string id = !string.IsNullOrEmpty(saveData.sourceBuildingDataId) ? saveData.sourceBuildingDataId : saveData.roadDataId;
-        if (string.IsNullOrEmpty(id))
-            id = "road";
-        return DataManager.Instance.Building.GetBuildingData(id);
+        if (string.IsNullOrEmpty(saveData.roadDataId))
+            return null;
+
+        return DataManager.Instance.Building.GetBuildingData(saveData.roadDataId);
     }
 
     private void CreateBlueprintPreviews()

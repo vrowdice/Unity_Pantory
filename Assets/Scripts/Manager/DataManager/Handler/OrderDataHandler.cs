@@ -152,6 +152,21 @@ public class OrderDataHandler : IDataHandlerEvents, ITimeChangeHandler, IGameSav
         _daysSinceLastOrder = 0;
     }
 
+    public bool CanFulfillOrderRequirements(OrderState order)
+    {
+        if (order == null || !order.isAccepted || order.resourceRequestList == null)
+            return false;
+
+        foreach (OrderState.ResourceRequest request in order.resourceRequestList)
+        {
+            ResourceEntry entry = _dataManager.Resource.GetResourceEntry(request.resourceId);
+            if (entry == null || entry.state.count < request.requiredCount)
+                return false;
+        }
+
+        return true;
+    }
+
     public void AcceptAndCompleteOrder(OrderState order)
     {
         if (order == null) return;

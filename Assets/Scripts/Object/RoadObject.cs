@@ -18,23 +18,35 @@ public class RoadObject : MonoBehaviour, IResourceNode
 
     private readonly Queue<ResourcePacket> _buffer = new Queue<ResourcePacket>();
     private GameObject _heldIconContainer;
-    private BuildingData _sourceBuildingData;
+    private RoadBuildingData _roadData;
 
-    public List<Vector2Int> OutputGridPositions { get; private set; }
-    public BuildingData SourceBuildingData => _sourceBuildingData;
+    public Vector2Int OutputGridPosition { get; private set; }
+    public RoadBuildingData RoadData => _roadData;
     public Vector2Int GridPosition => _gridPosition;
     public int Rotation => _rotation;
     public bool IsEmpty => _buffer.Count == 0;
     public bool IsFull => _buffer.Count >= _maxCapacity;
 
-    public void Init(Vector2Int gridPosition, int rotation, BuildingData sourceBuildingData = null)
+    public void Init(Vector2Int gridPosition, int rotation, RoadBuildingData roadData)
     {
+        if (roadData == null)
+        {
+            Debug.LogError("[RoadObject] RoadBuildingData is required.");
+            return;
+        }
+
         _gridPosition = gridPosition;
         _rotation = rotation % 4;
-        _sourceBuildingData = sourceBuildingData;
+        _roadData = roadData;
         transform.localRotation = Quaternion.Euler(0f, 0f, -_rotation * 90f);
-        OutputGridPositions = BuildingCalculationUtils.GetOutputGridPositions(_gridPosition, Vector2Int.one, _rotation);
-        OutputIndicatorHelper.SpawnOnRightEdge(transform, _outputIndicatorPrefab, Vector2Int.one);
+
+        OutputGridPosition = BuildingOutputUtils.GetOutputGridPosition(
+            _gridPosition,
+            Vector2Int.one,
+            _rotation,
+            _roadData);
+
+        BuildingOutputUtils.SpawnIndicator(transform, _outputIndicatorPrefab, Vector2Int.one, _roadData);
         RefreshHeldResourceIcons();
     }
 
@@ -69,8 +81,7 @@ public class RoadObject : MonoBehaviour, IResourceNode
         data.x = _gridPosition.x;
         data.y = _gridPosition.y;
         data.rotation = _rotation;
-        data.roadDataId = _sourceBuildingData != null ? _sourceBuildingData.id : null;
-        data.sourceBuildingDataId = data.roadDataId;
+        data.roadDataId = _roadData.id;
         ResourcePacketQueueUtils.ExportToSaveBuffer(_buffer, data.buffer);
         return data;
     }

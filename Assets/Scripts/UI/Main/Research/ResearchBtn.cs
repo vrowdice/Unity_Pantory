@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using Evo.UI;
 using TMPro;
 
-public class ResearchBtn : BtnBase
+public class ResearchBtn : EntryListBtnBase
 {
     [SerializeField] private Image _image;
     [SerializeField] private GameObject _focusedImage;
@@ -16,20 +16,30 @@ public class ResearchBtn : BtnBase
     {
         _researchEntry = researchEntry;
         _researchCanvas = researchCanvas;
-        Refresh(researchEntry);
+        Refresh();
         EnsureClickBound();
     }
 
-    public void Refresh(ResearchEntry researchEntry)
+    public override void Refresh()
     {
-        _researchEntry = researchEntry;
-        _image.sprite = researchEntry.data.icon;
-        _text.text = researchEntry.data.id.Localize(LocalizationUtils.TABLE_RESEARCH);
-        _focusedImage.SetActive(researchEntry.state.isCompleted);
+        if (_researchEntry?.data == null)
+            return;
+
+        _image.sprite = _researchEntry.data.icon;
+        _text.text = _researchEntry.data.id.Localize(LocalizationUtils.TABLE_RESEARCH);
+        _focusedImage.SetActive(_researchEntry.state.isCompleted);
 
         Evo.UI.Button button = ResolveButton();
         if (button != null)
-            button.interactable = researchEntry.state.isUnlocked;
+            button.interactable = _researchEntry.state.isUnlocked;
+    }
+
+    public Transform GetCompleteAnimationTarget()
+    {
+        if (_focusedImage != null && _focusedImage.activeSelf)
+            return _focusedImage.transform;
+
+        return transform;
     }
 
     protected override void HandleClick()
