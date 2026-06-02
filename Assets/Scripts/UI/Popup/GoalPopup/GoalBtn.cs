@@ -58,9 +58,12 @@ public class GoalBtn : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        _activeGoalContent.SetActive(true);
         _descriptionText.text = GetTitle(goalData);
+        _rewardText.text = FormatReward(goalData.rewardCredit);
+
+        _activeGoalContent.SetActive(true);
         _completedImage.SetActive(true);
+        _progressSlider.gameObject.SetActive(false);
     }
 
     public static string GetTitle(GoalData goalData)

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: search_mine_5
   displayName: 
   researchType: 1
-  icon: {fileID: 21300000, guid: ec25fe544e4460647936b5f977868f8e, type: 3}
+  icon: {fileID: 21300000, guid: d357a494eaf7e9343be2f5cb42861f7d, type: 3}
   description: 
   isDefaultUnlocked: 0
   researchPointCost: 12000

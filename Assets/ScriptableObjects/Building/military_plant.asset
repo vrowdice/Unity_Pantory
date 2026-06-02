@@ -22,10 +22,14 @@ MonoBehaviour:
     High demand during wartime.
   isUnlockedByDefault: 0
   requiredEmployees: 6
-  buildCost: 16800
-  maintenanceCost: 35
+  buildCost: 12000
+  maintenanceCost: 28
   size: {x: 3, y: 3}
   requiredResearch: {fileID: 11400000, guid: e69b43f93678def45aa09a0d737402a9, type: 2}
+  usePlacedCountLimit: 0
+  baseMaxPlacedCount: 0
+  maxInputBufferCapacity: 10
+  maxInputResourceKinds: 4
   handlingResource: {fileID: 0}
   allowedResourceTypes: 02000000
   _producibleResources:

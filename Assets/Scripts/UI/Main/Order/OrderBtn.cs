@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class OrderBtn : BtnBase
+public class OrderBtn : EntryListBtnBase
 {
     [SerializeField] private MarketActorPopupBtn _marketActorPopupBtn;
     [SerializeField] private TextMeshProUGUI _marketActorNameText;
@@ -18,26 +18,31 @@ public class OrderBtn : BtnBase
     [SerializeField] private GameObject _orderRequireResourceItemPrefab;
 
     [SerializeField] private Slider _durationDaysSlider;
+    [SerializeField] private RectTransform _completeAnimationTarget;
 
     private OrderState _orderState;
     private OrderData _orderData;
     private MarketActorEntry _marketActorEntry;
     private DataManager _dataManager;
     private GameManager _gameManager;
+    private AudioClip _requirementCompleteSfx;
+    private bool _wasRequirementsReady;
 
-    private List<OrderRequireResourceItemPanel> _resourceItemPanels = new List<OrderRequireResourceItemPanel>();
+    private readonly List<OrderRequireResourceItemPanel> _resourceItemPanels = new List<OrderRequireResourceItemPanel>();
 
-    public void Init(OrderState orderState, MainCanvas mainCanvas)
+    public void Init(OrderState orderState, MainCanvas mainCanvas, AudioClip requirementCompleteSfx)
     {
         _orderState = orderState;
         _dataManager = mainCanvas.DataManager;
         _gameManager = mainCanvas.GameManager;
+        _requirementCompleteSfx = requirementCompleteSfx;
+        _wasRequirementsReady = false;
 
         _orderData = _dataManager.Order.GetOrderData(orderState.id);
         _marketActorEntry = _dataManager.MarketActor.GetMarketActorEntry(orderState.senderActorId);
         _marketActorPopupBtn.Init(_marketActorEntry);
 
-        if(_orderState.isAccepted)
+        if (_orderState.isAccepted)
         {
             _durationDaysSlider.maxValue = _orderData.durationDays;
         }
@@ -46,11 +51,10 @@ public class OrderBtn : BtnBase
             _durationDaysSlider.maxValue = _dataManager.InitialOrderData.orderAcceptanceDelayDays;
         }
 
-        UpdateUI();
+        Refresh();
     }
 
-
-    public void UpdateUI()
+    public override void Refresh()
     {
         if (_orderState == null || _orderData == null || _marketActorEntry == null) return;
 
@@ -64,6 +68,30 @@ public class OrderBtn : BtnBase
         _durationDaysSlider.value = _orderState.durationDays;
 
         RefreshRequireResourceItems();
+        RefreshRequirementReadyFeedback();
+    }
+
+    private void RefreshRequirementReadyFeedback()
+    {
+        bool isReady = _dataManager.Order.CanFulfillOrderRequirements(_orderState);
+        Transform target = GetCompleteAnimationTarget();
+        RequirementCompleteFeedbackUtils.NotifyBecameReady(
+            ref _wasRequirementsReady,
+            isReady,
+            target,
+            _requirementCompleteSfx);
+    }
+
+    private Transform GetCompleteAnimationTarget()
+    {
+        if (_completeAnimationTarget != null)
+            return _completeAnimationTarget;
+
+        Evo.UI.Button button = ResolveButton();
+        if (button != null)
+            return button.transform;
+
+        return transform;
     }
 
     private void RefreshRequireResourceItems()
@@ -118,6 +146,6 @@ public class OrderBtn : BtnBase
 
         _dataManager.Order.AcceptAndCompleteOrder(_orderState);
 
-        UpdateUI();
+        Refresh();
     }
 }

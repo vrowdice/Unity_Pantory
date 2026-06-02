@@ -15,7 +15,7 @@ MonoBehaviour:
   id: goal_place_mine
   displayName: "\uAD11\uC0B0 1\uAC1C \uBC30\uCE58"
   conditionType: 4
-  targetId: mine
+  targetId: iron_mine
   targetValue: 1
   rewardCredit: 15000
   isDefaultUnlocked: 1

@@ -2781,7 +2781,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0010127196}
+  m_AnchoredPosition: {x: 0, y: 0.0005442227}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3125783419564302356
@@ -9637,6 +9637,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 211116100728dfc44afca43f9889cd76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 0}
   _unionCohesionProgressText: {fileID: 8455714559032770885}
   _remainDateText: {fileID: 8942632657807057956}
 --- !u!1 &4711101167637235972
@@ -13730,6 +13733,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b35277fce0d8d742a3553ea42902b76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 0}
 --- !u!1 &6404377119141207814
 GameObject:
   m_ObjectHideFlags: 0
@@ -14017,29 +14023,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c3d4e5f647438658b7e48197818000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
   _tutorialPanelInfo: []
+  _gameOverTimer: {fileID: 0}
   _buildingTypeBtnPrefab: {fileID: 5843711190326734755, guid: 1df3294a1ba7ef54eac87bc4a0d0da5a, type: 3}
   _buildingTypeBtnContent: {fileID: 790790657864453035}
   _buildingBtnPrefab: {fileID: 412398129040250562, guid: ca8cf8656f83546468bec330025d97f7, type: 3}
   _buildingBtnContent: {fileID: 7747889693879375877}
+  _blueprintTypeBtnPrefab: {fileID: 5843711190326734755, guid: 3daa29f785ad60d4db200a2d37f94884, type: 3}
+  _blueprintAddBtnPrefab: {fileID: 412398129040250562, guid: 5cb327f3e84b4db4f93534c77bedef3b, type: 3}
+  _blueprintSavedEntryPrefab: {fileID: 412398129040250562, guid: 217efe202fa5fad4aacf64f8dc2d67d1, type: 3}
   _autoEmployeePlacementSwitch: {fileID: 5257570787913362637}
   _removalModeSwitch: {fileID: 6085614814687480489}
-  _rotateBtnContainer: {fileID: 7420153415134158891}
+  _storageCanvasPrefab: {fileID: 3873413108417295653, guid: 30056fd530b20ab46b220efa4515fd26, type: 3}
+  _orderCanvasPrefab: {fileID: 6298053347902593458, guid: 4922c1492c6bfd74e905d25940c2ccd2, type: 3}
   _marketCanvasPrefab: {fileID: 4348083378959238153, guid: d79de820966302849b1946f890c89388, type: 3}
+  _employmentCanvasPrefab: {fileID: 6227641040661825204, guid: dfa8f56bf4e422e458e09f4cbb4ffca5, type: 3}
+  _policyCanvasPrefab: {fileID: 6333051514348184066, guid: b934963f48acdc34fb4b597a848c3fdf, type: 3}
+  _newsCanvasPrefab: {fileID: 6572344294995928050, guid: c5b05d190fb475c4ea30bc3f21187b2e, type: 3}
+  _researchCanvasPrefab: {fileID: 7580730937239458178, guid: e760c77103f6fb54b94e6a5db1778817, type: 3}
+  _financeCanvasPrefab: {fileID: 6333051514348184066, guid: 3ba3b235a00b5be45a7a643116f3e020, type: 3}
   _quickMoveBtnPrefeb: {fileID: 1343671733478616711, guid: ecbf718cd5649e74d9e4fda0e969449e, type: 3}
   _quickMovePanelContent: {fileID: 5881713774088659892}
-  _resourceScrollView: {fileID: 149838796137830201}
   _mainScrollViewResouceBtn: {fileID: 4338296998459436098, guid: df689a2700ec81941afcf72e1afb34b4, type: 3}
   _resouceScrollViewContent: {fileID: 5792593746420108247}
   _creditText: {fileID: 3157747697831197936}
   _deltaCreditText: {fileID: 5621586244536354010}
+  _creditGainSfx: {fileID: 0}
+  _creditLossSfx: {fileID: 0}
   _researchText: {fileID: 1357046106529955860}
   _deltaResearchText: {fileID: 2900234184803921058}
   _infoDatePanel: {fileID: 5746231852346789846}
   _topInfoPanel: {fileID: 2851215756797902493}
-  _creditTopInfoToggleRect: {fileID: 7662292808670379893}
-  _newsFlowContainer: {fileID: 0}
+  _newsFlowContainer: {fileID: 7751825416769081538}
   _mainEventBtns: {fileID: 0}
+  _creditTopInfoToggleRect: {fileID: 7662292808670379893}
+  _tutorialDirector: {fileID: 0}
 --- !u!1 &6622800443618218885
 GameObject:
   m_ObjectHideFlags: 0
@@ -14824,9 +14844,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1297958502235259899}
-        m_TargetAssemblyTypeName: MainCanvas, Assembly-CSharp
-        m_MethodName: AutoEmployeePlacementToggle
-        m_Mode: 1
+        m_TargetAssemblyTypeName: TutorialCanvas, Assembly-CSharp
+        m_MethodName: SyncAutoEmployeePlacementSwitch
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -18535,6 +18555,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8de9afb97b26604b9617abf2bd22e1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationTarget: {fileID: 0}
+  _effectType: 1
+  _button: {fileID: 0}
 --- !u!1 &9067717359744380097
 GameObject:
   m_ObjectHideFlags: 0

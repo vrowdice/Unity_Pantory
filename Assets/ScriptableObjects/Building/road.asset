@@ -23,11 +23,15 @@ MonoBehaviour:
   isUnlockedByDefault: 1
   isProfessional: 0
   requiredEmployees: 0
-  buildCost: 100
+  buildCost: 50
   maintenanceCost: 0
   size: {x: 1, y: 1}
   requiredResearch: {fileID: 0}
   usePlacedCountLimit: 0
   baseMaxPlacedCount: 0
-  maxInputBufferCapacity: 16
-  maxOutputBufferCapacity: 16
+  maxInputBufferCapacity: 10
+  maxInputResourceKinds: 10
+  outputOffset: {x: 1, y: 0}
+  passThroughNeighbors: 0
+  hasSecondaryOutput: 0
+  secondaryOutputOffset: {x: 0, y: 1}

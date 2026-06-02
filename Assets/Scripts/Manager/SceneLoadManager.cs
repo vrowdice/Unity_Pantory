@@ -56,6 +56,11 @@ public class SceneLoadManager : Singleton<SceneLoadManager>
         StartCoroutine(LoadSceneRoutine(SceneManager.GetActiveScene().name));
     }
 
+    public string GetSceneName()
+    {
+        return SceneManager.GetActiveScene().name;
+    }
+
     /// <summary>
     /// 씬을 로드합니다. 페이드 효과와 로딩바를 표시합니다.
     /// </summary>

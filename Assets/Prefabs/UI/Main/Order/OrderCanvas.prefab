@@ -3093,6 +3093,7 @@ MonoBehaviour:
   _acceptedOrderSwitch: {fileID: 6772521333635175978}
   _orderMarketActorPopupBtnPrefab: {fileID: 803238571696267269, guid: f01708041c661a047abe09f4cf940daa, type: 3}
   _orderBtnPrefab: {fileID: 3500419985314219930, guid: 67b26507bfa31bc42afd73cc1d92f609, type: 3}
+  _requirementCompleteSfx: {fileID: 8300000, guid: 730dfcd7a3a2973419c07521901ae0ee, type: 3}
 --- !u!1 &6366443823734316548
 GameObject:
   m_ObjectHideFlags: 0

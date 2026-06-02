@@ -19,11 +19,11 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 864226266001
-    m_Localized: Component Manufacturing
+    m_Localized: Electronic Components
     m_Metadata:
       m_Items: []
   - m_Id: 864226266002
-    m_Localized: Mining
+    m_Localized: Iron Mine Construction
     m_Metadata:
       m_Items: []
   - m_Id: 864226266003
@@ -59,16 +59,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267001
-    m_Localized: Unlocks component factories. Produces machine parts from iron ingots,
-      electronic components from copper and aluminum ingots, and precision tools
-      from steel ingots and machine parts. Core mid-game production for vehicles and
-      advanced industry.
+    m_Localized: Unlocks the Electronic Components Factory. Produces electronic components
+      from copper and aluminum ingots. Essential for engines and advanced production.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267002
-    m_Localized: Unlocks general mines. Extracts iron ore, coal, copper ore, and aluminum
-      ore. Does not produce gold ore—research Gold Mine Construction separately.
-      High build and upkeep costs.
+    m_Localized: Unlocks iron mines. Extracts iron ore for smelting into iron ingots.
+      Core facility for metalworking chains. Available from the start.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267003
@@ -84,13 +81,13 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226267005
     m_Localized: Unlocks oil pumps. Extracts crude oil underground. Very high upkeep;
-      foundation for chemical plants and fuel-using production. Completing this
-      research unlocks chemical processing research.
+      foundation for chemical plants and fuel-using production. Completing this research
+      unlocks chemical processing research.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267006
-    m_Localized: Unlocks smelters. Converts iron, copper, and aluminum ores into ingots
-      and gold ore into pure gold. Essential for metal and electronics chains.
+    m_Localized: Unlocks smelters. Converts iron, copper, and aluminum ores into
+      ingots and gold ore into pure gold. Essential for metal and electronics chains.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267007
@@ -99,8 +96,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267008
-    m_Localized: Unlocks military factories. Produces small arms, heavy arms, and munitions
-      using steel, machine parts, fine wood, and coal depending on the product.
+    m_Localized: Unlocks military factories. Produces small arms, heavy arms, and
+      munitions using steel, machine parts, fine wood, and coal depending on the
+      product.
     m_Metadata:
       m_Items: []
   - m_Id: 864226267009
@@ -111,7 +109,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 10166970572226560
     m_Localized: Foundation research for factory operations. Unlocks the Light Factory
-      and Load station. Also opens research paths for mining, smelting, and oil
+      and Load station. Also opens research paths for ore mines, smelting, and oil
       extraction.
     m_Metadata:
       m_Items: []
@@ -169,43 +167,46 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226266015
-    m_Localized: Mineral Survey I
+    m_Localized: Iron Ore Survey I
     m_Metadata:
       m_Items: []
   - m_Id: 864226267015
-    m_Localized: Exploration expands how many mines you can place for ore and minerals.
+    m_Localized: Exploration expands how many iron mines you can place.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266016
-    m_Localized: Mineral Survey II
+    m_Localized: Iron Ore Survey II
     m_Metadata:
       m_Items: []
   - m_Id: 864226267016
-    m_Localized: Better vein models and sampling. Further raises mine placement cap.
+    m_Localized: Better vein models and sampling. Further raises iron mine placement
+      cap.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266017
-    m_Localized: Mineral Survey III
+    m_Localized: Iron Ore Survey III
     m_Metadata:
       m_Items: []
   - m_Id: 864226267017
-    m_Localized: Deeper geology surveys open more viable mine sites on the map.
+    m_Localized: Deeper geology surveys open more viable iron mine sites on the map.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266018
-    m_Localized: Mineral Survey IV
+    m_Localized: Iron Ore Survey IV
     m_Metadata:
       m_Items: []
   - m_Id: 864226267018
-    m_Localized: Integrated reserve estimates and logistics. More parallel operations.
+    m_Localized: Integrated reserve estimates and logistics. More parallel iron mining
+      operations.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266019
-    m_Localized: Mineral Survey V
+    m_Localized: Iron Ore Survey V
     m_Metadata:
       m_Items: []
   - m_Id: 864226267019
-    m_Localized: Full district-scale mapping. Maximizes how many mines you may run.
+    m_Localized: Full district-scale mapping. Maximizes how many iron mines you may
+      run.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266020
@@ -277,7 +278,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226267028
-    m_Localized: Reserve estimation and logistics analysis raise parallel mining limits.
+    m_Localized: Reserve estimation and logistics analysis raise parallel mining
+      limits.
     m_Metadata:
       m_Items: []
   - m_Id: 864226266029
@@ -286,7 +288,165 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226267029
     m_Localized: Unlocks dedicated gold mines. Extracts gold ore only for smelting
-      into pure gold. Requires prior mining research.
+      into pure gold. Requires iron mine construction research.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266030
+    m_Localized: Coal Survey I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267030
+    m_Localized: Exploration expands how many coal mines you can place.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266031
+    m_Localized: Coal Survey II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267031
+    m_Localized: Better seam models and sampling. Further raises coal mine placement
+      cap.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266032
+    m_Localized: Coal Survey III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267032
+    m_Localized: Deeper geology surveys open more viable coal mine sites on the map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266033
+    m_Localized: Coal Survey IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267033
+    m_Localized: Integrated reserve estimates and logistics. More parallel coal mining
+      operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266034
+    m_Localized: Coal Survey V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267034
+    m_Localized: Full district-scale mapping. Maximizes how many coal mines you may
+      run.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266035
+    m_Localized: Copper Ore Survey I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267035
+    m_Localized: Exploration expands how many copper mines you can place.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266036
+    m_Localized: Copper Ore Survey II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267036
+    m_Localized: Better vein models and sampling. Further raises copper mine placement
+      cap.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266037
+    m_Localized: Copper Ore Survey III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267037
+    m_Localized: Deeper geology surveys open more viable copper mine sites on the
+      map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266038
+    m_Localized: Copper Ore Survey IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267038
+    m_Localized: Integrated reserve estimates and logistics. More parallel copper
+      mining operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266039
+    m_Localized: Copper Ore Survey V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267039
+    m_Localized: Full district-scale mapping. Maximizes how many copper mines you
+      may run.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266040
+    m_Localized: Aluminum Ore Survey I
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267040
+    m_Localized: Exploration expands how many aluminum mines you can place.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266041
+    m_Localized: Aluminum Ore Survey II
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267041
+    m_Localized: Better deposit models and sampling. Further raises aluminum mine
+      placement cap.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266042
+    m_Localized: Aluminum Ore Survey III
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267042
+    m_Localized: Deeper geology surveys open more viable aluminum mine sites on the
+      map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266043
+    m_Localized: Aluminum Ore Survey IV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267043
+    m_Localized: Integrated reserve estimates and logistics. More parallel aluminum
+      mining operations.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266044
+    m_Localized: Aluminum Ore Survey V
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267044
+    m_Localized: Full district-scale mapping. Maximizes how many aluminum mines you
+      may run.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266045
+    m_Localized: Coal Mine Construction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267045
+    m_Localized: Unlocks coal mines. Extracts coal for smelting, fuel, and munitions
+      production. High build and upkeep costs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266046
+    m_Localized: Copper Mine Construction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267046
+    m_Localized: Unlocks copper mines. Extracts copper ore for smelting and electronics
+      chains. High build and upkeep costs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226266047
+    m_Localized: Aluminum Mine Construction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226267047
+    m_Localized: Unlocks aluminum mines. Extracts aluminum ore for smelting and advanced
+      manufacturing. High build and upkeep costs.
     m_Metadata:
       m_Items: []
   references:

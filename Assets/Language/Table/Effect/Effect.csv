@@ -1,0 +1,59 @@
+Key,Id,English(en),Japanese(ja),Korean(ko)
+"lack_of_managers",7000000000001,"Lack of Managers","マネージャー不足","관리자 부족"
+"salary_satisfaction_effect",7000000000002,"Salary Bonus","給与ボーナス","급여 보너스"
+"satisfaction_efficiency_effect",7000000000003,"Satisfaction Efficiency","満足度効率","만족도 효율"
+"effect_air_price_up_25",7000000000004,"Airplane Price Surge","飛行機価格高騰","비행기 가격 폭등"
+"effect_alum_price_up_15",7000000000005,"Aluminum Price Surge","アルミニウム価格高騰","알루미늄 가격 폭등"
+"effect_arms_price_up_15",7000000000006,"Arms Price Surge","武器価格高騰","무기 가격 폭등"
+"effect_bcloth_price_up_20",7000000000007,"Basic Clothing Price Surge","一般衣類価格高騰","기본 의류 가격 폭등"
+"effect_car_price_up_30",7000000000008,"Car Price Surge","自動車価格高騰","자동차 가격 폭등"
+"effect_coal_price_up_20",7000000000009,"Coal Price Surge","石炭価格高騰","석탄 가격 폭등"
+"effect_coping_price_up_30",7000000000010,"Copper Ingot Price Surge","銅インゴット価格高騰","구리 주괴 가격 폭등"
+"effect_copore_price_up_50",7000000000011,"Copper Ore Price Surge","銅鉱石価格高騰","구리 광석 가격 폭등"
+"effect_elec_price_up_35",7000000000012,"Electronics Price Surge","電子機器価格高騰","전자제품 가격 폭등"
+"effect_engine_price_up_15",7000000000013,"Engine Price Surge","エンジン価格高騰","엔진 가격 폭등"
+"effect_fabric_price_up_40",7000000000014,"Fabric Price Surge","布地価格高騰","직물 가격 폭등"
+"effect_gold_price_up",7000000000015,"Gold Price Surge Impact","金価格高騰","금 가격 폭등"
+"effect_hearms_price_down_40",7000000000016,"Heavy Arms Price Drop","重火器価格暴落","중화기 가격 폭락"
+"effect_iron_price_up_15",7000000000017,"Iron Price Surge","鉄価格高騰","철 가격 폭등"
+"effect_mach_price_up_10",7000000000018,"Machine Parts Price Surge","機械部品価格高騰","기계 부품 가격 폭등"
+"effect_muni_price_up_20",7000000000019,"Munitions Price Surge","軍需品価格高騰","군수품 가격 폭등"
+"effect_oil_price_up_40",7000000000020,"Oil Price Surge","石油価格高騰","석유 가격 폭등"
+"effect_pcloth_price_down_20",7000000000021,"Premium Clothing Price Drop","高級衣類価格暴落","고급 의류 가격 폭락"
+"effect_pfurn_price_down_20",7000000000022,"Premium Furniture Price Drop","高級家具価格暴落","고급 가구 가격 폭락"
+"effect_pgold_price_down_10",7000000000023,"Pure Gold Price Drop","純金価格暴落","순금 가격 폭락"
+"effect_simtool_price_up_10",7000000000024,"Simple Tools Price Surge","単純工具価格高騰","단순 도구 가격 폭등"
+"effect_smarms_price_down_30",7000000000025,"Small Arms Price Drop","小型武器価格暴落","소형 무기 가격 폭락"
+"effect_steel_price_up_25",7000000000026,"Steel Price Surge","鋼鉄価格高騰","강철 가격 폭등"
+"effect_tank_price_up_10",7000000000027,"Tank Price Surge","戦車価格高騰","탱크 가격 폭등"
+"effect_wood_price_up_10",7000000000028,"Wood Log Price Surge","丸太価格高騰","통나무 가격 폭등"
+"logging_camp_max_placed",7000000000029,"Logging Camp Placement Limit","伐採場設置上限","벌목장 설치 제한"
+"mine_max_placed",7000000000030,"Mine Placement Limit","鉱山設置上限","광산 설치 제한"
+"oil_pump_max_placed",7000000000031,"Oil Pump Placement Limit","石油ポンプ設置上限","유정 설치 제한"
+"gold_mine_max_placed",7000000000032,"Gold Mine Placement Limit","金鉱山設置上限","금광 설치 제한"
+"iron_mine_max_placed",7000000000059,"Iron Mine Placement Limit","鉄鉱山設置上限","철광 설치 제한"
+"coal_mine_max_placed",7000000000060,"Coal Mine Placement Limit","石炭鉱山設置上限","석탄광 설치 제한"
+"copper_mine_max_placed",7000000000061,"Copper Mine Placement Limit","銅鉱山設置上限","동광 설치 제한"
+"aluminum_mine_max_placed",7000000000062,"Aluminum Mine Placement Limit","アルミ鉱山設置上限","알루미늄 광 설치 제한"
+"policy_effect_iron_ingot_price_subsidy",7000000000033,"Iron Ingot Price Support (Policy)","鉄インゴット価格支援（政策）","철괴 시세 완화 (정책)"
+"policy_effect_technician_efficiency_up",7000000000034,"Technician Line Efficiency (Policy)","ラインテクニシャン効率（政策）","라인 테크니션 효율 (정책)"
+"policy_effect_worker_efficiency_up",7000000000035,"Worker Line Efficiency (Policy)","ラインワーカー効率（政策）","라인 노동자 효율 (정책)"
+"policy_effect_worker_satisfaction_penalty",7000000000036,"Worker Satisfaction Pressure (Policy)","労働者満足度への逆風（政策）","노동자 만족도 하향 (정책)"
+"research_effect_rp_production_bonus",7000000000037,"RP Production Bonus (Research)","研究ポイント生産ボーナス（研究）","연구력 생산 보너스 (연구)"
+"policy_effect_research_rp_production_bonus",7000000000038,"RP Production Bonus (Policy)","研究ポイント生産ボーナス（政策）","연구력 생산 보너스 (정책)"
+"policy_effect_employee_welfare_satisfaction",7000000000039,"Daily Satisfaction (Welfare Policy)","満足度/日（福利政策）","만족도/일 (복지 정책)"
+"divided_factory",7000000000040,"Divided Factory","分裂した工場","분열된 공장"
+"effect_airplane_price_down_20",7000000000045,,,
+"effect_aluminumore_price_up_20",7000000000046,,,
+"effect_basicfurniture_price_up_20",7000000000047,,,
+"effect_finewood_price_up_10",7000000000048,,,
+"effect_heavyarms_price_up_20",7000000000049,,,
+"effect_ironore_price_up_20",7000000000050,,,
+"effect_munitions_price_down_20",7000000000051,,,
+"effect_precisiontools_price_up_20",7000000000052,,,
+"effect_premiumcloth_price_up_20",7000000000053,,,
+"effect_premiumfurniture_price_up_20",7000000000054,,,
+"effect_premiumwood_price_up_10",7000000000055,,,
+"effect_puregold_price_up_20",7000000000056,,,
+"effect_smallarms_price_up_20",7000000000057,,,
+"effect_tank_price_down_20",7000000000058,,,

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
-    private RunnerBase _currentRunnerBase;
+    private RunnerBase _currentRunner;
     private DataManager _dataManager;
     private VisualManager _visualManager;
     private SaveLoadManager _saveLoadManager;
@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
 
     public MainCameraController MainCameraController => _mainCameraController;
     public PoolingManager PoolingManager => _poolingManager;
+    public RunnerBase CurrentRunner => _currentRunner;
 
     [Header("World Space Canvas Settings")]
     [SerializeField] private string _worldCanvasName = "SharedWorldCanvas";
@@ -105,7 +106,7 @@ public class GameManager : Singleton<GameManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         _mainCameraController = null;
-        _currentRunnerBase = null;
+        _currentRunner = null;
 
         if (_sharedWorldCanvas != null)
         {
@@ -115,9 +116,13 @@ public class GameManager : Singleton<GameManager>
         _dataManager.ClearAllEventSubscriptions();
 
         if (scene.name == "Tutorial")
+        {
             _dataManager.ResetToTutorialGame();
-        else
+        }
+        else if (_saveLoadManager == null || !_saveLoadManager.TryApplyPendingGameSave(_dataManager))
+        {
             _dataManager.Time.PauseTime();
+        }
 
         MainCameraController mainCamera = FindAnyObjectByType<MainCameraController>();
         if (mainCamera == null)
@@ -131,16 +136,16 @@ public class GameManager : Singleton<GameManager>
 
         CreateWorldCanvas(_mainCameraController.Camera);
 
-        RunnerBase runnerBase = FindAnyObjectByType<RunnerBase>();
-        if (runnerBase == null)
+        RunnerBase runner = FindAnyObjectByType<RunnerBase>();
+        if (runner == null)
         {
-            _currentRunnerBase = null;
+            _currentRunner = null;
             Debug.LogError("[GameManager] RunnerBase not found in loaded scene.");
         }
         else
         {
-            _currentRunnerBase = runnerBase;
-            _currentRunnerBase.Init();
+            _currentRunner = runner;
+            _currentRunner.Init();
         }
 
         UIManager.Instance?.RefreshCamera();
@@ -176,8 +181,6 @@ public class GameManager : Singleton<GameManager>
         _canvasRect.localPosition = Vector3.zero;
         _canvasRect.localRotation = Quaternion.identity;
 
-        CanvasGroup group = _sharedWorldCanvas.AddComponent<CanvasGroup>();
-        group.interactable = false;
-        group.blocksRaycasts = false;
+        _sharedWorldCanvas.AddComponent<GraphicRaycaster>();
     }
 }

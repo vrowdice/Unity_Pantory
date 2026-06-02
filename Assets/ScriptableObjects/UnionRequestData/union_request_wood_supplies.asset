@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: union_request_wood_supplies
   description: Union requests wood supplies for break-room renovations.
-  requireCredit: 0
-  creditScaleFactor: 1
-  requireResource:
-    resource: {fileID: 11400000, guid: f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c5, type: 2}
-    count: 50
-  resourceScaleFactor: 0.03
-  requirePolicy: {fileID: 0}
-  rewardCohesion: 5
+  conditionType: 2
+  targetId: wood_log
+  targetValue: 15
+  scaleFactor: 0.005
+  rewardCohesion: 1

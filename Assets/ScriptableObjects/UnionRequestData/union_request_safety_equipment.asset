@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: union_request_safety_equipment
   description: Workers demand safety equipment shipments to prevent workplace accidents.
-  requireCredit: 0
-  creditScaleFactor: 1
-  requireResource:
-    resource: {fileID: 11400000, guid: 208002f198141704eac213170f701b39, type: 2}
-    count: 15
-  resourceScaleFactor: 0.05
-  requirePolicy: {fileID: 0}
-  rewardCohesion: 6
+  conditionType: 2
+  targetId: simple_tools
+  targetValue: 6
+  scaleFactor: 0.008
+  rewardCohesion: 2

@@ -123,6 +123,12 @@ public class PopupBase : TutorialBase
             StopCoroutine(_showCoroutine);
         }
         _showCoroutine = StartCoroutine(ShowEffectCoroutine());
+        TryAutoStartTutorialIfPending();
+    }
+
+    protected override void Start()
+    {
+        // 팝업은 Show() 시점에만 자동 튜토리얼을 띄웁니다.
     }
 
     public virtual Coroutine ShowCoroutine()

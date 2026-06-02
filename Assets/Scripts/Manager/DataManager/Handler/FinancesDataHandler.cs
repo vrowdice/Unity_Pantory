@@ -114,6 +114,19 @@ public class FinancesDataHandler : IDataHandlerEvents, ITimeChangeHandler, IMont
         RefreshWealth();
     }
 
+    public void ModifyPlacedBuildingMaintenance(long maintenanceDelta, long assetValueDelta)
+    {
+        _placedBuildingsDailyMaintenance += maintenanceDelta;
+        if (_placedBuildingsDailyMaintenance < 0)
+            _placedBuildingsDailyMaintenance = 0;
+
+        _placedBuildingsAssetValue += assetValueDelta;
+        if (_placedBuildingsAssetValue < 0)
+            _placedBuildingsAssetValue = 0;
+
+        RefreshWealth();
+    }
+
     /// <summary>
     /// 건물/도로 제거 시 일일 유지비 합계에서 뺍니다.
     /// </summary>

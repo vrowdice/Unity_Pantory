@@ -24,6 +24,7 @@ public class TimeDataHandler : IDataHandlerEvents
     private float _realSecondsPerDay = 2.0f;
     private int _daysPerMonth = 20;
     private int _monthsPerYear = 12;
+    private bool _suppressTimeEvents;
 
     public event Action OnHourChanged;
     public event Action OnDayChanged;
@@ -97,7 +98,8 @@ public class TimeDataHandler : IDataHandlerEvents
             AdvanceDayAfterHourRollover();
         }
 
-        OnHourChanged?.Invoke();
+        if (!_suppressTimeEvents)
+            OnHourChanged?.Invoke();
     }
 
     private void AdvanceDayAfterHourRollover()
@@ -109,7 +111,8 @@ public class TimeDataHandler : IDataHandlerEvents
             AdvanceMonth();
         }
 
-        OnDayChanged?.Invoke();
+        if (!_suppressTimeEvents)
+            OnDayChanged?.Invoke();
     }
 
     private void AdvanceMonth()
@@ -122,13 +125,15 @@ public class TimeDataHandler : IDataHandlerEvents
         }
 
         // 구독처: DataManager — 월말 재정 처리 및 SaveLoadManager 오토세이브 등
-        OnMonthChanged?.Invoke();
+        if (!_suppressTimeEvents)
+            OnMonthChanged?.Invoke();
     }
 
     private void AdvanceYear()
     {
         Year++;
-        OnYearChanged?.Invoke();
+        if (!_suppressTimeEvents)
+            OnYearChanged?.Invoke();
     }
 
     public void PauseTime() => IsPaused = true;
@@ -153,7 +158,37 @@ public class TimeDataHandler : IDataHandlerEvents
         Month = month;
         Day = day;
         CurrentHour = 0;
-        OnHourChanged?.Invoke();
+        DayProgress = 0f;
+        if (!_suppressTimeEvents)
+            OnHourChanged?.Invoke();
+    }
+
+    public void CaptureTo(GameSaveData saveData)
+    {
+        if (saveData == null)
+            return;
+
+        saveData.year = Year;
+        saveData.month = Month;
+        saveData.day = Day;
+        saveData.currentHour = CurrentHour;
+        saveData.dayProgress = DayProgress;
+    }
+
+    /// <summary>세이브 로드용. 날짜·시각만 복원. 재생 속도·일시정지는 항상 초기값(정지)입니다.</summary>
+    public void ApplyFromSave(int year, int month, int day, int currentHour, float dayProgress)
+    {
+        _suppressTimeEvents = true;
+
+        Year = year;
+        Month = month;
+        Day = day;
+        CurrentHour = Mathf.Clamp(currentHour, 0, Mathf.Max(0, _initialTimeData.hoursPerDay - 1));
+        DayProgress = Mathf.Clamp01(dayProgress);
+        IsPaused = true;
+        TimeSpeed = 1.0f;
+
+        _suppressTimeEvents = false;
     }
 
     public void SetRealSecondsPerDay(float seconds)

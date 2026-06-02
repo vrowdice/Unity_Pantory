@@ -1029,6 +1029,8 @@ MonoBehaviour:
   _tutorialPanelInfo: []
   _animationTarget: {fileID: 6225846922872203226}
   _effectType: 0
+  _researchActionButton: {fileID: 6237237388085014776}
+  _researchCompleteSfx: {fileID: 8300000, guid: 730dfcd7a3a2973419c07521901ae0ee, type: 3}
   _nameText: {fileID: 1989814236906686404}
   _tireText: {fileID: 0}
   _descriptionText: {fileID: 5894489354211301873}

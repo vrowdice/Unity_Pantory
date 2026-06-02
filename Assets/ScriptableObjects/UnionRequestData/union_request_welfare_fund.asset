@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: union_request_welfare_fund
   description: Union requests a substantial credit deposit to their welfare fund.
-  requireCredit: 100000
-  creditScaleFactor: 1.2
-  requireResource:
-    resource: {fileID: 0}
-    count: 0
-  resourceScaleFactor: 0.05
-  requirePolicy: {fileID: 0}
-  rewardCohesion: 12
+  conditionType: 1
+  targetId: 
+  targetValue: 10000
+  scaleFactor: 0.6
+  rewardCohesion: 4

@@ -6,13 +6,10 @@ public class UnionRequestData : ScriptableObject
     public string id;
     public string description;
 
-    public long requireCredit;
-    public float creditScaleFactor = 1f;
-
-    public ResourceRequirement requireResource;
-    public float resourceScaleFactor = 0.05f;
-
-    public PolicyData requirePolicy;
+    public UnionRequestConditionType conditionType;
+    public string targetId = string.Empty;
+    public long targetValue;
+    public float scaleFactor = 1f;
 
     public int rewardCohesion;
 }

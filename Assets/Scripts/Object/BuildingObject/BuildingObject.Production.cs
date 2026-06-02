@@ -6,7 +6,11 @@ public partial class BuildingObject
     private void TickSimulationProduction(DataManager dataManager)
     {
         if (_selectedResource == null) return;
-        TickStaffedBatchWork(dataManager, CanCompleteProductionBatch, TryCompleteProductionBatch, CanAdvanceProductionProgress);
+        TickStaffedBatchWork(
+            dataManager,
+            CanCompleteProductionBatch,
+            () => TryCompleteProductionBatch(dataManager),
+            CanAdvanceProductionProgress);
     }
     
     private bool CanAdvanceProductionProgress()
@@ -23,13 +27,13 @@ public partial class BuildingObject
         if (need.Count > 0 && !InputBufferSatisfies(need)) return false;
 
         Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
-        int newPackets = outputs.Count;
-        if (_maxOutputCapacity > 0 && _outputBuffer.Count + newPackets > _maxOutputCapacity) return false;
-
-        return true;
+        return outputs.Count > 0
+            && _mainRunner != null
+            && _mainRunner.ResourceFlowHandler != null
+            && _mainRunner.ResourceFlowHandler.CanAcceptBuildingOutputs(this, outputs);
     }
 
-    private bool TryCompleteProductionBatch()
+    private bool TryCompleteProductionBatch(DataManager dataManager)
     {
         Dictionary<string, int> need = GetInputNeedForBatch(_selectedResource);
         if (need.Count > 0)
@@ -39,8 +43,21 @@ public partial class BuildingObject
         }
 
         Dictionary<string, int> outputs = _selectedResource.GetBatchOutputCounts();
-        foreach (KeyValuePair<string, int> kvp in outputs)
-            _outputBuffer.Enqueue(new ResourcePacket(kvp.Key, Mathf.Max(1, kvp.Value)));
+        if (outputs.Count == 0
+            || _mainRunner == null
+            || _mainRunner.ResourceFlowHandler == null
+            || !_mainRunner.ResourceFlowHandler.TryEmitBuildingOutputs(this, outputs))
+        {
+            return false;
+        }
+
+        if (dataManager?.Goal != null)
+        {
+            foreach (KeyValuePair<string, int> kvp in outputs)
+                dataManager.Goal.NotifyResourceProduced(kvp.Key, kvp.Value);
+        }
+
+        BuildingVisualFx.TryPlayProductionPulse(_viewObjRenderer, transform.position);
 
         return true;
     }
@@ -63,7 +80,7 @@ public partial class BuildingObject
 
     private bool InputBufferSatisfies(Dictionary<string, int> need)
     {
-        Dictionary<string, int> have = AggregateQueueCounts(_inputBuffer);
+        Dictionary<string, int> have = ResourcePacketQueueUtils.AggregateCounts(_inputBuffer);
         foreach (KeyValuePair<string, int> kvp in need)
         {
             if (!have.TryGetValue(kvp.Key, out int h) || h < kvp.Value)

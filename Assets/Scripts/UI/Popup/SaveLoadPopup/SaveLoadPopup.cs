@@ -69,16 +69,17 @@ public class SaveLoadPopup : PopupBase
 
         _saveLoadBtns.Clear();
 
-        List<string> saveFiles = SaveLoadManager.Instance.GetSaveFileList();
+        List<SaveFileInfo> saveFiles = SaveLoadManager.Instance.GetSaveFileList();
 
         yield return StaggeredSpawnUtils.ForEachFrame(saveFiles.Count, i =>
         {
-            string fileName = saveFiles[i];
+            SaveFileInfo saveFile = saveFiles[i];
             GameObject btnObj = Instantiate(_saveLoadBtnPrefab, _saveLoadBtnContentTransform);
             SaveLoadBtn btn = btnObj.GetComponent<SaveLoadBtn>();
             if (btn != null)
             {
-                btn.Init(this, _isSaveMode, fileName);
+                string dateText = SaveLoadManager.FormatSaveDateForDisplay(saveFile.SavedAtUtc);
+                btn.Init(this, _isSaveMode, saveFile.FileName, dateText);
                 _saveLoadBtns.Add(btn);
             }
         });

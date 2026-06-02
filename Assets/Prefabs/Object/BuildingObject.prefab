@@ -186,7 +186,4 @@ MonoBehaviour:
   _selectedResource: {fileID: 0}
   _assignedWorkers: 0
   _assignedTechnicians: 0
-  _rawWarehouseFxIconSize: 48
-  _rawWarehouseFxMovePixels: 100
-  _rawWarehouseFxDuration: 0.55
-  _rawWarehouseFxWorldOffset: {x: 0, y: 0, z: 0}
+  _splitterArrow: {fileID: 21300000, guid: 3c4ff40ee890036469b3359538e5d5d7, type: 3}

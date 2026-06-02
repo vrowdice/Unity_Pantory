@@ -71,9 +71,6 @@ public class DataManager : Singleton<DataManager>
     public UnionRequestDataHandler UnionRequest { get; private set; }
     public GoalDataHandler Goal { get; private set; }
     public GameOverDataHandler GameOver { get; private set; }
-
-    public PlayerDataHandler Player { get; private set; }
-
     public PlacedObjectLayoutDataHandler PlacedLayout { get; private set; }
     public BlueprintLayoutDataHandler BlueprintLayout { get; private set; }
 
@@ -82,6 +79,7 @@ public class DataManager : Singleton<DataManager>
     private readonly List<IMonthChangeHandler> _monthHandlers = new List<IMonthChangeHandler>();
     private readonly List<IGameSaveHandler> _saveHandlers = new List<IGameSaveHandler>();
     private readonly List<ICrossHandlerEvents> _crossHandlerEvents = new List<ICrossHandlerEvents>();
+    private readonly HashSet<string> _completedPanelTutorials = new HashSet<string>();
 
     private bool _servicesInitialized;
 
@@ -133,9 +131,7 @@ public class DataManager : Singleton<DataManager>
         Goal = new GoalDataHandler(this, _goalDataList);
         GameOver = new GameOverDataHandler(this);
 
-        Player = new PlayerDataHandler();
-
-        PlacedLayout = new PlacedObjectLayoutDataHandler();
+        PlacedLayout = new PlacedObjectLayoutDataHandler(this);
         BlueprintLayout = new BlueprintLayoutDataHandler();
 
         _eventHandlers.Clear();
@@ -178,7 +174,6 @@ public class DataManager : Singleton<DataManager>
         _saveHandlers.Add(UnionRequest);
         _saveHandlers.Add(Effect);
         _saveHandlers.Add(Policy);
-        _saveHandlers.Add(Player);
         _saveHandlers.Add(Goal);
         _saveHandlers.Add(GameOver);
 
@@ -191,11 +186,26 @@ public class DataManager : Singleton<DataManager>
     }
 
     /// <summary>
-    /// 튜토리얼 씬 진입용 초기화. 새 게임 상태에 시간을 일시정지합니다.
+    /// 튜토리얼 씬 진입 시 단일 진입점. 새 게임(핸들러 재생성·오토세이브 삭제) 후 시간을 일시정지합니다.
+    /// GameManager.OnSceneLoaded(Tutorial)에서 호출됩니다.
     /// </summary>
     public void ResetToTutorialGame()
     {
-        ResetToNewGame();
+        if (Instance != this)
+        {
+            return;
+        }
+
+        SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
+        if (saveLoadManager != null)
+        {
+            saveLoadManager.StartNewGame(this);
+        }
+        else
+        {
+            ResetToNewGame();
+        }
+
         Time?.PauseTime();
     }
 
@@ -209,8 +219,38 @@ public class DataManager : Singleton<DataManager>
             return;
         }
 
+        _completedPanelTutorials.Clear();
         InitializeServices();
         ClearAllEventSubscriptions();
+    }
+
+    public bool IsPanelTutorialCompleted(string ownerGameObjectName)
+    {
+        return !string.IsNullOrEmpty(ownerGameObjectName)
+            && _completedPanelTutorials.Contains(ownerGameObjectName);
+    }
+
+    public void MarkPanelTutorialCompleted(string ownerGameObjectName)
+    {
+        if (!string.IsNullOrEmpty(ownerGameObjectName))
+            _completedPanelTutorials.Add(ownerGameObjectName);
+    }
+
+    private void CapturePanelTutorialsTo(GameSaveData saveData)
+    {
+        saveData.completedPanelTutorialOwnerKeys.Clear();
+        foreach (string ownerKey in _completedPanelTutorials)
+            saveData.completedPanelTutorialOwnerKeys.Add(ownerKey);
+    }
+
+    private void ApplyPanelTutorialsFrom(GameSaveData saveData)
+    {
+        _completedPanelTutorials.Clear();
+        foreach (string ownerKey in saveData.completedPanelTutorialOwnerKeys)
+        {
+            if (!string.IsNullOrEmpty(ownerKey))
+                _completedPanelTutorials.Add(ownerKey);
+        }
     }
 
 #if UNITY_EDITOR
@@ -315,15 +355,7 @@ public class DataManager : Singleton<DataManager>
         }
 
         if (Time != null)
-        {
-            saveData.year = Time.Year;
-            saveData.month = Time.Month;
-            saveData.day = Time.Day;
-            saveData.currentHour = Time.CurrentHour;
-            saveData.dayProgress = Time.DayProgress;
-            saveData.isPaused = Time.IsPaused;
-            saveData.timeSpeed = Time.TimeSpeed;
-        }
+            Time.CaptureTo(saveData);
 
         if (Employee != null)
         {
@@ -333,13 +365,7 @@ public class DataManager : Singleton<DataManager>
             }
         }
 
-        if (Resource != null)
-        {
-            foreach (KeyValuePair<string, ResourceEntry> kvp in Resource.GetAllResources())
-            {
-                saveData.resources.Add(new ResourceStateSaveData(kvp.Key, CloneState(kvp.Value.state)));
-            }
-        }
+        Resource?.CaptureTo(saveData);
 
         if (MarketActor != null)
         {
@@ -352,15 +378,26 @@ public class DataManager : Singleton<DataManager>
         foreach (IGameSaveHandler handler in _saveHandlers)
             handler.CaptureTo(saveData);
 
-        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        MainRunner sceneRunner = FindActiveBuildingSceneRunner();
         if (sceneRunner != null && sceneRunner.GridHandler != null)
         {
-            saveData.placedBuildings = sceneRunner.GridHandler.ExportPlacedBuildings();
+            List<PlacedBuildingSaveData> placedBuildings = new List<PlacedBuildingSaveData>();
+            placedBuildings.AddRange(sceneRunner.GridHandler.ExportPlacedBuildings());
+            if (sceneRunner.RawBuildingHandler != null)
+                placedBuildings.AddRange(sceneRunner.RawBuildingHandler.ExportPlacedBuildings());
+
+            saveData.placedBuildings = placedBuildings;
             saveData.placedRoads = sceneRunner.GridHandler.ExportPlacedRoads();
+        }
+        else
+        {
+            PlacedLayout?.CopyLayoutSnapshotTo(saveData);
         }
 
         if (BlueprintLayout != null)
             saveData.blueprintLayouts = BlueprintLayout.ExportSaveData();
+
+        CapturePanelTutorialsTo(saveData);
     }
 
     public void ApplyGameStateFrom(GameSaveData saveData)
@@ -370,15 +407,12 @@ public class DataManager : Singleton<DataManager>
             return;
         }
 
-        NormalizeLoadedSaveData(saveData);
-        LegacyIdMigration.MigrateSaveData(saveData);
-
-        if (Time != null)
-        {
-            Time.SetDate(saveData.year, saveData.month, saveData.day);
-            Time.SetTimeSpeed(saveData.timeSpeed);
-            Time.PauseTime();
-        }
+        Time?.ApplyFromSave(
+            saveData.year,
+            saveData.month,
+            saveData.day,
+            saveData.currentHour,
+            saveData.dayProgress);
 
         if (Employee != null)
         {
@@ -392,17 +426,7 @@ public class DataManager : Singleton<DataManager>
             }
         }
 
-        if (Resource != null)
-        {
-            foreach (ResourceStateSaveData resourceSave in saveData.resources)
-            {
-                ResourceEntry entry = Resource.GetResourceEntry(resourceSave.resourceId);
-                if (entry != null)
-                {
-                    entry.state = resourceSave.state;
-                }
-            }
-        }
+        Resource?.ApplyFromSave(saveData);
 
         if (MarketActor != null)
         {
@@ -416,11 +440,17 @@ public class DataManager : Singleton<DataManager>
             }
         }
 
-        foreach (IGameSaveHandler handler in _saveHandlers)
-            handler.ApplyFromSave(saveData);
-
         PlacedLayout?.SetFromSave(saveData.placedBuildings, saveData.placedRoads);
         BlueprintLayout?.SetFromSave(saveData.blueprintLayouts);
+
+        ApplyPanelTutorialsFrom(saveData);
+
+        Goal?.BeginLayoutRestore();
+        foreach (IGameSaveHandler handler in _saveHandlers)
+            handler.ApplyFromSave(saveData);
+        Goal?.EndLayoutRestore();
+
+        Resource?.NotifyResourceStateRestored();
     }
 
     /// <summary>
@@ -431,7 +461,7 @@ public class DataManager : Singleton<DataManager>
         if (count <= 0)
             return 0;
 
-        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        MainRunner sceneRunner = FindActiveBuildingSceneRunner();
         if (sceneRunner != null && sceneRunner.GridHandler != null)
             return sceneRunner.GridHandler.UnassignEmployeesFromLastBuildings(type, count);
 
@@ -447,7 +477,7 @@ public class DataManager : Singleton<DataManager>
 
     public int GetPlacedBuildingAssignedEmployeeCount(EmployeeType type)
     {
-        BuildingSceneRunnerBase sceneRunner = FindActiveBuildingSceneRunner();
+        MainRunner sceneRunner = FindActiveBuildingSceneRunner();
         if (sceneRunner != null && sceneRunner.GridHandler != null)
             return sceneRunner.GridHandler.GetTotalAssignedEmployeeCount(type);
 
@@ -467,43 +497,20 @@ public class DataManager : Singleton<DataManager>
         Employee.TryEnsureRequiredManagers();
     }
 
-    private static void NormalizeLoadedSaveData(GameSaveData data)
-    {
-        data.employees ??= new List<EmployeeStateSaveData>();
-        data.resources ??= new List<ResourceStateSaveData>();
-        data.marketActors ??= new List<MarketActorStateSaveData>();
-        data.monthlyCreditHistory ??= new List<long>();
-        data.monthlyWealthHistory ??= new List<long>();
-        data.researches ??= new List<ResearchStateSaveData>();
-        data.factoryPolicies ??= new List<PolicyStateSaveData>();
-        data.activeOrders ??= new List<OrderState>();
-        data.activeNews ??= new List<NewsState>();
-        data.activeUnionRequests ??= new List<UnionRequestState>();
-        data.effects ??= new EffectStateSaveData();
-        data.effects.globalEffects ??= new List<GlobalEffectStateSaveData>();
-        data.effects.instanceEffects ??= new List<InstanceEffectStateSaveData>();
-        data.placedBuildings ??= new List<PlacedBuildingSaveData>();
-        data.placedRoads ??= new List<PlacedRoadSaveData>();
-        data.blueprintLayouts ??= new List<BlueprintLayoutSaveData>();
-        data.tutorialAutoShowPending ??= new List<TutorialAutoShowPendingSaveData>();
-        data.activeGoals ??= new List<GoalActiveSaveData>();
-        data.completedGoalIds ??= new List<string>();
-    }
-
     private static T CloneState<T>(T state)
     {
         string json = JsonUtility.ToJson(state);
         return JsonUtility.FromJson<T>(json);
     }
 
-    private static BuildingSceneRunnerBase FindActiveBuildingSceneRunner()
+    private static MainRunner FindActiveBuildingSceneRunner()
     {
-        BuildingSceneRunnerBase sceneRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
+        MainRunner sceneRunner = UnityEngine.Object.FindAnyObjectByType<MainRunner>();
         if (sceneRunner != null)
             return sceneRunner;
 
-        BuildingSceneRunnerBase[] runners =
-            UnityEngine.Object.FindObjectsByType<BuildingSceneRunnerBase>(FindObjectsSortMode.None);
+        MainRunner[] runners =
+            UnityEngine.Object.FindObjectsByType<MainRunner>(FindObjectsSortMode.None);
         return runners.Length > 0 ? runners[0] : null;
     }
 }

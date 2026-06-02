@@ -4,6 +4,10 @@ using TMPro;
 
 public class ResearchInfoPopup : PopupBase
 {
+    [Header("Complete Feedback")]
+    [SerializeField] private RectTransform _researchActionButton;
+    [SerializeField] private AudioClip _researchCompleteSfx;
+
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _tireText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -12,14 +16,20 @@ public class ResearchInfoPopup : PopupBase
     [SerializeField] private TextMeshProUGUI _costPanelText;
 
     private ResearchEntry _currentResearchEntry;
-    private MainCanvas _mainUiManager;
-
     private GameManager _gameManager;
+    private static bool _skipCanvasCompleteSfxOnce;
+
+    public static bool ConsumeCanvasCompleteSfxSkip()
+    {
+        bool skip = _skipCanvasCompleteSfxOnce;
+        _skipCanvasCompleteSfxOnce = false;
+        return skip;
+    }
 
     public void Init(ResearchEntry researchEntry)
     {
         base.Init();
-        
+
         _gameManager = GameManager.Instance;
         _currentResearchEntry = researchEntry;
 
@@ -45,7 +55,6 @@ public class ResearchInfoPopup : PopupBase
         _costPanelText.text = _currentResearchEntry.data.researchPointCost.ToString();
 
         PoolingManager.Instance.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
-        PoolingManager.Instance.ClearChildrenToPool(_researchEffectScrollViewContentTransform);
         foreach (EffectData effectData in _currentResearchEntry.data.effects)
         {
             UIManager.Instance.CreateEffectTextPairPanel(_researchEffectScrollViewContentTransform, new EffectState(effectData));
@@ -57,10 +66,15 @@ public class ResearchInfoPopup : PopupBase
         if (!_dataManager.Research.TryUnlockResearch(_currentResearchEntry.data.id))
         {
             UIManager.Instance.ShowWarningPopup(WarningMessage.ResearchCannotUnlock);
+            return;
         }
-        else
-        {
-            Close();
-        }
+
+        _skipCanvasCompleteSfxOnce = true;
+
+        Transform feedbackTarget = _researchActionButton != null
+            ? _researchActionButton
+            : transform;
+        RequirementCompleteFeedbackUtils.Play(feedbackTarget, _researchCompleteSfx);
+        Close();
     }
 }

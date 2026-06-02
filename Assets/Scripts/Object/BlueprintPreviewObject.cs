@@ -10,6 +10,13 @@ public class BlueprintPreviewObject : MonoBehaviour
 
     private readonly List<SpriteRenderer> _spriteRenderers = new List<SpriteRenderer>();
 
+    private void Awake()
+    {
+        TextMeshPro[] texts = GetComponentsInChildren<TextMeshPro>(true);
+        for (int i = 0; i < texts.Length; i++)
+            texts[i].sortingOrder = WorldSortOrder.PreviewWorldText;
+    }
+
     public void SetBlueprintInfo(string blueprintName, long totalPrice)
     {
         if (_blueprintNameText != null)

@@ -15,10 +15,10 @@ MonoBehaviour:
   id: search_gold_mine_4
   displayName: 
   researchType: 1
-  icon: {fileID: 21300000, guid: 404b3dbc866512a408ffc7ec7da3a791, type: 3}
+  icon: {fileID: 21300000, guid: aa8d00e27ccab1849bedc4f246204afe, type: 3}
   description: 
   isDefaultUnlocked: 0
-  researchPointCost: 8000
+  researchPointCost: 16000
   unlockResearchList:
   - {fileID: 11400000, guid: 28fe060323076fc41a2dc609cfa95c66, type: 2}
   effects:

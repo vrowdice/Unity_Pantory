@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public partial class BuildingObject
 {
@@ -14,8 +15,18 @@ public partial class BuildingObject
     private bool CanCompleteUnloadBatch(DataManager dataManager)
     {
         UnloadStationData u = (UnloadStationData)_buildingData;
-        int outCap = u.outputBufferCapacity > 0 ? u.outputBufferCapacity : _maxOutputCapacity;
-        if (outCap > 0 && _outputBuffer.Count >= outCap) return false;
+        Dictionary<string, int> outputs = new Dictionary<string, int>
+        {
+            { _selectedResource.id, u.pullPerHour }
+        };
+        if (outputs.Count == 0
+            || _mainRunner == null
+            || _mainRunner.ResourceFlowHandler == null
+            || !_mainRunner.ResourceFlowHandler.CanAcceptBuildingOutputs(this, outputs))
+        {
+            return false;
+        }
+
         ResourceEntry entry = dataManager.Resource.GetResourceEntry(_selectedResource.id);
         return entry.state.count >= u.pullPerHour;
     }
@@ -25,7 +36,19 @@ public partial class BuildingObject
         UnloadStationData u = (UnloadStationData)_buildingData;
         int pull = u.pullPerHour;
         if (!dataManager.Resource.ModifyResourceCount(_selectedResource.id, -pull)) return false;
-        _outputBuffer.Enqueue(new ResourcePacket(_selectedResource.id, pull));
+
+        Dictionary<string, int> outputs = new Dictionary<string, int>
+        {
+            { _selectedResource.id, pull }
+        };
+        if (_mainRunner == null
+            || _mainRunner.ResourceFlowHandler == null
+            || !_mainRunner.ResourceFlowHandler.TryEmitBuildingOutputs(this, outputs))
+        {
+            dataManager.Resource.ModifyResourceCount(_selectedResource.id, pull);
+            return false;
+        }
+
         ResourceFlowFx.TryPlayFromWarehouse(_selectedResource, transform.position);
         return true;
     }

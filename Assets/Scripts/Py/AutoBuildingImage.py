@@ -26,7 +26,7 @@ elif GOOGLE_AI_API_KEY:
         print(f"Imagen 클라이언트 초기화 실패: {e}")
         imagen_client = None
 
-DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/Datas/Building")
+DATAS_PATH = os.path.join(PROJECT_ROOT, "Assets/ScriptableObjects/Building")
 IMAGES_PATH = os.path.join(PROJECT_ROOT, "Assets/Images/Building")
 
 def parse_asset_file(file_path):
@@ -107,7 +107,7 @@ CAMERA / VIEW (critical):
 REQUIREMENTS:
 - MANDATORY: Orthographic frontal view only — one flat face of the building toward the viewer, like a 2D game sprite or UI icon. No vanishing lines, no tilted horizon.
 - MANDATORY: This must be a completely flat 2D image, no 3D perspective, no depth, no shadows, no shading suggesting 3D
-- 512x512 pixels (size specification only, do not render as text)
+- 256x256 pixels (size specification only, do not render as text)
 - Pure white background #FFFFFF - this is just background, do not draw ground
 - Building width and height should be approximately equal (square proportions)
 - Casual pixel art style, sharp pixels, no anti-aliasing
@@ -131,8 +131,8 @@ def process_generated_image(img, item_name):
         if img.mode != 'RGB':
             img = img.convert('RGB')
         
-        # 512x512로 리사이즈
-        img = img.resize((512, 512), Image.Resampling.NEAREST)
+        # 256x256으로 리사이즈
+        img = img.resize((256, 256), Image.Resampling.NEAREST)
         
         print(f"  흰색 배경 이미지로 저장: {item_name}")
         

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetType: 4
   isGlobalEffect: 1
-  id: mine_max_placed
+  id: iron_mine_max_placed
   displayName: 
   statType: 8
   modifierType: 0
-  value: 30
+  value: 50
   durationDays: 0
-  targetId: mine
+  targetId: iron_mine

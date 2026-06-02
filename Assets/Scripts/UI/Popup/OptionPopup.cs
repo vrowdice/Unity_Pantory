@@ -143,7 +143,6 @@ public class OptionPopup : PopupBase
     {
         UIManager.Instance.ShowConfirmPopup(ConfirmMessage.ReplayTutorialConfirm, () =>
         {
-            SaveLoadManager.Instance?.StartNewGame(DataManager.Instance);
             SceneLoadManager.Instance.LoadScene("Tutorial");
             OnClickExit();
         });

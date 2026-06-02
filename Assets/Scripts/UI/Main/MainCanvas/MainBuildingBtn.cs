@@ -12,13 +12,13 @@ public class MainBuildingBtn : BtnBase
     [SerializeField] private TextMeshProUGUI _text = null;
     [SerializeField] private TextMeshProUGUI _placedCountText = null;
 
-    private IBuildingBuildHost _host = null;
+    private MainCanvas _host = null;
     private BuildingData _buildingData;
     private bool _isSelected = false;
 
     public BuildingData BuildingData => _buildingData;
 
-    public void Init(IBuildingBuildHost host, BuildingData buildingData, BuildingSceneRunnerBase runner)
+    public void Init(MainCanvas host, BuildingData buildingData, MainRunner runner)
     {
         _host = host;
         _buildingData = buildingData;
@@ -33,12 +33,7 @@ public class MainBuildingBtn : BtnBase
         EnsureClickBound();
     }
 
-    public void Init(MainCanvas host, BuildingData buildingData, MainRunner runner)
-    {
-        Init(host, buildingData, (BuildingSceneRunnerBase)runner);
-    }
-
-    public void RefreshPlacedCount(BuildingSceneRunnerBase runner)
+    public void RefreshPlacedCount(MainRunner runner)
     {
         if (_placedCountText == null || _buildingData == null)
         {

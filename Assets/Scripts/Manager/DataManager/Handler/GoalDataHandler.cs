@@ -16,6 +16,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
     private readonly HashSet<string> _completedGoalIds = new HashSet<string>();
 
     private bool _allGoalsCompleted;
+    private bool _suppressGoalEvaluation;
     private MainBuildingGridHandler _boundGridHandler;
 
     public IReadOnlyList<GoalState> ActiveGoals => _activeGoals;
@@ -68,6 +69,23 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         return _goalDict.TryGetValue(goalId, out GoalData goalData) ? goalData : null;
     }
 
+    public void BeginLayoutRestore()
+    {
+        _suppressGoalEvaluation = true;
+    }
+
+    public void EndLayoutRestore()
+    {
+        if (!_suppressGoalEvaluation)
+            return;
+
+        _suppressGoalEvaluation = false;
+        EvaluateAllActiveGoals();
+
+        if (_activeGoals.Count > 0)
+            NotifyActiveGoalsChanged();
+    }
+
     public void BindSceneGrid(MainBuildingGridHandler gridHandler)
     {
         if (gridHandler == null)
@@ -77,7 +95,9 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         _boundGridHandler = gridHandler;
         _boundGridHandler.OnBuildingInstanceLayoutChanged -= EvaluateAllActiveGoals;
         _boundGridHandler.OnBuildingInstanceLayoutChanged += EvaluateAllActiveGoals;
-        EvaluateAllActiveGoals();
+
+        if (!_suppressGoalEvaluation)
+            EvaluateAllActiveGoals();
     }
 
     public void UnbindSceneGrid()
@@ -174,13 +194,22 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         if (_allGoalsCompleted)
             return;
 
-        if (RestoreActiveGoalsFromSave(saveData))
-            EvaluateAllActiveGoals();
-        else
-            UnlockDefaultGoals();
+        if (!RestoreActiveGoalsFromSave(saveData))
+            UnlockDefaultGoalEntries();
     }
 
     private void UnlockDefaultGoals()
+    {
+        UnlockDefaultGoalEntries();
+
+        if (_activeGoals.Count == 0)
+            return;
+
+        NotifyActiveGoalsChanged();
+        EvaluateAllActiveGoals();
+    }
+
+    private void UnlockDefaultGoalEntries()
     {
         if (_allGoalsCompleted)
             return;
@@ -192,12 +221,6 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
 
             TryUnlockGoal(goalData.id, resetProduceProgress: true);
         }
-
-        if (_activeGoals.Count == 0)
-            return;
-
-        NotifyActiveGoalsChanged();
-        EvaluateAllActiveGoals();
     }
 
     private bool RestoreActiveGoalsFromSave(GameSaveData saveData)
@@ -266,6 +289,9 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
         return -1;
     }
 
+    /// <summary>
+    /// 채굴·벌목 등 플레이어 보유량에 직접 반영되는 생산(원자재 공장) 진행을 갱신합니다.
+    /// </summary>
     private void HandleResourceChanged()
     {
         if (_allGoalsCompleted || _activeGoals.Count == 0)
@@ -283,17 +309,52 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
                 snapshot = current;
 
             if (current > snapshot)
-            {
-                long progress = _produceProgressByGoalId.TryGetValue(goalId, out long existingProgress)
-                    ? existingProgress
-                    : 0;
-                _produceProgressByGoalId[goalId] = progress + (current - snapshot);
-            }
+                AddProduceProgress(goalId, current - snapshot);
 
             _produceResourceSnapshotByGoalId[goalId] = current;
         }
 
         EvaluateAllActiveGoals();
+    }
+
+    /// <summary>
+    /// 가공 건물 등 도로로 배출되는 생산량을 목표 진행에 반영합니다.
+    /// </summary>
+    public void NotifyResourceProduced(string resourceId, int amount)
+    {
+        if (_allGoalsCompleted || _activeGoals.Count == 0 || string.IsNullOrEmpty(resourceId) || amount <= 0)
+            return;
+
+        bool anyUpdated = false;
+
+        for (int i = 0; i < _activeGoals.Count; i++)
+        {
+            string goalId = _activeGoals[i].goalId;
+            GoalData goalData = GetGoalData(goalId);
+            if (goalData == null
+                || goalData.conditionType != GoalConditionType.ProduceResource
+                || goalData.targetId != resourceId)
+            {
+                continue;
+            }
+
+            AddProduceProgress(goalId, amount);
+            anyUpdated = true;
+        }
+
+        if (anyUpdated)
+            EvaluateAllActiveGoals();
+    }
+
+    private void AddProduceProgress(string goalId, long amount)
+    {
+        if (amount <= 0)
+            return;
+
+        long progress = _produceProgressByGoalId.TryGetValue(goalId, out long existingProgress)
+            ? existingProgress
+            : 0;
+        _produceProgressByGoalId[goalId] = progress + amount;
     }
 
     private void HandleResearchCompleted(string researchId)
@@ -303,7 +364,7 @@ public class GoalDataHandler : IDataHandlerEvents, ICrossHandlerEvents, IGameSav
 
     private void EvaluateAllActiveGoals()
     {
-        if (_allGoalsCompleted || _activeGoals.Count == 0)
+        if (_suppressGoalEvaluation || _allGoalsCompleted || _activeGoals.Count == 0)
             return;
 
         bool progressChanged = false;

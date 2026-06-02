@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: union_request_collective_bonus
   description: Workers demand a one-time collective bonus payment.
-  requireCredit: 50000
-  creditScaleFactor: 1
-  requireResource:
-    resource: {fileID: 0}
-    count: 0
-  resourceScaleFactor: 0.05
-  requirePolicy: {fileID: 0}
-  rewardCohesion: 8
+  conditionType: 1
+  targetId: 
+  targetValue: 5000
+  scaleFactor: 0.4
+  rewardCohesion: 3

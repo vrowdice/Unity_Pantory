@@ -2,7 +2,7 @@ using Evo.UI;
 using TMPro;
 using UnityEngine;
 
-public class UnionPopupRequestBtn : BtnBase
+public class UnionPopupRequestBtn : EntryListBtnBase
 {
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -18,23 +18,31 @@ public class UnionPopupRequestBtn : BtnBase
     [SerializeField] private Switch _policySwitch;
 
     [SerializeField] private GameObject _completeImage;
+    [SerializeField] private RectTransform _completeAnimationTarget;
     [SerializeField] private TextMeshProUGUI _rewardCohesionText;
 
     private UnionRequestState _requestState;
     private UnionRequestData _requestTemplate;
     private DataManager _dataManager;
     private UnionPopup _unionPopup;
+    private AudioClip _requirementCompleteSfx;
+    private bool _wasRequirementsReady;
 
-    public void Init(UnionRequestState requestState, DataManager dataManager, UnionPopup unionPopup)
+    public void Init(UnionRequestState requestState, DataManager dataManager, UnionPopup unionPopup, AudioClip requirementCompleteSfx)
     {
+        bool isNewBinding = _requestState != requestState;
         _requestState = requestState;
         _dataManager = dataManager;
         _unionPopup = unionPopup;
+        _requirementCompleteSfx = requirementCompleteSfx;
+        if (isNewBinding)
+            _wasRequirementsReady = false;
+
         _requestTemplate = _dataManager?.UnionRequest?.GetUnionRequestData(requestState.id);
-        RefreshUI();
+        Refresh();
     }
 
-    public void RefreshUI()
+    public override void Refresh()
     {
         if (_requestState == null || _dataManager == null)
         {
@@ -120,36 +128,23 @@ public class UnionPopupRequestBtn : BtnBase
 
     private UnionRequestConditionType GetConditionType()
     {
-        if (_requestState.requireCredit > 0)
-        {
-            return UnionRequestConditionType.Credit;
-        }
-
-        if (!string.IsNullOrEmpty(_requestState.requireResourceId) && _requestState.requireResourceCount > 0)
-        {
-            return UnionRequestConditionType.Resource;
-        }
-
-        if (!string.IsNullOrEmpty(_requestState.requiredPolicyId))
-        {
-            return UnionRequestConditionType.Policy;
-        }
-
-        return UnionRequestConditionType.None;
+        return _requestState != null ? _requestState.conditionType : UnionRequestConditionType.None;
     }
 
     private void RefreshCreditConditionUI()
     {
-        if (_creditCostText == null)
+        if (_creditCostText == null || _requestState == null)
         {
             return;
         }
 
-        _creditCostText.text = ReplaceUtils.FormatNumberWithCommas(_requestState.requireCredit);
+        _creditCostText.text = ReplaceUtils.FormatNumberWithCommas(_requestState.targetValue);
     }
 
     private void RefreshResourceConditionUI()
     {
+        if (_requestState == null) return;
+
         OrderRequireResourceItemPanel resourcePanel = _resourceItemPanel;
         if (resourcePanel == null && _resourceConditionContainer != null)
         {
@@ -161,23 +156,25 @@ public class UnionPopupRequestBtn : BtnBase
             return;
         }
 
-        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(_requestState.requireResourceId);
+        ResourceEntry resourceEntry = _dataManager.Resource.GetResourceEntry(_requestState.targetId);
         if (resourceEntry == null)
         {
             return;
         }
 
-        resourcePanel.Init(resourceEntry, _requestState.requireResourceCount);
+        resourcePanel.Init(resourceEntry, (int)_requestState.targetValue);
     }
 
     private void RefreshPolicyConditionUI()
     {
-        PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(_requestState.requiredPolicyId);
+        if (_requestState == null) return;
+
+        PolicyEntry policyEntry = _dataManager.Policy.GetPolicyEntry(_requestState.targetId);
         if (_policyRequirementText != null)
         {
             _policyRequirementText.text = policyEntry?.data != null
                 ? policyEntry.data.id.Localize(LocalizationUtils.TABLE_POLICY)
-                : _requestState.requiredPolicyId;
+                : _requestState.targetId;
         }
 
         if (_policySwitch != null)
@@ -218,5 +215,27 @@ public class UnionPopupRequestBtn : BtnBase
         {
             _completeImage.SetActive(canFulfill);
         }
+
+        Transform target = GetCompleteAnimationTarget();
+        RequirementCompleteFeedbackUtils.NotifyBecameReady(
+            ref _wasRequirementsReady,
+            canFulfill,
+            target,
+            _requirementCompleteSfx);
+    }
+
+    private Transform GetCompleteAnimationTarget()
+    {
+        if (_completeAnimationTarget != null)
+            return _completeAnimationTarget;
+
+        if (_completeImage != null && _completeImage.activeSelf)
+            return _completeImage.transform;
+
+        Evo.UI.Button button = ResolveButton();
+        if (button != null)
+            return button.transform;
+
+        return transform;
     }
 }

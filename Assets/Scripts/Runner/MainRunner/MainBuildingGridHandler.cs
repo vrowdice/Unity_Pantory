@@ -3,44 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-/// <summary>
-/// 메인에서 사용하는 건물 그리드/점유/오브젝트 생성 핸들러.
-/// </summary>
 public class MainBuildingGridHandler
 {
-    private readonly BuildingSceneRunnerBase _mainRunner;
+    private readonly MainRunner _mainRunner;
     private readonly DataManager _dataManager;
 
     private readonly Transform _tileParent;
     private readonly Transform _buildingParent;
     private readonly Transform _roadParent;
 
-    private readonly Dictionary<string, BuildingObject> _rawResourceBuildingObjDict = new();
     private readonly Dictionary<string, BuildingObject> _buildingObjDict = new();
     private readonly Dictionary<string, RoadObject> _roadObjDict = new();
     private readonly Dictionary<string, DualLaneRoadObject> _dualLaneRoadObjDict = new();
 
-    private readonly Dictionary<string, int> _buildingOutputRoundRobinIndex = new();
     private readonly Dictionary<Vector2Int, string> _occupiedAsObjectDict = new();
-    private readonly Dictionary<Vector2Int, BuildingTile> _tileDict = new();
 
     private const float TileZ = 10f;
     private const float BuildingZ = 9f;
-    private const float TileViewportCullMargin = 0.75f;
-    private const int TileViewportCullPaddingCells = 2;
-
-    private Vector2Int _lastVisibleCellMin;
-    private Vector2Int _lastVisibleCellMax;
-    private bool _tileViewportCullInitialized;
-    private bool _tileOverviewModeActive;
-    private float _lastTileZoomOrthoSize = -1f;
-
-    private GameObject _gridOverviewObj;
-    private SpriteRenderer _gridOverviewRenderer;
 
     public event Action OnBuildingInstanceLayoutChanged;
 
-    public MainBuildingGridHandler(BuildingSceneRunnerBase runner)
+    public Dictionary<string, BuildingObject> BuildingObjDict => _buildingObjDict;
+    public Dictionary<string, RoadObject> RoadObjDict => _roadObjDict;
+    public Dictionary<string, DualLaneRoadObject> DualLaneRoadObjDict => _dualLaneRoadObjDict;
+    public Dictionary<Vector2Int, string> OccupiedAsObjectDict => _occupiedAsObjectDict;
+    public Transform TileParent => _tileParent;
+    public Transform BuildingParent => _buildingParent;
+    public Transform RoadParent => _roadParent;
+    private bool AllowRawBuildingPlacement => _mainRunner.AllowRawBuildingPlacement;
+
+    public IEnumerable<IBuilding> GetAllBuildings()
+    {
+        foreach (var building in _buildingObjDict.Values)
+            yield return building;
+    }
+
+    public MainBuildingGridHandler(MainRunner runner)
     {
         _mainRunner = runner;
         _dataManager = DataManager.Instance;
@@ -50,148 +48,25 @@ public class MainBuildingGridHandler
         _roadParent = CreateChildTransform(runner.transform, "Roads");
     }
 
-    public void CreateGrid(int width, int height)
-    {
-        ClearGrid();
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                Vector2Int p = new Vector2Int(x, y);
-                GameObject tileObj = MonoBehaviour.Instantiate(_mainRunner.TilePrefab, _tileParent);
-                tileObj.transform.localPosition = new Vector3(x, -y, TileZ);
-
-                if (!tileObj.TryGetComponent(out BuildingTile tile))
-                    tile = tileObj.AddComponent<BuildingTile>();
-
-                tile.Initialize(p);
-                _tileDict[p] = tile;
-            }
-        }
-
-        _tileViewportCullInitialized = false;
-        EnsureGridOverview(_mainRunner.GridWidth, _mainRunner.GridHeight);
-    }
-
-    public void ClearGrid()
-    {
-        ClearAllBuildings();
-
-        foreach (BuildingTile tile in _tileDict.Values)
-            MonoBehaviour.Destroy(tile.gameObject);
-        _tileDict.Clear();
-        _tileViewportCullInitialized = false;
-        _tileOverviewModeActive = false;
-        _lastTileZoomOrthoSize = -1f;
-        DestroyGridOverview();
-    }
-
-    /// <summary>
-    /// 줌 아웃 시 단일 그리드 스프라이트, 줌 인 시 개별 타일(+뷰포트 컬링)을 전환합니다.
-    /// </summary>
-    public void RefreshTileZoomVisuals(Camera camera)
-    {
-        if (camera == null || _tileDict.Count == 0)
-            return;
-
-        if (!camera.orthographic)
-        {
-            ApplyTileDetailMode(camera, forceDetail: true);
-            return;
-        }
-
-        float orthoSize = camera.orthographicSize;
-        if (_lastTileZoomOrthoSize >= 0f &&
-            Mathf.Approximately(orthoSize, _lastTileZoomOrthoSize) &&
-            _tileOverviewModeActive == (orthoSize >= _mainRunner.TileOverviewOrthographicSizeThreshold))
-        {
-            if (!_tileOverviewModeActive)
-                RefreshTileViewportCulling(camera);
-            return;
-        }
-
-        _lastTileZoomOrthoSize = orthoSize;
-        bool useOverview = orthoSize >= _mainRunner.TileOverviewOrthographicSizeThreshold;
-        if (useOverview)
-            ApplyTileOverviewMode();
-        else
-            ApplyTileDetailMode(camera, forceDetail: false);
-    }
-
-    private void ApplyTileOverviewMode()
-    {
-        if (_tileOverviewModeActive)
-            return;
-
-        _tileOverviewModeActive = true;
-        _tileViewportCullInitialized = false;
-
-        if (_gridOverviewRenderer != null)
-            _gridOverviewRenderer.enabled = true;
-
-        foreach (BuildingTile tile in _tileDict.Values)
-            tile.SetDetailRenderingEnabled(false);
-    }
-
-    private void ApplyTileDetailMode(Camera camera, bool forceDetail)
-    {
-        bool wasOverview = _tileOverviewModeActive;
-        _tileOverviewModeActive = false;
-
-        if (_gridOverviewRenderer != null)
-            _gridOverviewRenderer.enabled = false;
-
-        foreach (BuildingTile tile in _tileDict.Values)
-            tile.SetDetailRenderingEnabled(true);
-
-        if (wasOverview || forceDetail)
-            _tileViewportCullInitialized = false;
-
-        RefreshTileViewportCulling(camera);
-    }
-
-    /// <summary>
-    /// 카메라 뷰포트 밖 타일 스프라이트를 끕니다. 범위가 바뀔 때만 전체 타일을 갱신합니다.
-    /// </summary>
-    public void RefreshTileViewportCulling(Camera camera)
-    {
-        if (camera == null || _tileDict.Count == 0 || _tileOverviewModeActive)
-            return;
-
-        if (!TryGetVisibleGridCellRange(camera, out Vector2Int cellMin, out Vector2Int cellMax))
-            return;
-
-        if (_tileViewportCullInitialized &&
-            cellMin == _lastVisibleCellMin &&
-            cellMax == _lastVisibleCellMax)
-            return;
-
-        _lastVisibleCellMin = cellMin;
-        _lastVisibleCellMax = cellMax;
-        _tileViewportCullInitialized = true;
-
-        foreach (KeyValuePair<Vector2Int, BuildingTile> pair in _tileDict)
-        {
-            Vector2Int gridPos = pair.Key;
-            bool inView = gridPos.x >= cellMin.x && gridPos.x <= cellMax.x &&
-                          gridPos.y >= cellMin.y && gridPos.y <= cellMax.y;
-            pair.Value.SetViewportCulled(!inView);
-        }
-    }
-
     public void ClearAllBuildings()
+    {
+        ClearGridBuildingsOnly();
+
+        if (_mainRunner.RawBuildingHandler != null)
+            _mainRunner.RawBuildingHandler.ClearAllBuildings();
+    }
+
+    /// <summary>그리드·도로만 제거합니다. 세이브 복원 시 대표 원자재 건물은 별도로 다룹니다.</summary>
+    public void ClearGridBuildingsOnly()
     {
         _dataManager.Finances.ClearPlacedBuildingMaintenanceTotal();
 
-        foreach (BuildingObject building in _buildingObjDict.Values)
+        foreach (IBuilding building in GetAllBuildings())
         {
             building.ReleaseAssignedEmployees();
             MonoBehaviour.Destroy(building.gameObject);
         }
         _buildingObjDict.Clear();
-        _rawResourceBuildingObjDict.Clear();
-        _buildingOutputRoundRobinIndex.Clear();
 
         foreach (RoadObject road in _roadObjDict.Values)
             MonoBehaviour.Destroy(road.gameObject);
@@ -203,15 +78,18 @@ public class MainBuildingGridHandler
 
         _occupiedAsObjectDict.Clear();
 
-        foreach (BuildingTile tile in _tileDict.Values)
-            tile.SetOccupied(false);
+        if (_mainRunner.TileGridHandler != null)
+        {
+            foreach (BuildingTile tile in _mainRunner.TileGridHandler.TileDict.Values)
+                tile.SetOccupied(false);
+        }
     }
 
     public List<PlacedBuildingSaveData> ExportPlacedBuildings()
     {
-        List<PlacedBuildingSaveData> list = new List<PlacedBuildingSaveData>(_buildingObjDict.Count);
+        List<PlacedBuildingSaveData> list = new List<PlacedBuildingSaveData>();
 
-        foreach (BuildingObject building in _buildingObjDict.Values)
+        foreach (IBuilding building in GetAllBuildings())
         {
             if (building.IsRemovalAnimating) continue;
             list.Add(building.ExportSaveData());
@@ -252,6 +130,52 @@ public class MainBuildingGridHandler
         return list;
     }
 
+    /// <summary>선택 사각형과 겹치는 배치물 발자국(건물·도로)을 수집합니다.</summary>
+    public void CollectFootprintsIntersectingGridRect(
+        Vector2Int cellMin,
+        Vector2Int cellMax,
+        List<Vector2Int> origins,
+        List<Vector2Int> sizes)
+    {
+        origins.Clear();
+        sizes.Clear();
+        ClampRectToGrid(ref cellMin, ref cellMax);
+
+        foreach (BuildingObject building in _buildingObjDict.Values)
+        {
+            if (building.IsRemovalAnimating)
+                continue;
+
+            Vector2Int origin = building.Origin;
+            Vector2Int footprint = building.Size;
+            if (!IntersectsGridRect(origin, footprint, cellMin, cellMax))
+                continue;
+
+            origins.Add(origin);
+            sizes.Add(footprint);
+        }
+
+        foreach (RoadObject road in _roadObjDict.Values)
+        {
+            Vector2Int origin = road.GridPosition;
+            if (!IsCellInGridRect(origin, cellMin, cellMax))
+                continue;
+
+            origins.Add(origin);
+            sizes.Add(Vector2Int.one);
+        }
+
+        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
+        {
+            Vector2Int origin = dualRoad.GridPosition;
+            if (!IsCellInGridRect(origin, cellMin, cellMax))
+                continue;
+
+            origins.Add(origin);
+            sizes.Add(Vector2Int.one);
+        }
+    }
+
     public List<PlacedRoadSaveData> ExportRoadsIntersectingGridRect(Vector2Int cellMin, Vector2Int cellMax)
     {
         ClampRectToGrid(ref cellMin, ref cellMax);
@@ -275,9 +199,6 @@ public class MainBuildingGridHandler
         return list;
     }
 
-    /// <summary>
-    /// 마지막으로 배치된 건물부터 직원 할당을 해제합니다.
-    /// </summary>
     public int UnassignEmployeesFromLastBuildings(EmployeeType type, int count)
     {
         if (count <= 0)
@@ -286,7 +207,7 @@ public class MainBuildingGridHandler
         int removed = 0;
         for (int i = _buildingParent.childCount - 1; i >= 0 && removed < count; i--)
         {
-            if (!_buildingParent.GetChild(i).TryGetComponent(out BuildingObject building) ||
+            if (!_buildingParent.GetChild(i).TryGetComponent(out IBuilding building) ||
                 building.IsRemovalAnimating)
                 continue;
 
@@ -323,7 +244,7 @@ public class MainBuildingGridHandler
     public int GetTotalAssignedEmployeeCount(EmployeeType type)
     {
         int total = 0;
-        foreach (BuildingObject building in _buildingObjDict.Values)
+        foreach (IBuilding building in GetAllBuildings())
         {
             if (building.IsRemovalAnimating) continue;
             total += type == EmployeeType.Worker
@@ -331,12 +252,17 @@ public class MainBuildingGridHandler
                 : building.AssignedTechnicians;
         }
 
+        if (_mainRunner.RawBuildingHandler != null)
+        {
+            total += _mainRunner.RawBuildingHandler.GetTotalAssignedEmployeeCount(type);
+        }
+
         return total;
     }
 
     public void RestoreFromSave(List<PlacedBuildingSaveData> buildings, List<PlacedRoadSaveData> roads)
     {
-        ClearAllBuildings();
+        ClearGridBuildingsOnly();
 
         if (roads != null)
         {
@@ -379,108 +305,6 @@ public class MainBuildingGridHandler
         return new Vector2Int(Mathf.RoundToInt(lp.x), Mathf.RoundToInt(-lp.y));
     }
 
-    private bool TryGetVisibleGridCellRange(Camera camera, out Vector2Int cellMin, out Vector2Int cellMax)
-    {
-        cellMin = default;
-        cellMax = default;
-
-        if (!camera.orthographic)
-            return false;
-
-        float halfHeight = camera.orthographicSize + TileViewportCullMargin;
-        float halfWidth = halfHeight * camera.aspect;
-        Vector3 center = camera.transform.position;
-
-        Vector3 worldMin = new Vector3(center.x - halfWidth, center.y - halfHeight, 0f);
-        Vector3 worldMax = new Vector3(center.x + halfWidth, center.y + halfHeight, 0f);
-
-        Vector2Int g0 = WorldToGridPosition(worldMin);
-        Vector2Int g1 = WorldToGridPosition(worldMax);
-        Vector2Int g2 = WorldToGridPosition(new Vector3(worldMin.x, worldMax.y, 0f));
-        Vector2Int g3 = WorldToGridPosition(new Vector3(worldMax.x, worldMin.y, 0f));
-
-        int minX = Mathf.Min(g0.x, g1.x, g2.x, g3.x);
-        int maxX = Mathf.Max(g0.x, g1.x, g2.x, g3.x);
-        int minY = Mathf.Min(g0.y, g1.y, g2.y, g3.y);
-        int maxY = Mathf.Max(g0.y, g1.y, g2.y, g3.y);
-
-        int gridMaxX = _mainRunner.GridWidth - 1;
-        int gridMaxY = _mainRunner.GridHeight - 1;
-
-        cellMin = new Vector2Int(
-            Mathf.Clamp(minX - TileViewportCullPaddingCells, 0, gridMaxX),
-            Mathf.Clamp(minY - TileViewportCullPaddingCells, 0, gridMaxY));
-        cellMax = new Vector2Int(
-            Mathf.Clamp(maxX + TileViewportCullPaddingCells, 0, gridMaxX),
-            Mathf.Clamp(maxY + TileViewportCullPaddingCells, 0, gridMaxY));
-
-        return true;
-    }
-
-    private void EnsureGridOverview(int width, int height)
-    {
-        DestroyGridOverview();
-
-        GameObject tilePrefab = _mainRunner.TilePrefab;
-        if (tilePrefab == null)
-            return;
-
-        SpriteRenderer referenceRenderer = tilePrefab.GetComponentInChildren<SpriteRenderer>();
-        if (referenceRenderer == null || referenceRenderer.sprite == null)
-            return;
-
-        _gridOverviewObj = new GameObject("GridTileOverview");
-        _gridOverviewObj.transform.SetParent(_tileParent, worldPositionStays: false);
-        _gridOverviewObj.transform.localPosition = new Vector3((width - 1) * 0.5f, -(height - 1) * 0.5f, TileZ);
-
-        _gridOverviewRenderer = _gridOverviewObj.AddComponent<SpriteRenderer>();
-        _gridOverviewRenderer.sprite = referenceRenderer.sprite;
-        _gridOverviewRenderer.color = referenceRenderer.color;
-        _gridOverviewRenderer.sortingLayerID = referenceRenderer.sortingLayerID;
-        _gridOverviewRenderer.sortingOrder = referenceRenderer.sortingOrder;
-        _gridOverviewRenderer.drawMode = SpriteDrawMode.Tiled;
-        _gridOverviewRenderer.size = new Vector2(width, height);
-        ApplyGridOverviewPatternDensity(referenceRenderer, width, height);
-        _gridOverviewRenderer.enabled = false;
-    }
-
-    private void ApplyGridOverviewPatternDensity(SpriteRenderer referenceRenderer, int width, int height)
-    {
-        if (_gridOverviewRenderer == null || referenceRenderer == null || referenceRenderer.sprite == null)
-            return;
-
-        float density = _mainRunner.TileOverviewPatternDensity;
-        Vector2 spriteBounds = referenceRenderer.sprite.bounds.size;
-
-        // 그리드 덮개(world = width×height)는 localScale (1,1,1) + size (width,height)가 맞음.
-        // 밀도만 올릴 때 scale을 줄이면 전체가 작아지므로 size를 같이 키워 world 크기를 유지한다.
-        if (Mathf.Approximately(density, 1f))
-        {
-            _gridOverviewObj.transform.localScale = Vector3.one;
-            _gridOverviewRenderer.size = new Vector2(width, height);
-            return;
-        }
-
-        float period = 1f / density;
-        float scaleX = period / Mathf.Max(0.001f, spriteBounds.x);
-        float scaleY = period / Mathf.Max(0.001f, spriteBounds.y);
-
-        _gridOverviewObj.transform.localScale = new Vector3(scaleX, scaleY, 1f);
-        _gridOverviewRenderer.size = new Vector2(
-            width / Mathf.Max(0.001f, scaleX),
-            height / Mathf.Max(0.001f, scaleY));
-    }
-
-    private void DestroyGridOverview()
-    {
-        if (_gridOverviewObj != null)
-        {
-            MonoBehaviour.Destroy(_gridOverviewObj);
-            _gridOverviewObj = null;
-            _gridOverviewRenderer = null;
-        }
-    }
-
     public Vector3 GridToWorldPosition(Vector2Int gridPos, Vector2Int size)
     {
         float cx = gridPos.x + (size.x - 1) * 0.5f;
@@ -516,10 +340,18 @@ public class MainBuildingGridHandler
         return true;
     }
 
-    public int CountPlacedBuildingsWithId(string buildingDataId)
+    public virtual int CountPlacedBuildingsWithId(string buildingDataId)
     {
         if (string.IsNullOrEmpty(buildingDataId))
             return 0;
+
+        BuildingData data = _dataManager.Building.GetBuildingData(buildingDataId);
+        if (data is RawMaterialFactoryData && !AllowRawBuildingPlacement)
+        {
+            if (_mainRunner.RawBuildingHandler != null)
+                return _mainRunner.RawBuildingHandler.CountPlacedBuildingsWithId(buildingDataId);
+            return 0;
+        }
 
         int count = 0;
         foreach (BuildingObject building in _buildingObjDict.Values)
@@ -552,10 +384,56 @@ public class MainBuildingGridHandler
             if (building.BuildingData.id == buildingDataId && building.HasConfiguredOutputResource)
                 return true;
         }
+
+        if (_mainRunner.RawBuildingHandler != null && _mainRunner.RawBuildingHandler.AnyPlacedBuildingHasConfiguredOutputResource(buildingDataId))
+            return true;
+
         return false;
     }
 
     public bool IsCellOccupied(Vector2Int position) => _occupiedAsObjectDict.ContainsKey(position);
+
+    public bool TryGetPlacedGameObjectAt(Vector2Int gridPosition, out GameObject placedObject)
+    {
+        placedObject = null;
+        if (!_occupiedAsObjectDict.TryGetValue(gridPosition, out string key))
+            return false;
+
+        if (_roadObjDict.TryGetValue(key, out RoadObject road))
+        {
+            placedObject = road.gameObject;
+            return true;
+        }
+
+        if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualLaneRoad))
+        {
+            placedObject = dualLaneRoad.gameObject;
+            return true;
+        }
+
+        if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
+        {
+            placedObject = building.gameObject;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryGetRoadAt(Vector2Int gridPosition, out RoadObject road)
+    {
+        road = null;
+        if (!_occupiedAsObjectDict.TryGetValue(gridPosition, out string key))
+            return false;
+
+        if (_roadObjDict.TryGetValue(key, out RoadObject foundRoad))
+        {
+            road = foundRoad;
+            return true;
+        }
+
+        return false;
+    }
 
     public virtual bool CanPlaceMoreInstances(BuildingData data)
     {
@@ -566,7 +444,13 @@ public class MainBuildingGridHandler
         return max > 0 && CountPlacedBuildingsWithId(data.id) < max;
     }
 
-    public bool TryPlaceRoad(BuildingData roadData, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
+    public bool TryPlaceRoad(
+        BuildingData roadData,
+        Vector2Int position,
+        int rotation,
+        out GameObject placed,
+        out bool insufficientCredits,
+        bool playSound = true)
     {
         placed = null;
         insufficientCredits = false;
@@ -582,6 +466,7 @@ public class MainBuildingGridHandler
             return false;
 
         ApplyPlacementFinances(roadData);
+        _mainRunner.PlayBuildFeedbackAt(placed.transform.position, playSound);
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
     }
@@ -618,17 +503,17 @@ public class MainBuildingGridHandler
 
         RegisterPlacedBuilding(building, data, origin, rotatedSize);
         building.PlayPlaceEntranceAnimation(targetLocalScale);
-        GameManager.Instance.MainCameraController.ShakeForConstruction();
+        _mainRunner.PlayGridBuildingBuildFeedback(building.transform.position, playSound: false, shakeCamera: false);
         ApplyPlacementFinances(data);
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
     }
 
-    public bool TryPlaceBuilding(BuildingData data, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
+    public virtual bool TryPlaceBuilding(BuildingData data, Vector2Int position, int rotation, out GameObject placed, out bool insufficientCredits)
     {
         placed = null;
         insufficientCredits = false;
-        if (data == null || data.buildingSprite == null || !CanPlaceMoreInstances(data))
+        if (data == null || (data is RawMaterialFactoryData && !AllowRawBuildingPlacement) || data.buildingSprite == null || !CanPlaceMoreInstances(data))
             return false;
 
         if (data.buildCost > 0 && _dataManager.Finances.Credit < data.buildCost)
@@ -647,7 +532,7 @@ public class MainBuildingGridHandler
 
         RegisterPlacedBuilding(building, data, position, rotatedSize);
         building.PlayPlaceEntranceAnimation(targetLocalScale);
-        GameManager.Instance.MainCameraController.ShakeForConstruction();
+        _mainRunner.PlayGridBuildingBuildFeedback(building.transform.position, playSound: true, shakeCamera: true);
         ApplyPlacementFinances(data);
 
         placed = building.gameObject;
@@ -661,172 +546,51 @@ public class MainBuildingGridHandler
             return false;
 
         if (_roadObjDict.TryGetValue(key, out RoadObject road))
-            return RemoveRoadInstance(road.GridPosition, key, road.SourceBuildingData, road.gameObject, _roadObjDict);
+            return RemoveRoadInstance(road.GridPosition, key, road.RoadData, road.gameObject, _roadObjDict);
 
         if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualRoad))
-            return RemoveRoadInstance(dualRoad.GridPosition, key, dualRoad.SourceBuildingData, dualRoad.gameObject, _dualLaneRoadObjDict);
+            return RemoveRoadInstance(dualRoad.GridPosition, key, dualRoad.RoadData, dualRoad.gameObject, _dualLaneRoadObjDict);
 
         if (!_buildingObjDict.TryGetValue(key, out BuildingObject building) || building.IsRemovalAnimating)
             return false;
 
         Vector2Int origin = building.Origin;
         Vector2Int size = building.Size;
+        _mainRunner.PlayGridBuildingRemovalFeedback(building.transform.position, playSound: true);
         building.PlayRemovalAnimation(() =>
         {
             building.ReleaseAssignedEmployees();
             _dataManager.Finances.UnregisterPlacedBuildingMaintenance(building.BuildingData);
             UnregisterOccupancy(origin, size);
             _buildingObjDict.Remove(key);
-            _rawResourceBuildingObjDict.Remove(key);
-            _buildingOutputRoundRobinIndex.Remove(key);
             MonoBehaviour.Destroy(building.gameObject);
             OnBuildingInstanceLayoutChanged?.Invoke();
         });
         return true;
     }
 
-    public void OnMainHourChanged()
+    public bool TryGetResourceNodeAtCell(Vector2Int pos, out IResourceNode node)
     {
-        foreach (BuildingObject building in _buildingObjDict.Values)
-        {
-            if (building.IsRemovalAnimating) continue;
-            building.TickSimulation(_dataManager);
-        }
-
-        TickResourceFlowFull();
-    }
-
-    public void TickResourceFlowFull()
-    {
-        foreach (RoadObject road in _roadObjDict.Values)
-            road.ResetRoadForwardGatesForQueuedPackets();
-        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
-            dualRoad.ResetRoadForwardGatesForQueuedPackets();
-
-        foreach (RoadObject road in _roadObjDict.Values)
-        {
-            if (road.IsEmpty) continue;
-
-            foreach (Vector2Int outCell in road.OutputGridPositions)
-            {
-                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
-                if (ReferenceEquals(road, destNode)) continue;
-                road.TryForwardTo(destNode, DirectionFromDelta(outCell - road.GridPosition));
-                break;
-            }
-        }
-
-        foreach (DualLaneRoadObject dualRoad in _dualLaneRoadObjDict.Values)
-        {
-            if (dualRoad.IsEmpty) continue;
-            for (int i = 0; i < dualRoad.OutputGridPositions.Count; i++)
-            {
-                Vector2Int outCell = dualRoad.OutputGridPositions[i];
-                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
-                if (ReferenceEquals(dualRoad, destNode)) continue;
-                dualRoad.TryForwardToCell(outCell, destNode);
-            }
-        }
-
-        foreach (KeyValuePair<string, BuildingObject> buildingPair in _buildingObjDict)
-        {
-            string buildingKey = buildingPair.Key;
-            BuildingObject building = buildingPair.Value;
-            if (building.IsRemovalAnimating) continue;
-
-            List<Vector2Int> outputCells = building.OutputGridPositions;
-            if (outputCells == null || outputCells.Count == 0) continue;
-
-            bool useRoundRobin = building.BuildingData is ProductionBuildingData && outputCells.Count > 1;
-            int startIndex = 0;
-            if (useRoundRobin)
-            {
-                _buildingOutputRoundRobinIndex.TryGetValue(buildingKey, out startIndex);
-                startIndex = Mathf.Clamp(startIndex, 0, outputCells.Count - 1);
-            }
-
-            for (int offset = 0; offset < outputCells.Count; offset++)
-            {
-                int outIndex = useRoundRobin
-                    ? (startIndex + offset) % outputCells.Count
-                    : offset;
-                Vector2Int outCell = outputCells[outIndex];
-                if (!TryGetResourceNodeAtCell(outCell, out IResourceNode destNode)) continue;
-                if (ReferenceEquals(building, destNode)) continue;
-
-                if (!building.TryForwardTo(destNode, DirectionFromBuildingOutput(building, outCell)))
-                    continue;
-
-                if (useRoundRobin)
-                    _buildingOutputRoundRobinIndex[buildingKey] = (outIndex + 1) % outputCells.Count;
-                break;
-            }
-        }
-    }
-
-    private static Transform CreateChildTransform(Transform parent, string name)
-    {
-        GameObject obj = new GameObject(name);
-        obj.transform.SetParent(parent, worldPositionStays: false);
-        return obj.transform;
-    }
-
-    private void ClampRectToGrid(ref Vector2Int cellMin, ref Vector2Int cellMax)
-    {
-        int gx0 = Mathf.Clamp(Mathf.Min(cellMin.x, cellMax.x), 0, _mainRunner.GridWidth - 1);
-        int gy0 = Mathf.Clamp(Mathf.Min(cellMin.y, cellMax.y), 0, _mainRunner.GridHeight - 1);
-        int gx1 = Mathf.Clamp(Mathf.Max(cellMin.x, cellMax.x), 0, _mainRunner.GridWidth - 1);
-        int gy1 = Mathf.Clamp(Mathf.Max(cellMin.y, cellMax.y), 0, _mainRunner.GridHeight - 1);
-        cellMin = new Vector2Int(gx0, gy0);
-        cellMax = new Vector2Int(gx1, gy1);
-    }
-
-    private bool TryPlaceRoadFromSave(PlacedRoadSaveData saveData)
-    {
-        if (saveData == null) return false;
-
-        Vector2Int position = new Vector2Int(saveData.x, saveData.y);
-        BuildingData roadData = _dataManager.Building.GetBuildingData(
-            string.IsNullOrEmpty(saveData.roadDataId) ? "road" : saveData.roadDataId);
-
-        BuildingData sourceBuildingData = roadData;
-        if (!string.IsNullOrEmpty(saveData.sourceBuildingDataId))
-            sourceBuildingData = _dataManager.Building.GetBuildingData(saveData.sourceBuildingDataId);
-
-        if (!TryInstantiateRoad(position, saveData.rotation, sourceBuildingData, saveData, animatePlacement: false, out _))
+        node = null;
+        if (!_occupiedAsObjectDict.TryGetValue(pos, out string key))
             return false;
 
-        if (roadData != null)
-            _dataManager.Finances.RegisterPlacedBuildingMaintenance(roadData);
-
-        return true;
-    }
-
-    private bool TryPlaceBuildingFromSave(PlacedBuildingSaveData saveData)
-    {
-        if (saveData == null || string.IsNullOrEmpty(saveData.buildingDataId))
-            return false;
-
-        BuildingData data = _dataManager.Building.GetBuildingData(saveData.buildingDataId);
-        if (data == null)
-            return false;
-
-        Vector2Int origin = new Vector2Int(saveData.originX, saveData.originY);
-        Vector2Int rotatedSize = GetRotatedSize(data.size, saveData.rotation);
-        if (!CanPlace(origin, rotatedSize))
-            return false;
-
-        BuildingObject building = CreateBuildingObject(
-            data,
-            origin,
-            rotatedSize,
-            saveData.rotation,
-            out _,
-            zeroScaleForEntranceAnimation: false);
-        building.ImportSaveData(saveData, _dataManager);
-        RegisterPlacedBuilding(building, data, origin, rotatedSize);
-        _dataManager.Finances.RegisterPlacedBuildingMaintenance(data);
-        return true;
+        if (_roadObjDict.TryGetValue(key, out RoadObject road))
+        {
+            node = road;
+            return true;
+        }
+        if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualRoad))
+        {
+            node = dualRoad;
+            return true;
+        }
+        if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
+        {
+            node = building;
+            return true;
+        }
+        return false;
     }
 
     private BuildingObject CreateBuildingObject(
@@ -856,25 +620,25 @@ public class MainBuildingGridHandler
         string key = BuildingGridKey(origin);
         RegisterBuildingOccupancy(origin, rotatedSize, key);
         _buildingObjDict[key] = building;
-        if (data is RawMaterialFactoryData)
-            _rawResourceBuildingObjDict[key] = building;
-        _buildingOutputRoundRobinIndex[key] = 0;
     }
 
     private bool TryInstantiateRoad(
         Vector2Int position,
         int rotation,
-        BuildingData sourceBuildingData,
+        BuildingData roadData,
         PlacedRoadSaveData saveData,
         bool animatePlacement,
         out GameObject placed)
     {
         placed = null;
 
+        if (roadData is not RoadBuildingData roadBuildingData)
+            return false;
+
         if (!IsWithinBounds(position, Vector2Int.one) || _occupiedAsObjectDict.ContainsKey(position))
             return false;
 
-        bool isDualLaneRoad = IsDualLaneRoadData(sourceBuildingData);
+        bool isDualLaneRoad = IsDualLaneRoadData(roadBuildingData);
         GameObject roadPrefab = isDualLaneRoad ? _mainRunner.DualLaneRoadObjectPrefab : _mainRunner.RoadObjectPrefab;
         if (roadPrefab == null)
             return false;
@@ -900,7 +664,7 @@ public class MainBuildingGridHandler
                 return false;
             }
 
-            dualRoadObject.Init(position, rotation, sourceBuildingData);
+            dualRoadObject.Init(position, rotation, roadBuildingData);
             if (saveData != null)
                 dualRoadObject.ImportSaveData(saveData);
             _dualLaneRoadObjDict[key] = dualRoadObject;
@@ -914,15 +678,19 @@ public class MainBuildingGridHandler
                 return false;
             }
 
-            roadObject.Init(position, rotation, sourceBuildingData);
+            roadObject.Init(position, rotation, roadBuildingData);
             if (saveData != null)
                 roadObject.ImportSaveData(saveData);
             _roadObjDict[key] = roadObject;
         }
 
         _occupiedAsObjectDict[position] = key;
-        if (_tileDict.TryGetValue(position, out BuildingTile tile))
-            tile.SetOccupied(true);
+
+        if (_mainRunner.TileGridHandler != null)
+        {
+            if (_mainRunner.TileGridHandler.TileDict.TryGetValue(position, out BuildingTile tile))
+                tile.SetOccupied(true);
+        }
 
         placed = obj;
         return true;
@@ -932,10 +700,17 @@ public class MainBuildingGridHandler
     {
         _occupiedAsObjectDict.Remove(pos);
         registry.Remove(key);
-        if (_tileDict.TryGetValue(pos, out BuildingTile tile))
-            tile.SetOccupied(false);
+
+        if (_mainRunner.TileGridHandler != null)
+        {
+            if (_mainRunner.TileGridHandler.TileDict.TryGetValue(pos, out BuildingTile tile))
+                tile.SetOccupied(false);
+        }
+
         if (sourceData != null)
             _dataManager.Finances.UnregisterPlacedBuildingMaintenance(sourceData);
+
+        _mainRunner.PlayRemovalFeedbackAt(instance.transform.position, playSound: true);
         MonoBehaviour.Destroy(instance);
         OnBuildingInstanceLayoutChanged?.Invoke();
         return true;
@@ -949,58 +724,10 @@ public class MainBuildingGridHandler
     }
 
     private static string BuildingGridKey(Vector2Int origin) => $"b:{origin.x}_{origin.y}";
-
     private static string RoadGridKey(Vector2Int pos) => $"r:{pos.x}_{pos.y}";
 
-    private bool TryGetResourceNodeAtCell(Vector2Int pos, out IResourceNode node)
-    {
-        node = null;
-        if (!_occupiedAsObjectDict.TryGetValue(pos, out string key))
-            return false;
-
-        if (_roadObjDict.TryGetValue(key, out RoadObject road))
-        {
-            node = road;
-            return true;
-        }
-        if (_dualLaneRoadObjDict.TryGetValue(key, out DualLaneRoadObject dualRoad))
-        {
-            node = dualRoad;
-            return true;
-        }
-        if (_buildingObjDict.TryGetValue(key, out BuildingObject building))
-        {
-            node = building;
-            return true;
-        }
-        return false;
-    }
-
-    private static bool IsDualLaneRoadData(BuildingData roadData) =>
-        roadData != null && (roadData.id == "splitter" || roadData.id == "tunnel");
-
-    private static FlowDirection DirectionFromDelta(Vector2Int delta)
-    {
-        if (delta == new Vector2Int(0, -1)) return FlowDirection.Up;
-        if (delta == new Vector2Int(1, 0)) return FlowDirection.Right;
-        if (delta == new Vector2Int(0, 1)) return FlowDirection.Down;
-        if (delta == new Vector2Int(-1, 0)) return FlowDirection.Left;
-        return FlowDirection.None;
-    }
-
-    private static FlowDirection DirectionFromBuildingOutput(BuildingObject building, Vector2Int outCell)
-    {
-        Vector2Int origin = building.Origin;
-        Vector2Int size = building.Size;
-        int maxX = origin.x + size.x - 1;
-        int maxY = origin.y + size.y - 1;
-
-        if (outCell.x < origin.x) return FlowDirection.Left;
-        if (outCell.x > maxX) return FlowDirection.Right;
-        if (outCell.y < origin.y) return FlowDirection.Up;
-        if (outCell.y > maxY) return FlowDirection.Down;
-        return FlowDirection.None;
-    }
+    private static bool IsDualLaneRoadData(RoadBuildingData roadData) =>
+        roadData != null && (roadData.passThroughNeighbors || roadData.hasSecondaryOutput);
 
     private void RegisterBuildingOccupancy(Vector2Int origin, Vector2Int size, string instanceKey)
     {
@@ -1010,8 +737,12 @@ public class MainBuildingGridHandler
             {
                 Vector2Int pos = new Vector2Int(origin.x + sizeX, origin.y + sizeY);
                 _occupiedAsObjectDict[pos] = instanceKey;
-                if (_tileDict.TryGetValue(pos, out BuildingTile tile))
-                    tile.SetOccupied(true);
+
+                if (_mainRunner.TileGridHandler != null)
+                {
+                    if (_mainRunner.TileGridHandler.TileDict.TryGetValue(pos, out BuildingTile tile))
+                        tile.SetOccupied(true);
+                }
             }
         }
     }
@@ -1024,9 +755,94 @@ public class MainBuildingGridHandler
             {
                 Vector2Int pos = new Vector2Int(position.x + sizeX, position.y + sizeY);
                 _occupiedAsObjectDict.Remove(pos);
-                if (_tileDict.TryGetValue(pos, out BuildingTile tile))
-                    tile.SetOccupied(false);
+
+                if (_mainRunner.TileGridHandler != null)
+                {
+                    if (_mainRunner.TileGridHandler.TileDict.TryGetValue(pos, out BuildingTile tile))
+                        tile.SetOccupied(false);
+                }
             }
         }
+    }
+
+    private static bool IsCellInGridRect(Vector2Int cell, Vector2Int cellMin, Vector2Int cellMax) =>
+        cell.x >= cellMin.x && cell.x <= cellMax.x && cell.y >= cellMin.y && cell.y <= cellMax.y;
+
+    private static bool IntersectsGridRect(Vector2Int origin, Vector2Int size, Vector2Int cellMin, Vector2Int cellMax) =>
+        origin.x <= cellMax.x && origin.x + size.x - 1 >= cellMin.x &&
+        origin.y <= cellMax.y && origin.y + size.y - 1 >= cellMin.y;
+
+    private void ClampRectToGrid(ref Vector2Int cellMin, ref Vector2Int cellMax)
+    {
+        int gx0 = Mathf.Clamp(Mathf.Min(cellMin.x, cellMax.x), 0, _mainRunner.GridWidth - 1);
+        int gy0 = Mathf.Clamp(Mathf.Min(cellMin.y, cellMax.y), 0, _mainRunner.GridHeight - 1);
+        int gx1 = Mathf.Clamp(Mathf.Max(cellMin.x, cellMax.x), 0, _mainRunner.GridWidth - 1);
+        int gy1 = Mathf.Clamp(Mathf.Max(cellMin.y, cellMax.y), 0, _mainRunner.GridHeight - 1);
+        cellMin = new Vector2Int(gx0, gy0);
+        cellMax = new Vector2Int(gx1, gy1);
+    }
+
+    private bool TryPlaceBuildingFromSave(PlacedBuildingSaveData saveData)
+    {
+        if (saveData == null || string.IsNullOrEmpty(saveData.buildingDataId))
+            return false;
+
+        BuildingData data = _dataManager.Building.GetBuildingData(saveData.buildingDataId);
+        if (data == null)
+            return false;
+
+        Vector2Int origin = new Vector2Int(saveData.originX, saveData.originY);
+
+        if (data is RawMaterialFactoryData && !AllowRawBuildingPlacement)
+        {
+            return true;
+        }
+
+        Vector2Int rotatedSize = GetRotatedSize(data.size, saveData.rotation);
+        if (!CanPlace(origin, rotatedSize))
+            return false;
+
+        BuildingObject building = CreateBuildingObject(
+            data,
+            origin,
+            rotatedSize,
+            saveData.rotation,
+            out _,
+            zeroScaleForEntranceAnimation: false);
+        building.ImportSaveData(saveData, _dataManager);
+        RegisterPlacedBuilding(building, data, origin, rotatedSize);
+        _dataManager.Finances.RegisterPlacedBuildingMaintenance(data);
+        return true;
+    }
+
+    private bool TryPlaceRoadFromSave(PlacedRoadSaveData saveData)
+    {
+        if (saveData == null || string.IsNullOrEmpty(saveData.roadDataId))
+            return false;
+
+        Vector2Int position = new Vector2Int(saveData.x, saveData.y);
+        BuildingData roadData = _dataManager.Building.GetBuildingData(saveData.roadDataId);
+        if (roadData == null)
+            return false;
+
+        if (!TryInstantiateRoad(position, saveData.rotation, roadData, saveData, animatePlacement: false, out _))
+            return false;
+
+        if (roadData != null)
+            _dataManager.Finances.RegisterPlacedBuildingMaintenance(roadData);
+
+        return true;
+    }
+
+    private Transform CreateChildTransform(Transform parent, string name)
+    {
+        Transform t = parent.Find(name);
+        if (t == null)
+        {
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            t = go.transform;
+        }
+        return t;
     }
 }

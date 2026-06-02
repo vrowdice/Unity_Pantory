@@ -4,23 +4,16 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class TutorialPopup : PopupBase
+public class TutorialPopup : TutorialPopupBase
 {
     [SerializeField] private TextMeshProUGUI _indexText;
     [SerializeField] private TextMeshProUGUI _descriptionText;
-    [SerializeField] private GameObject _panel;
-    [SerializeField] private GameObject _focusPanel;
 
     [SerializeField] private Button _beforeBtn;
     [SerializeField] private Button _nextBtn;
 
-    [SerializeField] private float _focusPulseScale = 1.1f;
-    [SerializeField] private float _focusPulseDuration = 0.6f;
-    [SerializeField] private float _panelMoveDuration = 0.35f;
-    [SerializeField] private Ease _panelMoveEase = Ease.OutCubic;
     [SerializeField] private float _stepTransitionDuration = 0.25f;
     [SerializeField] private Ease _stepTransitionEase = Ease.OutCubic;
-    [SerializeField] private float _screenEdgePadding = 16f;
 
     private List<TutorialData> _tutorialDataList;
     private string _gameObjectName;
@@ -105,58 +98,18 @@ public class TutorialPopup : PopupBase
         _indexText.text = indexText;
         _descriptionText.text = descriptionText;
 
-        RectTransform panelRect = _panel.GetComponent<RectTransform>();
-        TutorialPanelLayout.MovePanelToPosition(
-            panelRect,
-            currentData.tutorialPanelPosition,
-            currentData.focusGameObject,
-            _screenEdgePadding,
-            animatePanel,
-            _panelMoveDuration,
-            _panelMoveEase);
+        ApplyPanelPosition(currentData.tutorialPanelPosition, currentData.focusGameObject, animatePanel);
         currentData.onStepStart?.Invoke();
         ApplyFocusTarget(currentData.focusGameObject);
-    }
-
-    private void ApplyFocusTarget(GameObject focusGameObject)
-    {
-        if (focusGameObject != null)
-        {
-            _focusPanel.SetActive(true);
-
-            RectTransform focusTransform = _focusPanel.GetComponent<RectTransform>();
-            RectTransform targetTransform = focusGameObject.GetComponent<RectTransform>();
-
-            focusTransform.position = targetTransform.position;
-            Vector3 baseScale = targetTransform.localScale;
-            focusTransform.localScale = baseScale;
-            RectTransformUtils.SyncSizeToTarget(focusTransform, targetTransform);
-            focusTransform.DOKill();
-
-            focusTransform
-                .DOScale(baseScale * _focusPulseScale, _focusPulseDuration)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.InOutSine);
-        }
-        else
-        {
-            _focusPanel.transform.DOKill();
-            _focusPanel.SetActive(false);
-        }
     }
 
     public void OnClickExit()
     {
         TutorialStepTransition.Kill(_descriptionText, _indexText);
 
-        if (_focusPanel != null)
-            _focusPanel.transform.DOKill();
-
-        if (_panel != null)
-            _panel.GetComponent<RectTransform>()?.DOKill();
-
+        KillCommonTweens();
         transform.DOKill();
-        DataManager.Instance?.Player?.MarkTutorialSequenceFinishedForOwner(_gameObjectName);
+        SaveLoadManager.Instance?.MarkTutorialSequenceFinishedForOwner(_gameObjectName);
         CloseAndDestroy();
     }
 
@@ -166,12 +119,7 @@ public class TutorialPopup : PopupBase
 
         TutorialStepTransition.Kill(_descriptionText, _indexText);
 
-        if (_focusPanel != null)
-            _focusPanel.transform.DOKill();
-
-        if (_panel != null)
-            _panel.GetComponent<RectTransform>()?.DOKill();
-
+        KillCommonTweens();
         transform.DOKill();
     }
 }

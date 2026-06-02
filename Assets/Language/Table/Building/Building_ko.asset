@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270002
-    m_Localized: "부품 공장"
+    m_Localized: "일반 부품 공장"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270009
-    m_Localized: "광산"
+    m_Localized: "철광"
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
@@ -85,10 +85,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270102
-    m_Localized: "정밀 부품 공장. 철 인골으로
-      기계 부품, 동·알루미늄 인골으로 전자
-      부품, 강괴와 기계 부품으로 정밀 공구를
-      생산. 고급 생산 체인에 필수적이다."
+    m_Localized: "일반 부품 공장. 철 인골로 기계 부품을 생산한다.
+      엔진·차량 등 중반 생산 체인의 기초 시설이다."
     m_Metadata:
       m_Items: []
   - m_Id: 864226270103
@@ -133,10 +131,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270109
-    m_Localized: "일반 광산. 지하에서 철광석, 석탄,
-      동광석, 알루미늄 광석을 채굴. 금광석은
-      생산하지 않으며 금광을 별도로 건설한다.
-      투자는 크지만 산업 핵심 원료를 공급한다."
+    m_Localized: "전용 철광. 철광석을 채굴해 제련하여 철 인골로 만든다. 금속 가공 체인의 핵심 시설."
     m_Metadata:
       m_Items: []
   - m_Id: 864226270110
@@ -213,6 +208,39 @@ MonoBehaviour:
   - m_Id: 864226270119
     m_Localized: "전용 금광. 금광석만 채굴해 제련하여 순금으로 만든다. 일반 광산보다 비용이 높으며
       설치 수에 제한이 있을 수 있다."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270020
+    m_Localized: "전자 부품 공장"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270120
+    m_Localized: "동·알루미늄 인골로 전자 부품을 생산한다.
+      엔진 및 고급 생산에 필요하다."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270021
+    m_Localized: 석탄광
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270121
+    m_Localized: "전용 석탄광. 석탄을 채굴해 제련, 연료, 탄약 생산에 공급한다."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270022
+    m_Localized: 동광
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270122
+    m_Localized: "전용 동광. 동광석을 채굴해 제련 및 전자 부품 체인에 공급한다."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270023
+    m_Localized: 알루미늄 광
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270123
+    m_Localized: "전용 알루미늄 광. 알루미늄 광석을 채굴해 제련 및 고급 제조에 공급한다."
     m_Metadata:
       m_Items: []
   references:

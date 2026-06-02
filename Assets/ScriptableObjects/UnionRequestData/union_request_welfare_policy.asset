@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: union_request_welfare_policy
   description: Union demands the adoption of the Employee Welfare Policy.
-  requireCredit: 0
-  creditScaleFactor: 1
-  requireResource:
-    resource: {fileID: 0}
-    count: 0
-  resourceScaleFactor: 0.05
-  requirePolicy: {fileID: 11400000, guid: a1d2e3f40516273849596a7b8c9d0eff, type: 2}
-  rewardCohesion: 15
+  conditionType: 3
+  targetId: policy_employee_welfare
+  targetValue: 1
+  scaleFactor: 1
+  rewardCohesion: 5

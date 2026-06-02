@@ -1,55 +1,66 @@
+using System.Collections;
 using DG.Tweening;
 using Evo.UI;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// 튜토리얼 씬 TutorialDirector가 제어하는 강제 가이드 패널.
 /// </summary>
-public class TutorialGuidedPopup : PopupBase
+public class TutorialGuidedPopup : TutorialPopupBase
 {
     [SerializeField] private TextMeshProUGUI _descriptionText;
-    [SerializeField] private GameObject _panel;
-    [SerializeField] private GameObject _focusPanel;
     [SerializeField] private GameObject _indexTextRoot;
     [SerializeField] private GameObject _beforeBtnRoot;
     [SerializeField] private Evo.UI.Button _nextBtn;
 
-    [SerializeField] private float _focusPulseScale = 1.1f;
-    [SerializeField] private float _focusPulseDuration = 0.6f;
-    [SerializeField] private float _panelMoveDuration = 0.35f;
-    [SerializeField] private Ease _panelMoveEase = Ease.OutCubic;
     [SerializeField] private float _stepTransitionDuration = 0.25f;
     [SerializeField] private Ease _stepTransitionEase = Ease.OutCubic;
-    [SerializeField] private float _screenEdgePadding = 16f;
 
-    private List<TutorialData> _tutorialDataList;
-    private string _gameObjectName;
-    private int _localizationIndexOverride = -1;
-    private string _localizationKeyOverride;
+    private int _stepIndex;
+    private GameObject _layoutFocusObject;
+    private string _layoutFocusObjectName;
+    private Vector2 _panelPosition;
+    private Coroutine _focusRetryCoroutine;
     private System.Action _advanceCallback;
     private System.Action _onDismissedUnexpectedly;
 
     private bool _allowClose;
     private bool _isRetiring;
     private bool _isFirstPanelPlacement = true;
-    private Image _rootBlockerImage;
-    private Image _focusPanelImage;
 
     public bool IsRetiring => _isRetiring;
 
-    public void SetStepIndexOverride(int localizationIndex)
+    public override void Init()
     {
-        _localizationIndexOverride = localizationIndex;
-        UpdateDescription(animateTransition: true);
+        base.Init();
+
+        ClearFocusHighlight();
+
+        HideUnusedNavigation();
+        if (_nextBtn != null)
+            _nextBtn.gameObject.SetActive(false);
+
+        Show();
     }
 
-    public void SetLocalizationKey(string localizationKey)
+    public void ApplyStep(
+        int stepIndex,
+        GameObject focusObject,
+        Vector2 panelPosition,
+        bool showNextButton,
+        string focusObjectName = null)
     {
-        _localizationKeyOverride = localizationKey;
-        UpdateDescription(animateTransition: true);
+        _stepIndex = stepIndex;
+        _layoutFocusObject = focusObject;
+        _layoutFocusObjectName = focusObjectName;
+        _panelPosition = panelPosition;
+
+        StopFocusRetry();
+        ClearFocusHighlight();
+
+        ConfigureStepPresentation(allowWorldInteraction: true, showNextButton);
+        UpdateDescription(animateTransition: stepIndex > 0);
     }
 
     public void SetAdvanceCallback(System.Action advanceCallback)
@@ -74,25 +85,6 @@ public class TutorialGuidedPopup : PopupBase
             if (showNextButton)
                 _nextBtn.interactable = true;
         }
-
-        SetRaycastBlocker(!allowWorldInteraction);
-    }
-
-    public void Init(List<TutorialData> tutorialDataList, string gameObjectName)
-    {
-        base.Init();
-
-        _tutorialDataList = tutorialDataList;
-        _gameObjectName = gameObjectName;
-        _localizationIndexOverride = -1;
-        _localizationKeyOverride = null;
-
-        HideUnusedNavigation();
-        if (_nextBtn != null)
-            _nextBtn.gameObject.SetActive(false);
-
-        UpdateDescription();
-        Show();
     }
 
     public override void Close()
@@ -123,14 +115,10 @@ public class TutorialGuidedPopup : PopupBase
 
     public void Dismiss()
     {
+        StopFocusRetry();
         TutorialStepTransition.Kill(_descriptionText);
 
-        if (_focusPanel != null)
-            _focusPanel.transform.DOKill();
-
-        if (_panel != null)
-            _panel.GetComponent<RectTransform>()?.DOKill();
-
+        KillCommonTweens();
         transform.DOKill();
         _isRetiring = true;
         _allowClose = true;
@@ -139,20 +127,14 @@ public class TutorialGuidedPopup : PopupBase
 
     private void UpdateDescription(bool animateTransition = false)
     {
-        if (_tutorialDataList == null || _tutorialDataList.Count == 0)
-            return;
-
-        TutorialData currentData = _tutorialDataList[0];
-        string localizationKey = !string.IsNullOrEmpty(_localizationKeyOverride)
-            ? _localizationKeyOverride
-            : $"{_gameObjectName}{(_localizationIndexOverride >= 0 ? _localizationIndexOverride : 0)}";
+        string localizationKey = $"TutorialScene{_stepIndex}";
         string descriptionText = localizationKey.Localize(LocalizationUtils.TABLE_TUTORIAL_GUIDED);
         bool isFirstShow = _isFirstPanelPlacement;
         bool shouldAnimate = animateTransition
             && !isFirstShow
             && descriptionText != _descriptionText.text;
 
-        System.Action applyContent = () => ApplyStepContent(currentData, descriptionText, !isFirstShow);
+        System.Action applyContent = () => ApplyStepContent(descriptionText);
 
         if (shouldAnimate)
         {
@@ -172,63 +154,69 @@ public class TutorialGuidedPopup : PopupBase
         _isFirstPanelPlacement = false;
     }
 
-    private void ApplyStepContent(TutorialData currentData, string descriptionText, bool animatePanel)
+    private void ApplyStepContent(string descriptionText)
     {
         _descriptionText.text = descriptionText;
-        ApplyPanelPosition(currentData.tutorialPanelPosition, currentData.focusGameObject, animatePanel);
-        currentData.onStepStart?.Invoke();
-        ApplyFocusTarget(currentData.focusGameObject);
+
+        GameObject focusObject = ResolveLayoutFocusObject();
+        ApplyPanelPosition(_panelPosition, focusObject, animatePanel: _stepIndex > 0);
+        TryApplyFocusTarget(focusObject);
     }
 
-    public void RefreshFocusTarget(GameObject focusGameObject)
+    private GameObject ResolveLayoutFocusObject()
     {
-        if (_tutorialDataList == null || _tutorialDataList.Count == 0)
+        if (_layoutFocusObject != null)
+            return _layoutFocusObject;
+
+        if (string.IsNullOrWhiteSpace(_layoutFocusObjectName))
+            return null;
+
+        return TutorialFocusResolver.FindFocusObject(_layoutFocusObjectName);
+    }
+
+    private void TryApplyFocusTarget(GameObject focusObject)
+    {
+        if (focusObject != null)
+        {
+            StopFocusRetry();
+            ApplyFocusTarget(focusObject);
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_layoutFocusObjectName))
+            StartFocusRetry();
+    }
+
+    private void StartFocusRetry()
+    {
+        StopFocusRetry();
+        _focusRetryCoroutine = StartCoroutine(FocusRetryRoutine());
+    }
+
+    private void StopFocusRetry()
+    {
+        if (_focusRetryCoroutine == null)
             return;
 
-        TutorialData currentData = _tutorialDataList[0];
-        currentData.focusGameObject = focusGameObject;
-
-        ApplyPanelPosition(currentData.tutorialPanelPosition, focusGameObject, animatePanel: true);
-        ApplyFocusTarget(focusGameObject);
+        StopCoroutine(_focusRetryCoroutine);
+        _focusRetryCoroutine = null;
     }
 
-    private void ApplyPanelPosition(Vector2 desiredPosition, GameObject focusTarget, bool animatePanel)
+    private IEnumerator FocusRetryRoutine()
     {
-        RectTransform panelRect = _panel.GetComponent<RectTransform>();
-        TutorialPanelLayout.MovePanelToPosition(
-            panelRect,
-            desiredPosition,
-            focusTarget,
-            _screenEdgePadding,
-            animatePanel,
-            _panelMoveDuration,
-            _panelMoveEase);
-    }
+        const int maxFrames = 90;
 
-    private void ApplyFocusTarget(GameObject focusGameObject)
-    {
-        if (focusGameObject != null)
+        for (int i = 0; i < maxFrames; i++)
         {
-            _focusPanel.SetActive(true);
+            yield return null;
 
-            RectTransform focusTransform = _focusPanel.GetComponent<RectTransform>();
-            RectTransform targetTransform = focusGameObject.GetComponent<RectTransform>();
+            GameObject found = ResolveLayoutFocusObject();
+            if (found == null)
+                continue;
 
-            focusTransform.position = targetTransform.position;
-            Vector3 baseScale = targetTransform.localScale;
-            focusTransform.localScale = baseScale;
-            RectTransformUtils.SyncSizeToTarget(focusTransform, targetTransform);
-            focusTransform.DOKill();
-
-            focusTransform
-                .DOScale(baseScale * _focusPulseScale, _focusPulseDuration)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.InOutSine);
-        }
-        else
-        {
-            _focusPanel.transform.DOKill();
-            _focusPanel.SetActive(false);
+            _layoutFocusObject = found;
+            ApplyFocusTarget(found);
+            yield break;
         }
     }
 
@@ -241,23 +229,9 @@ public class TutorialGuidedPopup : PopupBase
             _beforeBtnRoot.SetActive(false);
     }
 
-    private void SetRaycastBlocker(bool block)
-    {
-        if (_rootBlockerImage == null)
-            _rootBlockerImage = GetComponent<Image>();
-
-        if (_rootBlockerImage != null)
-            _rootBlockerImage.raycastTarget = block;
-
-        if (_focusPanelImage == null && _focusPanel != null)
-            _focusPanelImage = _focusPanel.GetComponent<Image>();
-
-        if (_focusPanelImage != null)
-            _focusPanelImage.raycastTarget = block;
-    }
-
     protected override void OnDestroy()
     {
+        StopFocusRetry();
         base.OnDestroy();
 
         if (!_allowClose && !_isRetiring)
@@ -265,12 +239,7 @@ public class TutorialGuidedPopup : PopupBase
 
         TutorialStepTransition.Kill(_descriptionText);
 
-        if (_focusPanel != null)
-            _focusPanel.transform.DOKill();
-
-        if (_panel != null)
-            _panel.GetComponent<RectTransform>()?.DOKill();
-
+        KillCommonTweens();
         transform.DOKill();
     }
 }

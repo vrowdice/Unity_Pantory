@@ -6,7 +6,7 @@ using DG.Tweening;
 /// <summary>
 /// 그리드에 설치된 건물: 뷰, 입출력 큐, 시간 틱 시뮬, 직원, 클릭 UI.
 /// </summary>
-public partial class BuildingObject : MonoBehaviour, IResourceNode
+public partial class BuildingObject : MonoBehaviour, IResourceNode, IBuilding
 {
     [SerializeField] private SpriteRenderer _viewObjRenderer;
     [SerializeField] private BoxCollider2D _collider;
@@ -23,35 +23,35 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     [SerializeField] private int _assignedTechnicians;
 
     private GameObject _outgoingIconContainer;
+    private readonly List<ResourcePacket> _failedReturnPackets = new List<ResourcePacket>();
     private readonly Queue<ResourcePacket> _inputBuffer = new Queue<ResourcePacket>();
-    private readonly Queue<ResourcePacket> _outputBuffer = new Queue<ResourcePacket>();
 
-    private BuildingSceneRunnerBase _mainRunner;
+    private MainRunner _mainRunner;
     private BuildingData _buildingData;
     private Vector2Int _origin;
     private Vector2Int _size;
     private int _rotation;
     private float _workProgress;
-    private int _maxInputCapacity;
-    private int _maxOutputCapacity;
+    private int _maxInputPerResource;
+    private int _maxInputResourceKinds;
     private bool _removalAnimating;
 
     private const float PlaceScaleDuration = 0.22f;
     private const float PlacePunchDuration = 0.12f;
     private const float PlacePunchStrength = 0.06f;
-    private const float RemoveScaleDuration = 0.2f;
 
     private bool _clickArmed;
     private Vector2 _pointerDownScreenPos;
     private const float ClickDragThresholdPixels = 8f;
 
     public BuildingData BuildingData => _buildingData;
+    public string BuildingDataId => _buildingData != null ? _buildingData.id : null;
     public bool HasConfiguredOutputResource =>
         _selectedResource != null && !string.IsNullOrEmpty(_selectedResource.id);
     public bool IsRemovalAnimating => _removalAnimating;
     public Vector2Int Origin => _origin;
     public Vector2Int Size => _size;
-    public List<Vector2Int> OutputGridPositions { get; private set; }
+    public Vector2Int OutputGridPosition { get; private set; }
 
     public int AssignedWorkers => _assignedWorkers;
     public int AssignedTechnicians => _assignedTechnicians;
@@ -60,15 +60,15 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         _buildingData.isProfessional ? 0 : RequiredEmployeeSlots;
     public int MaxTechnicianSlots => RequiredEmployeeSlots;
 
-    public void Init(BuildingSceneRunnerBase runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
+    public void Init(MainRunner runner, BuildingData buildingData, Vector2Int origin, Vector2Int rotatedSize, int rotation, bool isAutoEmployeeAssignment = false)
     {
         _mainRunner = runner;
         _buildingData = buildingData;
         _origin = origin;
         _size = rotatedSize;
         _rotation = rotation;
-        _maxInputCapacity = Mathf.Max(0, buildingData.maxInputBufferCapacity);
-        _maxOutputCapacity = Mathf.Max(0, buildingData.maxOutputBufferCapacity);
+        _maxInputPerResource = Mathf.Max(0, buildingData.maxInputBufferCapacity);
+        _maxInputResourceKinds = Mathf.Max(0, buildingData.maxInputResourceKinds);
 
         transform.localRotation = Quaternion.Euler(0f, 0f, -rotation * 90f);
 
@@ -78,9 +78,9 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         _collider.size = new Vector2(rotatedSize.x, rotatedSize.y);
         _collider.offset = Vector2.zero;
 
-        RebuildOutputGridPositions();
-        UpdateOutputIndicators();
-        EnsureDefaultSelectedResourceForRawFactory();
+        OutputGridPosition = BuildingOutputUtils.GetOutputGridPosition(_origin, _size, _rotation, _buildingData);
+        if (!(_buildingData is LoadStationData))
+            BuildingOutputUtils.SpawnIndicator(transform, _outputIndicatorPrefab, _size, _buildingData);
         RefreshOutgoingResourceIcons();
 
         if (isAutoEmployeeAssignment)
@@ -105,7 +105,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     }
 
     /// <summary>
-    /// 제거 시 스케일 다운 후 콜백. 점유 해제·파괴는 콜백에서 처리.
+    /// 제거 시 펀치 후 스케일 다운. 점유 해제·파괴는 콜백에서 처리.
     /// </summary>
     public void PlayRemovalAnimation(Action onComplete)
     {
@@ -116,15 +116,25 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
         transform.DOKill(false);
 
-        transform.DOScale(Vector3.zero, RemoveScaleDuration)
-            .SetEase(Ease.InBack)
-            .SetUpdate(true)
-            .SetLink(gameObject)
-            .OnComplete(() =>
-            {
-                _removalAnimating = false;
-                onComplete?.Invoke();
-            });
+        float scaleDuration = _mainRunner != null ? _mainRunner.RemovalScaleDuration : 0.2f;
+        float punchDuration = _mainRunner != null ? _mainRunner.RemovalPunchDuration : 0.08f;
+        float punchStrength = _mainRunner != null ? _mainRunner.RemovalPunchStrength : 0.05f;
+
+        Sequence seq = DOTween.Sequence();
+        seq.SetLink(gameObject);
+        seq.SetUpdate(true);
+
+        if (punchStrength > 0f && punchDuration > 0f)
+        {
+            seq.Append(transform.DOPunchScale(Vector3.one * punchStrength, punchDuration, 8, 0.5f));
+        }
+
+        seq.Append(transform.DOScale(Vector3.zero, scaleDuration).SetEase(Ease.InBack));
+        seq.OnComplete(() =>
+        {
+            _removalAnimating = false;
+            onComplete?.Invoke();
+        });
     }
 
     private void LateUpdate()
@@ -169,35 +179,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         }
     }
 
-    private void RebuildOutputGridPositions()
-    {
-        OutputGridPositions = BuildingCalculationUtils.GetOutputGridPositions(_origin, _size, _rotation);
-    }
-
-    private void UpdateOutputIndicators()
-    {
-        if (_buildingData is LoadStationData || _buildingData is RawMaterialFactoryData) return;
-        foreach (Vector3 localPos in BuildingCalculationUtils.GetOutputLocalPositions(_size))
-        {
-            GameObject indicator = Instantiate(_outputIndicatorPrefab, transform);
-            indicator.transform.localPosition = localPos;
-            indicator.transform.localRotation = Quaternion.identity;
-        }
-    }
-
-    private static Dictionary<string, int> AggregateQueueCounts(Queue<ResourcePacket> queue)
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-        foreach (ResourcePacket p in queue)
-        {
-            if (string.IsNullOrEmpty(p.Id)) continue;
-            if (counts.TryGetValue(p.Id, out int v)) counts[p.Id] = v + p.Amount;
-            else counts[p.Id] = p.Amount;
-        }
-
-        return counts;
-    }
-
     private void OnDestroy()
     {
         transform.DOKill(false);
@@ -206,7 +187,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
 
     public bool TryPush(ResourcePacket packet)
     {
-        if (_buildingData is RawMaterialFactoryData || _buildingData is UnloadStationData)
+        if (_buildingData is UnloadStationData)
             return false;
 
         if (_buildingData is LoadStationData || _buildingData is ProductionBuildingData)
@@ -215,87 +196,50 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         return false;
     }
 
-    public bool TryForwardTo(IResourceNode destination, FlowDirection outputDirection)
-    {
-        if (_buildingData is ProductionBuildingData || _buildingData is UnloadStationData)
-            return TryForwardOutputBufferTo(destination, outputDirection);
-
-        return false;
-    }
-
     private bool TryEnqueueInputPacket(ResourcePacket packet)
     {
-        if (_maxInputCapacity <= 0 || _inputBuffer.Count >= _maxInputCapacity) return false;
+        if (packet == null || string.IsNullOrEmpty(packet.Id)) return false;
+
+        Dictionary<string, int> counts = ResourcePacketQueueUtils.AggregateCounts(_inputBuffer);
+        if (!ResourcePacketQueueUtils.CanAcceptResourceAmount(
+                counts, packet.Id, packet.Amount, _maxInputPerResource, _maxInputResourceKinds))
+            return false;
+
         _inputBuffer.Enqueue(packet);
         return true;
     }
 
-    private bool TryForwardOutputBufferTo(IResourceNode destination, FlowDirection outputDirection)
-    {
-        if (_outputBuffer.Count == 0) return false;
-        ResourcePacket packet = _outputBuffer.Peek();
-        packet.TravelDirection = outputDirection;
-        if (!destination.TryPush(packet)) return false;
-        bool destIsRoad = destination is RoadObject || destination is DualLaneRoadObject;
-        if (!(_buildingData is UnloadStationData) && !destIsRoad)
-            ResourceFlowFx.TryPlayNodeTransit(packet.Id, this, destination);
-        _outputBuffer.Dequeue();
-        return true;
-    }
-
-    private bool TryForwardInputBufferTo(IResourceNode destination, FlowDirection outputDirection)
-    {
-        if (_inputBuffer.Count == 0) return false;
-        ResourcePacket packet = _inputBuffer.Peek();
-        packet.TravelDirection = outputDirection;
-        if (!destination.TryPush(packet)) return false;
-        _inputBuffer.Dequeue();
-        return true;
-    }
-
-    public Dictionary<string, int> GetRuntimeInputResourceCounts() => AggregateQueueCounts(_inputBuffer);
-    public Dictionary<string, int> GetRuntimeOutputResourceCounts() => AggregateQueueCounts(_outputBuffer);
+    public Dictionary<string, int> GetRuntimeInputResourceCounts() => ResourcePacketQueueUtils.AggregateCounts(_inputBuffer);
 
     /// <summary>
-    /// 입·출력 큐의 자원을 모두 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 플레이어 보유에 반영합니다. 실패한 패킷은 해당 큐에 다시 넣습니다.
+    /// 입력 큐의 자원을 모두 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 플레이어 보유에 반영합니다. 실패한 패킷은 해당 큐에 다시 넣습니다.
     /// </summary>
-    public void ReturnAllRuntimeBuffersToDataManager(DataManager dataManager)
+    public void ReturnAllRuntimeBuffersToDataManager(DataManager dataManager) =>
+        ReturnBufferToDataManager(_inputBuffer, dataManager);
+
+    private void ReturnBufferToDataManager(Queue<ResourcePacket> buffer, DataManager dataManager)
     {
-        List<ResourcePacket> failedInput = new List<ResourcePacket>();
-        while (_inputBuffer.Count > 0)
+        _failedReturnPackets.Clear();
+        while (buffer.Count > 0)
         {
-            ResourcePacket p = _inputBuffer.Dequeue();
-            if (string.IsNullOrEmpty(p.Id))
-                continue;
-            if (!dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
-                failedInput.Add(p);
+            ResourcePacket packet = buffer.Dequeue();
+            if (string.IsNullOrEmpty(packet.Id)) continue;
+            if (!dataManager.Resource.ModifyResourceCount(packet.Id, packet.Amount))
+                _failedReturnPackets.Add(packet);
         }
 
-        foreach (ResourcePacket p in failedInput)
-            _inputBuffer.Enqueue(p);
-
-        List<ResourcePacket> failedOutput = new List<ResourcePacket>();
-        while (_outputBuffer.Count > 0)
-        {
-            ResourcePacket p = _outputBuffer.Dequeue();
-            if (string.IsNullOrEmpty(p.Id))
-                continue;
-            if (!dataManager.Resource.ModifyResourceCount(p.Id, p.Amount))
-                failedOutput.Add(p);
-        }
-
-        foreach (ResourcePacket p in failedOutput)
-            _outputBuffer.Enqueue(p);
+        for (int i = 0; i < _failedReturnPackets.Count; i++)
+            buffer.Enqueue(_failedReturnPackets[i]);
     }
 
     /// <summary>
-    /// 입력 또는 출력 큐에서 지정 id와 일치하는 패킷만 꺼내 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 반영합니다. 순서는 유지합니다.
+    /// 입력 큐에서 지정 id와 일치하는 패킷만 꺼내 <see cref="ResourceDataHandler.ModifyResourceCount"/>로 반영합니다. 순서는 유지합니다.
     /// </summary>
-    public bool TryReturnBufferResourceToDataManager(DataManager dataManager, string resourceId, bool fromInputBuffer)
+    public bool TryReturnInputBufferResourceToDataManager(DataManager dataManager, string resourceId)
     {
         if (string.IsNullOrEmpty(resourceId)) return false;
 
-        Queue<ResourcePacket> queue = fromInputBuffer ? _inputBuffer : _outputBuffer;
+        Queue<ResourcePacket> queue = _inputBuffer;
         int n = queue.Count;
         if (n == 0) return false;
 
@@ -331,9 +275,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     {
         switch (_buildingData)
         {
-            case RawMaterialFactoryData rawFactory:
-                TickSimulationRawMaterialFactory(dataManager, rawFactory);
-                break;
             case LoadStationData:
                 TickSimulationLoadStation(dataManager);
                 break;
@@ -371,9 +312,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
     {
         switch (_buildingData)
         {
-            case RawMaterialFactoryData raw:
-                if (!IsResourceAllowedForRawFactory(raw, data)) return false;
-                break;
             case ProductionBuildingData prod:
                 if (!IsResourceAllowedForProduction(prod, data)) return false;
                 break;
@@ -405,7 +343,6 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         data.assignedTechnicians = _assignedTechnicians;
 
         data.inputBuffer = ExportBuffer(_inputBuffer);
-        data.outputBuffer = ExportBuffer(_outputBuffer);
 
         return data;
     }
@@ -423,9 +360,7 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
                 _selectedResource = savedResource;
         }
 
-        EnsureDefaultSelectedResourceForRawFactory();
-        ImportBuffer(_inputBuffer, saveData.inputBuffer, _maxInputCapacity);
-        ImportBuffer(_outputBuffer, saveData.outputBuffer, _maxOutputCapacity);
+        ImportBuffer(_inputBuffer, saveData.inputBuffer, _maxInputPerResource, _maxInputResourceKinds);
 
         RefreshOutgoingResourceIcons();
     }
@@ -443,21 +378,30 @@ public partial class BuildingObject : MonoBehaviour, IResourceNode
         return list;
     }
 
-    private static void ImportBuffer(Queue<ResourcePacket> target, List<ResourcePacketSaveData> list, int maxCapacity)
+    private static void ImportBuffer(
+        Queue<ResourcePacket> target,
+        List<ResourcePacketSaveData> list,
+        int maxPerResource,
+        int maxKinds)
     {
         target.Clear();
-
         if (list == null) return;
 
+        Dictionary<string, int> counts = new Dictionary<string, int>();
         for (int i = 0; i < list.Count; i++)
         {
-            if (maxCapacity > 0 && target.Count >= maxCapacity) break;
+            ResourcePacketSaveData saved = list[i];
+            if (saved == null || string.IsNullOrEmpty(saved.id)) continue;
 
-            ResourcePacketSaveData s = list[i];
-            if (string.IsNullOrEmpty(s.id)) continue;
+            int amount = Mathf.Max(1, saved.amount);
+            if (!ResourcePacketQueueUtils.CanAcceptResourceAmount(counts, saved.id, amount, maxPerResource, maxKinds))
+                continue;
 
-            int amount = Mathf.Max(1, s.amount);
-            target.Enqueue(new ResourcePacket(s.id, amount, s.direction));
+            target.Enqueue(new ResourcePacket(saved.id, amount, saved.direction));
+            if (counts.TryGetValue(saved.id, out int existing))
+                counts[saved.id] = existing + amount;
+            else
+                counts[saved.id] = amount;
         }
     }
 }

@@ -185,6 +185,7 @@ MonoBehaviour:
   _outputIndicatorPrefab: {fileID: 4329135525379065979, guid: 3983bd3e3a5ec024997cd1a1a0d233a4, type: 3}
   _heldIconScale: 0.01
   _maxCapacity: 1
+  _splitterArrow: {fileID: 21300000, guid: 3c4ff40ee890036469b3359538e5d5d7, type: 3}
 --- !u!1 &8876456922134046606
 GameObject:
   m_ObjectHideFlags: 0

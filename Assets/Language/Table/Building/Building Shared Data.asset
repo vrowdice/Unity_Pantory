@@ -24,11 +24,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270002
-    m_Key: component_plant
+    m_Key: parts_plant
     m_Metadata:
       m_Items: []
   - m_Id: 864226270102
-    m_Key: component_plant_Desc
+    m_Key: parts_plant_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270003
@@ -80,11 +80,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 864226270009
-    m_Key: mine
+    m_Key: iron_mine
     m_Metadata:
       m_Items: []
   - m_Id: 864226270109
-    m_Key: mine_Desc
+    m_Key: iron_mine_Desc
     m_Metadata:
       m_Items: []
   - m_Id: 864226270010
@@ -169,6 +169,38 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 864226270119
     m_Key: gold_mine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270020
+    m_Key: electronics_plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270120
+    m_Key: electronics_plant_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270021
+    m_Key: coal_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270121
+    m_Key: coal_mine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270022
+    m_Key: copper_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270122
+    m_Key: copper_mine_Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270023
+    m_Key: aluminum_mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 864226270123
+    m_Key: aluminum_mine_Desc
     m_Metadata:
       m_Items: []
   m_Metadata:

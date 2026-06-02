@@ -28,21 +28,39 @@ public class MainCameraController : MonoBehaviour
     [SerializeField] private int _constructionShakeVibrato = 14;
     [SerializeField] private float _constructionShakeRandomness = 90f;
 
+    [Header("Removal feedback (DOTween)")]
+    [SerializeField] private float _removalShakeDuration = 0.18f;
+    [SerializeField] private Vector3 _removalShakeStrength = new Vector3(0.1f, 0.1f, 0f);
+    [SerializeField] private int _removalShakeVibrato = 12;
+    [SerializeField] private float _removalShakeRandomness = 90f;
+
     public Camera Camera => _camera;
 
     private Camera _camera;
     private Vector3 _dragOrigin;
     private bool _isDragging;
-    private BuildingSceneRunnerBase _sceneRunner;
+    private Vector3 _middleDragOrigin;
+    private bool _isMiddleDragging;
+    private MainRunner _sceneRunner;
 
-    private void Awake() => Init();
+    private void Awake()
+    {
+        Init();
+    }
 
-    public void Init() => _camera = GetComponent<Camera>();
+    public void Init()
+    {
+        _camera = GetComponent<Camera>();
+    }
 
     public void SetDragEnabled(bool isEnabled)
     {
         _isDragEnabled = isEnabled;
-        if (!isEnabled) _isDragging = false;
+        if (!isEnabled)
+        {
+            _isDragging = false;
+            _isMiddleDragging = false;
+        }
     }
 
     /// <summary>
@@ -62,8 +80,6 @@ public class MainCameraController : MonoBehaviour
 
         _boundaryCollider.transform.position = new Vector3(center.x, center.y, 0);
         _boundaryCollider.size = size;
-
-        transform.position = ClampToBoundary(transform.position);
     }
 
     /// <summary>
@@ -86,11 +102,30 @@ public class MainCameraController : MonoBehaviour
 
     public void ShakeCamera() => ShakeForConstruction();
 
+    /// <summary>
+    /// 건물 제거 시 짧은 카메라 흔들림.
+    /// </summary>
+    public void ShakeForRemoval()
+    {
+        transform.DOKill(false);
+        transform.DOShakePosition(
+                _removalShakeDuration,
+                _removalShakeStrength,
+                _removalShakeVibrato,
+                _removalShakeRandomness,
+                false,
+                true,
+                ShakeRandomnessMode.Full)
+            .SetUpdate(UpdateType.Normal, isIndependentUpdate: true)
+            .SetLink(gameObject);
+    }
+
     private void LateUpdate()
     {
         HandlePinchZoom();
         HandleKeyboardMove();
         HandleInput();
+        HandleMiddleMouseDrag();
         HandleScrollZoom();
     }
 
@@ -161,6 +196,35 @@ public class MainCameraController : MonoBehaviour
             _isDragging = false;
     }
 
+    private void HandleMiddleMouseDrag()
+    {
+        if (!_isDragEnabled || Application.isMobilePlatform)
+            return;
+
+        Vector3 currentInputPos = Input.mousePosition;
+
+        if (Input.GetMouseButtonDown(2))
+        {
+            if (PointerInput.IsPointerOverUi())
+                return;
+
+            _middleDragOrigin = _camera.ScreenToWorldPoint(currentInputPos);
+            _isMiddleDragging = true;
+        }
+
+        if (_isMiddleDragging && Input.GetMouseButton(2))
+        {
+            Vector3 currentWorldPos = _camera.ScreenToWorldPoint(currentInputPos);
+            Vector3 direction = _middleDragOrigin - currentWorldPos;
+
+            transform.position = ClampToBoundary(transform.position + direction * _dragSpeed);
+            _middleDragOrigin = _camera.ScreenToWorldPoint(currentInputPos);
+        }
+
+        if (Input.GetMouseButtonUp(2))
+            _isMiddleDragging = false;
+    }
+
     private bool IsContinuousPlacementInProgress()
     {
         if (_sceneRunner == null)
@@ -168,8 +232,8 @@ public class MainCameraController : MonoBehaviour
             _sceneRunner = FindAnyObjectByType<MainRunner>();
             if (_sceneRunner == null)
             {
-                BuildingSceneRunnerBase[] runners =
-                    FindObjectsByType<BuildingSceneRunnerBase>(FindObjectsSortMode.None);
+                MainRunner[] runners =
+                    FindObjectsByType<MainRunner>(FindObjectsSortMode.None);
                 if (runners.Length > 0)
                     _sceneRunner = runners[0];
             }
@@ -181,6 +245,11 @@ public class MainCameraController : MonoBehaviour
             return true;
         if (_sceneRunner.PlacementHandler == null)
             return false;
+
+        if (_sceneRunner.PlacementHandler.IsRemovalMode &&
+            _sceneRunner.PlacementHandler.IsPointerRemovalActive)
+            return true;
+
         if (!_sceneRunner.PlacementHandler.IsPlacementMode)
             return false;
         return _sceneRunner.PlacementHandler.IsPointerPlacementActive;

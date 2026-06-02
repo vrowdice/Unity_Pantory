@@ -715,6 +715,18 @@ MonoBehaviour:
     m_Key: GameOver
     m_Metadata:
       m_Items: []
+  - m_Id: 44695410453135360
+    m_Key: CompletedGoal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45730788731666432
+    m_Key: SelectResource
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45731453591764992
+    m_Key: BuildingCondition
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

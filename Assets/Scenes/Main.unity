@@ -395,8 +395,12 @@ MonoBehaviour:
   _blueprintPreviewPrefab: {fileID: 5812946505932702459, guid: 4c9a77042d86cd648a4adb67e6b01b87, type: 3}
   _tilePrefab: {fileID: 439694459351957875, guid: 2883a97c15064334e9930e3cf7771678, type: 3}
   _buildingObjectPrefab: {fileID: 4788968508785240937, guid: c11a7645413457d49842259c4ae0af64, type: 3}
+  _rawBuildingObjectPrefab: {fileID: 4788968508785240937, guid: d79ab84e9083cc14cb2f57a9eb58c5f3, type: 3}
   _roadObjectPrefab: {fileID: 4788968508785240937, guid: 6e7924c93a28da54a80d66883902e559, type: 3}
   _dualLaneRoadObjectPrefab: {fileID: 4788968508785240937, guid: be9b8d82a97cd3048ada2882ec72af77, type: 3}
+  _rawBuildingsSpawnY: 2
+  _rawBuildingsStartX: 1.5
+  _rawBuildingsSpacingX: 3
   _gridWidth: 50
   _gridHeight: 50
   _cameraZOffset: 11
@@ -1079,7 +1083,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5792593746420108247, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchoredPosition.y
+<<<<<<< HEAD
       value: -0.000027403235
+=======
+      value: 0.000008185511
+>>>>>>> bd130ad35c871243cca9f91b0438c5b559f375c2
       objectReference: {fileID: 0}
     - target: {fileID: 5892855330931353407, guid: cd49b637dd67d3c439ff15317e1b1212, type: 3}
       propertyPath: m_AnchorMax.y

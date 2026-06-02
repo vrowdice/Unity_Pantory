@@ -4,6 +4,7 @@ using UnityEngine;
 public class SaveLoadBtn : BtnBase
 {
     [SerializeField] private TextMeshProUGUI _saveDataNameText;
+    [SerializeField] private TextMeshProUGUI _saveDataDateText;
     [SerializeField] private GameObject _loadBtn;
     [SerializeField] private Evo.UI.Button _loadButton;
     [SerializeField] private Evo.UI.Button _deleteButton;
@@ -12,7 +13,7 @@ public class SaveLoadBtn : BtnBase
     private bool _isSaveMode = false;
     private string _saveFileName = string.Empty;
 
-    public void Init(SaveLoadPopup saveLoadPopup, bool isSaveMode, string saveFileName)
+    public void Init(SaveLoadPopup saveLoadPopup, bool isSaveMode, string saveFileName, string saveDateText = "")
     {
         _saveLoadPopup = saveLoadPopup;
         _isSaveMode = isSaveMode;
@@ -21,6 +22,11 @@ public class SaveLoadBtn : BtnBase
         if (_saveDataNameText != null)
         {
             _saveDataNameText.text = saveFileName;
+        }
+
+        if (_saveDataDateText != null)
+        {
+            _saveDataDateText.text = saveDateText ?? string.Empty;
         }
 
         if (_loadButton == null && _loadBtn != null)

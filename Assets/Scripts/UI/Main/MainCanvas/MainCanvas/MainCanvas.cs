@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePanelHost, IBuildingBuildHost, IBuildingTypeSelectHost
+public partial class MainCanvas : CanvasBase
 {
     [Header("Information")]
     [SerializeField] private TextMeshProUGUI _creditText;
@@ -21,7 +21,7 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
     [SerializeField] private MainCanvasMainEventBtns _mainEventBtns;
     [SerializeField] private RectTransform _creditTopInfoToggleRect;
 
-    protected BuildingSceneRunnerBase _mainRunner;
+    protected MainRunner _mainRunner;
 
     private Coroutine _resourceScrollCoroutine;
     private Coroutine _buildingTypeSpawnCoroutine;
@@ -50,11 +50,6 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
     }
 
     public void Init(MainRunner mainRunner)
-    {
-        Init((BuildingSceneRunnerBase)mainRunner);
-    }
-
-    public void Init(BuildingSceneRunnerBase mainRunner)
     {
         base.Init();
 
@@ -276,7 +271,12 @@ public partial class MainCanvas : CanvasBase, IBuildSceneCanvas, IBuildScenePane
     {
         RefreshResourceScrollView();
         UpdateAllMainText();
-        _mainEventBtns.SetMainEventContainer(DataManager.MainEvent.CurrentEventType, this);
+
+        if(_mainEventBtns != null)
+            _mainEventBtns.SetMainEventContainer(DataManager.MainEvent.CurrentEventType, this);
+
+        if(TutorialDirector.Instance != null)
+            TutorialDirector.Instance.NotifyDayAdvanced();
     }
 
     public void ShowNewsPopup(NewsState newsState)

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: goal_place_component_plant
   m_EditorClassIdentifier: 
   id: goal_place_component_plant
-  displayName: "\uBD80\uD488 \uACF5\uC7A5 1\uAC1C \uBC30\uCE58"
+  displayName: "\uC77C\uBC18 \uBD80\uD488 \uACF5\uC7A5 1\uAC1C \uBC30\uCE58"
   conditionType: 4
-  targetId: component_plant
+  targetId: parts_plant
   targetValue: 1
   rewardCredit: 40000
   isDefaultUnlocked: 0

@@ -93,7 +93,7 @@ public class GoalPopup : PopupBase
         Refresh();
     }
 
-    private void OnCompletedGoalSwitchChanged(bool isOn)
+    public void OnCompletedGoalSwitchChanged(bool isOn)
     {
         Refresh();
     }

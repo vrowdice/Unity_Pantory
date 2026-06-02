@@ -92,7 +92,6 @@ public class BlueprintLayoutDataHandler
             dst.selectedResourceId = src.selectedResourceId;
             dst.workProgress = src.workProgress;
             dst.inputBuffer = ClonePacketList(src.inputBuffer);
-            dst.outputBuffer = ClonePacketList(src.outputBuffer);
             clone.Add(dst);
         }
 
@@ -132,7 +131,6 @@ public class BlueprintLayoutDataHandler
             dst.y = src.y;
             dst.rotation = src.rotation;
             dst.roadDataId = src.roadDataId;
-            dst.sourceBuildingDataId = src.sourceBuildingDataId;
             dst.buffer = ClonePacketList(src.buffer);
             clone.Add(dst);
         }

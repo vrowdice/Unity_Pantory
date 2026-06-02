@@ -22,6 +22,9 @@ public class UnionPopup : PopupBase
     [SerializeField] private GameObject _requestBtnPrefab;
     [SerializeField] private TextMeshProUGUI _remainDayText;
 
+    [Header("Complete Feedback")]
+    [SerializeField] private AudioClip _requirementCompleteSfx;
+
     private List<UnionPopupEmployeeInfoContainer> _employeeInfoContainerList = new();
     private List<UnionPopupRequestBtn> _requestBtnList = new();
     private bool _isEmployeeEventSubscribed;
@@ -194,7 +197,7 @@ public class UnionPopup : PopupBase
                 container.RefreshUI();
         }
 
-        yield return RefreshUnionRequestListUIRoutine(module);
+        RefreshUnionRequestButtons(module);
     }
 
     private void RefreshDailyCohesionChangeUI(UnionStateModule module)
@@ -242,10 +245,10 @@ public class UnionPopup : PopupBase
         }
     }
 
-    private IEnumerator RefreshUnionRequestListUIRoutine(UnionStateModule module)
+    private void RefreshUnionRequestButtons(UnionStateModule module)
     {
         if (_requestBtnPrefab == null || _requestScrollViewContentransform == null)
-            yield break;
+            return;
 
         List<UnionRequestState> activeRequests = module.GetActiveUnionRequests();
 
@@ -258,15 +261,15 @@ public class UnionPopup : PopupBase
                 Destroy(removedBtn.gameObject);
         }
 
-        yield return StaggeredSpawnUtils.ForEachFrame(activeRequests.Count, i =>
+        for (int i = 0; i < activeRequests.Count; i++)
         {
             UnionPopupRequestBtn requestBtn = GetOrCreateUnionRequestBtn(i);
             if (requestBtn == null)
-                return;
+                continue;
 
             requestBtn.gameObject.SetActive(true);
-            requestBtn.Init(activeRequests[i], _dataManager, this);
-        });
+            requestBtn.Init(activeRequests[i], _dataManager, this, _requirementCompleteSfx);
+        }
 
         for (int i = activeRequests.Count; i < _requestBtnList.Count; i++)
             _requestBtnList[i].gameObject.SetActive(false);

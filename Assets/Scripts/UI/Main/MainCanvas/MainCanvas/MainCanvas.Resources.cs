@@ -25,7 +25,7 @@ public partial class MainCanvas
 
             if (_resourceBtnMap.TryGetValue(pair.Key, out MainScrollViewResouceBtn existingBtn))
             {
-                existingBtn.Refresh(entry);
+                existingBtn.Refresh();
                 continue;
             }
 

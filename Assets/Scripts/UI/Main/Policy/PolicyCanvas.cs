@@ -52,19 +52,7 @@ public class PolicyCanvas : MainCanvasPanelBase
 
     private void RefreshPolicySetBtns()
     {
-        if (_policySetBtnScrollViewContentTransform == null)
-        {
-            return;
-        }
-
-        foreach (Transform child in _policySetBtnScrollViewContentTransform)
-        {
-            PolicySetBtn policySetBtn = child.GetComponent<PolicySetBtn>();
-            if (policySetBtn != null)
-            {
-                policySetBtn.RefreshUI();
-            }
-        }
+        EntryListPanelUtils.RefreshAllChildren(_policySetBtnScrollViewContentTransform);
     }
 
     public void DisplayPolicyEffect()
